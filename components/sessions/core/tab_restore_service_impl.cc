@@ -176,6 +176,18 @@ void RemoveEntryByID(
         }
       }
     }
+    // If this entry is a split, look through its tabs.
+    if (entry.type == tab_restore::Type::SPLIT) {
+      auto& split = static_cast<tab_restore::Split&>(entry);
+      for (auto it = split.tabs.begin(); it != split.tabs.end(); ++it) {
+        const tab_restore::Tab& tab = **it;
+        // Erase it if it's our target.
+        if (tab.id == id) {
+          split.tabs.erase(it);
+          return;
+        }
+      }
+    }
   }
 }
 

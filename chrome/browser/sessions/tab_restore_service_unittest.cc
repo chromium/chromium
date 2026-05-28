@@ -1572,3 +1572,49 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   service_->RestoreEntryById(&mock_live_tab_context, entry->id,
                              WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
+
+TEST_F(TabRestoreServiceImplWithMockClientTest, RestoreOneTabFromSplit) {
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  testing::NiceMock<MockLiveTab> mock_tab1, mock_tab2;
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  SetupMockSplit(&mock_live_tab_context, &mock_tab1, &mock_tab2,
+                 GURL("http://split1"), GURL("http://split2"), split_id);
+
+  ON_CALL(mock_live_tab_context, AddRestoredTab(_, _, _, _, _))
+      .WillByDefault(testing::Return(&mock_tab1));
+
+  // Create the Historical Split
+  service_->CreateHistoricalSplit(&mock_live_tab_context, split_id);
+  ASSERT_EQ(1U, service_->entries().size());
+
+  auto& entry = service_->entries().front();
+  ASSERT_EQ(sessions::tab_restore::Type::SPLIT, entry->type);
+
+  auto* split_entry = static_cast<sessions::tab_restore::Split*>(entry.get());
+  ASSERT_EQ(2U, split_entry->tabs.size());
+
+  SessionID tab1_id = split_entry->tabs[0]->id;
+  SessionID tab2_id = split_entry->tabs[1]->id;
+
+  // Restore only tab1 from the split.
+  service_->RestoreEntryById(&mock_live_tab_context, tab1_id,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
+
+  // Verify the Split entry has been replaced by the remaining tab entry.
+  ASSERT_EQ(1U, service_->entries().size());
+  auto& remaining_entry = service_->entries().front();
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, remaining_entry->type);
+
+  auto* tab_entry =
+      static_cast<sessions::tab_restore::Tab*>(remaining_entry.get());
+  EXPECT_EQ(tab2_id, tab_entry->id);
+  EXPECT_EQ(std::nullopt, tab_entry->split_id);
+  EXPECT_EQ(std::nullopt, tab_entry->split_visual_data);
+
+  // Restore the remaining tab to verify that it does not crash.
+  service_->RestoreEntryById(&mock_live_tab_context, tab2_id,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
+
+  EXPECT_TRUE(service_->entries().empty());
+}

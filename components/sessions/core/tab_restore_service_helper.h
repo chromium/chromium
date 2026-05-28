@@ -187,6 +187,16 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
                                               WindowOpenDisposition disposition,
                                               std::vector<LiveTab*>* live_tabs);
 
+  // Helper function for RestoreEntryById(). Restores a single tab from the
+  // `split` and returns the remaining tab.
+  std::unique_ptr<Tab> RestoreOneTabFromSplit(
+      Split& split,
+      SessionID id,
+      LiveTabContext** context,
+      WindowOpenDisposition disposition,
+      sessions::tab_restore::Type session_restore_type,
+      std::vector<LiveTab*>& live_tabs);
+
   // Helper function for CreateHistoricalGroup. Returns a Group populated with
   // metadata for the tab group `id`.
   std::unique_ptr<Group> CreateHistoricalGroupImpl(
