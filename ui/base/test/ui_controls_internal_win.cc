@@ -11,17 +11,23 @@
 
 #include <windows.h>
 
+#include <commctrl.h>
+
 #include <algorithm>
 #include <cmath>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/win_util.h"
 #include "ui/base/win/event_creation_utils.h"
@@ -118,7 +124,7 @@ class InputDispatcher {
   static InputDispatcher* current_dispatcher_;
 
   // Return value from SetWindowsHookEx.
-  static HHOOK next_hook_;
+  static HHOOK hook_;
 
   THREAD_CHECKER(thread_checker_);
 
@@ -150,7 +156,7 @@ class InputDispatcher {
 InputDispatcher* InputDispatcher::current_dispatcher_ = nullptr;
 
 // static
-HHOOK InputDispatcher::next_hook_ = nullptr;
+HHOOK InputDispatcher::hook_ = nullptr;
 
 // static
 void InputDispatcher::CreateForMouseEvent(base::OnceClosure callback,
@@ -222,8 +228,8 @@ InputDispatcher::~InputDispatcher() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(current_dispatcher_, this);
   current_dispatcher_ = nullptr;
-  UnhookWindowsHookEx(next_hook_);
-  next_hook_ = nullptr;
+  UnhookWindowsHookEx(hook_);
+  hook_ = nullptr;
 }
 
 void InputDispatcher::InstallHook() {
@@ -251,23 +257,23 @@ void InputDispatcher::InstallHook() {
           TestTimeouts::action_timeout());
     }
   }
-  next_hook_ =
+  hook_ =
       SetWindowsHookEx(hook_type, hook_function, nullptr, GetCurrentThreadId());
-  DPCHECK(next_hook_);
+  DPCHECK(hook_);
 }
 
 // static
 LRESULT CALLBACK InputDispatcher::MouseHook(int n_code,
                                             WPARAM w_param,
                                             LPARAM l_param) {
-  HHOOK next_hook = next_hook_;
+  HHOOK hook = hook_;
   if (n_code == HC_ACTION) {
     DCHECK(current_dispatcher_);
     current_dispatcher_->DispatchedMessage(
         static_cast<UINT>(w_param),
         reinterpret_cast<MOUSEHOOKSTRUCT*>(l_param));
   }
-  return CallNextHookEx(next_hook, n_code, w_param, l_param);
+  return CallNextHookEx(hook, n_code, w_param, l_param);
 }
 
 // static
@@ -285,7 +291,7 @@ LRESULT CALLBACK InputDispatcher::KeyHook(int n_code,
                          false));
     }
   }
-  return CallNextHookEx(next_hook_, n_code, w_param, l_param);
+  return CallNextHookEx(hook_, n_code, w_param, l_param);
 }
 
 void InputDispatcher::DispatchedMessage(
@@ -381,6 +387,127 @@ void InputDispatcher::OnTimeout() {
   std::move(callback).Run();
 }
 
+// WindowMessageObserver is used to listen for a message sent to a target
+// window using a window subclass. The callback is run when the message matches.
+class WindowMessageObserver {
+ public:
+  static void Create(base::OnceClosure callback,
+                     HWND target_hwnd,
+                     WPARAM message_type);
+
+  ~WindowMessageObserver();
+
+  WindowMessageObserver(const WindowMessageObserver&) = delete;
+  WindowMessageObserver& operator=(const WindowMessageObserver&) = delete;
+
+ private:
+  WindowMessageObserver(base::OnceClosure callback,
+                        HWND target_hwnd,
+                        WPARAM message_type);
+
+  void RegisterObserver();
+
+  static LRESULT CALLBACK SubclassProc(HWND hwnd,
+                                       UINT msg,
+                                       WPARAM w_param,
+                                       LPARAM l_param,
+                                       UINT_PTR id,
+                                       DWORD_PTR ref_data);
+
+  void ProcessMessage(HWND hwnd, UINT msg, UINT_PTR id);
+
+  void MatchingMessageProcessed();
+
+  THREAD_CHECKER(thread_checker_);
+
+  base::OnceClosure callback_;
+  const HWND expected_hwnd_;
+  const WPARAM message_waiting_for_;
+
+  base::WeakPtrFactory<WindowMessageObserver> weak_factory_{this};
+};
+
+// WindowMessageObserver ------------------------------------------------------
+
+// static
+void WindowMessageObserver::Create(base::OnceClosure callback,
+                                   HWND target_hwnd,
+                                   WPARAM message_type) {
+  // Owns self.
+  new WindowMessageObserver(std::move(callback), target_hwnd, message_type);
+}
+
+WindowMessageObserver::WindowMessageObserver(base::OnceClosure callback,
+                                             HWND target_hwnd,
+                                             WPARAM message_type)
+    : callback_(std::move(callback)),
+      expected_hwnd_(target_hwnd),
+      message_waiting_for_(message_type) {
+  RegisterObserver();
+}
+
+WindowMessageObserver::~WindowMessageObserver() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ::RemoveWindowSubclass(expected_hwnd_, &SubclassProc,
+                         reinterpret_cast<UINT_PTR>(this));
+}
+
+void WindowMessageObserver::RegisterObserver() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ::SetWindowSubclass(expected_hwnd_, &SubclassProc,
+                      reinterpret_cast<UINT_PTR>(this),
+                      reinterpret_cast<DWORD_PTR>(this));
+}
+
+void WindowMessageObserver::ProcessMessage(HWND hwnd,
+                                           UINT msg,
+                                           UINT_PTR id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (msg == message_waiting_for_) {
+    ::RemoveWindowSubclass(hwnd, &SubclassProc, id);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WindowMessageObserver::MatchingMessageProcessed,
+                       weak_factory_.GetWeakPtr()));
+  } else if (msg == WM_NCDESTROY) {
+    ::RemoveWindowSubclass(hwnd, &SubclassProc, id);
+    // Since the window is being destroyed and we never matched the message,
+    // we should delete ourselves to prevent a leak.
+    //
+    // We must delete asynchronously (via DeleteSoon) rather than immediately:
+    // 1. To allow the current subclass message dispatch stack to completely
+    //    unwind before the C++ controller object is destroyed. Deleting
+    //    immediately inside the window procedure callback could result in
+    //    use-after-free bugs if subsequent message handlers on the call stack
+    //    attempt to inspect the window subclass state.
+    // 2. To prevent redundant and nested calls to RemoveWindowSubclass
+    //    while the subclass proc is currently executing on the stack frame.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  this);
+  }
+}
+
+// static
+LRESULT CALLBACK WindowMessageObserver::SubclassProc(HWND hwnd,
+                                                     UINT msg,
+                                                     WPARAM w_param,
+                                                     LPARAM l_param,
+                                                     UINT_PTR id,
+                                                     DWORD_PTR ref_data) {
+  auto* observer = reinterpret_cast<WindowMessageObserver*>(ref_data);
+  CHECK(observer);
+  observer->ProcessMessage(hwnd, msg, id);
+  return ::DefSubclassProc(hwnd, msg, w_param, l_param);
+}
+
+void WindowMessageObserver::MatchingMessageProcessed() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto callback = std::move(callback_);
+  delete this;
+  std::move(callback).Run();
+}
+
 // Private functions ----------------------------------------------------------
 
 UINT MapVirtualKeyToScanCode(UINT code) {
@@ -470,6 +597,86 @@ void AppendAcceleratorInputs(int accelerator_state,
   }
 }
 
+// Helper to find the deepest descendant window at a specified screen point.
+// We loop using ::ChildWindowFromPointEx because the standard Windows API
+// ::ChildWindowFromPointEx is non-recursive (it only searches immediate first-
+// level children of the parent window).
+// We cannot use ::WindowFromPoint here because when Chrome is occluded by an
+// external process window, ::WindowFromPoint returns the occluding window.
+HWND FindDeepestChildAtPoint(HWND parent, const POINT& screen_pt) {
+  HWND current = parent;
+  while (current) {
+    POINT client_pt = screen_pt;
+    ::ScreenToClient(current, &client_pt);
+    HWND child = ::ChildWindowFromPointEx(current, client_pt,
+                                          CWP_SKIPINVISIBLE | CWP_SKIPDISABLED);
+    if (!child || child == current) {
+      break;
+    }
+    current = child;
+  }
+  return current;
+}
+
+HWND FindChromeWindowAtPoint(const POINT& pt) {
+  const DWORD chrome_pid = ::GetCurrentProcessId();
+  HWND hwnd = ::GetTopWindow(nullptr);
+  while (hwnd) {
+    DWORD pid;
+    ::GetWindowThreadProcessId(hwnd, &pid);
+    if (pid == chrome_pid && ::IsWindowVisible(hwnd)) {
+      RECT rect;
+      ::GetWindowRect(hwnd, &rect);
+      if (::PtInRect(&rect, pt)) {
+        return FindDeepestChildAtPoint(hwnd, pt);
+      }
+    }
+    hwnd = ::GetWindow(hwnd, GW_HWNDNEXT);
+  }
+  return NULL;
+}
+
+// Posts a mouse event message directly to a Chrome window and monitors
+// its delivery.
+void SendMouseEventByPostMessage(HWND chrome_hwnd,
+                                 HWND hwnd_under_mouse,
+                                 DWORD pid,
+                                 const gfx::Point& screen_point,
+                                 WPARAM message_type,
+                                 base::OnceClosure task) {
+  wchar_t class_name[256];
+  ::GetClassName(hwnd_under_mouse, class_name, std::size(class_name));
+
+  wchar_t title[256];
+  ::GetWindowText(hwnd_under_mouse, title, std::size(title));
+
+  RECT rect;
+  ::GetWindowRect(hwnd_under_mouse, &rect);
+
+  VLOG(1) << "Occluding window detected details:"
+          << "\n  HWND: " << hwnd_under_mouse << "\n  Class: " << class_name
+          << "\n  Title: " << title << "\n  Bounds: (" << rect.left << ", "
+          << rect.top << ") - (" << rect.right << ", " << rect.bottom << ")";
+
+  // Update the cursor for WM_MOUSEMOVE. This is needed so that GetCursorPos()
+  // returns the correct cursor position.
+  if (message_type == WM_MOUSEMOVE) {
+    ui::SendMouseEvent(screen_point,
+                       MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK);
+  }
+
+  POINT client_pt = {screen_point.x(), screen_point.y()};
+  ::ScreenToClient(chrome_hwnd, &client_pt);
+  ::PostMessage(chrome_hwnd, message_type, 0,
+                MAKELPARAM(client_pt.x, client_pt.y));
+
+  // Subclass the target window. Call the completion callback when the subclass
+  // proc receives the message.
+  if (task) {
+    WindowMessageObserver::Create(std::move(task), chrome_hwnd, message_type);
+  }
+}
+
 }  // namespace
 
 namespace ui_controls {
@@ -540,6 +747,29 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
                     "Offsetting move target by 1 DIP for x to force dispatch.";
     screen_point = display::win::GetScreenWin()->DIPToScreenPoint(
         {screen_x + 1, screen_y});
+  }
+
+  POINT pt = {screen_point.x(), screen_point.y()};
+  HWND hwnd_under_mouse = ::WindowFromPoint(pt);
+  DWORD pid = 0;
+  ::GetWindowThreadProcessId(hwnd_under_mouse, &pid);
+  const bool other_process_window_under_mouse =
+      pid != ::GetCurrentProcessId() && hwnd_under_mouse != NULL;
+
+  // The mouse is over a window owned by another process. On bots we see
+  // HWNDs owned by text_input_host.exe or explorer.exe occluding Chrome's
+  // window. WM_MOUSEMOVE will be sent to them, not Chrome. They are not also
+  // responsive to SetWindowPos or SendInput calls from Chrome.
+  // Subtle: only post a WM_MOUSEMOVE if occluded by another process. If we
+  // always post a WM_MOUSEMOVE, Chrome will receive 2 WM_MOUSEMOVEs, one
+  // from SendInput (required for cursor update) and the other from PostMessage.
+  if (other_process_window_under_mouse) {
+    HWND chrome_hwnd = FindChromeWindowAtPoint(pt);
+    if (chrome_hwnd) {
+      SendMouseEventByPostMessage(chrome_hwnd, hwnd_under_mouse, pid,
+                                  screen_point, WM_MOUSEMOVE, std::move(task));
+      return true;
+    }
   }
 
   if (!ui::SendMouseEvent(screen_point,

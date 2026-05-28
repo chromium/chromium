@@ -30,8 +30,6 @@ class WebViewInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/503006729): this test times out on Windows.
-#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest, MouseMoveEventDelivered) {
   // Create a widget with a WebView.
   TestingProfile testing_profile;
@@ -96,6 +94,5 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest, MouseMoveEventDelivered) {
   EXPECT_NEAR(expected_x, mouse_x, 2);
   EXPECT_NEAR(expected_y, mouse_y, 2);
 }
-#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace views
