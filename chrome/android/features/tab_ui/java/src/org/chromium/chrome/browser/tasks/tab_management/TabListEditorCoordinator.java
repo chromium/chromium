@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
@@ -336,7 +336,7 @@ public class TabListEditorCoordinator {
     private final @TabListMode int mTabListMode;
     private final boolean mDisplayGroups;
     private final TabContentManager mTabContentManager;
-    private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
+    private final @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider;
     private final ModalDialogManager mModalDialogManager;
     private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
@@ -368,10 +368,14 @@ public class TabListEditorCoordinator {
      * @param snackbarManager Used to display snackbar messages.
      * @param bottomSheetController Used to display bottom sheets.
      * @param initialTabActionState The initial TabActionState to use.
+     * @param tabListItemOnClickListenerProvider Provides click listeners for regular tabs and tab
+     *     group cards.
      * @param modalDialogManager Used for managing the modal dialogs.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param creationMode Mode in which list is created e.g. full screen mode or in a dialog.
+     * @param itemPickerSelectionHandler Handler to set the selection state of the items in the item
+     *     picker.
      * @param undoBarExplicitTrigger Used to explicitly trigger the undo bar closure snackbar.
      * @param componentId The {@link TabComponentId} identifying the parent UI container hosting
      *     this tab list.
@@ -380,8 +384,6 @@ public class TabListEditorCoordinator {
      * @param isSingleContextMode Whether the picker is operating in a mode where only one item can
      *     be selected at a time. If true, selecting a new tab will replace the current selection
      *     instead of appending to it.
-     * @param itemPickerSelectionHandler Handler to set the selection state of the items in the item
-     *     picker.
      */
     public TabListEditorCoordinator(
             Activity activity,
@@ -396,7 +398,7 @@ public class TabListEditorCoordinator {
             SnackbarManager snackbarManager,
             @Nullable BottomSheetController bottomSheetController,
             @TabActionState int initialTabActionState,
-            @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable TabListItemOnClickListenerProvider tabListItemOnClickListenerProvider,
             ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
@@ -419,7 +421,7 @@ public class TabListEditorCoordinator {
             mTabActionState = initialTabActionState;
             mTabContentManager = tabContentManager;
             assert mode == TabListCoordinator.TabListMode.GRID;
-            mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
+            mTabListItemOnClickListenerProvider = tabListItemOnClickListenerProvider;
             mModalDialogManager = modalDialogManager;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
             mUndoBarExplicitTrigger = undoBarExplicitTrigger;
@@ -642,7 +644,7 @@ public class TabListEditorCoordinator {
                         thumbnailProvider,
                         mDisplayGroups,
                         /* dataSharingTabManager= */ null,
-                        mGridCardOnClickListenerProvider,
+                        mTabListItemOnClickListenerProvider,
                         /* dialogHandler= */ null,
                         mTabActionState,
                         this::getSelectionDelegate,

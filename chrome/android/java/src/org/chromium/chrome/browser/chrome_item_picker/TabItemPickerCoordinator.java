@@ -662,7 +662,7 @@ public class TabItemPickerCoordinator {
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.SELECTABLE,
-                        /* gridCardOnClickListenerProvider= */ null,
+                        /* tabListItemOnClickListenerProvider= */ null,
                         modalDialogManager,
                         /* desktopWindowStateManager= */ null,
                         /* edgeToEdgeSupplier= */ null,

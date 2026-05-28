@@ -353,7 +353,7 @@ public class TabListMediatorUnitTest {
     @Mock TabRemover mTabRemover;
     @Mock TabRemover mIncognitoTabRemover;
     @Mock TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
-    @Mock TabListMediator.GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
+    @Mock TabListMediator.TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider;
     @Mock TabFavicon mFavicon;
     @Mock Bitmap mFaviconBitmap;
     @Mock Activity mActivity;
@@ -515,10 +515,10 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabModel).getRepresentativeTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getRepresentativeTabAt(POSITION2);
         doReturn(mOpenGroupActionListener)
-                .when(mGridCardOnClickListenerProvider)
+                .when(mTabListItemOnClickListenerProvider)
                 .onTabGroupClicked(any(Tab.class));
         doReturn(mOpenGroupActionListener)
-                .when(mGridCardOnClickListenerProvider)
+                .when(mTabListItemOnClickListenerProvider)
                 .onTabGroupClicked(anyString());
         doAnswer(
                         invocation -> {
@@ -527,7 +527,7 @@ public class TabListMediatorUnitTest {
                             return new TabActionButtonData(
                                     TabActionButtonType.OVERFLOW, defaultListenerSupplier.get());
                         })
-                .when(mGridCardOnClickListenerProvider)
+                .when(mTabListItemOnClickListenerProvider)
                 .getTabGroupActionButtonData(any(), any(), any());
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
@@ -950,7 +950,7 @@ public class TabListMediatorUnitTest {
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
                         /* triggeringMotion= */ null);
 
-        verify(mGridCardOnClickListenerProvider)
+        verify(mTabListItemOnClickListenerProvider)
                 .onTabSelecting(mModelList.get(1).model.get(TabProperties.TAB_ID), true);
     }
 
@@ -1716,7 +1716,7 @@ public class TabListMediatorUnitTest {
                         mTabListFaviconProvider,
                         true,
                         () -> mSelectionDelegate,
-                        mGridCardOnClickListenerProvider,
+                        mTabListItemOnClickListenerProvider,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -5369,7 +5369,7 @@ public class TabListMediatorUnitTest {
                         mTabListFaviconProvider,
                         true,
                         () -> mSelectionDelegate,
-                        mGridCardOnClickListenerProvider,
+                        mTabListItemOnClickListenerProvider,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -5608,7 +5608,7 @@ public class TabListMediatorUnitTest {
                         mTabListFaviconProvider,
                         /* actionOnRelatedTabs= */ true,
                         () -> mSelectionDelegate,
-                        /* gridCardOnClickListenerProvider= */ null,
+                        /* tabListItemOnClickListenerProvider= */ null,
                         /* dialogHandler= */ null,
                         /* priceWelcomeMessageControllerSupplier= */ null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -6018,7 +6018,7 @@ public class TabListMediatorUnitTest {
                         mTabListFaviconProvider,
                         actionOnRelatedTabs,
                         () -> mSelectionDelegate,
-                        mGridCardOnClickListenerProvider,
+                        mTabListItemOnClickListenerProvider,
                         handler,
                         null,
                         componentId,

@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -331,8 +331,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mCoordinator.show(mOnTabSelectingListener);
 
         // Run the click listener.
-        GridCardOnClickListenerProvider provider =
-                mCoordinator.getGridCardOnClickListenerProviderForTesting();
+        TabListItemOnClickListenerProvider provider =
+                mCoordinator.getTabListItemOnClickListenerProviderForTesting();
         TabActionListener listener = provider.onTabGroupClicked(TAB_GROUP_ID_STRING);
         listener.run(mItemView1, TAB_GROUP_ID_STRING, /* triggeringMotion= */ null);
 

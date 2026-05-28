@@ -143,7 +143,7 @@ public class TabListEditorManager {
                             mSnackbarManager,
                             mBottomSheetController,
                             TabProperties.TabActionState.SELECTABLE,
-                            /* gridCardOnClickListenerProvider= */ null,
+                            /* tabListItemOnClickListenerProvider= */ null,
                             mModalDialogManager,
                             mDesktopWindowStateManager,
                             mEdgeToEdgeSupplier,

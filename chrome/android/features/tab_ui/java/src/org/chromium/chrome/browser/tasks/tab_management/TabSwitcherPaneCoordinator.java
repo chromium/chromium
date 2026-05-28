@@ -83,7 +83,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.DragObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -377,7 +377,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 tabModelSupplier,
                                                 tabContentManager,
                                                 resetHandler,
-                                                getGridCardOnClickListenerProvider(),
+                                                getTabListItemOnClickListenerProvider(),
                                                 TabSwitcherPaneCoordinator.this
                                                         ::getTabGridDialogAnimationSourceView,
                                                 scrimManager,
@@ -437,7 +437,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             mMultiThumbnailCardProvider,
                             /* actionOnRelatedTabs= */ true,
                             dataSharingTabManager,
-                            getGridCardOnClickListenerProvider(),
+                            getTabListItemOnClickListenerProvider(),
                             /* dialogHandler= */ null,
                             TabProperties.TabActionState.CLOSABLE,
                             /* selectionDelegateProvider= */ null,
@@ -1032,7 +1032,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         }
     }
 
-    private GridCardOnClickListenerProvider getGridCardOnClickListenerProvider() {
+    private TabListItemOnClickListenerProvider getTabListItemOnClickListenerProvider() {
         return mMediator;
     }
 

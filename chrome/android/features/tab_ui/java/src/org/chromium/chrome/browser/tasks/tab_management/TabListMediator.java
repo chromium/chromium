@@ -225,11 +225,8 @@ public class TabListMediator implements TabListNotificationHandler {
         SelectionDelegate<E> getSelectionDelegate();
     }
 
-    /**
-     * An interface to get the onClickListener when clicking on a grid card.
-     * TODO(crbug.com/517268274): Rename this interface to be more generic.
-     */
-    public interface GridCardOnClickListenerProvider {
+    /** An interface to get the onClickListener when clicking on a tab list item. */
+    public interface TabListItemOnClickListenerProvider {
         /**
          * Returns the {@link TabActionListener} to handle a tab group card click. If the given
          * {@link Tab} is not able to create a group, return null.
@@ -359,7 +356,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final @Nullable SelectionDelegateProvider<TabListEditorItemSelectionId>
             mSelectionDelegateProvider;
-    private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
+    private final @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider;
     private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
     private final @Nullable Supplier<@Nullable PriceWelcomeMessageController>
             mPriceWelcomeMessageControllerSupplier;
@@ -444,8 +441,8 @@ public class TabListMediator implements TabListNotificationHandler {
                         //     here.
                         recordUserSwitchedTab();
                     }
-                    if (mGridCardOnClickListenerProvider != null) {
-                        mGridCardOnClickListenerProvider.onTabSelecting(
+                    if (mTabListItemOnClickListenerProvider != null) {
+                        mTabListItemOnClickListenerProvider.onTabSelecting(
                                 tabId, /* fromActionButton= */ true);
                     } else {
                         tabModel.setIndex(
@@ -1059,7 +1056,7 @@ public class TabListMediator implements TabListNotificationHandler {
      *     tabs.
      * @param selectionDelegateProvider Provider for a {@link SelectionDelegate} that is used for a
      *     selectable list. It's null when selection is not possible.
-     * @param gridCardOnClickListenerProvider Provides click listeners for regular tabs and tab
+     * @param tabListItemOnClickListenerProvider Provides click listeners for regular tabs and tab
      *     group cards.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
@@ -1085,7 +1082,7 @@ public class TabListMediator implements TabListNotificationHandler {
             boolean actionOnRelatedTabs,
             @Nullable SelectionDelegateProvider<TabListEditorItemSelectionId>
                     selectionDelegateProvider,
-            @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable TabListItemOnClickListenerProvider tabListItemOnClickListenerProvider,
             @Nullable TabGridDialogHandler dialogHandler,
             @Nullable Supplier<@Nullable PriceWelcomeMessageController>
                     priceWelcomeMessageControllerSupplier,
@@ -1107,7 +1104,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mTabListFaviconProvider = tabListFaviconProvider;
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mSelectionDelegateProvider = selectionDelegateProvider;
-        mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
+        mTabListItemOnClickListenerProvider = tabListItemOnClickListenerProvider;
         mTabGridDialogHandler = dialogHandler;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mComponentId = componentId;
@@ -2136,8 +2133,8 @@ public class TabListMediator implements TabListNotificationHandler {
                     TabActionButtonType.SELECT, mSelectableTabOnClickListener);
         }
         if (isTabGroupHeader(model)) {
-            if (mGridCardOnClickListenerProvider != null) {
-                return mGridCardOnClickListenerProvider.getTabGroupActionButtonData(
+            if (mTabListItemOnClickListenerProvider != null) {
+                return mTabListItemOnClickListenerProvider.getTabGroupActionButtonData(
                         tab, model, this::getTabGroupOverflowMenuClickListener);
             }
             return new TabActionButtonData(
@@ -2178,8 +2175,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (tabActionState == TabActionState.SELECTABLE) {
             return mSelectableTabOnClickListener;
         } else {
-            if (isTabGroupHeader(model) && mGridCardOnClickListenerProvider != null) {
-                return mGridCardOnClickListenerProvider.onTabGroupClicked(tab);
+            if (isTabGroupHeader(model) && mTabListItemOnClickListenerProvider != null) {
+                return mTabListItemOnClickListenerProvider.onTabGroupClicked(tab);
             } else {
                 return mTabSelectedListener;
             }
@@ -2233,11 +2230,11 @@ public class TabListMediator implements TabListNotificationHandler {
                         ? new TabActionButtonData(
                                 TabActionButtonType.SELECT, mSelectableTabOnClickListener)
                         : new TabActionButtonData(TabActionButtonType.CLOSE, mTabClosedListener);
-        assumeNonNull(mGridCardOnClickListenerProvider);
+        assumeNonNull(mTabListItemOnClickListenerProvider);
         TabActionListener tabClickListener =
                 isSelectableState
                         ? mSelectableTabOnClickListener
-                        : mGridCardOnClickListenerProvider.onTabGroupClicked(
+                        : mTabListItemOnClickListenerProvider.onTabGroupClicked(
                                 assumeNonNull(savedTabGroup.syncId));
         TabActionListener tabLongClickListener =
                 isSelectableState ? mSelectableTabOnClickListener : null;
@@ -2254,12 +2251,12 @@ public class TabListMediator implements TabListNotificationHandler {
 
     private TabActionListener getTabActionListener(Tab tab, boolean isInTabGroup) {
         TabActionListener tabSelectedListener;
-        if (mGridCardOnClickListenerProvider == null
+        if (mTabListItemOnClickListenerProvider == null
                 || !isInTabGroup
                 || !mActionsOnAllRelatedTabs) {
             tabSelectedListener = mTabSelectedListener;
         } else {
-            tabSelectedListener = mGridCardOnClickListenerProvider.onTabGroupClicked(tab);
+            tabSelectedListener = mTabListItemOnClickListenerProvider.onTabGroupClicked(tab);
             if (tabSelectedListener == null) {
                 tabSelectedListener = mTabSelectedListener;
             }
@@ -2280,9 +2277,9 @@ public class TabListMediator implements TabListNotificationHandler {
             // Check if the tab group card should show as selected. The click listener provider
             // can override this behavior.
             if (isTabGroupHeader(model) && tab.getTabGroupId() != null) {
-                if (mGridCardOnClickListenerProvider != null) {
+                if (mTabListItemOnClickListenerProvider != null) {
                     @Nullable Boolean selectedOverride =
-                            mGridCardOnClickListenerProvider.isTabGroupSelected(tab, model);
+                            mTabListItemOnClickListenerProvider.isTabGroupSelected(tab, model);
                     if (selectedOverride != null) {
                         return selectedOverride;
                     }

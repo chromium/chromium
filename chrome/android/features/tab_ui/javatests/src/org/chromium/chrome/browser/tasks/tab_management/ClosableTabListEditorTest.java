@@ -101,7 +101,7 @@ public class ClosableTabListEditorTest {
                                     mSnackbarManager,
                                     /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.CLOSABLE,
-                                    /* gridCardOnClickListenerProvider= */ null,
+                                    /* tabListItemOnClickListenerProvider= */ null,
                                     mModalDialogManager,
                                     /* desktopWindowStateManager= */ null,
                                     mEdgeToEdgeSupplier,

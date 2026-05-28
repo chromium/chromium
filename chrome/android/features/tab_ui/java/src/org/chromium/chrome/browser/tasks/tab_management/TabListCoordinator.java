@@ -59,9 +59,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.SelectionDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -182,7 +182,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
      * @param dataSharingTabManager The service used to initiate data sharing.
-     * @param gridCardOnClickListenerProvider Provides click listeners for regular tabs and tab
+     * @param tabListItemOnClickListenerProvider Provides click listeners for regular tabs and tab
      *     group cards.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
@@ -214,7 +214,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable DataSharingTabManager dataSharingTabManager,
-            @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable TabListItemOnClickListenerProvider tabListItemOnClickListenerProvider,
             @Nullable TabGridDialogHandler dialogHandler,
             @TabActionState int initialTabActionState,
             @Nullable SelectionDelegateProvider<TabListEditorItemSelectionId>
@@ -355,7 +355,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         mTabListFaviconProvider,
                         actionOnRelatedTabs,
                         selectionDelegateProvider,
-                        gridCardOnClickListenerProvider,
+                        tabListItemOnClickListenerProvider,
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
                         componentId,

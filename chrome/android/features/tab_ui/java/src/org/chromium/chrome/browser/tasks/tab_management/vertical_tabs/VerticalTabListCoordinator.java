@@ -51,7 +51,7 @@ public class VerticalTabListCoordinator {
     private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
 
     private class VerticalTabListClickHandler
-            implements TabListMediator.GridCardOnClickListenerProvider {
+            implements TabListMediator.TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
                 new TabActionListener() {
                     @Override
@@ -198,7 +198,7 @@ public class VerticalTabListCoordinator {
                         mTabListFaviconProvider,
                         /* actionOnRelatedTabs */ true,
                         /* selectionDelegateProvider */ null,
-                        /* gridCardOnClickListenerProvider */ new VerticalTabListClickHandler(),
+                        new VerticalTabListClickHandler(),
                         /* dialogHandler */ null,
                         /* priceWelcomeMessageControllerSupplier */ null,
                         TabComponentId.VERTICAL_TABS,
