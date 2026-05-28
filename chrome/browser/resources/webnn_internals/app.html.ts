@@ -10,13 +10,15 @@ export function getHtml(this: WebnnInternalsAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <h1>WebNN Internals</h1>
-<cr-tabs id="tabs" .tabNames="${['Active Contexts', 'ML Graph Dump']}"
+<cr-tabs id="tabs" .tabNames="${['Active Contexts', 'Info', 'ML Graph Dump']}"
     .selected="${this.selectedTabIndex_}"
     @selected-changed="${this.onSelectedChanged_}">
 </cr-tabs>
 <cr-page-selector .selected="${this.selectedTabIndex_}">
   <webnn-internals-contexts-viewer class="tab-contents">
   </webnn-internals-contexts-viewer>
+  <webnn-internals-info-page class="tab-contents">
+  </webnn-internals-info-page>
 <if expr="webnn_enable_graph_dump">
   <webnn-internals-graph-dump class="tab-contents">
   </webnn-internals-graph-dump>

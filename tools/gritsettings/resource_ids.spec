@@ -884,7 +884,7 @@
     "includes": [5280],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webnn_internals/resources.grd": {
-    "META": {"sizes": {"includes": [13]}},
+    "META": {"sizes": {"includes": [16]}},
     "includes": [5290],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ai_overlay_dialog/resources.grd": {

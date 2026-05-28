@@ -18,11 +18,14 @@ build_webui("build") {
     "browser_proxy.ts",
     "contexts_viewer.ts",
     "contexts_viewer.html.ts",
+    "info_page.ts",
+    "info_page.html.ts",
   ]
 
   css_files = [
     "contexts_viewer.css",
     "app.css",
+    "info_page.css",
   ]
 
   if (webnn_enable_graph_dump) {

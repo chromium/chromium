@@ -6,6 +6,7 @@ import './contexts_viewer.js';
 // <if expr="webnn_enable_graph_dump">
 import './graph_dump.js';
 // </if>
+import './info_page.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 

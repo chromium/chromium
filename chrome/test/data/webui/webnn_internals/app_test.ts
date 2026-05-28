@@ -16,6 +16,22 @@ suite('WebnnInternalsUITest', function() {
   let app: WebnnInternalsAppElement;
   let contextsTab: WebnnInternalsContextsViewerElement;
   let testProxy: TestWebnnInternalsBrowserProxy;
+  const testExecutionProviders = [
+    {
+      name: 'Test EP 1',
+      vendor: 'Vendor 1',
+      hardwareType: 'GPU',
+      version: '1.0',
+      firstSelected: true,
+    },
+    {
+      name: 'Test EP 2',
+      vendor: 'Vendor 2',
+      version: '',
+      hardwareType: 'CPU',
+      firstSelected: false,
+    },
+  ];
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -29,6 +45,10 @@ suite('WebnnInternalsUITest', function() {
       enabled: false,
     }));
     // </if>
+    testProxy.handler.setResultFor(
+        'requestAvailableExecutionProvidersDetails', Promise.resolve({
+          availableExecutionProviders: testExecutionProviders,
+        }));
     BrowserProxy.setInstance(testProxy);
     app = document.createElement('webnn-internals-app');
     document.body.appendChild(app);
@@ -36,6 +56,7 @@ suite('WebnnInternalsUITest', function() {
         app.shadowRoot.querySelector('webnn-internals-contexts-viewer');
     assertTrue(!!viewer);
     contextsTab = viewer;
+    return microtasksFinished();
   });
 
   test('InitialViewWithNoContexts', function() {
@@ -55,22 +76,7 @@ suite('WebnnInternalsUITest', function() {
       {
         contextId: 1,
         contextBackend: 'Test Backend',
-        executionProviders: [
-          {
-            name: 'Test EP 1',
-            vendor: 'Vendor 1',
-            hardwareType: 'GPU',
-            version: '1.0',
-            firstSelected: true,
-          },
-          {
-            name: 'Test EP 2',
-            vendor: 'Vendor 2',
-            hardwareType: 'CPU',
-            version: '',
-            firstSelected: false,
-          },
-        ],
+        executionProviders: testExecutionProviders,
       },
       {contextId: 2, contextBackend: 'Test Backend 2', executionProviders: []},
     ]);
@@ -130,6 +136,88 @@ suite('WebnnInternalsUITest', function() {
     const noContextText =
         contextsTab.shadowRoot.querySelector<HTMLElement>('.no-context');
     assertTrue(!!noContextText);
+  });
+
+  function assertGridItemContent(gridItem: Element, expectedValues: string[]) {
+    const elements = gridItem.querySelectorAll('div');
+    assertEquals(expectedValues.length, elements.length);
+
+    expectedValues.forEach((expectedValue, index) => {
+      assertEquals(expectedValue, elements[index]!.textContent.trim());
+    });
+  }
+
+  test('AvailableExecutionProvidersDetails', function() {
+    const infoTab = app.shadowRoot.querySelector('webnn-internals-info-page');
+    assertTrue(!!infoTab);
+    const gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
+        '.grid-container-available-eps');
+    assertTrue(!!gridContainer);
+    const epItems = gridContainer.querySelectorAll('.grid-item');
+    assertEquals(2, epItems.length);
+    assertGridItemContent(epItems[0]!, [
+      'Name:',
+      'Test EP 1',
+      'Vendor:',
+      'Vendor 1',
+      'Hardware Type:',
+      'GPU',
+      'Version:',
+      '1.0',
+    ]);
+    // Test EP 2 has no version so it should not be rendered.
+    assertGridItemContent(epItems[1]!, [
+      'Name:',
+      'Test EP 2',
+      'Vendor:',
+      'Vendor 2',
+      'Hardware Type:',
+      'CPU',
+    ]);
+  });
+
+  test('UpdateAvailableExecutionProvidersDetails', async function() {
+    // Simulate updating the available execution providers details.
+    testProxy.page.onUpdateAvailableExecutionProvidersDetails([
+      {
+        name: 'Test EP 3',
+        vendor: 'Vendor 3',
+        version: '1.3',
+        hardwareType: 'NPU',
+        firstSelected: false,
+      },
+    ]);
+    await microtasksFinished();
+    const infoTab = app.shadowRoot.querySelector('webnn-internals-info-page');
+    assertTrue(!!infoTab);
+    const gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
+        '.grid-container-available-eps');
+    assertTrue(!!gridContainer);
+    const epItems = gridContainer.querySelectorAll('.grid-item');
+    assertEquals(1, epItems.length);
+    assertGridItemContent(epItems[0]!, [
+      'Name:',
+      'Test EP 3',
+      'Vendor:',
+      'Vendor 3',
+      'Hardware Type:',
+      'NPU',
+      'Version:',
+      '1.3',
+    ]);
+  });
+
+  test('RemoveAllAvailableExecutionProvidersDetails', async function() {
+    // Simulate that there are no EPs available.
+    testProxy.page.onUpdateAvailableExecutionProvidersDetails([]);
+    await microtasksFinished();
+    const infoTab = app.shadowRoot.querySelector('webnn-internals-info-page');
+    assertTrue(!!infoTab);
+    const gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
+        '.grid-container-available-eps');
+    assertFalse(!!gridContainer);
+    const noEp = infoTab.shadowRoot.querySelectorAll('.grid-item');
+    assertEquals(1, noEp.length);
   });
 
   // <if expr="not webnn_enable_graph_dump">
