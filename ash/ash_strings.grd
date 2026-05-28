@@ -9874,6 +9874,143 @@ To shut down the device, press and hold the power button on the device again.
         The on-screen keyboard doesn’t work in Linux apps yet
       </message>
 
+      <!-- Demo setup flow errors -->
+      <message name="IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR" desc="Error message shown on demo setup screen when loading or parsing offline policy failed.">
+        Could not read offline demo mode policy.
+      </message>
+      <message name="IDS_DEMO_SETUP_OFFLINE_STORE_ERROR" desc="Error message shown on demo setup screen when loading or parsing offline policy failed.">
+        Failed to install offline policy on the device.
+      </message>
+      <message name="IDS_DEMO_SETUP_OFFLINE_UNAVAILABLE_ERROR" desc="Error message shown on demo setup screen when offline demo mode is not available on the device.">
+        This device cannot be set up in offline demo mode.
+      </message>
+      <message name="IDS_DEMO_SETUP_COMPONENT_ERROR" desc="Error message shown on demo setup screen when loading online component with demo resources failed.">
+        Could not load online component with demo mode resources.
+      </message>
+      <message name="IDS_DEMO_SETUP_NO_STATE_KEYS_ERROR" desc="Error message shown on demo setup screen when the system failed to determine server-backed state keys.">
+        The system failed to determine device identifiers for this device.
+      </message>
+      <message name="IDS_DEMO_SETUP_ROBOT_ERROR" desc="Error message shown on demo setup screen upon failure to fetch the OAuth2 token for device-level API access.">
+        The system failed to authorize API access for this device.
+      </message>
+      <message name="IDS_DEMO_SETUP_ROBOT_STORE_ERROR" desc="Error message shown on demo setup screen upon failure to store the OAuth2 refresh token for device-level API access.">
+        The system failed to store the long-term API access token for this device.
+      </message>
+      <message name="IDS_DEMO_SETUP_BAD_MODE_ERROR" desc="Error message shown on demo setup screen upon receiving a bad mode on device registration.">
+        The supplied enrollment mode is not supported by this version of the operating system. Please make sure you are running the newest version.
+      </message>
+      <message name="IDS_DEMO_SETUP_CERT_FETCH_ERROR" desc="Error message shown when a registration certificate could not be obtained.">
+        A registration certificate could not be obtained.
+      </message>
+      <message name="IDS_DEMO_SETUP_POLICY_FETCH_ERROR" desc="Error message shown on demo setup screen upon a failed policy fetch.">
+        Error when fetching policy from the server.
+      </message>
+      <message name="IDS_DEMO_SETUP_POLICY_VALIDATION_ERROR" desc="Error message shown on demo setup screen upon a failure to validate downloaded policy.">
+        The policy downloaded from the server is invalid.
+      </message>
+      <message name="IDS_DEMO_SETUP_LOCK_TIMEOUT_ERROR" desc="Error message shown on demo setup screen when the initialization of the lockbox is taking too long.">
+        The initialization of the installation-time attributes has timed out.
+      </message>
+      <message name="IDS_DEMO_SETUP_LOCK_ERROR" desc="Error message shown on demo setup screen upon failure to lock the device mode.">
+        The system failed to establish the device installation-time attributes lock.
+      </message>
+      <message name="IDS_DEMO_SETUP_ALREADY_LOCKED_ERROR" desc="Error message shown on demo setup screen when device is already locked with different domain or mode.">
+        This device was locked to different domain or mode.
+      </message>
+      <message name="IDS_DEMO_SETUP_ONLINE_STORE_ERROR" desc="Error message shown on demo setup screen when the installation of the policy on the device failed.">
+        Failed to install policy on the device.
+      </message>
+      <message name="IDS_DEMO_SETUP_NO_MACHINE_IDENTIFICATION_ERROR" desc="Error message shown on demo setup screen when the system failed to determine the device model or serial number.">
+        The system failed to determine device model or serial number.
+      </message>
+      <message name="IDS_DEMO_SETUP_DM_TOKEN_STORE_ERROR" desc="Error message shown on demo setup screen when the system failed to save some part of the device configuration. e.g. token from the device management server.">
+        The system failed to save device configuration.
+      </message>
+      <message name="IDS_DEMO_SETUP_UNEXPECTED_ERROR" desc="Error message to show shown on demo setup screen when there is an fatal/unexpected error.">
+        Oops! Something went wrong while setting up demo mode.
+      </message>
+      <message name="IDS_DEMO_SETUP_INVALID_REQUEST_ERROR" desc="Error message to show on demo setup screen when request issued to DMServer was invalid.">
+        A problem with demo registration request occurred.
+      </message>
+      <message name="IDS_DEMO_SETUP_NETWORK_ERROR" desc="Error message to show on demo setup screen when network error occurred.">
+        Network error occurred.
+      </message>
+      <message name="IDS_DEMO_SETUP_TEMPORARY_ERROR" desc="Error message to show on demo setup screen when temporary error occurred.">
+        Temporary server error occurred.
+      </message>
+      <message name="IDS_DEMO_SETUP_RESPONSE_ERROR" desc="Error message to show on demo setup screen when management service sent an abnormal HTTP code.">
+        Management service sent HTTP error.
+      </message>
+      <message name="IDS_DEMO_SETUP_RESPONSE_DECODING_ERROR" desc="Error message to show on demo setup screen when decoding management server response failed.">
+        A problem occurred when decoding server response.
+      </message>
+      <message name="IDS_DEMO_SETUP_ACCOUNT_ERROR" desc="Error message to show on demo setup screen when there is a problem with the demo mode account.">
+        A problem with demo mode account occurred.
+      </message>
+      <message name="IDS_DEMO_SETUP_DEVICE_NOT_FOUND_ERROR" desc="Error message to show on demo setup screen when management service could not find the device.">
+        Missing device record.
+      </message>
+      <message name="IDS_DEMO_SETUP_INVALID_DM_TOKEN_ERROR" desc="Error message to show on demo setup screen when device management token is invalid.">
+        Device management token is invalid.
+      </message>
+      <message name="IDS_DEMO_SETUP_INVALID_SERIAL_NUMBER_ERROR" desc="Error message to show on demo setup screen when provided serial number is invalid.">
+        Device serial number is invalid.
+      </message>
+      <message name="IDS_DEMO_SETUP_DEVICE_ID_ERROR" desc="Error message to show on demo setup screen in case of conflicting device id.">
+        Conflicting device identifier.
+      </message>
+      <message name="IDS_DEMO_SETUP_TOO_MANY_REQUESTS_ERROR" desc="Error message to show on demo setup screen in case of too many requests.">
+        Too many requests.
+      </message>
+      <message name="IDS_DEMO_SETUP_LICENSE_ERROR" desc="Error message to show on demo setup screen when the demo domain has expired or exhausted licenses.">
+        A problem with demo mode device licenses occurred.
+      </message>
+      <message name="IDS_DEMO_SETUP_DEPROVISIONED_ERROR" desc="Error message to show on demo setup screen when enrollment fails because device has been deprovisioned on the server side.">
+        This demo device has been placed into a deprovisioned state.
+      </message>
+      <message name="IDS_DEMO_SETUP_DOMAIN_MISMATCH_ERROR" desc="Error message shown on demo setup screen when the device belongs to the domain different than demo mode.">
+        This device is marked for management by a different domain. Deprovision it from that domain before setting up demo mode.
+      </message>
+      <message name="IDS_DEMO_SETUP_SIGNING_ERROR" desc="Error message shown on demo setup screen when failure to sign request occurred.">
+        Request could not be signed.
+      </message>
+      <message name="IDS_DEMO_SETUP_POLICY_NOT_FOUND_ERROR" desc="Error message shown on demo setup screen when management server failed to find the policy to be applied to the device.">
+        Policy not found.
+      </message>
+      <message name="IDS_DEMO_SETUP_ARC_ERROR" desc="Error message shown when ARC is disabled.">
+        A problem with ARC++ occurred.
+      </message>
+      <!-- Demo setup error recovery suggestions -->
+      <message name="IDS_DEMO_SETUP_RECOVERY_RETRY" desc="Error recovery recommendation to retry demo setup. Shown on demo setup screen.">
+        Please try again.
+      </message>
+      <message name="IDS_DEMO_SETUP_RECOVERY_REBOOT" desc="Error recovery recommendation to reboot and retry demo setup. Shown on demo setup screen.">
+        Please reboot the device and try again.
+      </message>
+      <message name="IDS_DEMO_SETUP_RECOVERY_POWERWASH" desc="Error recovery recommendation to powerwash and retry demo setup. Shown on demo setup screen.">
+        Please powerwash the device and try again.
+      </message>
+      <message name="IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK" desc="Error recovery recommendation to check network and retry demo setup. Shown on demo setup screen.">
+        Please check your network connection and try again.
+      </message>
+      <message name="IDS_DEMO_SETUP_RECOVERY_OFFLINE_FATAL" desc="Error recovery recommendation to contact support. Shown on demo setup screen.">
+        This device might be only eligible for online demo mode. Please contact your support representative for more details.
+      </message>
+      <message name="IDS_DEMO_SETUP_RECOVERY_FATAL" desc="Error recovery recommendation to contact support. Shown on demo setup screen.">
+        Please retry. If you see this error again please contact your support representative.
+      </message>
+
+      <!-- Strings for Demo Sessions -->
+      <message name="IDS_DEMO_SESSION_TOS_NOTIFICATION_TITLE" desc="Title of the ToS notification in demo session.">
+        You are using a demo device
+      </message>
+      <message name="IDS_DEMO_SESSION_TOS_NOTIFICATION_MESSAGE" desc="Message of the ToS notification in demo session.">
+        Demo mode is intended for users 18+ and is governed by Google's Terms of Service and Privacy Policy. Data entered on this device may be viewed by others between periodic wipes.
+      </message>
+      <message name="IDS_DEMO_SESSION_TOS_NOTIFICATION_BUTTON_TEXT" desc="The text of the button on the ToS notification in demo session.">
+        Learn more
+      </message>
+
       <!-- Easy Unlock strings -->
       <!-- Strings for notification shown when the Chromebook is added to Easy Unlock -->
       <message name="IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_TITLE" desc="Title for notification shown when this Chromebook is added to Easy Unlock as an additional Easy Unlock device.">
