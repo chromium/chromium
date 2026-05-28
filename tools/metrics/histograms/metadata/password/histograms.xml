@@ -2455,7 +2455,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PasskeyRetrievalWaitDuration" units="ms"
-    expires_after="2026-06-30">
+    expires_after="2027-05-31">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
