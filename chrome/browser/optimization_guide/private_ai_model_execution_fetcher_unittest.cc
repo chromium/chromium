@@ -54,7 +54,11 @@ TEST_F(PrivateAiModelExecutionFetcherTest,
              const private_ai::proto::PaicMessage& request,
              private_ai::Client::OnPaicMessageRequestCompletedCallback callback,
              const private_ai::Client::RequestOptions& options) {
-            auto execute_request = request.execute_request_ext();
+            auto execute_request =
+                base::FeatureList::IsEnabled(
+                    features::internal::kPrivateExecuteRequest)
+                    ? request.private_execute_request_ext().request()
+                    : request.execute_request_ext();
             auto zss_request =
                 ParsedAnyMetadata<proto::ZeroStateSuggestionsRequest>(
                     execute_request.request_metadata());
@@ -91,7 +95,11 @@ TEST_F(PrivateAiModelExecutionFetcherTest,
              const private_ai::proto::PaicMessage& request,
              private_ai::Client::OnPaicMessageRequestCompletedCallback callback,
              const private_ai::Client::RequestOptions& options) {
-            auto execute_request = request.execute_request_ext();
+            auto execute_request =
+                base::FeatureList::IsEnabled(
+                    features::internal::kPrivateExecuteRequest)
+                    ? request.private_execute_request_ext().request()
+                    : request.execute_request_ext();
             auto zss_request =
                 ParsedAnyMetadata<proto::ZeroStateSuggestionsRequest>(
                     execute_request.request_metadata());
