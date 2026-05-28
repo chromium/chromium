@@ -405,8 +405,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testNewTabButton)] ||
-      [self isRunningTest:@selector(testToolbarsUI)]) {
+  if ([self isRunningTest:@selector(testToolbarsUI)]) {
     config.features_disabled.push_back(kChromeNextIa);
   }
   return config;
@@ -594,7 +593,12 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Tests that tapping the NewTab button opens a new tab.
 - (void)testNewTabButton {
-  if (![ChromeEarlGrey isSplitToolbarMode]) {
+  if ([ChromeEarlGrey isChromeNextEnabled] && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"No button to tap.");
+  }
+
+  if (![ChromeEarlGrey isChromeNextEnabled] &&
+      ![ChromeEarlGrey isSplitToolbarMode]) {
     EARL_GREY_TEST_SKIPPED(@"No button to tap.");
   }
 
