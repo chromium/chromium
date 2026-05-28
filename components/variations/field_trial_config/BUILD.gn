@@ -8,7 +8,10 @@ action("field_trial_testing_config_action") {
   script = "//tools/variations/fieldtrial_to_struct.py"
 
   source = "//testing/variations/fieldtrial_testing_config.json"
-  inputs = JSON_TO_STRUCT_FILES + [ source ]
+  inputs = JSON_TO_STRUCT_FILES + [
+             source,
+             "field_trial_testing_config_schema.json",
+           ]
   out_name = "fieldtrial_testing_config"
   outputs = [
     "$target_gen_dir/$out_name.cc",

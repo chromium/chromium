@@ -110,7 +110,6 @@ def __step_config(ctx, step_config):
         "tools/nocompile/wrapper.py",
         "tools/polymer/css_to_wrapper.py",
         "tools/polymer/html_to_wrapper.py",
-        "tools/variations/fieldtrial_to_struct.py",
         "ui/webui/resources/tools/bundle_js.py",
         "ui/webui/resources/tools/eslint_ts.py",
         "ui/webui/resources/tools/generate_code_cache.py",
