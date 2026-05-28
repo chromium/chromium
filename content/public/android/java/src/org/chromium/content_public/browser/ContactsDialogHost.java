@@ -28,6 +28,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
 
     private long mNativeContactsProviderAndroid;
     private final WebContents mWebContents;
+    private boolean mFlowActive = true;
 
     private static @Nullable ContactsPermissionProvider sContactsPermissionProvider;
 
@@ -69,9 +70,11 @@ public class ContactsDialogHost implements ContactsPickerListener {
             boolean includeAddresses,
             boolean includeIcons,
             String formattedOrigin) {
+        mFlowActive = true;
         if (sContactsPermissionProvider == null) {
             Log.e(TAG, "Permission provider not set");
             ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
+            mFlowActive = false;
         } else {
             ContactsPickerListener listener = this;
 
@@ -100,9 +103,10 @@ public class ContactsDialogHost implements ContactsPickerListener {
 
                         @Override
                         public void onDenied() {
-                            if (isDestroyed()) {
+                            if (isDestroyed() || !mFlowActive) {
                                 return;
                             }
+                            mFlowActive = false;
                             ContactsDialogHostJni.get()
                                     .endWithPermissionDenied(mNativeContactsProviderAndroid);
                         }
@@ -117,16 +121,18 @@ public class ContactsDialogHost implements ContactsPickerListener {
             int percentageShared,
             int propertiesSiteRequested,
             int propertiesUserRejected) {
-        if (mNativeContactsProviderAndroid == 0) return;
+        if (mNativeContactsProviderAndroid == 0 || !mFlowActive) return;
 
         switch (action) {
             case ContactsPickerAction.CANCEL:
+                mFlowActive = false;
                 ContactsDialogHostJni.get()
                         .endContactsList(
                                 mNativeContactsProviderAndroid, 0, propertiesSiteRequested);
                 break;
 
             case ContactsPickerAction.CONTACTS_SELECTED:
+                mFlowActive = false;
                 assumeNonNull(contacts);
                 for (Contact contact : contacts) {
                     ContactsDialogHostJni.get()
