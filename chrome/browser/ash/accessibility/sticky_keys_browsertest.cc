@@ -12,7 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
@@ -64,8 +64,11 @@ class StickyKeysBrowserTest : public AccessibilityFeatureBrowserTest {
 
   void SetStickyKeysEnabled(bool enabled) {
     AccessibilityManager::Get()->EnableStickyKeys(enabled);
-    // Spin the message loop to ensure ash sees the change.
-    base::RunLoop().RunUntilIdle();
+    // Wait for the browser pref change to reach Ash's sticky keys controller.
+    ASSERT_TRUE(base::test::RunUntil([enabled]() {
+      return Shell::Get()->sticky_keys_controller()->enabled_for_test() ==
+             enabled;
+    }));
   }
 
   bool IsSystemTrayBubbleOpen() {
