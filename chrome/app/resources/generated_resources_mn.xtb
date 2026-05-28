@@ -106,7 +106,6 @@
 <translation id="1066964438793906105">Хортой программ байгаа эсэхийг скан хийх</translation>
 <translation id="1067661089446014701">Нэмэлт аюулгүй байдлын үүднээс та төхөөрөмж дээрх нууц үгнүүдээ Google Бүртгэлдээ хадгалахаасаа өмнө шифрлэх боломжтой</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
-<translation id="106814709658156573">Хурууны хээ тохируулахын тулд хүүхдээрээ гарын зүүн доод буланд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="106855837688344862">Хүрэх үйл явдлууд</translation>
 <translation id="1069104208554708737">Энэ passkey-г зөвхөн уг төхөөрөмж дээр хадгална</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> нэртэй eSIM профайлыг хасах</translation>
@@ -460,7 +459,6 @@
 <translation id="1303101771013849280">HTML Файлыг жагсааж хадгалах</translation>
 <translation id="1303671224831497365">Bluetooth төхөөрөмж олдсонгүй</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" />-г нээх</translation>
-<translation id="1306606229401759371">Тохиргоог өөрчлөх</translation>
 <translation id="1307165550267142340">Таны ПИН-г үүсгэлээ</translation>
 <translation id="1307431692088049276">Дахиж асуух хэрэггүй</translation>
 <translation id="130744661532298792">Та Google Бүртгэлийнхээ нууц үгнүүдийг үргэлж ашиглах боломжтой болохоо нягтлахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
@@ -562,7 +560,6 @@
 <translation id="1386966479075994683">Табуудыг дэлгэх</translation>
 <translation id="1388253969141979417">Таны микрофоныг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1388728792929436380">Шинэчилж дуусахад <ph name="DEVICE_TYPE" /> дахин эхэлнэ.</translation>
-<translation id="1390113502208199250">Та Chrome Education-н сайжруулалтын онцлогуудыг ашиглахын тулд энэ төхөөрөмжийг үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай болно.</translation>
 <translation id="139013308650923562">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" />-г таны <ph name="DEVICE_TYPE" />-д урьдчилж суулгасан</translation>
 <translation id="1390548061267426325">Энгийн цонх хэлбэрээр нээх</translation>
@@ -578,7 +575,6 @@
 <translation id="1400243387594338234">Та энэ ПИН-г төхөөрөмждөө нэвтрэхэд ашиглах боломжтой</translation>
 <translation id="1401216725754314428">Холбоотой сайтуудын талаарх нэмэлт мэдээллийг шинэ табд авах</translation>
 <translation id="1402426911829176748">Таны төхөөрөмжид холбогдож байна</translation>
-<translation id="1403222014593521787">Проксид холбогдож чадсангүй</translation>
 <translation id="1405779994569073824">Эвдэрсэн.</translation>
 <translation id="1406500794671479665">Шалгаж байна...</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
@@ -1188,7 +1184,6 @@
 <translation id="1831848493690504725">Бид холбогдсон сүлжээгээр дамжуулан Google-д холбогдох боломжгүй. Өөр сүлжээ сонгох эсвэл сүлжээний тохиргоо, прокси тохиргоогоо (хэрэв та прокси ашиглаж байгаа бол) шалгаж үзнэ үү.</translation>
 <translation id="1832414451155700364">Түүх, табыг синк хийх эсэхээ сонгоорой</translation>
 <translation id="1832459821645506983">Тийм, би зөвшөөрч байна</translation>
-<translation id="1832511806131704864">Гар утасны өөрчлөлт шинэчлэгдсэн</translation>
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1833059747301212935">Саяхны баримт бичиг, удахгүй болох календарийн үйл явдалд хялбар хандаарай</translation>
 <translation id="183445248400150852">Сайтууд энэ онцлогийг тоглоом, алсын зайн компьютерын апп зэрэгт зориулж таны гарын оролтыг дарахад ашигладаг</translation>
@@ -1275,7 +1270,6 @@
 <translation id="1892453608039100484">1. Доорх <ph name="BUTTON_LABEL" /> дээр товшино уу Windows-н тохиргоондоо <ph name="BUTTON_2" /> дээр товшино уу</translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
 <translation id="1895658205118569222">Унтраах</translation>
-<translation id="1896043844785689584">Хурууны хээ тохируулахын тулд хүүхдээрээ гарын баруун доод буланд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="1897120393475391208">Сайн нууц үг ашиглана уу</translation>
 <translation id="1897860317037652061">Скан амжилтгүй боллоо</translation>
 <translation id="1898804291554630487">Энэ хуудасны талаар асуух</translation>
@@ -1310,7 +1304,6 @@
 <translation id="1918281588461452432">Таныг сайт үзэх явцад хуудасных нь контентыг шифрлэж, таны төхөөрөмжид хадгалдаг</translation>
 <translation id="1918761619391445601"><ph name="EXTENSION_NAME" />-г бэхэлсэн. Бусад сонголтыг харна уу.</translation>
 <translation id="1919096511823372013">Холбоос, эможи болон бусад зүйлийг оруулаарай. Та мөн Google-н ХОУ-аар бичих, зураг үүсгэх тусламж авах боломжтой.</translation>
-<translation id="1919872106782726755">Хурууны хээ тохируулахын тулд хүүхдээ гарын баруун дээд буланд байх хурууны хээ мэдрэгчид, дараа нь Асаах/Унтраах товчид хүргэнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="1920390473494685033">Харилцагчид</translation>
 <translation id="1921544956190977703">Танд аюултай вебсайт, татаж авсан файл болон өргөтгөлийн эсрэг хамгийн хүчирхэг хамгаалалт бий</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> нэг инчид ноогдох цэгийн тоо</translation>
@@ -1495,7 +1488,6 @@
 <translation id="2045211794962848221">Та дахин энэ тодорхой мессежийг харахгүй</translation>
 <translation id="2045540927991079503">Холбоосыг дараах байдлаар нээх</translation>
 <translation id="2045838962742066664">Таталган бичгээр бичих</translation>
-<translation id="204622017488417136">Таны төхөөрөмж Chrome-ийн өмнөх суулгасан хувилбар руу буцаагдана. Бүх хэрэглэгчийн данс болон суурин өгөгдлүүд устгагдах бөгөөд энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="2047279909708154872">{NUM_TABS,plural, =1{Таны хөтчийг удаашруулж буй табыг түр зогсооно уу}other{Таны хөтчийг удаашруулж буй табуудыг түр зогсооно уу}}</translation>
 <translation id="2048182445208425546">Сүлжээнийхээ ачааллагдсан мэдээлэл рүү нэвтэр</translation>
@@ -1892,7 +1884,6 @@
 <translation id="2314165183524574721">Одоогийн харагдцын тохиргоог нуусан байна</translation>
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
-<translation id="2316433409811863464">Аппын стриминг</translation>
 <translation id="2316709634732130529">Санал болгосон нууц үгийг ашиглах</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />%-г татсан</translation>
 <translation id="2318143611928805047">Цаасны хэмжээ</translation>
@@ -1987,7 +1978,6 @@
 <translation id="2383825469508278924">Гарын товчлуурын харгалзуулалт, функцийн товчлуур болон бусад зүйлийг өөрчлөх</translation>
 <translation id="2387052489799050037">Нүүр хуудас руу очих</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Одоогийн)</translation>
-<translation id="2390347491606624519">Проксид холбогдох боломжгүй байна, дахин нэвтэрнэ үү</translation>
 <translation id="2390782873446084770">Wi-Fi синк</translation>
 <translation id="2391419135980381625">Стандарт үсгийн фонт</translation>
 <translation id="239185270194776190">Таны Gemini-тай хийсэн харилцан яриа өөр цонхонд байна. Энэ хажуугийн самбарыг ийш зөөхийн тулд самбарын дурын хэсэгт товшино уу.</translation>
@@ -2094,6 +2084,7 @@
 <translation id="2461550163693930491">Сайтуудад хуваалцсан табуудыг гүйлгэж, томруулахыг бүү зөвшөөр</translation>
 <translation id="2461593638794842577">Та нууц үгнүүдээ зөвхөн энэ төхөөрөмжид хадгалахын тулд энэ тохиргоог унтраах боломжтой</translation>
 <translation id="2462550463312552298">Энэ баримт бичгийг хураангуйлна уу</translation>
+<translation id="246264032905007361">Edge-г нээх</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" />-г нэмсэн</translation>
 <translation id="2464075479326723132">Та Microsoft SharePoint, OneDrive дахь хамгийн сүүлийн үйл ажиллагаа руу тань хялбархан буцаж очиход туслах санал болгосон файлуудыг харж байна.
@@ -2140,7 +2131,6 @@
 <translation id="2487067538648443797">Шинэ хавчуурга нэмэх</translation>
 <translation id="2487602042876349837"><ph name="VIEW_ONE_ORIENTATION" /> Одоо үзэх <ph name="VIEW_ONE_PERCENT" />-н өргөнтэй, <ph name="VIEW_TWO_ORIENTATION" /> Одоо үзэх <ph name="VIEW_TWO_PERCENT" />-н өргөнтэй.</translation>
 <translation id="2489686758589235262">Өөр 2 сэлгүүр оноох</translation>
-<translation id="2489829450872380594">Дараагийн удаа шинэ утас энэ <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
 <translation id="2489918096470125693">Хавтас нэмэх...</translation>
 <translation id="2489931062851778802">Эдгээр түлхүүрийг <ph name="DEVICE_NAME" /> дээр оруулна уу</translation>
 <translation id="249098303613516219">Төхөөрөмж дээрх сайтын өгөгдлийг зөвшөөрсөн</translation>
@@ -2179,7 +2169,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Та картын цэсээс тохиргоог удирдах эсвэл Chrome-г өөрчлөх хэсгээс бусад сонголтыг харах боломжтой.</translation>
-<translation id="2514326558286966059">Хурууны хээгээрээ түгжээг илүү хурдан тайлаарай</translation>
 <translation id="2514465118223423406">Хулгана холбогдсон байхад</translation>
 <translation id="2514938842036917377">Энэ нь <ph name="SITE_NAME" />, холбогдох сайт, суулгасан аппын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг устгана</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2527,7 +2516,6 @@
 <translation id="2752805177271551234">Оролтын түүхийг ашигла</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />-д хадгалсан Хурдан холбох төхөөрөмжүүдийг хүлээж байна</translation>
 <translation id="2754825024506485820">Бүтээмжээс эхлээд энтертэйнмент хүртэлх хэрэгтэй аппуудаа Google Play Дэлгүүрээс олоорой. Та аппуудыг хүссэн үедээ суулгах боломжтой.</translation>
-<translation id="2755349111255270002">Энэ <ph name="DEVICE_TYPE" />-г шинэчлэх</translation>
 <translation id="2755367719610958252">Хандалтын онцлогийг удирдах</translation>
 <translation id="2755485474385016903">Хийсэн өөрчлөлтийг бүлэг дэх хүн бүр хардаг</translation>
 <translation id="275662540872599901">дэлгэц унтраалттай</translation>
@@ -2695,7 +2683,6 @@
 <translation id="2873956234023215251">Аппыг суулгах боломжгүй. Ямар нэг алдаа гарлаа.</translation>
 <translation id="2874939134665556319">Өмнөх бичлэг</translation>
 <translation id="2875698561019555027">(Chrome алдааны хуудас)</translation>
-<translation id="2876336351874743617">Хуруу 2</translation>
 <translation id="2876369937070532032">Таны аюулгүй байдал эрсдэлд орох үед таны зочилдог зарим хуудсын URL-г Google-д илгээдэг</translation>
 <translation id="2876484123356705658">Хугацааны интервал сонгох</translation>
 <translation id="2876556152483133018">Сайтын хайлт</translation>
@@ -2704,7 +2691,6 @@
 <translation id="288042212351694283">Universal 2nd Factor төхөөрөмжүүдэд хандах</translation>
 <translation id="2881076733170862447">Та өргөтгөл гэснийг товших үед</translation>
 <translation id="2882301808122022326">Omaha-н хариулт</translation>
-<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> дахин эхлэх бөгөөд хоромхон зуур л тохируулагдана.</translation>
 <translation id="2883143988769190738">Энэ өргөтгөл дараах зөвшөөрлүүдийг хүсэж байна:</translation>
 <translation id="2884070497102362193">Батарей, төв процессорын нэгж, санах ой, холболт болон бусад зүйлээ туршина уу</translation>
 <translation id="2885129935310217435">Ижил нэртэй товчлуур байна. Өөр нэгийг сонгоно уу.</translation>
@@ -2871,7 +2857,6 @@
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001144475369593262">Хүүхдийн бүртгэл</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Ямар ч товчийг өөрчлөөгүй}=1{Өөрчилсөн 1 товч}other{Өөрчилсөн {COUNT} товч}}</translation>
-<translation id="3001835006423291524">Таны гарын баруун доод буланд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="3003144360685731741">Давуу эрхтэй сүлжээ</translation>
 <translation id="3003253259757197230">Таныг дараа ямар сайтуудад зочилж магадгүй болохыг таамаглах болон таны зочилж буй хуудасны тухай нэмэлт мэдээлэл харуулахын тулд таны зочилсон URL-уудыг Google-д илгээнэ</translation>
 <translation id="3003623123441819449">CSS кэш</translation>
@@ -2979,9 +2964,7 @@
 <translation id="3067198360141518313">Энэ нэмэлт өргөтгөлийг ажиллуул</translation>
 <translation id="3071624960923923138">Та шинэ таб нээхийн тулд энд товших боломжтой</translation>
 <translation id="3074499504015191586">Бүтэн хуудсыг орчуулах</translation>
-<translation id="3075144191779656260">Таны <ph name="DEVICE_TYPE" />-н зүүн гар талд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="3075740753681485522">Унтраалттай • Энэ өргөтгөл хортой программ агуулж байна</translation>
-<translation id="3075874217500066906">Powerwash процессыг эхлүүлэхийн тулд та төхөөрөмжөө дахин эхлүүлнэ үү. Төхөөрөмжийг дахин эхлүүлсний дараагаар танаас цаашид үргэлжлэх эсэхийг асууна.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" /> / <ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Зөвхөн энэ төхөөрөмж дээр хадгалах</translation>
 <translation id="3076977359333237641">Таны нэвтрэх өгөгдлийг устгалаа</translation>
@@ -3011,6 +2994,7 @@
 <translation id="3095871294753148861">Хавчуурга, нууц үг болон бусад интернэтээр үзсэн өгөгдлийг үндсэн бүртгэлтэй синк хийдэг.</translation>
 <translation id="3101126716313987672">Бүдэг гэрэл</translation>
 <translation id="3101709781009526431">Огноо ба цаг</translation>
+<translation id="3101924772906986970">Таны Chrome хөтчийн хавчуурга, нууц үг, түүх болон бусад зүйлийг Google Бүртгэлд тань хадгалдаг</translation>
 <translation id="3102309003841389927">Логоны шинэчлэлтийг хянах</translation>
 <translation id="310297983047869047">Өмнөх слайд</translation>
 <translation id="3103451787721578293">Энэ өгөгдлийг байршуулах шалтгаан оруулна уу:</translation>
@@ -3049,7 +3033,6 @@
 <translation id="3127862849166875294">Linux-н дискийн хэмжээг өөрчлөх</translation>
 <translation id="3129150892373332590">Энэ нь USB төхөөрөмжүүдийг зочидтой тогтмол хуваалцахыг идэвхгүй болгох ба энэ нь мөн бүх тогтмол байдлыг шинэчилнэ. Та итгэлтэй байна уу?</translation>
 <translation id="3129173833825111527">Зүүн хүрээ</translation>
-<translation id="3130528281680948470">Таны төхөөрөмжийг дахин тохируулах бөгөөд бүх хэрэглэгчийн данс, суурин өгөгдлүүд устгагдах болно. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="3130863904455712965">Түүх болон бусад</translation>
 <translation id="313205617302240621">Нууц үгээ мартсан уу?</translation>
 <translation id="3132277757485842847">Бид таны утасны холболтыг хадгалж чадсангүй. Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
@@ -3096,6 +3079,7 @@
 <translation id="3165390001037658081">Зарим оператор компани энэ онцлогийг блоклож болзошгүй.</translation>
 <translation id="316542773973815724">Навигац</translation>
 <translation id="3165734944977250074">Уг файл байхаа больсон тул үүнийг зөөх боломжгүй</translation>
+<translation id="3166256634240273583">Хөтчийнхөө хаяг оруулах хэсгээс болон шинэ таб нээхдээ Google Хайлтыг шууд ашиглаарай.</translation>
 <translation id="3166443275568926403">Гүйцэтгэл болон батарейн төлөв</translation>
 <translation id="3167446923957429259">Амаа зүүн тийш мушийлгана уу</translation>
 <translation id="3167562202484086668"><ph name="BRAND" />-н бүх өгөгдлийг устгах</translation>
@@ -3104,6 +3088,7 @@
 <translation id="3175067642577044620">Үндсэн хэсэг</translation>
 <translation id="3175862692832442091">Ой мод</translation>
 <translation id="3176347586396987181">Хулганын товчийг удаан дарахын тулд “z”-г ашиглана уу</translation>
+<translation id="3176984568033229317">Google Хайлтыг Edge-д аваачаарай</translation>
 <translation id="3177430966804511955">Тусгаарласан веб аппуудыг удирдах (бета)</translation>
 <translation id="31774765611822736">Шинэ табыг зүүн тийш нь</translation>
 <translation id="3177909033752230686">Хуудасны хэл:</translation>
@@ -3117,7 +3102,6 @@
 <translation id="3183139917765991655">Профайл импортлогч</translation>
 <translation id="3183143381919926261">Мобайл дата сүлжээнүүд</translation>
 <translation id="3183428991752322898">Товчлуурын шууд холбоосыг арилгах</translation>
-<translation id="3183700187146209259">Сканнерын программ хангамжийг суулгах боломжгүй</translation>
 <translation id="3183750649832309748">Танай байгууллага <ph name="ACCOUNT_MANAGER" /> зарим мэдээллийг харах боломжтой болно. Үүнд</translation>
 <translation id="3183944777708523606">Зохион байгуулалтыг хянах</translation>
 <translation id="3184536091884214176">CUPS хэвлэгчийг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -3305,6 +3289,7 @@
 <translation id="3321460131042519426">Үг хураангуйлахыг идэвхжүүлэх</translation>
 <translation id="3321494112580110651">Хэвлэгчээ харахгүй байна уу?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" />-с</translation>
+<translation id="3323288183237359315">Edge-д зориулж суулгах</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Таны нууцлалыг хамгаалахын тулд нэг сайтаас зөвшөөрлийг хассан}other{Таны нууцлалыг хамгаалахын тулд зарим сайтаас зөвшөөрлийг хассан}}</translation>
 <translation id="3325930488268995856">Microsoft OneDrive холбогдсон</translation>
@@ -3338,7 +3323,6 @@
 <translation id="3348973040180736882">Задалж байна</translation>
 <translation id="3349933790966648062">Санах ойн ул мөр</translation>
 <translation id="3351472127384196879">Үзгэн дээрээ товчлуурууд нэмэх эсвэл тэдгээрийн байрлалыг тогтоох</translation>
-<translation id="3353786022389205125">"Нойрноос сэрэх үед түгжигдсэн дэлгэцийг харуулах"-ыг асаагаад дахин оролдоно уу</translation>
 <translation id="3354768182971982851">Chrome аппын хуучин хувилбарууд 2022 оны 12-р сараас хойш Mac төхөөрөмжүүд дээр нээгдэхгүй. Та шинэ хувилбар боломжтой эсэхийг шалгаж болно.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> төхөөрөмжтэй хослуулж чадсангүй. Дахин оролдохын тулд төхөөрөмж сонгоно уу</translation>
 <translation id="335581015389089642">Хэлсэн үг</translation>
@@ -3411,7 +3395,6 @@
 <translation id="3406396172897554194">Хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="3406605057700382950">&amp; Хадгалагдсан хуудсуудыг харуулах</translation>
 <translation id="3407392651057365886">Илүү олон хуудсыг урьдчилан ачаална. Бусад сайтаас хүсэлт тавьсан үед хуудаснуудыг Google-н серверээр урьдчилан ачаалж магадгүй.</translation>
-<translation id="3407967630066378878">Хурууны хээ тохируулахын тулд хүүхдээрээ энэ <ph name="DEVICE_TYPE" />-н зүүн гар талд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="3408555740610481810">Камер болон микрофоныг ашиглаж байна</translation>
 <translation id="3409157109901479672">Зүүн тал</translation>
 <translation id="3409513286451883969">Сонголтыг <ph name="LANGUAGE" /> руу &amp;орчуулах</translation>
@@ -3909,12 +3892,10 @@
 <translation id="3748706263662799310">Алдааг мэдээлэх</translation>
 <translation id="3749724428455457489">Сайтаас санал болгож буй зарын талаар нэмэлт мэдээлэл аваарай</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" />-н нууц үгнийхээ хуулбарыг хуваалцах</translation>
-<translation id="3752253558646317685">Хурууны хээг хадгалахын тулд хүүхдийнхээ хурууг хөндийрүүлсэн хэвээр байлгана уу</translation>
 <translation id="3753033997400164841">Нэг удаа хадгалаад. Хүссэн газраа ашиглаарай</translation>
 <translation id="3753142252662437130">Өнгөний шүүлтүүрүүд</translation>
 <translation id="3753412199586870466">Хажуугийн самбарыг нээх</translation>
 <translation id="3753585830134123417">Цонхны хэмжээг зүүн тийш өөрчилсөн</translation>
-<translation id="3755411799582650620">Таны <ph name="PHONE_NAME" /> одоо энэ <ph name="DEVICE_TYPE" /> -ийн түгжээг бас тайлж чадна.</translation>
 <translation id="375636864092143889">Сайт таны микрофоныг ашиглаж байна</translation>
 <translation id="3756485814916578707">Дэлгэцийг дамжуулж байна</translation>
 <translation id="3756578970075173856">ПИН тохируулах</translation>
@@ -4087,7 +4068,6 @@
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" />-д Google Бүртгэлээ ашиглах</translation>
 <translation id="3856800405688283469">Цагийн бүс сонгох</translation>
 <translation id="3856902135796972992">Энэ сайт нэмэлт үйлдэл шаарддаг. Нууц үгийг өөрчилж дуусгахын тулд үүнийг хуудсан дээр гүйцэтгэнэ үү.</translation>
-<translation id="3857807444929313943">Дээшлүүлээд дахин хүрэх</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="385939467708172187">Сайн нууц үг ашиглана уу</translation>
 <translation id="3859869403161297890">Хуваалцсан табын бүлгийн талаарх санал хүсэлтээ энд илгээнэ үү</translation>
@@ -4190,7 +4170,6 @@
 <translation id="3925573269917483990">Камер:</translation>
 <translation id="3925926055063465902">Энэ төхөөрөмжийн бусад хэрэглэгч мөн энэ сүлжээг ашиглах боломжтой</translation>
 <translation id="3925934852713265455">Табуудынхаа талаар асуух</translation>
-<translation id="3926002189479431949">Smart Lock суулгасан утас өөрчлөгдсөн байна.</translation>
 <translation id="3926410220776569451">Камерын хандалтыг блоклосон</translation>
 <translation id="3927932062596804919">Татгалзах</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />-д хийсэн өөрчлөлтийг хадгалах уу?</translation>
@@ -4408,7 +4387,6 @@
 <translation id="4087089424473531098">Өргөтгөлийг үүсгэсэн:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="4087328411748538168">Баруун талд харуулах</translation>
 <translation id="4089235344645910861">Тохиргоонуудыг хадгалсан. Синкийг эхлүүлсэн.</translation>
 <translation id="4089743381329341712">Тохируулгын дараа сонгосон аппуудыг суулгана. Дараа Апп, тоглоом аппаас илүү олон зөвлөмж олоорой.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4450,7 +4428,6 @@
 <translation id="4115002065223188701">Сүлжээний хүрээнээс гарсан</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
 <translation id="4116480382905329353">1 удаа илэрсэн</translation>
-<translation id="4116704186509653070">Дахин нээх</translation>
 <translation id="4117714603282104018">Мэдрэгч самбарын мэдрэгдэх хариу</translation>
 <translation id="4117854923024277067">Таны дэлгэцийн агшныг таны зааврын хамт ашиглах эсвэл устгах боломжтой</translation>
 <translation id="4118579674665737931">Төхөөрөмжийг дахин асаагаад дахин оролдоно уу.</translation>
@@ -4663,7 +4640,6 @@
 <translation id="4281789858103154731">Үүсгэх</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4281849573951338030">Үзгийн товчлууруудыг өөрчлөх</translation>
-<translation id="4282196459431406533">Smart Lock-г асаасан</translation>
 <translation id="4284903252249997120">ChromeVox дэлгэц уншигч болон ярихаар сонгох</translation>
 <translation id="4285418559658561636">Нууц үгийг шинэчлэх</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
@@ -4760,7 +4736,6 @@
 <translation id="4352913519324947509">Таны нууц үгийг өөрчлөөгүй ч та одоогийн нууц үгээрээ сайтад хандах боломжтой хэвээр байх ёстой</translation>
 <translation id="4354073718307267720">Сайт таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянах хүсэлтэй үед асуух</translation>
 <translation id="4354344420232759511">Таны зочилдог сайтууд энд харагдана</translation>
-<translation id="435527878592612277">Зургаа сонгох</translation>
 <translation id="4356100841225547054">Дууг унтраах</translation>
 <translation id="4357583358198801992">Табын бүлгүүдийг харуулах</translation>
 <translation id="4357812592970409234">Шинэ таб хуудасны дэвсгэрийнхээ талаар нэмэлт мэдээлэл авах</translation>
@@ -4914,7 +4889,6 @@
 <translation id="4450974146388585462">Оношлох</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> нь таны өгөгдлийг илүү аюулгүй хадгалах боломжтой идэвхтэй TPM илрүүллээ.</translation>
 <translation id="4452898361839215358">эсвэл PPD-г сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="4453430595102511050">Таны гарын баруун дээд буланд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />-г хайх эсвэл URL оруулах</translation>
 <translation id="4457472090507035117">Одоогийн дуу хоолойг сонгоно уу:</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
@@ -4958,7 +4932,6 @@
 <translation id="4497360513077910151">Бүлгийг нуух</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> гэмтсэн байна</translation>
 <translation id="4500647907053779331">Сонголтыг <ph name="LANGUAGE" /> руу &amp;орчуулах</translation>
-<translation id="450099669180426158">Анхаарлын тэмдэгийн дүрс</translation>
 <translation id="4501530680793980440">Усгахыг баталгаажуулах</translation>
 <translation id="4502423230170890588">Энэ төхөөрөмжөөс хасах</translation>
 <translation id="4502477450742595012">Таб дээр баруун талыг товшоод, "Табыг шинэ бүлэгт нэмэх"-ийг сонгоно уу</translation>
@@ -5045,7 +5018,6 @@
 <translation id="4562364000855074606">Энэ <ph name="DEVICE_TYPE" /> дээр суулгасан аппуудыг блоклоно уу. Аппууд эсвэл контент татахыг хязгаарлахын тулд Google Play-н Тохиргоо руу очно уу. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Эхний оролтын хэл бол Хятад хэл юм.</translation>
 <translation id="4563382028841851106">Бүртгэлээс хасах</translation>
-<translation id="4563880231729913339">Хуруу 3</translation>
 <translation id="4564245002465020751">Утсан дээрээ тохируулж дуусгана уу</translation>
 <translation id="456449593072900590">Гарахад устгах</translation>
 <translation id="4565377596337484307">Нууц үгийг нуух</translation>
@@ -5094,7 +5066,6 @@
 <translation id="4595560905247879544">Апп болон өргөтгөлийг (<ph name="CUSTODIAN_NAME" />) менежер өөрчлөх боломжтой.</translation>
 <translation id="4598345735110653698">Нууц үгнүүдийг удирдах</translation>
 <translation id="4598556348158889687">Сангийн менежмент</translation>
-<translation id="4598776695426288251">Wi-Fi олон төхөөрөмжид боломжтой байна</translation>
 <translation id="4600071396330666617">Зөвлөмжийн тоо</translation>
 <translation id="4600978165652322776">Сүлжээний алдаа гарлаа. Интернэт холболт болон сүлжээний тохиргоогоо шалгана уу.</translation>
 <translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
@@ -5112,7 +5083,6 @@
 <translation id="4610022258080608778">Сонголтын товчлолыг засах</translation>
 <translation id="4610493438923139095">Итгэмжлэгдээгүй</translation>
 <translation id="4610637590575890427">Та энэ <ph name="SITE" /> руу орох гэж байсан уу?</translation>
-<translation id="4611114513649582138">Дата холболт боломжтой байна</translation>
 <translation id="4611619000650855880">Хулганын зүүн товчийг сонгосон үед 2 товшихын тулд “/”-г ашиглана уу</translation>
 <translation id="4611759022973144129">Та энэ нууц үгээ <ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд ашиглах боломжтой.</translation>
 <translation id="4612841084470706111">Хүсэлт тавьсан бүх сайтад хандах эрх олгоно уу.</translation>
@@ -5587,7 +5557,6 @@
 <translation id="4943368462779413526">Хөл бөмбөг</translation>
 <translation id="4943927218331934807">Нууц үг шаардлагатай</translation>
 <translation id="4944310289250773232">Энэ нотолгооны үйлчилгээг <ph name="SAML_DOMAIN" />-с удирддаг</translation>
-<translation id="4945439665401275950">Хурууны хээ тохируулахын тулд хүүхдээ асаах/унтраах товчинд хүргэнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="4946998421534856407">эхлүүлэгч + дээш сум</translation>
 <translation id="4947376546135294974">Таны зочилж буй сайтын өгөгдөл</translation>
 <translation id="4949898053053527676">Таны хайлтад ямар ч хайлтын илэрц байхгүй бололтой</translation>
@@ -5650,7 +5619,6 @@
 <translation id="4991873517942703737">Энэ баримт бичгийн талаар асуух</translation>
 <translation id="4992066212339426712">Дууг нээх</translation>
 <translation id="4992443049233195791">Microsoft 365 файлын тохиргоо</translation>
-<translation id="4992458225095111526">Powerwash-ийг батлах</translation>
 <translation id="4992473555164495036">Танай админ боломжит оруулах аргыг хязгаарласан байна.</translation>
 <translation id="4994426888044765950">Хэрэв та товчийг удаан дарвал товчийн тэмдэгт давтагдана</translation>
 <translation id="4994754230098574403">Тохируулж байна</translation>
@@ -5659,6 +5627,7 @@
 <translation id="4997086284911172121">Интернет холболт алга.</translation>
 <translation id="4998430619171209993">Асаалттай</translation>
 <translation id="4999804342505941663">Бүү саад бол онцлогийг асаах</translation>
+<translation id="5000497292978544380">Google Хайлтын ХОУ-ы горим</translation>
 <translation id="5001526427543320409">Гуравдагч талын күүки</translation>
 <translation id="5003070249435823986">Та гүйлгэх горимд орохын тулд зангааг ашиглаж, дараа нь гүйлгэхийг хүсэж буй чиглэл рүүгээ толгойгоо хөдөлгөнө үү. Гүйлгэх горимоос гарахын тулд зангааг дахин ашиглана уу.</translation>
 <translation id="5003993274120026347">Дараагийн өгүүлбэр</translation>
@@ -5840,7 +5809,6 @@
 <translation id="513555878193063507">Шинэ APN-г нэмэх</translation>
 <translation id="5136343472380336530">Хоёр төхөөрөмжийн түгжээг хоёуланг нь тайлсан эсэх, хоорондоо ойрхон эсэх, Bluetooth-г нь асаасан эсэхээ шалгана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5136529877787728692">F7</translation>
-<translation id="5137349216872139332">Шуурхай сүлжээний цэгийн холболт амжилтгүй боллоо</translation>
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
 <translation id="5139823398361067371">Аюулгүй байдлын түлхүүрийнхээ ПИН-г оруулна уу. Хэрэв та ПИН-г мэдэхгүй бол аюулгүй байдлын түлхүүрийг шинэчлэх хэрэгтэй болно.</translation>
 <translation id="5139955368427980650">&amp; Нээлттэй</translation>
@@ -5883,6 +5851,7 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" />-г блоклосон байна</translation>
 <translation id="5163910114647549394">Табыг tabstrip-н төгсгөл рүү зөөсөн</translation>
 <translation id="5164530241085602114"><ph name="SITE" />-д мэдэгдлийг зөвшөөрөөгүй</translation>
+<translation id="5166614864040402649">Тохиргоо, дараа нь Харагдах байдлыг нээж, Хажуугийн самбарыг сонгосноор зэрэгцүүлсэн харагдах байдал руу буцаж сэлгэнэ үү.</translation>
 <translation id="516747639689914043">Гипертекстийн Дамжуулалтын Протокол (HTTP)</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5171045022955879922">Хайх эсвэл холбоосыг бичиж оруул</translation>
@@ -6103,7 +6072,6 @@
 <translation id="5327570636534774768">Энэ төхөөрөмжийг өөр домэйнээс менежментэд ашиглах зорилгоор тэмдэглэсэн байна. Демо горимыг тохируулахаас өмнө тухайн домэйнээс үүний нэвтрэх эрхийг хүчингүй болгоно уу.</translation>
 <translation id="5327912693242073631">Мэдэгдэл шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="5328551442597731838">Бусад төхөөрөмжийн табыг харах</translation>
-<translation id="532943162177641444">Энэ төхөөрөмжид ашиглах боломжтой хөдөлгөөнт холбооны сүлжээний цэгийг тохируулахын тулд <ph name="PHONE_NAME" />-н мэдэгдлийг товшино уу.</translation>
 <translation id="5329858601952122676">&amp;Устгах</translation>
 <translation id="5331568967879689647">ChromeOS системийн апп</translation>
 <translation id="5331975486040154427">USB-C төхөөрөмж (ард талын портны зүүн тал)</translation>
@@ -6139,7 +6107,6 @@
 <translation id="5362741141255528695">Хувийн түлхүүр файлыг сонго</translation>
 <translation id="536278396489099088">ChromeOS системийн төлөв болон тайлангууд</translation>
 <translation id="5362916924854054326">SharePoint, OneDrive-н файлуудыг бүү харуул</translation>
-<translation id="5363109466694494651">Powerwash болон Revert</translation>
 <translation id="5365858324977454035">Гэнэтийн алдаа гарлаа. Файлыг байршуулж чадсангүй.</translation>
 <translation id="5365881113273618889">Таны сонгосон фолдерт эмзэг файл агуулсан байна. Та "<ph name="APP_NAME" />"-д энэ фолдерыг бичих хандалтыг бүрмөсөн өгөхдөө итгэлтэй байна уу?</translation>
 <translation id="536638840841140142">Байхгүй</translation>
@@ -6402,7 +6369,6 @@
 <translation id="5547868626772433490">Gemini-с хүсэх</translation>
 <translation id="5548075230008247516">Бүх зүйлийн сонголтыг болиулсан. Сонголтын горимоос гарсан.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" болон бусад 1 таб}other{"<ph name="TAB_TITLE" />" болон бусад # таб}}</translation>
-<translation id="5548644592758170183">Зүүн талд харуулах</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Тохируулгаа сонгоно уу</translation>
 <translation id="5551573675707792127">Гар болон текстийн оролт</translation>
@@ -6764,7 +6730,6 @@
 <translation id="5828633471261496623">Хэвлэж байна...</translation>
 <translation id="5829214552954466783"><ph name="USER_EMAIL" /> хэрэглэгчийн нэрийн <ph name="CREDENTIAL_TYPE" />-г хуваалцах</translation>
 <translation id="5829544019044013776">Таны Google Wallet дахь төлбөрийн хэрэгсэл</translation>
-<translation id="5830205393314753525"><ph name="APP_NAME" />-г нээх боломжгүй</translation>
 <translation id="5830512293931520102">Таны нууц үг шифрлэгдсэн бөгөөд хэнд ч харагдахгүй</translation>
 <translation id="5830720307094128296">Хуудсыг  ... гэх хадгалах</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -6855,7 +6820,6 @@
 <translation id="5885314688092915589">Танай байгууллага энэ профайлыг удирдана</translation>
 <translation id="5885470467814103868">Скан хийж эхлэх</translation>
 <translation id="5885631909150054232">Токеныг хуулах</translation>
-<translation id="5886009770935151472">Хуруу 1</translation>
 <translation id="5886112770923972514">Ойролцоох Хурдан холбох төхөөрөмжүүдэд холбогдож, шуурхай тохируулах</translation>
 <translation id="5886384907280980632">Одоо унтраах</translation>
 <translation id="5888337581644150257">Олон улсын төлбөр тооцооны харилцагчийн дансны дугаар (IBAN)</translation>
@@ -7028,7 +6992,6 @@
 <translation id="6015796118275082299">Жил</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />-с <ph name="CURRENT_ELEMENT" /> нэмэлт контентод шилжих</translation>
 <translation id="6016462059150340136">Ойролцоох дурын хүн</translation>
-<translation id="6016551720757758985">Өмнөх хувилбар руу буцаах Powerwash-ийг баталгаажуулна уу.</translation>
 <translation id="6016972670657536680">Хэл болон гарын товчлуурыг сонгоно уу. Одоогоор <ph name="LANGUAGE" /> хэлийг сонгосон байна.</translation>
 <translation id="6017318029492906697">Таны талаар хадгалсан мэдээллээ ашиглахыг нь зөвшөөрөөгүй</translation>
 <translation id="6017514345406065928">Ногоон</translation>
@@ -7183,9 +7146,7 @@
 <translation id="6130807998512240230">Phone Hub, Ойролцоо хуваалцах</translation>
 <translation id="6130887916931372608">Гарны товчлуур</translation>
 <translation id="6131511889181741773">Цацарсан</translation>
-<translation id="6132188132833716741">ХОУ-ы горимыг асуухын тулд таб дараа нь enter дээр дарна уу</translation>
 <translation id="6132251717264923430">Товчийг бэхэлсэн</translation>
-<translation id="6132714462430777655">Сургуулийн элсэлтийг алгасах уу?</translation>
 <translation id="6134418895482326458">Шинэ таб хуудсан дээрээс доод хэсгийг нуух</translation>
 <translation id="6134428719487602109">Бүх хэрэглэгчийн бүртгэлийг хасаж, Chromebook-ээ шинэчилж шинэ юм шиг болгоорой.</translation>
 <translation id="6135826623269483856">Таны бүх дэлгэц дээр цонх удирдахыг зөвшөөрөөгүй</translation>
@@ -7311,7 +7272,6 @@
 <translation id="62229737360959019">Чат, хуваалцсан табаас нээсэн табыг мөн Gemini-тай хуваалцдаг. Шууд горимд зөвхөн одоогийн табыг өгөгдмөлөөр хуваалцдаг.</translation>
 <translation id="622484624075952240">Бууруулсан жагсаалт</translation>
 <translation id="622537739776246443">Профайлыг устгана</translation>
-<translation id="6225475702458870625">Таны <ph name="PHONE_NAME" />-с дата холболт боломжтой байна</translation>
 <translation id="622568138962270592">Gemini-тай харилцдаг аппын үйл ажиллагаа</translation>
 <translation id="6226777517901268232">Хувийн түлхүүрийн файл (заавал биш)</translation>
 <translation id="6227280783235722609">өргөтгөл</translation>
@@ -7386,7 +7346,6 @@
 <translation id="6274108044476515407">Таны хардаг зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK1" />сайтын санал болгосон зар<ph name="LINK_END1" />, таны <ph name="BEGIN_LINK2" />күүкиний тохиргоо<ph name="LINK_END2" /> болон таны үзэж буй сайт зарыг хувийн болгодог эсэх гэх мэт олон зүйлээс хамаарч болно. <ph name="BEGIN_LINK3" />Зарын нууцлалаа удирдах<ph name="LINK_END3" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6274202259872570803">Дэлгэцийн видео бичлэг</translation>
 <translation id="627581157848786026">Бусад төхөөрөмжийн табыг харах</translation>
-<translation id="6276210637549544171"><ph name="PROXY_SERVER" /> прокси нь хэрэглэгчийн нэр, нууц үг шаарддаг.</translation>
 <translation id="6277105963844135994">Сүлжээний завсарлагаа</translation>
 <translation id="6277518330158259200">Дэлгэцийн зураг авах</translation>
 <translation id="6278428485366576908">Загвар</translation>
@@ -7444,7 +7403,6 @@
 <translation id="6318125393809743217">Бодлогын тохируулгатай policies.json файлыг багтаана.</translation>
 <translation id="6318944945640833942">Хэвлэгчийг илрүүлж чадсангүй. Хэвлэгчийн хаягийг дахин оруулна уу.</translation>
 <translation id="6319278239690147683">Интернэтээр үзсэн өгөгдлийг синк хийсэн бүх төхөөрөмж болон Google Бүртгэлээсээ устгахын тулд <ph name="BEGIN_LINK" />синк хийх тохиргоогоор зочилно уу<ph name="END_LINK" />.</translation>
-<translation id="6322370287306604163">Хурууны хээгээр түгжээг илүү хурдан тайлаарай</translation>
 <translation id="6322559670748154781">Энэ файлыг ихэвчлэн татдаггүй бөгөөд Дэвшилтэт хамгаалалтаас блоклосон байна</translation>
 <translation id="6324916366299863871">Товчлолыг засах</translation>
 <translation id="6325191661371220117">Автоматаар эхлэх тохиргоог идэвхгүй болгох</translation>
@@ -7472,7 +7430,6 @@
 <translation id="6344170822609224263">Сүлжээний холболтын жагсаалтанд хандах</translation>
 <translation id="6344576354370880196">Хадгалсан хэвлэгч</translation>
 <translation id="6344608411615208519">Таны эцэг эх <ph name="BEGIN_LINK" />хөтчийг тань удирддаг<ph name="END_LINK" /></translation>
-<translation id="6345418402353744910"><ph name="PROXY" /> проксид таны хэрэглэгчийн нэр, нууц үг шаардлагатай, ингэснээр админ сүлжээг тань тохируулах боломжтой болно</translation>
 <translation id="6345566021391290381"><ph name="WEBSITE_NAME" />-н нууц үгнүүдийг тантай хуваалцсан. Та тэдгээрийг нэвтрэх маягтад ашиглах боломжтой.</translation>
 <translation id="6345878117466430440">Уншсан гэж тэмдэглэх</translation>
 <translation id="6346952829206698721">Түр санах ойгоос буулгах</translation>
@@ -7572,7 +7529,6 @@
 <translation id="6416743254476733475">Компьютер дээрээ зөвшөөрч эсвэл хориглоно уу.</translation>
 <translation id="6416856063840710198">Таны зочлолыг сайжруулахын тулд сайтууд таны үйл ажиллагааг ихэвчлэн төхөөрөмжид тань хадгалдаг. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Өгөгдмөл байдал</translation>
-<translation id="6418160186546245112">Өмнө нь суулгасан <ph name="IDS_SHORT_PRODUCT_NAME" /> хувилбарт шилжүүлэх</translation>
 <translation id="641817663353603351">хуудас дээшлүүлэх</translation>
 <translation id="6418481728190846787">Бүх аппликейшнууд руу нэвтрэх эрхийг тогтмол устгах</translation>
 <translation id="6418511932144861495">Чухал шинэчлэлтийг суулгах</translation>
@@ -7837,7 +7793,6 @@
 <translation id="6607890859198268021"><ph name="DOMAIN" /> аль хэдийнээ <ph name="USER_EMAIL" />-г удирдаж байна. Эцэг эхийн хяналтыг өөр Google Бүртгэлээр ашиглахын тулд тохируулгын дараа гарч, нэвтрэх дэлгэц дээрх "Хүн нэмэх"-ийг сонгоно уу.</translation>
 <translation id="6608166463665411119">eSIM-г шинэчлэх</translation>
 <translation id="660846213831377756">Хулганын товч</translation>
-<translation id="6608773371844092260">Хурууны хээ тохируулахын тулд хүүхдээрээ энэ <ph name="DEVICE_TYPE" />-н баруун гар талд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="6609478180749378879">Таныг Нууцлалын горимоос гарсны дараа нэвтрэх өгөгдлийг энэ төхөөрөмж дээр хадгална. Та энэ вебсайтад дараа нь төхөөрөмжөөрөө нэвтрэх боломжтой болно.</translation>
 <translation id="6610002944194042868">Орчуулах сонголт</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> таб</translation>
@@ -7907,7 +7862,6 @@
 <translation id="666099631117081440">Хэвлэх серверүүд</translation>
 <translation id="6662394424395160792">Дурын төхөөрөмжөөсөө сайтад илүү хурдан нэвтрэхэд Google Нууц үгний менежерийг ашиглана уу</translation>
 <translation id="6662931079349804328">Байгууллагын бодлого өөрчлөгдсөн. Туршилтын товчлуурыг самбараас хассан.</translation>
-<translation id="6663190258859265334"><ph name="DEVICE_TYPE" />-г powerwash хийж, өмнөх хувилбар луу буцна уу.</translation>
 <translation id="6664774537677393800">Таны профайлыг нээхэд асуудал гарлаа. Бүртгэлээсээ гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="6665874326033183068">Зэрлэг</translation>
 <translation id="6666560794795912543">Хажуугийн самбарт хавчуурга харуулах</translation>
@@ -8093,7 +8047,6 @@
 <translation id="6795371939514004514">Автоматаар скан хийх онцлог нь танд дэлгэц дээрх зүйлс хооронд автоматаар шилжих боломжийг олгоно. Зүйлийг тодруулсан үед нь идэвхжүүлэхийн тулд “Сонгох” дээр дарна уу.</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
 <translation id="6796509790850723820">Рэндэрлэх</translation>
-<translation id="6797493596609571643">Өө, ямар нэг зүйл ажиллахаа больсон байна.</translation>
 <translation id="6797877165704994393">Шүүлтүүрийг хасах</translation>
 <translation id="6798420440063423019">ПИН-г хэт олон удаа буруу оруулсан тул аюулгүй байдлын түлхүүрийг түгжсэн байна. Та аюулгүй байдлын түлхүүрийг шинэчлэх шаардлагатай.</translation>
 <translation id="679845623837196966">Унших жагсаалтыг харуулах</translation>
@@ -8185,7 +8138,6 @@
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" <ph name="FILE_NAME" />-г <ph name="PRINTER_NAME" />-р хэвлэхийг хүсэж байна.</translation>
 <translation id="6846843854964504403">Аюулгүй байдлын шинэчлэлт</translation>
 <translation id="6847125920277401289">Үргэлжлүүлэхийн тулд сул зай гаргана уу</translation>
-<translation id="6848716236260083778">Хурууны хээ тохируулахын тулд хүүхдээ хурууны хээ мэдрэгчид хүргэнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="6850286078059909152">Текстийн өнгө</translation>
 <translation id="6850925512806464982">Хүн бүр энэ табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд үүнийг бүх төхөөрөмжөөс устгана</translation>
 <translation id="6851346504162963984">{MEMBERS,plural, =1{1 сайт <ph name="RWS_OWNER" />-н бүлэгт байна}other{{MEMBERS} сайт <ph name="RWS_OWNER" />-н бүлэгт байна}}</translation>
@@ -8694,7 +8646,6 @@
 <translation id="7226163413959353072">Гол санааг өгч, концепцыг тодорхойлж, хариулт олж мөн илүү ихийг хийдэг ХОУ-ы туслах</translation>
 <translation id="7227235818314667565">Хуваалцахыг удирдах</translation>
 <translation id="7227458944009118910">Доор жагсаасан аппууд мөн протоколын холбоосыг зохицуулах боломжтой. Бусад апп зөвшөөрөл хүснэ.</translation>
-<translation id="7228056665272655255">Хурууны хээ тохируулахын тулд хүүхдээрээ гарын баруун дээд буланд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="7228854227189381547">Сэлгэхгүй</translation>
 <translation id="7230222852462421043">&amp;Цонхыг сэргээх</translation>
 <translation id="7230881857327093958">Тохируулгын дараа өөрчлөлтийг хэрэгжүүлнэ</translation>
@@ -8744,7 +8695,6 @@
 <translation id="7262919421769447042">Таны профайлыг <ph name="PROFILE_MANAGER" /> удирддаг бөгөөд таны зарим мэдээллийг харах боломжтой. Үүнд:</translation>
 <translation id="7264695323040866038">Дэмжигдсэн веб холбооснуудыг нээхийн тулд <ph name="APP" />-г үргэлж ашиглах уу?</translation>
 <translation id="7267044199012331848">Виртуал машиныг суулгаж чадсангүй. Дахин оролдож үзнэ үү, эсвэл админтайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
-<translation id="7267875682732693301">Хурууныхаа хээг бүрэн гаргахын тулд хуруугаа хөндийрүүлсэн хэвээр байлгана уу</translation>
 <translation id="7267898843336437186">Энэ сайтын үзэх боломжтой фолдерыг сонгоно уу</translation>
 <translation id="7268127947535186412">Энэ тохиргоог төхөөрөмжийн эзэмшигч удирддаг.</translation>
 <translation id="7268412955622368206">Шинэ USB төхөөрөмжид попап мэдэгдэл харуулна.</translation>
@@ -8873,7 +8823,6 @@
 <translation id="7360333718677093875">эможи сонгогч</translation>
 <translation id="7360460316021916328">Цонх сонгох</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />-г ажиллуулахын тулд барууныг дарна уу</translation>
-<translation id="7361914392989692067">Асаах/унтраах товчинд хуруугаараа хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="7362387053578559123">Сайтууд Bluetooth төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="7363349185727752629">Таны нууцлалын сонголтуудын гарын авлага</translation>
 <translation id="7364591875953874521">Хандах хүсэлт тавьсан</translation>
@@ -8937,7 +8886,6 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> руу буцааж өөрчлөх үү?</translation>
 <translation id="7400528739136719497">Google-н зарим дуу хоолой яг одоо боломжгүй байж магадгүй</translation>
-<translation id="7400839060291901923"><ph name="PHONE_NAME" />-д холболт тохируулах</translation>
 <translation id="7401559588859088661">Зөөж, нээх</translation>
 <translation id="7401778920660465883">Энэ мессежийг хаах</translation>
 <translation id="7402198013420237102">Хадгалсан нууц үгнүүдийг Google Бүртгэл рүүгээ зөөх үү?</translation>
@@ -9027,7 +8975,6 @@
 <translation id="7458933488302148148">Аюулгүй байдлаа сайжруулж, онлайн орчинд илүү аюулгүй байхын тулд хадгалсан нууц үгнүүдээ шалгана уу</translation>
 <translation id="7460045493116006516">Таны суулгасан одоогийн загвар</translation>
 <translation id="7461924472993315131">Pin</translation>
-<translation id="746216226901520237">Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Танай байгууллага эдгээр онцлогийн цуглуулсан өгөгдлийг хэрхэн ашиглаж болохыг удирдана.</translation>
 <translation id="7464645554245611385">Энэ табын сүүлийн шинэчлэлт</translation>
@@ -9202,7 +9149,6 @@
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7592060599656252486">Зарим</translation>
-<translation id="7594725637786616550">Өөрийн <ph name="DEVICE_TYPE" />-г шинэ мэт шинэчлэхийн тулд Powerwash хийгээрэй.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (алдааны код <ph name="ERROR_CODE" />).</translation>
 <translation id="7600054753482800821">&amp;Хайлтын систем болон сайтын хайлтыг удирдах</translation>
 <translation id="7600218158048761260">Google Драйвыг энэ бүртгэлийн төрөлд идэвхгүй болгосон.</translation>
@@ -9226,6 +9172,7 @@
 <translation id="7612497353238585898">Идэвхтэй сайт</translation>
 <translation id="7612655942094160088">Холбогдсон утасны онцлогуудын идэвхжилт.</translation>
 <translation id="7612989789287281429">Та нэвтэрч байна…</translation>
+<translation id="76131528886466333">Microsoft Edge-н өргөтгөлд зориулсан Google Хайлтыг суулгаарай</translation>
 <translation id="7615365294369022248">Бүртгэл нэмэхэд алдаа гарлаа</translation>
 <translation id="7616214729753637086">Төхөөрөмжийг бүртгүүлж байна...</translation>
 <translation id="7616964248951412133">Сайтууд энэ онцлогийг тоглоом, алсын зайн компьютерын апп зэрэгт зориулж таны хулганын оролтын мэдээллийг авч, ашиглахад хэрэглэдэг</translation>
@@ -9259,7 +9206,6 @@
 <translation id="7635048370253485243">Таны администратор бэхэлсэн</translation>
 <translation id="7636346903338549690">Сайтуудад гуравдагч талын күүкинүүдийг ашиглахыг зөвшөөрсөн</translation>
 <translation id="7636919061354591437">Энэ төхөөрөмж дээр суулгах</translation>
-<translation id="7637253234491814483">Таны гарны баруун дээд буланд байх хурууны хээ мэдрэгчид, дараа нь Асаах/Унтраах товчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд таны <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="7637593984496473097">Дискийн зай хангалтгүй байна</translation>
 <translation id="7639914187072011620">SAML-н дахин чиглүүлэхийг серверээс дуудаж чадсангүй</translation>
 <translation id="7640256527901510478">Таны төхөөрөмжийн IMEI нь <ph name="IMEI_NUMBER" /> бөгөөд төхөөрөмжийн серийн дугаар нь <ph name="SERIAL_NUMBER" /> юм. Эдгээр дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглаж болно.</translation>
@@ -9299,7 +9245,6 @@
 <translation id="7660116474961254898">Утасныхаа зааварчилгааг дагана уу</translation>
 <translation id="7660146600670077843">Таб дээр баруун талыг товшоод, "Табыг шинэ бүлэгт нэмэх"-ийг сонгоно уу</translation>
 <translation id="7661451191293163002">Бүртгэлийн гэрчилгээг авах боломжгүй байна.</translation>
-<translation id="7662283695561029522">Тохируулахын тулд товших</translation>
 <translation id="7662535435481776002">Бага ялгаралтай цайвар</translation>
 <translation id="7663719505383602579">Хүлээн авагч: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Товчлуурны шууд холбоос боломжтой</translation>
@@ -9481,7 +9426,6 @@
 <translation id="7776950606649732730">Файлыг синк хийж дууссаны дараа дахин оролдоно уу.</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" />-д зориулсан <ph name="SHORTCUT" /> товчлол</translation>
 <translation id="7779840061887151693">дэлгэц</translation>
-<translation id="7781335840981796660">Бүх хэрэглэгчийн бүртгэлүүд болон суурин өгөгдлүүд устах болно.</translation>
 <translation id="7782102568078991263">Google-ээс өөр зөвлөмж алга байна.</translation>
 <translation id="7782717250816686129">Нэвтрэх дэлгэц дээр байнгын өгөгдлийг хадгалж, харилцан үйлдэлд мандат үнэмлэхийг оруулах.</translation>
 <translation id="7784020347632229094">Товчлуурын шууд холбоосны талаар нэмэлт мэдээлэл авах</translation>
@@ -9708,7 +9652,6 @@
 <translation id="7943837619101191061">Байрлалыг нэм...</translation>
 <translation id="79446453817422139">Энэ файл аюултай байж магадгүй</translation>
 <translation id="7944772052836377867">Синк таныг мөн болохыг баталгаажуулах шаардлагатай байна</translation>
-<translation id="7944847494038629732">Дахин оролдохын тулд сканнерын USB кабелийг салгаад, дахин залгана уу</translation>
 <translation id="7945703887991230167">Сонгосон дуу хоолой</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> таныг энэ сайтын бүх табыг хаах хүртэл <ph name="FOLDERNAME" /> дахь файлыг харах, өөрийн хуулбарыг үүсгэх боломжтой болно</translation>
 <translation id="7946586320617670168">Эх хувь нь аюулгүй байх ёстой</translation>
@@ -9813,7 +9756,6 @@
 <translation id="8013534738634318212">Эдгээр сайт нь <ph name="RWS_OWNER" />-н тодорхойлсон бүлэгт байна. Бүлгийн сайтууд бүлэг дэх таны үйл ажиллагааг харах боломжтой.</translation>
 <translation id="8013993649590906847">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chrome танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
 <translation id="8014154204619229810">Шинэчлэгч ажиллаж байна. Хэдэн хормын дараа дахин ачаалаад, шалгана уу.</translation>
-<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> өмнөх хэвэнд оруулах боломжгүй байна. Powerwash сонголтыг та дахин сонгож үзнэ үү.</translation>
 <translation id="8015021949830563076">Энэ онцлог ХОУ ашигладаг, хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд заримдаа алдаа гаргаж болно</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{1 файлыг хуулсан}other{{NUM_OF_FILES} файлыг хуулсан}}</translation>
 <translation id="8017004049696748317">Дуу хоолойгоор бичихийг эхлүүлэх эсвэл зогсоох</translation>
@@ -10166,7 +10108,6 @@
 <translation id="8260864402787962391">Хулгана</translation>
 <translation id="8261378640211443080">Энэ өргөтгөл нь <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ийн нь жагсаалтад ороогүй байгаа бөгөөд танд мэдэгдэхгүйгээр нэмэгдсэн байж болно.</translation>
 <translation id="8261506727792406068">Устгах</translation>
-<translation id="8261625296061301062">Сканнерын программ хангамжийг суулгасан</translation>
 <translation id="8263149565724023141">Холбоотой аппликэйшн</translation>
 <translation id="8263228331881858381">Нэвтрэх түлхүүрийг хадгалсан</translation>
 <translation id="8263336784344783289">Энэ бүлгийг нэрлэнэ үү</translation>
@@ -10226,7 +10167,6 @@
 <translation id="8299951061833867575">Wi-Fi, мобайл дата</translation>
 <translation id="8300011035382349091">Энэ табын хавчуургыг засах</translation>
 <translation id="8300374739238450534">Хар хөх</translation>
-<translation id="8301242268274839723">Таны гарын зүүн доод буланд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Хаяг}other{# хаяг}}</translation>
 <translation id="8304383784961451596">Та энэ төхөөрөмжийг ашиглах зөвшөөрөлгүй байна. Нэвтрэх зөвшөөрөл авахын тулд администратортай холбогдох буюу эсхүл Family Link-р хянадаг Google Бүртгэлээр нэвтэрнэ үү.</translation>
 <translation id="8306063480506363120">Драйвын хандалтыг хасах</translation>
@@ -10339,7 +10279,6 @@
 <translation id="8379991678458444070">Энэ табыг тэмдэглэснээр дараа олоход хялбар болно</translation>
 <translation id="8380266723152870797">Цонхны нэр</translation>
 <translation id="8382197851871630452">Орон нутгийн цаг агаар</translation>
-<translation id="8382677870544805359">Та байгууллагын онцлогуудыг ашиглахын тулд энэ төхөөрөмжийг үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай болно.</translation>
 <translation id="8382913212082956454">И-мэйл хаягийг хуулбарлах</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Асуудал шийдэх эдгээр алхмыг туршиж үзнэ үү:
     <ph name="BEGIN_LIST" />
@@ -10355,7 +10294,6 @@
 <translation id="8387361103813440603">Таны байршлыг харахыг зөвшөөрөөгүй</translation>
 <translation id="8388770971141403598">Хоёрдогч профайлыг дэмждэггүй</translation>
 <translation id="8389492867173948260">Энэ өргөтгөлд таны зочилдог веб сайтын бүх өгөгдлийг унших болон өөрчлөхийг зөвшөөрнө үү:</translation>
-<translation id="8390392581097975659">Сканнерын программ хангамжийг суулгаж байна</translation>
 <translation id="8390449457866780408">Серверүүд ажиллах боломжгүй байна.</translation>
 <translation id="8391218455464584335">Пянз</translation>
 <translation id="8391918125842702622">Гүйцэтгэлийн асуудлын сэрэмжлүүлэг</translation>
@@ -10627,7 +10565,6 @@
 <translation id="8598249292448297523">хэвлэл</translation>
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг удирдах}other{Өргөтгөлүүдийг удирдах}}</translation>
 <translation id="8599681327221583254">Нэг эсвэл түүнээс олон бодлогыг зөв тохируулаагүй байна. Администратортайгаа холбогдоно уу</translation>
-<translation id="8599864823732014237">Байгууллагаар бүртгүүлэхийг алгасах уу?</translation>
 <translation id="8600362954032151088">Нууц үг, нэвтрэх түлхүүрүүдээ <ph name="GOOGLE_PASSWORD_MANAGER" />-д удирдах</translation>
 <translation id="8602851771975208551">Таны компьютерт өөр нэг программ нэмэгдсэн бөгөөд энэ нь Chrome-ийн ажиллах зарчмыг өөрчилж болох юм.</translation>
 <translation id="8602867356511778172">Google заналхийллийг илүү хурдан, нарийвчлалтай илрүүлэхийн тулд илүү их өгөгдөл (жишээлбэл: URL, хуудасны контентын түүвэр, системийн мэдээлэл) ашигладаг</translation>
@@ -10788,7 +10725,6 @@
 <translation id="8704662571571150811">Домэйнүүд</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>
 <translation id="870536819717176711">Таныг одоогийн табыг Gemini-тай хуваалцахаар сонгох үед тухайн табын бүрэн агуулга, медиа, URL-г Google-д илгээнэ.</translation>
-<translation id="8705580154597116082">Wi-Fi-д утсаар холбогдох боломжтой</translation>
 <translation id="8705629851992224300">Таны аюулгүй байдлын түлхүүрийг унших боломжгүй байна</translation>
 <translation id="8706111173576263877">QR кодыг скан хийсэн.</translation>
 <translation id="8707318721234217615">Үсгийн зай</translation>
@@ -10817,8 +10753,6 @@
 <translation id="8720200012906404956">Хөдөлгөөнт холбооны сүлжээг хайж байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">Суулгалтын хугацааны атрибутын анхны утгыг олох хугацаа дууслаа.</translation>
 <translation id="8721093493695533465">Энэ нь үзүүлсэн сайтууд болон суулгасан аппуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг устгана</translation>
-<translation id="8724405322205516354">Та энэ дүрс тэмдгийг харсан үедээ өөрийгөө мөн болохыг баталгаажуулах эсвэл худалдан авалтыг зөвшөөрөхийн тулд хурууны хээгээ ашиглана уу.</translation>
-<translation id="8724409975248965964">Хурууны хээ нэмсэн</translation>
 <translation id="8724859055372736596">&amp;Хавтсанд харуул</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8725178340343806893">Гол холбоос/Тэмдэглэл</translation>
@@ -10915,7 +10849,6 @@
 <translation id="8783834180813871000">Bluetooth хослуулах кодыг оруулаад Return эсвэл Enter дарна уу.</translation>
 <translation id="8784626084144195648">Хэмжигдсэн дундаж утга</translation>
 <translation id="8785622406424941542">Мэдрэгч үзэг</translation>
-<translation id="8786824282808281903">Таны хүүхэд энэ дүрс тэмдгийг харах үед хурууны хээг таниулбар эсвэл худалдан авалт зөвшөөрөхөд ашиглах боломжтой.</translation>
 <translation id="8787752878731558379">Та яагаад гуравдагч талын күүкинүүдийг зөвшөөрсөн талаараа бидэнд хэлснээр Chrome-г сайжруулахад туслаарай</translation>
 <translation id="8788008845761123079"><ph name="SELECTED_ACTION" />-д зангаа сонгох</translation>
 <translation id="878862491037637275">Энэ табын бүлэг дүүрсэн байна</translation>
@@ -10963,7 +10896,6 @@
 <translation id="8821045908425223359">IP хаягийг автоматаар тохируулах</translation>
 <translation id="8821206216942230957">Таны бүртгэл Chrome дахь Gemini-д хандах эрхгүй байна</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" />-г ашиглахад бэлэн байна.</translation>
-<translation id="882204272221080310">Аюулгүй байдлаа сайжруулахын тулд жижиг программыг шинэчилнэ үү.</translation>
 <translation id="8823514049557262177">Текстийн холбоосыг хуулах</translation>
 <translation id="8823704566850948458">Нууц үг санал болгох...</translation>
 <translation id="8823963789776061136">Эсвэл принтерийн PPD-г сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -11219,14 +11151,13 @@
 <translation id="8993787625629280252">Хэрэв Chrome таны аль нэг нууц үгийг олон нийтийн өгөгдлийн зөрчлөөс олбол таныг нэвтэрсэн тохиолдолд нууц үгээ өөрчлөхийг санал болгож болно</translation>
 <translation id="899384117894244799">Хязгаарласан хэрэглэгчийг хасах</translation>
 <translation id="8993853206419610596">Бүх хүсэлтийг дэлгэх</translation>
-<translation id="8993945059918628059">Хуруугаараа хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="899403249577094719">Нетскейп гэрчилгээнд суурилсан холбоос</translation>
 <translation id="8996080012222587839">Автоматаар дэлгэгдэх табуудыг асаах</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Энэ өргөтгөлийг таны Google Бүртгэлд хадгалсан ч тухайн өргөтгөлийн зөвхөн энэ төхөөрөмж дээр хадгалсан аливаа өгөгдлийг устгаж болзошгүй}other{Эдгээр өргөтгөлийг таны Google Бүртгэлд хадгалсан ч эдгээр өргөтгөлийн зөвхөн энэ төхөөрөмж дээр хадгалсан аливаа өгөгдлийг устгаж болзошгүй}}</translation>
+<translation id="8997263272622166883">Ctrl-tab-р хамгийн сүүлд ашигласан хоёр табын хооронд сэлгэнэ үү</translation>
 <translation id="8999027165951679951">Идэвхгүй таб: <ph name="MEMORY_SAVINGS" />-г сулласан</translation>
 <translation id="8999560016882908256">Хэсгийн дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Дэлгэц дээрх хөдөлгөөнийг багасгасан</translation>
-<translation id="9000185763019430629">Таны <ph name="DEVICE_TYPE" />-н баруун гар талд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="9000529821022336229">Шинэчлэгчийн ямар ч суулгалт олж чадсангүй.</translation>
 <translation id="900267527532832868">Энэ нэвтрэх түлхүүр ажиллахаа больсон. Үүнийг удахгүй <ph name="GOOGLE_PASSWORD_MANAGER" />-с устгана.</translation>
 <translation id="9003031149571024583">ПИН кодын 6-аас <ph name="NUM_DIGIT" /> дахь орныг оруулна уу. Сүүлийн орныг хасахын тулд ухраах эсвэл устгах товчийг ашиглана уу.</translation>
@@ -11287,7 +11218,6 @@
 <translation id="9036484080057916082">Гарын үсэг зурсан сертификатын хугацаа тэмдэглэгчийн жагсаалт</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> гэсэн Bluetooth төхөөрөмжид холбогдсон</translation>
 <translation id="9037640663275993951">Төхөөрөмжийг зөвшөөрдөггүй</translation>
-<translation id="9037818663270399707">Таны холболт сүлжээний бүх ачааллын хувьд хувийн биш байна</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9038489124413477075">Нэрлэгдээгүй хавтас</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Танд нэг оролдлого үлдлээ.}other{Танд # оролдлого үлдлээ.}}</translation>

@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Has iniciat la sessió com a <ph name="USER" /></translation>
 <translation id="1149401351239820326">Mes de caducitat</translation>
 <translation id="1150989369772528668">Calendari</translation>
+<translation id="1161444134753003495">Inicia la sessió</translation>
 <translation id="1161663161838091892">Sincronitza les pestanyes i l'historial per continuar</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} targeta de crèdit}other{{count} targetes de crèdit}}</translation>
 <translation id="1164891049599601209">S'ha introduït en un lloc web enganyós</translation>
@@ -820,6 +821,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Contrasenya nova per a aquest lloc web}other{Contrasenyes noves per a aquest lloc web}}</translation>
 <translation id="3933372629914873850">Iniciaràs la sessió a <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pinça per canviar la mida</translation>
+<translation id="393732545649378031">Compte</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tanca {COUNT} pestanya}other{Tanca {COUNT} pestanyes}}</translation>
 <translation id="3946483119107054883">Baixa com a CSV</translation>
@@ -1467,6 +1469,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6140948187512243695">Mostra els detalls</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
 <translation id="6146563240635539929">Vídeos</translation>
+<translation id="6148392728478209113">Encara estàs utilitzant Live? Toca el botó Live per continuar parlant amb Gemini</translation>
 <translation id="6151006591088192882">Desbloqueja les pestanyes d'incògnit amb <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactiu</translation>
 <translation id="6152406514676263192">Sincronitza per obtenir el contingut més rellevant en funció dels teus interessos.</translation>
@@ -2216,6 +2219,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8643403533759285912">Suprimeix el grup</translation>
 <translation id="8647280737650867362">No s'ha pogut deixar de fer el seguiment del preu.</translation>
 <translation id="8654802032646794042">Cancel·la</translation>
+<translation id="8659875081143553823">Un moment</translation>
 <translation id="8660600697590740984">Imatge de Lens copiada</translation>
 <translation id="866266761389616183">Vaja!</translation>
 <translation id="8663764600409216912">Estàs utilitzant contrasenyes que semblen difícils d'endevinar</translation>

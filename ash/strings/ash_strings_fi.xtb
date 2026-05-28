@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja kuvia.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />Varmuuskopioidut tiedot eivät vaikuta Driven tallennustilakiintiöösi.<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />Voit laittaa tämän palvelun pois päältä asetuksista.<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on näppäimistön vasemmassa alakulmassa. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1073899992769346247">Vaihda tai lataa akku</translation>
 <translation id="1081015718268701546">Linux-sovelluksia ei tällä hetkellä tueta. Muut sovellukset tallennetaan.</translation>
 <translation id="108486256082349153">Matkapuhelin: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">Paina <ph name="LAUNCHER_KEY_NAME" /> + g milloin tahansa</translation>
 <translation id="130491383855577612">Linux-sovellukset ja ‑tiedostot korvattu</translation>
 <translation id="1306549533752902673">SOVELLUSSUOSITUKSET</translation>
+<translation id="1306606229401759371">Muuta asetuksia</translation>
 <translation id="1310396869741602366">Vaihda sävyä</translation>
 <translation id="1312604459020188865">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">Valittu yläreunan kahva, siirry nuolinäppäimillä</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">Tallenna työpöytä myöhempää käyttöä varten</translation>
 <translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383876407941801731">Haku</translation>
+<translation id="1390113502208199250">Sinun on palautettava laitteen tehdasasetukset, jotta voit käyttää Chrome Education Upgrade ‐ominaisuuksia.</translation>
 <translation id="1391102559483454063">Päällä</translation>
 <translation id="1394698770495054737">Täysi sumennus</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 päivä sitten}other{# päivää sitten}}</translation>
+<translation id="1403222014593521787">Välityspalvelimeen ei saada yhteyttä</translation>
 <translation id="1404963891829069586">Keskittymisäänet</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Siirry päivästä toiseen nuolinäppäimillä.</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">Laita sijainti päälle</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> irrotettiin</translation>
 <translation id="1831565490995294689">Avaa <ph name="APP_TO_OPEN" /> valitsemalla.</translation>
+<translation id="1832511806131704864">Puhelimen vaihdos päivitettiin</translation>
 <translation id="1838011306813517425">Keskittymistilan asetukset</translation>
 <translation id="1838895407229022812">Yövalo on pois päältä.</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">Avaa sormenjäljellä</translation>
 <translation id="1891362123137972260">Levytila on erittäin vähissä. Vapauta levytilaa.</translation>
 <translation id="1894024878080591367">Ota käyttöön näppäimistöllä pelaamista varten</translation>
+<translation id="1896043844785689584">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on näppäimistön oikeassa alakulmassa. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1896383923047738322">Muokkaa näppäimistöä</translation>
 <translation id="1904997243703671177">Kun laitat Bluetoothin pois päältä, <ph name="DEVICE_COUNT" /> ulkoista laitetta katkaisee yhteyden (<ph name="DEVICE_TYPE" />) esimerkiksi näihin:</translation>
 <translation id="1908992311423394684">Uusi asennus</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1918022425394817322">Kamera kohdistettu oikeaan yläkulmaan</translation>
+<translation id="1919872106782726755">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on näppäimistön oikeassa yläkulmassa virtapainikkeen vieressä. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1920390473494685033">Yhteystiedot</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
 <translation id="1925320505152357008">alle 1 min</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">Tallenna silti</translation>
 <translation id="2041220428661959602">Akun varaustaso: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Pikakomento <ph name="SIX_PACK_KEY_NAME" /> on pois päältä</translation>
+<translation id="204622017488417136">Laitteeseesi palautetaan aiemmin asennettu Chromen versio. Kaikki käyttäjätilit ja paikalliset tiedot poistetaan. Tätä ei voi kumota.</translation>
 <translation id="204706822916043810">Tarkistetaan virtuaalikonetta</translation>
 <translation id="2048554637254265991">Virhe säilönhallinnan käynnistyksessä. Yritä uudelleen.</translation>
 <translation id="2048653237708779538">Toiminto ei ole käytettävissä</translation>
@@ -412,12 +420,14 @@
 <translation id="2304702218354340897">Haluatko varmasti laittaa kasvo-ohjauksen pois päältä?</translation>
 <translation id="2305738328104302723">Google-tehtävälista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: viimeaikaiset kuvakaappaukset, lataukset ja kiinnitetyt tiedostot</translation>
+<translation id="2316433409811863464">Sovellusten striimaus</translation>
 <translation id="2318576281648121272">Tänään <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">Jos haluat käyttää Android-sovelluksia, lataa ja päivitä <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , hakutuloskategoria</translation>
 <translation id="2322173485024759474">Yksi kirjain taaksepäin</translation>
 <translation id="2326112202058075478">Näytä lisää emojeita</translation>
 <translation id="2335091074961603075">Chromebookissa tai Bluetooth-laitteessa on vanhempi Bluetooth-versio. Voit parantaa äänenlaatua käyttämällä sisäistä mikrofonia.</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää laserosoitinta tai suurennuslasia.</translation>
 <translation id="2341729377289034582">Lukittu pystysuuntaiseksi</translation>
 <translation id="2344032937402519675">Palvelimeen ei saatu yhteyttä. Tarkista verkkoyhteys ja yritä uudelleen. Jos ongelma ei ratkea, kokeile käynnistää Chromebook uudelleen.</translation>
@@ -442,6 +452,7 @@
 <translation id="2383521554963939360">Sovellus- ja välilehtiryhmät</translation>
 <translation id="2386292613071805067">Valitse kaikki sisältö sivulta</translation>
 <translation id="2389423187722941333">Laita Gemini päälle tai pois päältä</translation>
+<translation id="2390347491606624519">Ei yhteyttä välityspalvelimeen, kirjaudu sisään uudelleen</translation>
 <translation id="2392659840443812875">Ei hotspoteja. Varmista, että laite on lähistöllä ja Bluetooth päällä.</translation>
 <translation id="2397416548179033562">Näytä Chrome-valikko</translation>
 <translation id="240006516586367791">Mediaohjaimet</translation>
@@ -483,17 +494,21 @@
 <translation id="2486214324139475545">Esikatselu: <ph name="DESK_NAME" />. Aktiivinen työpöytä.</translation>
 <translation id="2486405091093637109">Näytön "<ph name="DISPLAY_NAME" />" resoluutioksi vaihdettiin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jos et vahvista, aiemmat asetukset palautetaan <ph name="TIMEOUT_SECONDS" /> kuluttua.</translation>
 <translation id="2487915095798731898">Liity</translation>
+<translation id="2489829450872380594">Ensi kerralla tämä <ph name="DEVICE_TYPE" /> avataan lukituksesta uudella puhelimella. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2499445554382787206">Työpöytäprofiilin valikko. <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">Takaisin</translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
 <translation id="2504454902900101003">Hylkää puhelimen viimeaikaisten kuvien, median ja ilmoitusten katselun käyttöönotto</translation>
 <translation id="2505378917951323738">Tehtävän muokkaaminen epäonnistui. Yritä uudelleen, kun olet yhteydessä verkkoon.</translation>
 <translation id="2509468283778169019">CAPS LOCK on päällä</translation>
+<translation id="2514326558286966059">Avaa lukitus entistä nopeammin sormenjäljellä</translation>
 <translation id="2514415433888497495">Keskeytä <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">Avaa saavutettavuusasetukset</translation>
 <translation id="2516416533263263796">Keskittymistila on päällä, 10 minuuttia jäljellä</translation>
 <translation id="2516637483312286228">Muokkaa peliohjaimia</translation>
+<translation id="2517472476991765520">Etsi</translation>
 <translation id="252054055865191167">Piirtotyökalu</translation>
 <translation id="2526581474998477112">Avaa ikkunoiden lukitus</translation>
 <translation id="2528111225373402384">Hotspot-asetukset</translation>
@@ -569,6 +584,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">Poista</translation>
 <translation id="2750941250130734256">Aktiivinen ikkuna irrotettu</translation>
+<translation id="2755349111255270002">Nollaa tämä <ph name="DEVICE_TYPE" /></translation>
 <translation id="2761723519669354964">Avaa korostettu kohde hyllystä</translation>
 <translation id="2762000892062317888">äsken</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> – <ph name="KEY_TWO" /></translation>
@@ -613,10 +629,12 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2869095047958348710">Viime <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Vaihda ensisijainen näyttö</translation>
 <translation id="2872961005593481000">Sammuta</translation>
+<translation id="2876336351874743617">Sormi 2</translation>
 <translation id="2876338922445400217">Lähennä näkymää</translation>
 <translation id="2876760662374103627">Kasvo-ohjaus käytössä</translation>
 <translation id="2878884018241093801">Ei viimeaikaisia kohteita</translation>
 <translation id="2880541185262491188">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä uudelleen</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> käynnistyy uudelleen ja nollautuu hetkellisesti</translation>
 <translation id="2883271196820422439">Jatka hiiren painikkeiden käyttöä</translation>
 <translation id="2885950158625301909">Lue lisää</translation>
 <translation id="2891209721153296020">"Poista valinta"</translation>
@@ -656,6 +674,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2993956882370897557">Yritätkö käyttää Endiä? Käytä yhdistelmää</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3001391739687111021">Muokkaa näytön kokoa</translation>
+<translation id="3001835006423291524">Kosketa sormenjälkitunnistinta, joka on näppäimistön oikeassa alakulmassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="301282384882049174">Järjestelmänvalvojan jakama</translation>
@@ -678,6 +697,8 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3062298103034426069">Ei tuettu</translation>
 <translation id="3068622547379332530">Versio <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Hylly vasemmalla</translation>
+<translation id="3075144191779656260">Kosketa sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) vasemmassa reunassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="3075874217500066906">Powerwash-prosessin aloittaminen vaatii uudelleenkäynnistyksen. Uudelleenkäynnistyksen jälkeen sinua pyydetään vahvistamaan, että haluat jatkaa.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Laajenna valikko</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
@@ -703,6 +724,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3125690294288312932">Tehtävätyyppi</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">Laitteesi nollataan ja kaikki käyttäjätilit ja paikalliset tiedot poistetaan. Tätä ei voi kumota.</translation>
 <translation id="3130793786899299931">Muuta pituutta</translation>
 <translation id="3134486240968249588">Muutama tärkeä asia</translation>
 <translation id="3139188263101386725">Käytä päivitettyä pikakuvaketta</translation>
@@ -719,6 +741,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3174897399179348329">Yritätkö käyttää Page Upia? Käytä yhdistelmää</translation>
 <translation id="3176221688814061633">Chromebookissa tai Bluetooth-laitteessa on vanhempi Bluetooth-versio. Laita Bluetooth Super Resolution päälle tai käytä sisäistä mikrofonia äänenlaadun parantamiseksi.</translation>
 <translation id="3181441307743005334">Uudelleenkäynnistys voi kestää hetken</translation>
+<translation id="3183700187146209259">Skanneriohjelmistoa ei voi asentaa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Yhdistetty 1 laitteeseen}other{Yhdistetty # laitteeseen}}</translation>
 <translation id="3203405173652969239">Kytkimen käyttö päällä</translation>
 <translation id="3204648577100496185">Tähän sovellukseen liittyvä data saatetaan poistaa tältä laitteelta</translation>
@@ -766,6 +789,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3346728094401457853">Lisää laitteen salasana: <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Valitse tekstiä kohdistimesta rivin loppuun</translation>
 <translation id="3349345708646875009">Avaa tehtävänhallinta</translation>
+<translation id="3353786022389205125">Laita asetus "Näytä lukitusnäyttö, kun laite poistuu virransäästötilasta" päälle ja yritä uudelleen</translation>
 <translation id="3364721542077212959">Näyttökynätyökalut</translation>
 <translation id="3365281428003534650">Ajastin, tehtävä ja musiikki</translation>
 <translation id="3365977133351922112">Puhelimesi on liian kaukana. Siirrä puhelin lähemmäs.</translation>
@@ -780,6 +804,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3394432020929931914">, laajennettu</translation>
 <translation id="3401474642070997151">Muokkaa ehdotuksia klikkaamalla kakkospainikkeella tai painamalla ehdotusta pitkään</translation>
 <translation id="3405101454990027959">Laita mikrofonin käyttölupa päälle</translation>
+<translation id="3407967630066378878">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) vasemmassa reunassa. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3409584356742878290">Näytä tai piilota Kehittäjätyökalut-tarkistin</translation>
 <translation id="3410336247007142655">Näytä tumman teeman asetukset</translation>
 <translation id="3413817803639110246">Ei mitään nähtävää vielä</translation>
@@ -919,9 +944,11 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
 <translation id="3743775386021959186">Keskittymistila on päällä, <ph name="REMAINING_TIME" /> jäljellä</translation>
 <translation id="3750403286520637847">Piilota sääehdotus</translation>
+<translation id="3752253558646317685">Pyydä lasta nostamaan sormea toistuvasti, jotta sormenjälki tallennetaan</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja kuvia.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Varmuuskopioitu data ei kuluta lapsen Drive-tallennuskiintiötä.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Voit laittaa tämän palvelun pois päältä asetuksista.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620"><ph name="PHONE_NAME" /> voi nyt avata myös tämän <ph name="DEVICE_TYPE" />-laitteen.</translation>
 <translation id="3756485814916578707">Striimataan näyttöä</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" />-pikakomento on päivitetty <ph name="NEW_SHORTCUT" /> ‑pikakomennoksi (vanha: <ph name="OLD_SHORTCUT" />)</translation>
 <translation id="3765841986579723851">Muokattu tänään</translation>
@@ -939,6 +966,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3799080171973636491">Painoit koko näytön suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="3804737937830804242">Tiivistä kameran näkymää</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Ei muita tuloksia.}other{# emojia. Ei muita tuloksia.}}</translation>
+<translation id="381202950560906753">Lisää toinen</translation>
 <translation id="3822403841174077928">Muotoilua ei voitu kopioida</translation>
 <translation id="3824621460022590830">Laitteen rekisteröintitunnus on virheellinen. Ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat pääsyn kameraan. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
@@ -953,6 +981,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3848526302597027234">Käyttää seuraavia lupia:</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="385300504083504382">Alku</translation>
+<translation id="3857807444929313943">Nosta sormi ja kosketa uudelleen</translation>
 <translation id="3859364108019690">Sovelluksia ei voi striimata</translation>
 <translation id="3861638017150647085">Käyttäjänimi <ph name="USERNAME" /> ei ole käytettävissä</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
@@ -971,6 +1000,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3923221004758245114">Poistetaanko <ph name="VM_NAME" /> laitteelta <ph name="DEVICE_TYPE" />? Kaikki virtuaalikoneen sovellukset ja data poistetaan.</translation>
 <translation id="3923494859158167397">Mobiiliverkkoja ei luotu</translation>
 <translation id="3925540965556789199">Ladataan tapahtumia (<ph name="DATE" />).</translation>
+<translation id="3926002189479431949">Smart Lock -puhelin on vaihdettu</translation>
 <translation id="3927049937406914450">Säätiedot eivät ole saatavilla, koska sijainti on poistettu käytöstä. Voit muuttaa tätä asetuksissa.</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3934456833412894880">Mukautuva lataus on päällä. Akun varaus pysyy 80 %:ssa akunkeston pidentämiseksi. Akku ladataan täyteen tarvittaessa.</translation>
@@ -1030,6 +1060,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4113030288477039509">Järjestelmänvalvojasi hallinnoima</translation>
 <translation id="4114315158543974537">Laita Phone Hub päälle</translation>
 <translation id="4115378294792113321">Purppura</translation>
+<translation id="4116704186509653070">Avaa uudelleen</translation>
 <translation id="411881149140864134">Aktivoi vasemmalla oleva työpöytä</translation>
 <translation id="4119928251231465047">Liian monta PIN-yritystä</translation>
 <translation id="412298498316631026">ikkuna</translation>
@@ -1097,6 +1128,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4279490309300973883">Peilaus päällä</translation>
 <translation id="4280601795273309128">Tietoturvapäivitykset ovat päättyneet. Päivitä laitteesi.</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
+<translation id="4282196459431406533">Smart Lock on käytössä.</translation>
 <translation id="4283888303416325161">Paranna tietoturvaa lisäämällä salasana</translation>
 <translation id="4285498937028063278">Irrota</translation>
 <translation id="428715201724021596">Muodostetaan yhteyttä profiiliin. Tämä voi kestää muutaman minuutin.</translation>
@@ -1122,6 +1154,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4338109981321384717">Suurennuslasi</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, mykistetty</translation>
 <translation id="4351244548802238354">Sulje ikkuna</translation>
+<translation id="435527878592612277">Valitse kuva</translation>
 <translation id="4356872429719185452">Näytä hotspotin tiedot. Hotspot laitetaan päälle.</translation>
 <translation id="4364101114148522660">Tallenne: <ph name="DURATION" /></translation>
 <translation id="4368227575116094370">Luo Google Sheets ‑taulukko</translation>
@@ -1156,6 +1189,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 tärkeä ilmoitus}other{# tärkeää ilmoitusta}}</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
 <translation id="4451374464530248585">Pikanäppäinyhdistelmä Alt + alanuoli on muuttunut. Jos haluat käyttää Page Down ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + alanuoli.</translation>
+<translation id="4453430595102511050">Kosketa sormenjälkitunnistinta, joka on näppäimistön oikeassa yläkulmassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="445765352722456792">Muokkaa ehdotuksia</translation>
 <translation id="4458688154122353284">Lopeta näytön tallennus</translation>
 <translation id="445923051607553918">Yhdistä Wi-Fi-verkkoon</translation>
@@ -1172,6 +1206,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4485506555414638855">Hylkää puhelimen viimeaikaisten kuvien, median, ilmoitusten ja sovellusten katselun käyttöönotto</translation>
 <translation id="4491109536499578614">Kuva</translation>
 <translation id="4493468155686877504">Suositus (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">Huutomerkkikuvake</translation>
 <translation id="450584155212756404">Kehittäjäversio</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Palaute</translation>
@@ -1181,6 +1216,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4527045527269911712">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen.</translation>
 <translation id="4531536770443562276">Vain koko näytön tila käytettävissä</translation>
 <translation id="4533343294786968049">Pidennä akunkestoa. Akku latautuu täyteen <ph name="FULLY_CHARGE_TIME" /> mennessä.</translation>
+<translation id="4534661889221639075">Yritä uudelleen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> täyteen lataukseen</translation>
 <translation id="4538824937723742295">Ota kuvakaappaus koko näytöstä</translation>
 <translation id="4539127209940689201">Tulosta nykyinen sivu</translation>
@@ -1196,6 +1232,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4560576029703263363">Päällä</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">Asenna ja päivitä sovelluksia. Jatkamalla hyväksyt, että laite voi automaattisesti ladata ja asentaa Googlen, operaattorisi tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Jotkin näistä sovelluksista tarjoavat sovelluksen sisäisiä ostoksia. <ph name="BEGIN_LINK1" />Lue lisää Playn automaattisesta asennuksesta<ph name="BEGIN_LINK1_END" />Lue lisää<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">Sormi 3</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4566144812051858745">En ole kiinnostunut ehdotuksista</translation>
 <translation id="4569753163207712681">Katsele puhelimesi viimeaikaisia kuvia, mediaa ja ilmoituksia</translation>
@@ -1208,7 +1245,9 @@ Yksi laite yhdistetty.</translation>
 <translation id="4585337515783392668">Lopeta suoratoisto tuntemattomaan kohteeseen</translation>
 <translation id="4596144739579517758">Tumma teema on pois päältä</translation>
 <translation id="4596442969149038771"><ph name="USER" /> jakoi</translation>
+<translation id="4598776695426288251">Wi-Fi käytettävissä useilla laitteilla</translation>
 <translation id="4610493115106525653">Hyvä tulos</translation>
+<translation id="4611114513649582138">Datayhteys käytettävissä</translation>
 <translation id="4611292653554630842">Kirjaudu sisään</translation>
 <translation id="4613144866899789710">Peruutetaan Linux-asennusta…</translation>
 <translation id="462160925400706389"><ph name="NAME" /> yhdistetty</translation>
@@ -1323,6 +1362,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4937170330762390348">Kun käytät sanelua, voit kirjoittaa puhumalla. Paina sanelunäppäintä tai valitse mikrofonikuvake näytön alareunasta, kun olet tekstikentässä. Sanelukieleksi on asetettu <ph name="LANGUAGE" />. Puhetiedostot ladataan, jotta voit käyttää sanelua offline-tilassa. Voit muuttaa sanelukieltä milloin tahansa valitsemalla Asetukset &gt; Saavutettavuus.</translation>
 <translation id="4938176435186993759">Piilota kaikki ehdotukset</translation>
 <translation id="4945196315133970626">Laita ilmoitukset pois päältä</translation>
+<translation id="4945439665401275950">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan virtapainiketta. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4946376291507881335">Kuvakaappaus</translation>
 <translation id="495046168593986294">Vieritä ylös</translation>
 <translation id="4950800194215951939">Muokkaa pelikokemustasi</translation>
@@ -1342,6 +1382,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4981175556418720939">Muokattu <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Työpöytä 16</translation>
 <translation id="4989163558385430922">Näytä kaikki</translation>
+<translation id="4992458225095111526">Vahvista powerwash</translation>
 <translation id="4995963195354861331">Tervetuloa-ikkuna</translation>
 <translation id="4996265698919320288">Kuvataan</translation>
 <translation id="5003993274120026347">Seuraava lause</translation>
@@ -1388,6 +1429,7 @@ Voit myös käyttää pikanäppäintä. Korosta ensin teksti ja paina sitten <ph
 <translation id="5121628974188116412">Siirry sivun alareunaan</translation>
 <translation id="5122517996953421795">Esikatselu: <ph name="DESK_NAME" />. Työpöytä ei aktiivinen.</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
+<translation id="5137349216872139332">Pikahotspot-yhteys epäonnistui</translation>
 <translation id="5139112070765735680"><ph name="DEFAULT_SEARCH_ENGINE_NAME" />, haku <ph name="QUERY_NAME" /></translation>
 <translation id="5144005092084035179">Vaihdetaanko äänituloa?</translation>
 <translation id="5147567197700016471">Avattu</translation>
@@ -1461,6 +1503,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="5322611492012084517">Puhelintasi ei löydy</translation>
 <translation id="5323994101633366939">Piilota työpöydän nimi</translation>
 <translation id="5327248766486351172">Nimi</translation>
+<translation id="532943162177641444">Avaa <ph name="PHONE_NAME" /> ja kosketa siinä näkyvää ilmoitusta, niin mobiili-hotspot määritetään tämän laitteen käyttöön.</translation>
 <translation id="5329548388331921293">Yhdistetään…</translation>
 <translation id="5331975486040154427">C-tyypin USB-laite (vasemman sivun taaimmainen portti)</translation>
 <translation id="533282197239610265">Näytä striimauslaitteet</translation>
@@ -1471,6 +1514,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
 <translation id="536019650977002321">Järjestelmänvalvoja ei salli äänen tallentamista. Pyydä lisätietoa järjestelmänvalvojalta.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> puhetiedostoa ladattu osittain</translation>
+<translation id="5363109466694494651">Suorita Powerwash ja palauta</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> – Siirry tälle välilehdelle</translation>
 <translation id="5364693579536176785">tallennustila</translation>
 <translation id="5369573834963677938">Kasvoilla ohjaaminen on saatavilla muille laitteen käyttäjille</translation>
@@ -1630,6 +1674,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5823239091726045201">Google Tasks verkossa</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> muuta</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> ei avaudu</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Hae Googlen kautta</translation>
@@ -1647,6 +1692,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5876666360658629066">Lisää vanhemman koodi</translation>
 <translation id="5881540930187678962">Ota puhelinhubi käyttöön myöhemmin</translation>
 <translation id="588258955323874662">Koko näyttö</translation>
+<translation id="5886009770935151472">Sormi 1</translation>
 <translation id="5887954372087850114">Ikkuna (<ph name="WINDOW_TITLE" />) lisätty työpöydälle <ph name="DESK_TITLE" /> mutta ei muille työpöydille</translation>
 <translation id="588817334757907802">Avaa tiedosto Chrome-selaimessa</translation>
 <translation id="5892014525522223653">Olet offline-tilassa.</translation>
@@ -1688,6 +1734,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6012623610530968780">Sivu <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Korosta seuraava kohde hyllyssä</translation>
 <translation id="6015573907265691211">Merkitse valmiiksi</translation>
+<translation id="6016551720757758985">Powerwashin vahvistaminen palauttaa käyttöön edellisen version</translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
@@ -1736,6 +1783,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
 <translation id="6127395413317891856">Olet offline-tilassa. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="6129953537138746214">Välilyönti</translation>
+<translation id="6132714462430777655">Ohitetaanko kouluun rekisteröityminen?</translation>
 <translation id="6136872094979134163">Steam for Chromebook -uutisten noutaminen epäonnistui.</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Mihin asiaan haluaisit keskittyä?</translation>
@@ -1770,6 +1818,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> on offline-tilassa. Muodosta internetyhteys ja yritä uudelleen.</translation>
 <translation id="6220928844947387476">Voit nyt kuvata itseäsi ja näyttöäsi samaan aikaan</translation>
 <translation id="622484624075952240">Alas</translation>
+<translation id="6225475702458870625">Datayhteys käytettävissä puhelimella <ph name="PHONE_NAME" /></translation>
 <translation id="6228457605945141550">Vähennä kirkkautta</translation>
 <translation id="623116199192908855">Striimaa Chromebookin näyttö</translation>
 <translation id="6231419273573514727">Lisälaitteen toiminta voi olla rajoitettua</translation>
@@ -1786,6 +1835,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktivoidaan…</translation>
 <translation id="6274202259872570803">Ruutukaappausvideo</translation>
 <translation id="6274422179279280249">Lisää esimerkiksi linkkejä ja emojeita. Voit myös saada Googlen tekoälyltä apua kirjoittamiseen. <ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">Välityspalvelin <ph name="PROXY_SERVER" /> edellyttää käyttäjänimeä ja salasanaa.</translation>
 <translation id="6276708887952587684">Näytä sivun lähdekoodi</translation>
 <translation id="6285871695023807425">Lisää kalenteriin</translation>
 <translation id="628699625505156622">Käytä sijaintia. Salli laitteen sijainnin käyttäminen ChromeOS- ja Android-sovelluksille, -verkkosivustoille ja -palveluille, joilla on sijaintilupa. Sijaintitietojen tarkkuus tarjoaa tarkemman sijainnin Android-sovelluksille ja ‑palveluille. Google käsittelee ajoittain laitteen anturien ja langattoman signaalin tietoja laitteeltasi langattomien signaalien sijainnin keräämistä varten. Näitä anonyymejä tietoja käytetään sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen, Googlen palveluiden parantamiseen, tarjoamiseen ja ylläpitämiseen Googlen ja kolmansien osapuolten oikeutetun edun mukaisesti. <ph name="BEGIN_LINK1" />Lue lisää sijainnin käytöstä<ph name="END_LINK1" /></translation>
@@ -1801,6 +1851,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6317369057005134371">Odotetaan sovellusikkunaa…</translation>
 <translation id="6319058840130157106">Siirry taaksepäin oikean alakulman, käynnistysohjelman, osoitepalkin, kirjanmerkkipalkin, avoimen verkkosivuston ja latausten välillä</translation>
 <translation id="6319503618073410818">Katso tiedot selaimessa</translation>
+<translation id="6322370287306604163">Avaa lukitus nopeammin sormenjäljellä</translation>
 <translation id="6324334979701518365">Ei voi käynnistää ei-tuettua Chrome-sovellusta. Ilmoita ongelmasta järjestelmänvalvojalle.</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
@@ -1810,6 +1861,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Jos olet unohtanut PIN-koodisi, kokeile palauttaa kyseinen käyttäjä.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> yhdistetty</translation>
+<translation id="6345418402353744910">Välityspalvelin <ph name="PROXY" /> edellyttää käyttäjänimeäsi ja salasanaasi, jotta järjestelmänvalvoja voi määrittää verkkosi</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, sitten <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> tai <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SOVELLUSEHDOTUKSET</translation>
 <translation id="6352082849089527770">Tuntemattomat verkot</translation>
@@ -1829,6 +1881,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6414618057231176439">Valitse asennettava versio (<ph name="VM_NAME" />).</translation>
 <translation id="641469293210305670">Päivitysten ja sovellusten asentaminen</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6418160186546245112">Palataan tuotteen <ph name="IDS_SHORT_PRODUCT_NAME" /> aiemmin asennettuun versioon</translation>
 <translation id="641817663353603351">sivu ylös</translation>
 <translation id="6418511932144861495">Asenna tärkeä päivitys</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1898,6 +1951,7 @@ Uusi asennus</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera kohdistettu vasempaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="6605415194043280389">Keskittymistila on päällä</translation>
+<translation id="6608773371844092260">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) oikeassa reunassa. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6612802754306526077">Näytön tallentajatila valittu</translation>
 <translation id="6612889377159412215">alatehtävä</translation>
@@ -1920,6 +1974,7 @@ Uusi asennus</translation>
 <translation id="6650742588569439432">Kohteiden lataaminen epäonnistui.</translation>
 <translation id="6650933572246256093">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Anna tämä avain kyseisellä laitteella: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Salasana</translation>
+<translation id="6663190258859265334">Tee Powerwash laitteellesi (<ph name="DEVICE_TYPE" />) ja palaa edelliseen versioon.</translation>
 <translation id="666343722268997814">Avaa korostetun kohteen kakkospainikevaihtoehdot</translation>
 <translation id="6665545700722362599">Anna verkkosivustoille, sovelluksille ja laajennuksille oikeus käyttää sijaintipalveluita, laitteen mikrofonia, kameraa ja muita ominaisuuksia</translation>
 <translation id="6667908387435388584">Yhdistä puhelimesi hotspotiin, hiljennä ja paikanna laitteesi sekä katso viimeaikaiset Chrome-välilehdet, jotka ovat avoinna puhelimellasi</translation>
@@ -1947,6 +2002,7 @@ Uusi asennus</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera ja mikrofoni käytössä</translation>
 <translation id="6739144137573853180">AVAA ASETUKSET</translation>
+<translation id="6745592621698551453">Päivitä nyt</translation>
 <translation id="6747985245839783873">Akun varaus on <ph name="PERCENTAGE" /> prosenttia. Virransäästö on päällä.</translation>
 <translation id="6751052314767925245">Järjestelmänvalvojan käyttämä</translation>
 <translation id="6751826523481687655">Tehokkuuden seuranta on käytössä</translation>
@@ -1954,6 +2010,7 @@ Uusi asennus</translation>
 <translation id="6753390234084146956">välilehdistä</translation>
 <translation id="6754918760968695779">Pikalisäys</translation>
 <translation id="6757237461819837179">Mediaa ei toisteta</translation>
+<translation id="6759193508432371551">Tehdasasetusten palauttaminen</translation>
 <translation id="6760438044935091345">Pelipaneeli</translation>
 <translation id="6768043681523654438">tallennustila</translation>
 <translation id="6769195697113506406">Kuva lisätty</translation>
@@ -1968,6 +2025,7 @@ Uusi asennus</translation>
 <translation id="6792351896138862473">Ei-tuettua kioskisovellusta ei voida käynnistää. Ilmoita ongelmasta järjestelmänvalvojalle.</translation>
 <translation id="679368458793552943">Lähennä, kun suurennus on päällä</translation>
 <translation id="6794287755901682422">Kohteen tiedot: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797493596609571643">Hups… Jotain meni pieleen.</translation>
 <translation id="6797745268063125932">Pidä päällä</translation>
 <translation id="6801878137098616817">Muokattu hiljattain</translation>
 <translation id="6802687695197837794"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kamera- ja mikrofonilupa, saavat pääsyn</translation>
@@ -1981,6 +2039,7 @@ Uusi asennus</translation>
 <translation id="682971198310367122">Googlen tietosuojakäytäntö</translation>
 <translation id="6836499262298959512">Vaarallinen tiedosto</translation>
 <translation id="6837621009301897464">Ota kuvakaappaus valitsemalla</translation>
+<translation id="6848716236260083778">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6852052252232534364">Klikkaa: aktivoi</translation>
 <translation id="6852628153543175788">Lisää 10 minuuttia</translation>
 <translation id="6855029042976311970">Muokattu äsken</translation>
@@ -2089,6 +2148,7 @@ Uusi asennus</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
+<translation id="7228056665272655255">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on näppäimistön oikeassa yläkulmassa. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7228968829656641943">Hae näytöltä valitsemalla kohta. Jos haluat siirtyä näppäimistön avulla, paina sarkainta ja sitten välilyöntiä.</translation>
 <translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
 <translation id="7234010996000898150">Linux-palautusta peruutetaan</translation>
@@ -2103,6 +2163,7 @@ Uusi asennus</translation>
 <translation id="7258828758145722155">Muokattu eilen</translation>
 <translation id="726276584504105859">Jaa näyttö vetämällä tähän.</translation>
 <translation id="7264788308526527464">Vähennä <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267875682732693301">Kosketa tunnistinta toistuvasti, niin sormenjäljen eri osat lisätään</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + askelpalautin</translation>
 <translation id="7285232777292757180">Ota kuvakaappauksia pika-asetusten kuvakaappaustyökalulla</translation>
 <translation id="7301826272005790482">Hylkää ikkunaehdotukset</translation>
@@ -2127,6 +2188,7 @@ Uusi asennus</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
 <translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
 <translation id="736045644501761622">Aseta taustakuva ja tyyli</translation>
+<translation id="7361914392989692067">Kosketa virtapainiketta sormella. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7368041336688136012">Sinun on oltava vähintään 18-vuotias, jotta voit käyttää Auta minua lukemaan-, Auta minua kirjoittamaan -toimintoja ja luomaan kuvia tekoälyllä.</translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
 <translation id="7372069265635026568">Muistia käytettävissä <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /></translation>
@@ -2141,6 +2203,7 @@ Uusi asennus</translation>
 <translation id="7384028040782072252">Järjestele sovellukset uudelleen klikkaamalla mitä tahansa kohtaa kakkospainikkeella</translation>
 <translation id="7386767620098596324">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Voit ottaa tämän käyttöön myöhemmin asetuksista.</translation>
+<translation id="7400839060291901923">Avaa <ph name="PHONE_NAME" /> ja määritä yhteys</translation>
 <translation id="7401222354741467707">Ota koko näytön kuvakaappaus tai tallennus koko näytöltä</translation>
 <translation id="7401788553834047908">Älä häiritse Keskittymistilassa</translation>
 <translation id="7405710164030118432">Avaa laitteen lukitus vanhemman Family Link ‑käyttökoodilla</translation>
@@ -2157,6 +2220,7 @@ Uusi asennus</translation>
 <translation id="7457027286267861992">Levytila ei riitä. Vapauta lisää levytilaa ja yritä uudelleen. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="7459485586006128091">Hotspot on laitettu pois päältä sisäisen virheen takia. Yritä muodostaa yhteys uudelleen muutaman minuutin kuluttua.</translation>
 <translation id="7461924472993315131">Kiinnitä</translation>
+<translation id="746216226901520237">Ensi kerralla <ph name="DEVICE_TYPE" /> avataan lukituksesta puhelimellasi. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="746232733191930409">Näytön tallentajatila</translation>
 <translation id="7466449121337984263">Kosketa tunnistinta</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
@@ -2211,6 +2275,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>
 <translation id="7588317312481506627">Kopioitu leikepöydälle.</translation>
 <translation id="7593891976182323525">Haku tai Shift</translation>
+<translation id="7594725637786616550">Nollaa laite tekemällä Powerwash, jotta <ph name="DEVICE_TYPE" /> on kuin uusi.</translation>
 <translation id="7595453277607160340">Jos haluat käyttää Android-sovelluksia ja varmistaa, että <ph name="DEVICE_TYPE" /> toimii oikein, kirjaudu sisään uudelleen ja päivitä.</translation>
 <translation id="7598054670902114203">Suorittimen käytön tilannekuva, <ph name="CPU_USEAGE" /> %. Lämpötila <ph name="TEMPERATURE" /> celsiusastetta, nykyinen nopeus: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Lisätään valittua tulosta</translation>
@@ -2231,6 +2296,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7632948528260659758">Seuraavien kioskisovellusten päivitys epäonnistui:</translation>
 <translation id="7634566076839829401">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="7634648064048557203">Kamera kohdistettu oikeaan alakulmaan</translation>
+<translation id="7637253234491814483">Kosketa sormenjälkitunnistinta, joka on näppäimistön oikeassa yläkulmassa virtapainikkeen vieressä. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7638572816805275740">Ota kuvakaappaus ikkunasta tai tallennus näytöltä</translation>
 <translation id="7642106959537987271">käänteiset värit ‑tila</translation>
 <translation id="7642647758716480637">Avaa asetukset: <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -2282,6 +2348,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="77747521138552256">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä PIN-koodin lisäämistä uudelleen. Jos haluat kirjautua sisään heti, käytä salasanaa.</translation>
 <translation id="7780094051999721182">pikakuvakkeista</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
+<translation id="7781335840981796660">Kaikki käyttäjätilit ja paikalliset tiedot poistetaan.</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7787212146956232129">Äänitulolaitteet on asetettu. Muuta siirtymällä asetuksiin.</translation>
 <translation id="7792590255364786396">Näkyy</translation>
@@ -2343,6 +2410,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7942349550061667556">Punainen</translation>
 <translation id="7943516765291457328">Laita Bluetooth päälle, niin voit etsiä lähellä olevia hotspoteja</translation>
 <translation id="7944023924886109030">Katso kaikki tämän päivän tapahtumat</translation>
+<translation id="7944847494038629732">Yritä uudelleen irrottamalla skannerin USB-johto ja kytkemällä se takaisin.</translation>
 <translation id="7945357288295809525">Näytä saavutettavuusasetukset, <ph name="ENABLED_FEATURES" /> käytössä.</translation>
 <translation id="7946681191253332687">Laajempia tietoturvapäivityksiä saatavilla</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> haluaa käyttää tätä: <ph name="DEVICE_NAME" /></translation>
@@ -2374,6 +2442,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8004512796067398576">Lisäys</translation>
 <translation id="8005527720597583355">Aloita Keskittymisistunto</translation>
 <translation id="8008356846765065031">Internetyhteys katkaistu. Tarkista internetyhteytesi.</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ei voi palautua aiemmin asennettuun versioon. Suorita laitteellesi Powerwash uudelleen.</translation>
 <translation id="8015361438441228492">Tehtävän muokkaaminen epäonnistui.</translation>
 <translation id="8027187124910699148">Jatka ehdotettua ryhmää</translation>
 <translation id="802782383769312836">Edellinen työpöytä: <ph name="DESK_NAME" />. Työpöytä <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
@@ -2452,15 +2521,18 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8249048954461686687">Alkuperäisten laitevalmistajien kansio</translation>
 <translation id="825129991941217170">Näytä kaikki Google Driven sisältö</translation>
 <translation id="8261506727792406068">Poista</translation>
+<translation id="8261625296061301062">Skanneriohjelmisto asennettu</translation>
 <translation id="8262312463845990408">Käynnistä tai keskeytä toisto</translation>
 <translation id="8268302343625273732">Katso kaikki kotitehtävät Google Classroomissa</translation>
 <translation id="8277261673056602147">Korosta tekstiä näytöllä</translation>
+<translation id="8281886186245836920">Ohita</translation>
 <translation id="8282784978194352587">Onnistuit!</translation>
 <translation id="8287009018010202411">Tuottavuus</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8289128870594824098">Levyn koko</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8300451473979404345">Valittu kahva, siirry nuolinäppäimillä</translation>
+<translation id="8301242268274839723">Kosketa sormenjälkitunnistinta, joka on näppäimistön vasemmassa alakulmassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps lock on päällä</translation>
@@ -2480,10 +2552,12 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8371991222807690464">Vierastila voi rajoittaa lisälaitteen toimintaa</translation>
 <translation id="8374601332003098278">Tallenna osittainen näyttö painamalla Enter</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> muodostaa yhteyden puhelimeesi automaattisesti</translation>
+<translation id="8382677870544805359">Sinun on palautettava laitteen tehdasasetukset, jotta voit käyttää yritysominaisuuksia.</translation>
 <translation id="8382715499079447151">Urkinnan esto</translation>
 <translation id="8383614331548401927">Tervetuloa taas</translation>
 <translation id="838540623579162843">Tilaa Music Premium</translation>
 <translation id="8388750414311082622">Viimeistä työpöytää ei voi poistaa.</translation>
+<translation id="8390392581097975659">Asennetaan skanneriohjelmistoa</translation>
 <translation id="8394567579869570560">Vanhempasi lukitsi tämän laitteen</translation>
 <translation id="8401850874595457088">Avaa kielivalikko</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2547,6 +2621,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="857201607579416096">Valikko siirretty näytön oikeaan alanurkkaan</translation>
 <translation id="8581946341807941670">Paina <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ja klikkaa linkkiä</translation>
 <translation id="8598235756057743477">Sovellusten lajitteleminen nimen tai värin perusteella</translation>
+<translation id="8599864823732014237">Ohitetaanko yritysrekisteröinti?</translation>
 <translation id="8609384513243082612">Avaa uusi välilehti</translation>
 <translation id="861045123704058818">Sovellukset järjestetään tilapäisesti kategorian mukaan</translation>
 <translation id="8612216344243590325">Säilytä tärkeitä tiedostoja työpöydän sijaan täällä: <ph name="HOLDING_SPACE_TITLE" />. Vedä tiedostot tänne: <ph name="HOLDING_SPACE_TITLE" />.</translation>
@@ -2583,6 +2658,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8700087567921985940">Käytä sijaintia. Salli laitteesi sijainnin käyttäminen sovelluksille ja palveluille, joilla on sijainnin käyttöoikeus. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä anonyymisti sijaintitietojen tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen. <ph name="BEGIN_LINK1" />Lue lisää sijainnista<ph name="BEGIN_LINK1_END" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Aloita tallentaminen. Kun tallentaminen on alkanut, avaa hylly painamalla Alt + Vaihto + L ja etsi tallennuksen lopetuspainike</translation>
 <translation id="8704155109538237473">Tarkenna pikkuruutu-ikkunaan</translation>
+<translation id="8705580154597116082">Wi-Fi-yhteys on käytettävissä puhelimen kautta</translation>
 <translation id="870917907284186124">Laita sanelu päälle tai pois päältä (kirjoita puhumalla)</translation>
 <translation id="8711169534266271368">Pelipaneelin vaihtoehdot</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
@@ -2591,6 +2667,8 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8717459106217102612">Valitse edellinen sana tai kirjain</translation>
 <translation id="8721053961083920564">Muuta äänenvoimakkuutta. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Koko näytön kuvakaappaus</translation>
+<translation id="8724405322205516354">Kun tämä kuvake on näkyvissä, voit tunnistautua tai vahvistaa ostoksen sormenjäljellä.</translation>
+<translation id="8724409975248965964">Sormenjälki lisätty</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8725214031272624704">Näytä lista käytettävissä olevista syöttötavoista</translation>
 <translation id="8730621377337864115">Valmis</translation>
@@ -2613,6 +2691,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, asennettu sovellus, estetty</translation>
 <translation id="8782565991310229362">Kioskisovelluksen käynnistäminen peruutettiin.</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
+<translation id="8786824282808281903">Kun lapsi näkee tämän kuvakkeen, sormenjälkeä voi käyttää tunnistamiseen tai ostosten hyväksymiseen.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Siirry eteenpäin oikean alakulman, käynnistysohjelman, osoitepalkin, kirjanmerkkipalkin, avoimen verkkosivuston ja latausten välillä</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
@@ -2625,6 +2704,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8815390544836110344">Paina kuvakaappauksen pikanäppäintä, Ctrl plus vaihto plus yleiskatsaustilanäppäin</translation>
 <translation id="881757059229893486">Syöttötapojen asetukset</translation>
 <translation id="8819728065740986820">Mukautuva lataus on päällä</translation>
+<translation id="882204272221080310">Paranna suojausta päivittämällä laiteohjelmisto.</translation>
 <translation id="8822104519413696986">Tämä on kosketuspeli</translation>
 <translation id="8825863694328519386">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="8832513206237979203">Näytä tai piilota kirjanmerkkipalkki</translation>
@@ -2688,6 +2768,8 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8991648557324317894">Peru painamalla fn + Pikalisäys tai Vaihto.</translation>
 <translation id="899350903320462459">Avaa laitteen lukitus tunnuksella <ph name="LOGIN_ID" />, niin voit käyttää ilmoitustoimintoa</translation>
 <translation id="8993733019280019776">Puhutko nyt? Mikrofoni on pois päältä. Laita mikrofoni päälle valitsemalla se.</translation>
+<translation id="8993945059918628059">Kosketa sormenjälkitunnistinta sormellasi. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="9000185763019430629">Kosketa sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) oikeassa reunassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="9000771174482730261">HALLINNOI TALLENNUSTILAA</translation>
 <translation id="9003374957546315126">Emojit ja muita</translation>
 <translation id="9005984960510803406">Avaa Crosh-ikkuna</translation>
@@ -2701,6 +2783,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9030515284705930323">Organisaatiosi ei ole sallinut tilillesi Google Play Kaupan käyttöä. Kysy lisätietoja järjestelmänvalvojaltasi.</translation>
 <translation id="9030665205623277906">Tilannekuva suorittimen käytöstä: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>
+<translation id="9037818663270399707">Yhteytesi kaikkea verkkoliikennettä ei suojata</translation>
 <translation id="9047624247355796468">Avaa asetukset: <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth ei ole käytettävissä</translation>
 <translation id="9050999376345823055">Vapauta painamalla "."</translation>

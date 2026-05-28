@@ -138,6 +138,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="121201262018556460">Proovisite jõuda saidile <ph name="DOMAIN" />, kuid server esitas nõrka võtit sisaldava sertifikaadi. Võimalik, et ründaja on privaatvõtme lahti murdnud ja tegemist ei pruugi olla oodatud serveriga (võimalik, et suhtlete ründajaga).</translation>
 <translation id="1212527389003717329">Allalaadimine on alanud. Selle vaatamiseks vajutage pikalt nuppu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Teie Google'i kontole salvestatud teavet kasutatakse paroolide, pääsuvõtmete, aadresside, makseviiside ja muu teabe automaattäitmiseks</translation>
+<translation id="1216257595811043403">Vahelehtede automaatne jagamine</translation>
 <translation id="1219129156119358924">Süsteemi turvalisus</translation>
 <translation id="1219134100826635117">Teie administraator on selle toimingu blokeerinud</translation>
 <translation id="1221024147024329929">PKCS 1 MD2 koos RSA krüpteerimisega</translation>
@@ -2197,6 +2198,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
 <translation id="443673843213245140">Puhverserveri kasutamine on keelatud, kuid määratud on ka konkreetne puhverserveri konfigureerimine.</translation>
 <translation id="4438821706955556403">Tavaline hind</translation>
+<translation id="4439687924334332880">Saate paremini kohandatud vastuseid, kui jagate selles aknas automaatselt avatud vahelehti, kui need on selle lõimega seotud. Saate selle seadetes kõigi lõimede jaoks sisse lülitada.</translation>
 <translation id="4441832193888514600">Eiratakse, kuna reegli saab seadistada ainult pilves olev kasutaja.</translation>
 <translation id="4444062564459679679">Juba saadetud teie seadme <ph name="DEVICE_NAME" /> Chrome'i.</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage vahelehtedelt otsimiseks sisestusklahvi</translation>
@@ -2299,7 +2301,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4640225694041297329">Viimase seitsme päeva tulemuste kuvamine</translation>
 <translation id="4642296966515958616">Selle vahelehegrupiga liitumiseks värskendage Chrome'i</translation>
 <translation id="464342062220857295">Otsingufunktsioonid</translation>
-<translation id="4643958597583594452">Chrome töötleb lehtede pealkirju ja URL-e teie seadmes või privaatses ruumis pilves.</translation>
 <translation id="4644567637638438744">Failide üleslaadimiseks peate olema Microsoft OneDrive’i sisse logitud</translation>
 <translation id="4644670975240021822">Vastupidine järjestus, esikülg allapoole</translation>
 <translation id="4648262692072505866">Räsiväärtuse vorming peab olema SHA-256.</translation>
@@ -3156,6 +3157,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5995727681868049093">Google'i kontol teabe, privaatsuse ja turvalisuse haldamine</translation>
 <translation id="5996255674476750320">Autonäitused</translation>
 <translation id="5997247540087773573">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Teie kontode turvalisuse kaitsmiseks soovitab Google'i paroolihaldur teil seda parooli kohe muuta ja kontrollida oma salvestatud paroole.</translation>
+<translation id="5997915162652837008">Aja säästmiseks saate vahelehe automaatse jagamise kõigi lõimede jaoks sisse lülitada. Lisateave</translation>
 <translation id="6000528814684428358">Raske ja progressiivne rokk</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6002122790816966947">Teie seadmed</translation>
@@ -3300,6 +3302,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6203231073485539293">Kontrollige Interneti-ühendust</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
 <translation id="6212314149070368045">USA lõõtspaber</translation>
+<translation id="6213685130162740188">Teadaoleva reisija numbrid</translation>
 <translation id="6215936431492593050">Metall (satiin)</translation>
 <translation id="6217950634729714357">Köögi- ja elutoamööbel</translation>
 <translation id="6218305986815100395">Virtuaalkaarti ei saa sisse lülitada</translation>
@@ -3718,11 +3721,13 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6874604403660855544">&amp;Lisa uuesti</translation>
 <translation id="6875873347995743859">Saada assistendile</translation>
 <translation id="6875894866901426843">Administraator kustutab teie kohalikud failid (sh kõik prügikastis olevad failid) kuupäeval <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Kas jagada paremate vastuste saamiseks alati avatud vahelehti?</translation>
 <translation id="6880941331070119097">Kallis valik</translation>
 <translation id="6881240511396774766">Looge kiirelt uus Google'i dokument</translation>
 <translation id="6883221904761970440">Turvalise maksemandaadi autentimisleht on suletud</translation>
 <translation id="6883745783646124431">töökoha aadress</translation>
 <translation id="6886283082988906333">ZIP-arhiiv</translation>
+<translation id="6886431827310382613">Jaga asjakohaseid vahelehti</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Kasuta asukohta</translation>
 <translation id="6888584790432772780">Chrome lihtsustas seda lehte, et seda oleks lihtsam lugeda. Chrome hankis algse lehe ebaturvalise ühenduse kaudu.</translation>
@@ -4009,6 +4014,7 @@ Lisateave:
 <translation id="7337706099755338005">Pole teie platvormil saadaval.</translation>
 <translation id="733923710415886693">Serveri sertifikaati ei avalikustatud sertifikaadi läbipaistvuse reegli kaudu.</translation>
 <translation id="73398226265793546">AI-režiimi nupp, aktiveerige, et esitada küsimus Google'i otsingu AI-režiimile</translation>
+<translation id="7343620778718789463">ID-kaardid</translation>
 <translation id="7346048084945669753">On seotud:</translation>
 <translation id="7346062987309535530">Lauanõud</translation>
 <translation id="7346081071264046066">„vasta sellele pulmakutsele põnevusega jah”</translation>
@@ -4183,6 +4189,7 @@ Lisateave:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Kas eemaldada Chrome'ist krediitkaart?</translation>
 <translation id="7569983096843329377">Must</translation>
+<translation id="7570862164055912832">Õiguskaitse numbrid</translation>
 <translation id="7571813784389228510">Google'i AI režiim</translation>
 <translation id="7574998639136359461">Talvespordivarustus</translation>
 <translation id="7575207903026901870">Soovituse eemaldamise nupp, vajutage selle soovituse eemaldamiseks sisestusklahvi</translation>
@@ -4691,6 +4698,7 @@ Lisateave:
 <translation id="8381674639488873545">Tasud võivad olla ühekordsed või korduvad ja need ei pruugi olla ilmselged. <ph name="BEGIN_LINK" />Kuva siiski<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automaatne täisekraan</translation>
 <translation id="838307841291975086">Universaalautod</translation>
+<translation id="838953173259347825">Saate paremini kohandatud vastuseid, kui jagate selles aknas automaatselt avatud vahelehti, kui need on selle lõimega seotud. Saate selle seadetes kõigi lõimede jaoks sisse lülitada</translation>
 <translation id="8389532092404711541">Tavaliselt <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Kohandatud ja suure võimsusega sõidukid</translation>
 <translation id="8390725133630534698">Saidilt <ph name="ORIGIN_NAME" /> virtuaalmasinaga <ph name="VM_NAME" /> jagamine on administraatori reegliga blokeeritud</translation>
@@ -4974,6 +4982,7 @@ Lisateave:
 <translation id="8861482055962701239">Seda teavet ei saanud teie Google Walletisse salvestada. See salvestati selles seadmes hoopis Chrome'i. Chrome pakub järgmisel korral, kui seda kasutate, selle Walletisse salvestamist.</translation>
 <translation id="8863218129525348270">Järgmine kord kiiremini maksmiseks salvestage oma kaart seadmesse</translation>
 <translation id="8864939224504814334">Ülikonnad ja ametlik riietus</translation>
+<translation id="8865650218866129025">Kas soovite selles lõimes paremate vastuste saamiseks automaatselt avatud vahelehti jagada?</translation>
 <translation id="8866132857352163524">Filmimuusika</translation>
 <translation id="8866481888320382733">Reegli seadete sõelumisel ilmnes viga</translation>
 <translation id="8866928039507595380">Kokkuvolditud</translation>

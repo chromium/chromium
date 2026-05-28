@@ -138,6 +138,7 @@
 <translation id="121201262018556460"><ph name="DOMAIN" />에 접속하려 했으나 서버가 안전성이 낮은 키가 포함된 인증서를 전달했습니다. 공격자가 비공개 키를 손상시켰을 수 있으며 서버를 가장한 공격자와 통신 중일 수 있습니다.</translation>
 <translation id="1212527389003717329">다운로드가 시작되었습니다. 확인하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="1215738931000958575">Google 계정에 저장된 정보를 사용하여 비밀번호, 패스키, 주소, 결제 수단 등의 정보를 자동 완성합니다.</translation>
+<translation id="1216257595811043403">탭 자동 공유</translation>
 <translation id="1219129156119358924">시스템 보안</translation>
 <translation id="1219134100826635117">관리자가 이 작업을 차단했습니다</translation>
 <translation id="1221024147024329929">PKCS #1 MD2(RSA 암호화 사용)</translation>
@@ -2197,6 +2198,7 @@
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
 <translation id="443673843213245140">프록시 사용은 중지되었지만 명시적 프록시 설정이 지정되어 있습니다.</translation>
 <translation id="4438821706955556403">일반 가격</translation>
+<translation id="4439687924334332880">이 창에서 열려 있는 탭이 이 대화목록과 관련이 있는 경우 자동으로 공유하여 더 맞춤설정된 대답을 받습니다. 설정에서 모든 대화목록에 대해 이 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="4441832193888514600">클라우드 사용자 정책으로만 설정할 수 있는 정책이므로 무시되었습니다.</translation>
 <translation id="4444062564459679679">이미 <ph name="DEVICE_NAME" />의 Chrome으로 전송되었습니다.</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 탭을 검색하려면 Enter 키를 누르세요</translation>
@@ -2299,7 +2301,6 @@
 <translation id="4640225694041297329">지난 7일 동안의 결과 표시</translation>
 <translation id="4642296966515958616">이 탭 그룹에 참여하려면 Chrome을 업데이트하세요.</translation>
 <translation id="464342062220857295">검색 기능</translation>
-<translation id="4643958597583594452">Chrome은 기기 또는 클라우드의 비공개 공간에서 페이지 제목과 URL을 처리합니다.</translation>
 <translation id="4644567637638438744">Microsoft OneDrive에 로그인한 경우에만 파일을 업로드할 수 있습니다.</translation>
 <translation id="4644670975240021822">역순으로 인쇄면이 아래를 향하게</translation>
 <translation id="4648262692072505866">해시는 SHA-256 형식이어야 합니다.</translation>
@@ -2917,7 +2918,7 @@
 <translation id="558420943003240152">비밀번호 및 패스키 관리…</translation>
 <translation id="5586446728396275693">저장된 주소 없음</translation>
 <translation id="5586831831248371458"><ph name="KEYWORD_SUFFIX" /> 검색</translation>
-<translation id="5587058852341670759">더 이상 앱을 전환할 필요가 없습니다. Google 암호화를 통해 정보를 보호하며 결제 전에 본인 인증을 진행할 수 있습니다.</translation>
+<translation id="5587058852341670759">더 이상 앱을 전환할 필요가 없습니다. Google 암호화를 통해 정보를 보호하며, 결제 전에 본인 인증을 진행합니다.</translation>
 <translation id="5587987780934666589">플랫폼 사용자</translation>
 <translation id="5593349413089863479">연결 보안이 완벽하지 않음</translation>
 <translation id="5593640815048812868">노트북</translation>
@@ -3156,6 +3157,7 @@
 <translation id="5995727681868049093">Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
 <translation id="5996255674476750320">모터쇼</translation>
 <translation id="5997247540087773573">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
+<translation id="5997915162652837008">모든 대화목록에 탭 공유를 자동으로 사용 설정하면 시간을 절약할 수 있습니다. 다음에 대해 자세히 알아보기:</translation>
 <translation id="6000528814684428358">하드 록 및 프로그레시브 록</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
 <translation id="6002122790816966947">내 기기</translation>
@@ -3300,6 +3302,7 @@
 <translation id="6203231073485539293">인터넷 연결 확인</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6212314149070368045">미국 Fanfold</translation>
+<translation id="6213685130162740188">KTN(Known Traveler Number)</translation>
 <translation id="6215936431492593050">금속(새틴)</translation>
 <translation id="6217950634729714357">주방 및 식당용 가구</translation>
 <translation id="6218305986815100395">가상 카드를 사용 설정할 수 없음</translation>
@@ -3718,11 +3721,13 @@
 <translation id="6874604403660855544">추가 다시 실행(&amp;R)</translation>
 <translation id="6875873347995743859">어시스턴트로 전송</translation>
 <translation id="6875894866901426843">관리자가 <ph name="DATE_TIME" />에 휴지통에 있는 파일을 비롯한 로컬 파일을 삭제합니다.</translation>
+<translation id="6880812263216766325">더 나은 대답을 얻기 위해 항상 열려 있는 탭을 공유하시겠습니까?</translation>
 <translation id="6880941331070119097">높은 가격 옵션</translation>
 <translation id="6881240511396774766">빠르게 새 Google 문서 만들기</translation>
 <translation id="6883221904761970440">보안 결제 사용자 인증 정보 승인 시트가 닫힘</translation>
 <translation id="6883745783646124431">직장 주소</translation>
 <translation id="6886283082988906333">ZIP 파일</translation>
+<translation id="6886431827310382613">관련 탭 공유</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">위치 사용</translation>
 <translation id="6888584790432772780">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 안전하지 않은 연결을 통해 원본 페이지를 가져왔습니다.</translation>
@@ -4009,6 +4014,7 @@
 <translation id="7337706099755338005">사용 중인 플랫폼에서는 제공되지 않습니다.</translation>
 <translation id="733923710415886693">서버 인증서가 인증서 투명성 정책을 사용하여 공개되지 않았습니다.</translation>
 <translation id="73398226265793546">AI 모드 버튼, Google 검색에서 AI 모드에 질문하기 위해 활성화</translation>
+<translation id="7343620778718789463">신분증</translation>
 <translation id="7346048084945669753">연결됨:</translation>
 <translation id="7346062987309535530">식기</translation>
 <translation id="7346081071264046066">'기쁜 마음으로 이 결혼식 초대에 '예'라고 답장'</translation>
@@ -4182,6 +4188,7 @@
 <translation id="7569490014721427265">골프</translation>
 <translation id="7569952961197462199">Chrome에서 신용카드를 삭제하시겠습니까?</translation>
 <translation id="7569983096843329377">검정색</translation>
+<translation id="7570862164055912832">리드레스 번호</translation>
 <translation id="7571813784389228510">Google AI 모드</translation>
 <translation id="7574998639136359461">겨울 스포츠용품</translation>
 <translation id="7575207903026901870">추천 삭제 버튼, Enter 키를 눌러 이 추천 삭제</translation>
@@ -4690,6 +4697,7 @@
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">자동 전체 화면</translation>
 <translation id="838307841291975086">스테이션 왜건</translation>
+<translation id="838953173259347825">이 창에서 열려 있는 탭이 이 대화목록과 관련이 있는 경우 자동으로 공유하여 더 맞춤설정된 대답을 받습니다. 다음에서 모든 대화목록에 대해 이 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="8389532092404711541">보통 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">맞춤 제작 및 고성능 차량</translation>
 <translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>
@@ -4973,6 +4981,7 @@
 <translation id="8861482055962701239">이 정보를 Google 월렛에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다. 다음에 사용할 때 Chrome에서 월렛에 저장할지 묻습니다.</translation>
 <translation id="8863218129525348270">다음번에 더 빠르게 결제할 수 있도록 기기에 카드를 저장하세요</translation>
 <translation id="8864939224504814334">수트 및 비즈니스 정장</translation>
+<translation id="8865650218866129025">이 대화목록에서 더 나은 대답을 얻기 위해 열려 있는 탭을 자동으로 공유하시겠습니까?</translation>
 <translation id="8866132857352163524">사운드트랙</translation>
 <translation id="8866481888320382733">정책 설정을 파싱하는 중 오류 발생</translation>
 <translation id="8866928039507595380">폴드</translation>

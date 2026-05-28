@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">እንደ <ph name="USER" /> ሆነው ገብተዋል</translation>
 <translation id="1149401351239820326">ጊዜው የሚያልፍበት ወር</translation>
 <translation id="1150989369772528668">ቀን መቁጠሪያ</translation>
+<translation id="1161444134753003495">ግባ</translation>
 <translation id="1161663161838091892">ለመቀጠል ትሮችን እና ታሪክን ያሥምሩ</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} ክሬዲት ካርድ}one{{count} ክሬዲት ካርድ}other{{count} ክሬዲት ካርዶች}}</translation>
 <translation id="1164891049599601209">በአታላይ ጣቢያ ላይ ገብቷል</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">ምስሉን ገልብጥ</translation>
 <translation id="1606899876897213121">የቅርብ ጊዜ እንቅስቃሴ ማጠቃለያን ዝጋ</translation>
 <translation id="1612754831519568745">የእርስዎ ደህንነቱ የተጠበቀ አሰሳ አሁኑ ጠፍቷል። ከአደገኛ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያግኙ።</translation>
+<translation id="1617300545081951343">የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" />፣ <ph name="BEGIN_LINK" />የኮሪያ አካባቢ ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስሕተቶችን ሊሠራ ይችላል።</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1622717322707146952">«ወደ Google ቀን መቁጠሪያ አክል» የሚለውን ወይም «ወደ Apple ቀን መቁጠሪያ አክል» የሚለውን ይምረጡ።</translation>
 <translation id="1629162218487290695">እርስዎ መሆንዎን ያረጋግጡ…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ እና የአሰሳ ውሂብዎ ይሰረዛል</translation>
 <translation id="3124568093781685165">ከቤተሰብዎ ጋር የይለፍ ቃላትን ያጋሩ</translation>
 <translation id="3130863904455712965">ታሪክ እና ተጨማሪ</translation>
+<translation id="3130973487775218359">ይመልከቱ፦ <ph name="BEGIN_LINK" />ስለ ሰው ሠራሽ አስተውሎት አመንጪ መታወቅ ያለባቸው 5 ነገሮች<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">የማስተካከያ ቁጥርን ያስቀምጡ</translation>
 <translation id="3132584647087998639">ውሂብዎን ያስመጡ</translation>
 <translation id="313283613037595347">አዲስ ማንነት የማያሳውቅ ትር ፍጠር።</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{ለዚህ ጣቢያ አዲስ የይለፍ ቃል}one{ለዚህ ጣቢያ አዲስ የይለፍ ቃል}other{ለዚህ ጣቢያ አዳዲስ የይለፍ ቃላት}}</translation>
 <translation id="3933372629914873850">በመለያ ወደ <ph name="URL" /> ይገባሉ</translation>
 <translation id="3934905113567851655">መጠኑን ለመቀየር ይቆንጥጡ</translation>
+<translation id="393732545649378031">መለያ</translation>
 <translation id="3940195383040445971">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ትር ዝጋ}one{{COUNT} ትር ዝጋ}other{{COUNT} ትሮችን ዝጋ}}</translation>
 <translation id="3946483119107054883">ወደ CSV ያውርዱ</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP መፈረም</translation>
 <translation id="4309403553630140242">ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="4310738531374808763">መነሻ ገጽዎን ያብጁ</translation>
+<translation id="4316794575239200608">ከGemini ጋር የሚኖሩዎት ውይይቶች ወይም እንደ የእርስዎ<ph name="BEGIN_LINK" />የGoogle Workspace ውሂብ<ph name="END_LINK" /> በሰው ገምጋሚዎች አይገመገሙም ወይም ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውሉም።</translation>
 <translation id="4320848494125124980">የቅርብ ጊዜ</translation>
 <translation id="4322394346347055525">ሌሎች ትሮችን ዝጋ</translation>
 <translation id="4323122584592971322">OID።</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃሎች</translation>
 <translation id="4632655012900268062">ካርዶችን ያብጁ</translation>
 <translation id="4634124774493850572">የይለፍ ቃል ይጠቀሙ</translation>
+<translation id="4634633632339959267">ውይይቶች ይገመገማሉ እና Google ሰው ሠራሽ አስተውሎትን ለማሻሻል ጥቅም ላይ ይውላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ ይወቁ።<ph name="END_LINK" /> <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ከእንቅስቃሴዎ ጋር ጭምር ይከማቻል።</translation>
 <translation id="4636930964841734540">መረጃ</translation>
 <translation id="4641425577292284174">ደህንነታቸው የተጠበቁ ቅንብሮች ካሉዎት ወይም ማንኛውንም ነገር መገምገም ካስፈለገዎት ይወቁ</translation>
 <translation id="4642472735733036929">የዋጋ ክትትል ቆሟል</translation>
@@ -1470,6 +1476,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6140948187512243695">ዝርዝሮችን አሳይ</translation>
 <translation id="6144589619057374135">ማንነት በማያሳውቅ ሁነታ ላይ ${url}ን ይክፈቱ</translation>
 <translation id="6146563240635539929">ቪዲዮዎች</translation>
+<translation id="6148392728478209113">አሁንም Live እየተጠቀሙ ነው? ከGemini ጋር ማውራት ለመቀጠል የLive አዝራሩን መታ ያድርጉ</translation>
 <translation id="6151006591088192882">ማንነት የማያሳውቁ ትሮችን በ<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይክፈቱ</translation>
 <translation id="6152340033632117531">የቦዘነ</translation>
 <translation id="6152406514676263192">በእርስዎ ዝንባሌዎች ላይ የተመሠረተ በጣም አግባብነት ያለው ይዘትን ለማግኘት ያስምሩ።</translation>
@@ -1563,6 +1570,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6435236283694032571">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="6435307030888827407">ዘግተው እንደወጡ ይቆዩ</translation>
 <translation id="6436318499800111867">ከእኔ ጋር የተጋራ <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />የሌሎችን ግላዊነት ያክብሩ<ph name="END_LINK" /> እና ከመቅዳትዎ በፊት ወይም በቀጥታ ውይይት ውስጥ ከማካተትዎ በፊት ፍቃድ ይጠይቁ።</translation>
 <translation id="6442697326824312960">ትር መጣበቅን አላቅ</translation>
 <translation id="6443118737398455446">ልክ ያልሆነ የአገልግሎት ማብቂያ ቀን</translation>
 <translation id="6444435711855078002">ተጨማሪ አማራጮች</translation>
@@ -1805,6 +1813,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7253951228444156601">የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
 <translation id="7261217796641151584">ቡድንን አጋራ</translation>
 <translation id="7266578100016339897">ይህ እንደተደራጁ እንዲቆዩ ያግዝዎታል። ይህን በቅንብሮች ውስጥ በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />የGoogle ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የGemini መተግበሪያዎች የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስሕተቶችን ሊሠራ ይችላል።</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="728025568708172005">ዞር ዞር አድርገህ አሳየኝ</translation>
 <translation id="7280980607183752256">ይህ ፋይል ሊመጣ አይችልም</translation>
@@ -2125,6 +2134,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8345328955902001853">{count,plural, =1{ደረጃ ከፍ ለማድረግ 1 ተጨማሪ ተግባር ያጠናቅቁ}one{ደረጃ ለማሳደግ {count} ተጨማሪ ተግባር ያጠናቅቁ}other{ደረጃ ለማሳደግ {count} ተጨማሪ ተግባራትን ያጠናቅቁ}}</translation>
 <translation id="8348530355586151720">ባለ ሦስት ነጥብ ምናሌውን መታ ያድርጉ</translation>
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
+<translation id="8360164927489392419">ከLive ጋር ያለዎት መስተጋብሮች እና ለእሱ የሚያጋሩት ይዘት ቅጂዎች <ph name="BEGIN_LINK" />በGemini መተግበሪያ የግላዊነት ማስታወቂያ<ph name="END_LINK" /> መሠረት ይቀመጣሉ እና ይሰናዳሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} የመጣ ዕልባት።}one{{count} የመጣ ዕልባት።}other{{count} የመጡ ዕልባቶች።}}</translation>
 <translation id="8363484128299778310">በችግር ጊዜ ጊዜያዊ መልሶ ማግኘት</translation>
 <translation id="8364563001733875155">የእርስዎን ፒን ለመቀየር መጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ያዋቅሩ።</translation>
@@ -2220,6 +2230,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8643403533759285912">ቡድን ይሰርዙ</translation>
 <translation id="8647280737650867362">ዋጋውን አለመከታተል አልተቻለም።</translation>
 <translation id="8654802032646794042">ይቅር</translation>
+<translation id="8659875081143553823">አንዴ ይጠብቁ</translation>
 <translation id="8660600697590740984">በሌንስ የተቀዳ ምስል</translation>
 <translation id="866266761389616183">ውይ፣ ተሰናከለ!</translation>
 <translation id="8663764600409216912">ሲታዩ ለመገመት ከባድ የሚመስሉ የይለፍ ቃላትን እየተጠቀሙ ነው</translation>

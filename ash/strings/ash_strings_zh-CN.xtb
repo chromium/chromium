@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />备份数据不会计入您的云端硬盘存储空间配额。<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">若要设置指纹，请让您的孩子轻触键盘左下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1073899992769346247">更换电池或为电池充电</translation>
 <translation id="1081015718268701546">尚不支持 Linux 应用。其他应用会被保存。</translation>
 <translation id="108486256082349153">移动网络设备：<ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">随时按<ph name="LAUNCHER_KEY_NAME" /> + g 键</translation>
 <translation id="130491383855577612">已成功替换 Linux 应用和文件</translation>
 <translation id="1306549533752902673">推荐的应用</translation>
+<translation id="1306606229401759371">更改设置</translation>
 <translation id="1310396869741602366">更改语气</translation>
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">已选择顶部边缘手柄，使用箭头键即可移动</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">保存桌面以备后用</translation>
 <translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
 <translation id="1383876407941801731">搜索</translation>
+<translation id="1390113502208199250">您必须将此设备恢复出厂设置才能使用 Chrome 教育版升级许可功能。</translation>
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1394698770495054737">完全虚化</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
+<translation id="1403222014593521787">无法连接到代理</translation>
 <translation id="1404963891829069586">专注模式音乐</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">开启位置信息访问权限</translation>
 <translation id="1830308660060964064">“<ph name="ITEM_TITLE" />”已被取消固定</translation>
 <translation id="1831565490995294689">选择<ph name="APP_TO_OPEN" />即可将其打开。</translation>
+<translation id="1832511806131704864">配对手机已更新</translation>
 <translation id="1838011306813517425">专注模式设置</translation>
 <translation id="1838895407229022812">当前已关闭夜间光效。</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">使用指纹解锁</translation>
 <translation id="1891362123137972260">磁盘空间严重不足。请释放磁盘空间。</translation>
 <translation id="1894024878080591367">设置以使用键盘玩游戏</translation>
+<translation id="1896043844785689584">若要设置指纹，请让您的孩子轻触键盘右下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1896383923047738322">自定义键盘</translation>
 <translation id="1904997243703671177">关闭蓝牙后，<ph name="DEVICE_COUNT" /> 个外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接，包括：</translation>
 <translation id="1908992311423394684">新安装</translation>
 <translation id="1915307458270490472">挂断</translation>
 <translation id="1918022425394817322">相机已对准右上角</translation>
+<translation id="1919872106782726755">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器（位于电源按钮旁边）。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1920390473494685033">通讯录</translation>
 <translation id="1923539912171292317">自动点击</translation>
 <translation id="1925320505152357008">不到 1 分钟</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">仍然保存</translation>
 <translation id="2041220428661959602">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键目前处于停用状态</translation>
+<translation id="204622017488417136">您的设备将还原到之前安装的 Chrome 版本。所有用户账号和本地数据都将移除。此操作无法撤消。</translation>
 <translation id="204706822916043810">正在检查虚拟机</translation>
 <translation id="2048554637254265991">启动容器管理器时出错。请重试。</translation>
 <translation id="2048653237708779538">无法执行操作</translation>
@@ -412,12 +420,14 @@
 <translation id="2304702218354340897">确定要关闭人脸操控功能吗？</translation>
 <translation id="2305738328104302723">Google 任务列表：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />：近期的屏幕截图、下载内容和已固定的文件</translation>
+<translation id="2316433409811863464">应用串流</translation>
 <translation id="2318576281648121272">今天 <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">要使用 Android 应用，请为您的 <ph name="DEVICE_TYPE" /> 充电并对其进行更新。</translation>
 <translation id="2322065293366551060">“<ph name="CATEGORY" />”，搜索结果类别</translation>
 <translation id="2322173485024759474">后退一个字母</translation>
 <translation id="2326112202058075478">显示更多表情符号</translation>
 <translation id="2335091074961603075">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。请使用内置麦克风以获得更好的音质。</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">点按任务栏中的触控笔按钮即可开始记事、截取屏幕截图以及使用激光笔/放大镜。</translation>
 <translation id="2341729377289034582">已锁定为纵向</translation>
 <translation id="2344032937402519675">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。</translation>
@@ -442,6 +452,7 @@
 <translation id="2383521554963939360">应用和标签页分组</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
 <translation id="2389423187722941333">切换 Gemini</translation>
+<translation id="2390347491606624519">无法连接到代理，请重新登录</translation>
 <translation id="2392659840443812875">没有可用的热点。确保您的设备就在附近且已开启蓝牙。</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
@@ -483,17 +494,21 @@
 <translation id="2486214324139475545">“<ph name="DESK_NAME" />”预览。活动桌面。</translation>
 <translation id="2486405091093637109">“<ph name="DISPLAY_NAME" />”的分辨率已更改为 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。如果不确认，系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="2489829450872380594">下次，您只需使用新手机就能解锁 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2499445554382787206">桌面个人资料菜单。<ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">返回</translation>
 <translation id="2501920221385095727">粘滞键</translation>
 <translation id="2504454902900101003">取消设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="2505378917951323738">无法修改任务。请在联网后重试。</translation>
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
+<translation id="2514326558286966059">指纹解锁更快捷</translation>
 <translation id="2514415433888497495">停用<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">打开无障碍选项</translation>
 <translation id="2516416533263263796">已开启专注模式，还剩 10 分钟</translation>
 <translation id="2516637483312286228">修改游戏控件</translation>
+<translation id="2517472476991765520">扫描</translation>
 <translation id="252054055865191167">标记工具</translation>
 <translation id="2526581474998477112">解锁窗口</translation>
 <translation id="2528111225373402384">热点设置</translation>
@@ -569,6 +584,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“删除”</translation>
 <translation id="2750941250130734256">取消停靠活动窗口。</translation>
+<translation id="2755349111255270002">重置此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2761723519669354964">打开任务栏中的突出显示项</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 至 <ph name="KEY_TWO" /></translation>
@@ -613,10 +629,12 @@
 <translation id="2869095047958348710">上个<ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">切换主显示器</translation>
 <translation id="2872961005593481000">关机</translation>
+<translation id="2876336351874743617">手指 2</translation>
 <translation id="2876338922445400217">放大屏幕</translation>
 <translation id="2876760662374103627">人脸操控已启用</translation>
 <translation id="2878884018241093801">近期没有任何内容</translation>
 <translation id="2880541185262491188">尝试输入 PIN 码的次数过多。请等待 <ph name="TIME_LEFT" />，然后重试</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 将立即重新启动并重置</translation>
 <translation id="2883271196820422439">恢复使用鼠标键</translation>
 <translation id="2885950158625301909">了解详情</translation>
 <translation id="2891209721153296020">“取消选择”</translation>
@@ -656,6 +674,7 @@
 <translation id="2993956882370897557">要使用 End 键吗？请使用</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001391739687111021">修改屏幕尺寸</translation>
+<translation id="3001835006423291524">轻触键盘右下角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3009178788565917040">输出</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="301282384882049174">由您的管理员分享</translation>
@@ -678,6 +697,8 @@
 <translation id="3062298103034426069">不支持</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">任务栏位于屏幕左侧</translation>
+<translation id="3075144191779656260">轻触 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="3075874217500066906">必须重启才能开始 Powerwash 操作。重启后，系统将提示您确认是否要继续。</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -703,6 +724,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">课业类型</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">您的设备将被重置，且所有用户账号和本地数据都将移除。此操作无法撤消。</translation>
 <translation id="3130793786899299931">更改长度</translation>
 <translation id="3134486240968249588">需要注意的事项</translation>
 <translation id="3139188263101386725">使用更新后的快捷键</translation>
@@ -719,6 +741,7 @@
 <translation id="3174897399179348329">要使用 Page Up 键吗？请使用</translation>
 <translation id="3176221688814061633">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。开启超高解析度蓝牙或使用内置麦克风可提升音质。</translation>
 <translation id="3181441307743005334">重启可能需要一点时间</translation>
+<translation id="3183700187146209259">无法安装扫描仪软件</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已连接到 1 台设备}other{已连接到 # 台设备}}</translation>
 <translation id="3203405173652969239">已启用“开关控制”</translation>
 <translation id="3204648577100496185">系统可能会从此设备上移除与该应用相关的数据</translation>
@@ -766,6 +789,7 @@
 <translation id="3346728094401457853">输入 <ph name="EMAIL" /> 用于登录设备的密码</translation>
 <translation id="334927402682780278">选中从光标处到行尾的文字</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
+<translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
 <translation id="3365281428003534650">设置定时器、任务和音乐</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
@@ -780,6 +804,7 @@
 <translation id="3394432020929931914">，已展开</translation>
 <translation id="3401474642070997151">如需自定义建议，请右键点击建议或按住建议</translation>
 <translation id="3405101454990027959">开启麦克风使用权限</translation>
+<translation id="3407967630066378878">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3409584356742878290">显示或隐藏开发者工具检查器</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
@@ -919,9 +944,11 @@
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">隐藏天气信息建议</translation>
+<translation id="3752253558646317685">让您的孩子不时地移开手指，以便保存指纹</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />备份数据不会计入您孩子的云端硬盘存储空间配额。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620">您的“<ph name="PHONE_NAME" />”现在也可用来为此 <ph name="DEVICE_TYPE" /> 解锁。</translation>
 <translation id="3756485814916578707">正在投屏</translation>
 <translation id="3765841382945324995">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键原为 <ph name="OLD_SHORTCUT" />，现已更新为 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天修改过</translation>
@@ -939,6 +966,7 @@
 <translation id="3799080171973636491">您按下了全屏放大镜的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="3804737937830804242">收起相机</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 个表情符号。没有其他结果。}other{# 个表情符号。没有其他结果。}}</translation>
+<translation id="381202950560906753">添加其他指纹</translation>
 <translation id="3822403841174077928">无法复制带格式的文本</translation>
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824784079442479685">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
@@ -953,6 +981,7 @@
 <translation id="3848526302597027234">访问以下权限：</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
+<translation id="3857807444929313943">移开手指，然后再次触摸传感器</translation>
 <translation id="3859364108019690">无法流式传输应用</translation>
 <translation id="3861638017150647085">用户名“<ph name="USERNAME" />”不可用</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
@@ -971,6 +1000,7 @@
 <translation id="3923221004758245114">要从您的 <ph name="DEVICE_TYPE" /> 中卸载 <ph name="VM_NAME" /> 吗？此操作会删除虚拟机中的所有应用和数据！</translation>
 <translation id="3923494859158167397">未设置任何移动网络</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在加载活动。</translation>
+<translation id="3926002189479431949">Smart Lock 的配对手机已更改</translation>
 <translation id="3927049937406914450">由于位置信息权限已关闭，无法获取天气信息。您可以在设置中开启此权限。</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3934456833412894880">已开启“自动调节充电”功能。电池电量将会保持在 80% 以延长电池寿命，并会在您需要时完全充满。</translation>
@@ -1030,6 +1060,7 @@
 <translation id="4113030288477039509">由您的管理员管理</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4115378294792113321">洋红色</translation>
+<translation id="4116704186509653070">重新打开</translation>
 <translation id="411881149140864134">启用左侧桌面</translation>
 <translation id="4119928251231465047">尝试输入 PIN 码的次数过多</translation>
 <translation id="412298498316631026">窗口</translation>
@@ -1096,6 +1127,7 @@
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4282196459431406533">Smart Lock 已开启</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在连接到配置文件。这可能需要几分钟的时间。</translation>
@@ -1121,6 +1153,7 @@
 <translation id="4338109981321384717">放大镜</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />，已设为静音</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
+<translation id="435527878592612277">选择您的照片</translation>
 <translation id="4356872429719185452">显示热点详情。热点正在开启。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  正在录制</translation>
 <translation id="4368227575116094370">创建 Google 表格</translation>
@@ -1155,6 +1188,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 条重要通知}other{# 条重要通知}}</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451374464530248585">键盘快捷键“Alt + 向下键”已更改。若要使用 Page Down 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向下键。</translation>
+<translation id="4453430595102511050">轻触键盘右上角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="445765352722456792">自定义建议</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
 <translation id="445923051607553918">加入Wi-Fi网络</translation>
@@ -1171,6 +1205,7 @@
 <translation id="4485506555414638855">取消设置查看手机中的近期照片、媒体内容、通知和应用</translation>
 <translation id="4491109536499578614">图片</translation>
 <translation id="4493468155686877504">建议大小 (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">感叹号图标</translation>
 <translation id="450584155212756404">开发渠道</translation>
 <translation id="4513044611477939680">快速分享</translation>
 <translation id="4513946894732546136">反馈</translation>
@@ -1180,6 +1215,7 @@
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="4531536770443562276">仅支持全屏模式</translation>
 <translation id="4533343294786968049">正在减缓电池老化，延长电池寿命。电池电量将在<ph name="FULLY_CHARGE_TIME" /> 之前充满。</translation>
+<translation id="4534661889221639075">请重试。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
 <translation id="4539127209940689201">打印当前网页</translation>
@@ -1195,6 +1231,7 @@
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">手指 3</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4566144812051858745">对任何建议都不感兴趣</translation>
 <translation id="4569753163207712681">查看手机中的近期照片、媒体内容和应用</translation>
@@ -1207,7 +1244,9 @@
 <translation id="4585337515783392668">停止投放至不明接收器</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4596442969149038771"><ph name="USER" />分享过</translation>
+<translation id="4598776695426288251">可通过多部设备使用 Wi-Fi</translation>
 <translation id="4610493115106525653">输出质量良好</translation>
+<translation id="4611114513649582138">有可用的数据网络连接</translation>
 <translation id="4611292653554630842">登录</translation>
 <translation id="4613144866899789710">正在取消安装 Linux…</translation>
 <translation id="462160925400706389">已连接到“<ph name="NAME" />”</translation>
@@ -1322,6 +1361,7 @@
 <translation id="4937170330762390348">借助语音输入功能，您可以通过说话来输入内容。选中某个文本字段后，按语音输入键或选择屏幕底部的麦克风图标。您的语音输入语言已设置为<ph name="LANGUAGE" />。系统会下载语音文件，以便您离线使用语音输入功能。您可以随时在“设置”&gt;“无障碍”中更改语音输入语言。</translation>
 <translation id="4938176435186993759">隐藏所有建议</translation>
 <translation id="4945196315133970626">关闭通知</translation>
+<translation id="4945439665401275950">若要设置指纹，请让您的孩子轻触电源按钮。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="4950800194215951939">自定义您的游戏体验</translation>
@@ -1341,6 +1381,7 @@
 <translation id="4981175556418720939">修改日期：<ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="4989163558385430922">查看全部</translation>
+<translation id="4992458225095111526">确认 Powerwash 操作</translation>
 <translation id="4995963195354861331">欢迎对话框</translation>
 <translation id="4996265698919320288">正在录制</translation>
 <translation id="5003993274120026347">下一句</translation>
@@ -1387,6 +1428,7 @@
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5122517996953421795">“<ph name="DESK_NAME" />”预览。非活动桌面。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
+<translation id="5137349216872139332">智能热点连接失败</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，用<ph name="DEFAULT_SEARCH_ENGINE_NAME" />执行搜索</translation>
 <translation id="5144005092084035179">要切换音频输入设备吗？</translation>
 <translation id="5147567197700016471">已解锁</translation>
@@ -1459,6 +1501,7 @@
 <translation id="5322611492012084517">找不到您的手机</translation>
 <translation id="5323994101633366939">隐藏桌面名称</translation>
 <translation id="5327248766486351172">名称</translation>
+<translation id="532943162177641444">请点按您的 <ph name="PHONE_NAME" /> 设备上的通知，以设置可供此设备使用的移动热点。</translation>
 <translation id="5329548388331921293">正在连接…</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="533282197239610265">显示投放设备</translation>
@@ -1469,6 +1512,7 @@
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和风格”。</translation>
 <translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
 <translation id="5361524080961918551">已下载<ph name="LANGUAGE" />语音文件的部分内容</translation>
+<translation id="5363109466694494651">执行 Powerwash 操作并还原</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
 <translation id="5364693579536176785">存储空间</translation>
 <translation id="5369573834963677938">设备上的其他用户将可以使用面部控制功能</translation>
@@ -1628,6 +1672,7 @@
 <translation id="5823239091726045201">Google Tasks 网页版</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="5830180081891717894">另外 <ph name="WINDOWS" /> 项</translation>
+<translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5840658767386246331">使用 Google 搜索</translation>
@@ -1645,6 +1690,7 @@
 <translation id="5876666360658629066">输入家长访问码</translation>
 <translation id="5881540930187678962">需要时再设置 Phone Hub</translation>
 <translation id="588258955323874662">全屏</translation>
+<translation id="5886009770935151472">手指 1</translation>
 <translation id="5887954372087850114">已将窗口“<ph name="WINDOW_TITLE" />”分配至“<ph name="DESK_TITLE" />”，并已取消此窗口与所有其他桌面的分配关系</translation>
 <translation id="588817334757907802">在 Chrome 浏览器中打开文件</translation>
 <translation id="5892014525522223653">您处于离线状态。</translation>
@@ -1686,6 +1732,7 @@
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="601304062528754300">突出显示任务栏上的后一项</translation>
 <translation id="6015573907265691211">标为已完成</translation>
+<translation id="6016551720757758985">确认 Powerwash 是否将设备还原到之前的版本</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="6019566113895157499">键盘快捷键</translation>
 <translation id="602001110135236999">向左滚动</translation>
@@ -1734,6 +1781,7 @@
 <translation id="612734058257491180">无法在访客会话中使用 Google 助理。</translation>
 <translation id="6127395413317891856">您处于离线状态。请检查连接，然后重试。</translation>
 <translation id="6129953537138746214">空格键</translation>
+<translation id="6132714462430777655">跳过学校注册？</translation>
 <translation id="6136872094979134163">无法检索 Chromebook 版 Steam 资讯。</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除账号”对话框</translation>
 <translation id="6141205840878048728">您打算专注于什么任务？</translation>
@@ -1768,6 +1816,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> 处于离线状态。请连接到互联网，然后重试。</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
+<translation id="6225475702458870625">可通过您的<ph name="PHONE_NAME" />使用数据网络连接</translation>
 <translation id="6228457605945141550">调低亮度</translation>
 <translation id="623116199192908855">从 Chromebook 中投放屏幕</translation>
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
@@ -1784,6 +1833,7 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在激活…</translation>
 <translation id="6274202259872570803">抓屏</translation>
 <translation id="6274422179279280249">插入链接、表情符号等内容。您还可以借助 Google AI 进行写作。<ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">代理 <ph name="PROXY_SERVER" /> 要求提供用户名和密码。</translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
 <translation id="6285871695023807425">添加到日历</translation>
 <translation id="628699625505156622">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
@@ -1799,6 +1849,7 @@
 <translation id="6317369057005134371">等待应用窗口…</translation>
 <translation id="6319058840130157106">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向后移动</translation>
 <translation id="6319503618073410818">在浏览器中查看详细信息</translation>
+<translation id="6322370287306604163">指纹解锁更快捷</translation>
 <translation id="6324334979701518365">无法启动不受支持的 Chrome 应用，请告知管理员此问题。</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6325525973963619867">失败</translation>
@@ -1808,6 +1859,7 @@
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
 <translation id="6340148837564298498">如果您忘记了 PIN 码，请尝试恢复此用户账号。</translation>
 <translation id="6344138931392227467">已连接到“<ph name="DEVICE_NAME" />”</translation>
+<translation id="6345418402353744910">代理 <ph name="PROXY" /> 要求您提供用户名和密码，以方便管理员配置您的网络</translation>
 <translation id="6348449481487610270">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">应用推荐</translation>
 <translation id="6352082849089527770">未知网络</translation>
@@ -1827,6 +1879,7 @@
 <translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6418160186546245112">正在还原到之前安装的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 版本</translation>
 <translation id="641817663353603351">向上翻页</translation>
 <translation id="6418511932144861495">安装重要更新</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1896,6 +1949,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
 <translation id="6605415194043280389">专注模式已开启</translation>
+<translation id="6608773371844092260">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6612802754306526077">已选择录屏模式</translation>
 <translation id="6612889377159412215">子任务</translation>
@@ -1918,6 +1972,7 @@
 <translation id="6650742588569439432">无法加载内容。</translation>
 <translation id="6650933572246256093">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密码</translation>
+<translation id="6663190258859265334">对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作，使其还原到先前的版本。</translation>
 <translation id="666343722268997814">打开突出显示项的右键点击菜单</translation>
 <translation id="6665545700722362599">授权网站、应用和扩展程序使用位置信息服务或使用此设备的麦克风/摄像头/其他功能</translation>
 <translation id="6667908387435388584">连接到您手机的热点，将您的手机静音并确定它的位置，以及查看您手机上最近打开的 Chrome 标签页</translation>
@@ -1945,6 +2000,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">摄像头和麦克风正在使用中</translation>
 <translation id="6739144137573853180">前往“设置”</translation>
+<translation id="6745592621698551453">立即更新</translation>
 <translation id="6747985245839783873">剩余的电池电量为 <ph name="PERCENTAGE" />%。省电模式已开启。</translation>
 <translation id="6751052314767925245">由您的管理员强制执行</translation>
 <translation id="6751826523481687655">已启用性能跟踪</translation>
@@ -1952,6 +2008,7 @@
 <translation id="6753390234084146956">标签页</translation>
 <translation id="6754918760968695779">快捷插入</translation>
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
+<translation id="6759193508432371551">恢复出厂设置</translation>
 <translation id="6760438044935091345">游戏信息中心</translation>
 <translation id="6768043681523654438">存储空间</translation>
 <translation id="6769195697113506406">已插入图片</translation>
@@ -1966,6 +2023,7 @@
 <translation id="6792351896138862473">无法启动不受支持的自助服务终端应用，请告知管理员此问题。</translation>
 <translation id="679368458793552943">开启放大镜时放大</translation>
 <translation id="6794287755901682422">此项内容的其他元数据：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
+<translation id="6797493596609571643">糟糕，出问题了。</translation>
 <translation id="6797745268063125932">保持开启状态</translation>
 <translation id="6801878137098616817">最近修改过</translation>
 <translation id="6802687695197837794">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
@@ -1979,6 +2037,7 @@
 <translation id="682971198310367122">Google 隐私权政策</translation>
 <translation id="6836499262298959512">危险文件</translation>
 <translation id="6837621009301897464">如需截取屏幕截图，请按</translation>
+<translation id="6848716236260083778">若要设置指纹，请让您的孩子轻触指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="6852052252232534364">点击即可启用</translation>
 <translation id="6852628153543175788">增加 10 分钟</translation>
 <translation id="6855029042976311970">刚刚修改过</translation>
@@ -2087,6 +2146,7 @@
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
 <translation id="7219573373513695352">未连接任何设备</translation>
+<translation id="7228056665272655255">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7228968829656641943">选择即可搜索我的屏幕内容。按 Tab 键然后按空格键即可使用键盘进行导航。</translation>
 <translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">正在取消 Linux 恢复</translation>
@@ -2101,6 +2161,7 @@
 <translation id="7258828758145722155">昨天修改过</translation>
 <translation id="726276584504105859">拖到此处即可使用分屏模式</translation>
 <translation id="7264788308526527464">减少 <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267875682732693301">不时地移开手指，以便传感器更完整地记录您的指纹</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />键 + 退格键</translation>
 <translation id="7285232777292757180">使用快捷设置中的“屏幕截取”工具截屏</translation>
 <translation id="7301826272005790482">关闭窗口建议</translation>
@@ -2125,6 +2186,7 @@
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="736045644501761622">设置壁纸与样式</translation>
+<translation id="7361914392989692067">用手指轻触电源按钮。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7368041336688136012">您必须年满 18 周岁，才能使用“帮我读”“帮我写”和借助 AI 创作图片功能。</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7372069265635026568">可用内存为 <ph name="AVAILABLE_MEMORY" />，总共 <ph name="TOTAL_MEMORY" /></translation>
@@ -2139,6 +2201,7 @@
 <translation id="7384028040782072252">若要将您的应用重新排序，请右键点击任意位置</translation>
 <translation id="7386767620098596324">开启/关闭网络连接。<ph name="STATE_TEXT" />。</translation>
 <translation id="7392563512730092880">日后您随时可从“设置”中进行设置。</translation>
+<translation id="7400839060291901923">请在您的 <ph name="PHONE_NAME" /> 设备上设置连接</translation>
 <translation id="7401222354741467707">截取整个屏幕或录屏</translation>
 <translation id="7401788553834047908">在专注模式下启用勿扰模式</translation>
 <translation id="7405710164030118432">要解锁此设备，请输入您的 Family Link 家长访问码</translation>
@@ -2155,6 +2218,7 @@
 <translation id="7457027286267861992">磁盘空间不足。请释放更多的磁盘空间，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
@@ -2209,6 +2273,7 @@
 <translation id="7579778809502851308">截取屏幕</translation>
 <translation id="7588317312481506627">已复制到剪贴板。</translation>
 <translation id="7593891976182323525">搜索键或 Shift</translation>
+<translation id="7594725637786616550">Powerwash 会将您的 <ph name="DEVICE_TYPE" /> 重置为初始状态。</translation>
 <translation id="7595453277607160340">要想使用 Android 应用并确保您的<ph name="DEVICE_TYPE" />能够正常运作，请重新登录并安装更新。</translation>
 <translation id="7598054670902114203">CPU 使用概况：CPU 使用率为 <ph name="CPU_USEAGE" />%。温度为 <ph name="TEMPERATURE" /> 摄氏度，当前速度为 <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">插入所选结果</translation>
@@ -2229,6 +2294,7 @@
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
+<translation id="7637253234491814483">轻触键盘右上角的指纹传感器（位于电源按钮旁边）。您的指纹数据会安全存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7638572816805275740">截取窗口或录屏</translation>
 <translation id="7642106959537987271">颜色反转模式</translation>
 <translation id="7642647758716480637">打开<ph name="NETWORK_NAME" />（<ph name="CONNECTION_STATUS" />）的设置</translation>
@@ -2280,6 +2346,7 @@
 <translation id="77747521138552256">尝试输入 PIN 码的次数过多。请等待 <ph name="TIME_LEFT" />后再尝试输入 PIN 码，或者立即输入密码登录。</translation>
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
+<translation id="7781335840981796660">所有用户账号和本地数据都将会移除。</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">输入和输出设备均已设置。如需更改，请前往“设置”。</translation>
 <translation id="7792590255364786396">可见</translation>
@@ -2341,6 +2408,7 @@
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943516765291457328">请开启蓝牙以扫描附近的热点</translation>
 <translation id="7944023924886109030">查看今天的所有活动</translation>
+<translation id="7944847494038629732">请拔下扫描仪的 USB 线，然后重新插上并重试</translation>
 <translation id="7945357288295809525">显示无障碍设置，“<ph name="ENABLED_FEATURES" />”已启用。</translation>
 <translation id="7946681191253332687">有可用的延长安全更新</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />想使用您的<ph name="DEVICE_NAME" /></translation>
@@ -2372,6 +2440,7 @@
 <translation id="8004512796067398576">增加</translation>
 <translation id="8005527720597583355">开启专注模式</translation>
 <translation id="8008356846765065031">网络已断开，请检查您的互联网连接是否正常。</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />无法还原到之前安装的版本。请重新尝试对您的设备执行 Powerwash 操作。</translation>
 <translation id="8015361438441228492">无法修改任务。</translation>
 <translation id="8027187124910699148">恢复建议的分组</translation>
 <translation id="802782383769312836">上一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
@@ -2450,15 +2519,18 @@
 <translation id="8249048954461686687">OEM文件夹</translation>
 <translation id="825129991941217170">显示所有 Google 云端硬盘内容</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8261625296061301062">已安装扫描仪软件</translation>
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
 <translation id="8268302343625273732">查看 Google 课堂中的所有作业</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
+<translation id="8281886186245836920">跳过</translation>
 <translation id="8282784978194352587">您做到了！</translation>
 <translation id="8287009018010202411">效率</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8300451473979404345">已选择手柄，使用箭头键即可移动</translation>
+<translation id="8301242268274839723">轻触键盘左下角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="8308637677604853869">上一菜单</translation>
 <translation id="830868413617744215">测试版</translation>
 <translation id="8314772463905284467">Caps Lock 已打开</translation>
@@ -2478,10 +2550,12 @@
 <translation id="8371991222807690464">在访客模式下，外围设备的性能可能会受到限制</translation>
 <translation id="8374601332003098278">按 Enter 键即可录制局部屏幕</translation>
 <translation id="8375916635258623388">此<ph name="DEVICE_NAME" />将会自动连接到您的手机</translation>
+<translation id="8382677870544805359">您必须将此设备恢复出厂设置才能使用企业功能。</translation>
 <translation id="8382715499079447151">防窥探功能</translation>
 <translation id="8383614331548401927">欢迎来到 Recap</translation>
 <translation id="838540623579162843">订阅 Music Premium</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>
+<translation id="8390392581097975659">正在安装扫描仪软件</translation>
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
 <translation id="8401850874595457088">进入语言菜单</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2545,6 +2619,7 @@
 <translation id="857201607579416096">菜单已移至屏幕的右下角。</translation>
 <translation id="8581946341807941670">在按 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 的同时点击链接</translation>
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
+<translation id="8599864823732014237">跳过企业注册？</translation>
 <translation id="8609384513243082612">打开新标签页</translation>
 <translation id="861045123704058818">系统会暂时按类别整理应用</translation>
 <translation id="8612216344243590325">请将重要文件保存在<ph name="HOLDING_SPACE_TITLE" />中，而不是放在桌面。只需将文件拖到<ph name="HOLDING_SPACE_TITLE" />即可。</translation>
@@ -2581,6 +2656,7 @@
 <translation id="8700087567921985940">使用位置信息。允许具备位置信息权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8704155109538237473">聚焦于画中画窗口</translation>
+<translation id="8705580154597116082">可通过手机使用 Wi-Fi</translation>
 <translation id="870917907284186124">开启/关闭语音输入（使用语音输入内容）</translation>
 <translation id="8711169534266271368">游戏信息中心选项</translation>
 <translation id="8712637175834984815">知道了</translation>
@@ -2589,6 +2665,8 @@
 <translation id="8717459106217102612">选择上一个字词或字母</translation>
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">截取整个屏幕</translation>
+<translation id="8724405322205516354">当您看见此图标时，请使用您的指纹进行身份验证或批准购买交易。</translation>
+<translation id="8724409975248965964">已添加指纹</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8725214031272624704">显示可用输入法列表</translation>
 <translation id="8730621377337864115">完成</translation>
@@ -2612,6 +2690,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安装的应用，已禁用</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8785070478575117577">连接到“<ph name="NETWORK_NAME" />”</translation>
+<translation id="8786824282808281903">当您的孩子看到此图标时，他/她可以使用指纹验证身份或批准购买交易。</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向前移动</translation>
 <translation id="8792626944327216835">麦克风</translation>
@@ -2624,6 +2703,7 @@
 <translation id="8815390544836110344">按下屏幕截图快捷键，具体方法为按住 Ctrl + Shift 组合键，然后按“概览模式”键</translation>
 <translation id="881757059229893486">输入法设置</translation>
 <translation id="8819728065740986820">已开启“自动调节充电”功能</translation>
+<translation id="882204272221080310">更新固件以提高安全性。</translation>
 <translation id="8822104519413696986">这是一款触摸游戏</translation>
 <translation id="8825863694328519386">从左侧向右滑动手指即可返回</translation>
 <translation id="8832513206237979203">显示或隐藏书签栏</translation>
@@ -2687,6 +2767,8 @@
 <translation id="8991648557324317894">按 fn + 快捷插入键或 shift 键可取消。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>
 <translation id="8993733019280019776">您正在说话吗？您的麦克风处于关闭状态。选择麦克风即可开启它。</translation>
+<translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="9000771174482730261">管理存储空间</translation>
 <translation id="9003374957546315126">表情符号和更多内容</translation>
 <translation id="9005984960510803406">打开 Crosh 窗口</translation>
@@ -2700,6 +2782,7 @@
 <translation id="9030515284705930323">贵单位还没有为您的账号启用 Google Play 商店。如需更多信息，请与管理员联系。</translation>
 <translation id="9030665205623277906">CPU 用量概况：<ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
+<translation id="9037818663270399707">您的连接在部分网络流量中不是私密连接</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9050012935252397793">蓝牙不可用</translation>
 <translation id="9050999376345823055">按“.”即可释放</translation>

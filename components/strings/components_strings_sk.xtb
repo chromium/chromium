@@ -138,6 +138,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="121201262018556460">Pokúsili ste sa o prístup na stránky <ph name="DOMAIN" />, server však predložil certifikát obsahujúci slabý kľúč. Útočník mohol tento súkromný kľúč prelomiť a môže ísť o iný server, než ste očakávali (môžete komunikovať s útočníkom).</translation>
 <translation id="1212527389003717329">Sťahovanie sa začalo. Ak ho chcete zobraziť, pridržte |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Automaticky dopĺňajte heslá, prístupové kľúče, adresy, spôsoby platby a ďalšie údaje pomocou informácií, ktoré máte uložené v účte Google</translation>
+<translation id="1216257595811043403">Automaticky zdieľať karty</translation>
 <translation id="1219129156119358924">Zabezpečenie systému</translation>
 <translation id="1219134100826635117">Váš správca túto akciu zablokoval</translation>
 <translation id="1221024147024329929">Štandard PKCS #1 MD2 so šifrovaním RSA</translation>
@@ -2193,6 +2194,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4434045419905280838">Vyskakovacie okná a presmerovania</translation>
 <translation id="443673843213245140">Použitie servera proxy je zakázané, ale je určená explicitná konfigurácia servera proxy.</translation>
 <translation id="4438821706955556403">Bežná cena</translation>
+<translation id="4439687924334332880">Dostávajte prispôsobenejšie odpovede automatickým zdieľaním otvorených kariet v tomto okne, ak súvisia s týmto vláknom. Túto možnosť môžete zapnúť pre všetky vlákna v Nastaveniach.</translation>
 <translation id="4441832193888514600">Ignorované, pretože pravidlá sa dajú nastaviť iba pravidlami cloudu pre používateľov.</translation>
 <translation id="4444062564459679679">Už bolo odoslané do Chromu vo vašom zariadení <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ak chcete vyhľadať karty, stlačte Enter</translation>
@@ -2295,7 +2297,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4640225694041297329">Zobraziť výsledky za posledných 7 dní</translation>
 <translation id="4642296966515958616">Ak sa chcete pripojiť k tejto skupine kariet, aktualizujte Chrome</translation>
 <translation id="464342062220857295">Funkcie vyhľadávania</translation>
-<translation id="4643958597583594452">Chrome spracúva názvy stránok a webové adresy vo vašom zariadení alebo v súkromnom priestore v cloude</translation>
 <translation id="4644567637638438744">Súbory môžete nahrať iba po prihlásení do služby Microsoft OneDrive</translation>
 <translation id="4644670975240021822">V opačnom poradí lícom nadol</translation>
 <translation id="4648262692072505866">Hash musí mať formát SHA‑256.</translation>
@@ -3152,6 +3153,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5995727681868049093">Spravovať v účte Google informácie, ochranu súkromia a zabezpečenie</translation>
 <translation id="5996255674476750320">Automobilové veľtrhy</translation>
 <translation id="5997247540087773573">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, Správca hesiel Google odporúča heslo okamžite zmeniť a skontrolovať uložené heslá.</translation>
+<translation id="5997915162652837008">Zapnutím automatického zdieľania kariet vo všetkých vláknach ušetríte čas. Ďalšie informácie</translation>
 <translation id="6000528814684428358">Hardrock a progresívny rock</translation>
 <translation id="6000758707621254961">Viacero výsledkov (<ph name="RESULT_COUNT" />) pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6002122790816966947">Vaše zariadenia</translation>
@@ -3295,6 +3297,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6203231073485539293">Skontrolujte internetové pripojenie</translation>
 <translation id="6205314730813004066">Ochrana súkromia pri reklamách</translation>
 <translation id="6212314149070368045">Americký skladaný formát</translation>
+<translation id="6213685130162740188">Čísla preverených cestujúcich</translation>
 <translation id="6215936431492593050">Kov (saténový)</translation>
 <translation id="6217950634729714357">Kuchynský a jedálenský nábytok</translation>
 <translation id="6218305986815100395">Virtuálna karta sa nedá zapnúť</translation>
@@ -3713,11 +3716,13 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6874604403660855544">&amp;Znova pridať</translation>
 <translation id="6875873347995743859">Odoslať asistentovi</translation>
 <translation id="6875894866901426843">Správca odstráni vaše miestne súbory vrátane súborov v koši <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Chcete vždy zdieľať otvorené karty, aby ste dostávali lepšie odpovede?</translation>
 <translation id="6880941331070119097">Možnosť vysokej ceny</translation>
 <translation id="6881240511396774766">Vytvorte nový dokument Google rýchlo</translation>
 <translation id="6883221904761970440">Hárok overenia poverenia zabezpečenej platby je zavretý</translation>
 <translation id="6883745783646124431">adresa práce</translation>
 <translation id="6886283082988906333">Archív ZIP</translation>
+<translation id="6886431827310382613">Zdieľať relevantné karty</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Používať polohu</translation>
 <translation id="6888584790432772780">Chrome zjednodušil túto stránku, aby sa dala ľahšie prečítať. Chrome načítal pôvodnú stránku cez nezabezpečené pripojenie.</translation>
@@ -4004,6 +4009,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7337706099755338005">Nie je k dispozícii pre vašu platformu.</translation>
 <translation id="733923710415886693">Certifikát servera nebol zverejnený prostredníctvom pravidla transparentnosti certifikátov.</translation>
 <translation id="73398226265793546">Tlačidlo režimu AI, aktivujte ho, aby ste v ňom mohli klásť otázky vo Vyhľadávaní Google</translation>
+<translation id="7343620778718789463">Doklady totožnosti</translation>
 <translation id="7346048084945669753">Je pridružený/-á</translation>
 <translation id="7346062987309535530">Jedálenský riad</translation>
 <translation id="7346081071264046066">„odpovedzte áno na túto pozvánku na svadbu s nadšením“</translation>
@@ -4178,6 +4184,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Chcete kreditnú kartu odstrániť z prehliadača Chrome?</translation>
 <translation id="7569983096843329377">Čierna</translation>
+<translation id="7570862164055912832">Nápravné čísla</translation>
 <translation id="7571813784389228510">Režim umelej inteligencie od Googlu</translation>
 <translation id="7574998639136359461">Vybavenie na zimné športy</translation>
 <translation id="7575207903026901870">Tlačidlo odstránenia návrhu, tento návrh odstránite stlačením klávesa Enter</translation>
@@ -4686,6 +4693,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8381674639488873545">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automaticky na celú obrazovku</translation>
 <translation id="838307841291975086">Autá kombi</translation>
+<translation id="838953173259347825">Dostávajte prispôsobenejšie odpovede automatickým zdieľaním otvorených kariet v tomto okne, ak súvisia s týmto vláknom. Túto možnosť môžete zapnúť pre všetky vlákna v</translation>
 <translation id="8389532092404711541">Zvyčajne <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Upravené a výkonné vozidlá</translation>
 <translation id="8390725133630534698">Zdieľanie zo zdroja <ph name="ORIGIN_NAME" /> na miesto <ph name="VM_NAME" /> je blokované pravidlami správcu</translation>
@@ -4970,6 +4978,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8861482055962701239">Tieto informácie sa nepodarilo uložiť do Peňaženky Google. Namiesto toho boli uložené do Chromu v tomto zariadení. Chrome vám pri ďalšom použití ponúkne uloženie do Peňaženky.</translation>
 <translation id="8863218129525348270">Ak chcete nabudúce platiť rýchlejšie, uložte si kartu do zariadenia</translation>
 <translation id="8864939224504814334">Obleky a oblečenie do práce</translation>
+<translation id="8865650218866129025">Chcete automaticky zdieľať otvorené karty, aby ste v tomto vlákne dostávali lepšie odpovede?</translation>
 <translation id="8866132857352163524">Filmová hudba</translation>
 <translation id="8866481888320382733">Pri analýze nastavení pravidla sa vyskytla chyba</translation>
 <translation id="8866928039507595380">Zahnúť</translation>

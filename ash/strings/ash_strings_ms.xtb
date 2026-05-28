@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Data apl boleh jadi sebarang data yang telah disimpan oleh apl (berdasarkan tetapan pembangun), termasuk data seperti kenalan, mesej dan foto.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />Data apl yang disandarkan tidak akan dikira dalam kuota storan Drive anda.<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />Anda boleh mematikan perkhidmatan ini dalam Tetapan.<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di penjuru kiri sebelah bawah papan kekunci. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1073899992769346247">Gantikan atau cas semula bateri</translation>
 <translation id="1081015718268701546">Apl Linux tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="108486256082349153">Selular: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">Tekan <ph name="LAUNCHER_KEY_NAME" /> + g pada bila-bila masa</translation>
 <translation id="130491383855577612">Apl &amp; fail Linux telah berjaya diganti</translation>
 <translation id="1306549533752902673">APL YANG DISYORKAN</translation>
+<translation id="1306606229401759371">Tukar tetapan</translation>
 <translation id="1310396869741602366">Ubah nada teks</translation>
 <translation id="1312604459020188865">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">Pemegang bahagian sisi sebelah atas dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">Simpan meja untuk dirujuk lagi</translation>
 <translation id="1383597849754832576">Tidak dapat memuat turun fail pertuturan. Cuba lagi nanti.</translation>
 <translation id="1383876407941801731">Carian</translation>
+<translation id="1390113502208199250">Anda perlu melakukan tetapan semula kilang pada peranti ini untuk menggunakan ciri Peningkatan Pendidikan Chrome.</translation>
 <translation id="1391102559483454063">Dihidupkan</translation>
 <translation id="1394698770495054737">Kabur Penuh</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 hari yang lalu}other{# hari yang lalu}}</translation>
+<translation id="1403222014593521787">Tidak dapat menyambung kepada proksi</translation>
 <translation id="1404963891829069586">Bunyi fokus</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan kekunci anak panah untuk menavigasi antara tarikh.</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">Hidupkan akses lokasi</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dinyahsemat</translation>
 <translation id="1831565490995294689">Pilih untuk buka <ph name="APP_TO_OPEN" />.</translation>
+<translation id="1832511806131704864">Perubahan telefon dikemas kini</translation>
 <translation id="1838011306813517425">Tetapan Fokus</translation>
 <translation id="1838895407229022812">Cahaya Malam dimatikan.</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">Buka kunci dengan cap jari</translation>
 <translation id="1891362123137972260">Ruang cakera terlalu sedikit. Sila kosongkan ruang cakera.</translation>
 <translation id="1894024878080591367">Persediaan untuk bermain dengan papan kekunci anda</translation>
+<translation id="1896043844785689584">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di penjuru kanan sebelah bawah papan kekunci. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1896383923047738322">Sesuaikan papan kekunci anda</translation>
 <translation id="1904997243703671177">Apabila anda mematikan Bluetooth, <ph name="DEVICE_COUNT" /> peranti luaran akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda, termasuk:</translation>
 <translation id="1908992311423394684">Pemasangan baharu</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1918022425394817322">Kamera diautojajar ke penjuru kanan sebelah atas</translation>
+<translation id="1919872106782726755">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di penjuru kanan sebelah atas papan kekunci anda, bersebelahan dengan butang Kuasa. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1920390473494685033">Kenalan</translation>
 <translation id="1923539912171292317">Klik automatik</translation>
 <translation id="1925320505152357008">kurang 1 min</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">Simpan juga</translation>
 <translation id="2041220428661959602">Tahap bateri: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Pintasan <ph name="SIX_PACK_KEY_NAME" /> dimatikan pada masa ini</translation>
+<translation id="204622017488417136">Peranti anda akan kembali ke versi Chrome yang dipasang sebelum ini. Semua akaun pengguna dan data setempat akan dialih keluar. Proses ini tidak boleh dibuat asal.</translation>
 <translation id="204706822916043810">Menyemak mesin maya</translation>
 <translation id="2048554637254265991">Ralat semasa memulakan pengurus bekas. Sila cuba lagi.</translation>
 <translation id="2048653237708779538">Tindakan tidak tersedia</translation>
@@ -372,6 +380,7 @@
 <translation id="2152796271648108398">Cuaca semasa</translation>
 <translation id="2152895518047545149">Nampaknya tiada apa-apa yang tercicir. Bagus!</translation>
 <translation id="2159568970844941445">Tiada imej dalam Fail</translation>
+<translation id="2160985496866145279">Matikan Bruschetta</translation>
 <translation id="2161132820593978283">Cuba pembingkaian kamera supaya anda berada di tengah-tengah skrin semasa membuat panggilan video. Hidupkan autozum dalam Tetapan Pantas.</translation>
 <translation id="216955976692983107">Tetingkap ubah saiz berjubin ke kanan</translation>
 <translation id="2185166372312820725">Pergi ke tab sebelumnya</translation>
@@ -412,12 +421,14 @@
 <translation id="2304702218354340897">Adakah anda pasti mahu mematikan kawalan wajah?</translation>
 <translation id="2305738328104302723">Senarai tugas Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: tangkapan skrin baru-baru ini, muat turun dan fail yang disemat</translation>
+<translation id="2316433409811863464">Penstriman Apl</translation>
 <translation id="2318576281648121272">Hari ini <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">Untuk menggunakan apl Android, cas &amp; kemas kini <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, kategori hasil carian</translation>
 <translation id="2322173485024759474">Undur satu huruf</translation>
 <translation id="2326112202058075478">Tunjukkan lebih banyak emoji</translation>
 <translation id="2335091074961603075">Chromebook atau peranti Bluetooth anda menggunakan versi Bluetooth yang lama. Gunakan mikrofon dalaman untuk mendapatkan kualiti audio yang lebih baik.</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Ketik butang stilus pada rak untuk mencatat nota, mengambil tangkapan skrin, menggunakan penuding laser atau kanta pembesar.</translation>
 <translation id="2341729377289034582">Dikunci menegak</translation>
 <translation id="2344032937402519675">Tidak dapat menyambung kepada pelayan. Semak sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda.</translation>
@@ -442,6 +453,7 @@
 <translation id="2383521554963939360">Apl &amp; kumpulan tab</translation>
 <translation id="2386292613071805067">Pilih segala-galanya pada halaman</translation>
 <translation id="2389423187722941333">Togol Gemini</translation>
+<translation id="2390347491606624519">Tidak dapat menyambung kepada proksi, sila log masuk semula</translation>
 <translation id="2392659840443812875">Tiada tempat liputan tersedia. Pastikan peranti anda berada berdekatan dan Bluetooth dihidupkan.</translation>
 <translation id="2397416548179033562">Paparkan menu Chrome</translation>
 <translation id="240006516586367791">Kawalan media</translation>
@@ -483,17 +495,21 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> pratonton. Meja aktif.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah kepada peleraian <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" /> tanpa pengesahan.</translation>
 <translation id="2487915095798731898">Sertai</translation>
+<translation id="2489829450872380594">Selepas ini, telefon baharu akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda boleh mematikan Smart Lock dalam Tetapan.</translation>
 <translation id="2496180316473517155">Sejarah penyemakan imbas</translation>
 <translation id="2499445554382787206">Menu profil meja. <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">Kembali</translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
 <translation id="2504454902900101003">Menolak penyediaan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
 <translation id="2505378917951323738">Tidak dapat mengedit tugas. Cuba lagi apabila anda kembali dalam talian.</translation>
 <translation id="2509468283778169019">Kekunci CAPS LOCK dihidupkan</translation>
+<translation id="2514326558286966059">Buka kunci dengan lebih cepat menggunakan cap jari anda</translation>
 <translation id="2514415433888497495">Hentikan <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> kini <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">Buka pilihan kebolehaksesan</translation>
 <translation id="2516416533263263796">Fokus dihidupkan, masa berbaki 10 minit lagi</translation>
 <translation id="2516637483312286228">Edit kawalan permainan</translation>
+<translation id="2517472476991765520">Imbas</translation>
 <translation id="252054055865191167">Alat penanda</translation>
 <translation id="2526581474998477112">Buka kunci tetingkap</translation>
 <translation id="2528111225373402384">Tetapan tempat liputan</translation>
@@ -569,6 +585,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Padam"</translation>
 <translation id="2750941250130734256">Tetingkap aktif tidak didok.</translation>
+<translation id="2755349111255270002">Tetapkan semula <ph name="DEVICE_TYPE" /> ini</translation>
 <translation id="2761723519669354964">Buka item yang diserlahkan daripada rak</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hingga <ph name="KEY_TWO" /></translation>
@@ -613,10 +630,12 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> yang lalu</translation>
 <translation id="2872353916818027657">Tukar monitor utama</translation>
 <translation id="2872961005593481000">Mematikan</translation>
+<translation id="2876336351874743617">Jari 2</translation>
 <translation id="2876338922445400217">Zum masuk pada skrin</translation>
 <translation id="2876760662374103627">Kawalan wajah aktif</translation>
 <translation id="2878884018241093801">Tiada item terbaharu</translation>
 <translation id="2880541185262491188">Terlalu banyak percubaan PIN. Tunggu selama <ph name="TIME_LEFT" /> dan cuba sekali lagi</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> akan dimulakan semula dan ditetapkan semula buat sementara waktu</translation>
 <translation id="2883271196820422439">Sambung semula kekunci tetikus</translation>
 <translation id="2885950158625301909">Ketahui lebih lanjut</translation>
 <translation id="2891209721153296020">"Nyahpilih"</translation>
@@ -656,6 +675,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2993956882370897557">Cuba menggunakan End? Gunakan</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Edit saiz skrin</translation>
+<translation id="3001835006423291524">Sentuh penderia cap jari di penjuru kanan sebelah bawah papan kekunci anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="301282384882049174">Dikongsi oleh pentadbir anda</translation>
@@ -678,6 +698,8 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3062298103034426069">Tidak disokong</translation>
 <translation id="3068622547379332530">Versi <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Rak di sebelah kiri</translation>
+<translation id="3075144191779656260">Sentuh penderia cap jari di sebelah kiri <ph name="DEVICE_TYPE" /> anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
+<translation id="3075874217500066906">Mula semula perlu dilakukan untuk memulakan proses Powerwash. Selepas memulakan semula, anda akan diminta mengesahkan bahawa anda ingin meneruskan.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Kembangkan menu</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -703,6 +725,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Jenis kerja kelas</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">Peranti anda akan ditetapkan semula dan semua akaun pengguna serta data setempat akan dipadamkan. Proses ini tidak boleh dibuat asal.</translation>
 <translation id="3130793786899299931">Ubah panjang teks</translation>
 <translation id="3134486240968249588">Beberapa perkara yang perlu diingati</translation>
 <translation id="3139188263101386725">Gunakan pintasan yang telah dikemaskinikan</translation>
@@ -719,6 +742,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3174897399179348329">Cuba menggunakan Halaman Ke Atas? Gunakan</translation>
 <translation id="3176221688814061633">Chromebook atau peranti Bluetooth anda menggunakan versi Bluetooth yang lama. Hidupkan Peleraian Super Bluetooth atau gunakan mikrofon dalaman untuk kualiti audio yang lebih baik.</translation>
 <translation id="3181441307743005334">Proses mula semula mungkin mengambil sedikit masa</translation>
+<translation id="3183700187146209259">Tidak dapat memasang perisian pengimbas</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Disambungkan ke peranti}other{Disambungkan ke # peranti}}</translation>
 <translation id="3203405173652969239">Akses Suis didayakan</translation>
 <translation id="3204648577100496185">Data yang berkaitan dengan apl ini mungkin dialih keluar daripada peranti ini</translation>
@@ -766,6 +790,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3346728094401457853">Masukkan kata laluan peranti untuk <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Pilih teks daripada kursor di penghujung baris</translation>
 <translation id="3349345708646875009">Buka pengurus tugas</translation>
+<translation id="3353786022389205125">Hidupkan "Tunjukkan skrin kunci apabila bangkit daripada tidur" dan cuba lagi</translation>
 <translation id="3364721542077212959">Alatan stilus</translation>
 <translation id="3365281428003534650">Tetapkan pemasa, tugasan dan muzik</translation>
 <translation id="3365977133351922112">Telefon anda terlalu jauh. Dekatkan telefon anda.</translation>
@@ -780,6 +805,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3394432020929931914">, dikembangkan</translation>
 <translation id="3401474642070997151">Untuk menyesuaikan cadangan, klik kanan atau tekan &amp; tahan pada cadangan</translation>
 <translation id="3405101454990027959">Hidupkan akses mikrofon</translation>
+<translation id="3407967630066378878">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di sebelah kiri <ph name="DEVICE_TYPE" /> ini. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="3409584356742878290">Tunjukkan atau sembunyikan pemeriksa Alatan Pembangun</translation>
 <translation id="3410336247007142655">Tunjukkan tetapan tema gelap</translation>
 <translation id="3413817803639110246">Tiada apa-apa untuk dilihat</translation>
@@ -919,9 +945,11 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
 <translation id="3743775386021959186">Fokus dihidupkan, masa berbaki <ph name="REMAINING_TIME" /> lagi</translation>
 <translation id="3750403286520637847">Sembunyikan cadangan cuaca</translation>
+<translation id="3752253558646317685">Minta anak anda mengangkat jarinya beberapa kali untuk menyimpan cap jari</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Data apl boleh jadi sebarang data yang telah disimpan oleh apl (berdasarkan tetapan pembangun), termasuk data seperti kenalan, mesej dan foto.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Data sandaran tidak dikira dalam kuota storan Drive anak anda.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Anda boleh mematikan perkhidmatan ini dalam Tetapan.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620"><ph name="PHONE_NAME" /> anda kini boleh membuka kunci <ph name="DEVICE_TYPE" /> ini juga.</translation>
 <translation id="3756485814916578707">Menghantar skrin</translation>
 <translation id="3765841382945324995">Pintasan <ph name="SIX_PACK_KEY_NAME" /> dikemaskinikan kepada <ph name="NEW_SHORTCUT" /> daripada <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
@@ -940,6 +968,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3799080171973636491">Anda menekan pintasan papan kekunci untuk penggadang skrin penuh. Adakah anda ingin menghidupkannya?</translation>
 <translation id="3804737937830804242">Kuncupkan kamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Tiada hasil carian lain.}other{# emoji. Tiada hasil carian lain.}}</translation>
+<translation id="381202950560906753">Tambahkan yang lain</translation>
 <translation id="3822403841174077928">Tidak dapat menyalin teks dengan pemformatan</translation>
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Tindakan ini akan membenarkan akses kamera untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
@@ -954,6 +983,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3848526302597027234">Akses kebenaran yang berikut:</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Permulaan</translation>
+<translation id="3857807444929313943">Angkat jari, kemudian sentuh lagi</translation>
 <translation id="3859364108019690">Tidak dapat menstrim apl</translation>
 <translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
 <translation id="3861651314799684201">Tekan kekunci enter untuk merakam skrin penuh</translation>
@@ -972,6 +1002,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3923221004758245114">Alih keluar <ph name="VM_NAME" /> daripada <ph name="DEVICE_TYPE" /> anda? Tindakan ini akan memadamkan semua apl dan data dalam mesin maya!</translation>
 <translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuatkan acara.</translation>
+<translation id="3926002189479431949">Telefon Smart Lock telah berubah</translation>
 <translation id="3927049937406914450">Cuaca tidak tersedia kerana akses lokasi dimatikan. Anda boleh menghidupkan akses lokasi dalam tetapan.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3934456833412894880">Pengecasan mudah suai dihidupkan. Bateri anda akan kekal pada 80% untuk memanjangkan hayat bateri dan mengecas sepenuhnya apabila anda memerlukannya.</translation>
@@ -1031,6 +1062,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4114315158543974537">Hidupkan Hab Telefon</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116704186509653070">Buka sekali lagi</translation>
 <translation id="411881149140864134">Aktifkan meja di sebelah kiri</translation>
 <translation id="4119928251231465047">Terlalu banyak percubaan PIN</translation>
 <translation id="412298498316631026">tetingkap</translation>
@@ -1097,6 +1129,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4279490309300973883">Pencerminan</translation>
 <translation id="4280601795273309128">Kemaskinian keselamatan tamat. Tingkatkan peranti anda.</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
+<translation id="4282196459431406533">Smart Lock dihidupkan</translation>
 <translation id="4283888303416325161">Masukkan kata laluan untuk meningkatkan keselamatan</translation>
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="428715201724021596">Menyambung kepada profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
@@ -1122,6 +1155,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4338109981321384717">Kanta pembesar</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Diredamkan</translation>
 <translation id="4351244548802238354">Tutup dialog</translation>
+<translation id="435527878592612277">Pilih foto anda</translation>
 <translation id="4356872429719185452">Tunjukkan butiran tempat liputan. Tempat liputan sedang dihidupkan.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Merakam</translation>
 <translation id="4368227575116094370">Buat Helaian Google</translation>
@@ -1156,6 +1190,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan penting}other{# pemberitahuan penting}}</translation>
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="4451374464530248585">Pintasan papan kekunci Alt + Anak Panah ke Bawah telah berubah. Untuk menggunakan kekunci Page Down, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Bawah.</translation>
+<translation id="4453430595102511050">Sentuh penderia cap jari di penjuru kanan sebelah atas papan kekunci anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="445765352722456792">Sesuaikan cadangan</translation>
 <translation id="4458688154122353284">Hentikan rakaman skrin</translation>
 <translation id="445923051607553918">Sertai rangkaian Wi-Fi</translation>
@@ -1172,6 +1207,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4485506555414638855">Menolak penyediaan pemaparan foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
 <translation id="4491109536499578614">Imej</translation>
 <translation id="4493468155686877504">Disyorkan (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">Ikon tanda seru</translation>
 <translation id="450584155212756404">Saluran Pembangunan</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
@@ -1181,6 +1217,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4527045527269911712">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan.</translation>
 <translation id="4531536770443562276">Hanya skrin penuh tersedia</translation>
 <translation id="4533343294786968049">Memanjangkan hayat bateri anda. Bateri akan dicas sepenuhnya pada <ph name="FULLY_CHARGE_TIME" />.</translation>
+<translation id="4534661889221639075">Cuba lagi.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> sehingga penuh</translation>
 <translation id="4538824937723742295">Ambil tangkapan skrin bagi skrin penuh</translation>
 <translation id="4539127209940689201">Cetak halaman semasa</translation>
@@ -1196,6 +1233,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4560576029703263363">Dihidupkan</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">Pasang kemaskinian &amp; apl. Dengan meneruskan proses, anda bersetuju bahawa peranti ini mungkin memuat turun dan memasang kemaskinian serta apl secara automatik daripada Google, pembawa anda dan pengeluar peranti anda juga, mungkin dengan menggunakan data selular. Sesetengah apl ini mungkin menawarkan pembelian dalam apl. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang Autopasang Play<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">Jari 3</translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
 <translation id="4566144812051858745">Tidak berminat dengan apa-apa cadangan</translation>
 <translation id="4569753163207712681">Lihat foto, media dan apl terbaharu telefon anda</translation>
@@ -1208,7 +1246,9 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4585337515783392668">Berhenti menghantar pada penerima yang tidak diketahui</translation>
 <translation id="4596144739579517758">Tema gelap dimatikan</translation>
 <translation id="4596442969149038771"><ph name="USER" /> telah berkongsi</translation>
+<translation id="4598776695426288251">Wi-Fi tersedia melalui berbilang peranti</translation>
 <translation id="4610493115106525653">Output yang baik</translation>
+<translation id="4611114513649582138">Sambungan data tersedia</translation>
 <translation id="4611292653554630842">Log masuk</translation>
 <translation id="4613144866899789710">Membatalkan pemasangan Linux...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> disambungkan</translation>
@@ -1323,6 +1363,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4937170330762390348">Dengan pengimlakan, anda boleh menaip menggunakan suara anda. Tekan kunci pengimlakan atau pilih ikon mikrofon pada bahagian bawah skrin apabila anda berada pada medan teks. Bahasa pengimlakan anda ditetapkan kepada <ph name="LANGUAGE" />. Fail ucapan akan dimuat turun supaya anda boleh menggunakan pengimlakan luar talian. Anda boleh menukar bahasa pengimlakan pada bila-bila masa dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="4938176435186993759">Sembunyikan semua cadangan</translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
+<translation id="4945439665401275950">Untuk menyediakan cap jari, minta anak anda menyentuh butang kuasa. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="4946376291507881335">Tangkap</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
 <translation id="4950800194215951939">Sesuaikan pengalaman permainan anda</translation>
@@ -1342,6 +1383,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4981175556418720939">Diubah suai <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Meja 16</translation>
 <translation id="4989163558385430922">Lihat semua</translation>
+<translation id="4992458225095111526">Sahkan Powerwash</translation>
 <translation id="4995963195354861331">Dialog alu-aluan</translation>
 <translation id="4996265698919320288">Merakam</translation>
 <translation id="5003993274120026347">Ayat seterusnya</translation>
@@ -1388,6 +1430,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5121628974188116412">Pergi ke bahagian bawah halaman</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> pratonton. Meja tidak aktif.</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
+<translation id="5137349216872139332">Sambungan tempat liputan segera gagal</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, Carian <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Tukar input audio?</translation>
 <translation id="5147567197700016471">Tidak berkunci</translation>
@@ -1461,6 +1504,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5322611492012084517">Tidak dapat menemukan telefon anda</translation>
 <translation id="5323994101633366939">Sembunyikan nama meja</translation>
 <translation id="5327248766486351172">Nama</translation>
+<translation id="532943162177641444">Ketik pemberitahuan pada <ph name="PHONE_NAME" /> anda untuk menyediakan tempat liputan mudah alih yang boleh digunakan oleh peranti ini.</translation>
 <translation id="5329548388331921293">Menyambung…</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
 <translation id="533282197239610265">Tunjukkan peranti cast</translation>
@@ -1471,6 +1515,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5356963482258194581">Beralih antara tema gelap dengan cerah. Klik kanan pada desktop dan pilih Kertas dinding &amp; gaya.</translation>
 <translation id="536019650977002321">Pentadbir anda tidak membenarkan rakaman audio. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5361524080961918551">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun sebahagiannya</translation>
+<translation id="5363109466694494651">Powerwash dan Berbalik</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pergi ke tab ini</translation>
 <translation id="5364693579536176785">ruang storan</translation>
 <translation id="5369573834963677938">Kawalan wajah akan tersedia kepada semua pengguna pada peranti</translation>
@@ -1630,6 +1675,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> lagi</translation>
+<translation id="5830205393314753525">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Cari dengan Google</translation>
@@ -1647,6 +1693,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5876666360658629066">Masukkan kod ibu bapa</translation>
 <translation id="5881540930187678962">Sediakan Hab Telefon kemudian</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
+<translation id="5886009770935151472">Jari 1</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> ditetapkan kepada <ph name="DESK_TITLE" /> dan tidak ditetapkan daripada semua meja.</translation>
 <translation id="588817334757907802">Buka fail dalam penyemak imbas Chrome</translation>
 <translation id="5892014525522223653">Anda luar talian.</translation>
@@ -1688,6 +1735,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> daripada <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Serlahkan item seterusnya pada rak</translation>
 <translation id="6015573907265691211">Tandai sebagai selesai</translation>
+<translation id="6016551720757758985">Sahkan Powerwash dengan kembali ke versi terdahulu</translation>
 <translation id="6018164090099858612">Keluar daripada mod cermin</translation>
 <translation id="6019566113895157499">Pintasan Kekunci</translation>
 <translation id="602001110135236999">Tatal ke kiri</translation>
@@ -1736,6 +1784,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
 <translation id="6127395413317891856">Anda luar talian. Periksa sambungan anda, kemudian cuba lagi.</translation>
 <translation id="6129953537138746214">Bar ruang</translation>
+<translation id="6132714462430777655">Langkau pendaftaran sekolah?</translation>
 <translation id="6136872094979134163">Tidak dapat mendapatkan kembali berita Steam untuk Chromebook.</translation>
 <translation id="6137566720514957455">Buka dialog alih keluar untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Apakah yang mahu anda fokuskan?</translation>
@@ -1770,6 +1819,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> di luar talian. Sambung ke Internet dan cuba lagi.</translation>
 <translation id="6220928844947387476">Kini anda boleh merakam diri anda dan skrin anda secara serentak</translation>
 <translation id="622484624075952240">Bawah</translation>
+<translation id="6225475702458870625">Sambungan data tersedia daripada <ph name="PHONE_NAME" /> anda</translation>
 <translation id="6228457605945141550">Kurangkan kecerahan</translation>
 <translation id="623116199192908855">Hantar skrin anda daripada Chromebook anda</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
@@ -1786,6 +1836,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
 <translation id="6274202259872570803">Rakaman skrin</translation>
 <translation id="6274422179279280249">Sisipkan pautan, emoji dan pelbagai lagi. Anda juga boleh mendapatkan bantuan menulis menggunakan Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proksi memerlukan nama pengguna dan kata laluan.</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
 <translation id="6285871695023807425">Tambahkan pada Calendar</translation>
 <translation id="628699625505156622">Gunakan lokasi. Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti ini. Ketepatan Lokasi menyediakan lokasi yang lebih tepat untuk apl dan perkhidmatan Android. Untuk berbuat demikian, Google memproses maklumat tentang penderia peranti dan isyarat wayarles secara berkala daripada peranti ini untuk mengumpulkan lokasi isyarat wayarles. Maklumat ini digunakan tanpa mengenal pasti mana-mana individu untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi serta untuk meningkatkan, menyediakan dan mengekalkan perkhidmatan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang menggunakan lokasi<ph name="END_LINK1" /></translation>
@@ -1801,6 +1852,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6317369057005134371">Menunggu tetingkap aplikasi...</translation>
 <translation id="6319058840130157106">Bergerak ke belakang antara penjuru bawah sebelah kanan, Pelancar, bar alamat, bar penanda halaman, laman web yang terbuka dengan muat turun</translation>
 <translation id="6319503618073410818">Lihat butiran dalam penyemak imbas</translation>
+<translation id="6322370287306604163">Buka kunci dengan lebih cepat menggunakan cap jari</translation>
 <translation id="6324334979701518365">Tidak dapat melancarkan apl Chrome yang tidak disokong. Maklumi pentadbir anda tentang masalah ini.</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6325525973963619867">Gagal</translation>
@@ -1810,6 +1862,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Jika anda terlupa PIN anda, cuba pulihkan semula pengguna ini.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> disambungkan</translation>
+<translation id="6345418402353744910">Nama pengguna dan kata laluan anda diperlukan untuk proksi <ph name="PROXY" /> agar pentadbir dapat mengkonfigurasikan rangkaian anda</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> kemudian <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">CADANGAN APL</translation>
 <translation id="6352082849089527770">Rangkaian tidak diketahui</translation>
@@ -1829,6 +1882,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6414618057231176439">Pilih versi <ph name="VM_NAME" /> untuk dipasang.</translation>
 <translation id="641469293210305670">Pasang Kemas Kini dan Apl</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6418160186546245112">Berbalik kepada versi <ph name="IDS_SHORT_PRODUCT_NAME" /> yang dipasang sebelum ini</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6418511932144861495">Pasang kemas kini genting</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1898,6 +1952,7 @@ Pemasangan baharu</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera diautojajar ke penjuru kiri sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="6605415194043280389">Fokus dihidupkan</translation>
+<translation id="6608773371844092260">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di sebelah kanan <ph name="DEVICE_TYPE" /> ini. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="6612802754306526077">Mod rakaman skrin dipilih</translation>
 <translation id="6612889377159412215">subtugasan</translation>
@@ -1920,6 +1975,7 @@ Pemasangan baharu</translation>
 <translation id="6650742588569439432">Tidak dapat memuatkan item.</translation>
 <translation id="6650933572246256093">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kekunci laluan ini pada peranti tersebut: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Kata laluan</translation>
+<translation id="6663190258859265334">Lakukan Powerwash pada <ph name="DEVICE_TYPE" /> anda dan kembali kepada versi sebelumnya.</translation>
 <translation id="666343722268997814">Buka menu klik kanan untuk item yang diserlahkan</translation>
 <translation id="6665545700722362599">Berikan kebenaran kepada laman web, apl dan sambungan untuk menggunakan perkhidmatan lokasi, mikrofon dan kamera peranti atau ciri lain</translation>
 <translation id="6667908387435388584">Sambung kepada tempat liputan telefon anda, senyapkan dan kesan lokasi peranti anda serta lihat tab Chrome baru-baru ini yang dibuka pada telefon anda</translation>
@@ -1947,6 +2003,7 @@ Pemasangan baharu</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera dan mikrofon sedang digunakan</translation>
 <translation id="6739144137573853180">PERGI KE TETAPAN</translation>
+<translation id="6745592621698551453">Kemas kini sekarang</translation>
 <translation id="6747985245839783873">Kuasa bateri pada tahap <ph name="PERCENTAGE" /> peratus. Penjimat Bateri dihidupkan.</translation>
 <translation id="6751052314767925245">Dikuatkuasakan oleh pentadbir anda</translation>
 <translation id="6751826523481687655">Pengesanan prestasi dihidupkan</translation>
@@ -1954,6 +2011,7 @@ Pemasangan baharu</translation>
 <translation id="6753390234084146956">tab</translation>
 <translation id="6754918760968695779">Sisipan Pantas</translation>
 <translation id="6757237461819837179">Tiada media sedang dimainkan</translation>
+<translation id="6759193508432371551">Tetapan semula kilang</translation>
 <translation id="6760438044935091345">Papan pemuka permainan</translation>
 <translation id="6768043681523654438">storan</translation>
 <translation id="6769195697113506406">Imej disisipkan</translation>
@@ -1968,6 +2026,7 @@ Pemasangan baharu</translation>
 <translation id="6792351896138862473">Tidak dapat melancarkan apl kios yang tidak disokong. Maklumi pentadbir anda tentang masalah ini.</translation>
 <translation id="679368458793552943">Zum masuk apabila penggadang dihidupkan</translation>
 <translation id="6794287755901682422">Item ini mengandungi: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797493596609571643">Op, sesuatu telah berlaku.</translation>
 <translation id="6797745268063125932">Biarkan hidup</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
 <translation id="6802687695197837794">Tindakan ini akan membenarkan akses kepada <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon</translation>
@@ -1981,6 +2040,7 @@ Pemasangan baharu</translation>
 <translation id="682971198310367122">Dasar privasi Google</translation>
 <translation id="6836499262298959512">Fail berbahaya</translation>
 <translation id="6837621009301897464">Untuk membuat tangkapan skrin, tekan</translation>
+<translation id="6848716236260083778">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6852052252232534364">Klik untuk aktifkan</translation>
 <translation id="6852628153543175788">Tambahkan 10 minit</translation>
 <translation id="6855029042976311970">Diedit sebentar tadi</translation>
@@ -2089,6 +2149,7 @@ Pemasangan baharu</translation>
 <translation id="7188494361780961876">Menu dialihkan ke sudut atas sebelah kiri skrin.</translation>
 <translation id="7198435252016571249">Kamera diautojajar ke penjuru kanan sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="7219573373513695352">Tiada peranti disambungkan</translation>
+<translation id="7228056665272655255">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di penjuru kanan sebelah atas papan kekunci. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="7228968829656641943">Pilih untuk membuat carian pada skrin saya. Tekan tab, kemudian tekan kekunci ruang untuk menavigasi papan kekunci.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> memori | Jumlah <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">Membatakan pemulihan Linux</translation>
@@ -2103,6 +2164,7 @@ Pemasangan baharu</translation>
 <translation id="7258828758145722155">Diedit semalam</translation>
 <translation id="726276584504105859">Seret ke sini untuk menggunakan skrin pisah</translation>
 <translation id="7264788308526527464">Kurangkan <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267875682732693301">Angkat jari berulang kali untuk menambahkan beberapa bahagian cap jari anda</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + undur ruang</translation>
 <translation id="7285232777292757180">Gunakan alat tangkapan skrin dalam tetapan pantas untuk mengambil tangkapan skrin</translation>
 <translation id="7301826272005790482">Ketepikan cadangan tetingkap</translation>
@@ -2127,6 +2189,7 @@ Pemasangan baharu</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>
 <translation id="7360036564632145207">Tindakan menukar perlindungan akses data anda untuk tetapan peranti persisian dapat mengoptimumkan prestasi</translation>
 <translation id="736045644501761622">Tetapkan hiasan latar &amp; gaya</translation>
+<translation id="7361914392989692067">Sentuh butang kuasa dengan jari anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="7368041336688136012">Anda mestilah berumur sekurang-kurangnya 18 tahun untuk menggunakan Bantu saya baca, Bantu saya tulis dan buat imej dengan AI.</translation>
 <translation id="7371404428569700291">Rakam tetingkap</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> memori tersedia daripada jumlah <ph name="TOTAL_MEMORY" /></translation>
@@ -2141,6 +2204,7 @@ Pemasangan baharu</translation>
 <translation id="7384028040782072252">Klik kanan di mana-mana untuk menyusun semula apl anda</translation>
 <translation id="7386767620098596324">Togol sambungan rangkaian. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Anda boleh menyediakan Hab Telefon daripada Tetapan pada bila-bila masa selepas ini.</translation>
+<translation id="7400839060291901923">Sediakan sambungan pada <ph name="PHONE_NAME" /> anda</translation>
 <translation id="7401222354741467707">Ambil tangkapan skrin penuh atau rakaman skrin</translation>
 <translation id="7401788553834047908">Jangan Ganggu ketika sesi Fokus</translation>
 <translation id="7405710164030118432">Untuk membuka kunci peranti, masukkan kod akses ibu bapa Family Link anda</translation>
@@ -2157,6 +2221,7 @@ Pemasangan baharu</translation>
 <translation id="7457027286267861992">Ruang cakera tidak mencukupi. Sila kosongkan lagi ruang cakera dan cuba lagi. Kod ralat ialah <ph name="ERROR" />.</translation>
 <translation id="7459485586006128091">Tempat liputan telah dimatikan kerana ralat dalaman. Cuba sambungkan semula tempat liputan dalam masa beberapa minit.</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="746216226901520237">Selepas ini, telefon anda akan membuka kunci <ph name="DEVICE_TYPE" /> anda. Anda boleh mematikan Smart Lock dalam Tetapan.</translation>
 <translation id="746232733191930409">Mod rakaman skrin</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
@@ -2211,6 +2276,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7579778809502851308">Tangkapan skrin</translation>
 <translation id="7588317312481506627">Disalin kepada papan keratan.</translation>
 <translation id="7593891976182323525">Search atau Shift</translation>
+<translation id="7594725637786616550">Lakukan Powerwash untuk menetapkan semula <ph name="DEVICE_TYPE" /> anda agar menjadi seperti baharu.</translation>
 <translation id="7595453277607160340">Untuk menggunakan apl Android dan memastikan <ph name="DEVICE_TYPE" /> anda berfungsi dengan betul, log masuk semula dan kemas kini.</translation>
 <translation id="7598054670902114203">Gambar penggunaan CPU, <ph name="CPU_USEAGE" />%. Suhu <ph name="TEMPERATURE" /> darjah celsius, kelajuan semasa: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">Menyisipkan hasil carian yang dipilih</translation>
@@ -2231,6 +2297,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7632948528260659758">Apl kiosk berikut telah gagal untuk mengemas kini:</translation>
 <translation id="7634566076839829401">Sesuatu yang tidak kena telah berlaku. Sila cuba lagi.</translation>
 <translation id="7634648064048557203">Kamera diautojajar ke penjuru kanan sebelah bawah</translation>
+<translation id="7637253234491814483">Sentuh penderia cap jari di penjuru kanan sebelah atas papan kekunci anda, bersebelahan dengan butang Kuasa. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="7638572816805275740">Ambil tangkapan skrin tetingkap atau rakaman skrin</translation>
 <translation id="7642106959537987271">mod penyongsangan warna</translation>
 <translation id="7642647758716480637">Buka tetapan untuk <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -2282,6 +2349,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="77747521138552256">Terlalu banyak percubaan PIN. Tunggu <ph name="TIME_LEFT" /> dan cuba PIN semula atau masukkan kata laluan untuk log masuk dengan serta-merta.</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Putarkan Skrin</translation>
+<translation id="7781335840981796660">Semua akaun pengguna dan data setempat akan dialih keluar.</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7787212146956232129">Peranti input dan output telah ditetapkan. Akses Tetapan untuk membuat perubahan.</translation>
 <translation id="7792590255364786396">Kelihatan</translation>
@@ -2343,6 +2411,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943516765291457328">Hidupkan Bluetooth untuk mengimbas tempat liputan berdekatan</translation>
 <translation id="7944023924886109030">Lihat semua peristiwa hari ini</translation>
+<translation id="7944847494038629732">Cabut dan pasang semula kabel USB pengimbas untuk mencuba semula</translation>
 <translation id="7945357288295809525">Memaparkan tetapan kebolehaksesan, "<ph name="ENABLED_FEATURES" />" didayakan.</translation>
 <translation id="7946681191253332687">Kemaskinian keselamatan lanjutan tersedia</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
@@ -2374,6 +2443,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8004512796067398576">Kenaikan</translation>
 <translation id="8005527720597583355">Mulakan sesi Fokus</translation>
 <translation id="8008356846765065031">Internet terputus sambungan. Sila periksa sambungan internet anda.</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> tidak dapat kembali kepada versi yang dipasang sebelumnya. Sila cuba Powerwash peranti anda lagi.</translation>
 <translation id="8015361438441228492">Tidak dapat mengedit tugas.</translation>
 <translation id="8027187124910699148">Sambung semula kumpulan yang dicadangkan</translation>
 <translation id="802782383769312836">Meja sebelumnya: <ph name="DESK_NAME" />. Meja <ph name="DESK_INDEX" /> daripada <ph name="DESK_COUNT" />.</translation>
@@ -2452,15 +2522,18 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8249048954461686687">Folder OEM</translation>
 <translation id="825129991941217170">Paparkan semua kandungan Google Drive</translation>
 <translation id="8261506727792406068">Padam</translation>
+<translation id="8261625296061301062">Perisian pengimba dipasang</translation>
 <translation id="8262312463845990408">Togol main balik</translation>
 <translation id="8268302343625273732">Lihat semua tugasan dalam Google Classroom</translation>
 <translation id="8277261673056602147">Serlahkan teks pada skrin anda</translation>
+<translation id="8281886186245836920">Langkau</translation>
 <translation id="8282784978194352587">Anda berjaya!</translation>
 <translation id="8287009018010202411">Produktiviti</translation>
 <translation id="828708037801473432">Dimatikan</translation>
 <translation id="8289128870594824098">Saiz cakera</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8300451473979404345">Pemegang yang dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
+<translation id="8301242268274839723">Sentuh penderia cap jari di penjuru kiri sebelah bawah papan kekunci anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock dihidupkan</translation>
@@ -2480,10 +2553,12 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8371991222807690464">Prestasi peranti persisian mungkin terhad dalam mod Tetamu</translation>
 <translation id="8374601332003098278">Tekan kekunci enter untuk merakam skrin separa</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan telefon anda akan disambungkan secara automatik</translation>
+<translation id="8382677870544805359">Anda perlu melakukan tetapan semula kilang bagi peranti ini untuk menggunakan ciri perusahaan.</translation>
 <translation id="8382715499079447151">Perlindungan paparan</translation>
 <translation id="8383614331548401927">Ringkasan Alu-aluan</translation>
 <translation id="838540623579162843">Dapatkan Music Premium</translation>
 <translation id="8388750414311082622">Meja terakhir tidak boleh dialih keluar.</translation>
+<translation id="8390392581097975659">Memasang perisian pengimbas</translation>
 <translation id="8394567579869570560">Ibu/bapa anda mengunci peranti ini</translation>
 <translation id="8401850874595457088">Masukkan menu bahasa</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2547,6 +2622,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="857201607579416096">Menu dialihkan ke sudut bawah sebelah kanan skrin.</translation>
 <translation id="8581946341807941670">Tekan <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> dan klik pautan</translation>
 <translation id="8598235756057743477">Isih apl anda mengikut nama atau warna</translation>
+<translation id="8599864823732014237">Langkau pendaftaran perusahaan?</translation>
 <translation id="8609384513243082612">Buka tab baharu</translation>
 <translation id="861045123704058818">Apl disusun mengikut kategori buat sementara waktu</translation>
 <translation id="8612216344243590325">Simpan fail penting dalam <ph name="HOLDING_SPACE_TITLE" />, bukannya pada desktop. Seret fail kepada <ph name="HOLDING_SPACE_TITLE" />.</translation>
@@ -2583,6 +2659,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8700087567921985940">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang lokasi<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Mulakan rakaman. Sebaik sahaja rakaman dimulakan, gunakan Alt + Shift + L untuk menavigasi ke rak dan cari butang hentikan rakaman</translation>
 <translation id="8704155109538237473">Fokuskan pada tetingkap gambar dalam gambar</translation>
+<translation id="8705580154597116082">Wi-Fi tersedia melalui telefon</translation>
 <translation id="870917907284186124">Hidupkan/Matikan pengimlakan (taip menggunakan suara anda)</translation>
 <translation id="8711169534266271368">Pilihan papan pemuka permainan</translation>
 <translation id="8712637175834984815">Faham</translation>
@@ -2591,6 +2668,8 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8717459106217102612">Pilih perkataan atau huruf sebelumnya</translation>
 <translation id="8721053961083920564">Togol Kelantangan. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan skrin penuh</translation>
+<translation id="8724405322205516354">Apabila anda melihat ikon ini, gunakan cap jari anda untuk pengenalan atau untuk membenarkan pembelian.</translation>
+<translation id="8724409975248965964">Cap jari ditambahkan</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8725214031272624704">Tunjukkan senarai kaedah input yang tersedia</translation>
 <translation id="8730621377337864115">Selesai</translation>
@@ -2614,6 +2693,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="878215960996152260"><ph name="APP_NAME" />, Apl yang Dipasang, Disekat</translation>
 <translation id="8782565991310229362">Pelancaran aplikasi kios dibatalkan.</translation>
 <translation id="8785070478575117577">Sambung kepada <ph name="NETWORK_NAME" /></translation>
+<translation id="8786824282808281903">Apabila anak anda melihat ikon ini, cap jari boleh digunakan untuk pengenalan atau meluluskan pembelian.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Bergerak ke hadapan antara penjuru bawah sebelah kanan, Pelancar, bar alamat, bar penanda halaman, laman web yang terbuka dengan muat turun</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -2626,6 +2706,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8815390544836110344">Tekan pintasan tangkapan skrin, Ctrl tambah Shift tambah kekunci mod Ikhtisar</translation>
 <translation id="881757059229893486">Tetapan Kaedah Masukan</translation>
 <translation id="8819728065740986820">Pengecasan boleh suai dihidupkan</translation>
+<translation id="882204272221080310">Kemas kini perisian tegar untuk keselamatan tambahan.</translation>
 <translation id="8822104519413696986">Permainan ini ialah permainan sentuh</translation>
 <translation id="8825863694328519386">Leret dari kiri untuk kembali</translation>
 <translation id="8832513206237979203">Tunjukkan atau sembunyikan bar penanda halaman</translation>
@@ -2689,6 +2770,8 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8991648557324317894">Tekan fn + Sisipan Pantas atau Shift untuk membatalkan tindakan.</translation>
 <translation id="899350903320462459">Buka kunci peranti sebagai <ph name="LOGIN_ID" /> untuk melaksanakan tindakan pemberitahuan</translation>
 <translation id="8993733019280019776">Adakah anda sedang bercakap? Mikrofon anda dimatikan. Pilih mikrofon untuk menghidupkan mikrofon anda.</translation>
+<translation id="8993945059918628059">Sentuh penderia cap jari dengan jari anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
+<translation id="9000185763019430629">Sentuh penderia cap jari di sebelah kanan <ph name="DEVICE_TYPE" /> anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="9000771174482730261">URUS STORAN</translation>
 <translation id="9003374957546315126">Emoji dan pelbagai lagi</translation>
 <translation id="9005984960510803406">Buka tetingkap Crosh</translation>
@@ -2702,6 +2785,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9030515284705930323">Organisasi anda belum mendayakan Gedung Google Play untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="9030665205623277906">Gambaran penggunaan CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Fail Linux</translation>
+<translation id="9037818663270399707">Sambungan anda tidak peribadi untuk semua trafik rangkaian</translation>
 <translation id="9047624247355796468">Buka tetapan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth tidak tersedia</translation>
 <translation id="9050999376345823055">Tekan "." untuk dikeluarkan</translation>

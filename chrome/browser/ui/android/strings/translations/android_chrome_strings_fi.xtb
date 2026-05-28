@@ -196,7 +196,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1877073879466606884">Profiili, johon olet kirjautunut, on hallinnoitu profiili. Järjestelmänvalvoja voi tehdä muutoksia profiilin asetuksiin etänä, analysoida selaimen tietoja raporttien avulla ja tehdä muita tarvittavia tehtäviä.</translation>
 <translation id="1879904908408734349">Kirjautumisen alapaneeli on suljettu</translation>
 <translation id="1883903952484604915">Omat tiedostot</translation>
-<translation id="1889626070177134359">Yllä olevassa listassa on <ph name="SUGGESTIONS_COUNT" /> ehdotusta.</translation>
 <translation id="189358972401248634">Muut kielet</translation>
 <translation id="1899175549411605574">Hintatilastojen alapaneeli</translation>
 <translation id="1900260903084164610">Jatkamalla hyväksyt <ph name="BEGIN_TOS_LINK" />käyttöehdot<ph name="END_TOS_LINK" />.</translation>

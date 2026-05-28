@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'afficheront ici.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, onglet en mode Incrustation d'image</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Restaurer 1 fenêtre}one{Restaurer # fenêtre}other{Restaurer # fenêtres}}</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1135018701024399762">Le mode Navigation privée préserve la confidentialité de votre navigation des autres personnes qui utilisent votre appareil</translation>
 <translation id="113752097246673894">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome au moyen de l'adresse <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier les paramètres de votre profil à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires.</translation>
 <translation id="1879904908408734349">La zone de contenu dans le bas de l'écran de connexion est fermée</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> éléments suggérés dans la liste ci-dessus.</translation>
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1899175549411605574">Zone de contenu dans le bas de l'écran concernant les statistiques sur les prix</translation>
 <translation id="1900260903084164610">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
 <translation id="3167258285411721858">Vous pouvez utiliser le site pour appareils mobiles de <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé et multisélectionné avec son désactivé</translation>
+<translation id="3183941812169784232">Restaurer toutes les fenêtres?</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3189635831478931757">Groupe d'onglets <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Fermer votre fenêtre actuelle?</translation>
@@ -722,6 +723,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4164642020717536140">Navigation Web rapide et sécurisée</translation>
 <translation id="4165077084524712774">Plus d'outils</translation>
 <translation id="4170577491341606575">Récupération de vos données en cours…</translation>
+<translation id="4176838562184310003">Chrome ne s'est pas fermé correctement et pourrait essayer de restaurer vos fenêtres et onglets perdus. Certaines fenêtres pourraient être réduites lors de la restauration.</translation>
 <translation id="4177222230309051052">Ajoutez tous vos favoris</translation>
 <translation id="4177501066905053472">Sujets d'annonces</translation>
 <translation id="417865198503699526">Recherchez un paramètre</translation>

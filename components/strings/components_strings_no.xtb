@@ -138,6 +138,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="121201262018556460">Du forsøkte å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som inneholder en svak nøkkel. En angriper kan ha løst den private nøkkelen, og tjeneren er kanskje ikke den tjeneren du forventet (det kan hende at du kommuniserer med en angriper).</translation>
 <translation id="1212527389003717329">Nedlastingen er startet. For å se den, trykk på og hold inne |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Bruk informasjon som er lagret i Google-kontoen din, til å autofylle passord, passnøkler, adresser, betalingsmåter og annen informasjon</translation>
+<translation id="1216257595811043403">Del faner automatisk</translation>
 <translation id="1219129156119358924">Systemsikkerhet</translation>
 <translation id="1219134100826635117">Administratoren din har blokkert denne handlingen</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 med RSA-kryptering</translation>
@@ -2197,6 +2198,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4434045419905280838">Forgrunnsvinduer/viderekoblinger</translation>
 <translation id="443673843213245140">Bruk av proxy-tjener er deaktivert, men det er angitt en uttrykkelig proxy-tjenerkonfigurasjon.</translation>
 <translation id="4438821706955556403">Vanlig pris</translation>
+<translation id="4439687924334332880">Få mer skreddersydde svar ved å automatisk dele åpne faner i dette vinduet hvis de er relatert til denne tråden. Du kan slå på dette for alle tråder i innstillingene.</translation>
 <translation id="4441832193888514600">Ignorert fordi regelen kun kan angis som brukerinnstillinger i nettskyen.</translation>
 <translation id="4444062564459679679">Allerede sendt til Chrome på <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Enter for å søke i faner</translation>
@@ -2299,7 +2301,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4640225694041297329">Vis resultater fra de siste 7 dagene</translation>
 <translation id="4642296966515958616">Oppdater Chrome for å bli med i denne fanegruppen.</translation>
 <translation id="464342062220857295">Søkefunksjoner</translation>
-<translation id="4643958597583594452">Chrome behandler sidetitler og nettadresser på enheten din eller i et privat område i skyen</translation>
 <translation id="4644567637638438744">Filer kan bare lastes opp hvis du er logget på Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Motsatt rekkefølge – forsiden ned</translation>
 <translation id="4648262692072505866">Hash-verdien må være i formatet SHA-256.</translation>
@@ -3156,6 +3157,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5995727681868049093">Administrer informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="5996255674476750320">Bilshow</translation>
 <translation id="5997247540087773573">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du endrer det nå og sjekker de lagrede passordene dine.</translation>
+<translation id="5997915162652837008">Du kan spare tid ved å slå på automatisk fanedeling for alle tråder. Finn ut mer om</translation>
 <translation id="6000528814684428358">Hardrock og progressiv rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6002122790816966947">Enhetene dine</translation>
@@ -3300,6 +3302,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6203231073485539293">Kontroller Internett-tilkoblingen</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
+<translation id="6213685130162740188">Known Traveler-numre</translation>
 <translation id="6215936431492593050">Metall (sateng)</translation>
 <translation id="6217950634729714357">Møbler til kjøkken og spisestue</translation>
 <translation id="6218305986815100395">Kan ikke slå på virtuelt kort</translation>
@@ -3718,11 +3721,13 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6874604403660855544">&amp;Legg til likevel</translation>
 <translation id="6875873347995743859">Send til assistenten</translation>
 <translation id="6875894866901426843">Administratoren din sletter de lokale filene dine, inkludert eventuelle filer i papirkurven, <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Vil du alltid dele åpne faner for å få bedre svar?</translation>
 <translation id="6880941331070119097">Alternativ med høy pris</translation>
 <translation id="6881240511396774766">Opprett et nytt Google-dokument raskt</translation>
 <translation id="6883221904761970440">Ark for sikker autentisering av betalingslegitimasjon er lukket</translation>
 <translation id="6883745783646124431">jobbadresse</translation>
 <translation id="6886283082988906333">ZIP-arkiv</translation>
+<translation id="6886431827310382613">Del relevante faner</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Bruk posisjon</translation>
 <translation id="6888584790432772780">Chrome har forenklet denne siden for å gjøre den lettere å lese. Chrome hentet den opprinnelige siden via en usikker forbindelse.</translation>
@@ -4008,6 +4013,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7337706099755338005">Ikke tilgjengelig på plattformen din.</translation>
 <translation id="733923710415886693">Tjenerens sertifikat er ikke vist i henhold til regelen for sertifikatåpenhet.</translation>
 <translation id="73398226265793546">AI-modus-knapp. Aktiver for å spørre AI-modusen i Google Søk</translation>
+<translation id="7343620778718789463">ID-kort</translation>
 <translation id="7346048084945669753">Er tilknyttet:</translation>
 <translation id="7346062987309535530">Servise</translation>
 <translation id="7346081071264046066">«Svar ja på denne bryllupsinvitasjonen med begeistring»</translation>
@@ -4182,6 +4188,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Vil du fjerne kredittkortet fra Chrome?</translation>
 <translation id="7569983096843329377">Svart</translation>
+<translation id="7570862164055912832">Redress-numre</translation>
 <translation id="7571813784389228510">Google AI-modus</translation>
 <translation id="7574998639136359461">Vintersportsutstyr</translation>
 <translation id="7575207903026901870">Knapp for å fjerne forslag – trykk på Enter for å fjerne dette forslaget</translation>
@@ -4690,6 +4697,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8381674639488873545">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare. <ph name="BEGIN_LINK" />Vis likevel<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatisk fullskjerm</translation>
 <translation id="838307841291975086">Stasjonsvogner</translation>
+<translation id="838953173259347825">Få mer skreddersydde svar ved å automatisk dele åpne faner i dette vinduet hvis de er relatert til denne tråden. Du kan slå på dette for alle tråder i</translation>
 <translation id="8389532092404711541">Vanligvis <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Spesialbygde kjøretøy og sportskjøretøy</translation>
 <translation id="8390725133630534698">Deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /> er blokkert av en administratorregel</translation>
@@ -4973,6 +4981,7 @@ Mer informasjon:
 <translation id="8861482055962701239">Kunne ikke lagre denne informasjonen i Google Wallet. Den ble lagret i Chrome på denne enheten i stedet. Chrome tilbyr å lagre den i Wallet neste gang du bruker det.</translation>
 <translation id="8863218129525348270">Lagre kortet på enheten din for å betale raskere neste gang</translation>
 <translation id="8864939224504814334">Dresser og forretningsantrekk</translation>
+<translation id="8865650218866129025">Vil du dele åpne faner automatisk for å få bedre svar i denne tråden?</translation>
 <translation id="8866132857352163524">Lydspor</translation>
 <translation id="8866481888320382733">Analysefeil i angivelsen av enhetrsinnstillinger</translation>
 <translation id="8866928039507595380">Fals</translation>

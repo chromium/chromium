@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />ข้อมูลแอปอาจเป็นข้อมูลใดก็ตามที่แอปบันทึกไว้ (ขึ้นอยู่กับการตั้งค่าของนักพัฒนาแอป) ซึ่งรวมถึงข้อมูลอย่างเช่นรายชื่อติดต่อ ข้อความ และรูปภาพ<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />ข้อมูลสำรองจะไม่นับรวมในโควตาพื้นที่เก็บข้อมูล Google ไดรฟ์<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมซ้ายล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="1073899992769346247">โปรดเปลี่ยนหรือชาร์จแบตเตอรี่</translation>
 <translation id="1081015718268701546">ขณะนี้ไม่รองรับแอป Linux ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="108486256082349153">โทรศัพท์มือถือ: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">กด <ph name="LAUNCHER_KEY_NAME" /> + g ได้ทุกเมื่อ</translation>
 <translation id="130491383855577612">แทนที่แอปและไฟล์ Linux เรียบร้อยแล้ว</translation>
 <translation id="1306549533752902673">แอปแนะนำ</translation>
+<translation id="1306606229401759371">เปลี่ยนการตั้งค่า</translation>
 <translation id="1310396869741602366">เปลี่ยนน้ำเสียง</translation>
 <translation id="1312604459020188865">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">เลือกแฮนเดิลขอบด้านบนแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">บันทึกเดสก์ไว้ใช้ในภายหลัง</translation>
 <translation id="1383597849754832576">ดาวน์โหลดไฟล์คำพูดไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
+<translation id="1390113502208199250">หากต้องการใช้ฟีเจอร์ของ Chrome Education Upgrade คุณจะต้องรีเซ็ตอุปกรณ์นี้เป็นค่าเริ่มต้น</translation>
 <translation id="1391102559483454063">เปิด</translation>
 <translation id="1394698770495054737">เบลอมาก</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 วันที่แล้ว}other{# วันที่แล้ว}}</translation>
+<translation id="1403222014593521787">เชื่อมต่อพร็อกซีไม่ได้</translation>
 <translation id="1404963891829069586">เสียงโหมดโฟกัส</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> ใช้ปุ่มลูกศรเพื่อไปยังวันที่ต่างๆ</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">เปิดการเข้าถึงตำแหน่ง</translation>
 <translation id="1830308660060964064">เลิกปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="1831565490995294689">เลือกเพื่อเปิด <ph name="APP_TO_OPEN" /></translation>
+<translation id="1832511806131704864">อัปเดตการเปลี่ยนแปลงของโทรศัพท์แล้ว</translation>
 <translation id="1838011306813517425">การตั้งค่าโหมดโฟกัส</translation>
 <translation id="1838895407229022812">แสงตอนกลางคืนปิดอยู่</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">ปลดล็อกด้วยลายนิ้วมือ</translation>
 <translation id="1891362123137972260">พื้นที่ดิสก์เกือบเต็มแล้ว โปรดเพิ่มพื้นที่ว่างในดิสก์</translation>
 <translation id="1894024878080591367">ตั้งค่าเพื่อเล่นด้วยแป้นพิมพ์</translation>
+<translation id="1896043844785689584">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="1896383923047738322">ปรับแต่งแป้นพิมพ์</translation>
 <translation id="1904997243703671177">เมื่อปิดบลูทูธ อุปกรณ์ภายนอก <ph name="DEVICE_COUNT" /> เครื่องจะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ ได้แก่</translation>
 <translation id="1908992311423394684">ติดตั้งใหม่</translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1918022425394817322">จัดกล้องพอดีกับมุมขวาบนแล้ว</translation>
+<translation id="1919872106782726755">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้างปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
 <translation id="1920390473494685033">รายชื่อติดต่อ</translation>
 <translation id="1923539912171292317">การคลิกอัตโนมัติ</translation>
 <translation id="1925320505152357008">น้อยกว่า 1 นาที</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">บันทึกเลย</translation>
 <translation id="2041220428661959602">ระดับแบตเตอรี่: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">แป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />ปิดอยู่</translation>
+<translation id="204622017488417136">อุปกรณ์จะเปลี่ยนกลับเป็นเวอร์ชันก่อนหน้าของ Chrome ที่ติดตั้งไว้ บัญชีผู้ใช้ทั้งหมดและข้อมูลในเครื่องจะถูกนำออก โดยขั้นตอนนี้ไม่สามารถยกเลิกได้</translation>
 <translation id="204706822916043810">กำลังตรวจสอบเครื่องเสมือน</translation>
 <translation id="2048554637254265991">เกิดข้อผิดพลาดขณะเริ่มต้นตัวจัดการคอนเทนเนอร์ โปรดลองอีกครั้ง</translation>
 <translation id="2048653237708779538">การดำเนินการไม่พร้อมให้ใช้งาน</translation>
@@ -412,12 +420,14 @@
 <translation id="2304702218354340897">คุณแน่ใจไหมว่าต้องการปิดการควบคุมด้วยใบหน้า</translation>
 <translation id="2305738328104302723">รายการงานของ Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: การจับภาพหน้าจอ การดาวน์โหลด และไฟล์ที่ปักหมุดไว้ล่าสุด</translation>
+<translation id="2316433409811863464">การสตรีมแอป</translation>
 <translation id="2318576281648121272">วันนี้ <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">หากต้องการใช้แอป Android ให้ชาร์จและอัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , หมวดหมู่ผลการค้นหา</translation>
 <translation id="2322173485024759474">ถอยกลับทีละตัวอักษร</translation>
 <translation id="2326112202058075478">แสดงอีโมจิเพิ่มเติม</translation>
 <translation id="2335091074961603075">Chromebook หรืออุปกรณ์บลูทูธของคุณกำลังใช้บลูทูธเวอร์ชันเก่า โปรดใช้ไมโครโฟนในตัวเพื่อคุณภาพเสียงที่ดียิ่งขึ้น</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ใช้ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
 <translation id="2341729377289034582">ล็อกไว้ที่แนวตั้งแล้ว</translation>
 <translation id="2344032937402519675">เชื่อมต่อกับเซิร์ฟเวอร์ไม่สำเร็จ ตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง หากยังประสบปัญหาอยู่ ให้ลองรีสตาร์ท Chromebook</translation>
@@ -442,6 +452,7 @@
 <translation id="2383521554963939360">กลุ่มแอปและกลุ่มแท็บ</translation>
 <translation id="2386292613071805067">เลือกทุกอย่างในหน้า</translation>
 <translation id="2389423187722941333">เปิด/ปิด Gemini</translation>
+<translation id="2390347491606624519">เชื่อมต่อพร็อกซีไม่สำเร็จ โปรดลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="2392659840443812875">ไม่มีฮอตสปอตที่ใช้ได้ ตรวจสอบว่าอุปกรณ์อยู่ใกล้ๆ และบลูทูธเปิดอยู่</translation>
 <translation id="2397416548179033562">แสดงเมนู Chrome</translation>
 <translation id="240006516586367791">การควบคุมสื่อ</translation>
@@ -483,17 +494,21 @@
 <translation id="2486214324139475545">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ใช้งานอยู่</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" เปลี่ยนเป็นความละเอียด <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) หากไม่ยืนยัน ระบบจะคืนค่าการตั้งค่าก่อนหน้านี้ใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
+<translation id="2489829450872380594">โทรศัพท์เครื่องใหม่จะปลดล็อก <ph name="DEVICE_TYPE" /> เครื่องนี้ในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2499445554382787206">เมนูโปรไฟล์เดสก์ <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2504454902900101003">ปิดการตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
 <translation id="2505378917951323738">แก้ไขงานไม่ได้ โปรดลองอีกครั้งเมื่อออนไลน์</translation>
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
+<translation id="2514326558286966059">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
 <translation id="2514415433888497495">หยุด<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">เปิดตัวเลือกการช่วยเหลือพิเศษ</translation>
 <translation id="2516416533263263796">โหมดโฟกัสเปิดอยู่ เหลืออีก 10 นาที</translation>
 <translation id="2516637483312286228">แก้ไขการควบคุมเกม</translation>
+<translation id="2517472476991765520">สแกน</translation>
 <translation id="252054055865191167">เครื่องมือมาร์คเกอร์</translation>
 <translation id="2526581474998477112">ปลดล็อกหน้าต่าง</translation>
 <translation id="2528111225373402384">การตั้งค่าฮอตสปอต</translation>
@@ -569,6 +584,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ลบ"</translation>
 <translation id="2750941250130734256">เลิกตรึงหน้าต่างที่ใช้งานแล้ว</translation>
+<translation id="2755349111255270002">รีเซ็ต <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
 <translation id="2761723519669354964">เปิดรายการที่ไฮไลต์ไว้จากแถบ</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> จนถึง <ph name="KEY_TWO" /></translation>
@@ -613,10 +629,12 @@
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" />ที่ผ่านมานี้</translation>
 <translation id="2872353916818027657">สลับหน้าจอหลัก</translation>
 <translation id="2872961005593481000">ปิด</translation>
+<translation id="2876336351874743617">นิ้วที่ 2</translation>
 <translation id="2876338922445400217">ซูมเข้าบนหน้าจอ</translation>
 <translation id="2876760662374103627">การควบคุมด้วยใบหน้าทำงานอยู่</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
 <translation id="2880541185262491188">พยายามป้อน PIN หลายครั้งเกินไป โปรดรอ <ph name="TIME_LEFT" /> แล้วลองอีกครั้ง</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> จะรีสตาร์ทและรีเซ็ตในอีกสักครู่</translation>
 <translation id="2883271196820422439">ทำให้แป้นเมาส์กลับมาทำงานอีกครั้ง</translation>
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
@@ -656,6 +674,7 @@
 <translation id="2993956882370897557">หากต้องการใช้ฟังก์ชัน End ให้ใช้แป้น</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3001391739687111021">แก้ไขขนาดหน้าจอ</translation>
+<translation id="3001835006423291524">แตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
@@ -678,6 +697,8 @@
 <translation id="3062298103034426069">ไม่รองรับ</translation>
 <translation id="3068622547379332530">เวอร์ชัน <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">ชั้นวางอยู่ทางซ้าย</translation>
+<translation id="3075144191779656260">แตะเซ็นเซอร์ลายนิ้วมือที่ด้านซ้ายของ <ph name="DEVICE_TYPE" /> ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
+<translation id="3075874217500066906">จำเป็นต้องรีสตาร์ทเพื่อเริ่มดำเนินการ Powerwash เมื่อรีสตาร์ทแล้ว ระบบจะขอให้คุณยืนยันว่าคุณต้องการดำเนินการ</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ขยายเมนู</translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
@@ -703,6 +724,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ประเภทงานของชั้นเรียน</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">ระบบจะรีเซ็ตอุปกรณ์ของคุณ บัญชีผู้ใช้ทั้งหมดและข้อมูลในเครื่องจะถูกนำออก ซึ่งขั้นตอนนี้ไม่สามารถยกเลิกได้</translation>
 <translation id="3130793786899299931">เปลี่ยนความยาว</translation>
 <translation id="3134486240968249588">โปรดคำนึงถึงสิ่งต่อไปนี้</translation>
 <translation id="3139188263101386725">ใช้แป้นพิมพ์ลัดที่อัปเดต</translation>
@@ -719,6 +741,7 @@
 <translation id="3174897399179348329">หากต้องการใช้ฟังก์ชัน Page Up ให้ใช้แป้น</translation>
 <translation id="3176221688814061633">Chromebook หรืออุปกรณ์บลูทูธของคุณกำลังใช้บลูทูธเวอร์ชันเก่า เปิด Bluetooth Super Resolution หรือใช้ไมโครโฟนภายในเพื่อคุณภาพเสียงที่ดีกว่า</translation>
 <translation id="3181441307743005334">การรีสตาร์ทอาจใช้เวลาสักพัก</translation>
+<translation id="3183700187146209259">ติดตั้งซอฟต์แวร์เครื่องสแกนไม่ได้</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{เชื่อมต่ออุปกรณ์แล้ว 1 เครื่อง}other{เชื่อมต่ออุปกรณ์แล้ว # เครื่อง}}</translation>
 <translation id="3203405173652969239">เปิดใช้ "การเข้าถึงด้วยสวิตช์" แล้ว</translation>
 <translation id="3204648577100496185">ระบบอาจนำข้อมูลที่เชื่อมโยงกับแอปดังกล่าวออกจากอุปกรณ์เครื่องนี้</translation>
@@ -766,6 +789,7 @@
 <translation id="3346728094401457853">ป้อนรหัสผ่านของอุปกรณ์สำหรับ <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">เลือกข้อความจากเคอร์เซอร์ไปจนถึงท้ายบรรทัด</translation>
 <translation id="3349345708646875009">เปิดตัวจัดการงาน</translation>
+<translation id="3353786022389205125">เปิด "แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป" แล้วลองอีกครั้ง</translation>
 <translation id="3364721542077212959">เครื่องมือสไตลัส</translation>
 <translation id="3365281428003534650">ตั้งตัวจับเวลา งาน และเพลง</translation>
 <translation id="3365977133351922112">โทรศัพท์อยู่ไกลเกินไป โปรดนำโทรศัพท์เข้ามาใกล้มากขึ้น</translation>
@@ -780,6 +804,7 @@
 <translation id="3394432020929931914">, ขยายแล้ว</translation>
 <translation id="3401474642070997151">หากต้องการปรับแต่งคำแนะนำ ให้คลิกขวาหรือกดคำแนะนำค้างไว้</translation>
 <translation id="3405101454990027959">เปิดการเข้าถึงไมโครโฟน</translation>
+<translation id="3407967630066378878">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่ด้านซ้ายของ <ph name="DEVICE_TYPE" /> เครื่องนี้ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="3409584356742878290">แสดงหรือซ่อนตัวตรวจสอบเครื่องมือสำหรับนักพัฒนาแอป</translation>
 <translation id="3410336247007142655">แสดงการตั้งค่าธีมมืด</translation>
 <translation id="3413817803639110246">ไม่มีการแจ้งเตือนใหม่</translation>
@@ -915,9 +940,11 @@
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3743775386021959186">โหมดโฟกัสเปิดอยู่ เหลืออีก <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">ซ่อนคำแนะนำสภาพอากาศ</translation>
+<translation id="3752253558646317685">ให้บุตรหลานยกนิ้วขึ้นเพื่อบันทึกลายนิ้วมือ</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />ข้อมูลแอปอาจเป็นข้อมูลใดก็ตามที่แอปบันทึกไว้ (ขึ้นอยู่กับการตั้งค่าของนักพัฒนาแอป) ซึ่งรวมถึงข้อมูลอย่างเช่นรายชื่อติดต่อ ข้อความ และรูปภาพ<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />ข้อมูลสำรองจะไม่นับรวมในโควต้าพื้นที่เก็บข้อมูล Google ไดรฟ์ของบุตรหลาน<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620">ขณะนี้ <ph name="PHONE_NAME" /> สามารถปลดล็อก <ph name="DEVICE_TYPE" /> ได้เช่นกัน</translation>
 <translation id="3756485814916578707">กำลังแคสต์หน้าจอ</translation>
 <translation id="3765841382945324995">อัปเดตแป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />จาก <ph name="OLD_SHORTCUT" /> เป็น <ph name="NEW_SHORTCUT" /> แล้ว</translation>
 <translation id="3765841986579723851">แก้ไขวันนี้</translation>
@@ -935,6 +962,7 @@
 <translation id="3799080171973636491">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายทั้งหน้าจอ จะเปิดแว่นขยายไหม</translation>
 <translation id="3804737937830804242">ย่อขนาดกล้อง</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 อีโมจิ ไม่มีผลลัพธ์อื่น}other{# อีโมจิ ไม่มีผลลัพธ์อื่น}}</translation>
+<translation id="381202950560906753">เพิ่มลายนิ้วมืออีก</translation>
 <translation id="3822403841174077928">คัดลอกพร้อมการจัดรูปแบบไม่ได้</translation>
 <translation id="3824621460022590830">โทเค็นการลงทะเบียนอุปกรณ์ไม่ถูกต้อง โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="3824784079442479685">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
@@ -949,6 +977,7 @@
 <translation id="3848526302597027234">เข้าถึงสิทธิ์ต่อไปนี้</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
+<translation id="3857807444929313943">ยกนิ้วขึ้นแล้วแตะอีกครั้ง</translation>
 <translation id="3859364108019690">สตรีมแอปไม่ได้</translation>
 <translation id="3861638017150647085">ใช้ชื่อผู้ใช้ "<ph name="USERNAME" />" ไม่ได้</translation>
 <translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
@@ -967,6 +996,7 @@
 <translation id="3923221004758245114">นำ <ph name="VM_NAME" /> ออกจาก <ph name="DEVICE_TYPE" /> ใช่ไหม การดําเนินการนี้จะลบแอปและข้อมูลทั้งหมดในเครื่องเสมือน</translation>
 <translation id="3923494859158167397">ไม่ได้ตั้งค่าเครือข่ายมือถือ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, กำลังโหลดกิจกรรม</translation>
+<translation id="3926002189479431949">โทรศัพท์ของ Smart Lock มีการเปลี่ยนแปลง</translation>
 <translation id="3927049937406914450">คำแนะนำสภาพอากาศไม่พร้อมใช้งานเนื่องจากการเข้าถึงตำแหน่งปิดอยู่ คุณสามารถเปลี่ยนค่านี้ได้ในการตั้งค่า</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3934456833412894880">การชาร์จแบบปรับอัตโนมัติเปิดอยู่ แบตเตอรี่จะหยุดชาร์จที่ 80% เพื่อยืดอายุการใช้งาน และจะชาร์จจนเต็มเมื่อคุณต้องการ</translation>
@@ -1026,6 +1056,7 @@
 <translation id="4113030288477039509">มีการจัดการโดยผู้ดูแลระบบ</translation>
 <translation id="4114315158543974537">เปิด Phone Hub</translation>
 <translation id="4115378294792113321">สีม่วงแดง</translation>
+<translation id="4116704186509653070">เปิดอีกครั้ง</translation>
 <translation id="411881149140864134">เปิดใช้งานเดสก์ทางด้านซ้าย</translation>
 <translation id="4119928251231465047">พยายามป้อน PIN หลายครั้งเกินไป</translation>
 <translation id="412298498316631026">หน้าต่าง</translation>
@@ -1092,6 +1123,7 @@
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
 <translation id="4280601795273309128">การอัปเดตความปลอดภัยสิ้นสุดแล้ว โปรดอัปเกรดอุปกรณ์</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
+<translation id="4282196459431406533">Smart Lock เปิดอยู่</translation>
 <translation id="4283888303416325161">ป้อนรหัสผ่านเพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="428715201724021596">กำลังเชื่อมต่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
@@ -1117,6 +1149,7 @@
 <translation id="4338109981321384717">แว่นขยาย</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ปิดเสียงอยู่</translation>
 <translation id="4351244548802238354">ปิดข้อความโต้ตอบ</translation>
+<translation id="435527878592612277">เลือกรูปภาพของคุณ</translation>
 <translation id="4356872429719185452">แสดงรายละเอียดฮอตสปอต กำลังเปิดฮอตสปอต</translation>
 <translation id="4364101114148522660">กำลังบันทึก <ph name="DURATION" /></translation>
 <translation id="4368227575116094370">สร้างสเปรดชีตใน Google ชีต</translation>
@@ -1151,6 +1184,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือนสำคัญ 1 รายการ}other{การแจ้งเตือนสำคัญ # รายการ}}</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
 <translation id="4451374464530248585">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรลง หากต้องการใช้แป้น Page Down ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรลง</translation>
+<translation id="4453430595102511050">แตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="445765352722456792">ปรับแต่งคำแนะนำ</translation>
 <translation id="4458688154122353284">หยุดการอัดหน้าจอ</translation>
 <translation id="445923051607553918">เข้าร่วมเครือข่าย Wi-Fi</translation>
@@ -1167,6 +1201,7 @@
 <translation id="4485506555414638855">ปิดการตั้งค่าการดูรูปภาพ สื่อ การแจ้งเตือน และแอปล่าสุดของโทรศัพท์</translation>
 <translation id="4491109536499578614">รูปภาพ</translation>
 <translation id="4493468155686877504">แนะนำ (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">ไอคอนเครื่องหมายอัศเจรีย์</translation>
 <translation id="450584155212756404">เวอร์ชันที่กำลังพัฒนา</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
@@ -1176,6 +1211,7 @@
 <translation id="4527045527269911712">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่</translation>
 <translation id="4531536770443562276">มีแบบเต็มหน้าจอเท่านั้น</translation>
 <translation id="4533343294786968049">กำลังยืดอายุการใช้งานแบตเตอรี่ แบตเตอรี่จะชาร์จจนเต็มภายใน <ph name="FULLY_CHARGE_TIME" /></translation>
+<translation id="4534661889221639075">ลองอีกครั้ง</translation>
 <translation id="453661520163887813">อีก <ph name="TIME" /> จะเต็ม</translation>
 <translation id="4538824937723742295">จับภาพแบบเต็มหน้าจอ</translation>
 <translation id="4539127209940689201">พิมพ์หน้าปัจจุบัน</translation>
@@ -1191,6 +1227,7 @@
 <translation id="4560576029703263363">เปิด</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">ติดตั้งอัปเดตและแอป การดำเนินการต่อหมายความว่าคุณยินยอมให้อุปกรณ์เครื่องนี้ดาวน์โหลดและติดตั้งอัปเดตและแอปจาก Google, ผู้ให้บริการ และผู้ผลิตอุปกรณ์ของคุณโดยอัตโนมัติด้วย ซึ่งอาจมีการใช้อินเทอร์เน็ตมือถือ แอปบางแอปเหล่านี้อาจมีการซื้อในแอป <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตั้งอัตโนมัติผ่าน Play Store<ph name="BEGIN_LINK1_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">นิ้วที่ 3</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
 <translation id="4566144812051858745">ไม่สนใจคำแนะนำใดๆ</translation>
 <translation id="4569753163207712681">ดูรูปภาพ สื่อ และแอปล่าสุดของโทรศัพท์</translation>
@@ -1203,7 +1240,9 @@
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4596442969149038771"><ph name="USER" /> แชร์เมื่อ</translation>
+<translation id="4598776695426288251">มี Wi-Fi พร้อมใช้งานผ่านอุปกรณ์หลายเครื่อง</translation>
 <translation id="4610493115106525653">เอาต์พุตดี</translation>
+<translation id="4611114513649582138">มีการเชื่อมต่อข้อมูลพร้อมใช้งาน</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
 <translation id="4613144866899789710">กำลังยกเลิกการติดตั้ง Linux...</translation>
 <translation id="462160925400706389">เชื่อมต่อ <ph name="NAME" /> แล้ว</translation>
@@ -1318,6 +1357,7 @@
 <translation id="4937170330762390348">ฟีเจอร์การพิมพ์ตามคำบอกช่วยให้คุณพิมพ์ด้วยเสียงได้ กดแป้นให้พิมพ์ตามคำบอกหรือเลือกไอคอนไมโครโฟนที่ด้านล่างของหน้าจอเมื่อคุณอยู่ในช่องข้อความ ภาษาสำหรับการพิมพ์ตามคำบอกตั้งค่าเป็น<ph name="LANGUAGE" /> จะมีการดาวน์โหลดไฟล์คำพูดเพื่อให้คุณใช้การพิมพ์ตามคำบอกแบบออฟไลน์ได้ คุณเปลี่ยนภาษาสำหรับการพิมพ์ตามคำบอกได้ทุกเมื่อในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
+<translation id="4945439665401275950">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="4950800194215951939">ปรับแต่งประสบการณ์การเล่นเกม</translation>
@@ -1337,6 +1377,7 @@
 <translation id="4981175556418720939">แก้ไขเมื่อ <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">เดสก์ที่ 16</translation>
 <translation id="4989163558385430922">ดูทั้งหมด</translation>
+<translation id="4992458225095111526">ยืนยัน Powerwash</translation>
 <translation id="4995963195354861331">กล่องโต้ตอบต้อนรับ</translation>
 <translation id="4996265698919320288">กำลังบันทึก</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
@@ -1383,6 +1424,7 @@
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5122517996953421795">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
+<translation id="5137349216872139332">เชื่อมต่อฮอตสปอตด่วนไม่สำเร็จ</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="5144005092084035179">เปลี่ยนอินพุตเสียงไหม</translation>
 <translation id="5147567197700016471">ปลดล็อกแล้ว</translation>
@@ -1456,6 +1498,7 @@
 <translation id="5322611492012084517">ไม่พบโทรศัพท์</translation>
 <translation id="5323994101633366939">ซ่อนชื่อเดสก์</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
+<translation id="532943162177641444">แตะการแจ้งเตือนใน <ph name="PHONE_NAME" /> เพื่อตั้งค่าฮอตสปอตมือถือที่อุปกรณ์นี้ใช้ได้</translation>
 <translation id="5329548388331921293">กำลังเชื่อมต่อ...</translation>
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="533282197239610265">แสดงอุปกรณ์แคสต์</translation>
@@ -1466,6 +1509,7 @@
 <translation id="5356963482258194581">สลับระหว่างธีมมืดและธีมสว่าง คลิกขวาที่เดสก์ท็อป แล้วเลือก "วอลเปเปอร์และสไตล์"</translation>
 <translation id="536019650977002321">ผู้ดูแลระบบไม่อนุญาตให้บันทึกเสียง ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5361524080961918551">ดาวน์โหลดไฟล์คําพูดภาษา<ph name="LANGUAGE" />แล้วบางส่วน</translation>
+<translation id="5363109466694494651">Powerwash และเปลี่ยนกลับ</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ไปที่แท็บนี้</translation>
 <translation id="5364693579536176785">พื้นที่เก็บข้อมูล</translation>
 <translation id="5369573834963677938">ผู้ใช้รายอื่นในอุปกรณ์จะใช้การควบคุมด้วยใบหน้าได้</translation>
@@ -1625,6 +1669,7 @@
 <translation id="5823239091726045201">Google Tasks บนเว็บ</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5830180081891717894">อีก <ph name="WINDOWS" /> รายการ</translation>
+<translation id="5830205393314753525">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">ค้นหาด้วย Google</translation>
@@ -1642,6 +1687,7 @@
 <translation id="5876666360658629066">กรอกรหัสผู้ปกครอง</translation>
 <translation id="5881540930187678962">ตั้งค่าฮับโทรศัพท์ภายหลัง</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
+<translation id="5886009770935151472">นิ้วที่ 1</translation>
 <translation id="5887954372087850114">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้กับ <ph name="DESK_TITLE" /> และยกเลิกการกำหนดจากเดสก์อื่นๆ ทั้งหมดแล้ว</translation>
 <translation id="588817334757907802">เปิดไฟล์ในเบราว์เซอร์ Chrome</translation>
 <translation id="5892014525522223653">คุณออฟไลน์อยู่</translation>
@@ -1683,6 +1729,7 @@
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ไฮไลต์รายการถัดไปบนแถบ</translation>
 <translation id="6015573907265691211">ทำเครื่องหมายว่าเสร็จแล้ว</translation>
+<translation id="6016551720757758985">ยืนยัน Powerwash และเปลี่ยนกลับเป็นเวอร์ชันก่อนหน้า</translation>
 <translation id="6018164090099858612">กำลังออกจากโหมดมิเรอร์</translation>
 <translation id="6019566113895157499">แป้นพิมพ์ลัด</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
@@ -1731,6 +1778,7 @@
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
 <translation id="6127395413317891856">คุณออฟไลน์อยู่ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="6129953537138746214">Space</translation>
+<translation id="6132714462430777655">ข้ามการลงทะเบียนโรงเรียนไหม</translation>
 <translation id="6136872094979134163">ไม่สามารถดึงข้อมูลข่าวสารเกี่ยวกับ Steam สำหรับ Chromebook</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">คุณต้องการโฟกัสสิ่งใด</translation>
@@ -1765,6 +1813,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ออฟไลน์อยู่ เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
+<translation id="6225475702458870625">มีการเชื่อมต่อข้อมูลพร้อมใช้งานจาก <ph name="PHONE_NAME" /></translation>
 <translation id="6228457605945141550">ลดความสว่าง</translation>
 <translation id="623116199192908855">แคสต์หน้าจอจาก Chromebook</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
@@ -1781,6 +1830,7 @@
 <translation id="6267036997247669271"><ph name="NAME" /> กำลังเปิดใช้งาน...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6274422179279280249">แทรกลิงก์ อีโมจิ และอื่นๆ คุณยังใช้ Google AI เพื่อช่วยเขียนได้ด้วย <ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">ต้องป้อนชื่อผู้ใช้และรหัสผ่านเพื่อเชื่อมต่อกับพร็อกซี <ph name="PROXY_SERVER" /></translation>
 <translation id="6276708887952587684">ดูซอร์สโค้ดของหน้าเว็บ</translation>
 <translation id="6285871695023807425">เพิ่มในปฏิทิน</translation>
 <translation id="628699625505156622">ใช้ตำแหน่ง อนุญาตให้แอป เว็บไซต์ และบริการของ ChromeOS รวมถึง Android ที่มีสิทธิ์เข้าถึงตำแหน่งใช้ตำแหน่งของอุปกรณ์นี้ ความแม่นยำของตำแหน่งจะระบุตำแหน่งที่แม่นยำยิ่งขึ้นสำหรับแอปและบริการต่างๆ ของ Android Google ทำเช่นนี้ได้ด้วยการประมวลผลข้อมูลเกี่ยวกับเซ็นเซอร์และสัญญาณไร้สายจากอุปกรณ์นี้เป็นระยะเพื่อรวบรวมข้อมูลตำแหน่งของสัญญาณไร้สายจากมวลชน ข้อมูลเหล่านี้มีการใช้โดยไม่ระบุตัวตนบุคคลใดเพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามตำแหน่ง รวมถึงเพื่อปรับปรุง จัดหา และดูแลรักษาบริการของเราโดยอิงตามประโยชน์โดยชอบด้วยกฎหมายของ Google และของบุคคลที่สามในการตอบสนองความต้องการของผู้ใช้ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการใช้ตำแหน่ง<ph name="END_LINK1" /></translation>
@@ -1796,6 +1846,7 @@
 <translation id="6317369057005134371">กำลังรอหน้าต่างแอปพลิเคชัน...</translation>
 <translation id="6319058840130157106">ย้ายไปข้างหลังระหว่างมุมขวาล่าง, Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก, เว็บไซต์ที่เปิดอยู่ และการดาวน์โหลด</translation>
 <translation id="6319503618073410818">ดูรายละเอียดในเบราว์เซอร์</translation>
+<translation id="6322370287306604163">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
 <translation id="6324334979701518365">เปิดแอป Chrome ที่ไม่รองรับไม่ได้ โปรดแจ้งผู้ดูแลระบบเกี่ยวกับปัญหานี้</translation>
 <translation id="6324916366299863871">แก้ไขทางลัด</translation>
 <translation id="6325525973963619867">ล้มเหลว</translation>
@@ -1805,6 +1856,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> เป็นเซสชันที่มีการจัดการซึ่งจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">หากลืม PIN ให้ลองกู้คืนผู้ใช้รายนี้</translation>
 <translation id="6344138931392227467">เชื่อมต่อ <ph name="DEVICE_NAME" /> แล้ว</translation>
+<translation id="6345418402353744910">ชื่อผู้ใช้และรหัสผ่านของคุณจำเป็นสำหรับพร็อกซี <ph name="PROXY" /> เพื่อให้ผู้ดูแลระบบกำหนดค่าเครือข่ายได้</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> แล้วกด <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> หรือ <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">คำแนะนำเกี่ยวกับแอป</translation>
 <translation id="6352082849089527770">เครือข่ายที่ไม่รู้จัก</translation>
@@ -1824,6 +1876,7 @@
 <translation id="6414618057231176439">เลือกเวอร์ชันของ <ph name="VM_NAME" /> ที่จะติดตั้ง</translation>
 <translation id="641469293210305670">ติดตั้งอัปเดตและแอป</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6418160186546245112">กำลังเปลี่ยนกลับไปใช้เวอร์ชันที่ติดตั้งไว้ก่อนหน้านี้ของ <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6418511932144861495">ติดตั้งอัปเดตสำคัญ</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1893,6 +1946,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">จัดกล้องพอดีกับมุมซ้ายล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="6605415194043280389">โหมดโฟกัสเปิดอยู่</translation>
+<translation id="6608773371844092260">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่ด้านขวาของ <ph name="DEVICE_TYPE" /> เครื่องนี้ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6612802754306526077">เลือกโหมดบันทึกหน้าจอแล้ว</translation>
 <translation id="6612889377159412215">งานย่อย</translation>
@@ -1915,6 +1969,7 @@
 <translation id="6650742588569439432">โหลดรายการไม่ได้</translation>
 <translation id="6650933572246256093">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ โปรดป้อนรหัสผ่านนี้บนอุปกรณ์นั้น: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
+<translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> และเปลี่ยนกลับไปใช้เวอร์ชันก่อนหน้า</translation>
 <translation id="666343722268997814">เปิดเมนูคลิกขวาสำหรับรายการที่ไฮไลต์</translation>
 <translation id="6665545700722362599">ให้สิทธิ์เว็บไซต์ แอป และส่วนขยายเพื่อใช้บริการตำแหน่ง ไมโครโฟนของอุปกรณ์ กล้อง หรือฟีเจอร์อื่นๆ</translation>
 <translation id="6667908387435388584">เชื่อมต่อฮอตสปอตของโทรศัพท์ ปิดเสียงและระบุตำแหน่งของอุปกรณ์ ตลอดจนดูแท็บ Chrome ล่าสุดที่เปิดอยู่ในโทรศัพท์</translation>
@@ -1942,6 +1997,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ใช้กล้องและไมโครโฟนอยู่</translation>
 <translation id="6739144137573853180">ไปที่การตั้งค่า</translation>
+<translation id="6745592621698551453">อัปเดตเลย</translation>
 <translation id="6747985245839783873">แบตเตอรี่เหลือ <ph name="PERCENTAGE" /> เปอร์เซ็นต์ โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="6751052314767925245">บังคับใช้โดยผู้ดูแลระบบของคุณ</translation>
 <translation id="6751826523481687655">การติดตามประสิทธิภาพเปิดอยู่</translation>
@@ -1949,6 +2005,7 @@
 <translation id="6753390234084146956">แท็บ</translation>
 <translation id="6754918760968695779">Quick Insert</translation>
 <translation id="6757237461819837179">ไม่มีการเล่นสื่อ</translation>
+<translation id="6759193508432371551">รีเซ็ตเป็นค่าเริ่มต้น</translation>
 <translation id="6760438044935091345">แดชบอร์ดเกม</translation>
 <translation id="6768043681523654438">พื้นที่เก็บข้อมูล</translation>
 <translation id="6769195697113506406">แทรกรูปภาพแล้ว</translation>
@@ -1963,6 +2020,7 @@
 <translation id="6792351896138862473">เปิดแอปคีออสก์ที่ไม่รองรับไม่ได้ โปรดแจ้งผู้ดูแลระบบเกี่ยวกับปัญหานี้</translation>
 <translation id="679368458793552943">ซูมเข้าเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="6794287755901682422">รายการนี้มี <ph name="GLANCEABLES_TASK_ITEM_METADATA" /></translation>
+<translation id="6797493596609571643">อ๊ะ เกิดข้อผิดพลาดบางอย่าง</translation>
 <translation id="6797745268063125932">เปิดใช้งานไว้</translation>
 <translation id="6801878137098616817">แก้ไขเมื่อเร็วๆ นี้</translation>
 <translation id="6802687695197837794">การดำเนินการนี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้</translation>
@@ -1976,6 +2034,7 @@
 <translation id="682971198310367122">นโยบายความเป็นส่วนตัวของ Google</translation>
 <translation id="6836499262298959512">ไฟล์นี้ไม่ปลอดภัย</translation>
 <translation id="6837621009301897464">หากต้องการถ่ายภาพหน้าจอ ให้กด</translation>
+<translation id="6848716236260083778">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
 <translation id="6852052252232534364">คลิกเพื่อเปิดใช้</translation>
 <translation id="6852628153543175788">เพิ่ม 10 นาที</translation>
 <translation id="6855029042976311970">แก้ไขเมื่อสักครู่</translation>
@@ -2084,6 +2143,7 @@
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="7219573373513695352">ไม่ได้เชื่อมต่ออุปกรณ์</translation>
+<translation id="7228056665272655255">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="7228968829656641943">เลือกเพื่อค้นหาในหน้าจอของฉัน กดแป้น Tab แล้วกดแป้น Space เพื่อไปยังส่วนต่างๆ ด้วยแป้นพิมพ์</translation>
 <translation id="7229029500464092426">ใช้หน่วยความจำแล้ว <ph name="AVAILABLE_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">กำลังยกเลิกการคืนค่า Linux</translation>
@@ -2098,6 +2158,7 @@
 <translation id="7258828758145722155">แก้ไขเมื่อวานนี้</translation>
 <translation id="726276584504105859">ลากมาที่นี่เพื่อใช้การแยกหน้าจอ</translation>
 <translation id="7264788308526527464">ลด <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267875682732693301">ยกนิ้วมือเรื่อยๆ เพื่อเพิ่มส่วนอื่นๆ ของลายนิ้วมือ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7285232777292757180">ใช้เครื่องมือจับภาพหน้าจอในการตั้งค่าด่วนเพื่อถ่ายภาพหน้าจอ</translation>
 <translation id="7301826272005790482">ปิดคำแนะนำหน้าต่าง</translation>
@@ -2122,6 +2183,7 @@
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
 <translation id="7360036564632145207">การเปลี่ยนการตั้งค่าการป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วงช่วยเพิ่มประสิทธิภาพได้</translation>
 <translation id="736045644501761622">ตั้งค่าวอลเปเปอร์และสไตล์</translation>
+<translation id="7361914392989692067">ใช้นิ้วแตะปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="7368041336688136012">คุณต้องมีอายุไม่ต่ำกว่า 18 ปีจึงจะใช้ฟีเจอร์ช่วยฉันอ่าน ช่วยฉันเขียน และสร้างรูปภาพด้วย AI ได้</translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7372069265635026568">เหลือหน่วยความจำ <ph name="AVAILABLE_MEMORY" /> จากทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
@@ -2136,6 +2198,7 @@
 <translation id="7384028040782072252">คลิกขวาที่ใดก็ได้เพื่อเรียงลำดับแอปใหม่</translation>
 <translation id="7386767620098596324">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
 <translation id="7392563512730092880">คุณตั้งค่าภายหลังได้เสมอจากการตั้งค่า</translation>
+<translation id="7400839060291901923">ตั้งค่าการเชื่อมต่อใน <ph name="PHONE_NAME" /></translation>
 <translation id="7401222354741467707">จับภาพหน้าจอหรือบันทึกหน้าจอแบบเต็ม</translation>
 <translation id="7401788553834047908">ห้ามรบกวนขณะอยู่ในโหมดโฟกัส</translation>
 <translation id="7405710164030118432">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อปลดล็อกอุปกรณ์</translation>
@@ -2152,6 +2215,7 @@
 <translation id="7457027286267861992">มีพื้นที่ในดิสก์ไม่เพียงพอ โปรดเพิ่มพื้นที่ว่างในดิสก์แล้วลองอีกครั้ง รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="7459485586006128091">ปิดฮอตสปอตแล้วเนื่องจากมีข้อผิดพลาดภายใน โปรดลองเชื่อมต่อใหม่ในอีกสักครู่</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
+<translation id="746216226901520237">โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="746232733191930409">โหมดบันทึกหน้าจอ</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
@@ -2206,6 +2270,7 @@
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>
 <translation id="7588317312481506627">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="7593891976182323525">ค้นหาหรือ Shift</translation>
+<translation id="7594725637786616550">Powerwash เพื่อรีเซ็ต <ph name="DEVICE_TYPE" /> ให้เหมือนใหม่</translation>
 <translation id="7595453277607160340">หากต้องการใช้แอป Android และให้ <ph name="DEVICE_TYPE" /> ทำงานอย่างถูกต้อง ให้ลงชื่อเข้าใช้อีกครั้งและอัปเดต</translation>
 <translation id="7598054670902114203">ภาพรวมการใช้งาน CPU <ph name="CPU_USEAGE" />% อุณหภูมิ <ph name="TEMPERATURE" /> องศาเซลเซียส ความเร็วปัจจุบัน: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">กำลังแทรกผลการค้นหาที่เลือก</translation>
@@ -2226,6 +2291,7 @@
 <translation id="7632948528260659758">แอปคีออสก์ต่อไปนี้ไม่สามารถอัปเดตได้:</translation>
 <translation id="7634566076839829401">เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง</translation>
 <translation id="7634648064048557203">จัดกล้องพอดีกับมุมขวาล่างแล้ว</translation>
+<translation id="7637253234491814483">แตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้างปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="7638572816805275740">จับภาพหน้าจอหรือบันทึกหน้าจอทั้งหน้าต่าง</translation>
 <translation id="7642106959537987271">โหมดการกลับสี</translation>
 <translation id="7642647758716480637">เปิดการตั้งค่าของ <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /></translation>
@@ -2277,6 +2343,7 @@
 <translation id="77747521138552256">พยายามป้อน PIN หลายครั้งเกินไป โปรดรอ <ph name="TIME_LEFT" /> แล้วลองใช้ PIN อีกครั้ง หรือป้อนรหัสผ่านเพื่อลงชื่อเข้าใช้ทันที</translation>
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
+<translation id="7781335840981796660">บัญชีผู้ใช้ทั้งหมดและข้อมูลในเครื่องจะถูกลบ</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7787212146956232129">ตั้งค่าอุปกรณ์อินพุตและเอาต์พุตแล้ว โปรดเปลี่ยนที่การตั้งค่า</translation>
 <translation id="7792590255364786396">มองเห็นได้</translation>
@@ -2338,6 +2405,7 @@
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943516765291457328">เปิดบลูทูธเพื่อสแกนหาฮอตสปอตใกล้เคียง</translation>
 <translation id="7944023924886109030">ดูกิจกรรมทั้งหมดของวันนี้</translation>
+<translation id="7944847494038629732">ถอดสาย USB ของเครื่องสแกนแล้วเสียบใหม่เพื่อลองอีกครั้ง</translation>
 <translation id="7945357288295809525">แสดงการตั้งค่าการช่วยเหลือพิเศษที่เปิดใช้ "<ph name="ENABLED_FEATURES" />"</translation>
 <translation id="7946681191253332687">มีการอัปเดตความปลอดภัยเพิ่มเติม</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /></translation>
@@ -2369,6 +2437,7 @@
 <translation id="8004512796067398576">เพิ่มขึ้น</translation>
 <translation id="8005527720597583355">เริ่มเซสชันโฟกัส</translation>
 <translation id="8008356846765065031">อินเทอร์เน็ตถูกตัด โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ไม่สามารถเปลี่ยนกลับไปเป็นเวอร์ชันที่ติดตั้งไว้ก่อนหน้านี้ได้ โปรดลองอีกครั้งเพื่อ Powerwash อุปกรณ์ของคุณ</translation>
 <translation id="8015361438441228492">แก้ไขงานไม่ได้</translation>
 <translation id="8027187124910699148">กลับมาใช้กลุ่มที่แนะนำ</translation>
 <translation id="802782383769312836">เดสก์ก่อนหน้า: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
@@ -2447,15 +2516,18 @@
 <translation id="8249048954461686687">โฟลเดอร์ OEM</translation>
 <translation id="825129991941217170">แสดงเนื้อหา Google ไดรฟ์ทั้งหมด</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8261625296061301062">ติดตั้งซอฟต์แวร์เครื่องสแกนแล้ว</translation>
 <translation id="8262312463845990408">สลับการเล่น</translation>
 <translation id="8268302343625273732">ดูงานทั้งหมดใน Google Classroom</translation>
 <translation id="8277261673056602147">ไฮไลต์ข้อความในหน้าจอ</translation>
+<translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282784978194352587">คุณทำได้</translation>
 <translation id="8287009018010202411">ประสิทธิภาพการทำงาน</translation>
 <translation id="828708037801473432">ปิด</translation>
 <translation id="8289128870594824098">ขนาดดิสก์</translation>
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8300451473979404345">เลือกแฮนเดิลแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
+<translation id="8301242268274839723">แตะเซ็นเซอร์ลายนิ้วมือที่มุมซ้ายล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="8308637677604853869">เมนูก่อนหน้า</translation>
 <translation id="830868413617744215">เบต้า</translation>
 <translation id="8314772463905284467">Caps Lock เปิดอยู่</translation>
@@ -2475,10 +2547,12 @@
 <translation id="8371991222807690464">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัดเมื่อใช้โหมดผู้มาเยือน</translation>
 <translation id="8374601332003098278">กด Enter เพื่อบันทึกหน้าจอบางส่วน</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>
+<translation id="8382677870544805359">หากต้องการใช้ฟีเจอร์สำหรับองค์กร คุณจะต้องรีเซ็ตอุปกรณ์นี้เป็นค่าเริ่มต้น</translation>
 <translation id="8382715499079447151">การป้องกันการดู</translation>
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
 <translation id="838540623579162843">สมัคร Music Premium</translation>
 <translation id="8388750414311082622">นำพื้นที่ทำงานสุดท้ายออกไม่ได้</translation>
+<translation id="8390392581097975659">กำลังติดตั้งซอฟต์แวร์เครื่องสแกน</translation>
 <translation id="8394567579869570560">ผู้ปกครองของคุณล็อกอุปกรณ์นี้ไว้</translation>
 <translation id="8401850874595457088">ป้อนเมนูภาษา</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2542,6 +2616,7 @@
 <translation id="857201607579416096">เมนูได้ย้ายไปอยู่ที่มุมขวาล่างของหน้าจอ</translation>
 <translation id="8581946341807941670">กด <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> แล้วคลิกลิงก์</translation>
 <translation id="8598235756057743477">จัดเรียงแอปตามชื่อหรือสี</translation>
+<translation id="8599864823732014237">ข้ามการลงทะเบียนองค์กรใช่ไหม</translation>
 <translation id="8609384513243082612">เปิดแท็บใหม่</translation>
 <translation id="861045123704058818">แอปจัดเรียงตามหมวดหมู่ชั่วคราว</translation>
 <translation id="8612216344243590325">เก็บไฟล์สำคัญไว้ใน <ph name="HOLDING_SPACE_TITLE" /> แทนที่จะเก็บไฟล์บนเดสก์ท็อป เพียงลากไฟล์ไปที่ <ph name="HOLDING_SPACE_TITLE" /></translation>
@@ -2578,6 +2653,7 @@
 <translation id="8700087567921985940">ใช้ตำแหน่ง อนุญาตแอปและบริการที่มีสิทธิ์เข้าถึงตำแหน่งให้ใช้ตำแหน่งของอุปกรณ์ Google อาจรวบรวมข้อมูลตำแหน่งเป็นระยะๆ และใช้ข้อมูลนี้แบบไม่ระบุตัวตนเพื่อปรับปรุงความแม่นยำของตำแหน่งและการบริการตามตำแหน่ง <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตำแหน่ง<ph name="BEGIN_LINK1_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">เริ่มบันทึก เมื่อการบันทึกเริ่มต้น ให้ใช้ Alt + Shift + L เพื่อไปที่แถบและหาปุ่มหยุดบันทึก</translation>
 <translation id="8704155109538237473">โฟกัสหน้าต่างการแสดงภาพซ้อนภาพ</translation>
+<translation id="8705580154597116082">มี Wi-Fi พร้อมให้บริการผ่านโทรศัพท์</translation>
 <translation id="870917907284186124">เปิด/ปิดการพิมพ์ตามคำบอก (พิมพ์ด้วยเสียง)</translation>
 <translation id="8711169534266271368">ตัวเลือกแดชบอร์ดเกม</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
@@ -2586,6 +2662,8 @@
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8721053961083920564">สลับเปิด/ปิดระดับเสียง <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">จับภาพแบบเต็มหน้าจอ</translation>
+<translation id="8724405322205516354">เมื่อเห็นไอคอนนี้ ให้ใช้ลายนิ้วมือเพื่อระบุตัวตนหรือเพื่ออนุมัติการซื้อ</translation>
+<translation id="8724409975248965964">เพิ่มลายนิ้วมือแล้ว</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8725214031272624704">แสดงรายการวิธีการป้อนข้อมูลที่มีอยู่</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
@@ -2609,6 +2687,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, ถูกบล็อก</translation>
 <translation id="8782565991310229362">การเรียกใช้แอปพลิเคชันคีออสก์ถูกยกเลิก</translation>
 <translation id="8785070478575117577">เชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
+<translation id="8786824282808281903">เมื่อบุตรหลานเห็นไอคอนนี้ ลายนิ้วมือสามารถใช้เพื่อระบุตัวตนหรืออนุมัติการซื้อได้</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" /> <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ย้ายไปข้างหน้าระหว่างมุมขวาล่าง, Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก, เว็บไซต์ที่เปิดอยู่ และการดาวน์โหลด</translation>
 <translation id="8792626944327216835">ไมโครโฟน</translation>
@@ -2621,6 +2700,7 @@
 <translation id="8815390544836110344">กดแป้นพิมพ์ลัดสำหรับการจับภาพหน้าจอ ปุ่ม Ctrl + Shift + แป้นโหมดภาพรวม</translation>
 <translation id="881757059229893486">การตั้งค่าวิธีการป้อนข้อมูล</translation>
 <translation id="8819728065740986820">การชาร์จแบบปรับอัตโนมัติเปิดอยู่</translation>
+<translation id="882204272221080310">อัปเดตเฟิร์มแวร์เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="8822104519413696986">เกมนี้เป็นเกมแบบสัมผัส</translation>
 <translation id="8825863694328519386">เลื่อนจากด้านซ้ายเพื่อย้อนกลับ</translation>
 <translation id="8832513206237979203">แสดงหรือซ่อนแถบบุ๊กมาร์ก</translation>
@@ -2684,6 +2764,8 @@
 <translation id="8991648557324317894">กด fn + Quick Insert หรือ Shift เพื่อยกเลิก</translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="8993733019280019776">คุณพูดอยู่ใช่ไหม ดูเหมือนว่าไมค์จะปิดอยู่ โปรดเลือกไมโครโฟนเพื่อเปิด</translation>
+<translation id="8993945059918628059">ใช้นิ้วแตะเซ็นเซอร์ลายนิ้วมือ ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
+<translation id="9000185763019430629">แตะเซ็นเซอร์ลายนิ้วมือที่ด้านขวาของ <ph name="DEVICE_TYPE" /> ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="9003374957546315126">อีโมจิและอื่นๆ</translation>
 <translation id="9005984960510803406">เปิดหน้าต่าง Crosh</translation>
@@ -2697,6 +2779,7 @@
 <translation id="9030515284705930323">องค์กรของคุณยังไม่ได้เปิดใช้ Google Play Store สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
 <translation id="9030665205623277906">ภาพรวมการใช้ CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">ไฟล์ Linux</translation>
+<translation id="9037818663270399707">การจราจรของข้อมูลทั้งหมดในเครือข่ายไม่เป็นส่วนตัวในการเชื่อมต่อของคุณ</translation>
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">บลูทูธไม่พร้อมใช้งาน</translation>
 <translation id="9050999376345823055">กด "." เพื่อปล่อย</translation>

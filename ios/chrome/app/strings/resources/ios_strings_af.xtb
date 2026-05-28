@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Aangemeld as <ph name="USER" /></translation>
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1150989369772528668">Kalender</translation>
+<translation id="1161444134753003495">Meld aan</translation>
 <translation id="1161663161838091892">Sinkroniseer oortjies en geskiedenis om voort te gaan</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredietkaart}other{{count} kredietkaarte}}</translation>
 <translation id="1164891049599601209">Op misleidende werf ingevoer</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Kopieer prent</translation>
 <translation id="1606899876897213121">Maak opsomming van onlangse aktiwiteit toe</translation>
 <translation id="1612754831519568745">Jou Veiligblaai is tans afgeskakel. Kry beskerming teen gevaarlike werwe, aflaaie en uitbreidings.</translation>
+<translation id="1617300545081951343">Ons <ph name="BEGIN_LINK" />bepalings<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreaanse Liggingbepalings<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />privaatheidkennisgewing<ph name="END_LINK" /> geld. Gemini is KI en kan foute maak, insluitend oor mense.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Kies “Voeg by Google Kalender“ of “Voeg by Apple Kalender”.</translation>
 <translation id="1629162218487290695">Verifieer dat dit jy is …</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Jy sal afgemeld word en blaaierdata sal uitgevee word</translation>
 <translation id="3124568093781685165">Deel jou wagwoorde met jou gesin</translation>
 <translation id="3130863904455712965">Geskiedenis en meer</translation>
+<translation id="3130973487775218359">Kyk: <ph name="BEGIN_LINK" />5 dinge wat jy oor generatiewe KI moet weet<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Stoor regstelnommer</translation>
 <translation id="3132584647087998639">Voer jou data in</translation>
 <translation id="313283613037595347">Skep nuwe Incognito-oortjie.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Nuwe wagwoord vir hierdie werf}other{Nuwe wagwoorde vir hierdie werf}}</translation>
 <translation id="3933372629914873850">Jy sal aanmeld by <ph name="URL" /></translation>
 <translation id="3934905113567851655">Knyp om grootte te verander</translation>
+<translation id="393732545649378031">Rekening</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
 <translation id="3946483119107054883">Laai af na CSV</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP-ondertekening</translation>
 <translation id="4309403553630140242">Dubbeltik vir meer inligting</translation>
 <translation id="4310738531374808763">Pasmaak jou tuisblad</translation>
+<translation id="4316794575239200608">Nóg jou gesprekke met Gemini, nóg jou <ph name="BEGIN_LINK" />Google Workspace-data<ph name="END_LINK" /> sal hersien word deur mense wat kontrolering uitvoer, of sal gebruik word om generatiewe KI-modelle te verbeter.</translation>
 <translation id="4320848494125124980">Onlangs</translation>
 <translation id="4322394346347055525">Maak ander oortjies toe</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> hergebruikte wagwoorde</translation>
 <translation id="4632655012900268062">Pasmaak kaarte</translation>
 <translation id="4634124774493850572">Gebruik wagwoord</translation>
+<translation id="4634633632339959267">Kletse word hersien en gebruik om Google KI te verbeter. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Inligting oor jou ligging<ph name="END_LINK" /> word ook saam met jou aktiwiteit geberg.</translation>
 <translation id="4636930964841734540">Inligting</translation>
 <translation id="4641425577292284174">Weet of jy die veiligste instellings het of enigiets moet hersien</translation>
 <translation id="4642472735733036929">Prysnasporing is gestop</translation>
@@ -1470,6 +1476,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6140948187512243695">Wys besonderhede</translation>
 <translation id="6144589619057374135">Maak ${url} in Incognitomodus oop</translation>
 <translation id="6146563240635539929">Video's</translation>
+<translation id="6148392728478209113">Gebruik jy nog Live? Tik op die Live-knoppie om aan te hou om met Gemini te praat</translation>
 <translation id="6151006591088192882">Ontsluit Incognito-oortjies met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Onaktief</translation>
 <translation id="6152406514676263192">Sinkroniseer vir die mees relevante inhoud gegrond op jou belangstellings.</translation>
@@ -1563,6 +1570,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6435236283694032571">Voeg by Leeslys</translation>
 <translation id="6435307030888827407">Bly afgemeld</translation>
 <translation id="6436318499800111867">Met my gedeel op <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respekteer ander se privaatheid<ph name="END_LINK" /> en vra toestemming voordat jy hulle in ’n Live-gesprek opneem of daarby insluit.</translation>
 <translation id="6442697326824312960">Ontspeld oortjie</translation>
 <translation id="6443118737398455446">Ongeldige vervaldatum</translation>
 <translation id="6444435711855078002">Meer opsies</translation>
@@ -1805,6 +1813,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
 <translation id="7261217796641151584">Deel groep</translation>
 <translation id="7266578100016339897">Dit help jou om georganiseerd te bly. Jy kan dit enige tyd in instellings verander.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google-bepalings<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Gemini-apps se privaatheidkennisgewing<ph name="END_LINK" /> is van toepassing. Gemini is KI en kan foute maak, insluitend oor mense.</translation>
 <translation id="7272437679830969316">Kan nie jou identiteit verifieer nie. Wagwoord is nie gekopieer nie.</translation>
 <translation id="728025568708172005">Wys my alles</translation>
 <translation id="7280980607183752256">Hierdie lêer kan nie ingevoer word nie</translation>
@@ -2125,6 +2134,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8345328955902001853">{count,plural, =1{Voltooi nog 1 taak om na die volgende vlak te vorder}other{Voltooi nog {count} take om na die volgende vlak te vorder}}</translation>
 <translation id="8348530355586151720">Tik op die driekol-kieslys</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
+<translation id="8360164927489392419">Opnames van jou interaksies met Live en inhoud wat jy daarmee deel, word gestoor en verwerk volgens <ph name="BEGIN_LINK" />Gemini-apps se privaatheidkennisgewing<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Het {count} boekmerk ingevoer}other{Het {count} boekmerke ingevoer}}</translation>
 <translation id="8363484128299778310">Tydelike terugstelling ingeval daar ’n probleem is</translation>
 <translation id="8364563001733875155">Om jou PIN te verander, moet jy eers ’n wagkode op jou toestel opstel.</translation>
@@ -2220,6 +2230,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8643403533759285912">Vee groep uit</translation>
 <translation id="8647280737650867362">Kon nie nasporing van die prys stop nie.</translation>
 <translation id="8654802032646794042">Kanselleer</translation>
+<translation id="8659875081143553823">Net 'n oomblik</translation>
 <translation id="8660600697590740984">Prent wat deur Lens gekopieer is</translation>
 <translation id="866266761389616183">O, mapstieks!</translation>
 <translation id="8663764600409216912">Jy gebruik wagwoorde wat moeilik lyk om te raai</translation>

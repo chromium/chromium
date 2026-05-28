@@ -138,6 +138,7 @@
 <translation id="121201262018556460">你嘗試前往 <ph name="DOMAIN" />，但伺服器所提供的憑證含有防護力薄弱的金鑰。攻擊者可能已破壞私密金鑰，而該伺服器可能並非你的目標伺服器 (你的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="1212527389003717329">開始下載。如要查看，請按住 |<ph name="ACCELERATOR" />|。</translation>
 <translation id="1215738931000958575">使用 Google 帳戶中儲存的資訊自動填入密碼、密碼金鑰、地址、付款方式和其他資訊</translation>
+<translation id="1216257595811043403">自動分享分頁</translation>
 <translation id="1219129156119358924">系統安全性</translation>
 <translation id="1219134100826635117">系統管理員已封鎖這項操作</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 (使用 RSA 加密)</translation>
@@ -2195,6 +2196,7 @@
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="443673843213245140">雖然已停用 Proxy，不過已指定明確 Proxy 設定。</translation>
 <translation id="4438821706955556403">一般價格</translation>
+<translation id="4439687924334332880">自動分享此視窗中與這個對話串相關的已開啟分頁，即可獲得更符合需求的回覆。你可以前往「設定」為所有對話串開啟這個選項。</translation>
 <translation id="4441832193888514600">由於這項政策只能設為雲端使用者政策，因此系統予以忽略。</translation>
 <translation id="4444062564459679679">已傳送到「<ph name="DEVICE_NAME" />」上的 Chrome</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Enter 鍵即可搜尋分頁</translation>
@@ -2297,7 +2299,6 @@
 <translation id="4640225694041297329">顯示過去 7 天的結果</translation>
 <translation id="4642296966515958616">如要加入這個分頁群組，請更新 Chrome</translation>
 <translation id="464342062220857295">搜尋功能</translation>
-<translation id="4643958597583594452">Chrome 會在裝置端或雲端私人空間處理網頁標題和網址</translation>
 <translation id="4644567637638438744">你必須登入 Microsoft OneDrive 才能上傳檔案</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4648262692072505866">雜湊的格式必須是 SHA-256。</translation>
@@ -3154,6 +3155,7 @@
 <translation id="5995727681868049093">管理 Google 帳戶的資訊、隱私權和安全性</translation>
 <translation id="5996255674476750320">車展</translation>
 <translation id="5997247540087773573">你剛才使用的密碼已在資料侵害事件中遭到外洩。為確保帳戶安全，Google 密碼管理員建議你立即變更這組密碼，並檢查已儲存的密碼。</translation>
+<translation id="5997915162652837008">開啟自動與所有對話串分享分頁的功能，即可節省時間。進一步瞭解</translation>
 <translation id="6000528814684428358">硬式搖滾與前衛音樂</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6002122790816966947">你的裝置</translation>
@@ -3298,6 +3300,7 @@
 <translation id="6203231073485539293">檢查網際網路連線</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6212314149070368045">美國 Fanfold</translation>
+<translation id="6213685130162740188">已知旅客號碼</translation>
 <translation id="6215936431492593050">金屬 (光滑)</translation>
 <translation id="6217950634729714357">廚房與餐廳家具</translation>
 <translation id="6218305986815100395">無法啟用虛擬卡片</translation>
@@ -3716,11 +3719,13 @@
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
 <translation id="6875873347995743859">傳送給助理</translation>
 <translation id="6875894866901426843">系統管理員會在 <ph name="DATE_TIME" /> 刪除你的本機檔案，包括垃圾桶中的所有檔案。</translation>
+<translation id="6880812263216766325">是否要一律分享開啟的分頁，以取得更實用的回覆？</translation>
 <translation id="6880941331070119097">高價選項</translation>
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6883221904761970440">已關閉安全付款憑證驗證表</translation>
 <translation id="6883745783646124431">公司地址</translation>
 <translation id="6886283082988906333">ZIP 封存檔</translation>
+<translation id="6886431827310382613">分享相關分頁</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">使用位置資訊</translation>
 <translation id="6888584790432772780">Chrome 已簡化這個頁面，讓內容更易於閱讀。Chrome 透過不安全的連線擷取原始頁面。</translation>
@@ -4007,6 +4012,7 @@
 <translation id="7337706099755338005">你的平台無法使用實驗性功能。</translation>
 <translation id="733923710415886693">伺服器憑證未依憑證透明化政策公開。</translation>
 <translation id="73398226265793546">AI 模式按鈕，啟用後即可在 Google 搜尋中向 AI 模式提問</translation>
+<translation id="7343620778718789463">身分證</translation>
 <translation id="7346048084945669753">是否已建立關聯：</translation>
 <translation id="7346062987309535530">餐具</translation>
 <translation id="7346081071264046066">「用興奮的語氣答應出席婚禮」</translation>
@@ -4181,6 +4187,7 @@
 <translation id="7569490014721427265">高爾夫</translation>
 <translation id="7569952961197462199">要從 Chrome 中移除信用卡嗎？</translation>
 <translation id="7569983096843329377">黑色</translation>
+<translation id="7570862164055912832">補救號碼</translation>
 <translation id="7571813784389228510">Google AI 模式</translation>
 <translation id="7574998639136359461">冬季運動用品</translation>
 <translation id="7575207903026901870">移除建議按鈕，按下 Enter 鍵即可移除這項建議</translation>
@@ -4689,6 +4696,7 @@
 <translation id="8381674639488873545">這些費用可能是一次性或週期性的費用，而且可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">自動進入全螢幕模式</translation>
 <translation id="838307841291975086">旅行車</translation>
+<translation id="838953173259347825">自動分享此視窗中與這個對話串相關的已開啟分頁，即可獲得更符合需求的回覆。如要為所有對話串開啟這個選項，請前往</translation>
 <translation id="8389532092404711541">一般為 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">改裝車與性能車</translation>
 <translation id="8390725133630534698">系統管理員政策禁止將 <ph name="ORIGIN_NAME" /> 的內容分享到 <ph name="VM_NAME" /></translation>
@@ -4972,6 +4980,7 @@
 <translation id="8861482055962701239">這項資訊無法儲存到 Google 錢包，因此改存到這部裝置的 Chrome。下次使用時，Chrome 會詢問你是否要儲存至錢包。</translation>
 <translation id="8863218129525348270">將卡片資訊儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="8864939224504814334">套裝與上班服飾</translation>
+<translation id="8865650218866129025">是否要自動分享開啟的分頁，在此對話串取得更實用的回覆？</translation>
 <translation id="8866132857352163524">原聲帶</translation>
 <translation id="8866481888320382733">解析政策設定時發生錯誤</translation>
 <translation id="8866928039507595380">折疊</translation>

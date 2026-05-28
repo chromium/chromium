@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
 <translation id="1111673857033749125">Hier werden die Lesezeichen angezeigt, die auf deinen anderen Geräten gespeichert sind.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Tab im Bild-im-Bild-Modus</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 Fenster wiederherstellen}other{# Fenster wiederherstellen}}</translation>
 <translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
 <translation id="1135018701024399762">Im Inkognitomodus kannst du auf gemeinsam verwendeten Geräten privat surfen</translation>
 <translation id="113752097246673894">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich mit <ph name="EMAIL" /> in Chrome an</translation>
@@ -195,7 +196,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1877073879466606884">Das Profil, in dem du angemeldet bist, ist ein verwaltetes Profil. Dein Administrator kann deine Profileinstellungen per Fernzugriff ändern, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen.</translation>
 <translation id="1879904908408734349">Ansicht zum Anmelden am unteren Rand ist geschlossen</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> vorgeschlagene Elemente in der Liste oben.</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
 <translation id="1899175549411605574">Preisinformationen am unteren Rand</translation>
 <translation id="1900260903084164610">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3166827708714933426">Tastenkombinationen für Tabs und Fenster</translation>
 <translation id="3167258285411721858">Du kannst die mobile Website für <ph name="HOST_NAME" /> anfordern</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter, stummgeschalteter Inkognitotab</translation>
+<translation id="3183941812169784232">Alle Fenster wiederherstellen?</translation>
 <translation id="3187472288455401631">Erfolgsmessung bei Anzeigen</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" />, Tabgruppe</translation>
 <translation id="3200536777393523575">Aktuelles Fenster schließen?</translation>
@@ -722,6 +723,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4164642020717536140">Schnelles und sicheres Surfen im Web</translation>
 <translation id="4165077084524712774">Weitere Tools</translation>
 <translation id="4170577491341606575">Daten werden abgerufen\u2026</translation>
+<translation id="4176838562184310003">Chrome wurde nicht ordnungsgemäß heruntergefahren und kann versuchen, deine verlorenen Fenster und Tabs wiederherzustellen. Einige Fenster werden beim Wiederherstellen möglicherweise minimiert.</translation>
 <translation id="4177222230309051052">Alle deine Lesezeichen abrufen</translation>
 <translation id="4177501066905053472">Werbethemen</translation>
 <translation id="417865198503699526">Nach einer Einstellung suchen</translation>

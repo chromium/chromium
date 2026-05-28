@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
 <translation id="1149401351239820326">Mes de vencimiento</translation>
 <translation id="1150989369772528668">Calendario</translation>
+<translation id="1161444134753003495">Acceder</translation>
 <translation id="1161663161838091892">Sincroniza las pestañas y el historial para continuar</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} tarjeta de crédito}other{{count} tarjetas de crédito}}</translation>
 <translation id="1164891049599601209">Se ingresó en un sitio engañoso</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Copiar imagen</translation>
 <translation id="1606899876897213121">Cerrar resumen de actividad reciente</translation>
 <translation id="1612754831519568745">La Navegación segura está desactivada. Obtén protección contra sitios, descargas y extensiones peligrosos.</translation>
+<translation id="1617300545081951343">Se aplican nuestras <ph name="BEGIN_LINK" />Condiciones<ph name="END_LINK" />, las <ph name="BEGIN_LINK" />Condiciones del Servicio de Ubicación de Corea<ph name="END_LINK" /> y nuestro <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />. Gemini es una IA y puede cometer errores, incluso con información sobre personas.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622717322707146952">Selecciona "Agregar al Calendario de Google" o "Agregar al Calendario de Apple".</translation>
 <translation id="1629162218487290695">Verificar tu identidad…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Saldrás de tu cuenta y se borrarán los datos de navegación</translation>
 <translation id="3124568093781685165">Comparte tus contraseñas con tu familia</translation>
 <translation id="3130863904455712965">Historial y más</translation>
+<translation id="3130973487775218359">Mira: <ph name="BEGIN_LINK" />5 cosas que debes saber sobre la IA generativa<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Guardar el número de rectificación</translation>
 <translation id="3132584647087998639">Importa tus datos</translation>
 <translation id="313283613037595347">Crear una pestaña de incógnito nueva.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Contraseña nueva para este sitio}other{Contraseñas nuevas para este sitio}}</translation>
 <translation id="3933372629914873850">Accederás a <ph name="URL" />.</translation>
 <translation id="3934905113567851655">Pellizca para cambiar el tamaño</translation>
+<translation id="393732545649378031">Cuenta</translation>
 <translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
 <translation id="3946483119107054883">Descargar en formato CSV</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">Firma de OCSP</translation>
 <translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
 <translation id="4310738531374808763">Personaliza la página principal</translation>
+<translation id="4316794575239200608">Tus conversaciones con Gemini y los <ph name="BEGIN_LINK" />datos de Google Workspace<ph name="END_LINK" /> no serán analizados por revisores humanos ni se usarán para mejorar modelos de IA generativa.</translation>
 <translation id="4320848494125124980">Recientes</translation>
 <translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> contraseñas reutilizadas</translation>
 <translation id="4632655012900268062">Personalizar tarjetas</translation>
 <translation id="4634124774493850572">Usar contraseña</translation>
+<translation id="4634633632339959267">Los chats se revisan y se usan para mejorar la IA de Google. <ph name="BEGIN_LINK" />Obtén más información sobre tus elecciones.<ph name="END_LINK" /> La <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" /> también se almacena junto con tu actividad.</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4641425577292284174">Descubre si tienes la configuración más segura o si necesitas revisar algo</translation>
 <translation id="4642472735733036929">Se detuvo el seguimiento de precios</translation>
@@ -1470,6 +1476,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6144589619057374135">Abrir ${url} en modo Incógnito</translation>
 <translation id="6146563240635539929">Videos</translation>
+<translation id="6148392728478209113">¿Aún estás usando Live? Presiona el botón Live para seguir hablando con Gemini</translation>
 <translation id="6151006591088192882">Desbloquear pestañas de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactivas</translation>
 <translation id="6152406514676263192">Activa la sincronización para acceder al contenido más relevante según tus intereses.</translation>
@@ -1563,6 +1570,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6435236283694032571">Agregar a la Lista de lectura</translation>
 <translation id="6435307030888827407">Continuar sin acceder</translation>
 <translation id="6436318499800111867">Compartido conmigo el <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respeta la privacidad de otras personas<ph name="END_LINK" /> y pídeles permiso antes de grabarlas o incluirlas en una conversación de Live.</translation>
 <translation id="6442697326824312960">Anular fijación de pestaña</translation>
 <translation id="6443118737398455446">Fecha de caducidad no válida</translation>
 <translation id="6444435711855078002">Más opciones</translation>
@@ -1805,6 +1813,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7253951228444156601">Verificando contraseñas…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Esto te ayuda a mantener tu organización. Puedes cambiar esta opción en la configuración en cualquier momento.</translation>
+<translation id="7270491814777319521">Se aplican las <ph name="BEGIN_LINK" />Condiciones de Google<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad de las Apps con Gemini<ph name="END_LINK" />. Gemini es una IA y puede cometer errores, incluso con información sobre personas.</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
 <translation id="728025568708172005">Mostrar el lugar</translation>
 <translation id="7280980607183752256">No se puede importar este archivo</translation>
@@ -2125,6 +2134,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8345328955902001853">{count,plural, =1{Completa 1 tarea más para subir de nivel}other{Completa {count} tareas más para subir de nivel}}</translation>
 <translation id="8348530355586151720">Presiona el menú de tres puntos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
+<translation id="8360164927489392419">Las grabaciones de tus interacciones con Live y el contenido que compartes con la función se guardan y se procesan según se indica en el <ph name="BEGIN_LINK" />Aviso de Privacidad de las Apps con Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Se importó {count} favorito}other{Se importaron {count} favoritos}}</translation>
 <translation id="8363484128299778310">Recuperación temporal en caso de problemas</translation>
 <translation id="8364563001733875155">Para cambiar el PIN, primero establece una contraseña en tu dispositivo.</translation>
@@ -2220,6 +2230,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8643403533759285912">Borrar grupo</translation>
 <translation id="8647280737650867362">No se pudo anular el seguimiento del precio.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
+<translation id="8659875081143553823">Un momento</translation>
 <translation id="8660600697590740984">Imagen copiada de Lens</translation>
 <translation id="866266761389616183">¡Oh, no!</translation>
 <translation id="8663764600409216912">Usas contraseñas que parecen difíciles de adivinar</translation>

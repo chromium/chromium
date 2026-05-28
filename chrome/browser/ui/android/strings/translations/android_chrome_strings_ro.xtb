@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1111673857033749125">Marcajele salvate pe alte dispozitive vor apărea aici.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, filă picture-in-picture</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Restabilește o fereastră}few{Restabilește # ferestre}other{Restabilește # de ferestre}}</translation>
 <translation id="1126696498560056882">Gestionează conturile de pe acest dispozitiv</translation>
 <translation id="1135018701024399762">Modul incognito îți păstrează navigarea privată față de alte persoane care îți folosesc dispozitivul</translation>
 <translation id="113752097246673894">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te la Chrome ca <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1877073879466606884">Profilul la care te-ai conectat este un profil gestionat. Administratorul poate să modifice setările profilului de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare.</translation>
 <translation id="1879904908408734349">Foaia de conectare din partea de jos este închisă</translation>
 <translation id="1883903952484604915">Fișierele mele</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> elemente sugerate în lista de mai sus.</translation>
 <translation id="189358972401248634">Alte limbi</translation>
 <translation id="1899175549411605574">Foaia din partea de jos cu Statistici despre prețuri</translation>
 <translation id="1900260903084164610">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_TOS_LINK" />Termenii și condițiile<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3166827708714933426">Comenzi rapide pentru file și ferestre</translation>
 <translation id="3167258285411721858">Poți solicita site-ul mobil pentru <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, filă incognito fixată cu sunetul dezactivat și selectare multiplă</translation>
+<translation id="3183941812169784232">Restabilești toate ferestrele?</translation>
 <translation id="3187472288455401631">Cuantificarea anunțurilor</translation>
 <translation id="3189635831478931757">Grupul de file <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Închizi fereastra actuală?</translation>
@@ -722,6 +723,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4164642020717536140">Navigare rapidă și securizată pe web</translation>
 <translation id="4165077084524712774">Mai multe instrumente</translation>
 <translation id="4170577491341606575">Se preiau elementele\u2026</translation>
+<translation id="4176838562184310003">Chrome nu s-a închis corect și poate încerca să restabilească ferestrele și filele pierdute. Unele ferestre pot fi minimizate când se restabilesc.</translation>
 <translation id="4177222230309051052">Accesează toate marcajele</translation>
 <translation id="4177501066905053472">Subiectele anunțurilor</translation>
 <translation id="417865198503699526">Caută o setare</translation>

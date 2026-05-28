@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />バックアップ データは、ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">指紋を設定するには、キーボードの左下にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="1073899992769346247">バッテリーを交換または充電してください</translation>
 <translation id="1081015718268701546">Linux アプリは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="108486256082349153">携帯電話: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">アクセスするには、<ph name="LAUNCHER_KEY_NAME" />+G キーを押してください</translation>
 <translation id="130491383855577612">Linux のアプリとファイルが正常に置き換えられました</translation>
 <translation id="1306549533752902673">おすすめのアプリ</translation>
+<translation id="1306606229401759371">設定を変更</translation>
 <translation id="1310396869741602366">トーンを変更</translation>
 <translation id="1312604459020188865">信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">選択した上端のハンドル、矢印キーを使用して移動します</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">デスクを保存して後で使用</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
+<translation id="1390113502208199250">Chrome Education Upgrade 機能を使用するには、このデバイスを出荷時の設定にリセットする必要があります。</translation>
 <translation id="1391102559483454063">オン</translation>
 <translation id="1394698770495054737">ぼかし（強）</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 日前}other{# 日前}}</translation>
+<translation id="1403222014593521787">プロキシに接続できませんでした</translation>
 <translation id="1404963891829069586">フォーカス モード用のサウンド</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。矢印キーを使用して日付を変更します。</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">位置情報へのアクセスをオンにする</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> の固定を解除しました</translation>
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> を選択して開きます。</translation>
+<translation id="1832511806131704864">スマートフォンの変更が反映されました</translation>
 <translation id="1838011306813517425">フォーカス モード設定</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">指紋でロックを解除する</translation>
 <translation id="1891362123137972260">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてください。</translation>
 <translation id="1894024878080591367">キーボードでプレイするよう設定する</translation>
+<translation id="1896043844785689584">指紋を設定するには、キーボードの右下にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="1896383923047738322">キーボードのカスタマイズ</translation>
 <translation id="1904997243703671177">Bluetooth をオフにすると、次を含む <ph name="DEVICE_COUNT" /> 台の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="1908992311423394684">新たなインストール</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1918022425394817322">カメラは右上にスナップされています</translation>
+<translation id="1919872106782726755">指紋を設定するには、キーボードの右上にある電源ボタンの横の指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="1920390473494685033">連絡先</translation>
 <translation id="1923539912171292317">自動クリック</translation>
 <translation id="1925320505152357008">1 分未満</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">このまま保存</translation>
 <translation id="2041220428661959602">バッテリー残量: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> のショートカットは現在無効になっています</translation>
+<translation id="204622017488417136">以前インストールしたバージョンの Chrome にデバイスを戻します。すべてのユーザー アカウントとローカルデータは削除されます。この操作は元に戻せません。</translation>
 <translation id="204706822916043810">仮想マシンを確認しています</translation>
 <translation id="2048554637254265991">コンテナ マネージャーの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2048653237708779538">操作できません</translation>
@@ -412,12 +420,14 @@
 <translation id="2304702218354340897">フェイスナビをオフにしてもよろしいですか？</translation>
 <translation id="2305738328104302723">Google ToDo リストのタスク一覧: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: 最近撮影したスクリーン キャプチャや、最近ダウンロードまたは固定したファイル</translation>
+<translation id="2316433409811863464">アプリ ストリーミング</translation>
 <translation id="2318576281648121272">今日 <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">Android アプリを使用するには、<ph name="DEVICE_TYPE" /> を充電し、アップデートを行ってください。</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />、検索結果のカテゴリ</translation>
 <translation id="2322173485024759474">1 字戻る</translation>
 <translation id="2326112202058075478">他の絵文字を表示</translation>
 <translation id="2335091074961603075">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。音質を向上させるには、内蔵マイクを使用してください。</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、レーザー ポインタや虫メガネを使用したりすることができます。</translation>
 <translation id="2341729377289034582">縦に固定</translation>
 <translation id="2344032937402519675">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。</translation>
@@ -442,6 +452,7 @@
 <translation id="2383521554963939360">アプリとタブグループ</translation>
 <translation id="2386292613071805067">ページ上のすべてを選択する</translation>
 <translation id="2389423187722941333">Gemini を切り替える</translation>
+<translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
 <translation id="2392659840443812875">利用できるアクセス ポイントはありません。デバイスが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="2397416548179033562">Chrome メニューを表示</translation>
 <translation id="240006516586367791">メディア コントロール</translation>
@@ -483,17 +494,21 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> のプレビュー。使用中のデスクです。</translation>
 <translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」の解像度を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。確定しない場合、<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="2487915095798731898">参加</translation>
+<translation id="2489829450872380594">次回から、新しいスマートフォンでこの <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2499445554382787206">デスクのプロファイル メニュー: <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">戻る</translation>
 <translation id="2501920221385095727">固定キー</translation>
 <translation id="2504454902900101003">スマートフォンの最近の写真、メディア、通知の表示の設定を行わない</translation>
 <translation id="2505378917951323738">タスクを編集できませんでした。オンラインになったらもう一度お試しください。</translation>
 <translation id="2509468283778169019">Caps Lock がオンになっています</translation>
+<translation id="2514326558286966059">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />を停止します。<ph name="CAPTURE_MEDIUM" />は<ph name="CAPTURE_STATE" />です</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">ユーザー補助オプションを開く</translation>
 <translation id="2516416533263263796">フォーカス モードがオンになっています。残り時間は 10 分です</translation>
 <translation id="2516637483312286228">ゲーム操作キーを編集する</translation>
+<translation id="2517472476991765520">スキャン</translation>
 <translation id="252054055865191167">マーカーツール</translation>
 <translation id="2526581474998477112">ウィンドウの固定を解除</translation>
 <translation id="2528111225373402384">アクセス ポイント設定</translation>
@@ -569,6 +584,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />、<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"削除"</translation>
 <translation id="2750941250130734256">アクティブなウィンドウの固定を解除しました。</translation>
+<translation id="2755349111255270002">この <ph name="DEVICE_TYPE" /> をリセットします</translation>
 <translation id="2761723519669354964">シェルフのハイライト表示されたアイテムを開きます</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />～<ph name="KEY_TWO" /> キーを押す</translation>
@@ -613,10 +629,12 @@
 <translation id="2869095047958348710">前の <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">メイン モニターを入れ替える</translation>
 <translation id="2872961005593481000">終了</translation>
+<translation id="2876336351874743617">指 2</translation>
 <translation id="2876338922445400217">画面を拡大する</translation>
 <translation id="2876760662374103627">フェイスナビが有効になっています</translation>
 <translation id="2878884018241093801">最近使用されたアイテムはありません</translation>
 <translation id="2880541185262491188">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> ほど待ってから、もう一度お試しください</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> の再起動とリセットを行います</translation>
 <translation id="2883271196820422439">マウスキーを再開</translation>
 <translation id="2885950158625301909">詳細</translation>
 <translation id="2891209721153296020">「選択解除」</translation>
@@ -656,6 +674,7 @@
 <translation id="2993956882370897557">End キーの代わりに次のキーを使用してください</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001391739687111021">画面サイズを編集</translation>
+<translation id="3001835006423291524">キーボードの右下にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3009178788565917040">出力</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="301282384882049174">管理者によって共有</translation>
@@ -678,6 +697,8 @@
 <translation id="3062298103034426069">未対応</translation>
 <translation id="3068622547379332530">バージョン <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">シェルフは左側にあります</translation>
+<translation id="3075144191779656260"><ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
+<translation id="3075874217500066906">Powerwash を開始するには再起動が必要です。再起動後、続行の確認メッセージが表示されます。</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">メニューを展開</translation>
 <translation id="3087734570205094154">下部</translation>
@@ -703,6 +724,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">授業の種類</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">デバイスをリセットし、すべてのユーザー アカウントとローカルデータを削除します。この操作は元に戻せません。</translation>
 <translation id="3130793786899299931">長さを変更</translation>
 <translation id="3134486240968249588">ご利用にあたっては、次の点にご注意ください</translation>
 <translation id="3139188263101386725">新しいショートカットを使用</translation>
@@ -719,6 +741,7 @@
 <translation id="3174897399179348329">PageUp キーの代わりに次のキーを使用してください</translation>
 <translation id="3176221688814061633">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。Bluetooth 超解像をオンにするか、内蔵マイクを使用すると音質が向上します。</translation>
 <translation id="3181441307743005334">再起動には時間がかかる場合があります</translation>
+<translation id="3183700187146209259">スキャナ ソフトウェアをインストールできません</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{1 台のデバイスと接続されています}other{# 台のデバイスと接続されています}}</translation>
 <translation id="3203405173652969239">スイッチ アクセスが有効になりました</translation>
 <translation id="3204648577100496185">このアプリに関連付けられているデータがこのデバイスから削除される可能性があります</translation>
@@ -766,6 +789,7 @@
 <translation id="3346728094401457853"><ph name="EMAIL" /> のデバイス パスワードを入力してください</translation>
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
+<translation id="3353786022389205125">[スリープから復帰するときにロック画面を表示する] をオンにしてから、もう一度お試しください</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
 <translation id="3365281428003534650">タイマー、タスク、音楽を設定する</translation>
 <translation id="3365977133351922112">スマートフォンが遠すぎます。近づけてください。</translation>
@@ -780,6 +804,7 @@
 <translation id="3394432020929931914">、開かれています</translation>
 <translation id="3401474642070997151">候補をカスタマイズするには、いずれかの候補を右クリックするか長押しします</translation>
 <translation id="3405101454990027959">マイクへのアクセスをオンにする</translation>
+<translation id="3407967630066378878">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3409584356742878290">デベロッパー ツール インスペクタの表示と非表示を切り替える</translation>
 <translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>
@@ -919,9 +944,11 @@
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3743775386021959186">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です</translation>
 <translation id="3750403286520637847">天気情報の提案を非表示にする</translation>
+<translation id="3752253558646317685">指紋を保存するには、お子様に指をかざしてもらってください</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />バックアップ データは、お子様のドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620"><ph name="PHONE_NAME" /> でもこの <ph name="DEVICE_TYPE" /> のロックを解除できるようになりました。</translation>
 <translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> のショートカットが、<ph name="OLD_SHORTCUT" /> から <ph name="NEW_SHORTCUT" /> に変更されました</translation>
 <translation id="3765841986579723851">今日編集したファイル</translation>
@@ -939,6 +966,7 @@
 <translation id="3799080171973636491">全画面拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
 <translation id="3804737937830804242">カメラをたたむ</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 個の絵文字が見つかりました。他に一致する結果はありません。}other{# 個の絵文字が見つかりました。他に一致する結果はありません。}}</translation>
+<translation id="381202950560906753">別の指紋を登録</translation>
 <translation id="3822403841174077928">書式設定付きでコピーできませんでした</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
@@ -953,6 +981,7 @@
 <translation id="3848526302597027234">次の権限へのアクセス:</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="385300504083504382">先頭</translation>
+<translation id="3857807444929313943">指を離して、もう一度タッチ</translation>
 <translation id="3859364108019690">アプリをストリーミングできません</translation>
 <translation id="3861638017150647085">ユーザー名「<ph name="USERNAME" />」は使用できません</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
@@ -971,6 +1000,7 @@
 <translation id="3923221004758245114"><ph name="DEVICE_TYPE" /> から <ph name="VM_NAME" /> を削除しますか？仮想マシン内のすべてのアプリとデータが削除されます。</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3925540965556789199"><ph name="DATE" />、予定を読み込んでいます。</translation>
+<translation id="3926002189479431949">Smart Lock 用のスマートフォンが変更されました</translation>
 <translation id="3927049937406914450">位置情報へのアクセスがオフになっているため、天気情報をご利用いただけません。これは [設定] で変更できます。</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3934456833412894880">アダプティブ充電がオンになっています。バッテリー寿命を延ばすため、残量は 80% に保たれ、必要なときにフル充電します。</translation>
@@ -1030,6 +1060,7 @@
 <translation id="4113030288477039509">管理者により管理されています</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
+<translation id="4116704186509653070">もう一度開く</translation>
 <translation id="411881149140864134">左側のデスクを有効にする</translation>
 <translation id="4119928251231465047">PIN の試行回数が上限を超えました</translation>
 <translation id="412298498316631026">ウィンドウ</translation>
@@ -1097,6 +1128,7 @@
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4280601795273309128">セキュリティ アップデートが終了しました。デバイスをアップグレードしてください。</translation>
 <translation id="4281844954008187215">利用規約</translation>
+<translation id="4282196459431406533">Smart Lock が有効です</translation>
 <translation id="4283888303416325161">セキュリティ強化のためパスワードを入力してください</translation>
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428715201724021596">プロファイルに接続しています。この処理には数分かかることがあります。</translation>
@@ -1122,6 +1154,7 @@
 <translation id="4338109981321384717">虫メガネ</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />、ミュートされています</translation>
 <translation id="4351244548802238354">ダイアログを閉じる</translation>
+<translation id="435527878592612277">写真を選択</translation>
 <translation id="4356872429719185452">アクセス ポイントの詳細を表示します。アクセス ポイントはオンです。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> 録画中</translation>
 <translation id="4368227575116094370">Google スプレッドシートを作成</translation>
@@ -1156,6 +1189,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 件の重要な通知}other{# 件の重要な通知}}</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451374464530248585">キーボード ショートカット「Alt+下矢印」が変更されました。PageDown キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+下矢印キーを押してください。</translation>
+<translation id="4453430595102511050">キーボードの右上にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="445765352722456792">提案をカスタマイズ</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
 <translation id="445923051607553918">Wi-Fi ネットワークへの接続</translation>
@@ -1172,6 +1206,7 @@
 <translation id="4485506555414638855">スマートフォンの最近の写真、メディア、通知、アプリの表示の設定を行わない</translation>
 <translation id="4491109536499578614">画像</translation>
 <translation id="4493468155686877504">推奨（<ph name="INSTALL_SIZE" />）</translation>
+<translation id="450099669180426158">感嘆符アイコン</translation>
 <translation id="450584155212756404">Dev チャンネル</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">フィードバック</translation>
@@ -1181,6 +1216,7 @@
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
 <translation id="4531536770443562276">全画面表示のみ</translation>
 <translation id="4533343294786968049">バッテリー充電中です。<ph name="FULLY_CHARGE_TIME" /> までに完全に充電されます。</translation>
+<translation id="4534661889221639075">もう一度お試しください。</translation>
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
 <translation id="4538824937723742295">全画面のスクリーンショットを撮影</translation>
 <translation id="4539127209940689201">現在のページを印刷する</translation>
@@ -1196,6 +1232,7 @@
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">アップデートやアプリをインストールします。続行すると、Google、ご利用の通信キャリア、デバイスの製造元からのアップデートやアプリをデバイスで自動的にダウンロードおよびインストールされる場合があることに同意したことになります（ダウンロードの際はモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。<ph name="BEGIN_LINK1" />Play 自動インストールの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">指 3</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4566144812051858745">提案自体に興味がない</translation>
 <translation id="4569753163207712681">スマートフォンの最近の写真、メディア、アプリを表示する</translation>
@@ -1208,7 +1245,9 @@
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4596144739579517758">ダークモードはオフになっています</translation>
 <translation id="4596442969149038771"><ph name="USER" /> さんから共有されたファイル</translation>
+<translation id="4598776695426288251">複数のデバイスから Wi-Fi に接続できます</translation>
 <translation id="4610493115106525653">結果に満足</translation>
+<translation id="4611114513649582138">データ接続が可能です</translation>
 <translation id="4611292653554630842">ログイン</translation>
 <translation id="4613144866899789710">Linux のインストールをキャンセルしています...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> を接続しました</translation>
@@ -1323,6 +1362,7 @@
 <translation id="4937170330762390348">音声入力では、声を使って入力できます。テキスト欄にカーソルを置いて、音声入力キーを押すか、画面下部のマイクアイコンを選択します。音声入力の言語は<ph name="LANGUAGE" />に設定されています。音声ファイルがダウンロードされ、オフラインで音声入力を使用できます。音声入力の言語は [設定] &gt; [ユーザー補助] でいつでも変更できます。</translation>
 <translation id="4938176435186993759">すべての候補を非表示</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
+<translation id="4945439665401275950">指紋を設定するには、お子様に電源ボタンをタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="4950800194215951939">ゲーム環境をカスタマイズ</translation>
@@ -1342,6 +1382,7 @@
 <translation id="4981175556418720939">更新: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">デスク 16</translation>
 <translation id="4989163558385430922">すべて表示</translation>
+<translation id="4992458225095111526">Powerwash の実行を確認</translation>
 <translation id="4995963195354861331">ようこそダイアログ</translation>
 <translation id="4996265698919320288">録画中</translation>
 <translation id="5003993274120026347">次の文</translation>
@@ -1388,6 +1429,7 @@
 <translation id="5121628974188116412">ページの一番下に移動する</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> のプレビュー。アクティブでないデスクです。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
+<translation id="5137349216872139332">インスタント アクセス ポイントに接続できませんでした</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />、<ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 検索</translation>
 <translation id="5144005092084035179">オーディオ入力を切り替えますか？</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
@@ -1461,6 +1503,7 @@
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5323994101633366939">デスク名を非表示</translation>
 <translation id="5327248766486351172">名前</translation>
+<translation id="532943162177641444">「<ph name="PHONE_NAME" />」で通知をタップして、このデバイスで使用できるモバイル アクセス ポイントを設定してください。</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
 <translation id="533282197239610265">キャスト デバイスを表示します</translation>
@@ -1471,6 +1514,7 @@
 <translation id="5356963482258194581">ダークモードとライトモードを切り替えます。デスクトップを右クリックして、[壁紙とスタイル] を選択します。</translation>
 <translation id="536019650977002321">管理者が音声キャプチャを許可していません。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> の音声ファイルを部分的にダウンロードしました</translation>
+<translation id="5363109466694494651">Powerwash を実行して以前のバージョンに戻す</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> このタブに移動</translation>
 <translation id="5364693579536176785">保存容量</translation>
 <translation id="5369573834963677938">同じデバイスを使用している他のユーザーもフェイス コントロールを利用できるようになります</translation>
@@ -1630,6 +1674,7 @@
 <translation id="5823239091726045201">ウェブの Google ToDo リスト</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5830180081891717894">他 <ph name="WINDOWS" /> 件</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> を開けません</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5840658767386246331">Google で検索</translation>
@@ -1647,6 +1692,7 @@
 <translation id="5876666360658629066">保護者用コードを入力してください</translation>
 <translation id="5881540930187678962">スマートフォン ハブを後で設定</translation>
 <translation id="588258955323874662">全画面表示</translation>
+<translation id="5886009770935151472">指 1</translation>
 <translation id="5887954372087850114">ウィンドウ <ph name="WINDOW_TITLE" /> を <ph name="DESK_TITLE" /> に割り当て、他のすべてのデスクへの割り当てを解除しました</translation>
 <translation id="588817334757907802">Chrome ブラウザでファイルを開く</translation>
 <translation id="5892014525522223653">オフラインです。</translation>
@@ -1688,6 +1734,7 @@
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /> ページ</translation>
 <translation id="601304062528754300">シェルフで次のアイテムをハイライト表示します</translation>
 <translation id="6015573907265691211">タスクを完了</translation>
+<translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
 <translation id="6018164090099858612">ミラーモードを終了しています</translation>
 <translation id="6019566113895157499">キー ショートカット</translation>
 <translation id="602001110135236999">左にスクロール</translation>
@@ -1736,6 +1783,7 @@
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
 <translation id="6127395413317891856">オフラインです。接続を確認してから、もう一度お試しください。</translation>
 <translation id="6129953537138746214">Space</translation>
+<translation id="6132714462430777655">教育機関の登録をスキップしますか？</translation>
 <translation id="6136872094979134163">Chromebook 向け Steam のニュースを取得できません。</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> の削除ダイアログを開きます</translation>
 <translation id="6141205840878048728">何の作業に集中しますか？</translation>
@@ -1770,6 +1818,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> はオフラインです。インターネットに接続してもう一度お試しください。</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
+<translation id="6225475702458870625"><ph name="PHONE_NAME" /> からデータ接続が可能です</translation>
 <translation id="6228457605945141550">明るさを下げる</translation>
 <translation id="623116199192908855">Chromebook から画面をキャストする</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
@@ -1786,6 +1835,7 @@
 <translation id="6267036997247669271"><ph name="NAME" />: 有効にしています...</translation>
 <translation id="6274202259872570803">スクリーンキャスト</translation>
 <translation id="6274422179279280249">リンクや絵文字などを挿入したり、Google AI を使用して文章を作成したりできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">プロキシ <ph name="PROXY_SERVER" /> に接続するには、ユーザー名とパスワードが必要です。</translation>
 <translation id="6276708887952587684">ページのソースを表示する</translation>
 <translation id="6285871695023807425">カレンダーに追加</translation>
 <translation id="628699625505156622">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
@@ -1801,6 +1851,7 @@
 <translation id="6317369057005134371">アプリケーション ウィンドウを待機しています...</translation>
 <translation id="6319058840130157106">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を逆方向に移動します</translation>
 <translation id="6319503618073410818">ブラウザで詳細を表示</translation>
+<translation id="6322370287306604163">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="6324334979701518365">サポートされていないため Chrome アプリを起動できません。管理者にこの問題を報告してください。</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6325525973963619867">失敗しました</translation>
@@ -1810,6 +1861,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> は <ph name="MANAGER" /> が管理する管理対象セッションです</translation>
 <translation id="6340148837564298498">PIN を忘れた場合は、このユーザーを復元してみてください。</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> を接続しました</translation>
+<translation id="6345418402353744910">管理者がネットワークを設定できるよう、プロキシ「<ph name="PROXY" />」のユーザー名とパスワードを指定してください</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから、<ph name="MODIFIER_THREE" />+<ph name="KEY_TWO" /> または <ph name="KEY_THREE" /> キーを押す</translation>
 <translation id="6351032674660237738">アプリの候補</translation>
 <translation id="6352082849089527770">不明なネットワーク</translation>
@@ -1829,6 +1881,7 @@
 <translation id="6414618057231176439">インストールする <ph name="VM_NAME" /> のバージョンを選択してください。</translation>
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
+<translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> の以前のインストール バージョンに戻しています</translation>
 <translation id="641817663353603351">PageUp</translation>
 <translation id="6418511932144861495">重要なアップデートのインストール</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1898,6 +1951,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />、<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">カメラは左下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="6605415194043280389">フォーカス モードがオンです</translation>
+<translation id="6608773371844092260">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="6612802754306526077">画面の録画モードを選択しました</translation>
 <translation id="6612889377159412215">サブタスク</translation>
@@ -1920,6 +1974,7 @@
 <translation id="6650742588569439432">アイテムを読み込めませんでした。</translation>
 <translation id="6650933572246256093">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次のパスキーを入力してください: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">パスワード</translation>
+<translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> で Powerwash を実行し、以前のバージョンに戻します。</translation>
 <translation id="666343722268997814">ハイライト表示されたアイテムで右クリックメニューを開く</translation>
 <translation id="6665545700722362599">ウェブサイト、アプリ、拡張機能に対して、位置情報サービスまたはデバイスのマイクやカメラなどの機能の使用を許可する</translation>
 <translation id="6667908387435388584">スマートフォンのアクセス ポイントに接続することや、スマートフォンをサイレント モードに切り替える、探すなどのほか、スマートフォンで最近使った Chrome タブを表示することができます</translation>
@@ -1947,6 +2002,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">カメラとマイクを使用中</translation>
 <translation id="6739144137573853180">設定に移動</translation>
+<translation id="6745592621698551453">今すぐ更新</translation>
 <translation id="6747985245839783873">バッテリー残量が <ph name="PERCENTAGE" />% です。バッテリー セーバーがオンになりました。</translation>
 <translation id="6751052314767925245">管理者によって適用</translation>
 <translation id="6751826523481687655">パフォーマンス追跡機能が有効になっています</translation>
@@ -1954,6 +2010,7 @@
 <translation id="6753390234084146956">タブ</translation>
 <translation id="6754918760968695779">クイック インサート</translation>
 <translation id="6757237461819837179">再生中のメディアはありません</translation>
+<translation id="6759193508432371551">初期状態へのリセット</translation>
 <translation id="6760438044935091345">ゲーム ダッシュボード</translation>
 <translation id="6768043681523654438">ストレージ</translation>
 <translation id="6769195697113506406">画像を挿入しました</translation>
@@ -1968,6 +2025,7 @@
 <translation id="6792351896138862473">サポートされていないためキオスクアプリを起動できません。管理者にこの問題を報告してください。</translation>
 <translation id="679368458793552943">拡大鏡がオンのときにズームインします</translation>
 <translation id="6794287755901682422">このアイテムには <ph name="GLANCEABLES_TASK_ITEM_METADATA" /> があります。</translation>
+<translation id="6797493596609571643">エラーが発生しました。</translation>
 <translation id="6797745268063125932">オンのままにする</translation>
 <translation id="6801878137098616817">最近編集したファイル</translation>
 <translation id="6802687695197837794">カメラとマイクへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、アクセスを許可します</translation>
@@ -1981,6 +2039,7 @@
 <translation id="682971198310367122">Google プライバシー ポリシー</translation>
 <translation id="6836499262298959512">危険なファイル</translation>
 <translation id="6837621009301897464">スクリーンショットを撮るには、押します</translation>
+<translation id="6848716236260083778">指紋を設定するには、お子様に指紋認証センサーをタッチしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="6852052252232534364">クリックして有効にする</translation>
 <translation id="6852628153543175788">10 分延長</translation>
 <translation id="6855029042976311970">数秒前に編集したファイル</translation>
@@ -2089,6 +2148,7 @@
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="7219573373513695352">接続されているデバイスはありません</translation>
+<translation id="7228056665272655255">指紋を設定するには、キーボードの右上にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7228968829656641943">画面上の範囲を選択して検索します。キーボード ナビゲーションを使用するには、Tab キーを押し、スペースキーを押してください。</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">Linux の復元をキャンセルしています</translation>
@@ -2103,6 +2163,7 @@
 <translation id="7258828758145722155">昨日編集したファイル</translation>
 <translation id="726276584504105859">分割画面を使用するにはここにドラッグします</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> 短縮</translation>
+<translation id="7267875682732693301">指を何度か離して、あらゆる角度から指紋を登録します</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+Backspace</translation>
 <translation id="7285232777292757180">クイック設定でスクリーン キャプチャ ツールを使用してスクリーンショットを撮る</translation>
 <translation id="7301826272005790482">ウィンドウの提案を閉じる</translation>
@@ -2127,6 +2188,7 @@
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
 <translation id="736045644501761622">壁紙とスタイルを設定</translation>
+<translation id="7361914392989692067">電源ボタンを指でタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7368041336688136012">AI による文書読解サポート、文書作成サポート、画像作成を使用できるのは 18 歳以上の方に限られます。</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7372069265635026568">合計メモリ <ph name="TOTAL_MEMORY" /> 中 <ph name="AVAILABLE_MEMORY" /> を使用できます</translation>
@@ -2142,6 +2204,7 @@
 <translation id="7384028040782072252">任意の場所を右クリックしてアプリを並べ替えられます</translation>
 <translation id="7386767620098596324">ネットワーク接続を切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="7392563512730092880">[設定] でいつでも設定できます。</translation>
+<translation id="7400839060291901923">「<ph name="PHONE_NAME" />」で接続設定を行ってください</translation>
 <translation id="7401222354741467707">フル スクリーンショットを撮影、または画面の録画を行います</translation>
 <translation id="7401788553834047908">フォーカス モード中はサイレント モードにする</translation>
 <translation id="7405710164030118432">このデバイスのロックを解除するには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
@@ -2158,6 +2221,7 @@
 <translation id="7457027286267861992">ディスクの空き容量が不足しています。空き容量を増やしてもう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="7459485586006128091">内部エラーにより、アクセス ポイントはオフになっています。数分後にもう一度接続してみてください。</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="746216226901520237">次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
@@ -2212,6 +2276,7 @@
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7588317312481506627">クリップボードにコピーしました。</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
+<translation id="7594725637786616550">お使いの <ph name="DEVICE_TYPE" /> を出荷時の状態にリセットするために、Powerwash を実行します。</translation>
 <translation id="7595453277607160340">Android アプリを使用し、<ph name="DEVICE_TYPE" /> が適切に動作し続けるようにするには、もう一度ログインしてアップデートを行ってください。</translation>
 <translation id="7598054670902114203">CPU 使用状況のスナップショット、<ph name="CPU_USEAGE" />%。気温 <ph name="TEMPERATURE" /> 度（摂氏）、現在の速度: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">選択した結果を挿入します</translation>
@@ -2232,6 +2297,7 @@
 <translation id="7632948528260659758">次のキオスクアプリを更新できませんでした:</translation>
 <translation id="7634566076839829401">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7634648064048557203">カメラは右下にスナップされています</translation>
+<translation id="7637253234491814483">キーボードの右上にある電源ボタンの横の指紋認証センサーに触れてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7638572816805275740">ウィンドウのスクリーンショットを撮影、または画面の録画を行います</translation>
 <translation id="7642106959537987271">色反転モード</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> の設定を開きます、<ph name="CONNECTION_STATUS" /></translation>
@@ -2283,6 +2349,7 @@
 <translation id="77747521138552256">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> 待ってから PIN をもう一度お試しください。パスワードを入力すれば、すぐにログインできます。</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
+<translation id="7781335840981796660">すべてのユーザー アカウントとローカル データは削除されます。</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7787212146956232129">入力デバイスと出力デバイスが設定されています。変更するには [設定] に移動してください。</translation>
 <translation id="7792590255364786396">表示</translation>
@@ -2344,6 +2411,7 @@
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943516765291457328">近くのアクセス ポイントをスキャンするには Bluetooth をオンにしてください</translation>
 <translation id="7944023924886109030">今日の予定をすべて表示</translation>
+<translation id="7944847494038629732">スキャナの USB ケーブルを外し、もう一度差し込んでみてください</translation>
 <translation id="7945357288295809525">ユーザー補助設定を表示します。「<ph name="ENABLED_FEATURES" />」が有効になっています。</translation>
 <translation id="7946681191253332687">セキュリティ アップデートを延長可能</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> が <ph name="DEVICE_NAME" /> の使用をリクエストしています</translation>
@@ -2375,6 +2443,7 @@
 <translation id="8004512796067398576">増やす</translation>
 <translation id="8005527720597583355">フォーカス モード セッションを開始</translation>
 <translation id="8008356846765065031">インターネットが切断されました。インターネット接続を確認してください。</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> を以前のインストール バージョンに戻せません。デバイスでもう一度 Powerwash を実行してみてください。</translation>
 <translation id="8015361438441228492">タスクを編集できませんでした。</translation>
 <translation id="8027187124910699148">提案グループを再開</translation>
 <translation id="802782383769312836">前のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
@@ -2453,15 +2522,18 @@
 <translation id="8249048954461686687">OEM フォルダ</translation>
 <translation id="825129991941217170">Google ドライブのすべてのコンテンツを表示</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8261625296061301062">スキャナ ソフトウェアをインストールしました</translation>
 <translation id="8262312463845990408">再生を切り替える</translation>
 <translation id="8268302343625273732">Google Classroom ですべての課題を表示</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
+<translation id="8281886186245836920">スキップ</translation>
 <translation id="8282784978194352587">お疲れさまでした！</translation>
 <translation id="8287009018010202411">仕事効率化</translation>
 <translation id="828708037801473432">オフ</translation>
 <translation id="8289128870594824098">ディスクサイズ</translation>
 <translation id="8297006494302853456">弱い</translation>
 <translation id="8300451473979404345">選択したハンドル、矢印キーを使用して移動します</translation>
+<translation id="8301242268274839723">キーボードの左下にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="8308637677604853869">前のメニュー</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock がオンになっています</translation>
@@ -2481,10 +2553,12 @@
 <translation id="8371991222807690464">ゲストモードでは、周辺機器のパフォーマンスが制限される場合があります</translation>
 <translation id="8374601332003098278">画面の一部を録画するには Enter キーを押してください</translation>
 <translation id="8375916635258623388">この <ph name="DEVICE_NAME" /> とお使いのスマートフォンは自動的に接続されます</translation>
+<translation id="8382677870544805359">エンタープライズ機能を使用するには、このデバイスを出荷時の設定にリセットする必要があります。</translation>
 <translation id="8382715499079447151">表示保護機能</translation>
 <translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="838540623579162843">Music Premium に登録</translation>
 <translation id="8388750414311082622">最後のデスクは削除できません。</translation>
+<translation id="8390392581097975659">スキャナ ソフトウェアをインストールしています</translation>
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
 <translation id="8401850874595457088">言語メニューを入力してください</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2548,6 +2622,7 @@
 <translation id="857201607579416096">メニューは画面右下に移動しました。</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" />+<ph name="MODIFIER_2" /> キーを押しながらリンクをクリックする</translation>
 <translation id="8598235756057743477">名前または色でアプリを並べ替えられます</translation>
+<translation id="8599864823732014237">企業の登録をスキップしますか？</translation>
 <translation id="8609384513243082612">新しいタブを開く</translation>
 <translation id="861045123704058818">アプリは現在カテゴリ別に整理されています</translation>
 <translation id="8612216344243590325">重要なファイルはデスクトップではなく <ph name="HOLDING_SPACE_TITLE" /> に保存してください。ファイルを <ph name="HOLDING_SPACE_TITLE" /> にドラッグするだけで保存できます。</translation>
@@ -2584,6 +2659,7 @@
 <translation id="8700087567921985940">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />位置情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8704155109538237473">ピクチャー イン ピクチャー ウィンドウにフォーカスする</translation>
+<translation id="8705580154597116082">スマートフォンから Wi-Fi に接続できます</translation>
 <translation id="870917907284186124">音声入力をオンまたはオフにします</translation>
 <translation id="8711169534266271368">ゲーム ダッシュボードのオプション</translation>
 <translation id="8712637175834984815">理解しました</translation>
@@ -2592,6 +2668,8 @@
 <translation id="8717459106217102612">前の単語または文字を選択する</translation>
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全画面キャプチャ</translation>
+<translation id="8724405322205516354">このアイコンが表示されているときは、本人確認や購入の承認に指紋認証を使用します。</translation>
+<translation id="8724409975248965964">指紋の登録完了</translation>
 <translation id="8725066075913043281">もう一度試す</translation>
 <translation id="8725214031272624704">利用可能な入力方法のリストを表示する</translation>
 <translation id="8730621377337864115">完了</translation>
@@ -2614,6 +2692,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />、インストール済みアプリ、ブロック中</translation>
 <translation id="8782565991310229362">キオスク アプリケーションの起動がキャンセルされました。</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> に接続</translation>
+<translation id="8786824282808281903">このアイコンが表示されているときは、お子様は本人確認や購入の承認に指紋認証を使用できます。</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を順方向に移動します</translation>
 <translation id="8792626944327216835">マイク</translation>
@@ -2626,6 +2705,7 @@
 <translation id="8815390544836110344">スクリーンショット ショートカット（Ctrl+Shift+概要モード キー）を押します</translation>
 <translation id="881757059229893486">入力方法の設定</translation>
 <translation id="8819728065740986820">アダプティブ充電がオンになっています</translation>
+<translation id="882204272221080310">セキュリティ強化のためにファームウェアをアップデートする。</translation>
 <translation id="8822104519413696986">これはタッチ操作のゲームです</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8832513206237979203">ブックマーク バーの表示と非表示を切り替える</translation>
@@ -2689,6 +2769,8 @@
 <translation id="8991648557324317894">キャンセルするには、fn+クイック インサート キーまたは Shift キーを押してください。</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
 <translation id="8993733019280019776">話していますか？マイクがオフになっています。オンにするにはマイクを選択してください。</translation>
+<translation id="8993945059918628059">指紋認証センサーに指を置いてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
+<translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9003374957546315126">絵文字など</translation>
 <translation id="9005984960510803406">Crosh ウィンドウを開く</translation>
@@ -2702,6 +2784,7 @@
 <translation id="9030515284705930323">組織の設定により、アカウントで Google Play ストアをご利用いただくことができません。詳しくは管理者にお尋ねください。</translation>
 <translation id="9030665205623277906">CPU 使用率のスナップショット: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
+<translation id="9037818663270399707">この接続ではすべてのネットワーク トラフィックのプライバシーが保護されません</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9050012935252397793">Bluetooth は使用できません</translation>
 <translation id="9050999376345823055">離すには「.」を押します</translation>

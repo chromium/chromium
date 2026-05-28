@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">Şəkli Kopyalayın</translation>
 <translation id="1606899876897213121">Son fəaliyyət xülasəsini bağlayın</translation>
 <translation id="1612754831519568745">Təhlükəsiz baxış deaktivdir. Təhlükəli sayt, endirmə və artırmalardan qorunma əldə edin.</translation>
+<translation id="1617300545081951343"><ph name="BEGIN_LINK" />Şərtlərimiz<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreya Məkan Şərtlərimiz<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Məxfilik Bildirişimiz<ph name="END_LINK" /> tətbiq olunur. Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">"Google Calendar-a əlavə edin" və ya "Apple Calendar-a əlavə edin" seçin.</translation>
 <translation id="1629162218487290695">Kimliyinizi təsdiq edin…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">Çıxacaqsınız və baxış datası silinəcək</translation>
 <translation id="3124568093781685165">Parollarınızı ailəniz ilə paylaşın</translation>
 <translation id="3130863904455712965">Tarixçə və digərləri</translation>
+<translation id="3130973487775218359">İzləyin: <ph name="BEGIN_LINK" />Generativ Sİ haqqında bilməli olduğunuz 5 vacib məqam<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Təzminat nömrəsini yadda saxlayın</translation>
 <translation id="3132584647087998639">Datanı import edin</translation>
 <translation id="313283613037595347">Yeni Anonim tab yaradın.</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">OCSP-nin imzalanması</translation>
 <translation id="4309403553630140242">Ətraflı məlumat üçün iki dəfə toxunun</translation>
 <translation id="4310738531374808763">Əsas səhifəni fərdiləşdirin</translation>
+<translation id="4316794575239200608">Gemini ilə söhbətləriniz və <ph name="BEGIN_LINK" />Google Workspace datanız<ph name="END_LINK" /> insan redaktorlar tərəfindən nəzərdən keçirilməyəcək və generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilməyəcək.</translation>
 <translation id="4320848494125124980">Son</translation>
 <translation id="4322394346347055525">Digər tabları qapadın</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> təkrar işlənən parol</translation>
 <translation id="4632655012900268062">Kartları fərdiləşdirin</translation>
 <translation id="4634124774493850572">Parol istifadə edin</translation>
+<translation id="4634633632339959267">Çatlar nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. <ph name="BEGIN_LINK" />Seçimləriniz haqqında məlumat əldə edin.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Məkanınız haqqında məlumat<ph name="END_LINK" /> da fəaliyyətinizlə birlikdə saxlanılır.</translation>
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4641425577292284174">Ayarların təhlükəsizliyini və ya nəyisə nəzərdən keçirməli olub-olmadığınızı öyrənin</translation>
 <translation id="4642472735733036929">Qiymət izlənilməsi dayandı</translation>
@@ -1566,6 +1570,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6435236283694032571">Oxu Siyahısına əlavə edin</translation>
 <translation id="6435307030888827407">Hesaba giriş etməyin</translation>
 <translation id="6436318499800111867">Mənimlə paylaşılıb: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Başqalarının məxfiliyinə hörmət edin<ph name="END_LINK" /> və onları qeydə almazdan və ya Canlı çata daxil etməzdən əvvəl icazə istəyin.</translation>
 <translation id="6442697326824312960">Tabı sancmayın</translation>
 <translation id="6443118737398455446">Yanlış bitmə tarixi</translation>
 <translation id="6444435711855078002">Əlavə seçimlər</translation>
@@ -1808,6 +1813,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7253951228444156601">Parollar yoxlanılır…</translation>
 <translation id="7261217796641151584">Qrupu paylaşın</translation>
 <translation id="7266578100016339897">Bu, səliqəli olmağınızı təmin edir. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google şərtləri<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Gemini tətbiqi məxfilik bildirişi<ph name="END_LINK" /> tətbiq olunur. Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər.</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="728025568708172005">Mənə ətrafı göstərin</translation>
 <translation id="7280980607183752256">Bu fayl import edilə bilməz</translation>
@@ -2128,6 +2134,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8345328955902001853">{count,plural, =1{Növbəti səviyyəyə keçmək üçün daha 1 tapşırığı tamamlayın}other{Növbəti səviyyəyə keçmək üçün daha {count} tapşırığı tamamlayın}}</translation>
 <translation id="8348530355586151720">Üç nöqtə menyusuna toxunun</translation>
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
+<translation id="8360164927489392419">Live ilə interaksiyalarınızın qeydləri və paylaşdığınız kontent <ph name="BEGIN_LINK" />Gemini tətbiqi məxfilik bildirişinə<ph name="END_LINK" /> uyğun şəkildə saxlanılır və emal edilir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{İmport edilmiş {count} əlfəcin}other{İmport edilmiş {count} əlfəcin}}</translation>
 <translation id="8363484128299778310">Problem halında müvəqqəti bərpa</translation>
 <translation id="8364563001733875155">PIN-i dəyişmək üçün əvvəlcə cihazınızda giriş kodunu ayarlayın.</translation>
@@ -2223,6 +2230,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8643403533759285912">Qrupu silin</translation>
 <translation id="8647280737650867362">Qiymət izlənmədi.</translation>
 <translation id="8654802032646794042">Ləğv edin</translation>
+<translation id="8659875081143553823">Bir saniyə</translation>
 <translation id="8660600697590740984">Linza ilə kopiyalanan şəkil</translation>
 <translation id="866266761389616183">Eh, alınmadı!</translation>
 <translation id="8663764600409216912">Asan təxmin edilməyən parollar istifadə edirsiniz</translation>

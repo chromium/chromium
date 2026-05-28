@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">Copïo'r Llun</translation>
 <translation id="1606899876897213121">Cau'r crynodeb gweithgaredd diweddar</translation>
 <translation id="1612754831519568745">Mae eich Pori'n Ddiogel i ffwrdd ar hyn o bryd. Sicrhewch amddiffyniad rhag gwefannau peryglus, lawrlwythiadau ac estyniadau.</translation>
+<translation id="1617300545081951343">Mae ein <ph name="BEGIN_LINK" />Telerau<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Telerau Lleoliad Corea<ph name="END_LINK" />, a'n <ph name="BEGIN_LINK" />Hysbysiad Preifatrwydd<ph name="END_LINK" /> yn berthnasol. Mae Gemini yn AI a gall wneud camgymeriadau, gan gynnwys am bobl.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Dewis "Ychwanegu at Google Calendar" neu "Ychwanegu at Apple Calendar."</translation>
 <translation id="1629162218487290695">Cadarnhewch mai chi sydd yno…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">Byddwch yn cael eich allgofnodi a bydd data pori yn cael eu dileu</translation>
 <translation id="3124568093781685165">Rhannu eich cyfrineiriau gyda'ch teulu</translation>
 <translation id="3130863904455712965">Hanes a rhagor</translation>
+<translation id="3130973487775218359">Gwyliwch: <ph name="BEGIN_LINK" />5 peth hanfodol i'w gwybod am AI cynhyrchiol<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Cadw rhif gwneud iawn</translation>
 <translation id="3132584647087998639">Mewnforio eich data</translation>
 <translation id="313283613037595347">Creu tab Anhysbys newydd.</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">Llofnodi OCSP</translation>
 <translation id="4309403553630140242">Tapiwch ddwywaith am ragor o wybodaeth</translation>
 <translation id="4310738531374808763">Addasu eich hafan</translation>
+<translation id="4316794575239200608">Ni fydd eich sgyrsiau gyda Gemini na'ch <ph name="BEGIN_LINK" />data Google Workspace<ph name="END_LINK" /> yn cael eu hadolygu gan adolygwyr dynol nac yn cael eu defnyddio i wella modelau AI cynhyrchiol.</translation>
 <translation id="4320848494125124980">Diweddar</translation>
 <translation id="4322394346347055525">Cau Tabiau Eraill</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> o gyfrineiriau sydd wedi'u hailddefnyddio</translation>
 <translation id="4632655012900268062">Personoleiddio cardiau</translation>
 <translation id="4634124774493850572">Defnyddio cyfrinair</translation>
+<translation id="4634633632339959267">Mae sgyrsiau'n cael eu hadolygu a'u defnyddio i wella Google AI. <ph name="BEGIN_LINK" />Dysgu am eich dewisiadau.<ph name="END_LINK" /> Mae <ph name="BEGIN_LINK" />gwybodaeth am eich lleoliad<ph name="END_LINK" /> hefyd yn cael ei storio gyda'ch gweithgaredd.</translation>
 <translation id="4636930964841734540">Gwybodaeth</translation>
 <translation id="4641425577292284174">Gwybod a oes gennych y gosodiadau mwyaf diogel neu os oes angen adolygu unrhyw beth</translation>
 <translation id="4642472735733036929">Olrhain prisiau wedi stopio</translation>
@@ -1566,6 +1570,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6435236283694032571">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="6435307030888827407">Aros wedi'ch allgofnodi</translation>
 <translation id="6436318499800111867">Rhannwyd â mi <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Parchwch breifatrwydd eraill<ph name="END_LINK" /> a gofynnwch am ganiatâd cyn recordio neu eu cynnwys mewn sgwrs Live.</translation>
 <translation id="6442697326824312960">Dad-binio Tab</translation>
 <translation id="6443118737398455446">Dyddiad darfod annilys</translation>
 <translation id="6444435711855078002">Mwy o Ddewisiadau</translation>
@@ -1808,6 +1813,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7253951228444156601">Wrthi'n gwirio cyfrineiriau…</translation>
 <translation id="7261217796641151584">Rhannu Grŵp</translation>
 <translation id="7266578100016339897">Mae hyn yn eich helpu i aros yn drefnus. Gallwch chi newid hyn yn y gosodiadau unrhyw bryd.</translation>
+<translation id="7270491814777319521">Mae <ph name="BEGIN_LINK" />Telerau Google<ph name="END_LINK" />a <ph name="BEGIN_LINK" />Hysbysiad Preifatrwydd Apiau Gemini<ph name="END_LINK" /> yn berthnasol. Mae Gemini yn AI a gall wneud camgymeriadau, gan gynnwys am bobl.</translation>
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
 <translation id="728025568708172005">Dangoswch fi o gwmpas</translation>
 <translation id="7280980607183752256">Ni ellir mewnforio'r ffeil hon</translation>
@@ -2128,6 +2134,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8345328955902001853">{count,plural, =1{Cwblhewch 1 dasg arall i fynd lefel yn uwch}zero{Cwblhewch {count} tasg arall i fynd lefel yn uwch}two{Cwblhewch {count} dasg arall i fynd lefel yn uwch}few{Cwblhewch {count} tasg arall i fynd lefel yn uwch}many{Cwblhewch {count} thasg arall i fynd lefel yn uwch}other{Cwblhewch {count} tasg arall i fynd lefel yn uwch}}</translation>
 <translation id="8348530355586151720">Tapiwch y ddewislen tri dot</translation>
 <translation id="8349305172487531364">Bar nodau tudalen</translation>
+<translation id="8360164927489392419">Mae recordiadau o'ch rhyngweithiadau â Live a chynnwys rydych yn ei rannu ag ef yn cael eu cadw a'u prosesu yn unol â'r <ph name="BEGIN_LINK" />Hysbysiad Preifatrwydd Gemini Apps<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Wedi mewnforio {count} nod tudalen}zero{Wedi mewnforio {count} nodau tudalen}two{Wedi mewnforio {count} nod tudalen}few{Wedi mewnforio {count} nod tudalen}many{Wedi mewnforio {count} nod tudalen}other{Wedi mewnforio {count} nod tudalen}}</translation>
 <translation id="8363484128299778310">Adferiad dros dro rhag ofn trafferth</translation>
 <translation id="8364563001733875155">I newid eich PIN, yn gyntaf gosodwch god pas ar eich dyfais.</translation>

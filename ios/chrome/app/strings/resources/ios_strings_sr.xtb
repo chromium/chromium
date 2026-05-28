@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">Копирај слику</translation>
 <translation id="1606899876897213121">Затворите резиме недавних активности</translation>
 <translation id="1612754831519568745">Безбедно прегледање је тренутно искључено. Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
+<translation id="1617300545081951343">Примењују се <ph name="BEGIN_LINK" />услови<ph name="END_LINK" />, <ph name="BEGIN_LINK" />услови коришћења локације за Кореју<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Обавештење о приватности<ph name="END_LINK" />. Gemini је вештачка интелигенција и може да погреши, укључујући и у вези са људима.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изаберите Додај у Google календар или Додај у Apple Calendar.</translation>
 <translation id="1629162218487290695">Потврдите да сте то ви…</translation>
@@ -538,6 +539,7 @@
 <translation id="2829172210806130158">Претражите екран</translation>
 <translation id="2831109159746537587">Пробајте да заокружите или додирнете слику да бисте је претражили</translation>
 <translation id="2834399722155632105">3. Додирните Опције лозинки</translation>
+<translation id="2834418947367581526">Здраво, ја сам Gemini. Ускоро крећемо уживо, па можете да постављате питања о страници на којој се налазите само помоћу гласа. Али пре него што почнемо, баците поглед на ове важне информације.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Време</translation>
 <translation id="284581348330507117">Направите јединствене лозинке</translation>
@@ -605,6 +607,7 @@
 <translation id="3119874402040566234">Одјавићете се и подаци прегледања ће бити избрисани</translation>
 <translation id="3124568093781685165">Делите лозинке са породицом</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
+<translation id="3130973487775218359">Гледајте: <ph name="BEGIN_LINK" />Пет ствари које морате да знате о генеративној вештачкој интелигенцији<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Сачувајте број обештећења</translation>
 <translation id="3132584647087998639">Увезите податке</translation>
 <translation id="313283613037595347">Направи нову картицу без архивирања.</translation>
@@ -689,6 +692,7 @@
 <translation id="3447332786336558089">Када се одјавите, картице ће бити затворене, а несачувани подаци налога ће бити избрисани са овог уређаја. То може да обухвата лозинке, историју и друго.</translation>
 <translation id="3449029510150690417">Направите нову групу картица тако што ћете јој дати назив и боју</translation>
 <translation id="345348365500626747">Адреса је пронађена</translation>
+<translation id="3459644598174926977">Почните да користите Live са Gemini-јем да бисте постављали питања о страници, размишљали наглас и разговарали.</translation>
 <translation id="3464194322481586217">Праћење цене није успело.</translation>
 <translation id="3469117812148449995">Опције за чување лозинке</translation>
 <translation id="3472469028191701821">Отвара се на новој картици</translation>
@@ -934,6 +938,7 @@
 <translation id="4306349443295056740">OCSP потписивање</translation>
 <translation id="4309403553630140242">Двапут додирните за више информација</translation>
 <translation id="4310738531374808763">Прилагодите страницу Почетна</translation>
+<translation id="4316794575239200608">Ваше конверзације са Gemini-јем и <ph name="BEGIN_LINK" />Google Workspace подаци<ph name="END_LINK" /> не подлежу прегледу од стране људи нити ћемо их користити за побољшавање модела генеративне вештачке интелигенције.</translation>
 <translation id="4320848494125124980">Недавно</translation>
 <translation id="4322394346347055525">Затвори друге картице</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1024,7 @@
 <translation id="4631335160486397366">Лозинке које користите за више налога: <ph name="COUNT" /></translation>
 <translation id="4632655012900268062">Прилагодите картице</translation>
 <translation id="4634124774493850572">Користи лозинку</translation>
+<translation id="4634633632339959267">Четови се прегледају и користе за побољшавање Google вештачке интелигенције. <ph name="BEGIN_LINK" />Сазнајте више о доступним изборима.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Информације о локацији<ph name="END_LINK" /> такође се чувају са активностима.</translation>
 <translation id="4636930964841734540">Информације</translation>
 <translation id="4641425577292284174">Сазнајте да ли имате најбезбеднија подешавања или треба нешто да прегледате</translation>
 <translation id="4642472735733036929">Праћење цена је заустављено</translation>
@@ -1566,6 +1572,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6435236283694032571">Додај на Листу за читање</translation>
 <translation id="6435307030888827407">Останите одјављени</translation>
 <translation id="6436318499800111867">Дељено са мном <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Поштујте приватност других људи<ph name="END_LINK" /> и питајте их за дозволу да их снимате или додате у Live чет.</translation>
 <translation id="6442697326824312960">Откачи картицу</translation>
 <translation id="6443118737398455446">Неважећи датум истека</translation>
 <translation id="6444435711855078002">Још опција</translation>
@@ -1808,6 +1815,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7253951228444156601">Проверавају се лозинке…</translation>
 <translation id="7261217796641151584">Дели групу</translation>
 <translation id="7266578100016339897">То вам помаже да останете организовани. То можете да промените у подешавањима у било ком тренутку.</translation>
+<translation id="7270491814777319521">Важе <ph name="BEGIN_LINK" />Google услови<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Обавештење о приватности Gemini апликација<ph name="END_LINK" />. Gemini је вештачка интелигенција и може да погреши, укључујући и у вези са људима.</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
 <translation id="728025568708172005">Покажи ми</translation>
 <translation id="7280980607183752256">Не можете да увезете овај фајл</translation>
@@ -2128,6 +2136,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8345328955902001853">{count,plural, =1{Довршите још 1 задатак да бисте прешли на следећи ниво}one{Довршите још {count} задатак да бисте прешли на следећи ниво}few{Довршите још {count} задатка да бисте прешли на следећи ниво}other{Довршите још {count} задатака да бисте прешли на следећи ниво}}</translation>
 <translation id="8348530355586151720">Додирните мени са три тачке</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
+<translation id="8360164927489392419">Снимци интеракција са Live-ом и садржај који делите са њим чувају се и обрађују у складу са <ph name="BEGIN_LINK" />Обавештењем о приватности Gemini апликација<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Увезен је {count} обележивач}one{Увезен је {count} обележивач}few{Увезена су {count} обележивача}other{Увезено је {count} обележивача}}</translation>
 <translation id="8363484128299778310">Привремено опоравак у случају проблема</translation>
 <translation id="8364563001733875155">Да бисте променили PIN, прво подесите шифру на уређају.</translation>
@@ -2223,6 +2232,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8643403533759285912">Избриши групу</translation>
 <translation id="8647280737650867362">Отказивање праћења цене није успело.</translation>
 <translation id="8654802032646794042">Откажи</translation>
+<translation id="8659875081143553823">Само тренутак</translation>
 <translation id="8660600697590740984">Слика коју је копирао Објектив</translation>
 <translation id="866266761389616183">О, не!</translation>
 <translation id="8663764600409216912">Користите лозинке које тешко могу да се погоде</translation>

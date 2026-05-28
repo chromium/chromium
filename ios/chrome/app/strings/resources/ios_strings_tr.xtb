@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> olarak oturum açıldı</translation>
 <translation id="1149401351239820326">Son kullanım tarihinin ayı</translation>
 <translation id="1150989369772528668">Takvim</translation>
+<translation id="1161444134753003495">Oturum aç</translation>
 <translation id="1161663161838091892">Devam etmek için sekmeleri ve geçmişi senkronize edin</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredi kartı}other{{count} kredi kartı}}</translation>
 <translation id="1164891049599601209">Yanıltıcı bir sitede girildi</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Resmi Kopyala</translation>
 <translation id="1606899876897213121">Son etkinlik özetini kapat</translation>
 <translation id="1612754831519568745">Güvenli Tarama şu anda kapalı. Tehlikeli siteler, indirme işlemleri ve uzantılara karşı korunun.</translation>
+<translation id="1617300545081951343"><ph name="BEGIN_LINK" />Şartlarımız<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Kore Konum Şartları<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Gizlilik Uyarımız<ph name="END_LINK" /> geçerlidir. Gemini bir yapay zeka modeli olduğu için kişiler dahil olmak üzere farklı konular hakkında yanlış bilgi verebilir.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">"Google Takvim'e ekle" veya "Apple Takvim'e ekle"yi seçin.</translation>
 <translation id="1629162218487290695">Kimliğinizi doğrulayın…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Oturumunuz kapatılacak ve tarama verileri silinecek</translation>
 <translation id="3124568093781685165">Şifrelerinizi ailenizle paylaşın</translation>
 <translation id="3130863904455712965">Geçmiş ve daha fazlası</translation>
+<translation id="3130973487775218359">İzleyin: <ph name="BEGIN_LINK" />Üretken yapay zeka hakkında bilmeniz gereken 5 şey<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Redress numarasını kaydedin</translation>
 <translation id="3132584647087998639">Verilerinizi içe aktarın</translation>
 <translation id="313283613037595347">Yeni Gizli sekme oluştur.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Bu site için yeni şifre mevcut}other{Bu site için yeni şifreler mevcut}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> sitesinde oturum açacaksınız</translation>
 <translation id="3934905113567851655">Boyutu değiştirmek için iki parmağınızı kullanın</translation>
+<translation id="393732545649378031">Hesap</translation>
 <translation id="3940195383040445971">Sekmelerde fiyatları takip et</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} sekmeyi kapat}other{{COUNT} sekmeyi kapat}}</translation>
 <translation id="3946483119107054883">CSV olarak indir</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP İmzalama</translation>
 <translation id="4309403553630140242">Daha fazla bilgi için iki kez dokunun</translation>
 <translation id="4310738531374808763">Ana sayfanızı özelleştirin</translation>
+<translation id="4316794575239200608">Gemini ile sohbetleriniz ya da <ph name="BEGIN_LINK" />Google Workspace verileriniz<ph name="END_LINK" />, inceleme uzmanları tarafından incelenmez veya üretken yapay zeka modellerini geliştirmek için kullanılmaz.</translation>
 <translation id="4320848494125124980">En son</translation>
 <translation id="4322394346347055525">Diğer Sekmeleri Kapat</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> şifre yeniden kullanılıyor</translation>
 <translation id="4632655012900268062">Kartları özelleştir</translation>
 <translation id="4634124774493850572">Şifreyi kullan</translation>
+<translation id="4634633632339959267">Sohbetler incelenir ve Google AI'ı daha iyi hale getirmek için kullanılır. <ph name="BEGIN_LINK" />Seçenekleriniz hakkında bilgi edinin.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Konumunuzla ilgili bilgiler<ph name="END_LINK" /> de etkinliğinizle birlikte saklanır.</translation>
 <translation id="4636930964841734540">Bilgi</translation>
 <translation id="4641425577292284174">En güvenli ayarları kullanıp kullanmadığınızı veya gözden geçirmeniz gereken bir şey olup olmadığını öğrenin</translation>
 <translation id="4642472735733036929">Fiyat takibi duraklatıldı</translation>
@@ -1470,6 +1476,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6140948187512243695">Ayrıntıları göster</translation>
 <translation id="6144589619057374135">Şunu Gizli modda aç: ${url}</translation>
 <translation id="6146563240635539929">Videolar</translation>
+<translation id="6148392728478209113">Live'ı kullanmaya devam ediyor musunuz? Gemini ile konuşmaya devam etmek için Live düğmesine dokunun</translation>
 <translation id="6151006591088192882">Gizli sekmelerin kilidini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ile aç</translation>
 <translation id="6152340033632117531">Etkin değil</translation>
 <translation id="6152406514676263192">Senkronize ederek ilgi alanlarınıza dayalı en alakalı içerikleri görün.</translation>
@@ -1563,6 +1570,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6435236283694032571">Okuma Listesine Ekle</translation>
 <translation id="6435307030888827407">Oturumu kapalı tut</translation>
 <translation id="6436318499800111867"><ph name="SHARED_WITH_ME_DATE" /> tarihinde benimle paylaşıldı</translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Diğer kişilerin gizliliğine saygı gösterin<ph name="END_LINK" /> ve onları kaydetmeden ya da Live sohbetine dahil etmeden önce izinlerini isteyin.</translation>
 <translation id="6442697326824312960">Sekmeyi Ayır</translation>
 <translation id="6443118737398455446">Son kullanma tarihi geçersiz</translation>
 <translation id="6444435711855078002">Diğer Seçenekler</translation>
@@ -1805,6 +1813,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7253951228444156601">Şifreler kontrol ediliyor…</translation>
 <translation id="7261217796641151584">Grubu Paylaş</translation>
 <translation id="7266578100016339897">Böylece düzenli şekilde çalışabilirsiniz. Bunu dilediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google Şartları<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Uyarısı<ph name="END_LINK" /> geçerlidir. Gemini bir yapay zeka modeli olduğu için kişiler dahil olmak üzere farklı konular hakkında yanlış bilgi verebilir.</translation>
 <translation id="7272437679830969316">Kimliğiniz doğrulanamıyor. Şifre kopyalanmadı.</translation>
 <translation id="728025568708172005">Tura katılın</translation>
 <translation id="7280980607183752256">Bu dosya içe aktarılamıyor</translation>
@@ -2125,6 +2134,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8345328955902001853">{count,plural, =1{Seviye atlamak için 1 görev daha tamamlayın}other{Seviye atlamak için {count} görev daha tamamlayın}}</translation>
 <translation id="8348530355586151720">Üç nokta menü simgesine dokunun.</translation>
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
+<translation id="8360164927489392419">Live ile etkileşimleriniz ve paylaştığınız içerikler kaydedilerek <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Uyarısı<ph name="END_LINK" />'na uygun şekilde işlenir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} yer işareti içe aktarıldı}other{{count} yer işareti içe aktarıldı}}</translation>
 <translation id="8363484128299778310">Sorun olması halinde geçici kurtarma</translation>
 <translation id="8364563001733875155">PIN'inizi değiştirmek için önce cihazınızda bir şifre kodu oluşturun.</translation>
@@ -2220,6 +2230,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8643403533759285912">Grubu Sil</translation>
 <translation id="8647280737650867362">Fiyat takibini bırakılamadı.</translation>
 <translation id="8654802032646794042">İptal</translation>
+<translation id="8659875081143553823">Bir saniye</translation>
 <translation id="8660600697590740984">Kopyaladığınız Lens resmi</translation>
 <translation id="866266761389616183">Hay aksi!</translation>
 <translation id="8663764600409216912">Tahmin edilmesi zor görünen şifreler kullanıyorsunuz</translation>

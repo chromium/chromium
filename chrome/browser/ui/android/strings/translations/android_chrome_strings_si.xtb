@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">ඉතිහාසය සමමුහුර්ත කිරීම</translation>
 <translation id="1111673857033749125">ඔබගේ අනෙකුත් උපාංගවල සුරැකි පිටුසන් මෙහි දිස් වනු ඇත.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, පින්තූරය තුළ පින්තූර පටිත්ත</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 කවුළුවක් ප්‍රතිසාධනය කරන්න}one{කවුළු #ක් ප්‍රතිසාධනය කරන්න}other{කවුළු #ක් ප්‍රතිසාධනය කරන්න}}</translation>
 <translation id="1126696498560056882">මෙම උපාංගය මත ගිණුම් කළමනා කරන්න</translation>
 <translation id="1135018701024399762">අප්‍රසිද්ධ ප්‍රකාරය ඔබේ බ්‍රවුස් කිරීම ඔබේ උපාංගය භාවිතා කරන අන් අයගෙන් පෞද්ගලිකව තබා ගනී</translation>
 <translation id="113752097246673894">ඔබේ සියලු උපාංග මත ඔබේ පිටුසන් සහ තවත් දේ ලබා ගැනීමට, Chrome වෙත <ph name="EMAIL" /> ලෙස පුරන්න</translation>
@@ -195,7 +196,6 @@
 <translation id="1877073879466606884">ඔබ පුරනය වී ඇති පැතිකඩ අධීක්‍ෂිත පැතිකඩකි. ඔබේ පරිපාලකයාට දුරස්ථව ඔබේ පැතිකඩ සැකසිම් වෙත වෙනස්කම් කිරීමට, වාර්තා කිරීම හරහා බ්‍රවුසරය ගැන තොරතුරු විශ්ලේෂණ කිරීමට, සහ වෙනත් අත්‍යවශ්‍ය කාර්යභාර ඉටු කිරීමට හැකි ය.</translation>
 <translation id="1879904908408734349">පිරීමේ පහළ පත්‍රය වසා ඇත</translation>
 <translation id="1883903952484604915">මගේ ගොනු</translation>
-<translation id="1889626070177134359">ඉහත ලැයිස්තුවේ යෝජිත අයිතම <ph name="SUGGESTIONS_COUNT" />කි.</translation>
 <translation id="189358972401248634">වෙනත් භාෂා</translation>
 <translation id="1899175549411605574">මිල ඇතුළාන්ත පහළ පත්‍රය</translation>
 <translation id="1900260903084164610">ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_TOS_LINK" />සේවා නියම<ph name="END_TOS_LINK" /> සමග එකඟ වේ.</translation>
@@ -510,6 +510,7 @@
 <translation id="3166827708714933426">ටැබ සහ කවුළු කෙටි මං</translation>
 <translation id="3167258285411721858">ඔබට <ph name="HOST_NAME" /> සඳහා ජංගම අඩවිය ඉල්ලා සිටිය හැක</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, බහු-තේරූ ඇමිණූ නිහඬ අප්‍රකට පටිත්ත</translation>
+<translation id="3183941812169784232">සියලු කවුළු ප්‍රතිසාධනය කරන්න ද?</translation>
 <translation id="3187472288455401631">වෙළඳ දැන්වීම් මිනුම</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> පටිති සමූහය</translation>
 <translation id="3200536777393523575">ඔබේ වත්මන් කවුළුව වසන්න ද?</translation>
@@ -722,6 +723,7 @@
 <translation id="4164642020717536140">වේගවත් සහ සුරක්ෂිත වෙබ් බ්‍රවුස් කිරීම</translation>
 <translation id="4165077084524712774">තවත් මෙවලම්</translation>
 <translation id="4170577491341606575">ඔබේ දේවල් ලබා ගනිමින්\u2026</translation>
+<translation id="4176838562184310003">Chrome නිවැරදිව වසා දැමුවේ නැති අතර ඔබේ නැති වූ කවුළු සහ පටිති ප්‍රතිසාධනය කිරීමට උත්සාහ කළ හැක. ප්‍රතිසාධනය කළ විට සමහර කවුළු අවම කළ හැක.</translation>
 <translation id="4177222230309051052">ඔබගේ සියලු පිටුසන් ලබා ගන්න</translation>
 <translation id="4177501066905053472">දැන්වීම් මාතෘකා</translation>
 <translation id="417865198503699526">සැකසීමක් සොයන්න</translation>

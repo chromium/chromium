@@ -196,7 +196,6 @@
 <translation id="1877073879466606884">نمایه‌ای که با آن به سیستم وارد شده‌اید نمایه مدیریت‌شده است. سرپرست شما می‌تواند تنظیمات نمایه‌تان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد.</translation>
 <translation id="1879904908408734349">برگ زیرین ورود به سیستم بسته شده است</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
-<translation id="1889626070177134359">‫<ph name="SUGGESTIONS_COUNT" /> مورد پیشنهادی در فهرست بالا.</translation>
 <translation id="189358972401248634">زبان‌های دیگر</translation>
 <translation id="1899175549411605574">برگ زیرین اطلاعات آماری قیمت</translation>
 <translation id="1900260903084164610">درصورت ادامه دادن، موافقتتان را با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> اعلام می‌کنید.</translation>
@@ -944,7 +943,7 @@
 <translation id="5011311129201317034">‫<ph name="SITE" /> می‌خواهد مرتبط شود</translation>
 <translation id="5012016139642806466">گذرواژه‌ها و موارد دیگر را در همه دستگاه‌ها دریافت کنید</translation>
 <translation id="5012253429094023177">به‌نظر می‌رسد <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> و <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> مرتبط باشند. پیش‌از استفاده از گذرواژه‌تان، مطمئن شوید به <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> اعتماد دارید.</translation>
-<translation id="5016205925109358554">Serif</translation>
+<translation id="5016205925109358554">سریف</translation>
 <translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5032430150487044192">رمزینه پاسخ‌سریع ایجاد نمی‌شود</translation>
 <translation id="5035846135112863536">برای دریافت اطلاعات بیشتر از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />، «جزئیات بیشتر» در زیر را انتخاب کنید.</translation>

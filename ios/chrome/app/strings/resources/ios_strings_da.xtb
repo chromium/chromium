@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1150989369772528668">Kalender</translation>
+<translation id="1161444134753003495">Log ind</translation>
 <translation id="1161663161838091892">Synkroniser faner og historik for at fortsætte</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditkort}one{{count} kreditkort}other{{count} kreditkort}}</translation>
 <translation id="1164891049599601209">Angivet på vildledende website</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Kopiér billede</translation>
 <translation id="1606899876897213121">Luk oversigten over den seneste aktivitet</translation>
 <translation id="1612754831519568745">Beskyttet browsing er i øjeblikket deaktiveret. Få beskyttelse mod farlige websites, downloads og udvidelser.</translation>
+<translation id="1617300545081951343">Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" />, <ph name="BEGIN_LINK" />koreanske servicevilkår for lokation<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende. Gemini er en AI-assistent og kan begå fejl, herunder om personer.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Vælg "Føj til Google Kalender" eller "Føj til Apple Kalender".</translation>
 <translation id="1629162218487290695">Verificer din identitet…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Du logges ud, og browserdataene slettes.</translation>
 <translation id="3124568093781685165">Del dine adgangskoder med din familie</translation>
 <translation id="3130863904455712965">Historik m.m.</translation>
+<translation id="3130973487775218359">Se: <ph name="BEGIN_LINK" />5 ting, der er værd at vide om generativ AI<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Gem redress-nummer</translation>
 <translation id="3132584647087998639">Importér dine data</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Ny adgangskode til dette website}one{Ny adgangskode til dette website}other{Nye adgangskoder til dette website}}</translation>
 <translation id="3933372629914873850">Du logger ind på <ph name="URL" /></translation>
 <translation id="3934905113567851655">Knib fingrene sammen for at tilpasse størrelse</translation>
+<translation id="393732545649378031">Konto</translation>
 <translation id="3940195383040445971">Følg prisudvikling på faner</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Luk {COUNT} fane}one{Luk {COUNT} fane}other{Luk {COUNT} faner}}</translation>
 <translation id="3946483119107054883">Download som CSV</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP-signering</translation>
 <translation id="4309403553630140242">Tryk to gange for at få flere oplysninger</translation>
 <translation id="4310738531374808763">Tilpas din startside</translation>
+<translation id="4316794575239200608">Hverken dine samtaler med Gemini eller dine <ph name="BEGIN_LINK" />Google Workspace-data<ph name="END_LINK" /> bliver gennemgået af menneskelige kontrollanter eller anvendt til at forbedre generativ AI-modeller.</translation>
 <translation id="4320848494125124980">Seneste</translation>
 <translation id="4322394346347055525">Luk alle andre faner</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> genbrugte adgangskoder</translation>
 <translation id="4632655012900268062">Tilpas kort</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
+<translation id="4634633632339959267">Chatsamtaler gennemgås og bruges til at forbedre Google AI. <ph name="BEGIN_LINK" />Se dine valgmuligheder.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Oplysninger om din lokation<ph name="END_LINK" /> gemmes også sammen med din aktivitet.</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4641425577292284174">Se, om du har de sikreste indstillinger eller har brug for at gennemgå noget</translation>
 <translation id="4642472735733036929">Prissporing er stoppet</translation>
@@ -1470,6 +1476,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6140948187512243695">Vis oplysninger</translation>
 <translation id="6144589619057374135">Åbn ${url} i inkognito</translation>
 <translation id="6146563240635539929">Videoer</translation>
+<translation id="6148392728478209113">Bruger du stadig Live? Tryk på Live-knappen for at fortsætte med at tale med Gemini</translation>
 <translation id="6151006591088192882">Lås inkognitofaner op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inaktiv</translation>
 <translation id="6152406514676263192">Synkroniser for at få det mest relevante indhold baseret på dine interesser.</translation>
@@ -1563,6 +1570,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6435236283694032571">Føj til læselisten</translation>
 <translation id="6435307030888827407">Forbliv logget ud</translation>
 <translation id="6436318499800111867">Delt med mig <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respekter andres privatliv<ph name="END_LINK" />, og bed om tilladelse, før du optager dem eller føjer dem til en livechat.</translation>
 <translation id="6442697326824312960">Frigør fane</translation>
 <translation id="6443118737398455446">Udløbsdatoen er ugyldig</translation>
 <translation id="6444435711855078002">Flere valgmuligheder</translation>
@@ -1805,6 +1813,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7253951228444156601">Tjekker adgangskoder…</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjælper dig med at bevare overblikket. Du kan til enhver tid ændre dette i indstillingerne.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Googles servicevilkår<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelsen for Gemini-apps<ph name="END_LINK" /> er gældende. Gemini er en AI-assistent og kan begå fejl, herunder om personer.</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke verificeres. Adgangskoden blev ikke kopieret.</translation>
 <translation id="728025568708172005">Vis mig rundt</translation>
 <translation id="7280980607183752256">Denne fil kan ikke importeres</translation>
@@ -2125,6 +2134,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8345328955902001853">{count,plural, =1{Udfør 1 opgave mere for at stige i niveau}one{Udfør {count} opgave mere for at stige i niveau}other{Udfør {count} opgaver mere for at stige i niveau}}</translation>
 <translation id="8348530355586151720">Tryk på prikmenuen</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
+<translation id="8360164927489392419">Optagelser af dine interaktioner med Live og indhold, du deler med funktionen, gemmes og behandles i henhold til <ph name="BEGIN_LINK" />privatlivsmeddelelsen for Gemini-apps<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} bogmærke blev importeret}one{{count} bogmærke blev importeret}other{{count} bogmærker blev importeret}}</translation>
 <translation id="8363484128299778310">Midlertidig gendannelse i tilfælde af problemer</translation>
 <translation id="8364563001733875155">Hvis du vil ændre din pinkode, skal du først oprette en adgangskode på din enhed.</translation>
@@ -2220,6 +2230,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8643403533759285912">Slet gruppe</translation>
 <translation id="8647280737650867362">Prissporingen kunne ikke deaktiveres.</translation>
 <translation id="8654802032646794042">Annuller</translation>
+<translation id="8659875081143553823">Vent et øjeblik</translation>
 <translation id="8660600697590740984">Lens-billede, du har kopieret</translation>
 <translation id="866266761389616183">Øv, surt!</translation>
 <translation id="8663764600409216912">Du bruger adgangskoder, der er svære at gætte</translation>

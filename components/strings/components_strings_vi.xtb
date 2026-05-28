@@ -138,6 +138,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="121201262018556460">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình chứng chỉ chứa khóa yếu. Kẻ tấn công có thể đã phá khóa cá nhân và máy chủ đó có thể không phải là máy chủ bạn mong đợi (bạn có thể đang giao tiếp với một kẻ tấn công).</translation>
 <translation id="1212527389003717329">Quá trình tải xuống đã bắt đầu. Để xem tệp đã tải xuống, hãy nhấn và giữ |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Sử dụng thông tin đã lưu trong Tài khoản Google để tự động điền mật khẩu, khoá truy cập, địa chỉ, phương thức thanh toán và các thông tin khác</translation>
+<translation id="1216257595811043403">Tự động chia sẻ các thẻ</translation>
 <translation id="1219129156119358924">Bảo mật hệ thống</translation>
 <translation id="1219134100826635117">Quản trị viên đã chặn hành động này</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Với Mã hóa RSA</translation>
@@ -2197,6 +2198,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4434045419905280838">Cửa sổ bật lên và chuyển hướng</translation>
 <translation id="443673843213245140">Đã tắt sử dụng proxy nhưng cấu hình proxy rõ ràng được chỉ định.</translation>
 <translation id="4438821706955556403">Giá thông thường</translation>
+<translation id="4439687924334332880">Nhận được câu trả lời phù hợp hơn bằng cách tự động chia sẻ các thẻ đang mở trong cửa sổ này nếu các thẻ đó có liên quan đến chuỗi này. Bạn có thể bật tính năng này cho tất cả các chuỗi trong phần Cài đặt.</translation>
 <translation id="4441832193888514600">Bỏ qua vì chính sách này chỉ có thể thiết lập thành chính sách người dùng trên đám mây.</translation>
 <translation id="4444062564459679679">Đã được gửi đến Chrome trên <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn phím Enter để tìm thẻ</translation>
@@ -2299,7 +2301,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4640225694041297329">Hiện kết quả trong vòng 7 ngày qua</translation>
 <translation id="4642296966515958616">Để tham gia nhóm thẻ này, hãy cập nhật Chrome</translation>
 <translation id="464342062220857295">Tìm kiếm tính năng</translation>
-<translation id="4643958597583594452">Chrome sẽ xử lý các tiêu đề trang và URL trên thiết bị của bạn hoặc trong một không gian riêng tư trên đám mây</translation>
 <translation id="4644567637638438744">Bạn chỉ có thể tải tệp lên nếu đã đăng nhập vào Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Thứ tự đảo ngược hướng xuống</translation>
 <translation id="4648262692072505866">Hàm băm phải có định dạng SHA-256.</translation>
@@ -3156,6 +3157,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5995727681868049093">Quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
 <translation id="5996255674476750320">Trình diễn xe cộ</translation>
 <translation id="5997247540087773573">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản, Trình quản lý mật khẩu khuyên bạn nên thay đổi mật khẩu này ngay và kiểm tra các mật khẩu bạn đã lưu.</translation>
+<translation id="5997915162652837008">Bạn có thể tiết kiệm thời gian bằng cách bật tính năng tự động chia sẻ thẻ cho tất cả các chuỗi. Tìm hiểu thêm về</translation>
 <translation id="6000528814684428358">Nhạc hard rock và progressive rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002122790816966947">Các thiết bị của bạn</translation>
@@ -3300,6 +3302,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6203231073485539293">Kiểm tra kết nối Internet của bạn</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
 <translation id="6212314149070368045">Fanfold Hoa Kỳ</translation>
+<translation id="6213685130162740188">Mã số hành khách đã biết</translation>
 <translation id="6215936431492593050">Kim loại (Satin)</translation>
 <translation id="6217950634729714357">Đồ nội thất nhà bếp và phòng ăn</translation>
 <translation id="6218305986815100395">Không thể bật thẻ ảo</translation>
@@ -3718,11 +3721,13 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6874604403660855544">&amp;Làm lại thêm</translation>
 <translation id="6875873347995743859">Gửi cho trợ lý</translation>
 <translation id="6875894866901426843">Quản trị viên sẽ xoá các tệp trên máy của bạn, bao gồm cả những tệp trong Thùng rác, vào <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Luôn chia sẻ các thẻ đang mở để nhận được câu trả lời phù hợp hơn?</translation>
 <translation id="6880941331070119097">Lựa chọn giá cao</translation>
 <translation id="6881240511396774766">Tạo nhanh một Google Tài liệu mới</translation>
 <translation id="6883221904761970440">Đã đóng bảng xác thực thông tin thanh toán an toàn</translation>
 <translation id="6883745783646124431">địa chỉ nơi làm việc</translation>
 <translation id="6886283082988906333">Tệp lưu trữ ZIP</translation>
+<translation id="6886431827310382613">Chia sẻ các thẻ có liên quan</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Sử dụng thông tin vị trí</translation>
 <translation id="6888584790432772780">Chrome đơn giản hóa trang này để bạn dễ đọc hơn. Chrome đã truy xuất trang gốc qua một đường kết nối không an toàn.</translation>
@@ -4009,6 +4014,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7337706099755338005">Không được hỗ trợ trên nền tảng của bạn.</translation>
 <translation id="733923710415886693">Chứng chỉ của máy chủ đã không được tiết lộ qua Tính minh bạch của chứng chỉ.</translation>
 <translation id="73398226265793546">Nút Chế độ AI, nhấn nút này để hỏi ở Chế độ AI trên Google Tìm kiếm</translation>
+<translation id="7343620778718789463">Thẻ căn cước</translation>
 <translation id="7346048084945669753">Được liên kết:</translation>
 <translation id="7346062987309535530">Dụng cụ ăn</translation>
 <translation id="7346081071264046066">"hào hứng nhận lời mời dự đám cưới này"</translation>
@@ -4183,6 +4189,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7569490014721427265">Gôn</translation>
 <translation id="7569952961197462199">Xóa thẻ tín dụng khỏi Chrome?</translation>
 <translation id="7569983096843329377">Đen</translation>
+<translation id="7570862164055912832">Mã số xác nhận trùng tên</translation>
 <translation id="7571813784389228510">Chế độ AI của Google</translation>
 <translation id="7574998639136359461">Thiết bị dành cho thể thao mùa đông</translation>
 <translation id="7575207903026901870">Nút Xóa đề xuất, nhấn Enter để xóa nội dung đề xuất này</translation>
@@ -4691,6 +4698,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8381674639488873545">Những khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Tự động mở toàn màn hình</translation>
 <translation id="838307841291975086">Xe ô tô khoang dài</translation>
+<translation id="838953173259347825">Nhận được câu trả lời phù hợp hơn bằng cách tự động chia sẻ các thẻ đang mở trong cửa sổ này nếu các thẻ đó có liên quan đến chuỗi này. Bạn có thể bật tính năng này cho tất cả các chuỗi trong</translation>
 <translation id="8389532092404711541">Giá thông thường: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Xe độ và xe có hiệu suất cao</translation>
 <translation id="8390725133630534698">Chính sách của quản trị viên đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> với <ph name="VM_NAME" /></translation>
@@ -4975,6 +4983,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8861482055962701239">Không thể lưu thông tin này vào Google Wallet. Thay vào đó, thông tin đã được lưu vào Chrome trên thiết bị này. Lần tới khi bạn dùng thông tin này, Chrome sẽ hỏi bạn có muốn lưu vào Wallet hay không.</translation>
 <translation id="8863218129525348270">Để thanh toán nhanh hơn vào lần tới, hãy lưu thông tin thẻ vào thiết bị của bạn</translation>
 <translation id="8864939224504814334">Com lê và trang phục công sở</translation>
+<translation id="8865650218866129025">Tự động chia sẻ các thẻ đang mở để nhận được câu trả lời phù hợp hơn trong chuỗi này?</translation>
 <translation id="8866132857352163524">Nhạc phim</translation>
 <translation id="8866481888320382733">Lỗi phân tích cú pháp cài đặt chính sách</translation>
 <translation id="8866928039507595380">Gấp</translation>

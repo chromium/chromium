@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
 <translation id="1111673857033749125">Таны бусад төхөөрөмжид хадгалсан хавчуурга энд харагдах болно</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Дэлгэц доторх дэлгэц таб</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 цонхыг сэргээх}other{# цонхыг сэргээх}}</translation>
 <translation id="1126696498560056882">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах</translation>
 <translation id="1135018701024399762">Нууцлалын горим таны төхөөрөмжийг ашигладаг бусад хүнээс таны үзэлтийг нууцалдаг</translation>
 <translation id="113752097246673894">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
@@ -195,7 +196,6 @@
 <translation id="1877073879466606884">Таны нэвтэрсэн профайл хяналттай профайл байна. Танай администратор профайлын тань тохиргоонд зайнаас өөрчлөлт хийх, тайлангаар дамжуулан хөтчийн талаарх мэдээллийг задлан шинжлэх, бусад шаардлагатай ажлыг гүйцэтгэх боломжтой.</translation>
 <translation id="1879904908408734349">Нэвтрэх доод хүснэгтийг хаасан</translation>
 <translation id="1883903952484604915">Миний файл</translation>
-<translation id="1889626070177134359">Дээрх жагсаалтад санал болгосон <ph name="SUGGESTIONS_COUNT" /> зүйл байна.</translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
 <translation id="1899175549411605574">Үнийн статистикийн доод хүснэгт</translation>
 <translation id="1900260903084164610">Үргэлжлүүлснээр та <ph name="BEGIN_TOS_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_TOS_LINK" /> зөвшөөрч байна.</translation>
@@ -510,6 +510,7 @@
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
 <translation id="3167258285411721858">Та <ph name="HOST_NAME" />-н мобайл сайтыг хүсэх боломжтой</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн, дууг нь хаасан нууцлалтай таб</translation>
+<translation id="3183941812169784232">Бүх цонхыг сэргээх үү?</translation>
 <translation id="3187472288455401631">Зарын хэмжилт</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> табын бүлэг</translation>
 <translation id="3200536777393523575">Одоогийн цонхоо хаах уу?</translation>
@@ -722,6 +723,7 @@
 <translation id="4164642020717536140">Хурдан, аюулгүй веб үзэх</translation>
 <translation id="4165077084524712774">Бусад хэрэгсэл</translation>
 <translation id="4170577491341606575">Таны юмнуудыг авч байна\u2026</translation>
+<translation id="4176838562184310003">Chrome зохих ёсоор унтраагүй бөгөөд таны алдсан цонх, табыг сэргээхээр оролдох боломжтой. Сэргээхэд зарим цонхыг багасгасан байж магадгүй.</translation>
 <translation id="4177222230309051052">Бүх хавчуургаа аваарай</translation>
 <translation id="4177501066905053472">Зарын сэдвүүд</translation>
 <translation id="417865198503699526">Тохиргоо хайх</translation>

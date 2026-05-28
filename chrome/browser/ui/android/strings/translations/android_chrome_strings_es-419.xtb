@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Restablecer 1 ventana}other{Restablecer # ventanas}}</translation>
 <translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
 <translation id="1135018701024399762">El modo Incógnito mantiene tu navegación privada ante las personas que usan tu dispositivo</translation>
 <translation id="113752097246673894">Para obtener tus favoritos y más en todos tus dispositivos, accede a Chrome como <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1877073879466606884">El perfil al que accediste es un perfil administrado. El administrador puede realizar cambios en la configuración de tu perfil de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias.</translation>
 <translation id="1879904908408734349">La hoja inferior de acceso está cerrada</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
-<translation id="1889626070177134359">Hay <ph name="SUGGESTIONS_COUNT" /> elementos sugeridos en la lista anterior.</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1899175549411605574">Hoja inferior de la información sobre precios</translation>
 <translation id="1900260903084164610">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3166827708714933426">Accesos directos a ventanas y pestañas</translation>
 <translation id="3167258285411721858">Puedes solicitar el sitio móvil de <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, pestaña de incógnito fijada y silenciada con selección múltiple</translation>
+<translation id="3183941812169784232">¿Quieres restablecer todas las ventanas?</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> grupo de pestañas</translation>
 <translation id="3200536777393523575">¿Quieres cerrar la ventana actual?</translation>
@@ -722,6 +723,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4164642020717536140">Navegación web rápida y segura</translation>
 <translation id="4165077084524712774">Más herramientas</translation>
 <translation id="4170577491341606575">Obteniendo tu contenido\u2026</translation>
+<translation id="4176838562184310003">Chrome no se cerró correctamente y puede intentar restablecer las pestañas y ventanas perdidas. Es posible que algunas ventanas se minimicen cuando se restablezcan.</translation>
 <translation id="4177222230309051052">Accede a todos tus favoritos</translation>
 <translation id="4177501066905053472">Temas de los anuncios</translation>
 <translation id="417865198503699526">Busca un parámetro de configuración</translation>

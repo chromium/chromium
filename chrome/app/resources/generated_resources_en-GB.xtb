@@ -106,7 +106,6 @@
 <translation id="1066964438793906105">Scan for malware</translation>
 <translation id="1067661089446014701">For added safety, you can encrypt passwords on your device before they're saved to your Google Account</translation>
 <translation id="1067922213147265141">Other Google services</translation>
-<translation id="106814709658156573">To set up fingerprint, have your child touch the fingerprint sensor at the bottom left corner of the keyboard. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="106855837688344862">Touch Events</translation>
 <translation id="1069104208554708737">This passkey will only be saved on this device</translation>
 <translation id="1069355737714877171">Remove eSIM profile named <ph name="PROFILE_NAME" /></translation>
@@ -460,7 +459,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1303101771013849280">Bookmarks HTML File</translation>
 <translation id="1303671224831497365">No Bluetooth devices found</translation>
 <translation id="1306518237408758433">Open <ph name="BOOKMARK_TITLE" /></translation>
-<translation id="1306606229401759371">Change settings</translation>
 <translation id="1307165550267142340">Your PIN was created</translation>
 <translation id="1307431692088049276">Don't ask me again</translation>
 <translation id="130744661532298792">To make sure that you can always use the passwords in your Google Account, verify that it's you</translation>
@@ -562,7 +560,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1386966479075994683">Expand tabs</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
-<translation id="1390113502208199250">You will have to factory reset this device to use Chrome Education upgrade features.</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> preinstalled on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1390548061267426325">Open as a Standard Tab</translation>
@@ -578,7 +575,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1400243387594338234">You can use this PIN to sign in to your device</translation>
 <translation id="1401216725754314428">Learn more about related sites in a new tab</translation>
 <translation id="1402426911829176748">Connecting to your device</translation>
-<translation id="1403222014593521787">Unable to connect to the proxy</translation>
 <translation id="1405779994569073824">Crashed.</translation>
 <translation id="1406500794671479665">Verifying...</translation>
 <translation id="1407069428457324124">Dark theme</translation>
@@ -1191,7 +1187,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1831848493690504725">We can't reach Google through the connected network. Try choosing a different network or checking your network settings or proxy settings (if you are using a proxy).</translation>
 <translation id="1832414451155700364">Choose whether to sync history and tabs</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
-<translation id="1832511806131704864">Phone change updated</translation>
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1833059747301212935">Easily access recent documents and upcoming calendar events</translation>
 <translation id="183445248400150852">Sites use this feature to override the input of your keyboard, like for games or remote desktop apps</translation>
@@ -1279,7 +1274,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 2. Click <ph name="BUTTON_2" /> in your Windows settings</translation>
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1895658205118569222">Shutdown</translation>
-<translation id="1896043844785689584">To set up fingerprint, have your child touch the fingerprint sensor at the bottom right corner of the keyboard. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1897120393475391208">Use strong password</translation>
 <translation id="1897860317037652061">Scan failed</translation>
 <translation id="1898804291554630487">Ask about this page</translation>
@@ -1314,7 +1308,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1918281588461452432">As you browse sites, their page contents are encrypted and saved to your device</translation>
 <translation id="1918761619391445601"><ph name="EXTENSION_NAME" /> is pinned. See more options.</translation>
 <translation id="1919096511823372013">Insert links, emojis and more. You can also get help writing and creating images with Google AI.</translation>
-<translation id="1919872106782726755">To set up fingerprint, get your child to touch the fingerprint sensor at the top-right corner of the keyboard, next to the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Contacts</translation>
 <translation id="1921544956190977703">You have Chrome's strongest security against dangerous websites, downloads and extensions</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -1499,7 +1492,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2045211794962848221">You won't see this specific message again</translation>
 <translation id="2045540927991079503">Open link as</translation>
 <translation id="2045838962742066664">Shorthand typing</translation>
-<translation id="204622017488417136">Your device will be returned to the previously installed version of Chrome. All user accounts and local data will be removed. This cannot be undone.</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2047279909708154872">{NUM_TABS,plural, =1{Pause the tab that's slowing your browser}other{Pause the tabs that are slowing your browser}}</translation>
 <translation id="2048182445208425546">Access your network traffic</translation>
@@ -1896,7 +1888,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
 <translation id="2316129865977710310">No, thanks</translation>
-<translation id="2316433409811863464">App streaming</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% done</translation>
 <translation id="2318143611928805047">Paper size</translation>
@@ -1991,7 +1982,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2383825469508278924">Change keyboard key mapping, function keys and more</translation>
 <translation id="2387052489799050037">Go home</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (current)</translation>
-<translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Standard font</translation>
 <translation id="239185270194776190">Your Gemini conversation is in another window. Click anywhere on this side panel to move it here.</translation>
@@ -2098,6 +2088,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2461550163693930491">Don't allow sites to scroll and zoom shared tabs</translation>
 <translation id="2461593638794842577">You can turn off this setting to save your passwords only on this device</translation>
 <translation id="2462550463312552298">Summarise this document</translation>
+<translation id="246264032905007361">Open Edge</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187">Added <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">You're seeing suggested files to help you easily get back to your most recent activity in Microsoft SharePoint and OneDrive.
@@ -2144,7 +2135,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2487067538648443797">Add new bookmark</translation>
 <translation id="2487602042876349837"><ph name="VIEW_ONE_ORIENTATION" /> View now <ph name="VIEW_ONE_PERCENT" /> wide, <ph name="VIEW_TWO_ORIENTATION" /> View now <ph name="VIEW_TWO_PERCENT" /> wide.</translation>
 <translation id="2489686758589235262">Assign 2 more switches</translation>
-<translation id="2489829450872380594">Next time, a new phone will unlock this <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
 <translation id="2489918096470125693">Add &amp;Folder...</translation>
 <translation id="2489931062851778802">Enter these keys on <ph name="DEVICE_NAME" /></translation>
 <translation id="249098303613516219">On-device site data allowed</translation>
@@ -2183,7 +2173,6 @@ You can manage this account’s settings by installing the Family Link app on yo
         <ph name="BREAK" />
         <ph name="BREAK" />
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
-<translation id="2514326558286966059">Unlock faster with your fingerprint</translation>
 <translation id="2514465118223423406">When a mouse is connected</translation>
 <translation id="2514938842036917377">This will delete <ph name="TOTAL_USAGE" /> of data stored by <ph name="SITE_NAME" />, related sites and installed apps</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2531,7 +2520,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2752805177271551234">Use input history</translation>
 <translation id="2754226775788136540">Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
-<translation id="2755349111255270002">Reset this <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Manage accessibility features</translation>
 <translation id="2755485474385016903">Changes made are seen by everyone in the group</translation>
 <translation id="275662540872599901">screen off</translation>
@@ -2699,7 +2687,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2873956234023215251">Can't install app. Something went wrong.</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2875698561019555027">(Chrome error pages)</translation>
-<translation id="2876336351874743617">Finger 2</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
 <translation id="2876484123356705658">Choose time range</translation>
 <translation id="2876556152483133018">Site Search</translation>
@@ -2708,7 +2695,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="288042212351694283">Access your Universal 2nd Factor devices</translation>
 <translation id="2881076733170862447">When You Click the Extension</translation>
 <translation id="2882301808122022326">Omaha response</translation>
-<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> will restart and reset momentarily</translation>
 <translation id="2883143988769190738">This extension requests the following permissions:</translation>
 <translation id="2884070497102362193">Test your battery, CPU, memory, connectivity and more</translation>
 <translation id="2885129935310217435">There is a button with the same name. Please choose another one.</translation>
@@ -2875,7 +2861,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Child accounts</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{No keys customised}=1{1 customised key}other{{COUNT} customised keys}}</translation>
-<translation id="3001835006423291524">Touch the fingerprint sensor at the bottom right corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Preferred networks</translation>
 <translation id="3003253259757197230">URLs that you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page that you're visiting</translation>
 <translation id="3003623123441819449">CSS cache</translation>
@@ -2983,9 +2968,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3067198360141518313">Run this plug-in</translation>
 <translation id="3071624960923923138">You can click here to open a new tab</translation>
 <translation id="3074499504015191586">Translate full page</translation>
-<translation id="3075144191779656260">Touch the fingerprint sensor at the left hand side of your <ph name="DEVICE_TYPE" />. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075740753681485522">Off • This extension contains malware</translation>
-<translation id="3075874217500066906">A restart is required to begin the Powerwash process. After restart you will be asked to confirm that you want to proceed.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Save only on this device</translation>
 <translation id="3076977359333237641">Your sign-in data was deleted</translation>
@@ -3015,6 +2998,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
 <translation id="3101126716313987672">Dim light</translation>
 <translation id="3101709781009526431">Date and time</translation>
+<translation id="3101924772906986970">Your Chrome browser bookmarks, passwords, history and more are saved in your Google Account</translation>
 <translation id="3102309003841389927">Review logo update</translation>
 <translation id="310297983047869047">Previous slide</translation>
 <translation id="3103451787721578293">Please enter a reason for uploading this data:</translation>
@@ -3053,7 +3037,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3127862849166875294">Linux disk resize</translation>
 <translation id="3129150892373332590">This will disable persistent sharing of USB devices with guests, which also will reset all persistence. Are you sure?</translation>
 <translation id="3129173833825111527">Left margin</translation>
-<translation id="3130528281680948470">Your device will be reset and all user accounts and local data will be removed. This cannot be undone.</translation>
 <translation id="3130863904455712965">History and more</translation>
 <translation id="313205617302240621">Forgot password?</translation>
 <translation id="3132277757485842847">We were unable to maintain a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
@@ -3100,6 +3083,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3165390001037658081">Some operators might block this feature.</translation>
 <translation id="316542773973815724">Navigation</translation>
 <translation id="3165734944977250074">The file can't be moved because it no longer exists</translation>
+<translation id="3166256634240273583">Use Google Search right from your browser's address bar and when you open a new tab.</translation>
 <translation id="3166443275568926403">Performance and Battery State</translation>
 <translation id="3167446923957429259">Move your mouth left</translation>
 <translation id="3167562202484086668">Delete all <ph name="BRAND" /> data</translation>
@@ -3108,6 +3092,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3175067642577044620">Body</translation>
 <translation id="3175862692832442091">Forest</translation>
 <translation id="3176347586396987181">Use 'z' to press a mouse button and hold</translation>
+<translation id="3176984568033229317">Bring Google Search to Edge</translation>
 <translation id="3177430966804511955">Manage isolated web apps (beta)</translation>
 <translation id="31774765611822736">New tab to the left</translation>
 <translation id="3177909033752230686">Page Language:</translation>
@@ -3121,7 +3106,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Mobile data networks</translation>
 <translation id="3183428991752322898">Clear keyboard shortcut</translation>
-<translation id="3183700187146209259">Can't install scanner software</translation>
 <translation id="3183750649832309748">Your organisation, <ph name="ACCOUNT_MANAGER" />, will be able to view some information, including</translation>
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -3309,6 +3293,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3321460131042519426">Enable word wrap</translation>
 <translation id="3321494112580110651">Don’t see your printer?</translation>
 <translation id="3321776060736518525">From <ph name="APP_URL" /></translation>
+<translation id="3323288183237359315">Install for Edge</translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{To protect your privacy, permissions were removed from a site}other{To protect your privacy, permissions were removed from some sites}}</translation>
 <translation id="3325930488268995856">Microsoft OneDrive connected</translation>
@@ -3342,7 +3327,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3348973040180736882">Decompressing</translation>
 <translation id="3349933790966648062">Memory footprint</translation>
 <translation id="3351472127384196879">Add or locate buttons on your pen</translation>
-<translation id="3353786022389205125">Turn on 'Show lock screen when waking from sleep' and try again</translation>
 <translation id="3354768182971982851">Old versions of Chrome apps won't open on Mac devices after December 2022. You can check if there's a new version available.</translation>
 <translation id="3354972872297836698">Couldn't pair to device <ph name="DEVICE_NAME" />; select device to try again</translation>
 <translation id="335581015389089642">Speech</translation>
@@ -3415,7 +3399,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3406396172897554194">Search by language or input name</translation>
 <translation id="3406605057700382950">&amp;Show bookmarks bar</translation>
 <translation id="3407392651057365886">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.</translation>
-<translation id="3407967630066378878">To set up fingerprint, have your child touch the fingerprint sensor at the left hand side of this <ph name="DEVICE_TYPE" />. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Camera and microphone in use</translation>
 <translation id="3409157109901479672">Left side</translation>
 <translation id="3409513286451883969">&amp;Translate Selection to <ph name="LANGUAGE" /></translation>
@@ -3913,12 +3896,10 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3749724428455457489">Learn more about site-suggested ads</translation>
 <translation id="3752115502500640407">Share a copy of your password for <ph name="WEBSITE" /></translation>
-<translation id="3752253558646317685">Get your child to keep lifting their finger to save the fingerprint</translation>
 <translation id="3753033997400164841">Store once. Use everywhere</translation>
 <translation id="3753142252662437130">Colour filters</translation>
 <translation id="3753412199586870466">Open side panel</translation>
 <translation id="3753585830134123417">Resized windows to the left</translation>
-<translation id="3755411799582650620">Your <ph name="PHONE_NAME" /> can now unlock this <ph name="DEVICE_TYPE" /> too.</translation>
 <translation id="375636864092143889">Site is using your microphone</translation>
 <translation id="3756485814916578707">Casting screen</translation>
 <translation id="3756578970075173856">Set PIN</translation>
@@ -4091,7 +4072,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3856470183388031602">Use your Google Account on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3856902135796972992">This site requires an additional action. Complete it on the page so that the password change can finish.</translation>
-<translation id="3857807444929313943">Lift, then touch again</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="385939467708172187">Use strong password</translation>
 <translation id="3859869403161297890">Send your feedback about shared tab groups here</translation>
@@ -4194,7 +4174,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3925926055063465902">Other users on this device can also use this network</translation>
 <translation id="3925934852713265455">Ask about your tabs</translation>
-<translation id="3926002189479431949">Smart Lock phone changed</translation>
 <translation id="3926410220776569451">Camera access is blocked</translation>
 <translation id="3927932062596804919">Deny</translation>
 <translation id="3928570707778085600">Save changes to <ph name="FILE_OR_FOLDER_NAME" />?</translation>
@@ -4413,7 +4392,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4087089424473531098">Created the extension:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="4087328411748538168">Show on right</translation>
 <translation id="4089235344645910861">Settings saved. Sync started.</translation>
 <translation id="4089743381329341712">Selected apps will be installed after setup. Find more recommendations later in the Apps &amp; Games app.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4455,7 +4433,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4115002065223188701">Network out of range</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116480382905329353">Detected 1 time</translation>
-<translation id="4116704186509653070">Open again</translation>
 <translation id="4117714603282104018">Touchpad haptic feedback</translation>
 <translation id="4117854923024277067">Your screenshot can be used with your prompt or deleted</translation>
 <translation id="4118579674665737931">Please reboot the device and try again.</translation>
@@ -4668,7 +4645,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4281789858103154731">Create</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4281849573951338030">Customise pen buttons</translation>
-<translation id="4282196459431406533">Smart Lock is turned on</translation>
 <translation id="4284903252249997120">ChromeVox screen reader and select-to-speak</translation>
 <translation id="4285418559658561636">Update Password</translation>
 <translation id="4285498937028063278">Unpin</translation>
@@ -4765,7 +4741,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4352913519324947509">Your password wasn't changed, but you should still be able to access the site with your current password</translation>
 <translation id="4354073718307267720">Ask when a site wants to create a 3D map of your surroundings or track camera position</translation>
 <translation id="4354344420232759511">Sites that you visit will appear here</translation>
-<translation id="435527878592612277">Select your photo</translation>
 <translation id="4356100841225547054">Turn off volume</translation>
 <translation id="4357583358198801992">Show tab groups</translation>
 <translation id="4357812592970409234">Learn more about your New tab page background</translation>
@@ -4919,7 +4894,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4450974146388585462">Diagnose</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detected an active TPM that can store your data more securely.</translation>
 <translation id="4452898361839215358">or select PPD. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="4453430595102511050">Touch the fingerprint sensor at the top right corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Search <ph name="SEARCH_ENGINE_NAME" /> or type a URL</translation>
 <translation id="4457472090507035117">Select current voice:</translation>
 <translation id="4460014764210899310">Ungroup</translation>
@@ -4963,7 +4937,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4497360513077910151">Hide group</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> has crashed</translation>
 <translation id="4500647907053779331">&amp;Translate selection to <ph name="LANGUAGE" /></translation>
-<translation id="450099669180426158">Exclamation mark icon</translation>
 <translation id="4501530680793980440">Confirm Removal</translation>
 <translation id="4502423230170890588">Remove from this device</translation>
 <translation id="4502477450742595012">Right-click on a tab and select 'Add tab to new group'</translation>
@@ -5050,7 +5023,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4562364000855074606">Block apps installed on this <ph name="DEVICE_TYPE" />. To restrict downloading apps or content, go to Google Play settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Initial input language is Chinese</translation>
 <translation id="4563382028841851106">Remove from account</translation>
-<translation id="4563880231729913339">Finger 3</translation>
 <translation id="4564245002465020751">Finish setting up on your phone</translation>
 <translation id="456449593072900590">Delete on exit</translation>
 <translation id="4565377596337484307">Hide password</translation>
@@ -5099,7 +5071,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4595560905247879544">Apps and extensions can only be modified by the manager (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4598345735110653698">Manage passkeys</translation>
 <translation id="4598556348158889687">Storage management</translation>
-<translation id="4598776695426288251">Wi-Fi available via multiple devices</translation>
 <translation id="4600071396330666617">Number of suggestions</translation>
 <translation id="4600978165652322776">A network error occurred. Check your Internet connection and network settings.</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
@@ -5117,7 +5088,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4610022258080608778">Edit selection shortcut</translation>
 <translation id="4610493438923139095">Distrusted</translation>
 <translation id="4610637590575890427">Did you mean to go to <ph name="SITE" />?</translation>
-<translation id="4611114513649582138">Data connection available</translation>
 <translation id="4611619000650855880">When left mouse button is selected, use '/' to double-click</translation>
 <translation id="4611759022973144129">You can use this password to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Grant access to all requested sites.</translation>
@@ -5592,7 +5562,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4943368462779413526">Football</translation>
 <translation id="4943927218331934807">Password needed</translation>
 <translation id="4944310289250773232">This authentication service is hosted by <ph name="SAML_DOMAIN" /></translation>
-<translation id="4945439665401275950">To set up fingerprint, get your child to touch the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">launcher + up arrow</translation>
 <translation id="4947376546135294974">Data from the site that you're visiting</translation>
 <translation id="4949898053053527676">It looks like there aren't any search results for your search</translation>
@@ -5655,7 +5624,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4991873517942703737">Ask about this document</translation>
 <translation id="4992066212339426712">Unmute</translation>
 <translation id="4992443049233195791">Microsoft 365 file settings</translation>
-<translation id="4992458225095111526">Confirm Powerwash</translation>
 <translation id="4992473555164495036">Your administrator has limited the available input methods.</translation>
 <translation id="4994426888044765950">If you hold down a key, the key's character will be repeated</translation>
 <translation id="4994754230098574403">Setting up</translation>
@@ -5664,6 +5632,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4997086284911172121">No Internet connection.</translation>
 <translation id="4998430619171209993">On</translation>
 <translation id="4999804342505941663">Turn on Do Not Disturb</translation>
+<translation id="5000497292978544380">Google Search AI Mode</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5003070249435823986">Use the gesture to enter scroll mode, then move your head in the direction you'd like to scroll. Use the gesture again to exit scroll mode.</translation>
 <translation id="5003993274120026347">Next sentence</translation>
@@ -5845,7 +5814,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="513555878193063507">Add new APN</translation>
 <translation id="5136343472380336530">Make sure that both devices are unlocked, close together and have Bluetooth turned on. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5136529877787728692">F7</translation>
-<translation id="5137349216872139332">Instant hotspot connection failed</translation>
 <translation id="5138227688689900538">Show less</translation>
 <translation id="5139823398361067371">Enter the PIN for your security key. If you don’t know the PIN, you’ll need to reset the security key.</translation>
 <translation id="5139955368427980650">&amp;Open</translation>
@@ -5888,6 +5856,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> has been blocked</translation>
 <translation id="5163910114647549394">Tab moved to end of tabstrip</translation>
 <translation id="5164530241085602114">Notifications not allowed for <ph name="SITE" /></translation>
+<translation id="5166614864040402649">Switch back to the side-by-side view by opening Settings, then View and select Side panel.</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5171045022955879922">Search or type URL</translation>
@@ -6108,7 +6077,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5327570636534774768">This device is marked for management by a different domain. Deprovision it from that domain before setting up demo mode.</translation>
 <translation id="5327912693242073631">Features that need notifications won't work</translation>
 <translation id="5328551442597731838">See tabs from other devices</translation>
-<translation id="532943162177641444">Tap the notification on your <ph name="PHONE_NAME" /> to set up the mobile hotspot that can be used by this device.</translation>
 <translation id="5329858601952122676">&amp;Delete</translation>
 <translation id="5331568967879689647">Chrome OS system app</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
@@ -6144,7 +6112,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5362741141255528695">Select private key file.</translation>
 <translation id="536278396489099088">ChromeOS System State and Reports</translation>
 <translation id="5362916924854054326">Don't show SharePoint and OneDrive files</translation>
-<translation id="5363109466694494651">Powerwash and Revert</translation>
 <translation id="5365858324977454035">Unexpected error, file upload failed.</translation>
 <translation id="5365881113273618889">The folder that you selected contains sensitive files. Are you sure that you want to grant '<ph name="APP_NAME" />' permanent write access to this folder?</translation>
 <translation id="536638840841140142">None</translation>
@@ -6407,7 +6374,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5547868626772433490">Ask Gemini</translation>
 <translation id="5548075230008247516">All items unselected, selection mode exited.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
-<translation id="5548644592758170183">Show on left</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Choose your setup</translation>
 <translation id="5551573675707792127">Keyboard and text input</translation>
@@ -6768,7 +6734,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5828633471261496623">Printing...</translation>
 <translation id="5829214552954466783">Share <ph name="CREDENTIAL_TYPE" /> for username: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Your payment methods in Google Wallet</translation>
-<translation id="5830205393314753525">Can't open <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Your password is encrypted and never seen by anyone</translation>
 <translation id="5830720307094128296">Save Page &amp;As...</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -6859,7 +6824,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5885314688092915589">Your organisation will manage this profile</translation>
 <translation id="5885470467814103868">Start scan</translation>
 <translation id="5885631909150054232">Copy token</translation>
-<translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Connect and quickly set up Fast Pair devices close by</translation>
 <translation id="5886384907280980632">Turn off now</translation>
 <translation id="5888337581644150257">International bank account numbers</translation>
@@ -7033,7 +6997,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6015796118275082299">Year</translation>
 <translation id="6016178549409952427">Navigate to extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016462059150340136">Anyone nearby</translation>
-<translation id="6016551720757758985">Confirm Powerwash with return to previous version</translation>
 <translation id="6016972670657536680">Select language and keyboard button. Currently selected language is <ph name="LANGUAGE" />.</translation>
 <translation id="6017318029492906697">Not allowed to use information that they've saved about you</translation>
 <translation id="6017514345406065928">Green</translation>
@@ -7188,9 +7151,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6130807998512240230">Phone Hub, Nearby Share</translation>
 <translation id="6130887916931372608">Keyboard key</translation>
 <translation id="6131511889181741773">Splatter</translation>
-<translation id="6132188132833716741">⇥ Press Tab then Enter to ask AI Mode</translation>
 <translation id="6132251717264923430">Button pinned</translation>
-<translation id="6132714462430777655">Skip school enrolment?</translation>
 <translation id="6134418895482326458">Hide footer on the New tab page</translation>
 <translation id="6134428719487602109">Remove all user accounts and reset your Chromebook to be just like new.</translation>
 <translation id="6135826623269483856">Not allowed to manage windows on all your displays</translation>
@@ -7316,7 +7277,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="62229737360959019">Tabs opened from a chat or a shared tab are also shared with Gemini. In Live mode, only the current tab is shared by default.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="622537739776246443">Profile will be deleted</translation>
-<translation id="6225475702458870625">Data connection available from your <ph name="PHONE_NAME" /></translation>
 <translation id="622568138962270592">Gemini Apps activity</translation>
 <translation id="6226777517901268232">Private key file (optional)</translation>
 <translation id="6227280783235722609">extension</translation>
@@ -7391,7 +7351,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6274108044476515407">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK1" />site-suggested ads<ph name="LINK_END1" />, your <ph name="BEGIN_LINK2" />cookie settings<ph name="LINK_END2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK3" />managing your ad privacy<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="627581157848786026">See tabs from other devices</translation>
-<translation id="6276210637549544171">The proxy <ph name="PROXY_SERVER" /> requires a username and password.</translation>
 <translation id="6277105963844135994">Network timeout</translation>
 <translation id="6277518330158259200">T&amp;ake Screenshot</translation>
 <translation id="6278428485366576908">Theme</translation>
@@ -7449,7 +7408,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6318125393809743217">Include a policies.json file with policy configurations.</translation>
 <translation id="6318944945640833942">Couldn't detect a printer. Please enter printer address again.</translation>
 <translation id="6319278239690147683">To delete browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />visit sync settings<ph name="END_LINK" />.</translation>
-<translation id="6322370287306604163">Unlock faster with fingerprint</translation>
 <translation id="6322559670748154781">This file is not commonly downloaded and has been blocked by Advanced Protection</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6325191661371220117">Disable auto-launch</translation>
@@ -7477,7 +7435,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6344170822609224263">Access list of network connections</translation>
 <translation id="6344576354370880196">Saved printers</translation>
 <translation id="6344608411615208519">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your parent</translation>
-<translation id="6345418402353744910">Your username and password are required for the proxy <ph name="PROXY" /> so that the admin can configure your network</translation>
 <translation id="6345566021391290381">There are passwords shared with you for <ph name="WEBSITE_NAME" />. You can use them in the sign-in form.</translation>
 <translation id="6345878117466430440">Mark as read</translation>
 <translation id="6346952829206698721">Paste from clipboard</translation>
@@ -7577,7 +7534,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6416743254476733475">Allow or block on your computer.</translation>
 <translation id="6416856063840710198">To improve your visit, sites often save your activity – often to your device. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Default behaviour</translation>
-<translation id="6418160186546245112">Reverting to the previously installed version of <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6418481728190846787">Permanently remove access for all apps</translation>
 <translation id="6418511932144861495">Install critical update</translation>
@@ -7842,7 +7798,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> is already being managed by <ph name="DOMAIN" />. To use parental controls with a different Google Account, sign out after setup, then select 'Add person' on the sign-in screen.</translation>
 <translation id="6608166463665411119">Reset eSIM</translation>
 <translation id="660846213831377756">Mouse keys</translation>
-<translation id="6608773371844092260">To set up fingerprint, have your child touch the fingerprint sensor at the right hand side of this <ph name="DEVICE_TYPE" />. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.</translation>
 <translation id="6610002944194042868">Translate Options</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
@@ -7912,7 +7867,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="666099631117081440">Print servers</translation>
 <translation id="6662394424395160792">Use Google Password Manager to sign in faster to sites from any of your devices</translation>
 <translation id="6662931079349804328">Enterprise policy changed. Experiments button removed from toolbar.</translation>
-<translation id="6663190258859265334">Powerwash your <ph name="DEVICE_TYPE" /> and return to the previous version.</translation>
 <translation id="6664774537677393800">Something went wrong when opening your profile. Please sign out then sign in again.</translation>
 <translation id="6665874326033183068">Wild</translation>
 <translation id="6666560794795912543">Show bookmarks in side panel</translation>
@@ -8098,7 +8052,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6795371939514004514">Auto-scan lets you move through items on the screen automatically. When an item is highlighted, press 'Select' to activate it.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Render</translation>
-<translation id="6797493596609571643">Oops, something went wrong.</translation>
 <translation id="6797877165704994393">Remove filter</translation>
 <translation id="6798420440063423019">The security key is locked because the wrong PIN was entered too many times. You'll need to reset the security key.</translation>
 <translation id="679845623837196966">Show reading list</translation>
@@ -8190,7 +8143,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6846178040388691741">'<ph name="EXTENSION_NAME" />' wants to print <ph name="FILE_NAME" /> with <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Safety reset</translation>
 <translation id="6847125920277401289">Free up space to continue</translation>
-<translation id="6848716236260083778">To set up fingerprint, get your child to touch the fingerprint sensor. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6850925512806464982">Everyone will immediately lose access to this tab group, and it will be deleted from all devices</translation>
 <translation id="6851346504162963984">{MEMBERS,plural, =1{1 site in <ph name="RWS_OWNER" />’s group}other{{MEMBERS} sites in <ph name="RWS_OWNER" />'s group}}</translation>
@@ -8700,7 +8652,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7226163413959353072">AI assistant that gives key takeaways, clarifies concepts, finds answers and more</translation>
 <translation id="7227235818314667565">Manage sharing</translation>
 <translation id="7227458944009118910">Apps listed below can handle protocol links as well. Other apps will ask for permission.</translation>
-<translation id="7228056665272655255">To set up fingerprint, have your child touch the fingerprint sensor at the top right corner of the keyboard. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228854227189381547">Don't switch</translation>
 <translation id="7230222852462421043">&amp;Restore Window</translation>
 <translation id="7230881857327093958">Changes will be applied after setup</translation>
@@ -8750,7 +8701,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7262919421769447042">Your profile is managed by <ph name="PROFILE_MANAGER" />, which can view some information, including</translation>
 <translation id="7264695323040866038">Always use the <ph name="APP" /> app to open supported web links?</translation>
 <translation id="7267044199012331848">Couldn't install the virtual machine. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
-<translation id="7267875682732693301">Keep lifting your finger to add the different parts of your fingerprint</translation>
 <translation id="7267898843336437186">Select a folder that this site can view</translation>
 <translation id="7268127947535186412">This setting is managed by the device owner.</translation>
 <translation id="7268412955622368206">Show pop-up notification for new USB devices.</translation>
@@ -8879,7 +8829,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7360333718677093875">emoji picker</translation>
 <translation id="7360460316021916328">Choose a window</translation>
 <translation id="7361297102842600584">Right-click to run <ph name="PLUGIN_NAME" /></translation>
-<translation id="7361914392989692067">Touch the power button with your finger. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7362387053578559123">Sites can ask to connect to Bluetooth devices</translation>
 <translation id="7363349185727752629">A guide to your privacy choices</translation>
 <translation id="7364591875953874521">Access requested</translation>
@@ -8943,7 +8892,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Change back to <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400528739136719497">Some Google voices may not be available at the moment</translation>
-<translation id="7400839060291901923">Set up connection on your <ph name="PHONE_NAME" /></translation>
 <translation id="7401559588859088661">Move and open</translation>
 <translation id="7401778920660465883">Dismiss this message</translation>
 <translation id="7402198013420237102">Move saved passwords to your Google Account?</translation>
@@ -9033,7 +8981,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7458933488302148148">Check your saved passwords to strengthen your security and stay safer online</translation>
 <translation id="7460045493116006516">Current theme that you have installed</translation>
 <translation id="7461924472993315131">Pin</translation>
-<translation id="746216226901520237">Next time, your phone will unlock your <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Your organisation manages how data collected by these features may be used.</translation>
 <translation id="7464645554245611385">Last update to this tab</translation>
@@ -9208,7 +9155,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7589461650300748890">Whoa, there. Be careful.</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7592060599656252486">Some</translation>
-<translation id="7594725637786616550">Powerwash to reset your <ph name="DEVICE_TYPE" /> to be just like new.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (error code <ph name="ERROR_CODE" />).</translation>
 <translation id="7600054753482800821">&amp;Manage search engines and Site Search</translation>
 <translation id="7600218158048761260">Google Drive is disabled for this account type.</translation>
@@ -9232,6 +9178,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7612497353238585898">Active site</translation>
 <translation id="7612655942094160088">Connected phone features enable.</translation>
 <translation id="7612989789287281429">Signing you in…</translation>
+<translation id="76131528886466333">Install Google Search for Microsoft Edge extension</translation>
 <translation id="7615365294369022248">There was an error adding an account</translation>
 <translation id="7616214729753637086">Enrolling device…</translation>
 <translation id="7616964248951412133">Sites use this feature to capture and use the input of your mouse, like for games or remote desktop apps</translation>
@@ -9265,7 +9212,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7635048370253485243">Pinned by your Administrator</translation>
 <translation id="7636346903338549690">Sites allowed to use third-party cookies</translation>
 <translation id="7636919061354591437">Install on this Device</translation>
-<translation id="7637253234491814483">Touch the fingerprint sensor at the top-right corner of your keyboard, next to the power button. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637593984496473097">Not enough disk space</translation>
 <translation id="7639914187072011620">Failed to fetch the SAML redirect URL from the server</translation>
 <translation id="7640256527901510478">Your device IMEI is <ph name="IMEI_NUMBER" /> and device serial is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
@@ -9305,7 +9251,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7660116474961254898">Follow the instructions on your phone</translation>
 <translation id="7660146600670077843">Right-click on a tab and select 'Add tab to new group'</translation>
 <translation id="7661451191293163002">A registration certificate could not be obtained.</translation>
-<translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7662535435481776002">Low-contrast light</translation>
 <translation id="7663719505383602579">Receiver: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Keyboard shortcut available</translation>
@@ -9487,7 +9432,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7776950606649732730">Please try again after the file has finished syncing.</translation>
 <translation id="7777624210360383048">Shortcut <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
 <translation id="7779840061887151693">display</translation>
-<translation id="7781335840981796660">All user accounts and local data will be removed.</translation>
 <translation id="7782102568078991263">No more suggestions from Google</translation>
 <translation id="7782717250816686129">Store persistent data on the login screen and inject credentials into the session.</translation>
 <translation id="7784020347632229094">Learn more about the keyboard shortcut</translation>
@@ -9714,7 +9658,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7943837619101191061">Add Location...</translation>
 <translation id="79446453817422139">This file may be dangerous</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
-<translation id="7944847494038629732">Unplug the scanner's USB cable and plug it in again to retry</translation>
 <translation id="7945703887991230167">Preferred voice</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> will be able to view and make its own copies of files in <ph name="FOLDERNAME" /> until you close all tabs for this site</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
@@ -9820,7 +9763,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8013534738634318212">These sites are in a group defined by <ph name="RWS_OWNER" />. Sites in a group can see your activity in the group.</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8014154204619229810">The updater is currently running. Refresh in a minute to check again.</translation>
-<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> is unable to revert to the previously installed version. Please try again to Powerwash your device.</translation>
 <translation id="8015021949830563076">This feature uses AI, is in early development and won't always get it right</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Copied 1 file}other{Copied {NUM_OF_FILES} files}}</translation>
 <translation id="8017004049696748317">Start or stop dictation</translation>
@@ -10173,7 +10115,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="8261506727792406068">Delete</translation>
-<translation id="8261625296061301062">Scanner software installed</translation>
 <translation id="8263149565724023141">Related applications</translation>
 <translation id="8263228331881858381">Passkey saved</translation>
 <translation id="8263336784344783289">Name This Group</translation>
@@ -10233,7 +10174,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8299951061833867575">Wi-Fi, mobile data</translation>
 <translation id="8300011035382349091">Edit bookmark for this tab</translation>
 <translation id="8300374739238450534">Midnight blue</translation>
-<translation id="8301242268274839723">Touch the fingerprint sensor at the bottom left corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Address}other{# addresses}}</translation>
 <translation id="8304383784961451596">You are not authorised to use this device. Please contact the administrator for sign-in permission or sign in with a Google Account supervised by Family Link.</translation>
 <translation id="8306063480506363120">Remove Drive access</translation>
@@ -10346,7 +10286,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
 <translation id="8380266723152870797">Window name</translation>
 <translation id="8382197851871630452">Local weather</translation>
-<translation id="8382677870544805359">You will have to factory reset this device to use enterprise features.</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Try these troubleshooting steps:
     <ph name="BEGIN_LIST" />
@@ -10362,7 +10301,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8387361103813440603">Not allowed to see your location</translation>
 <translation id="8388770971141403598">Secondary profiles are not supported</translation>
 <translation id="8389492867173948260">Allow this extension to read and change all your data on websites that you visit:</translation>
-<translation id="8390392581097975659">Installing scanner software</translation>
 <translation id="8390449457866780408">Server unavailable.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
 <translation id="8391918125842702622">Performance issue alert</translation>
@@ -10634,7 +10572,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8598249292448297523">print</translation>
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Manage extension}other{Manage extensions}}</translation>
 <translation id="8599681327221583254">One or more policies are not configured correctly. Please contact your administrator</translation>
-<translation id="8599864823732014237">Skip enterprise enrolment?</translation>
 <translation id="8600362954032151088">Manage your passwords and passkeys in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Another program on your computer added an app that may change the way Chrome works.</translation>
 <translation id="8602867356511778172">Google uses more data (for example, URLs, samples of page content, system information) to detect threats faster and more accurately</translation>
@@ -10795,7 +10732,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8704662571571150811">Domains</translation>
 <translation id="8705331520020532516">Serial Number</translation>
 <translation id="870536819717176711">When you choose to share the current tab with Gemini, the tab's full content, media and URL are sent to Google.</translation>
-<translation id="8705580154597116082">Wi-Fi available via phone</translation>
 <translation id="8705629851992224300">Your security key couldn't be read</translation>
 <translation id="8706111173576263877">QR code has been scanned.</translation>
 <translation id="8707318721234217615">Letter spacing</translation>
@@ -10824,8 +10760,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8720200012906404956">Looking for a mobile network. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">The initialisation of the installation-time attributes has timed out.</translation>
 <translation id="8721093493695533465">This will delete <ph name="TOTAL_USAGE" /> of data stored by displayed sites and installed apps</translation>
-<translation id="8724405322205516354">When you see this icon, use your fingerprint for identification or to approve purchases.</translation>
-<translation id="8724409975248965964">Fingerprint added</translation>
 <translation id="8724859055372736596">&amp;Show in Folder</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8725178340343806893">Favourites/bookmarks</translation>
@@ -10924,7 +10858,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>
 <translation id="8784626084144195648">Binned Average</translation>
 <translation id="8785622406424941542">Stylus</translation>
-<translation id="8786824282808281903">When your child sees this icon, a fingerprint can be used for identification or to approve purchases.</translation>
 <translation id="8787752878731558379">Help us improve Chrome by telling us why you allowed third-party cookies</translation>
 <translation id="8788008845761123079">Select a gesture for <ph name="SELECTED_ACTION" /></translation>
 <translation id="878862491037637275">This tab group is full</translation>
@@ -10972,7 +10905,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8821045908425223359">Configure IP address automatically</translation>
 <translation id="8821206216942230957">Your account doesn't have access to Gemini in Chrome</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> is ready to use.</translation>
-<translation id="882204272221080310">Update firmware for added security.</translation>
 <translation id="8823514049557262177">Copy link te&amp;xt</translation>
 <translation id="8823704566850948458">Suggest password...</translation>
 <translation id="8823963789776061136">Alternatively, select printer PPD. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -11228,14 +11160,13 @@ This can include information about installed software, files, your browser, the 
 <translation id="8993787625629280252">If Chrome finds one of your passwords in a public data breach, it can offer to change your password for you if you're signed in</translation>
 <translation id="899384117894244799">Remove restricted user</translation>
 <translation id="8993853206419610596">Expand all requests</translation>
-<translation id="8993945059918628059">Touch the fingerprint sensor with your finger. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="8996080012222587839">Turn on auto-expanding tabs</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{This extension is saved in your Google Account, but any data that it saved only on this device may be deleted}other{These extensions are saved in your Google Account, but any data that they've saved only on this device may be deleted}}</translation>
+<translation id="8997263272622166883">Switch between two most recently used tabs with Ctrl-tab</translation>
 <translation id="8999027165951679951">Inactive tab: <ph name="MEMORY_SAVINGS" /> freed up</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Reduced movement on the screen</translation>
-<translation id="9000185763019430629">Touch the fingerprint sensor at the right hand side of your <ph name="DEVICE_TYPE" />. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9000529821022336229">No updater installations could be found.</translation>
 <translation id="900267527532832868">This passkey doesn't work any more. It will get deleted soon from <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Enter PIN digit <ph name="NUM_DIGIT" /> of 6. Use backspace or delete to remove the last digit.</translation>
@@ -11296,7 +11227,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9036484080057916082">Signed Certificate Timestamp List</translation>
 <translation id="9037054491984310631">Connected to Bluetooth device named <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Device is not allowed</translation>
-<translation id="9037818663270399707">Your connection is not private for all network traffic</translation>
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9038489124413477075">Unnamed Folder</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{You have one attempt remaining.}other{You have # attempts remaining.}}</translation>

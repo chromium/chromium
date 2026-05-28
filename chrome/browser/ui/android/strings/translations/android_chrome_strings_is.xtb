@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Samstilla feril</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, mynd-í-mynd-flipi</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Endurheimta 1 glugga}one{Endurheimta # glugga}other{Endurheimta # glugga}}</translation>
 <translation id="1126696498560056882">Stjórna reikningum í þessu tæki</translation>
 <translation id="1135018701024399762">Huliðsstilling felur vefskoðun þína fyrir öðrum sem nota tækið þitt</translation>
 <translation id="113752097246673894">Skráðu þig inn á Chrome sem <ph name="EMAIL" /> til að fá aðgang að bókamerkjum og fleiru í öllum tækjunum þínum</translation>
@@ -195,7 +196,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1877073879466606884">Prófíllinn sem þú ert skráð(ur) inn á er stýrður prófíll. Stjórnandinn þinn getur breytt stillingum prófílsins þíns í gegnum fjaraðgang, greint upplýsingar um vafrann þinn út frá skýrslum og framkvæmt aðrar nauðsynlegar aðgerðir.</translation>
 <translation id="1879904908408734349">Innskráningarblað neðst er lokað</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> tillögur að atriðum á listanum hér að ofan.</translation>
 <translation id="189358972401248634">Önnur tungumál</translation>
 <translation id="1899175549411605574">Blað neðst með verðinnsýn</translation>
 <translation id="1900260903084164610">Með því að halda áfram samþykkirðu <ph name="BEGIN_TOS_LINK" />þjónustuskilmálana<ph name="END_TOS_LINK" /></translation>
@@ -510,6 +510,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3166827708714933426">Flýtilyklar flipa og glugga</translation>
 <translation id="3167258285411721858">Þú getur óskað eftir snjallvef fyrir <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, margvalinn festur huliðsflipi með slökkt á hljóði</translation>
+<translation id="3183941812169784232">Endurheimta alla glugga?</translation>
 <translation id="3187472288455401631">Auglýsingamælingar</translation>
 <translation id="3189635831478931757">Flipahópur: <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Loka núverandi glugga?</translation>
@@ -722,6 +723,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4164642020717536140">Hraðvirk og örugg vefskoðun</translation>
 <translation id="4165077084524712774">Fleiri verkfæri</translation>
 <translation id="4170577491341606575">Sækir gögnin þín\u2026</translation>
+<translation id="4176838562184310003">Chrome var ekki lokað á réttan hátt og það getur reynt að endurheimta glugga og flipa sem þú tapaðir. Sumir gluggar kunna að vera minnkaðir þegar þeir eru endurheimtir.</translation>
 <translation id="4177222230309051052">Fáðu öll bókamerkin þín</translation>
 <translation id="4177501066905053472">Umfjöllunarefni auglýsinga</translation>
 <translation id="417865198503699526">Leita að stillingu</translation>

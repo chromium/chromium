@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">画像をコピー</translation>
 <translation id="1606899876897213121">最近のアクティビティの概要を閉じる</translation>
 <translation id="1612754831519568745">現在、セーフ ブラウジングはオフになっています。危険なサイト、ダウンロード、拡張機能からの保護を強化してください。</translation>
+<translation id="1617300545081951343"><ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />、<ph name="BEGIN_LINK" />韓国の位置情報に関する利用規約<ph name="END_LINK" />、および<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1622717322707146952">[Google カレンダーに追加] または [Apple カレンダーに追加] を選択します。</translation>
 <translation id="1629162218487290695">本人確認…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">ログアウトして閲覧データを削除します</translation>
 <translation id="3124568093781685165">家族とパスワードを共有する</translation>
 <translation id="3130863904455712965">履歴、その他</translation>
+<translation id="3130973487775218359">動画: <ph name="BEGIN_LINK" />生成 AI について知っておきたい 5 つのこと<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Redress 番号を保存</translation>
 <translation id="3132584647087998639">データをインポート</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">OCSP 署名</translation>
 <translation id="4309403553630140242">詳細を確認するにはダブルタップします</translation>
 <translation id="4310738531374808763">ホームページをカスタマイズ</translation>
+<translation id="4316794575239200608">Gemini との会話や <ph name="BEGIN_LINK" />Google Workspace のデータ<ph name="END_LINK" />が人間のレビュアーによって確認されたり、生成 AI モデルの改善に使用されたりすることはありません。</translation>
 <translation id="4320848494125124980">最近使用したアイテム</translation>
 <translation id="4322394346347055525">他のタブをすべて閉じる</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366">使い回されているパスワード: <ph name="COUNT" /> 件</translation>
 <translation id="4632655012900268062">カードをカスタマイズする</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
+<translation id="4634633632339959267">チャットはレビューされ、Google AI の改善に使用されます。<ph name="BEGIN_LINK" />プライバシーの設定についてご確認ください<ph name="END_LINK" />。<ph name="BEGIN_LINK" />ユーザーの位置情報<ph name="END_LINK" />もアクティビティとともに保存されます。</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4641425577292284174">設定の安全性や確認が必要な項目のチェック</translation>
 <translation id="4642472735733036929">価格のトラッキングを停止しました</translation>
@@ -1566,6 +1570,7 @@
 <translation id="6435236283694032571">リーディング リストに追加する</translation>
 <translation id="6435307030888827407">ログアウト状態を保持する</translation>
 <translation id="6436318499800111867">共有: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />他者のプライバシーを尊重<ph name="END_LINK" />し、Gemini Live の会話に参加してもらったり録音したりする前には必ず許可を得てください。</translation>
 <translation id="6442697326824312960">タブの固定を解除</translation>
 <translation id="6443118737398455446">有効期限が無効です</translation>
 <translation id="6444435711855078002">その他のオプション</translation>
@@ -1808,6 +1813,7 @@
 <translation id="7253951228444156601">パスワードを確認しています…</translation>
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7266578100016339897">タブの整理に役立つこの機能は、設定でいつでも変更できます。</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google 利用規約<ph name="END_LINK" />と <ph name="BEGIN_LINK" />Gemini アプリのプライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="728025568708172005">スタートガイド ツアー</translation>
 <translation id="7280980607183752256">このファイルはインポートできません</translation>
@@ -2128,6 +2134,7 @@
 <translation id="8345328955902001853">{count,plural, =1{レベルアップするには、あと 1 件のタスクを完了してください}other{レベルアップするには、あと {count} 件のタスクを完了してください}}</translation>
 <translation id="8348530355586151720">その他メニューをタップ</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
+<translation id="8360164927489392419">Live での会話の録音と Live で共有したコンテンツは、<ph name="BEGIN_LINK" />Gemini アプリのプライバシーに関するお知らせ<ph name="END_LINK" />に従って保存および処理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} 件のブックマークをインポートしました}other{{count} 件のブックマークをインポートしました}}</translation>
 <translation id="8363484128299778310">問題発生時用の一時的な再設定パスワード</translation>
 <translation id="8364563001733875155">PIN を変更するには、まずデバイスでパスコードを設定してください。</translation>
@@ -2223,6 +2230,7 @@
 <translation id="8643403533759285912">グループを削除</translation>
 <translation id="8647280737650867362">価格のトラッキングを解除できませんでした。</translation>
 <translation id="8654802032646794042">キャンセル</translation>
+<translation id="8659875081143553823">少々お待ちください</translation>
 <translation id="8660600697590740984">コピーした画像をレンズで検索</translation>
 <translation id="866266761389616183">エラー</translation>
 <translation id="8663764600409216912">推測しにくいパスワードが使用されています</translation>

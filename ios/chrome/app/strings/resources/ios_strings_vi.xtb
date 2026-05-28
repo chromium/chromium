@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1150989369772528668">Lịch</translation>
+<translation id="1161444134753003495">Đăng nhập</translation>
 <translation id="1161663161838091892">Đồng bộ hoá các thẻ và nhật ký để tiếp tục</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} thẻ tín dụng}other{{count} thẻ tín dụng}}</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Sao chép ảnh</translation>
 <translation id="1606899876897213121">Đóng phần tóm tắt hoạt động gần đây</translation>
 <translation id="1612754831519568745">Tính năng Duyệt web an toàn hiện đang tắt. Hãy bật tính năng này để được bảo vệ khỏi các trang web, tệp tải xuống và tiện ích nguy hiểm.</translation>
+<translation id="1617300545081951343">Áp dụng <ph name="BEGIN_LINK" />Điều khoản<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Điều khoản dịch vụ vị trí ở Hàn Quốc<ph name="END_LINK" /> và <ph name="BEGIN_LINK" />Thông báo về quyền riêng tư<ph name="END_LINK" /> của chúng tôi. Gemini là AI và có thể mắc sai sót, kể cả sai sót về con người.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Chọn "Thêm vào Lịch Google" hoặc "Thêm vào Lịch Apple".</translation>
 <translation id="1629162218487290695">Xác minh danh tính của bạn…</translation>
@@ -537,6 +539,7 @@
 <translation id="2829172210806130158">Tìm trên màn hình</translation>
 <translation id="2831109159746537587">Hãy thử khoanh tròn hoặc nhấn vào hình ảnh để tìm kiếm</translation>
 <translation id="2834399722155632105">3. Nhấn vào Tuỳ chọn mật khẩu</translation>
+<translation id="2834418947367581526">Xin chào, tôi là Gemini. Chúng tôi sắp ra mắt tính năng trò chuyện trực tiếp để bạn có thể đặt câu hỏi bằng lời nói về trang bạn đang xem. Nhưng trước khi chúng ta bắt đầu, hãy xem nhanh thông tin quan trọng này.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Thời gian</translation>
 <translation id="284581348330507117">Tạo mật khẩu khác biệt</translation>
@@ -604,6 +607,7 @@
 <translation id="3119874402040566234">Hệ thống sẽ đăng xuất bạn và xoá dữ liệu duyệt web</translation>
 <translation id="3124568093781685165">Chia sẻ mật khẩu với gia đình</translation>
 <translation id="3130863904455712965">Nhật ký và nhiều nội dung khác</translation>
+<translation id="3130973487775218359">Xem: <ph name="BEGIN_LINK" />5 điều cần biết về AI tạo sinh<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Lưu mã số xác nhận trùng tên</translation>
 <translation id="3132584647087998639">Nhập dữ liệu của bạn</translation>
 <translation id="313283613037595347">Tạo thẻ Ẩn danh mới.</translation>
@@ -688,6 +692,7 @@
 <translation id="3447332786336558089">Sau khi bạn đăng xuất, hệ thống sẽ đóng các thẻ và xoá dữ liệu tài khoản chưa lưu khỏi thiết bị này. Dữ liệu này có thể bao gồm mật khẩu, nhật ký và nhiều nội dung khác.</translation>
 <translation id="3449029510150690417">Tạo nhóm thẻ mới bằng cách đặt tên và màu cho nhóm thẻ</translation>
 <translation id="345348365500626747">Đã tìm thấy địa chỉ</translation>
+<translation id="3459644598174926977">Nói chuyện với Gemini bằng tính năng Live để hỏi về một trang, cùng lên ý tưởng và trò chuyện hai chiều.</translation>
 <translation id="3464194322481586217">Không thể theo dõi giá này.</translation>
 <translation id="3469117812148449995">Các lựa chọn lưu mật khẩu</translation>
 <translation id="3472469028191701821">Mở trong thẻ mới</translation>
@@ -822,6 +827,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Mật khẩu mới cho trang web này}other{Các mật khẩu mới cho trang web này}}</translation>
 <translation id="3933372629914873850">Bạn sẽ đăng nhập vào <ph name="URL" /></translation>
 <translation id="3934905113567851655">Chụm hai ngón tay để thay đổi kích thước</translation>
+<translation id="393732545649378031">Tài khoản</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Đóng {COUNT} thẻ}other{Đóng {COUNT} thẻ}}</translation>
 <translation id="3946483119107054883">Tải xuống dưới dạng tệp CSV</translation>
@@ -932,6 +938,7 @@
 <translation id="4306349443295056740">Ký OCSP</translation>
 <translation id="4309403553630140242">Nhấn đúp để xem thêm thông tin</translation>
 <translation id="4310738531374808763">Tuỳ chỉnh trang chủ của bạn</translation>
+<translation id="4316794575239200608">Nhân viên đánh sẽ không xem xét các cuộc trò chuyện của bạn với Gemini cũng như <ph name="BEGIN_LINK" />dữ liệu của bạn trên Google Workspace<ph name="END_LINK" />. Google cũng không sử dụng những thông tin này để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="4320848494125124980">Gần đây</translation>
 <translation id="4322394346347055525">Đóng các thẻ khác</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1024,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> mật khẩu trùng lặp</translation>
 <translation id="4632655012900268062">Tuỳ chỉnh thẻ</translation>
 <translation id="4634124774493850572">Dùng mật khẩu</translation>
+<translation id="4634633632339959267">Các cuộc trò chuyện được đánh giá và dùng để cải thiện AI của Google. <ph name="BEGIN_LINK" />Tìm hiểu về các lựa chọn của bạn.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Thông tin về vị trí của bạn<ph name="END_LINK" /> cũng được lưu trữ cùng với nhật ký hoạt động.</translation>
 <translation id="4636930964841734540">Thông tin</translation>
 <translation id="4641425577292284174">Kiểm tra xem bạn đã có chế độ cài đặt an toàn nhất chưa hay có cần xem xét vấn đề nào không</translation>
 <translation id="4642472735733036929">Tính năng theo dõi giá đã dừng hoạt động</translation>
@@ -1470,6 +1478,7 @@
 <translation id="6140948187512243695">Hiển thị chi tiết</translation>
 <translation id="6144589619057374135">Mở ${url} ở Chế độ ẩn danh</translation>
 <translation id="6146563240635539929">Video</translation>
+<translation id="6148392728478209113">Bạn vẫn đang sử dụng tính năng Live? Nhấn vào nút Live để tiếp tục trò chuyện với Gemini</translation>
 <translation id="6151006591088192882">Mở khoá các thẻ Ẩn danh bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Không hoạt động</translation>
 <translation id="6152406514676263192">Đồng bộ hóa cho nội dung phù hợp nhất dựa trên mối quan tâm của bạn.</translation>
@@ -1563,6 +1572,7 @@
 <translation id="6435236283694032571">Thêm vào Danh sách đọc</translation>
 <translation id="6435307030888827407">Không đăng nhập</translation>
 <translation id="6436318499800111867">Được chia sẻ với tôi vào <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Hãy tôn trọng quyền riêng tư của người khác<ph name="END_LINK" /> và xin phép họ trước khi ghi âm hoặc đưa họ vào cuộc trò chuyện qua Live.</translation>
 <translation id="6442697326824312960">Bỏ gắn Thẻ</translation>
 <translation id="6443118737398455446">Ngày hết hạn không hợp lệ</translation>
 <translation id="6444435711855078002">Lựa chọn khác</translation>
@@ -1805,6 +1815,7 @@
 <translation id="7253951228444156601">Đang kiểm tra mật khẩu…</translation>
 <translation id="7261217796641151584">Chia sẻ nhóm</translation>
 <translation id="7266578100016339897">Chế độ này sẽ giúp bạn sắp xếp mọi thứ hợp lý. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần cài đặt.</translation>
+<translation id="7270491814777319521">Áp dụng <ph name="BEGIN_LINK" />Điều khoản của Google<ph name="END_LINK" /> và <ph name="BEGIN_LINK" />Thông báo về quyền riêng tư của Các ứng dụng Gemini<ph name="END_LINK" />. Gemini là AI và có thể mắc sai sót, kể cả sai sót về con người.</translation>
 <translation id="7272437679830969316">Không thể xác minh danh tính của bạn. Chưa sao chép mật khẩu.</translation>
 <translation id="728025568708172005">Bắt đầu hướng dẫn</translation>
 <translation id="7280980607183752256">Không nhập được tệp này</translation>
@@ -2125,6 +2136,7 @@
 <translation id="8345328955902001853">{count,plural, =1{Hoàn thành 1 việc cần làm nữa để lên cấp}other{Hoàn thành {count} việc cần làm nữa để lên cấp}}</translation>
 <translation id="8348530355586151720">Nhấn vào trình đơn có biểu tượng ba dấu chấm</translation>
 <translation id="8349305172487531364">Thanh dấu trang</translation>
+<translation id="8360164927489392419">Các bản ghi về hoạt động tương tác của bạn với chế độ Live cũng như những nội dung bạn chia sẻ với chế độ này được lưu và xử lý theo <ph name="BEGIN_LINK" />Thông báo về quyền riêng tư của Các ứng dụng Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Đã nhập {count} dấu trang}other{Đã nhập {count} dấu trang}}</translation>
 <translation id="8363484128299778310">Khôi phục tạm thời trong trường hợp gặp sự cố</translation>
 <translation id="8364563001733875155">Để thay đổi mã PIN, trước tiên, hãy thiết lập mật mã trên thiết bị của bạn.</translation>
@@ -2220,6 +2232,7 @@
 <translation id="8643403533759285912">Xoá nhóm</translation>
 <translation id="8647280737650867362">Không thể bỏ theo dõi giá này.</translation>
 <translation id="8654802032646794042">Huỷ</translation>
+<translation id="8659875081143553823">Hãy đợi giây lát</translation>
 <translation id="8660600697590740984">Dùng Ống kính để tìm hình ảnh đã sao chép</translation>
 <translation id="866266761389616183">Ôi, hỏng!</translation>
 <translation id="8663764600409216912">Bạn đang sử dụng các mật khẩu khá khó đoán</translation>

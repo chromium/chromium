@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Geçmiş senkronizasyonu</translation>
 <translation id="1111673857033749125">Diğer cihazlarınızda kaydedilmiş yer işaretleri burada görünür.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Pencere İçinde Pencere Sekmesi</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 pencereyi geri yükle}other{# pencereyi geri yükle}}</translation>
 <translation id="1126696498560056882">Bu cihazdaki hesapları yönet</translation>
 <translation id="1135018701024399762">Gizli mod, internette gezinme işlemlerinizi cihazınızı kullanan diğer kişilerden gizli tutar</translation>
 <translation id="113752097246673894">Yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da <ph name="EMAIL" /> olarak oturum açın.</translation>
@@ -195,7 +196,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1877073879466606884">Oturum açtığınız profil, yönetilen bir profildir. Yöneticiniz profil ayarlarınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir.</translation>
 <translation id="1879904908408734349">Oturum açma alt sayfası kapatıldı</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
-<translation id="1889626070177134359">Yukarıdaki listede önerilen <ph name="SUGGESTIONS_COUNT" /> öğe.</translation>
 <translation id="189358972401248634">Diğer diller</translation>
 <translation id="1899175549411605574">Fiyat analizleri alt sayfası</translation>
 <translation id="1900260903084164610">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" />'nı kabul etmiş olursunuz.</translation>
@@ -510,6 +510,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3166827708714933426">Sekme ve pencere kısayolları</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> mobil sitesini isteyebilirsiniz</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Birden Çok Seçili Sesi Kapalı Sabit Gizli Sekme</translation>
+<translation id="3183941812169784232">Tüm pencereler geri yüklensin mi?</translation>
 <translation id="3187472288455401631">Reklam ölçümü</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> sekme grubu</translation>
 <translation id="3200536777393523575">Geçerli pencereniz kapatılsın mı?</translation>
@@ -722,6 +723,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4164642020717536140">Web'de hızlı ve güvenli bir şekilde gezinin.</translation>
 <translation id="4165077084524712774">Diğer araçlar</translation>
 <translation id="4170577491341606575">Öğeleriniz alınıyor\u2026</translation>
+<translation id="4176838562184310003">Chrome düzgün şekilde kapatılmadığı için kaybolan pencerelerinizi ve sekmelerinizi geri yüklemeyi deneyebilir. Geri yüklenen bazı pencereler simge durumuna küçültülebilir.</translation>
 <translation id="4177222230309051052">Tüm yer işaretlerinize ulaşın</translation>
 <translation id="4177501066905053472">Reklam konuları</translation>
 <translation id="417865198503699526">Ayar için arama yapın</translation>

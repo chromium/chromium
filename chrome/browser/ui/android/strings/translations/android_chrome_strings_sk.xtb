@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Synchronizácia histórie</translation>
 <translation id="1111673857033749125">Tu sa zobrazia záložky, ktoré ste uložili na iných zariadeniach.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, karta s obrazom v obraze</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Obnoviť 1 okno}few{Obnoviť # okná}many{Restore # windows}other{Obnoviť # okien}}</translation>
 <translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
 <translation id="1135018701024399762">Režim inkognito chráni vaše prehliadanie pred ostatnými, ktorí používajú vaše zariadenie</translation>
 <translation id="113752097246673894">Ak chcete mať záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu ako <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@
 <translation id="1877073879466606884">Profil, do ktorého ste sa prihlásili, je spravovaný. Správca môže vzdialene vykonávať zmeny v nastaveniach profilu, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy.</translation>
 <translation id="1879904908408734349">Dolný hárok prihlásenia je zavretý</translation>
 <translation id="1883903952484604915">Moje súbory</translation>
-<translation id="1889626070177134359">V zozname vyššie sú navrhované položky (<ph name="SUGGESTIONS_COUNT" />).</translation>
 <translation id="189358972401248634">Ďalšie jazyky</translation>
 <translation id="1899175549411605574">Dolný hárok cenových štatistík</translation>
 <translation id="1900260903084164610">Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_TOS_LINK" />zmluvnými podmienkami<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@
 <translation id="3166827708714933426">Skratky pre karty a okná</translation>
 <translation id="3167258285411721858">Môžete požiadať o mobilný web pre <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta inkognito s vypnutým zvukom</translation>
+<translation id="3183941812169784232">Chcete obnoviť všetky okná?</translation>
 <translation id="3187472288455401631">Meranie reklám</translation>
 <translation id="3189635831478931757">Skupina kariet <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Chcete aktuálne okno zavrieť?</translation>
@@ -722,6 +723,7 @@
 <translation id="4164642020717536140">Rýchle a bezpečné prehliadanie internetu</translation>
 <translation id="4165077084524712774">Ďalšie nástroje</translation>
 <translation id="4170577491341606575">Váš obsah sa načítava\u2026</translation>
+<translation id="4176838562184310003">Chrome sa správne nevypol a môže sa pokúsiť obnoviť vaše stratené okná a karty. Niektoré okná môžu byť po obnovení minimalizované.</translation>
 <translation id="4177222230309051052">Získajte všetky svoje záložky</translation>
 <translation id="4177501066905053472">Témy reklám</translation>
 <translation id="417865198503699526">Vyhľadajte požadované nastavenie</translation>

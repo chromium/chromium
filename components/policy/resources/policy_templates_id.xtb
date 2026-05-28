@@ -4173,6 +4173,21 @@ Jika kebijakan ini disetel ke Aktif, SwiftShader akan digunakan sebagai penggant
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pembuatan konteks WebGL mungkin gagal jika akselerasi GPU hardware tidak tersedia. Halaman web mungkin tidak berfungsi dengan baik jika tidak menangani kegagalan pembuatan konteks WebGL dengan baik.
 
 Kebijakan ini adalah kebijakan sementara yang akan dihapus di masa mendatang.</translation>
+<translation id="3607939601300521364">Mengontrol apakah agen <ph name="GEMINI_SPARK_PRODUCT_NAME" /> diizinkan untuk terhubung ke <ph name="PRODUCT_NAME" /> dan menggunakan penjelajahan otomatis.
+
+Nilai 0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> diizinkan untuk terhubung ke dan menggunakan penjelajahan otomatis <ph name="PRODUCT_NAME" />
+
+Nilai 1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tidak diizinkan untuk terhubung ke atau menggunakan penjelajahan otomatis <ph name="PRODUCT_NAME" />
+
+Peringatan: Mengizinkan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> terhubung ke <ph name="PRODUCT_NAME" /> dan menggunakan penjelajahan otomatis mengizinkan agen <ph name="GEMINI_SPARK_PRODUCT_NAME" /> untuk melakukan tindakan multilangkah secara otonom di klien <ph name="PRODUCT_NAME" /> menggunakan sesi penjelajahan aktif. Hal ini menimbulkan risiko keamanan yang signifikan, termasuk risiko kredensial, Ingress Jaringan Lokal, dan hilangnya sinyal kontekstual. Kontrol pengelolaan dan keamanan yang ada mungkin tidak dipatuhi.
+
+Administrator disarankan untuk mengevaluasi dengan cermat model ancaman jaringan, kepatuhan, dan privasi organisasi sebelum mengaktifkan fitur ini.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan aplikasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> atau penjelajahan otomatis <ph name="PRODUCT_NAME" /> dinonaktifkan. Misalnya, <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> dapat dinonaktifkan oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Untuk mendapatkan informasi selengkapnya tentang <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />, lihat https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Penjelajahan otomatis <ph name="PRODUCT_NAME" /> dan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> hanya tersedia di negara atau bahasa tertentu. Jika kebijakan ini disetel ke 0 - Aktif, tidak ada jaminan bahwa fitur akan diaktifkan; fitur tetap bergantung pada ketersediaan. Untuk mendapatkan info selengkapnya tentang peluncuran, baca Catatan Rilis Enterprise: https://chromeenterprise.google/resources/release-notes/
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="3608206578291537084">Aktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="3608281460204780443">Tampilkan ikon Chrome Web Store di peluncur <ph name="PRODUCT_OS_NAME" /> dan di halaman tab baru</translation>
 <translation id="3612482251405108708">Memulai otomatis autentikasi ulang online di layar kunci</translation>
@@ -4206,15 +4221,6 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan nama library default.</translation>
-<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
-Fitur ServiceWorkerAutoPreload mengirimkan permintaan jaringan untuk resource utama pada saat yang sama saat fitur tersebut memulai proses bootstrap ServiceWorker.
-
-Jika kebijakan ini disetel ke Aktif atau tidak disetel,
-<ph name="PRODUCT_NAME" /> akan mengaktifkan ServiceWorkerAutoPreload. Dalam beberapa skenario, permintaan navigasi otomatis dikirim saat ServiceWorker dimulai, misalnya saat ServiceWorker belum berjalan,
-
-Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan mengaktifkan ServiceWorkerAutoPreload. Permintaan navigasi selalu dikirim setelah ServiceWorker dimulai.
-
-Kebijakan ini merupakan tindakan sementara untuk mengontrol fitur dan akan dihapus di M144.</translation>
 <translation id="3650122925429054129">Nonaktifkan sorotan kursor di layar login</translation>
 <translation id="365093517647222762">Melaporkan data telemetri situs untuk URL yang diizinkan yang ditentukan oleh kebijakan <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> bagi pengguna terafiliasi.
 
@@ -5243,6 +5249,7 @@ Lapisan ini adalah lapisan kontrol tambahan, yang berada di bawah lapisan izin u
 Pengguna tidak dapat mengganti pilihan admin. Jika kebijakan ini tidak disetel, pengguna akan mendapatkan pengalaman konsumen, yaitu mereka dapat dengan bebas mengubah setelan lokasi sistem, dengan setelan default-nya adalah <ph name="GLS_ALLOWED" />.
 
 Catatan: Kebijakan ini menghentikan penggunaan kebijakan <ph name="ARC_GLS_POLICY_NAME" />. Selain itu, jika kebijakan ini disetel, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> tidak akan lagi memengaruhi preferensi lokasi <ph name="ANDROID_NAME" /> di <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4340826578810728651">Mengizinkan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> terhubung ke dan menggunakan penjelajahan otomatis <ph name="PRODUCT_NAME" /></translation>
 <translation id="4341199399451274159">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> akan menentukan encoding karakter yang didukung oleh penyedia penelusuran. Encoding adalah nama halaman kode seperti UTF-8, GB2312, dan ISO-8859-1. Encoding dicoba sesuai urutan yang diberikan.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> tidak disetel, UTF-8 akan digunakan.</translation>
@@ -6178,6 +6185,7 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti pros
       - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, browser akan memiliki fungsi terbatas.
 
       - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
+<translation id="4896469165628792802"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> diizinkan untuk terhubung ke dan menggunakan penjelajahan otomatis <ph name="PRODUCT_NAME" />.</translation>
 <translation id="489760181463331251">Kebijakan ini mengubah tingkat penghematan Penghemat Memori.
 
 Tindakan ini hanya berlaku saat Penghemat Memori diaktifkan melalui setelan atau melalui kebijakan <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />, dan akan memengaruhi cara heuristik digunakan untuk menentukan kapan harus menghapus tab. Misalnya, mengurangi masa pakai tab yang tidak aktif sebelum menghapusnya dapat menghemat memori, tetapi juga berarti tab akan lebih sering dimuat ulang sehingga dapat menyebabkan pengalaman pengguna yang buruk dan menimbulkan biaya traffic jaringan yang lebih besar.
@@ -7042,6 +7050,7 @@ Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mod
 Jika nilai disetel ke benar (true) atau tidak disetel, pengajar tertentu dapat memberi teks pada suara mereka dan mengirimkan transkripsinya kepada siswa.
 
 Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</translation>
+<translation id="5377484655498931153"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> tidak diizinkan untuk terhubung ke atau menggunakan penjelajahan otomatis <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5377606826822211923">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk pengguna</translation>
 <translation id="537786648513450280">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk perangkat</translation>
 <translation id="5378885577701865339">Nonaktifkan fitur papan klip bersama</translation>

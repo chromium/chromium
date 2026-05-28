@@ -138,6 +138,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="121201262018556460">Heu provat d'accedir a <ph name="DOMAIN" />, però el servidor ha presentat un certificat que conté una clau dèbil. És possible que un atacant hagi accedit a la clau privada i que aquest servidor no sigui el que espereu (pot ser que us estigueu comunicant amb un atacant).</translation>
 <translation id="1212527389003717329">S'ha iniciat la baixada. Per veure-la, mantén premuda la tecla |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Utilitza la informació desada al teu Compte de Google per emplenar automàticament contrasenyes, claus d'accés, adreces, formes de pagament i altres dades</translation>
+<translation id="1216257595811043403">Comparteix les pestanyes automàticament</translation>
 <translation id="1219129156119358924">Seguretat del sistema</translation>
 <translation id="1219134100826635117">El teu administrador ha bloquejat aquesta acció</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 amb encriptació RSA</translation>
@@ -2195,6 +2196,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4434045419905280838">Finestres emergents i redireccions</translation>
 <translation id="443673843213245140">L'ús d'un servidor intermediari no està activat, però s'ha especificat una configuració explícita d'un servidor intermediari.</translation>
 <translation id="4438821706955556403">Preu habitual</translation>
+<translation id="4439687924334332880">Obtén respostes més personalitzades compartint automàticament les pestanyes obertes d'aquesta finestra si estan relacionades amb aquest fil de discussió. Pots activar aquesta opció per a tots els fils de discussió a Configuració.</translation>
 <translation id="4441832193888514600">S'ha ignorat perquè la política només es pot establir com a política d'usuari basada en el núvol.</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Retorn per cercar pestanyes.</translation>
 <translation id="4445964943162061557">Aquesta funció és experimental i no sempre l'encertarà.</translation>
@@ -2296,7 +2298,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4640225694041297329">Mostra els resultats dels 7 darrers dies</translation>
 <translation id="4642296966515958616">Per unir-te a aquest grup de pestanyes, actualitza Chrome</translation>
 <translation id="464342062220857295">Funcions de cerca</translation>
-<translation id="4643958597583594452">Chrome processa els títols i els URL de les pàgines al dispositiu o en un espai privat al núvol</translation>
 <translation id="4644567637638438744">Els fitxers només es poden penjar si tens la sessió iniciada a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre invers de cara avall</translation>
 <translation id="4648262692072505866">El valor resum ha de tenir el format SHA-256.</translation>
@@ -3151,6 +3152,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5995727681868049093">Gestiona la teva informació, privadesa i seguretat al Compte de Google</translation>
 <translation id="5996255674476750320">Exhibicions de vehicles</translation>
 <translation id="5997247540087773573">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes de Google recomana que la canviïs ara i que comprovis les contrasenyes desades.</translation>
+<translation id="5997915162652837008">Pots estalviar temps activant la compartició automàtica de pestanyes per a tots els fils de discussió. Més informació sobre</translation>
 <translation id="6000528814684428358">Música heavy i progressiva</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Els teus dispositius</translation>
@@ -3295,6 +3297,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6203231073485539293">Comprovació de la connexió a Internet</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
+<translation id="6213685130162740188">Números de viatgers coneguts</translation>
 <translation id="6215936431492593050">Metall (setinat)</translation>
 <translation id="6217950634729714357">Mobiliari de cuina i de menjador</translation>
 <translation id="6218305986815100395">No es pot activar la targeta virtual</translation>
@@ -3713,11 +3716,13 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6874604403660855544">&amp;Refés l'addició</translation>
 <translation id="6875873347995743859">Envia a l'Assistent</translation>
 <translation id="6875894866901426843">L'administrador suprimirà els teus fitxers locals, inclosos els de la paperera, el dia <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Vols compartir sempre les pestanyes obertes per obtenir millors respostes?</translation>
 <translation id="6880941331070119097">Opció de preu alt</translation>
 <translation id="6881240511396774766">Crea un document de Google ràpidament</translation>
 <translation id="6883221904761970440">El full d'autenticació de credencials de pagament segur està tancat</translation>
 <translation id="6883745783646124431">adreça de la feina</translation>
 <translation id="6886283082988906333">Fitxer ZIP</translation>
+<translation id="6886431827310382613">Comparteix pestanyes rellevants</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> (<ph name="SHORT_URL" />)</translation>
 <translation id="688706781007114099">Utilitza la ubicació</translation>
 <translation id="6888584790432772780">Chrome ha simplificat aquesta pàgina perquè sigui més fàcil de llegir. A més, ha recuperat la pàgina original amb una connexió no segura.</translation>
@@ -4002,6 +4007,7 @@ Detalls addicionals:
 <translation id="7337706099755338005">No està disponible a la teva plataforma.</translation>
 <translation id="733923710415886693">El certificat del servidor no s'ha divulgat mitjançant la Transparència de certificats.</translation>
 <translation id="73398226265793546">Botó del mode IA. Activa'l per fer preguntes al mode IA a la Cerca de Google.</translation>
+<translation id="7343620778718789463">Documents d'identitat</translation>
 <translation id="7346048084945669753">Està afiliat:</translation>
 <translation id="7346062987309535530">Estris per menjar</translation>
 <translation id="7346081071264046066">"Respon afirmativament a aquesta invitació de casament amb entusiasme"</translation>
@@ -4176,6 +4182,7 @@ Detalls addicionals:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Voleu suprimir la targeta de crèdit de Chrome?</translation>
 <translation id="7569983096843329377">Negre</translation>
+<translation id="7570862164055912832">Números Redress</translation>
 <translation id="7571813784389228510">Mode IA de Google</translation>
 <translation id="7574998639136359461">Equipament d'esports d'hivern</translation>
 <translation id="7575207903026901870">Botó Suprimeix el suggeriment, prem Retorn per suprimir aquest suggeriment</translation>
@@ -4683,6 +4690,7 @@ Detalls addicionals:
 <translation id="8381674639488873545">Aquests càrrecs poden ser únics o recurrents i és possible que no s'indiquin d'una manera evident. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Pantalla completa automàtica</translation>
 <translation id="838307841291975086">Vehicles familiars</translation>
+<translation id="838953173259347825">Obtén respostes més personalitzades compartint automàticament les pestanyes obertes d'aquesta finestra si estan relacionades amb aquest fil de discussió. Pots activar aquesta opció per a tots els fils de discussió a</translation>
 <translation id="8389532092404711541">Preu habitual: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehicles personalitzats i d'alt rendiment</translation>
 <translation id="8390725133630534698">La política de l'administrador no permet compartir contingut de <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>
@@ -4965,6 +4973,7 @@ Detalls addicionals:
 <translation id="8861482055962701239">No s'ha pogut desar aquesta informació a Google Wallet. S'ha desat a Chrome en aquest dispositiu. Chrome t'oferirà desar-la a Wallet la propera vegada que l'utilitzis.</translation>
 <translation id="8863218129525348270">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta al dispositiu</translation>
 <translation id="8864939224504814334">Vestits i roba formal</translation>
+<translation id="8865650218866129025">Vols compartir automàticament les pestanyes obertes per obtenir millors respostes en aquest fil de discussió?</translation>
 <translation id="8866132857352163524">Bandes sonores</translation>
 <translation id="8866481888320382733">Hi ha hagut un error en analitzar la configuració de la política</translation>
 <translation id="8866928039507595380">Plegat</translation>

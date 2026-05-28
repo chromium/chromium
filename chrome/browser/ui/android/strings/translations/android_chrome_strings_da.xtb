@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, fane i tilstanden integreret billede</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Gendan 1 vindue}one{Gendan # vindue}other{Gendan # vinduer}}</translation>
 <translation id="1126696498560056882">Administrer konti på denne enhed</translation>
 <translation id="1135018701024399762">Inkognitotilstand sørger for, at din internetaktivitet er privat, så andre, der bruger din enhed, ikke kan se den</translation>
 <translation id="113752097246673894">Hvis du vil have dine bogmærker m.m. på alle dine enheder, skal du logge ind i Chrome som <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1877073879466606884">Den profil, du er logget ind på, er en administreret profil. Din administrator kan foretage ændringer i dine profilindstillinger via fjernadgang, analysere oplysninger om browseren via rapportering og udføre andre nødvendige opgaver.</translation>
 <translation id="1879904908408734349">Loginfeltet i bunden er lukket</translation>
 <translation id="1883903952484604915">Mine filer</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> foreslåede elementer på listen ovenfor.</translation>
 <translation id="189358972401248634">Andre sprog</translation>
 <translation id="1899175549411605574">Felt i bunden med prisinfo</translation>
 <translation id="1900260903084164610">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
 <translation id="3167258285411721858">Du kan anmode om mobilwebsitet for <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg og lyden slået fra</translation>
+<translation id="3183941812169784232">Vil du gendanne alle vinduer?</translation>
 <translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3189635831478931757">Fanegruppe: <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Vil du lukke det aktuelle vindue?</translation>
@@ -722,6 +723,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4164642020717536140">Hurtig og sikker webbrowsing</translation>
 <translation id="4165077084524712774">Flere værktøjer</translation>
 <translation id="4170577491341606575">Henter dine data\u2026</translation>
+<translation id="4176838562184310003">Chrome blev ikke lukket korrekt og kan prøve at gendanne dine mistede vinduer og faner. Nogle vinduer kan være minimeret, når de gendannes.</translation>
 <translation id="4177222230309051052">Få alle dine bogmærker</translation>
 <translation id="4177501066905053472">Annonceemner</translation>
 <translation id="417865198503699526">Søg efter en indstilling</translation>

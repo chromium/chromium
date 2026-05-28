@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Ajaloo sünkroonimine</translation>
 <translation id="1111673857033749125">Siin kuvatakse teie teistes seadmetes salvestatud järjehoidjad.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pilt-pildis vaheleht</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Taasta üks aken}other{Taasta # akent}}</translation>
 <translation id="1126696498560056882">Selles seadmes olevate kontode haldamine</translation>
 <translation id="1135018701024399762">Inkognito režiim hoiab teie sirvimise privaatsena teiste eest, kes teie seadet kasutavad</translation>
 <translation id="113752097246673894">Kõigis seadmetes oma järjehoidjatele ja muule juurdepääsuks logige Chrome'i sisse kontoga <ph name="EMAIL" />.</translation>
@@ -195,7 +196,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1877073879466606884">Profiil, millele olete sisse logitud, on hallatud profiil. Teie administraator saab teha teie profiili seadetes distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke toiminguid.</translation>
 <translation id="1879904908408734349">Sisselogimise alumine leht on suletud</translation>
 <translation id="1883903952484604915">Minu failid</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> soovitatud üksust ülalolevas loendis.</translation>
 <translation id="189358972401248634">Teised keeled</translation>
 <translation id="1899175549411605574">Hinnastatistika alumine leht</translation>
 <translation id="1900260903084164610">Jätkates kinnitate, et nõustute <ph name="BEGIN_TOS_LINK" />teenusetingimustega<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3166827708714933426">Vahelehe ja akna otseteed</translation>
 <translation id="3167258285411721858">Saate taotleda hosti <ph name="HOST_NAME" /> mobiilisaiti</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud vaigistatud inkognito vaheleht</translation>
+<translation id="3183941812169784232">Kas taastada kõik aknad?</translation>
 <translation id="3187472288455401631">Reklaamide mõõtmine</translation>
 <translation id="3189635831478931757">Vahelehegrupp <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Kas sulgeda praegune aken?</translation>
@@ -722,6 +723,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4164642020717536140">Kiire ja turvaline veebisirvimine</translation>
 <translation id="4165077084524712774">Rohkem tööriistu</translation>
 <translation id="4170577491341606575">Teie asjade toomine…</translation>
+<translation id="4176838562184310003">Chrome ei sulgunud õigesti ja võib proovida teie kaotatud aknad ja vahelehed taastada. Mõned aknad võivad taastamisel olla minimeeritud.</translation>
 <translation id="4177222230309051052">Hankige kõik oma järjehoidjad</translation>
 <translation id="4177501066905053472">Reklaamiteemad</translation>
 <translation id="417865198503699526">Otsige seadet.</translation>

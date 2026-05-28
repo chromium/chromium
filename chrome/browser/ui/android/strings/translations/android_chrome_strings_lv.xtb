@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Vēstures sinhronizēšana</translation>
 <translation id="1111673857033749125">Šeit būs redzamas grāmatzīmes, kuras esat saglabājis citās ierīcēs.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" /> ir cilne, kas tiek rādīta režīmā “Attēls attēlā”</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Atjaunot 1 logu}zero{Atjaunot # logus}one{Atjaunot # logu}other{Atjaunot # logus}}</translation>
 <translation id="1126696498560056882">Pārvaldīt kontus šajā ierīcē</translation>
 <translation id="1135018701024399762">Inkognito režīmā jūsu pārlūkošana ir privāta un nav redzama citiem ierīces lietotājiem.</translation>
 <translation id="113752097246673894">Pierakstieties pārlūkā Chrome ar kontu <ph name="EMAIL" />, lai varētu piekļūt grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
@@ -195,7 +196,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1877073879466606884">Profils, kurā esat pierakstījies, ir pārvaldīts profils. Administrators var attāli veikt izmaiņas jūsu profila iestatījumos, analizēt informāciju par pārlūku, izmantojot pārskatus, kā arī veikt citus nepieciešamos uzdevumus.</translation>
 <translation id="1879904908408734349">Pierakstīšanās ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="1883903952484604915">Mani faili</translation>
-<translation id="1889626070177134359">Iepriekš redzamajā sarakstā ieteikto vienumu skaits: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="189358972401248634">Citas valodas</translation>
 <translation id="1899175549411605574">Cenu ieskatu ekrāna apakšdaļas lapa</translation>
 <translation id="1900260903084164610">Turpinot jūs piekrītat <ph name="BEGIN_TOS_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3166827708714933426">Ciļņu un logu īsinājumtaustiņi</translation>
 <translation id="3167258285411721858">Varat pieprasīt vietnes <ph name="HOST_NAME" /> versiju mobilajām ierīcēm.</translation>
 <translation id="3181145110929454111">Piespraustā inkognito cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tās skaņa ir izslēgta</translation>
+<translation id="3183941812169784232">Vai atjaunot visus logus?</translation>
 <translation id="3187472288455401631">Reklāmu novērtēšana</translation>
 <translation id="3189635831478931757">Ciļņu grupa “<ph name="GROUP_TITLE" />”</translation>
 <translation id="3200536777393523575">Vai aizvērt pašreizējo logu?</translation>
@@ -722,6 +723,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4164642020717536140">Ātri un droši pārlūkojiet tīmekli</translation>
 <translation id="4165077084524712774">Vairāk rīku</translation>
 <translation id="4170577491341606575">Notiek jūsu satura iegūšana\u2026</translation>
+<translation id="4176838562184310003">Pārlūks Chrome netika pareizi izslēgts, un tas var mēģināt atjaunot pazaudētos logus un cilnes. Atjaunošanas laikā daži logi var tikt minimizēti.</translation>
 <translation id="4177222230309051052">Iegūstiet visas savas grāmatzīmes</translation>
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
 <translation id="417865198503699526">Meklēt iestatījumu</translation>

@@ -196,7 +196,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1877073879466606884">The profile that you're signed in to is a managed profile. Your administrator can make changes to your profile settings remotely, analyse information about the browser through reporting and perform other necessary tasks.</translation>
 <translation id="1879904908408734349">Sign-in bottom sheet is closed</translation>
 <translation id="1883903952484604915">My files</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> suggested items in list above.</translation>
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1899175549411605574">Price insights bottom sheet</translation>
 <translation id="1900260903084164610">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.</translation>

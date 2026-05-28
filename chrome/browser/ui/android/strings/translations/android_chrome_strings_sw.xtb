@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Usawazishaji wa historia</translation>
 <translation id="1111673857033749125">Alamisho zilizohifadhiwa katika vifaa vyako vingine zitaonekana hapa.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Kichupo cha Kupachika Picha Ndani ya Picha Nyingine</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Rejesha dirisha 1}other{Rejesha madirisha #}}</translation>
 <translation id="1126696498560056882">Dhibiti akaunti kwenye kifaa hiki</translation>
 <translation id="1135018701024399762">Kutumia faraghani hufanya hali yako ya kuvinjari iwe ya faragha ili isionekane na wengine wanaotumia kifaa chako</translation>
 <translation id="113752097246673894">Ili upate alamisho zako na mengineyo kwenye vifaa vyako vyote, ingia katika Chrome ukitumia <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1877073879466606884">Umetumia wasifu unaodhibitiwa kuingia katika akaunti. Msimamizi wako anaweza kufanya mabadiliko kwenye mipangilio ya wasifu wako akiwa mbali, kuchanganua taarifa kuhusu kivinjari kupitia kuripoti na kufanya majukumu mengine muhimu.</translation>
 <translation id="1879904908408734349">Safu ya chini ya kuingia katika akaunti imefungwa</translation>
 <translation id="1883903952484604915">Faili Zangu</translation>
-<translation id="1889626070177134359">Vipengee <ph name="SUGGESTIONS_COUNT" /> vilivyopendekezwa katika orodha iliyo hapo juu.</translation>
 <translation id="189358972401248634">Lugha zingine</translation>
 <translation id="1899175549411605574">Safu ya chini ya maarifa ya bei</translation>
 <translation id="1900260903084164610">Kwa kuendelea, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3166827708714933426">Njia za mikato ya vichupo na vidirisha</translation>
 <translation id="3167258285411721858">Unaweza kuomba tovuti ya kifaa cha mkononi ya<ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Umechagua Mara Nyingi Kichupo cha Faragha Ulichobandika na Kuzima Sauti</translation>
+<translation id="3183941812169784232">Ungependa kurejesha madirisha yote?</translation>
 <translation id="3187472288455401631">Upimaji wa matangazo</translation>
 <translation id="3189635831478931757">Kikundi cha vichupo cha <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Je, ungependa kufunga dirisha ulilofungua sasa?</translation>
@@ -722,6 +723,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4164642020717536140">Kuvinjari kwa haraka na kwa usalama</translation>
 <translation id="4165077084524712774">Zana zaidi</translation>
 <translation id="4170577491341606575">Inakusanya data yako\u2026</translation>
+<translation id="4176838562184310003">Chrome haikuzimwa ipasavyo na inaweza kujaribu kurejesha madirisha na vichupo vyako vilivyopotea. Huenda baadhi ya madirisha yakawekwa kwenye upauzana wakati yatarejeshwa.</translation>
 <translation id="4177222230309051052">Pata alamisho zako zote</translation>
 <translation id="4177501066905053472">Mada za matangazo</translation>
 <translation id="417865198503699526">Tafuta mipangilio</translation>

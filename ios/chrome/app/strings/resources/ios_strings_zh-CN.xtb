@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">复制图片</translation>
 <translation id="1606899876897213121">关闭近期活动摘要</translation>
 <translation id="1612754831519568745">安全浏览功能目前处于关闭状态。该功能可保护您免受危险网站、下载内容和扩展程序的侵害。</translation>
+<translation id="1617300545081951343">须遵守<ph name="BEGIN_LINK" />《Google 条款》<ph name="END_LINK" /><ph name="BEGIN_LINK" />《韩国位置信息条款》<ph name="END_LINK" />和<ph name="BEGIN_LINK" />《隐私权声明》<ph name="END_LINK" />。Gemini 是一款 AI 工具，可能会出现错误（包括与人相关的信息）。</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
 <translation id="1629162218487290695">验证身份…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">您将退出账号，而且浏览数据将被删除</translation>
 <translation id="3124568093781685165">与家人分享您的密码</translation>
 <translation id="3130863904455712965">历史记录和其他内容</translation>
+<translation id="3130973487775218359">观看视频：<ph name="BEGIN_LINK" />关于生成式 AI 必须了解的 5 个要点<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">保存身份纠正识别号</translation>
 <translation id="3132584647087998639">导入数据</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">OCSP 签名</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
 <translation id="4310738531374808763">自定义首页</translation>
+<translation id="4316794575239200608">您与 Gemini 的对话以及您的 <ph name="BEGIN_LINK" />Google Workspace 数据<ph name="END_LINK" />不会经过人工审核，也不会用于改进生成式 AI 模型。</translation>
 <translation id="4320848494125124980">最近用过</translation>
 <translation id="4322394346347055525">关闭其他标签页</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="4632655012900268062">自定义卡片</translation>
 <translation id="4634124774493850572">使用密码</translation>
+<translation id="4634633632339959267">对话内容会接受审核，并用于改进 Google AI。<ph name="BEGIN_LINK" />了解您有哪些选择。<ph name="END_LINK" /><ph name="BEGIN_LINK" />与您所在位置有关的信息<ph name="END_LINK" />也会存储在活动记录中。</translation>
 <translation id="4636930964841734540">信息</translation>
 <translation id="4641425577292284174">了解您是否已使用最安全的设置，或是否需要检查任何内容</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
@@ -1566,6 +1570,7 @@
 <translation id="6435236283694032571">添加到阅读清单</translation>
 <translation id="6435307030888827407">保持未登录状态</translation>
 <translation id="6436318499800111867">与我分享的日期：<ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031">请<ph name="BEGIN_LINK" />尊重他人隐私<ph name="END_LINK" />，只有征得对方同意后，才能在 Live 实时对话中添加对方或录下其声音。</translation>
 <translation id="6442697326824312960">取消固定标签页</translation>
 <translation id="6443118737398455446">过期日期无效</translation>
 <translation id="6444435711855078002">更多选项</translation>
@@ -1808,6 +1813,7 @@
 <translation id="7253951228444156601">正在检查密码…</translation>
 <translation id="7261217796641151584">共享分组</translation>
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
+<translation id="7270491814777319521">须遵守<ph name="BEGIN_LINK" />《Google 条款》<ph name="END_LINK" />和<ph name="BEGIN_LINK" />《Gemini 应用隐私权声明》<ph name="END_LINK" />。Gemini 是一款 AI 工具，可能会出现错误（包括与人相关的信息）。</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="728025568708172005">带我看看</translation>
 <translation id="7280980607183752256">无法导入此文件</translation>
@@ -2128,6 +2134,7 @@
 <translation id="8345328955902001853">{count,plural, =1{再完成 1 项任务即可升级}other{再完成 {count} 项任务即可升级}}</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
 <translation id="8349305172487531364">书签栏</translation>
+<translation id="8360164927489392419">您与 Live 模式互动的记录以及您与 Live 模式分享的内容会依据<ph name="BEGIN_LINK" />《Gemini 应用隐私权声明》<ph name="END_LINK" />保存和处理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{已导入 {count} 个书签}other{已导入 {count} 个书签}}</translation>
 <translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
@@ -2223,6 +2230,7 @@
 <translation id="8643403533759285912">删除分组</translation>
 <translation id="8647280737650867362">无法取消跟踪价格。</translation>
 <translation id="8654802032646794042">取消</translation>
+<translation id="8659875081143553823">请稍候</translation>
 <translation id="8660600697590740984">使用智能镜头搜索复制的图片</translation>
 <translation id="866266761389616183">喔唷，崩溃啦！</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>

@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Data aplikasi dapat berupa data yang telah disimpan oleh aplikasi (berdasarkan setelan developer), termasuk data seperti kontak, pesan, dan foto.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />Data cadangan tidak akan mengurangi kuota penyimpanan Drive Anda.<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />Anda dapat menonaktifkan layanan ini di Setelan.<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di pojok kiri bawah keyboard. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1073899992769346247">Ganti atau isi daya baterai</translation>
 <translation id="1081015718268701546">Aplikasi Linux saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="108486256082349153">Seluler: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">Tekan <ph name="LAUNCHER_KEY_NAME" /> + g kapan saja</translation>
 <translation id="130491383855577612">Berhasil mengganti file &amp; aplikasi Linux</translation>
 <translation id="1306549533752902673">APLIKASI YANG DIREKOMENDASIKAN</translation>
+<translation id="1306606229401759371">Ubah setelan</translation>
 <translation id="1310396869741602366">Ubah gaya bahasa</translation>
 <translation id="1312604459020188865">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">Tuas tepi atas dipilih, gunakan tombol panah untuk memindahkan</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">Simpan desktop untuk nanti</translation>
 <translation id="1383597849754832576">Tidak dapat mendownload file ucapan. Coba lagi nanti.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
+<translation id="1390113502208199250">Anda harus mereset perangkat ini ke setelan pabrik untuk menggunakan fitur Chrome Education Upgrade.</translation>
 <translation id="1391102559483454063">Aktif</translation>
 <translation id="1394698770495054737">Buram Penuh</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 hari lalu}other{# hari lalu}}</translation>
+<translation id="1403222014593521787">Tidak dapat terhubung ke proxy</translation>
 <translation id="1404963891829069586">Suara fokus</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan tombol panah untuk berpindah-pindah antar-tanggal.</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">Aktifkan akses lokasi</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dilepas pinnya</translation>
 <translation id="1831565490995294689">Pilih untuk membuka <ph name="APP_TO_OPEN" />.</translation>
+<translation id="1832511806131704864">Perubahan ponsel diperbarui</translation>
 <translation id="1838011306813517425">Setelan fokus</translation>
 <translation id="1838895407229022812">Cahaya Malam nonaktif.</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">Buka kunci dengan sidik jari</translation>
 <translation id="1891362123137972260">Ruang disk hampir habis. Kosongkan ruang disk.</translation>
 <translation id="1894024878080591367">Siapkan untuk bermain dengan keyboard</translation>
+<translation id="1896043844785689584">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di pojok kanan bawah keyboard. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1896383923047738322">Sesuaikan keyboard Anda</translation>
 <translation id="1904997243703671177">Jika Anda menonaktifkan Bluetooth, koneksi <ph name="DEVICE_COUNT" /> perangkat eksternal akan diputuskan dari <ph name="DEVICE_TYPE" />, termasuk:</translation>
 <translation id="1908992311423394684">Baru diinstal</translation>
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1918022425394817322">Kamera dipaskan ke pojok kanan atas</translation>
+<translation id="1919872106782726755">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di pojok kanan atas keyboard, di samping tombol Daya. Data sidik jari anak Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1920390473494685033">Kontak</translation>
 <translation id="1923539912171292317">Klik otomatis</translation>
 <translation id="1925320505152357008">kurang dari 1 menit</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">Simpan saja</translation>
 <translation id="2041220428661959602">Tingkat daya baterai: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Pintasan <ph name="SIX_PACK_KEY_NAME" /> saat ini nonaktif</translation>
+<translation id="204622017488417136">Perangkat Anda akan dikembalikan ke versi Chrome yang terpasang sebelumnya. Semua akun pengguna dan data lokal akan dihapus. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="204706822916043810">Memeriksa mesin virtual</translation>
 <translation id="2048554637254265991">Error saat memulai pengelola penampung. Coba lagi.</translation>
 <translation id="2048653237708779538">Tindakan tidak tersedia</translation>
@@ -412,12 +420,14 @@
 <translation id="2304702218354340897">Yakin ingin menonaktifkan fitur kontrol dengan wajah?</translation>
 <translation id="2305738328104302723">Daftar tugas Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: screenshot, download, dan file tersemat yang terbaru</translation>
+<translation id="2316433409811863464">Streaming Aplikasi</translation>
 <translation id="2318576281648121272">Hari ini <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">Untuk menggunakan aplikasi Android, isi daya baterai &amp; update <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, kategori hasil penelusuran</translation>
 <translation id="2322173485024759474">Mundur per huruf</translation>
 <translation id="2326112202058075478">Tampilkan lebih banyak emoji</translation>
 <translation id="2335091074961603075">Chromebook atau perangkat Bluetooth Anda menggunakan Bluetooth versi lama. Gunakan mikrofon internal untuk kualitas audio yang lebih baik.</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Ketuk tombol stilus di rak untuk mencatat, mengambil screenshot, serta menggunakan penunjuk laser, atau kaca pembesar.</translation>
 <translation id="2341729377289034582">Terkunci ke vertikal</translation>
 <translation id="2344032937402519675">Tidak dapat terhubung dengan server. Periksa koneksi jaringan Anda, lalu coba lagi. Jika Anda masih mengalami masalah, coba mulai ulang Chromebook.</translation>
@@ -442,6 +452,7 @@
 <translation id="2383521554963939360">Grup tab &amp; aplikasi</translation>
 <translation id="2386292613071805067">Pilih semuanya di halaman</translation>
 <translation id="2389423187722941333">Aktifkan/nonaktifkan Gemini</translation>
+<translation id="2390347491606624519">Tidak dapat terhubung ke proxy, harap login lagi</translation>
 <translation id="2392659840443812875">Tidak ada hotspot yang tersedia. Pastikan perangkat berada di sekitar dan Bluetooth diaktifkan.</translation>
 <translation id="2397416548179033562">Tampilkan Menu Chrome</translation>
 <translation id="240006516586367791">Kontrol media</translation>
@@ -483,17 +494,21 @@
 <translation id="2486214324139475545">Pratinjau <ph name="DESK_NAME" />. Desktop virtual aktif.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah ke resolusi <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tanpa mengonfirmasi, setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Gabung</translation>
+<translation id="2489829450872380594">Saat digunakan lagi, ponsel baru akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
 <translation id="2499445554382787206">Menu profil desktop virtual. <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">Kembali</translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
 <translation id="2504454902900101003">Tutup penyiapan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
 <translation id="2505378917951323738">Tidak dapat mengedit tugas. Coba lagi saat online.</translation>
 <translation id="2509468283778169019">CAPS LOCK aktif</translation>
+<translation id="2514326558286966059">Buka kunci lebih cepat dengan sidik jari</translation>
 <translation id="2514415433888497495">Hentikan <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">Buka opsi aksesibilitas</translation>
 <translation id="2516416533263263796">Fokus aktif, 10 menit lagi</translation>
 <translation id="2516637483312286228">Edit kontrol game</translation>
+<translation id="2517472476991765520">Pindai</translation>
 <translation id="252054055865191167">Alat penanda</translation>
 <translation id="2526581474998477112">Buka kunci jendela</translation>
 <translation id="2528111225373402384">Setelan hotspot</translation>
@@ -569,6 +584,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Hapus"</translation>
 <translation id="2750941250130734256">Jendela yang aktif dilepas kaitannya.</translation>
+<translation id="2755349111255270002">Reset <ph name="DEVICE_TYPE" /> ini</translation>
 <translation id="2761723519669354964">Buka item yang ditandai dari rak</translation>
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hingga <ph name="KEY_TWO" /></translation>
@@ -613,10 +629,12 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> yang lalu</translation>
 <translation id="2872353916818027657">Tukar monitor utama</translation>
 <translation id="2872961005593481000">Matikan</translation>
+<translation id="2876336351874743617">Jari 2</translation>
 <translation id="2876338922445400217">Perbesar tampilan di layar</translation>
 <translation id="2876760662374103627">Kontrol dengan wajah aktif</translation>
 <translation id="2878884018241093801">Tidak ada item baru-baru ini</translation>
 <translation id="2880541185262491188">Terlalu banyak percobaan memasukkan PIN. Tunggu <ph name="TIME_LEFT" />, lalu coba lagi</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> akan segera dimulai dan direset</translation>
 <translation id="2883271196820422439">Lanjutkan tombol mouse</translation>
 <translation id="2885950158625301909">Pelajari lebih lanjut</translation>
 <translation id="2891209721153296020">"Batalkan pilihan"</translation>
@@ -656,6 +674,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2993956882370897557">Mencoba menggunakan End? Gunakan</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Edit ukuran layar</translation>
+<translation id="3001835006423291524">Sentuh sensor sidik jari di pojok kanan bawah keyboard. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3009178788565917040">Keluaran</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="301282384882049174">Dibagikan oleh administrator Anda</translation>
@@ -678,6 +697,8 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3062298103034426069">Tidak didukung</translation>
 <translation id="3068622547379332530">Versi <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Rak di bagian kiri</translation>
+<translation id="3075144191779656260">Sentuh sensor sidik jari di sisi kiri <ph name="DEVICE_TYPE" />. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3075874217500066906">Anda perlu memulai ulang untuk memulai proses Powerwash. Setelah proses mulai ulang, Anda akan diminta untuk mengonfirmasi apakah ingin melanjutkan.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Luaskan menu</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -703,6 +724,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Jenis tugas kelas</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">Perangkat Anda akan direset dan semua akun pengguna serta data lokal akan dibuang. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="3130793786899299931">Ubah panjang</translation>
 <translation id="3134486240968249588">Beberapa hal yang perlu diingat</translation>
 <translation id="3139188263101386725">Gunakan pintasan yang diperbarui</translation>
@@ -719,6 +741,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3174897399179348329">Mencoba menggunakan Page Up? Gunakan</translation>
 <translation id="3176221688814061633">Chromebook atau perangkat Bluetooth Anda menggunakan Bluetooth versi lama. Aktifkan Resolusi Super Bluetooth atau gunakan mikrofon internal untuk mendapatkan kualitas audio yang lebih baik.</translation>
 <translation id="3181441307743005334">Mulai ulang dapat memerlukan waktu beberapa saat</translation>
+<translation id="3183700187146209259">Tidak dapat menginstal software pemindai</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Terhubung ke satu perangkat}other{Terhubung ke # perangkat}}</translation>
 <translation id="3203405173652969239">Tombol Akses diaktifkan</translation>
 <translation id="3204648577100496185">Data yang terkait dengan aplikasi ini dapat dihapus dari perangkat ini</translation>
@@ -766,6 +789,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3346728094401457853">Masukkan sandi perangkat untuk <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Pilih teks dari kursor ke akhir baris</translation>
 <translation id="3349345708646875009">Buka pengelola tugas</translation>
+<translation id="3353786022389205125">Aktifkan "Tampilkan layar kunci saat keluar dari mode tidur" lalu coba lagi</translation>
 <translation id="3364721542077212959">Alat stilus</translation>
 <translation id="3365281428003534650">Setel timer, tugas, dan musik</translation>
 <translation id="3365977133351922112">Ponsel terlalu jauh. Dekatkan ponsel Anda.</translation>
@@ -780,6 +804,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3394432020929931914">, diluaskan</translation>
 <translation id="3401474642070997151">Untuk menyesuaikan saran, klik kanan atau tekan &amp; tahan saran</translation>
 <translation id="3405101454990027959">Aktifkan akses mikrofon</translation>
+<translation id="3407967630066378878">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di sisi kiri <ph name="DEVICE_TYPE" /> ini. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="3409584356742878290">Tampilkan atau sembunyikan pemeriksa Developer Tools</translation>
 <translation id="3410336247007142655">Tampilkan setelan tema gelap</translation>
 <translation id="3413817803639110246">Belum ada notifikasi</translation>
@@ -919,9 +944,11 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
 <translation id="3743775386021959186">Fokus aktif, <ph name="REMAINING_TIME" /> lagi</translation>
 <translation id="3750403286520637847">Sembunyikan saran cuaca</translation>
+<translation id="3752253558646317685">Minta anak Anda mengangkat dan menyentuhkan jari secara berulang untuk menyimpan sidik jari</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Data aplikasi dapat berupa data yang telah disimpan oleh aplikasi (berdasarkan setelan developer), termasuk data seperti kontak, pesan, dan foto.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Data cadangan tidak akan mengurangi kuota penyimpanan Drive anak Anda.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Anda dapat menonaktifkan layanan ini di Setelan.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620"><ph name="PHONE_NAME" /> Anda sekarang dapat membuka kunci <ph name="DEVICE_TYPE" /> ini juga.</translation>
 <translation id="3756485814916578707">Mentransmisikan layar</translation>
 <translation id="3765841382945324995">Pintasan <ph name="SIX_PACK_KEY_NAME" /> diperbarui dari <ph name="OLD_SHORTCUT" /> menjadi <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
@@ -939,6 +966,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3799080171973636491">Anda menekan pintasan keyboard untuk kaca pembesar layar penuh. Ingin mengaktifkannya?</translation>
 <translation id="3804737937830804242">Ciutkan kamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Tidak ada hasil lainnya.}other{# emoji. Tidak ada hasil lainnya.}}</translation>
+<translation id="381202950560906753">Tambahkan lainnya</translation>
 <translation id="3822403841174077928">Tidak dapat menyalin dengan pemformatan</translation>
 <translation id="3824621460022590830">Token pendaftaran perangkat tidak valid. Hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
@@ -953,6 +981,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3848526302597027234">Mengakses izin berikut:</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
+<translation id="3857807444929313943">Angkat jari, lalu sentuhkan lagi</translation>
 <translation id="3859364108019690">Tidak dapat men-streaming aplikasi</translation>
 <translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
@@ -971,6 +1000,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3923221004758245114">Hapus <ph name="VM_NAME" /> dari <ph name="DEVICE_TYPE" /> Anda? Tindakan ini akan menghapus semua aplikasi dan data di virtual machine tersebut.</translation>
 <translation id="3923494859158167397">Tidak ada jaringan seluler yang disiapkan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuat acara.</translation>
+<translation id="3926002189479431949">Ponsel Smart Lock diubah</translation>
 <translation id="3927049937406914450">Cuaca tidak tersedia karena akses lokasi dinonaktifkan. Anda dapat mengubahnya di setelan.</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3934456833412894880">Pengisian daya adaptif aktif. Daya baterai Anda hanya akan diisi sampai 80% untuk memperpanjang masa pakai baterai, dan diisi penuh jika Anda memerlukannya.</translation>
@@ -1030,6 +1060,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4113030288477039509">Dikelola oleh administrator</translation>
 <translation id="4114315158543974537">Aktifkan Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116704186509653070">Buka lagi</translation>
 <translation id="411881149140864134">Aktifkan desktop di sisi kiri</translation>
 <translation id="4119928251231465047">Terlalu banyak percobaan memasukkan PIN</translation>
 <translation id="412298498316631026">jendela</translation>
@@ -1097,6 +1128,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4279490309300973883">Mencerminkan</translation>
 <translation id="4280601795273309128">Update keamanan telah berakhir. Upgrade perangkat Anda.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
+<translation id="4282196459431406533">Smart Lock diaktifkan</translation>
 <translation id="4283888303416325161">Masukkan sandi untuk keamanan tambahan</translation>
 <translation id="4285498937028063278">Lepaskan</translation>
 <translation id="428715201724021596">Menghubungkan ke profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
@@ -1122,6 +1154,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4338109981321384717">Kaca pembesar</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Dibisukan</translation>
 <translation id="4351244548802238354">Tutup dialog</translation>
+<translation id="435527878592612277">Pilih foto Anda</translation>
 <translation id="4356872429719185452">Tampilkan detail hotspot. Hotspot sedang diaktifkan.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> Merekam</translation>
 <translation id="4368227575116094370">Buat Spreadsheet Google</translation>
@@ -1156,6 +1189,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi penting}other{# notifikasi penting}}</translation>
 <translation id="4450893287417543264">Jangan tampilkan lagi</translation>
 <translation id="4451374464530248585">Pintasan keyboard Alt + Panah Bawah telah diubah. Untuk menggunakan tombol Page Down, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Bawah.</translation>
+<translation id="4453430595102511050">Sentuh sensor sidik jari di pojok kanan atas keyboard. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="445765352722456792">Sesuaikan saran</translation>
 <translation id="4458688154122353284">Hentikan perekaman layar</translation>
 <translation id="445923051607553918">Bergabung dengan jaringan Wi-Fi</translation>
@@ -1172,6 +1206,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4485506555414638855">Tutup penyiapan untuk melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="4491109536499578614">Gambar</translation>
 <translation id="4493468155686877504">Direkomendasikan (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">Ikon tanda seru</translation>
 <translation id="450584155212756404">Saluran Dev</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Masukan</translation>
@@ -1181,6 +1216,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4527045527269911712">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding.</translation>
 <translation id="4531536770443562276">Hanya tersedia ukuran layar penuh</translation>
 <translation id="4533343294786968049">Mengisi daya baterai Anda. Baterai akan terisi penuh pada <ph name="FULLY_CHARGE_TIME" />.</translation>
+<translation id="4534661889221639075">Coba lagi.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> sampai penuh</translation>
 <translation id="4538824937723742295">Ambil screenshot dalam layar penuh</translation>
 <translation id="4539127209940689201">Cetak halaman saat ini</translation>
@@ -1196,6 +1232,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4560576029703263363">Aktif</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">Instal update &amp; aplikasi. Dengan melanjutkan, Anda setuju bahwa perangkat ini juga dapat otomatis mendownload serta menginstal update dan aplikasi dari Google, operator Anda, dan produsen perangkat Anda, yang mungkin menggunakan data seluler. Beberapa aplikasi tersebut mungkin menawarkan pembelian dalam aplikasi. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut instal otomatis Play<ph name="BEGIN_LINK1_END" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">Jari 3</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4566144812051858745">Tidak tertarik dengan saran apa pun</translation>
 <translation id="4569753163207712681">Lihat foto, media, dan aplikasi terbaru ponsel Anda</translation>
@@ -1208,7 +1245,9 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4596442969149038771"><ph name="USER" /> berbagi</translation>
+<translation id="4598776695426288251">Wi-Fi tersedia melalui beberapa perangkat</translation>
 <translation id="4610493115106525653">Output bagus</translation>
+<translation id="4611114513649582138">Koneksi data tersedia</translation>
 <translation id="4611292653554630842">Login</translation>
 <translation id="4613144866899789710">Membatalkan penginstalan Linux...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> terhubung</translation>
@@ -1323,6 +1362,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4937170330762390348">Dengan dikte, Anda dapat mengetik menggunakan suara. Tekan tombol dikte atau pilih ikon mikrofon di bagian bawah layar saat Anda berada di kolom teks. Bahasa dikte Anda disetel ke <ph name="LANGUAGE" />. File ucapan akan didownload sehingga Anda dapat menggunakan dikte secara offline. Anda dapat mengubah bahasa dikte kapan saja di Setelan &gt; Aksesibilitas.</translation>
 <translation id="4938176435186993759">Sembunyikan semua saran</translation>
 <translation id="4945196315133970626">Nonaktifkan notifikasi</translation>
+<translation id="4945439665401275950">Untuk menyiapkan sidik jari, minta anak Anda menyentuh tombol daya. Data sidik jari anak Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="4946376291507881335">Ambil gambar</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
 <translation id="4950800194215951939">Sesuaikan pengalaman bermain game Anda</translation>
@@ -1342,6 +1382,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4981175556418720939">Diubah pada <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Desktop 16</translation>
 <translation id="4989163558385430922">Lihat semua</translation>
+<translation id="4992458225095111526">Konfirmasi Powerwash</translation>
 <translation id="4995963195354861331">Dialog sambutan</translation>
 <translation id="4996265698919320288">Merekam</translation>
 <translation id="5003993274120026347">Kalimat berikutnya</translation>
@@ -1388,6 +1429,7 @@ Anda juga dapat menggunakan pintasan keyboard. Pertama, tandai teks, lalu tekan 
 <translation id="5121628974188116412">Membuka bagian bawah halaman</translation>
 <translation id="5122517996953421795">Pratinjau <ph name="DESK_NAME" />. Desktop virtual tidak aktif.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
+<translation id="5137349216872139332">Koneksi hotspot instan gagal</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, Penelusuran <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Ganti input audio?</translation>
 <translation id="5147567197700016471">Kunci dibuka</translation>
@@ -1461,6 +1503,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5322611492012084517">Tidak dapat menemukan ponsel Anda</translation>
 <translation id="5323994101633366939">Sembunyikan nama desktop</translation>
 <translation id="5327248766486351172">Nama</translation>
+<translation id="532943162177641444">Ketuk notifikasi di <ph name="PHONE_NAME" /> Anda untuk menyiapkan hotspot seluler yang dapat digunakan oleh perangkat ini.</translation>
 <translation id="5329548388331921293">Menghubungkan ...</translation>
 <translation id="5331975486040154427">Perangkat USB-C (port belakang sebelah kiri)</translation>
 <translation id="533282197239610265">Tampilkan perangkat transmisi</translation>
@@ -1471,6 +1514,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5356963482258194581">Berpindah-pindah antara tema gelap dan terang. Klik kanan desktop lalu pilih Wallpaper &amp; Gaya.</translation>
 <translation id="536019650977002321">Administrator tidak mengizinkan perekaman audio. Hubungi administrator untuk mendapatkan info selengkapnya.</translation>
 <translation id="5361524080961918551">File ucapan <ph name="LANGUAGE" /> didownload sebagian</translation>
+<translation id="5363109466694494651">Powerwash dan Kembalikan</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Buka tab ini</translation>
 <translation id="5364693579536176785">ruang penyimpanan</translation>
 <translation id="5369573834963677938">Kontrol wajah akan tersedia untuk pengguna lain di perangkat ini</translation>
@@ -1630,6 +1674,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5823239091726045201">Google Tasks di web</translation>
 <translation id="5825969630400862129">Setelan perangkat yang terhubung</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> lainnya</translation>
+<translation id="5830205393314753525">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Telusuri dengan Google</translation>
@@ -1647,6 +1692,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5876666360658629066">Masukkan kode orang tua</translation>
 <translation id="5881540930187678962">Siapkan Phone Hub nanti</translation>
 <translation id="588258955323874662">Layar Penuh</translation>
+<translation id="5886009770935151472">Jari 1</translation>
 <translation id="5887954372087850114">Jendela <ph name="WINDOW_TITLE" /> ditetapkan ke <ph name="DESK_TITLE" /> dan tidak lagi ditetapkan ke semua desktop lainnya</translation>
 <translation id="588817334757907802">Buka file di browser Chrome</translation>
 <translation id="5892014525522223653">Anda sedang offline.</translation>
@@ -1688,6 +1734,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> dari <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Tandai item berikutnya di rak</translation>
 <translation id="6015573907265691211">Tandai selesai</translation>
+<translation id="6016551720757758985">Konfirmasi Powerwash dengan kembali ke versi sebelumnya</translation>
 <translation id="6018164090099858612">Keluar dari mode transmisi</translation>
 <translation id="6019566113895157499">Pintasan Keyboard</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
@@ -1736,6 +1783,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="612734058257491180">Asisten Google tidak tersedia dalam sesi tamu.</translation>
 <translation id="6127395413317891856">Anda sedang offline. Periksa koneksi dan coba lagi.</translation>
 <translation id="6129953537138746214">Space</translation>
+<translation id="6132714462430777655">Lewati pendaftaran sekolah?</translation>
 <translation id="6136872094979134163">Tidak dapat mengambil berita Steam untuk Chromebook.</translation>
 <translation id="6137566720514957455">Buka dialog hapus untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Apa yang ingin Anda fokuskan?</translation>
@@ -1770,6 +1818,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> offline. Sambungkan ke internet, lalu coba lagi.</translation>
 <translation id="6220928844947387476">Anda kini dapat merekam diri Anda dan layar secara bersamaan</translation>
 <translation id="622484624075952240">Bawah</translation>
+<translation id="6225475702458870625">Koneksi data tersedia dari <ph name="PHONE_NAME" /> Anda</translation>
 <translation id="6228457605945141550">Mengurangi kecerahan</translation>
 <translation id="623116199192908855">Transmisikan layar dari Chromebook</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
@@ -1786,6 +1835,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6274422179279280249">Sisipkan link, emoji, dan lainnya. Anda juga bisa mendapatkan bantuan menulis dengan AI Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> memerlukan nama pengguna dan sandi.</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
 <translation id="6285871695023807425">Tambahkan ke Kalender</translation>
 <translation id="628699625505156622">Gunakan lokasi. Izinkan aplikasi, situs, dan layanan ChromeOS serta Android yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat ini. Akurasi Lokasi memberikan lokasi yang lebih akurat untuk aplikasi dan layanan Android. Agar dapat melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel dari perangkat ini untuk melakukan crowdsource lokasi sinyal nirkabel. Hal ini digunakan tanpa mengidentifikasi individu mana pun untuk meningkatkan akurasi lokasi serta layanan yang berbasis lokasi, serta untuk meningkatkan, menyediakan, dan mengelola layanan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut cara menggunakan lokasi<ph name="END_LINK1" /></translation>
@@ -1801,6 +1851,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6317369057005134371">Menunggu jendela aplikasi...</translation>
 <translation id="6319058840130157106">Bergerak mundur antara pojok kanan bawah, Peluncur, kolom URL, kolom bookmark, situs yang terbuka, dan download</translation>
 <translation id="6319503618073410818">Lihat detail di browser</translation>
+<translation id="6322370287306604163">Buka kunci lebih cepat dengan sidik jari</translation>
 <translation id="6324334979701518365">Tidak dapat meluncurkan aplikasi Chrome yang tidak didukung. Beri tahukan masalah ini kepada administrator Anda.</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6325525973963619867">Gagal</translation>
@@ -1810,6 +1861,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> adalah sesi terkelola yang dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Jika Anda lupa PIN, coba pulihkan pengguna ini.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> terhubung</translation>
+<translation id="6345418402353744910">Perlu nama pengguna dan sandi Anda untuk proxy <ph name="PROXY" /> agar admin dapat mengonfigurasi jaringan Anda</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, lalu <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SARAN APLIKASI</translation>
 <translation id="6352082849089527770">Jaringan tidak dikenal</translation>
@@ -1829,6 +1881,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6414618057231176439">Pilih versi <ph name="VM_NAME" /> yang akan diinstal.</translation>
 <translation id="641469293210305670">Instal Update dan Aplikasi</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
+<translation id="6418160186546245112">Mengembalikan ke versi <ph name="IDS_SHORT_PRODUCT_NAME" /> yang terpasang sebelumnya</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6418511932144861495">Instal update penting</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1898,6 +1951,7 @@ Baru diinstal</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera dipaskan ke pojok kiri bawah. Bertentangan dengan platform sistem.</translation>
 <translation id="6605415194043280389">Fokus aktif</translation>
+<translation id="6608773371844092260">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di sisi kanan <ph name="DEVICE_TYPE" /> ini. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="6612802754306526077">Mode perekaman layar dipilih</translation>
 <translation id="6612889377159412215">subtugas</translation>
@@ -1920,6 +1974,7 @@ Baru diinstal</translation>
 <translation id="6650742588569439432">Tidak dapat memuat item.</translation>
 <translation id="6650933572246256093">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Masukkan kunci sandi ini pada perangkat tersebut: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Sandi</translation>
+<translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> dan kembalikan ke versi sebelumnya.</translation>
 <translation id="666343722268997814">Membuka menu klik kanan untuk item yang ditandai</translation>
 <translation id="6665545700722362599">Berikan izin ke situs, aplikasi, atau ekstensi untuk menggunakan layanan lokasi, mikrofon perangkat, kamera, atau fitur lainnya</translation>
 <translation id="6667908387435388584">Hubungkan ke hotspot ponsel, nonaktifkan suara dan temukan perangkat, serta lihat tab Chrome terbaru yang dibuka di ponsel</translation>
@@ -1947,6 +2002,7 @@ Baru diinstal</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera dan mikrofon sedang digunakan</translation>
 <translation id="6739144137573853180">BUKA SETELAN</translation>
+<translation id="6745592621698551453">Perbarui sekarang</translation>
 <translation id="6747985245839783873">Daya baterai <ph name="PERCENTAGE" /> persen. Penghemat Baterai aktif.</translation>
 <translation id="6751052314767925245">Diterapkan oleh administrator Anda</translation>
 <translation id="6751826523481687655">Pelacakan performa diaktifkan</translation>
@@ -1954,6 +2010,7 @@ Baru diinstal</translation>
 <translation id="6753390234084146956">tab</translation>
 <translation id="6754918760968695779">Penyisipan Cepat</translation>
 <translation id="6757237461819837179">Tidak ada media yang diputar</translation>
+<translation id="6759193508432371551">Kembalikan ke setelan pabrik</translation>
 <translation id="6760438044935091345">Dasbor game</translation>
 <translation id="6768043681523654438">penyimpanan</translation>
 <translation id="6769195697113506406">Gambar disisipkan</translation>
@@ -1968,6 +2025,7 @@ Baru diinstal</translation>
 <translation id="6792351896138862473">Tidak dapat meluncurkan aplikasi kios yang tidak didukung. Beri tahukan masalah ini kepada administrator Anda.</translation>
 <translation id="679368458793552943">Perbesar saat kaca pembesar diaktifkan</translation>
 <translation id="6794287755901682422">Item ini memiliki: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797493596609571643">Ups, ada yang tidak beres.</translation>
 <translation id="6797745268063125932">Tetap aktifkan</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
 <translation id="6802687695197837794">Tindakan ini akan mengizinkan akses untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi dan situs yang memiliki izin kamera dan mikrofon</translation>
@@ -1981,6 +2039,7 @@ Baru diinstal</translation>
 <translation id="682971198310367122">Kebijakan privasi Google</translation>
 <translation id="6836499262298959512">File berbahaya</translation>
 <translation id="6837621009301897464">Untuk mengambil screenshot, tekan</translation>
+<translation id="6848716236260083778">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari. Data sidik jari anak Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6852052252232534364">Klik untuk mengaktifkan</translation>
 <translation id="6852628153543175788">Tambahkan 10 menit</translation>
 <translation id="6855029042976311970">Baru saja diedit</translation>
@@ -2089,6 +2148,7 @@ Baru diinstal</translation>
 <translation id="7188494361780961876">Menu dipindahkan ke pojok kiri atas layar.</translation>
 <translation id="7198435252016571249">Kamera dipaskan ke pojok kanan bawah. Bertentangan dengan platform sistem.</translation>
 <translation id="7219573373513695352">Tidak ada perangkat yang terhubung</translation>
+<translation id="7228056665272655255">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di pojok kanan atas keyboard. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="7228968829656641943">Pilih untuk menelusuri layar saya. Tekan tab, lalu spasi untuk menggunakan navigasi keyboard.</translation>
 <translation id="7229029500464092426">Memori <ph name="AVAILABLE_MEMORY" /> | Total <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">Membatalkan pemulihan Linux</translation>
@@ -2103,6 +2163,7 @@ Baru diinstal</translation>
 <translation id="7258828758145722155">Diedit kemarin</translation>
 <translation id="726276584504105859">Tarik ke sini untuk menggunakan layar terpisah</translation>
 <translation id="7264788308526527464">Kurangi <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267875682732693301">Angkat dan sentuhkan jari secara berulang untuk menambahkan bagian lain dari sidik jari Anda</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Gunakan alat screenshot di setelan cepat untuk mengambil screenshot</translation>
 <translation id="7301826272005790482">Tutup saran jendela</translation>
@@ -2127,6 +2188,7 @@ Baru diinstal</translation>
 <translation id="735745346212279324">VPN terputus</translation>
 <translation id="7360036564632145207">Mengubah setelan perlindungan akses data untuk periferal dapat mengoptimalkan performa</translation>
 <translation id="736045644501761622">Setel wallpaper &amp; gaya</translation>
+<translation id="7361914392989692067">Sentuh tombol daya dengan jari Anda. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7368041336688136012">Anda harus berusia minimal 18 tahun untuk menggunakan fitur Bantu baca dan Bantu tulis, serta membuat gambar dengan AI.</translation>
 <translation id="7371404428569700291">Rekam jendela</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> memori tersedia dari total <ph name="TOTAL_MEMORY" /></translation>
@@ -2141,6 +2203,7 @@ Baru diinstal</translation>
 <translation id="7384028040782072252">Klik kanan di sembarang tempat untuk mengurutkan ulang aplikasi</translation>
 <translation id="7386767620098596324">Tombol koneksi jaringan. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Anda selalu dapat melakukan penyiapan nanti dari Setelan.</translation>
+<translation id="7400839060291901923">Siapkan koneksi di <ph name="PHONE_NAME" /> Anda</translation>
 <translation id="7401222354741467707">Ambil screenshot atau rekaman layar penuh</translation>
 <translation id="7401788553834047908">Mode Jangan Ganggu saat dalam mode Fokus</translation>
 <translation id="7405710164030118432">Untuk membuka kunci perangkat, masukkan kode akses orang tua Family Link</translation>
@@ -2157,6 +2220,7 @@ Baru diinstal</translation>
 <translation id="7457027286267861992">Kapasitas disk tidak cukup. Kosongkan lebih banyak kapasitas disk, lalu coba lagi. Kode error adalah <ph name="ERROR" />.</translation>
 <translation id="7459485586006128091">Karena error internal, hotspot telah dinonaktifkan. Coba hubungkan kembali dalam beberapa menit.</translation>
 <translation id="7461924472993315131">Sematkan</translation>
+<translation id="746216226901520237">Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="746232733191930409">Mode perekaman layar</translation>
 <translation id="7466449121337984263">Sentuh sensor</translation>
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
@@ -2211,6 +2275,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7588317312481506627">Disalin ke papan klip.</translation>
 <translation id="7593891976182323525">Telusuri atau Shift</translation>
+<translation id="7594725637786616550">Powerwash untuk mereset <ph name="DEVICE_TYPE" /> agar kembali seperti baru.</translation>
 <translation id="7595453277607160340">Untuk menggunakan aplikasi Android dan menjaga agar <ph name="DEVICE_TYPE" /> berfungsi dengan benar, login lagi dan update.</translation>
 <translation id="7598054670902114203">Ringkasan penggunaan CPU, <ph name="CPU_USEAGE" />%. Suhu <ph name="TEMPERATURE" /> derajat Celsius, kecepatan saat ini: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Menyisipkan hasil yang dipilih</translation>
@@ -2231,6 +2296,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7632948528260659758">Aplikasi kios berikut gagal memperbarui:</translation>
 <translation id="7634566076839829401">Terjadi error. Coba lagi.</translation>
 <translation id="7634648064048557203">Kamera dipaskan ke pojok kanan bawah</translation>
+<translation id="7637253234491814483">Sentuh sensor sidik jari di pojok kanan atas keyboard, di samping tombol Daya. Data sidik jari Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7638572816805275740">Ambil screenshot atau rekaman layar jendela</translation>
 <translation id="7642106959537987271">mode inversi warna</translation>
 <translation id="7642647758716480637">Buka setelan untuk <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -2282,6 +2348,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="77747521138552256">Terlalu banyak percobaan memasukkan PIN. Tunggu <ph name="TIME_LEFT" /> dan coba masukkan PIN lagi, atau masukkan sandi untuk segera login.</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
+<translation id="7781335840981796660">Semua akun dan data lokal pengguna akan dihapus.</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7787212146956232129">Perangkat input dan output disetel. Buka Setelan untuk mengubah.</translation>
 <translation id="7792590255364786396">Dapat dilihat</translation>
@@ -2343,6 +2410,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943516765291457328">Aktifkan Bluetooth untuk memindai hotspot di sekitar</translation>
 <translation id="7944023924886109030">Lihat semua acara hari ini</translation>
+<translation id="7944847494038629732">Cabut kabel USB pemindai, lalu colokkan kembali untuk mencoba lagi</translation>
 <translation id="7945357288295809525">Tampilkan setelan aksesibilitas, "<ph name="ENABLED_FEATURES" />" diaktifkan.</translation>
 <translation id="7946681191253332687">Update keamanan yang diperpanjang tersedia</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" /></translation>
@@ -2374,6 +2442,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8004512796067398576">Penambahan</translation>
 <translation id="8005527720597583355">Mulai sesi Fokus</translation>
 <translation id="8008356846765065031">Internet terputus. Periksa koneksi internet Anda.</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> tidak dapat mengembalikan ke versi yang terpasang sebelumnya. Coba lagi untuk melakukan Powerwash perangkat Anda.</translation>
 <translation id="8015361438441228492">Tidak dapat mengedit tugas.</translation>
 <translation id="8027187124910699148">Lanjutkan saran grup</translation>
 <translation id="802782383769312836">Desktop virtual sebelumnya: <ph name="DESK_NAME" />. Desktop virtual <ph name="DESK_INDEX" /> dari <ph name="DESK_COUNT" />.</translation>
@@ -2452,15 +2521,18 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8249048954461686687">Folder OEM</translation>
 <translation id="825129991941217170">Tampilkan semua konten Google Drive</translation>
 <translation id="8261506727792406068">Hapus</translation>
+<translation id="8261625296061301062">Software pemindai diinstal</translation>
 <translation id="8262312463845990408">Putar/Jeda pemutaran</translation>
 <translation id="8268302343625273732">Lihat semua tugas di Google Classroom</translation>
 <translation id="8277261673056602147">Tandai teks di layar</translation>
+<translation id="8281886186245836920">Lewati</translation>
 <translation id="8282784978194352587">Anda berhasil!</translation>
 <translation id="8287009018010202411">Produktivitas</translation>
 <translation id="828708037801473432">Nonaktif</translation>
 <translation id="8289128870594824098">Ukuran disk</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8300451473979404345">Tuas dipilih, gunakan tombol panah untuk memindahkan</translation>
+<translation id="8301242268274839723">Sentuh sensor sidik jari di pojok kiri bawah keyboard. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock aktif</translation>
@@ -2480,10 +2552,12 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8371991222807690464">Performa periferal mungkin dibatasi dalam mode Tamu</translation>
 <translation id="8374601332003098278">Tekan Enter untuk merekam sebagian layar</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan ponsel Anda akan terhubung otomatis</translation>
+<translation id="8382677870544805359">Anda harus mereset perangkat ini ke setelan pabrik untuk menggunakan fitur perusahaan.</translation>
 <translation id="8382715499079447151">Perlindungan tampilan</translation>
 <translation id="8383614331548401927">Selamat Datang Kembali</translation>
 <translation id="838540623579162843">Dapatkan Music Premium</translation>
 <translation id="8388750414311082622">Halaman kerja terakhir tidak dapat dihapus.</translation>
+<translation id="8390392581097975659">Menginstal software pemindai</translation>
 <translation id="8394567579869570560">Orang tuamu mengunci perangkat ini</translation>
 <translation id="8401850874595457088">Buka menu bahasa</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2547,6 +2621,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="857201607579416096">Menu dipindahkan ke pojok kanan bawah layar.</translation>
 <translation id="8581946341807941670">Tekan <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, lalu klik link</translation>
 <translation id="8598235756057743477">Urutkan aplikasi menurut nama atau warna</translation>
+<translation id="8599864823732014237">Lewati pendaftaran perusahaan?</translation>
 <translation id="8609384513243082612">Membuka tab baru</translation>
 <translation id="861045123704058818">Aplikasi disusun menurut kategori untuk sementara</translation>
 <translation id="8612216344243590325">Simpan file penting di <ph name="HOLDING_SPACE_TITLE" />, bukan di desktop. Cukup tarik file ke <ph name="HOLDING_SPACE_TITLE" />.</translation>
@@ -2583,6 +2658,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8700087567921985940">Gunakan lokasi. Izinkan aplikasi dan layanan yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi serta layanan yang berbasis lokasi. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut lokasi<ph name="BEGIN_LINK1_END" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Mulai merekam. Setelah perekaman dimulai, gunakan Alt + Shift + L untuk menuju rak dan temukan tombol hentikan perekaman</translation>
 <translation id="8704155109538237473">Fokus pada jendela picture-in-picture</translation>
+<translation id="8705580154597116082">Wi-Fi tersedia melalui ponsel</translation>
 <translation id="870917907284186124">Aktifkan/nonaktifkan dikte (ketik dengan suara Anda)</translation>
 <translation id="8711169534266271368">Opsi dasbor game</translation>
 <translation id="8712637175834984815">Mengerti</translation>
@@ -2591,6 +2667,8 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8717459106217102612">Memilih kata atau huruf sebelumnya</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan layar penuh</translation>
+<translation id="8724405322205516354">Saat melihat ikon ini, gunakan sidik jari untuk identifikasi atau menyetujui pembelian.</translation>
+<translation id="8724409975248965964">Sidik jari ditambahkan</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8725214031272624704">Tampilkan daftar metode input yang tersedia</translation>
 <translation id="8730621377337864115">Selesai</translation>
@@ -2614,6 +2692,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="878215960996152260"><ph name="APP_NAME" />, Aplikasi Terinstal, Diblokir</translation>
 <translation id="8782565991310229362">Peluncuran aplikasi kios dibatalkan.</translation>
 <translation id="8785070478575117577">Hubungkan ke <ph name="NETWORK_NAME" /></translation>
+<translation id="8786824282808281903">Jika anak Anda melihat ikon ini, artinya sidik jari dapat digunakan untuk identifikasi atau untuk menyetujui pembelian.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Bergerak maju antara pojok kanan bawah, Peluncur, kolom URL, kolom bookmark, situs yang terbuka, dan download</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -2626,6 +2705,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8815390544836110344">Tekan pintasan screenshot, Ctrl + Shift + tombol mode Ringkasan</translation>
 <translation id="881757059229893486">Setelan Metode Input</translation>
 <translation id="8819728065740986820">Pengisian daya adaptif aktif</translation>
+<translation id="882204272221080310">Update firmware untuk tambahan keamanan.</translation>
 <translation id="8822104519413696986">Game ini adalah game sentuh</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>
 <translation id="8832513206237979203">Tampilkan atau sembunyikan kolom bookmark</translation>
@@ -2689,6 +2769,8 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8991648557324317894">Tekan fn + Penyisipan Cepat atau Shift untuk membatalkan.</translation>
 <translation id="899350903320462459">Buka kunci perangkat sebagai <ph name="LOGIN_ID" /> untuk melakukan tindakan notifikasi</translation>
 <translation id="8993733019280019776">Sedang berbicara? Mikrofon Anda nonaktif. Pilih mikrofon untuk mengaktifkannya.</translation>
+<translation id="8993945059918628059">Sentuh sensor sidik jari dengan jari Anda. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000185763019430629">Sentuh sensor sidik jari di sisi kanan <ph name="DEVICE_TYPE" />. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9000771174482730261">KELOLA PENYIMPANAN</translation>
 <translation id="9003374957546315126">Emoji dan lainnya</translation>
 <translation id="9005984960510803406">Membuka jendela Crosh</translation>
@@ -2702,6 +2784,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="9030515284705930323">Organisasi belum mengaktifkan Google Play Store untuk akun Anda. Hubungi administrator untuk informasi selengkapnya.</translation>
 <translation id="9030665205623277906">Ringkasan penggunaan CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">File Linux</translation>
+<translation id="9037818663270399707">Koneksi Anda tidak bersifat pribadi untuk semua traffic jaringan</translation>
 <translation id="9047624247355796468">Buka setelan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth tidak tersedia</translation>
 <translation id="9050999376345823055">Tekan "." untuk melepaskan</translation>

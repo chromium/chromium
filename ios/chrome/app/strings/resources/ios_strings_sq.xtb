@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">Kopjo imazhin</translation>
 <translation id="1606899876897213121">Mbyll përmbledhjen e aktivitetit të fundit</translation>
 <translation id="1612754831519568745">"Shfletimi i sigurt" është aktualisht joaktiv. Merr mbrojtjen nga sajtet, shkarkimet dhe shtesat e rrezikshme.</translation>
+<translation id="1617300545081951343">Zbatohen <ph name="BEGIN_LINK" />"Kushtet" tona<ph name="END_LINK" />, <ph name="BEGIN_LINK" />"Kushtet e shërbimit për vendndodhjen" për Korenë<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />Njoftimi ynë i privatësisë<ph name="END_LINK" />. Gemini është IA dhe mund të bëjë gabime, duke përfshirë edhe për njerëzit.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Zgjidh “Shto te 'Kalendari i Google'“ ose “Shto tek Apple Calendar“.</translation>
 <translation id="1629162218487290695">Verifiko që je ti…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">Do të dalësh nga llogaria dhe të dhënat e shfletimit do të fshihen</translation>
 <translation id="3124568093781685165">Ndaj fjalëkalimet e tua me familjen tënde</translation>
 <translation id="3130863904455712965">Historiku etj.</translation>
+<translation id="3130973487775218359">Shiko: <ph name="BEGIN_LINK" />5 gjërat që duhet të dish për IA-në gjeneruese<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Ruaj numrin e zhdëmtimit</translation>
 <translation id="3132584647087998639">Importo të dhënat e tua</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">Nënshkrim OCSP</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
 <translation id="4310738531374808763">Personalizo faqen tënde kryesore</translation>
+<translation id="4316794575239200608">Bashkëbisedimet e tua me Gemini dhe <ph name="BEGIN_LINK" />të dhënat e tua të Google Workspace<ph name="END_LINK" /> nuk do të shqyrtohen nga shqyrtues njerëzorë dhe nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="4320848494125124980">Të fundit</translation>
 <translation id="4322394346347055525">Mbyll skedat e tjera</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> fjalëkalime të ripërdorura</translation>
 <translation id="4632655012900268062">Personalizo kartat</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
+<translation id="4634633632339959267">Bisedat shqyrtohen dhe përdoren për të përmirësuar IA-në e Google. <ph name="BEGIN_LINK" />Mëso për zgjedhjet e tua.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Informacionet për vendndodhjen tënde<ph name="END_LINK" /> ruhen gjithashtu me aktivitetin tënd.</translation>
 <translation id="4636930964841734540">Informacion</translation>
 <translation id="4641425577292284174">Mëso nëse ke cilësimet më të sigurta ose duhet të rishikosh ndonjë gjë</translation>
 <translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
@@ -1566,6 +1570,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6435236283694032571">Shto te lista e leximit</translation>
 <translation id="6435307030888827407">Qëndro i paidentifikuar</translation>
 <translation id="6436318499800111867">Ndarë me mua më <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respekto privatësinë e të tjerëve<ph name="END_LINK" /> dhe kërko leje para se t'i regjistrosh ose t'i përfshish ata në një bisedë me Live.</translation>
 <translation id="6442697326824312960">Zhgozhdo skedën</translation>
 <translation id="6443118737398455446">Datë skadimi e pavlefshme</translation>
 <translation id="6444435711855078002">Më shumë opsione</translation>
@@ -1808,6 +1813,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7253951228444156601">Po kontrollon fjalëkalimet…</translation>
 <translation id="7261217796641151584">Ndaj grupin</translation>
 <translation id="7266578100016339897">Kjo të ndihmon të qëndrosh i organizuar. Mund ta ndryshosh këtë te cilësimet në çdo kohë.</translation>
+<translation id="7270491814777319521">Zbatohen <ph name="BEGIN_LINK" />"Kushtet" e Google<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />Njoftimi i privatësisë për aplikacionet Gemini<ph name="END_LINK" />. Gemini është IA dhe mund të bëjë gabime, duke përfshirë edhe për njerëzit.</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
 <translation id="728025568708172005">Fillo turneun</translation>
 <translation id="7280980607183752256">Ky skedar nuk mund të importohet</translation>
@@ -2128,6 +2134,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8345328955902001853">{count,plural, =1{Përfundo 1 detyrë tjetër për t'u ngjitur në nivel}other{Përfundo {count} detyra të tjera për t'u ngjitur në nivel}}</translation>
 <translation id="8348530355586151720">Trokit te menyja me tri pika</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
+<translation id="8360164927489392419">Regjistrimet e ndërveprimeve të tua me Live dhe përmbajtjet që ndan me të ruhen dhe përpunohen sipas <ph name="BEGIN_LINK" />Njoftimit të privatësisë për aplikacionet Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{U importua {count} faqeshënues}other{U importuan {count} faqeshënues}}</translation>
 <translation id="8363484128299778310">Rikuperimi i përkohshëm në rast problemi</translation>
 <translation id="8364563001733875155">Për të ndryshuar kodin tënd PIN, në fillim konfiguro kodin e kalimit në pajisjen tënde.</translation>
@@ -2223,6 +2230,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8643403533759285912">Fshi grupin</translation>
 <translation id="8647280737650867362">Monitorimi i çmimeve nuk mund të anulohej.</translation>
 <translation id="8654802032646794042">Anulo</translation>
+<translation id="8659875081143553823">Prit një sekondë</translation>
 <translation id="8660600697590740984">Imazhi i "Lentes" që kopjove</translation>
 <translation id="866266761389616183">Oh, mos!</translation>
 <translation id="8663764600409216912">Po përdor fjalëkalime që duken të vështira për t'u hamendësuar</translation>

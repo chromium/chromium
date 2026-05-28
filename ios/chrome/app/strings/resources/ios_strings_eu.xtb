@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> gisa hasi duzu saioa</translation>
 <translation id="1149401351239820326">Iraungitze-hilabetea</translation>
 <translation id="1150989369772528668">Egutegia</translation>
+<translation id="1161444134753003495">Hasi saioa</translation>
 <translation id="1161663161838091892">Aurrera egiteko, sinkronizatu fitxak eta historia</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditu-txartel}other{{count} kreditu-txartel}}</translation>
 <translation id="1164891049599601209">Webgune engainagarri batean idatzi duzu</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Kopiatu irudia</translation>
 <translation id="1606899876897213121">Itxi azkenaldiko jardueren laburpena</translation>
 <translation id="1612754831519568745">Arakatze segurua desaktibatuta dago. Lortu webgune, deskarga eta luzapen arriskutsuen aurkako babesa.</translation>
+<translation id="1617300545081951343">Gure <ph name="BEGIN_LINK" />Baldintzak<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreako Kokapen-baldintzak<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />Pribatutasun-oharra<ph name="END_LINK" /> aplikatzen dira. Gemini AA bidezko laguntzaile bat da eta baliteke akatsak egitea (jendeari buruzkoak barne).</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Hautatu "Gehitu Google Calendar-en" edo "Gehitu Apple Calendar-en".</translation>
 <translation id="1629162218487290695">Egiaztatu zeu zarela…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Zure saioa amaituko da, eta arakatze-datuak ezabatuko dira</translation>
 <translation id="3124568093781685165">Partekatu pasahitzak familiarekin</translation>
 <translation id="3130863904455712965">Historia eta beste</translation>
+<translation id="3130973487775218359">Ikusi: <ph name="BEGIN_LINK" />AA generatiboari buruz jakin beharreko 5 gauza<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Gorde Redress zenbakia</translation>
 <translation id="3132584647087998639">Inportatu datuak</translation>
 <translation id="313283613037595347">Sortu ezkutuko moduko fitxa bat.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> webgunean hasiko duzu saioa</translation>
 <translation id="3934905113567851655">Atximurkatu tamaina aldatzeko</translation>
+<translation id="393732545649378031">Kontua</translation>
 <translation id="3940195383040445971">Egin prezioen jarraipena fitxetan</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
 <translation id="3946483119107054883">Deskargatu CSV gisa</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP sinadura</translation>
 <translation id="4309403553630140242">Informazio gehiago lortzeko, sakatu birritan</translation>
 <translation id="4310738531374808763">Pertsonalizatu orri nagusia</translation>
+<translation id="4316794575239200608">Gemini-rekin dituzun elkarrizketak eta <ph name="BEGIN_LINK" />Google Workspace-ko datuak<ph name="END_LINK" /> ez dituzte berrikusiko gizakiek, eta ez dira erabiliko AA generatiboko ereduak hobetzeko.</translation>
 <translation id="4320848494125124980">Azkenak</translation>
 <translation id="4322394346347055525">Itxi beste fitxak</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> pasahitz erabili dira beste nonbait</translation>
 <translation id="4632655012900268062">Pertsonalizatu txartelak</translation>
 <translation id="4634124774493850572">Erabili pasahitza</translation>
+<translation id="4634633632339959267">Elkarrizketak berrikusiko dira, eta Google-ren AA hobetzeko erabiliko. <ph name="BEGIN_LINK" />Lortu zure aukerei buruzko informazioa.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Zure kokapenari buruzko informazioa<ph name="END_LINK" /> ere jarduerekin batera gordetzen da.</translation>
 <translation id="4636930964841734540">Informazioa</translation>
 <translation id="4641425577292284174">Jakin ezarpen seguruenak dituzun edo zerbait berrikusi behar duzun</translation>
 <translation id="4642472735733036929">Prezioaren jarraipena egiteari utzi zaio</translation>
@@ -1470,6 +1476,7 @@
 <translation id="6140948187512243695">Erakutsi xehetasunak</translation>
 <translation id="6144589619057374135">Ireki ${url} ezkutuko moduan</translation>
 <translation id="6146563240635539929">Bideoak</translation>
+<translation id="6148392728478209113">Live erabiltzen ari zara oraindik? Gemini-rekin hitz egiten jarraitzeko, sakatu Live botoia.</translation>
 <translation id="6151006591088192882">Desblokeatu ezkutuko moduko fitxak <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="6152340033632117531">Inaktibo</translation>
 <translation id="6152406514676263192">Zure interesetan oinarritutako eduki egokiena lortzeko, sinkronizatu.</translation>
@@ -1563,6 +1570,7 @@
 <translation id="6435236283694032571">Gehitu irakurketa-zerrendan</translation>
 <translation id="6435307030888827407">Ez hasi saioa</translation>
 <translation id="6436318499800111867">Nirekin partekatzeko data: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Errespetatu besteen pribatutasuna<ph name="END_LINK" /> eta eskatu baimena Live bidezko elkarrizketa bat grabatu edo halako batean sartu aurretik.</translation>
 <translation id="6442697326824312960">Kendu aingura fitxari</translation>
 <translation id="6443118737398455446">Iraungitze-datak ez du balio</translation>
 <translation id="6444435711855078002">Aukera gehiago</translation>
@@ -1805,6 +1813,7 @@
 <translation id="7253951228444156601">Pasahitzak egiaztatzen…</translation>
 <translation id="7261217796641151584">Partekatu taldea</translation>
 <translation id="7266578100016339897">Horrela, antolatuta edukiko duzu guztia. Ezarpenetan alda dezakezu hori.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google-ren Baldintzak<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />Gemini-ren aplikazioen Pribatutasun-oharra<ph name="END_LINK" /> aplikatzen dira. Gemini AA bidezko laguntzaile bat da eta baliteke akatsak egitea (jendeari buruzkoak barne).</translation>
 <translation id="7272437679830969316">Ezin da egiaztatu identitatea. Ez da kopiatu pasahitza.</translation>
 <translation id="728025568708172005">Eraman nazazue txangoan</translation>
 <translation id="7280980607183752256">Ezin da inportatu fitxategia</translation>
@@ -2125,6 +2134,7 @@
 <translation id="8345328955902001853">{count,plural, =1{Mailaz igotzeko, osatu beste zeregin bat}other{Mailaz igotzeko, osatu beste {count} zeregin}}</translation>
 <translation id="8348530355586151720">Sakatu 3 puntuko menua.</translation>
 <translation id="8349305172487531364">Laster-marken barra</translation>
+<translation id="8360164927489392419">Live-rekin dituzun interakzioen grabaketak eta harekin partekatzen duzun edukia <ph name="BEGIN_LINK" />Gemini-ren aplikazioen Pribatutasun-oharra<ph name="END_LINK" /> oinarri hartuta gordetzen eta prozesatzen dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} laster-marka inportatu da}other{{count} laster-marka inportatu dira}}</translation>
 <translation id="8363484128299778310">Aldi baterako berreskuratzea, arazorik balego</translation>
 <translation id="8364563001733875155">PINa aldatzeko, konfiguratu pasakode bat gailuan.</translation>
@@ -2220,6 +2230,7 @@
 <translation id="8643403533759285912">Ezabatu taldea</translation>
 <translation id="8647280737650867362">Ezin izan zaio utzi prezioaren jarraipena egiteari.</translation>
 <translation id="8654802032646794042">Utzi</translation>
+<translation id="8659875081143553823">Itxaron unetxo batean</translation>
 <translation id="8660600697590740984">Lens-en kopiatu duzun irudia</translation>
 <translation id="866266761389616183">Hutsegite bat izan da.</translation>
 <translation id="8663764600409216912">Asmatzen zailak diruditen pasahitzak darabiltzazu</translation>

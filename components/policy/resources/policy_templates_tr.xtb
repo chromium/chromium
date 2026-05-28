@@ -2943,6 +2943,7 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2853757230661166968">Uygulamaların, varsayılan sistem kısayollarını yakalamasına ve geçersiz kılmasına olanak tanır.</translation>
 <translation id="285480231336205327">Yüksek kontrast modunu etkinleştir</translation>
 <translation id="285627849510728211">Gelişmiş pil şarj modu gün yapılandırmasını ayarla</translation>
+<translation id="2856348870384508185">Chrome önerilerini devre dışı bırak</translation>
 <translation id="2856932965866813330">Kullanıcı kimlik bilgilerinin diğer kullanıcılarla paylaşılmasını etkinleştir</translation>
 <translation id="28600673996840076">Google profil resmini veya yerel resimleri kullanarak kullanıcı avatarı resminin özelleştirilmesine izin ver.</translation>
 <translation id="2864207379891420023">Uzantı yükleme izin listesini yapılandır</translation>
@@ -4107,6 +4108,21 @@ Politika, Etkin değerine ayarlanırsa SwiftShader, yazılım WebGL yedeği olar
 Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa ve donanım GPU hızlandırması kullanılamıyorsa WebGL bağlamı oluşturulamaz. WebGL bağlamı oluşturma hatasını düzgün şekilde ele almayan web sayfaları hatalı davranabilir.
 
 Bu politika geçicidir ve gelecekte kaldırılacaktır.</translation>
+<translation id="3607939601300521364"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasına ve otomatik gezinme özelliğini kullanmasına izin verilip verilmeyeceğini kontrol eder.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kurabilir ve otomatik gezinme özelliğini kullanabilir
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kuramaz veya otomatik gezinme özelliğini kullanamaz
+
+Uyarı: <ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasını ve otomatik gezinme özelliğini kullanmasını etkinleştirmek, <ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının etkin tarayıcı oturumunu kullanarak <ph name="PRODUCT_NAME" /> istemcilerinde bağımsız, çok adımlı işlemler yapmasına olanak tanır. Bu durum; kimlik bilgisi riskleri, Yerel Ağ Girişi ve içeriğe duyarlı sinyallerin kaybı gibi önemli güvenlik risklerini beraberinde getirir. Mevcut yönetim ve güvenlik denetimlerine uyulmayabilir.
+
+Yöneticilerin bu özelliği etkinleştirmeden önce kuruluşlarının ağ tehdit modelini, uyumluluk ve gizlilik kurallarını dikkatlice değerlendirmeleri önerilir.
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> uygulaması veya <ph name="PRODUCT_NAME" /> otomatik gezinme politikaları devre dışı bırakıldığında bu politikanın etkisi olmaz. Örneğin, <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> uygulaması <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından devre dışı bırakılabilir. <ph name="PRODUCT_NAME" /> üzerinde <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=gemini_in_chrome adresine göz atın.
+
+<ph name="PRODUCT_NAME" /> otomatik gezinme ve <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tüm ülkelerde veya dillerde kullanılamaz. Bu politikanın 0 - Etkin değerine ayarlanması, özelliğin etkinleştirileceğini garanti etmez. Bu durum, kullanılabilirliğe bağlıdır. Özelliğin kullanılabilirliğiyle ilgili daha fazla bilgi için Enterprise sürüm notlarını inceleyin: https://chromeenterprise.google/resources/release-notes/
+
+Politika ayarlanmazsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikası tarafından belirlenir.</translation>
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
 <translation id="3612482251405108708">Kilit ekranında yeniden online kimlik doğrulamayı otomatik olarak başlat</translation>
@@ -4140,15 +4156,6 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="3647212518036289905">Politikanın ayarlanması, HTTP kimlik doğrulaması için hangi GSSAPI kitaplığının kullanılacağını belirtir. Politikayı bir kitaplık adı veya tam yol olarak ayarlayın.
 
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, varsayılan bir kitaplık adı kullanır.</translation>
-<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
-ServiceWorkerAutoPreload özelliği, ServiceWorker önyükleme sürecini başlattığı sırada ana kaynak için bir ağ isteği gönderir.
-
-Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa
-<ph name="PRODUCT_NAME" />, ServiceWorkerAutoPreload'u etkinleştirir. Gezinme isteği, bazı senaryolarda (ör. ServiceWorker çalışmıyorsa) ServiceWorker başlatılırken otomatik olarak gönderilir.
-
-Politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, ServiceWorkerAutoPreload'u etkinleştirmez. Gezinme isteği her zaman ServiceWorker başlatıldıktan sonra gönderilir.
-
-Bu politika, özelliği kontrol etmek için geçici bir çözüm olup M144 sürümünde kaldırılacaktır.</translation>
 <translation id="3650122925429054129">Giriş ekranında fare imlecini vurgulamayı devre dışı bırak</translation>
 <translation id="365093517647222762">İlişkili kullanıcılar için <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> politikası tarafından izin verilen URL'lere ait web sitesi telemetri verilerini raporlar.
 
@@ -5169,6 +5176,7 @@ Bu, uygulama ve web sitelerine ait izin katmanının altındaki ek bir kontrol k
 Kullanıcılar, yöneticinin yaptığı seçimi geçersiz kılamaz. Politika ayarlanmadan bırakılırsa kullanıcılar, tüketici deneyimi yaşar. Bu da sistem konum ayarını istedikleri gibi değiştirebilecekleri ve varsayılan değerin <ph name="GLS_ALLOWED" /> olacağı anlamına gelir.
 
 Not: Bu politika ile birlikte <ph name="ARC_GLS_POLICY_NAME" /> politikasının desteği sonlandırılır. Ayrıca, bu politika ayarlandığında <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> artık <ph name="PRODUCT_OS_NAME" /> ürününde <ph name="ANDROID_NAME" /> konum tercihini etkilemez.</translation>
+<translation id="4340826578810728651"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasına ve otomatik gezinme özelliğini kullanmasına izin verilir.</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> politikasının ayarlanması, arama sağlayıcı tarafından desteklenen karakter kodlamalarını belirtir. Kodlamalar UTF-8, GB2312 ve ISO-8859-1 gibi kod sayfası adlarıdır. Bunlar, sağlandıkları sırada denenirler.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> politikası ayarlanmazsa UTF-8 kullanılır.</translation>
@@ -5906,6 +5914,13 @@ Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzant
 <translation id="4789450349513792856">Bu sitelerde pop-up'ları engelle</translation>
 <translation id="4790391579868456557">Aramada gerekli ve gerekli olmayan çerezleri kullan.</translation>
 <translation id="4790588245699320140">Google Asistan'ın ekran içeriğine erişmesine izin ver</translation>
+<translation id="4797001637482545491">Bu ayar, Chrome'un alakalı anlarda yapay zeka özellikleri önermesine olanak tanır.
+
+0/ayarlanmadı = Chrome önerileri, kullanıcılar için etkinleştirilir.
+
+1 = Chrome önerileri, kullanıcılar için devre dışı bırakılır.
+
+Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_suggestions adresindeki Yardım Merkezi makalesini inceleyin.</translation>
 <translation id="4799820756794591883">TLS 1.3 Eary Data, TLS el sıkışmasıyla aynı anda HTTP isteği göndermek için kullanılan bir TLS 1.3 uzantısıdır.
 
       Bu politika yapılandırılmazsa <ph name="PRODUCT_NAME" />, TLS 1.3 Early Data için varsayılan kullanıma sunma işlemini uygular.
@@ -6057,6 +6072,7 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, <ph name="DBSC_FEATURE_NAME
       - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise tarayıcının işlevi sınırlı olur.
 
       - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
+<translation id="4896469165628792802"><ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kurabilir ve otomatik gezinme özelliğini kullanabilir.</translation>
 <translation id="489760181463331251">Bu politika, Bellek Tasarrufu'nun tasarruf düzeyini değiştirir.
 
 Bu politika yalnızca Bellek Tasarrufu, ayarlardan veya <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> politikası aracılığıyla etkinleştirildiğinde geçerli olur ve sekmelerin ne zaman silineceğini belirlemek için buluşsal yöntemlerin kullanılma biçimini etkiler. Örneğin, etkin olmayan bir sekmeyi silmeden önce ömrünü kısaltmak bellek tasarrufu sağlayabilir ancak sekmelerin daha sık yeniden yükleneceği anlamına da gelir. Bu da kötü bir kullanıcı deneyimine ve daha fazla ağ trafiğine neden olabilir.
@@ -6899,6 +6915,7 @@ Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz mo
 Politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa seçilen öğretmenler seslerini altyazıya dönüştürüp transkripti öğrencilere gönderebilir.
 
 Politika, Yanlış değerine ayarlanırsa öğretmenler bu özelliğe erişemez.</translation>
+<translation id="5377484655498931153"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasına veya otomatik gezinme özelliğini kullanmasına izin verilmez.</translation>
 <translation id="5377606826822211923">Kullanıcı için güvenilmeyen kaynaklardan Android uygulaması kullanımının kontrolü</translation>
 <translation id="537786648513450280">Cihaz için güvenilmeyen kaynaklardan Android uygulaması kullanımının kontrolü</translation>
 <translation id="5378885577701865339">Paylaşılan pano özelliğini devre dışı bırak</translation>
@@ -8162,6 +8179,7 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
 <translation id="624219423122512710">Boşta Kalan Tarayıcı İşlemleri</translation>
 <translation id="6244061205361004687">Kullanıcının manuel olarak VPN bağlantısını kesmesine veya VPN'yi yapılandırmasına izin ver</translation>
 <translation id="6244210204546589761">Başlangıçta açılacak olan URL'ler</translation>
+<translation id="6244263962918757383">ChromeSuggestions ayarları</translation>
 <translation id="6245828368576563662">Bu politika, spesifik URL kalıplarıyla eşleşen web isteklerine özel HTTP başlıkları yerleştirmek için bir kural listesi tanımlanmasını sağlar. Bu politika tarafından ayarlanan başlıklar, başlangıçta istekte bulunan başlıkların yanı sıra kullanıcılar veya uzantılar tarafından yapılan değişikliklere göre önceliklidir.
 
 Bu politikanın yaygın kullanım alanlarından biri, özel başlıklar (ör. <ph name="EXAMPLE_HEADER_NAME" />) yerleştirerek kiracı erişim denetimlerini zorunlu kılmaktır.
@@ -11775,6 +11793,7 @@ kısayolları yapılandırmasına olanak tanır.</translation>
 
 Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğinde silinir. Politika 0 değerine ayarlanırsa anlık görüntü alınmaz</translation>
 <translation id="8446679541472571487">Oturum açma sırasında yapay zeka giriş ekranını göster</translation>
+<translation id="8451205236854734195">Chrome önerilerine izin ver</translation>
 <translation id="8451988835943702790">Ana sayfa olarak Yeni Sekme Sayfası'nı kullan</translation>
 <translation id="8452787853105404870">ChromeOS Flex iyileştirmelerini desteklemek için donanım verilerini Google'a gönder</translation>
 <translation id="8453218444172088993">Kullanıcılar için <ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarını devre dışı bırak.</translation>

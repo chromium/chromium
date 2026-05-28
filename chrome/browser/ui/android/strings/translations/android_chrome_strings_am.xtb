@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">ታሪክ አስምር</translation>
 <translation id="1111673857033749125">በሌሎች መሣሪያዎችዎ ላይ የተቀመጡ ዕልባቶችዎ እዚህ ብቅ ይላሉ።</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />፣ የሥዕል-ላይ-ሥዕል ትር</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 መስኮት ወደነበረበት መልስ}one{# መስኮት ወደነበረበት መልስ}other{# መስኮቶች ወደነበረበት መልስ}}</translation>
 <translation id="1126696498560056882">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያቀናብሩ</translation>
 <translation id="1135018701024399762">ማንነት የማያሳውቅ ሁነታ መሣሪያዎን ከሚጠቀሙ ሌሎች ሰዎች የአሰሳ ታሪክዎን ግላዊ አድርጎ ያቆያል</translation>
 <translation id="113752097246673894">ዕልባቶችዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chrome እንደ <ph name="EMAIL" /> ሆነው ይግቡ</translation>
@@ -195,7 +196,6 @@
 <translation id="1877073879466606884">እርስዎ የገቡበት መገለጫ የሚተዳደር መገለጫ ነው። አስተዳዳሪዎ በመገለጫዎ ቅንብሮች ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል።</translation>
 <translation id="1879904908408734349">የመለያ መግቢያ የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="1883903952484604915">የእኔ ፋይሎች</translation>
-<translation id="1889626070177134359">ከላይ ባለው ዝርዝር ውስጥ <ph name="SUGGESTIONS_COUNT" /> የተጠቆሙ ንጥሎች።</translation>
 <translation id="189358972401248634">ሌሎች ቋንቋዎች</translation>
 <translation id="1899175549411605574">የዋጋ ግንዛቤዎች የግርጌ ሉህ</translation>
 <translation id="1900260903084164610">በመቀጠል፣ በ<ph name="BEGIN_TOS_LINK" />የአገልግሎት ውል<ph name="END_TOS_LINK" /> ይስማማሉ።</translation>
@@ -510,6 +510,7 @@
 <translation id="3166827708714933426">የትር እና የመስኮት አቋራጮች</translation>
 <translation id="3167258285411721858">የ<ph name="HOST_NAME" />ን የተንቀሳቃሽ ስልክ ጣቢያ መጠየቅ ይችላሉ</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ፒን የተደረገ ድምፀ-ከል የተደረገ ማንነት የማያሳውቅ ትር</translation>
+<translation id="3183941812169784232">ሁሉም መስኮቶች ወደነበሩበት ይመለሱ?</translation>
 <translation id="3187472288455401631">የማስታወቂያ ልኬት</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> የትር ቡድን</translation>
 <translation id="3200536777393523575">የአሁን መስኮትዎ ይዘጋ?</translation>
@@ -722,6 +723,7 @@
 <translation id="4164642020717536140">ፈጣን እና ደኅንነቱ የተጠበቀ የድር አሰሳ</translation>
 <translation id="4165077084524712774">ተጨማሪ መሣሪያዎች</translation>
 <translation id="4170577491341606575">የእርስዎን ነገሮች በማግኘት ላይ\u2026</translation>
+<translation id="4176838562184310003">Chrome በትክክል አልተዘጋም እና የጠፉ መስኮቶችዎን እና ትሮችዎን ወደነበሩበት ለመመለስ መሞከር ይችላል። አንዳንድ መስኮቶች ወደነበሩበት ሲመለሱ ሊቀነሱ ይችላሉ።</translation>
 <translation id="4177222230309051052">ሁሉንም የእርስዎ እልባቶች ያግኙ</translation>
 <translation id="4177501066905053472">የማስታወቂያ ርዕሶች</translation>
 <translation id="417865198503699526">ቅንብር ይፈልጉ</translation>

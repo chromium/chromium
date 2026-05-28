@@ -539,6 +539,7 @@
 <translation id="2829172210806130158">جستجو در صفحه</translation>
 <translation id="2831109159746537587">برای جستجو کردن، دور عکس موردنظر دایره بکشید یا روی آن تک‌ضرب بزنید</translation>
 <translation id="2834399722155632105">۳. روی «گزینه‌های گذرواژه» تک‌ضرب بزنید</translation>
+<translation id="2834418947367581526">‏سلام، من Gemini هستم. درآستانه شروع کردن مکالمه Live هستیم که در آن می‌توانید تنها با صحبت کردن، درباره صفحه‌ای که در آن هستید سؤال بپرسید. اما قبل‌از اینکه شروع کنیم، نگاهی سریع به این اطلاعات مهم بیندازید.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2841013758207633010">زمان</translation>
 <translation id="284581348330507117">گذرواژه‌های متمایز ایجاد کنید</translation>
@@ -691,6 +692,7 @@
 <translation id="3447332786336558089">پس‌از خارج شدن از سیستم، زبانه‌ها بسته خواهند شد و داده‌های ذخیره‌نشده حساب از این دستگاه حذف خواهند شد. این داده‌ها می‌تواند شامل گذرواژه، سابقه، و موارد دیگر باشد.</translation>
 <translation id="3449029510150690417">گروه زبانه جدیدتان را با انتخاب نام و رنگ برای آن ایجاد کنید</translation>
 <translation id="345348365500626747">نشانی پیدا شد</translation>
+<translation id="3459644598174926977">‏ازطریق مکالمه Live با Gemini می‌توانید درباره محتوای صفحه‌ سؤال بپرسید، با صدای بلند بارش فکری داشته باشید و به گفتگوی دوطرفه بپردازید.</translation>
 <translation id="3464194322481586217">قیمت پیگیری نشد.</translation>
 <translation id="3469117812148449995">گزینه‌های ذخیره کردن گذرواژه</translation>
 <translation id="3472469028191701821">در زبانه جدید باز می‌شود</translation>
@@ -1142,7 +1144,7 @@
 <translation id="4992255726304765516">رنگ <ph name="COLOR" /> گروه زبانه</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5009127379503001909">ادامه مرور</translation>
-<translation id="5016205925109358554">Serif</translation>
+<translation id="5016205925109358554">سریف</translation>
 <translation id="5016420433031926653">ارسال به <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5020732097997376541">روی «نماد لنز» تک‌ضرب بزنید</translation>
@@ -2230,6 +2232,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8643403533759285912">حذف گروه</translation>
 <translation id="8647280737650867362">پیگیری قیمت لغو نشد.</translation>
 <translation id="8654802032646794042">لغو</translation>
+<translation id="8659875081143553823">لحظه‌ای صبر کنید</translation>
 <translation id="8660600697590740984">جستجوی تصویر کپی‌شده با «لنز»</translation>
 <translation id="866266761389616183">اوه، نه!</translation>
 <translation id="8663764600409216912">از گذرواژه‌هایی استفاده می‌کنید که حدس زدنشان سخت به‌نظر می‌رسد</translation>

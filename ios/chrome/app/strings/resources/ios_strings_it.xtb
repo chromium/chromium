@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
 <translation id="1149401351239820326">Mese di scadenza</translation>
 <translation id="1150989369772528668">Calendario</translation>
+<translation id="1161444134753003495">Accedi</translation>
 <translation id="1161663161838091892">Sincronizza schede e cronologia per continuare</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} carta di credito}other{{count} carte di credito}}</translation>
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Copia immagine</translation>
 <translation id="1606899876897213121">Chiudi riepilogo attività recente</translation>
 <translation id="1612754831519568745">Navigazione sicura è attualmente disattivata. Ricevi protezione da estensioni, download e siti pericolosi.</translation>
+<translation id="1617300545081951343">Si applicano i <ph name="BEGIN_LINK" />Termini<ph name="END_LINK" />, i <ph name="BEGIN_LINK" />Termini per la posizione coreani<ph name="END_LINK" /> e l‘<ph name="BEGIN_LINK" />Informativa sulla privacy<ph name="END_LINK" />. Gemini è un'AI e può commettere errori, anche in merito a persone.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1622717322707146952">Seleziona l'opzione "Aggiungi a Google Calendar" o "Aggiungi a Calendario Apple".</translation>
 <translation id="1629162218487290695">Verifica la tua identità…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Il tuo account verrà disconnesso e i dati di navigazione verranno eliminati</translation>
 <translation id="3124568093781685165">Condividi le password con la tua famiglia</translation>
 <translation id="3130863904455712965">Cronologia e altro ancora</translation>
+<translation id="3130973487775218359">Guarda: <ph name="BEGIN_LINK" />5 cose da sapere sull'AI generativa<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Salva Redress Number</translation>
 <translation id="3132584647087998639">Importa i dati</translation>
 <translation id="313283613037595347">Crea nuova scheda Incognito.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Nuova password per questo sito}other{Nuove password per questo sito}}</translation>
 <translation id="3933372629914873850">Accederai al sito <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pizzica per ridimensionare</translation>
+<translation id="393732545649378031">Account</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
 <translation id="3946483119107054883">Scarica in formato CSV</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">Firma OCSP</translation>
 <translation id="4309403553630140242">Tocca due volte per ulteriori informazioni</translation>
 <translation id="4310738531374808763">Personalizza la tua home page</translation>
+<translation id="4316794575239200608">Le tue conversazioni con Gemini e i tuoi <ph name="BEGIN_LINK" />dati di Google Workspace<ph name="END_LINK" /> non saranno esaminati da revisori umani né usati per migliorare i modelli di AI generativa.</translation>
 <translation id="4320848494125124980">Recenti</translation>
 <translation id="4322394346347055525">Chiudi le altre schede</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="4632655012900268062">Personalizza le schede</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
+<translation id="4634633632339959267">Le chat vengono esaminate e utilizzate per migliorare Google AI. <ph name="BEGIN_LINK" />Scopri di più sulle opzioni a tua disposizione.<ph name="END_LINK" /> Nella tua attività vengono memorizzate anche le <ph name="BEGIN_LINK" />informazioni sulla tua posizione<ph name="END_LINK" />.</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4641425577292284174">Scopri se hai le impostazioni più sicure o se devi controllare qualcosa</translation>
 <translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
@@ -1470,6 +1476,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6140948187512243695">Mostra dettagli</translation>
 <translation id="6144589619057374135">Apri ${url} in incognito</translation>
 <translation id="6146563240635539929">Video</translation>
+<translation id="6148392728478209113">Stai ancora usando Live? Tocca il pulsante Live per continuare a parlare con Gemini</translation>
 <translation id="6151006591088192882">Sblocca le schede Incognito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inattive</translation>
 <translation id="6152406514676263192">Sincronizza i contenuti più pertinenti in base ai tuoi interessi.</translation>
@@ -1563,6 +1570,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6435236283694032571">Aggiungi all'elenco di lettura</translation>
 <translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
 <translation id="6436318499800111867">Condivisi con me il: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Rispetta la privacy degli altri<ph name="END_LINK" /> e chiedi l'autorizzazione prima di registrarli o includerli in una chat Live.</translation>
 <translation id="6442697326824312960">Sblocca scheda</translation>
 <translation id="6443118737398455446">Data di scadenza non valida</translation>
 <translation id="6444435711855078002">Altre opzioni</translation>
@@ -1805,6 +1813,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7266578100016339897">In questo modo, è più semplice organizzarsi. Puoi modificare questa opzione nelle impostazioni in qualsiasi momento.</translation>
+<translation id="7270491814777319521">Si applicano i <ph name="BEGIN_LINK" />Termini Google<ph name="END_LINK" /> e l‘<ph name="BEGIN_LINK" />Informativa sulla privacy delle app Gemini<ph name="END_LINK" />. Gemini è un'AI e può commettere errori, anche in merito a persone.</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
 <translation id="728025568708172005">Avvia il tour</translation>
 <translation id="7280980607183752256">Impossibile importare questo file</translation>
@@ -2125,6 +2134,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8345328955902001853">{count,plural, =1{Completa 1 altra attività per salire di livello}other{Completa {count} altre attività per salire di livello}}</translation>
 <translation id="8348530355586151720">Tocca il menu con tre puntini</translation>
 <translation id="8349305172487531364">Barra dei preferiti</translation>
+<translation id="8360164927489392419">Le registrazioni delle interazioni con Live e i contenuti che condividi vengono salvati e trattati secondo l‘<ph name="BEGIN_LINK" />Informativa sulla privacy delle app Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} preferito importato}other{{count} preferiti importati}}</translation>
 <translation id="8363484128299778310">Recupero temporaneo in caso di problemi</translation>
 <translation id="8364563001733875155">Per cambiare il PIN, devi prima impostare un passcode sul dispositivo.</translation>
@@ -2220,6 +2230,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8643403533759285912">Elimina gruppo</translation>
 <translation id="8647280737650867362">Impossibile interrompere il monitoraggio del prezzo.</translation>
 <translation id="8654802032646794042">Annulla</translation>
+<translation id="8659875081143553823">Attendi un secondo</translation>
 <translation id="8660600697590740984">Immagine copiata da Lens</translation>
 <translation id="866266761389616183">Uffa!</translation>
 <translation id="8663764600409216912">Stai utilizzando password che sembrano difficili da indovinare</translation>

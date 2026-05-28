@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />App-gegevens kunnen alle gegevens zijn die een app heeft opgeslagen (op basis van de ontwikkelaarsinstellingen), waaronder gegevens zoals contacten, berichten en foto's.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />Back-upgegevens tellen niet mee voor de opslaglimiet van Drive.<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />Je kunt deze service uitzetten via Instellingen.<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor linksonder op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="1073899992769346247">Vervang de batterij of laad hem op</translation>
 <translation id="1081015718268701546">Linux-apps worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="108486256082349153">Mobiel: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">Druk op elk moment op <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="130491383855577612">Vervangen van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
+<translation id="1306606229401759371">Instellingen wijzigen</translation>
 <translation id="1310396869741602366">Toon wijzigen</translation>
 <translation id="1312604459020188865">Signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">Geselecteerde handgreep aan de bovenkant, gebruik de pijltoetsen om te verplaatsen</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">Bureau opslaan voor later</translation>
 <translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
+<translation id="1390113502208199250">Je moet dit apparaat terugzetten op de fabrieksinstellingen om de functies van Chrome Education Upgrade te gebruiken.</translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1394698770495054737">Volledige vervaging</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 dag geleden}other{# dagen geleden}}</translation>
+<translation id="1403222014593521787">Kan geen verbinding maken met de proxy</translation>
 <translation id="1404963891829069586">Focusgeluiden</translation>
 <translation id="1407069428457324124">Donker thema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gebruik de pijltoetsen om tussen datums te navigeren.</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">Locatietoegang aanzetten</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is losgemaakt</translation>
 <translation id="1831565490995294689">Selecteer dit om <ph name="APP_TO_OPEN" /> te openen.</translation>
+<translation id="1832511806131704864">Telefoonwijziging geüpdatet</translation>
 <translation id="1838011306813517425">Focusinstellingen</translation>
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
 <translation id="1840920496749066704">°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">Ontgrendelen met vingerafdruk</translation>
 <translation id="1891362123137972260">Er is zeer weinig schijfruimte beschikbaar. Maak ruimte vrij.</translation>
 <translation id="1894024878080591367">Instellen om met je toetsenbord te spelen</translation>
+<translation id="1896043844785689584">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsonder op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="1896383923047738322">Je toetsenbord aanpassen</translation>
 <translation id="1904997243703671177">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_COUNT" /> externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken, waaronder:</translation>
 <translation id="1908992311423394684">Nieuwe installatie</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1918022425394817322">Camera uitgelijnd op de rechterbovenhoek</translation>
+<translation id="1919872106782726755">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsboven op het toetsenbord aanraken, naast de aan/uit-knop. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="1920390473494685033">Contacten</translation>
 <translation id="1923539912171292317">Automatische klikken</translation>
 <translation id="1925320505152357008">minder dan 1 min</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="2041220428661959602">Batterijniveau: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> staat op dit moment uit</translation>
+<translation id="204622017488417136">Je apparaat wordt hersteld naar de vorige geïnstalleerde versie van Chrome. Alle gebruikersaccounts en lokale gegevens worden verwijderd. Dit kan niet ongedaan worden gemaakt.</translation>
 <translation id="204706822916043810">De virtuele machine wordt gecontroleerd</translation>
 <translation id="2048554637254265991">Fout bij starten van containerbeheer. Probeer het opnieuw.</translation>
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
@@ -372,6 +380,7 @@
 <translation id="2152796271648108398">Huidig weer</translation>
 <translation id="2152895518047545149">Het lijkt erop dat je niets hebt gemist. Knap werk!</translation>
 <translation id="2159568970844941445">Geen afbeeldingen in Bestanden</translation>
+<translation id="2160985496866145279">Bruschetta uitzetten</translation>
 <translation id="2161132820593978283">Probeer cameraframing, zodat je bij videogesprekken in het midden van het scherm te zien bent. Zet dit aan via Snelle instellingen.</translation>
 <translation id="216955976692983107">Venster met tegels voor formaat aanpassen naar rechts verplaatsen</translation>
 <translation id="2185166372312820725">Naar het vorige tabblad gaan</translation>
@@ -412,12 +421,14 @@
 <translation id="2304702218354340897">Weet je zeker dat je gezichtsbediening wilt uitzetten?</translation>
 <translation id="2305738328104302723">Google-takenlijst: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: recente schermopnamen, downloads en vastgezette bestanden</translation>
+<translation id="2316433409811863464">App-streaming</translation>
 <translation id="2318576281648121272">Vandaag <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">Je moet je <ph name="DEVICE_TYPE" /> opladen en updaten om Android-apps te gebruiken.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, zoekresultaatcategorie</translation>
 <translation id="2322173485024759474">Terug per letter</translation>
 <translation id="2326112202058075478">Meer emoji's tonen</translation>
 <translation id="2335091074961603075">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Gebruik de interne microfoon voor betere audiokwaliteit.</translation>
+<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Tik op de stylusknop op de plank om een notitie of screenshot te maken, of om de Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="2341729377289034582">Vergrendeld in verticale stand</translation>
 <translation id="2344032937402519675">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op.</translation>
@@ -442,6 +453,7 @@
 <translation id="2383521554963939360">App- en tabbladgroepen</translation>
 <translation id="2386292613071805067">Alles op pagina selecteren</translation>
 <translation id="2389423187722941333">Gemini aan-/uitzetten</translation>
+<translation id="2390347491606624519">Kan geen verbinding maken met proxy, log opnieuw in</translation>
 <translation id="2392659840443812875">Geen beschikbare hotspot. Zorg dat je telefoon in de buurt is en dat bluetooth aanstaat.</translation>
 <translation id="2397416548179033562">Chrome-menu bekijken</translation>
 <translation id="240006516586367791">Mediabediening</translation>
@@ -483,17 +495,21 @@
 <translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> is gewijzigd in een resolutie van <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zonder bevestiging worden de vorige instellingen hersteld over <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
+<translation id="2489829450872380594">De volgende keer wordt deze <ph name="DEVICE_TYPE" /> ontgrendeld met een nieuwe telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2499445554382787206">Menu voor bureauprofiel. <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">Terug</translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
 <translation id="2504454902900101003">Instellen van de weergave van recente foto's, media en meldingen van je telefoon sluiten</translation>
 <translation id="2505378917951323738">Kan taak niet bewerken. Probeer het opnieuw als je online bent.</translation>
 <translation id="2509468283778169019">CAPS LOCK staat aan</translation>
+<translation id="2514326558286966059">Sneller ontgrendelen met je vingerafdruk</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> stoppen. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">Toegankelijkheidsopties openen</translation>
 <translation id="2516416533263263796">Focus staat aan, nog 10 minuten</translation>
 <translation id="2516637483312286228">Gamebediening bewerken</translation>
+<translation id="2517472476991765520">Scannen</translation>
 <translation id="252054055865191167">Markeertool</translation>
 <translation id="2526581474998477112">De vensters ontgrendelen</translation>
 <translation id="2528111225373402384">Hotspot-instellingen</translation>
@@ -569,6 +585,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">'Verwijderen'</translation>
 <translation id="2750941250130734256">Actief venster losgemaakt.</translation>
+<translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
 <translation id="2761723519669354964">Gemarkeerd item openen vanuit plank</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> tot en met <ph name="KEY_TWO" /></translation>
@@ -613,10 +630,12 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2869095047958348710">Afgelopen <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Primaire monitor omwisselen</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
+<translation id="2876336351874743617">Vinger 2</translation>
 <translation id="2876338922445400217">Inzoomen op scherm</translation>
 <translation id="2876760662374103627">Gezichtsbediening actief</translation>
 <translation id="2878884018241093801">Geen recente items</translation>
 <translation id="2880541185262491188">Te veel pincodepogingen. Wacht <ph name="TIME_LEFT" /> en probeer het opnieuw.</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wordt zo meteen opnieuw gestart en opnieuw ingesteld.</translation>
 <translation id="2883271196820422439">Muistoetsen hervatten</translation>
 <translation id="2885950158625301909">Meer informatie</translation>
 <translation id="2891209721153296020">Deselecteren</translation>
@@ -656,6 +675,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2993956882370897557">Probeer je End te gebruiken? Gebruik</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
 <translation id="3001391739687111021">Schermformaat bewerken</translation>
+<translation id="3001835006423291524">Raak de vingerafdruksensor rechtsonder op je toetsenbord aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="301282384882049174">Gedeeld door je beheerder</translation>
@@ -678,6 +698,8 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3062298103034426069">Niet ondersteund</translation>
 <translation id="3068622547379332530">Versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Plank aan linkerkant</translation>
+<translation id="3075144191779656260">Raak de vingerafdruksensor aan de linkerkant van je <ph name="DEVICE_TYPE" /> aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
+<translation id="3075874217500066906">Apparaat moet opnieuw worden opgestart om met het Powerwash-proces te beginnen. Na het opnieuw opstarten word je gevraagd om te bevestigen dat je wilt doorgaan.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menu uitvouwen</translation>
 <translation id="3087734570205094154">Onderaan</translation>
@@ -703,6 +725,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Type schoolwerk</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">Je apparaat wordt opnieuw ingesteld en alle gebruikersaccounts en lokale gegevens worden verwijderd. Dit kan niet ongedaan worden gemaakt.</translation>
 <translation id="3130793786899299931">Lengte wijzigen</translation>
 <translation id="3134486240968249588">Een paar punten om rekening mee te houden</translation>
 <translation id="3139188263101386725">De geüpdatete sneltoets gebruiken</translation>
@@ -719,6 +742,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3174897399179348329">Probeer je Page Up te gebruiken? Gebruik</translation>
 <translation id="3176221688814061633">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Zet Bluetooth Super Resolution aan of gebruik de interne microfoon voor een betere audiokwaliteit.</translation>
 <translation id="3181441307743005334">Opnieuw opstarten kan even duren</translation>
+<translation id="3183700187146209259">Kan scannersoftware niet installeren</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Verbonden met een apparaat}other{Verbonden met # apparaten}}</translation>
 <translation id="3203405173652969239">Toegang via schakelaar staat aan</translation>
 <translation id="3204648577100496185">Gegevens die aan deze app zijn gekoppeld, kunnen van dit apparaat worden verwijderd</translation>
@@ -766,6 +790,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3346728094401457853">Voer het apparaatwachtwoord in voor <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Tekst vanaf cursor tot het einde van de regel selecteren</translation>
 <translation id="3349345708646875009">Taakbeheer openen</translation>
+<translation id="3353786022389205125">Zet 'Vergrendelscherm bekijken bij activering vanuit de slaapstand' aan en probeer het opnieuw</translation>
 <translation id="3364721542077212959">Stylustools</translation>
 <translation id="3365281428003534650">Stel een timer, taak en muziek in</translation>
 <translation id="3365977133351922112">Je telefoon is te ver weg. Breng je telefoon dichterbij.</translation>
@@ -780,6 +805,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3394432020929931914">, uitgevouwen</translation>
 <translation id="3401474642070997151">Als je suggesties wilt aanpassen, klik je met de rechtermuisknop op een suggestie of houd je je vinger op een suggestie</translation>
 <translation id="3405101454990027959">Microfoontoegang aanzetten</translation>
+<translation id="3407967630066378878">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor aan de linkerkant van deze <ph name="DEVICE_TYPE" /> aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="3409584356742878290">Developer Tools-inspector tonen of verbergen</translation>
 <translation id="3410336247007142655">Instellingen voor donker thema bekijken</translation>
 <translation id="3413817803639110246">Er is nog niets te zien</translation>
@@ -919,9 +945,11 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3743775386021959186">Focus staat aan, nog <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Weersuggestie verbergen</translation>
+<translation id="3752253558646317685">Laat je kind de vinger steeds optillen om de vingerafdruk te bewaren</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />App-gegevens kunnen alle gegevens zijn die een app heeft opgeslagen (op basis van de ontwikkelaarsinstellingen), waaronder gegevens zoals contacten, berichten en foto's.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Back-upgegevens tellen niet mee voor de Drive-opslaglimiet van je kind.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Je kunt deze service uitzetten via Instellingen.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620">Je <ph name="PHONE_NAME" /> kan deze <ph name="DEVICE_TYPE" /> nu ook ontgrendelen.</translation>
 <translation id="3756485814916578707">Scherm casten</translation>
 <translation id="3765841382945324995">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> is geüpdatet van <ph name="OLD_SHORTCUT" /> naar <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Vandaag bewerkt</translation>
@@ -939,6 +967,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3799080171973636491">Je hebt op de sneltoets van het vergrootglas voor volledig scherm gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="3804737937830804242">Camera samenvouwen</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Geen andere resultaten.}other{# emoji's. Geen andere resultaten.}}</translation>
+<translation id="381202950560906753">Nog een toevoegen</translation>
 <translation id="3822403841174077928">Kan niet kopiëren met opmaak</translation>
 <translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
@@ -953,6 +982,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3848526302597027234">Krijg toegang tot de volgende rechten:</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
+<translation id="3857807444929313943">Raak de sensor opnieuw aan</translation>
 <translation id="3859364108019690">Kan geen apps streamen</translation>
 <translation id="3861638017150647085">De gebruikersnaam '<ph name="USERNAME" />' is niet beschikbaar</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
@@ -971,6 +1001,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3923221004758245114"><ph name="VM_NAME" /> verwijderen van je <ph name="DEVICE_TYPE" />? Hierdoor worden alle apps en gegevens in de virtuele machine verwijderd.</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, afspraken laden.</translation>
+<translation id="3926002189479431949">Smart Lock-telefoon gewijzigd</translation>
 <translation id="3927049937406914450">Weer is niet beschikbaar omdat locatietoegang uitstaat. Je kunt dit wijzigen in de instellingen.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934456833412894880">Aangepast opladen staat aan. Je batterij blijft op 80% om de batterijduur te verlengen en wordt volledig opgeladen wanneer je dat nodig hebt.</translation>
@@ -1030,6 +1061,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4113030288477039509">Beheerd door je beheerder</translation>
 <translation id="4114315158543974537">Phone Hub aanzetten</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116704186509653070">Opnieuw openen</translation>
 <translation id="411881149140864134">Bureau aan de linkerkant activeren</translation>
 <translation id="4119928251231465047">Te veel pincodepogingen</translation>
 <translation id="412298498316631026">venster</translation>
@@ -1097,6 +1129,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
+<translation id="4282196459431406533">Smart Lock staat aan</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
@@ -1122,6 +1155,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, uit</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
+<translation id="435527878592612277">Selecteer je foto</translation>
 <translation id="4356872429719185452">Toon de hotspotdetails. Hotspot wordt aangezet.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> opnemen</translation>
 <translation id="4368227575116094370">Google-spreadsheet maken</translation>
@@ -1156,6 +1190,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrijke melding}other{# belangrijke meldingen}}</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4451374464530248585">De sneltoets Alt + pijl-omlaag is veranderd. Als je de toets Page Down wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omlaag.</translation>
+<translation id="4453430595102511050">Raak de vingerafdruksensor rechtsboven op je toetsenbord aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="445765352722456792">Suggesties aanpassen</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
 <translation id="445923051607553918">Aanmelden bij wifi-netwerk</translation>
@@ -1172,6 +1207,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4485506555414638855">Instellen van de weergave van recente foto's, media, meldingen en apps van je telefoon sluiten</translation>
 <translation id="4491109536499578614">Afbeelding</translation>
 <translation id="4493468155686877504">Aanbevolen (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">Uitroeptekenpictogram</translation>
 <translation id="450584155212756404">Dev-kanaal</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
@@ -1181,6 +1217,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
 <translation id="4531536770443562276">Alleen volledig scherm is beschikbaar</translation>
 <translation id="4533343294786968049">De batterijduur wordt verlengd. De batterij is om <ph name="FULLY_CHARGE_TIME" /> volledig opgeladen.</translation>
+<translation id="4534661889221639075">Probeer het opnieuw.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="4538824937723742295">Screenshot van volledig scherm maken</translation>
 <translation id="4539127209940689201">Huidige pagina afdrukken</translation>
@@ -1196,6 +1233,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">Installeer updates en apps. Als je doorgaat, ga je ermee akkoord dat dit apparaat ook automatisch updates of apps van Google, je provider of de fabrikant van je apparaat kan downloaden en installeren, en dat hiervoor misschien mobiele data worden gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden. <ph name="BEGIN_LINK1" />Meer informatie over automatische installatie via Play<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">Vinger 3</translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4566144812051858745">Niet geïnteresseerd in suggesties</translation>
 <translation id="4569753163207712681">Recente foto's, media en meldingen van je telefoon bekijken</translation>
@@ -1208,7 +1246,9 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
 <translation id="4596442969149038771">Gedeeld door <ph name="USER" /></translation>
+<translation id="4598776695426288251">Wifi beschikbaar via meerdere apparaten</translation>
 <translation id="4610493115106525653">Goede uitvoer</translation>
+<translation id="4611114513649582138">Gegevensverbinding beschikbaar</translation>
 <translation id="4611292653554630842">Inloggen</translation>
 <translation id="4613144866899789710">Linux-installatie annuleren…</translation>
 <translation id="462160925400706389"><ph name="NAME" /> gekoppeld</translation>
@@ -1323,6 +1363,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4937170330762390348">Met dicteren kun je typen met je stem. Druk op de dicteertoets of selecteer het microfoontje onderaan het scherm in een tekstveld. Je dicteertaal is ingesteld op <ph name="LANGUAGE" />. Spraakbestanden worden gedownload zodat je dicteren offline kunt gebruiken. Je kunt de dicteertaal op elk moment wijzigen via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
+<translation id="4945439665401275950">Laat je kind de aan/uit-knop aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="4946376291507881335">Opnemen</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
 <translation id="4950800194215951939">Je gamebeleving aanpassen</translation>
@@ -1342,6 +1383,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4981175556418720939">Aangepast: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="4989163558385430922">Alles bekijken</translation>
+<translation id="4992458225095111526">Powerwash bevestigen</translation>
 <translation id="4995963195354861331">Welkomstdialoogvenster</translation>
 <translation id="4996265698919320288">Opnemen</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
@@ -1388,6 +1430,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5121628974188116412">Naar onderkant van pagina gaan</translation>
 <translation id="5122517996953421795">Voorbeeld van <ph name="DESK_NAME" />. Inactief bureau.</translation>
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
+<translation id="5137349216872139332">Verbinding met instant hotspot mislukt</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, zoeken in <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Audio-invoer wisselen?</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
@@ -1461,6 +1504,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5322611492012084517">Kan je telefoon niet vinden</translation>
 <translation id="5323994101633366939">Bureaunaam verbergen</translation>
 <translation id="5327248766486351172">Naam</translation>
+<translation id="532943162177641444">Tik op de melding op je <ph name="PHONE_NAME" /> om de mobiele hotspot in te stellen die door dit apparaat kan worden gebruikt.</translation>
 <translation id="5329548388331921293">Verbinden...</translation>
 <translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="533282197239610265">Cast-apparaten tonen</translation>
@@ -1471,6 +1515,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5356963482258194581">Schakelen tussen het donkere en lichte thema. Klik met de rechtermuisknop op het bureaublad en selecteer Achtergrond en stijl.</translation>
 <translation id="536019650977002321">Je beheerder staat geen audio-opnamen toe. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5361524080961918551">Spraakbestanden voor <ph name="LANGUAGE" /> gedeeltelijk gedownload</translation>
+<translation id="5363109466694494651">Powerwash en terugzetten</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Naar dit tabblad gaan</translation>
 <translation id="5364693579536176785">opslagruimte</translation>
 <translation id="5369573834963677938">Gezichtsbediening is beschikbaar voor andere gebruikers op het apparaat</translation>
@@ -1630,6 +1675,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5823239091726045201">Google Tasks op het web</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5830180081891717894">Nog <ph name="WINDOWS" /></translation>
+<translation id="5830205393314753525">Kan <ph name="APP_NAME" /> niet openen</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="5840658767386246331">Zoeken met Google</translation>
@@ -1647,6 +1693,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5876666360658629066">Voer de oudercode in</translation>
 <translation id="5881540930187678962">Telefoonhub later instellen</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
+<translation id="5886009770935151472">Vinger 1</translation>
 <translation id="5887954372087850114">Venster <ph name="WINDOW_TITLE" /> is toegewezen aan <ph name="DESK_TITLE" /> en is niet meer toegewezen aan andere bureaus</translation>
 <translation id="588817334757907802">Bestand openen in Chrome-browser</translation>
 <translation id="5892014525522223653">Je bent offline.</translation>
@@ -1688,6 +1735,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Het volgende item op de plank markeren</translation>
 <translation id="6015573907265691211">Markeren als klaar</translation>
+<translation id="6016551720757758985">Powerwash bevestigen met herstel van eerdere versie</translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
 <translation id="6019566113895157499">Sneltoetsen</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
@@ -1736,6 +1784,7 @@ Geen apparaten verbonden.</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
 <translation id="6127395413317891856">Je bent offline. Check de verbinding en probeer het opnieuw.</translation>
 <translation id="6129953537138746214">Spatiebalk</translation>
+<translation id="6132714462430777655">Schoolinschrijving overslaan?</translation>
 <translation id="6136872094979134163">Kan nieuws over Steam voor Chromebook niet ophalen.</translation>
 <translation id="6137566720514957455">Dialoogvenster 'Account verwijderen' openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Waarop wil je je focussen?</translation>
@@ -1770,6 +1819,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> is offline. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
+<translation id="6225475702458870625">Gegevensverbinding beschikbaar via je <ph name="PHONE_NAME" /></translation>
 <translation id="6228457605945141550">Helderheid verlagen</translation>
 <translation id="623116199192908855">Je scherm casten vanaf je Chromebook</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
@@ -1786,6 +1836,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activeren...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6274422179279280249">Voeg onder andere links en emoji's in. Je kunt ook hulp krijgen bij het schrijven met AI van Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">Voor de proxy <ph name="PROXY_SERVER" /> zijn een gebruikersnaam en wachtwoord vereist.</translation>
 <translation id="6276708887952587684">Paginabron bekijken</translation>
 <translation id="6285871695023807425">Toevoegen aan Agenda</translation>
 <translation id="628699625505156622">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van dit apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder een bepaalde persoon te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
@@ -1801,6 +1852,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6317369057005134371">Wachten op appvenster...</translation>
 <translation id="6319058840130157106">Terugschakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="6319503618073410818">Details in browser bekijken</translation>
+<translation id="6322370287306604163">Sneller ontgrendelen met je vingerafdruk</translation>
 <translation id="6324334979701518365">Kan niet-ondersteunde Chrome-app niet starten. Informeer je beheerder over dit probleem.</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6325525973963619867">Mislukt</translation>
@@ -1810,6 +1862,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Als je je pincode bent vergeten, probeer je deze gebruiker te herstellen.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> gekoppeld</translation>
+<translation id="6345418402353744910">Je gebruikersnaam en wachtwoord zijn vereist voor de proxy <ph name="PROXY" /> zodat de beheerder je netwerk kan configureren</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> en dan <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
 <translation id="6352082849089527770">Onbekende netwerken</translation>
@@ -1829,6 +1882,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6414618057231176439">Selecteer welke versie van <ph name="VM_NAME" /> je wilt installeren.</translation>
 <translation id="641469293210305670">Updates en apps installeren</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="6418160186546245112">Terugzetten naar de vorige geïnstalleerde versie van <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6418511932144861495">Essentiële update installeren</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1898,6 +1952,7 @@ Nieuwe installatie</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera uitgelijnd op de linkerbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="6605415194043280389">Focus staat aan</translation>
+<translation id="6608773371844092260">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor aan de rechterkant van deze <ph name="DEVICE_TYPE" /> aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="6612802754306526077">Schermopnamemodus geselecteerd</translation>
 <translation id="6612889377159412215">subtaak</translation>
@@ -1920,6 +1975,7 @@ Nieuwe installatie</translation>
 <translation id="6650742588569439432">Kan items niet laden.</translation>
 <translation id="6650933572246256093">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende toegangscode in op dat apparaat: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
+<translation id="6663190258859265334">Powerwash je <ph name="DEVICE_TYPE" /> en zet de vorige versie terug.</translation>
 <translation id="666343722268997814">Het menu dat met de rechtermuisknop worden geopend, openen voor het gemarkeerde item</translation>
 <translation id="6665545700722362599">Kies of websites, apps en extensies mogen gebruikmaken van locatieservices of de microfoon, de camera of andere functies van het apparaat</translation>
 <translation id="6667908387435388584">Maak verbinding met de hotspot van je telefoon, demp en lokaliseer je apparaat en bekijk recente Chrome-tabbladen die op je telefoon zijn geopend</translation>
@@ -1947,6 +2003,7 @@ Nieuwe installatie</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Camera en microfoon in gebruik</translation>
 <translation id="6739144137573853180">NAAR INSTELLINGEN</translation>
+<translation id="6745592621698551453">Nu updaten</translation>
 <translation id="6747985245839783873">Batterij op <ph name="PERCENTAGE" /> procent. Batterijbesparing staat aan.</translation>
 <translation id="6751052314767925245">Afgedwongen door je beheerder</translation>
 <translation id="6751826523481687655">Bijhouden van prestaties staat aan</translation>
@@ -1954,6 +2011,7 @@ Nieuwe installatie</translation>
 <translation id="6753390234084146956">tabbladen</translation>
 <translation id="6754918760968695779">Snel invoegen</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
+<translation id="6759193508432371551">Terugzetten op fabrieksinstellingen</translation>
 <translation id="6760438044935091345">Game Dashboard</translation>
 <translation id="6768043681523654438">opslag</translation>
 <translation id="6769195697113506406">Afbeelding ingevoegd</translation>
@@ -1968,6 +2026,7 @@ Nieuwe installatie</translation>
 <translation id="6792351896138862473">Kan niet-ondersteunde kiosk-app niet starten. Informeer je beheerder over dit probleem.</translation>
 <translation id="679368458793552943">Inzoomen als vergrootglas aanstaat</translation>
 <translation id="6794287755901682422">Dit item heeft: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797493596609571643">Er is een fout opgetreden.</translation>
 <translation id="6797745268063125932">Aan laten</translation>
 <translation id="6801878137098616817">Recent bewerkt</translation>
 <translation id="6802687695197837794">Hiermee geef je toegang aan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camera- en microfoonrechten</translation>
@@ -1981,6 +2040,7 @@ Nieuwe installatie</translation>
 <translation id="682971198310367122">Privacybeleid van Google</translation>
 <translation id="6836499262298959512">Gevaarlijk bestand</translation>
 <translation id="6837621009301897464">Als je een screenshot wilt maken, druk je op</translation>
+<translation id="6848716236260083778">Laat je kind de vingerafdruksensor aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="6852052252232534364">Klik om te activeren</translation>
 <translation id="6852628153543175788">10 minuten toevoegen</translation>
 <translation id="6855029042976311970">Zojuist bewerkt</translation>
@@ -2089,6 +2149,7 @@ Nieuwe installatie</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
 <translation id="7198435252016571249">Camera uitgelijnd op de rechterbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="7219573373513695352">Geen apparaten gekoppeld</translation>
+<translation id="7228056665272655255">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsboven op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="7228968829656641943">Selecteer om mijn scherm te doorzoeken. Druk op Tab en daarna op de spatiebalk voor toetsenbordnavigatie.</translation>
 <translation id="7229029500464092426">Geheugen <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
 <translation id="7234010996000898150">Linux herstellen annuleren</translation>
@@ -2103,6 +2164,7 @@ Nieuwe installatie</translation>
 <translation id="7258828758145722155">Gisteren bewerkt</translation>
 <translation id="726276584504105859">Sleep hier naartoe om het scherm te splitsen</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> inkorten</translation>
+<translation id="7267875682732693301">Raak de sensor meerdere keren aan om de verschillende delen van je vingerafdruk toe te voegen.</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Gebruik de tool Screenshot in Snelle instellingen om screenshots te maken</translation>
 <translation id="7301826272005790482">Venstersuggesties sluiten</translation>
@@ -2127,6 +2189,7 @@ Nieuwe installatie</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
+<translation id="7361914392989692067">Raak de aan/uit-knop aan met je vinger. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="7368041336688136012">Je moet 18 jaar of ouder zijn om Help me met lezen en Help me met schrijven te gebruiken en afbeeldingen te maken met AI.</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheugen van in totaal <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
@@ -2141,6 +2204,7 @@ Nieuwe installatie</translation>
 <translation id="7384028040782072252">Klik ergens met de rechtermuisknop om je apps opnieuw te ordenen</translation>
 <translation id="7386767620098596324">Netwerkverbinding aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Je kunt dit later altijd instellen via Instellingen.</translation>
+<translation id="7400839060291901923">Een verbinding instellen op je <ph name="PHONE_NAME" /></translation>
 <translation id="7401222354741467707">Volledig screenshot of schermopname maken</translation>
 <translation id="7401788553834047908">Niet storen tijdens Focus</translation>
 <translation id="7405710164030118432">Geef je Family Link-toegangscode voor ouders op om het apparaat te ontgrendelen</translation>
@@ -2157,6 +2221,7 @@ Nieuwe installatie</translation>
 <translation id="7457027286267861992">Er is onvoldoende schijfruimte. Maak wat meer schijfruimte vrij en probeer het opnieuw. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="7459485586006128091">De hotspot is uitgezet vanwege een interne fout. Probeer over een paar minuten opnieuw verbinding te maken.</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
+<translation id="746216226901520237">De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
@@ -2211,6 +2276,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7588317312481506627">Naar klembord gekopieerd.</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
+<translation id="7594725637786616550">Voer de Powerwash-functie uit om je <ph name="DEVICE_TYPE" /> te resetten.</translation>
 <translation id="7595453277607160340">Log opnieuw in en update de versleuteling om Android-apps te kunnen gebruiken en ervoor te zorgen dat je <ph name="DEVICE_TYPE" /> goed blijft functioneren.</translation>
 <translation id="7598054670902114203">Momentopname van CPU-gebruik, <ph name="CPU_USEAGE" />%. Temperatuur <ph name="TEMPERATURE" /> graden Celsius, huidige snelheid: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Geselecteerd resultaat invoegen</translation>
@@ -2231,6 +2297,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
 <translation id="7634566076839829401">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="7634648064048557203">Camera uitgelijnd op de rechterbenedenhoek</translation>
+<translation id="7637253234491814483">Raak de vingerafdruksensor rechtsboven op je toetsenbord aan, naast de aan/uit-knop. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="7638572816805275740">Screenshot of schermopname van venster maken</translation>
 <translation id="7642106959537987271">modus voor kleurinversie</translation>
 <translation id="7642647758716480637">Instellingen openen voor <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -2282,6 +2349,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="77747521138552256">Te veel pincodepogingen. Wacht <ph name="TIME_LEFT" /> en probeer de pincode opnieuw of voer het wachtwoord in om meteen in te loggen.</translation>
 <translation id="7780094051999721182">snelkoppelingen</translation>
 <translation id="7780159184141939021">Scherm draaien</translation>
+<translation id="7781335840981796660">Alle gebruikersaccounts en lokale gegevens worden verwijderd.</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7787212146956232129">Invoer- en uitvoerapparaten zijn ingesteld. Ga naar Instellingen voor wijzigingen.</translation>
 <translation id="7792590255364786396">Zichtbaar</translation>
@@ -2343,6 +2411,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943516765291457328">Zet bluetooth aan om te scannen naar hotspots in de buurt</translation>
 <translation id="7944023924886109030">Alle afspraken voor vandaag bekijken</translation>
+<translation id="7944847494038629732">Koppel de USB-kabel van de scanner los en sluit deze opnieuw aan om het opnieuw te proberen</translation>
 <translation id="7945357288295809525">Toegankelijkheidsinstellingen tonen, '<ph name="ENABLED_FEATURES" />' aangezet.</translation>
 <translation id="7946681191253332687">Uitgebreide beveiligingsupdates beschikbaar</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil je <ph name="DEVICE_NAME" /> gebruiken</translation>
@@ -2374,6 +2443,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8004512796067398576">Verhoging</translation>
 <translation id="8005527720597583355">Focussessie starten</translation>
 <translation id="8008356846765065031">Verbinding met internet verbroken. Controleer je internetverbinding.</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> kan niet worden teruggezet naar de voorgaande versie. Probeer Powerwash opnieuw op je apparaat.</translation>
 <translation id="8015361438441228492">Kan taak niet bewerken.</translation>
 <translation id="8027187124910699148">Voorgestelde groep hervatten</translation>
 <translation id="802782383769312836">Vorig bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
@@ -2452,15 +2522,18 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8249048954461686687">OEM-map</translation>
 <translation id="825129991941217170">Alle Google Drive-content tonen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
+<translation id="8261625296061301062">Scannersoftware geïnstalleerd</translation>
 <translation id="8262312463845990408">Afspelen aan-/uitzetten</translation>
 <translation id="8268302343625273732">Alle opdrachten in Google Classroom bekijken</translation>
 <translation id="8277261673056602147">Tekst op je scherm markeren</translation>
+<translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282784978194352587">Gelukt!</translation>
 <translation id="8287009018010202411">Productiviteit</translation>
 <translation id="828708037801473432">Uit</translation>
 <translation id="8289128870594824098">Schijfgrootte</translation>
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8300451473979404345">Geselecteerde handgreep, gebruik de pijltoetsen om te verplaatsen</translation>
+<translation id="8301242268274839723">Raak de vingerafdruksensor linksonder op je toetsenbord aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="8308637677604853869">Vorig menu</translation>
 <translation id="830868413617744215">Bèta</translation>
 <translation id="8314772463905284467">Caps Lock staat aan</translation>
@@ -2480,10 +2553,12 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8371991222807690464">De prestaties van randapparaten kunnen beperkt zijn in de gastmodus</translation>
 <translation id="8374601332003098278">Druk op Enter om het scherm gedeeltelijk op te nemen</translation>
 <translation id="8375916635258623388">Deze <ph name="DEVICE_NAME" /> en je telefoon maken automatisch verbinding</translation>
+<translation id="8382677870544805359">Je moet dit apparaat terugzetten op de fabrieksinstellingen als je zakelijke functies wilt gebruiken.</translation>
 <translation id="8382715499079447151">Weergavebeveiliging</translation>
 <translation id="8383614331548401927">Welkomstsamenvatting</translation>
 <translation id="838540623579162843">Music Premium nemen</translation>
 <translation id="8388750414311082622">Het laatste bureaublad kan niet worden verwijderd.</translation>
+<translation id="8390392581097975659">Scannersoftware installeren</translation>
 <translation id="8394567579869570560">Je ouder heeft dit apparaat vergrendeld</translation>
 <translation id="8401850874595457088">Taalmenu openen</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2547,6 +2622,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="857201607579416096">Menu verplaatst naar rechtsonder in het scherm.</translation>
 <translation id="8581946341807941670">Druk op <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> en klik op een link</translation>
 <translation id="8598235756057743477">Je apps sorteren op naam of kleur</translation>
+<translation id="8599864823732014237">Zakelijke inschrijving overslaan?</translation>
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
 <translation id="861045123704058818">Apps worden tijdelijk ingedeeld op categorie</translation>
 <translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
@@ -2583,6 +2659,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8700087567921985940">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van je apparaat gebruiken. Google kan af en toe locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren. <ph name="BEGIN_LINK1" />Meer informatie over locatie<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8704155109538237473">De focus op het scherm-in-scherm-venster zetten</translation>
+<translation id="8705580154597116082">Wifi beschikbaar via telefoon</translation>
 <translation id="870917907284186124">Dicteren (typen met je stem) aan-/uitzetten</translation>
 <translation id="8711169534266271368">Game Dashboard-instellingen</translation>
 <translation id="8712637175834984815">Begrepen</translation>
@@ -2591,6 +2668,8 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8717459106217102612">Het vorige woord of de vorige letter selecteren</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volledig scherm opnemen</translation>
+<translation id="8724405322205516354">Als je dit icoon ziet, kun je je vingerafdruk gebruiken voor identificatie of om een aankoop goed te keuren.</translation>
+<translation id="8724409975248965964">Vingerafdruk toegevoegd</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8725214031272624704">Lijst met beschikbare invoermethoden tonen</translation>
 <translation id="8730621377337864115">Klaar</translation>
@@ -2614,6 +2693,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="878215960996152260"><ph name="APP_NAME" />, geïnstalleerde app, geblokkeerd</translation>
 <translation id="8782565991310229362">Starten van kiosk-app geannuleerd.</translation>
 <translation id="8785070478575117577">Verbinding maken met <ph name="NETWORK_NAME" /></translation>
+<translation id="8786824282808281903">Als je kind dit icoon ziet, kan er een vingerafdruk worden gebruikt voor identificatie of om aankopen goed te keuren.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Vooruitschakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="8792626944327216835">microfoon</translation>
@@ -2626,6 +2706,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8815390544836110344">Druk op de snelkoppeling voor een screenshot, Ctrl plus Shift plus de toets voor de overzichtsmodus</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
+<translation id="882204272221080310">Firmware updaten voor extra beveiliging</translation>
 <translation id="8822104519413696986">Dit is een game met aanraakbediening</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8832513206237979203">Bookmarkbalk tonen of verbergen</translation>
@@ -2689,6 +2770,8 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8991648557324317894">Druk op fn + Snel invoegen of Shift om te annuleren.</translation>
 <translation id="899350903320462459">Ontgrendel het apparaat als <ph name="LOGIN_ID" /> om de meldingsactie uit te voeren</translation>
 <translation id="8993733019280019776">Ben je aan het praten? Je microfoon staat uit. Selecteer de microfoon om deze aan te zetten.</translation>
+<translation id="8993945059918628059">Raak de vingerafdruksensor aan met je vinger. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
+<translation id="9000185763019430629">Raak de vingerafdruksensor aan de rechterkant van je <ph name="DEVICE_TYPE" /> aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
 <translation id="9003374957546315126">Emoji's en meer</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
@@ -2702,6 +2785,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9030515284705930323">Je organisatie heeft de Google Play Store niet aangezet voor jouw account. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="9030665205623277906">Momentopname van CPU-gebruik: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
+<translation id="9037818663270399707">Je verbinding is niet privé voor alle netwerkverkeer</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth is niet beschikbaar</translation>
 <translation id="9050999376345823055">Druk op '.' om los te laten</translation>

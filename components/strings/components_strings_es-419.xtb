@@ -138,6 +138,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="121201262018556460">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor  presentó un certificado que contiene una clave no segura. Es posible que un atacante haya descifrado la clave privada y que este no sea el servidor esperado (es posible que hayas establecido comunicación con un atacante).</translation>
 <translation id="1212527389003717329">Comenzó la descarga. Para verla, mantén presionado |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Usa la información guardada en tu Cuenta de Google para autocompletar contraseñas, llaves de acceso, direcciones, formas de pago y otros datos</translation>
+<translation id="1216257595811043403">Compartir pestañas automáticamente</translation>
 <translation id="1219129156119358924">Seguridad del sistema</translation>
 <translation id="1219134100826635117">Tu administrador bloqueó esta acción</translation>
 <translation id="1221024147024329929">PKCS N. º 1 MD2 con encriptación RSA</translation>
@@ -2198,6 +2199,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4434045419905280838">Ventanas emergentes y redireccionamientos</translation>
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
 <translation id="4438821706955556403">Precio habitual</translation>
+<translation id="4439687924334332880">Comparte automáticamente las pestañas abiertas en esta ventana si están relacionadas con este hilo para obtener respuestas más personalizadas. Puedes activar esta opción para todas las conversaciones en Configuración.</translation>
 <translation id="4441832193888514600">Se ignoró porque la política puede establecerse solo como política del usuario basada en la nube.</translation>
 <translation id="4444062564459679679">Ya se envió a Chrome en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para buscar pestañas</translation>
@@ -2300,7 +2302,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4640225694041297329">Mostrar resultados de los últimos 7 días</translation>
 <translation id="4642296966515958616">Para unirte a este grupo de pestañas, actualiza Chrome</translation>
 <translation id="464342062220857295">Buscar funciones</translation>
-<translation id="4643958597583594452">Chrome procesa las URLs y los títulos de las páginas en tu dispositivo o en un espacio privado en la nube</translation>
 <translation id="4644567637638438744">Los archivos solo se pueden subir si accedes a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orden inverso hacia abajo</translation>
 <translation id="4648262692072505866">El hash debe tener el formato SHA-256.</translation>
@@ -3157,6 +3158,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5995727681868049093">Administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="5996255674476750320">Exhibiciones de vehículos</translation>
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
+<translation id="5997915162652837008">Puedes ahorrar tiempo si activas la opción para compartir automáticamente pestañas automático para todos los hilos. Más información sobre</translation>
 <translation id="6000528814684428358">Rock pesado y progresivo</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
@@ -3301,6 +3303,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
 <translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>
+<translation id="6213685130162740188">Números de viajero conocido</translation>
 <translation id="6215936431492593050">Metal (satinado)</translation>
 <translation id="6217950634729714357">Muebles para la cocina y el comedor</translation>
 <translation id="6218305986815100395">No se puede activar la tarjeta virtual</translation>
@@ -3719,11 +3722,13 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6874604403660855544">&amp;Rehacer Agregar</translation>
 <translation id="6875873347995743859">Enviar al asistente</translation>
 <translation id="6875894866901426843">El administrador borrará tus archivos locales, incluidos los que estén en la papelera, el <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">¿Quieres compartir siempre las pestañas abiertas para obtener mejores respuestas?</translation>
 <translation id="6880941331070119097">Opción de precio alto</translation>
 <translation id="6881240511396774766">Crea un documento de Google nuevo rápidamente</translation>
 <translation id="6883221904761970440">Está cerrada la hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="6883745783646124431">dirección de trabajo</translation>
 <translation id="6886283082988906333">Archivo ZIP</translation>
+<translation id="6886431827310382613">Compartir pestañas pertinentes</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Usar ubicación</translation>
 <translation id="6888584790432772780">Chrome simplificó esta página para facilitar la lectura. Chrome recuperó la página original a través de una conexión no segura.</translation>
@@ -4010,6 +4015,7 @@ Detalles adicionales:
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
 <translation id="73398226265793546">Botón del Modo IA, actívalo para preguntar al Modo IA en la Búsqueda de Google</translation>
+<translation id="7343620778718789463">Documentos de identidad</translation>
 <translation id="7346048084945669753">Se afilió:</translation>
 <translation id="7346062987309535530">Vajilla</translation>
 <translation id="7346081071264046066">"responder sí a esta invitación de boda con emoción"</translation>
@@ -4184,6 +4190,7 @@ Detalles adicionales:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">¿Confirmas que quieres quitar la tarjeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>
+<translation id="7570862164055912832">Números de rectificación</translation>
 <translation id="7571813784389228510">Modo IA de Google</translation>
 <translation id="7574998639136359461">Equipo para deportes de invierno</translation>
 <translation id="7575207903026901870">Botón Quitar sugerencia; presiona Intro para quitar esta sugerencia</translation>
@@ -4692,6 +4699,7 @@ Detalles adicionales:
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Pantalla completa automática</translation>
 <translation id="838307841291975086">Vagonetas</translation>
+<translation id="838953173259347825">Comparte automáticamente las pestañas abiertas en esta ventana si están relacionadas con este hilo para obtener respuestas más personalizadas. Puedes activar esta opción para todas las conversaciones en</translation>
 <translation id="8389532092404711541">Precio habitual: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehículos personalizados y de alto rendimiento</translation>
 <translation id="8390725133630534698">Una política del administrador no permite compartir contenido de <ph name="ORIGIN_NAME" /> con <ph name="VM_NAME" /></translation>
@@ -4976,6 +4984,7 @@ Detalles adicionales:
 <translation id="8861482055962701239">No se pudo guardar esta información en tu Billetera de Google. Se guardó en Chrome en este dispositivo. Chrome te ofrecerá guardarla en la Billetera la próxima vez que la uses.</translation>
 <translation id="8863218129525348270">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta en el dispositivo</translation>
 <translation id="8864939224504814334">Trajes y atuendos formales</translation>
+<translation id="8865650218866129025">¿Quieres compartir automáticamente las pestañas abiertas para obtener mejores respuestas en este hilo?</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>
 <translation id="8866481888320382733">Error al analizar la configuración de la política</translation>
 <translation id="8866928039507595380">Plegado</translation>

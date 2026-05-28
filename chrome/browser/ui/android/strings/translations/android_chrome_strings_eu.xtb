@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Historiaren sinkronizazioa</translation>
 <translation id="1111673857033749125">Beste gailuetan gordeta dituzun laster-markak hemen agertuko dira.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pantaila txiki gainjarrian dagoen fitxa</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Leheneratu leiho bat}other{Leheneratu # leiho}}</translation>
 <translation id="1126696498560056882">Kudeatu gailuko kontuak</translation>
 <translation id="1135018701024399762">Ezkutuko moduan zure arakatze-jarduerak pribatu mantentzen dira, gailuaren beste erabiltzaileek ikus ez ditzaten</translation>
 <translation id="113752097246673894">Laster-markak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chrome-n <ph name="EMAIL" /> gisa</translation>
@@ -195,7 +196,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1877073879466606884">Saioa hasteko erabili duzun profila kudeatua da. Administratzaileak profilaren ezarpenak urrunetik alda ditzake, baita txostenen bidez arakatzaileari buruzko informazioa aztertu eta beharrezko beste zeregin batzuk gauzatu ere.</translation>
 <translation id="1879904908408734349">Pantailaren behealdean ainguratutako orria, saioa hasteko balio duena, itxita dago</translation>
 <translation id="1883903952484604915">Nire fitxategiak</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> iradokizun daude goiko zerrendan.</translation>
 <translation id="189358972401248634">Beste hizkuntzak</translation>
 <translation id="1899175549411605574">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena</translation>
 <translation id="1900260903084164610">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3166827708714933426">Fitxetarako eta leihoetarako lasterbideak</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> webgunearen mugikorretarako bertsioa eska dezakezu</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" /> fitxa, beste batzuekin batera hautatuta, ezkutuko modukoa, ainguratuta, audioa desaktibatuta</translation>
+<translation id="3183941812169784232">Leiho guztiak leheneratu nahi dituzu?</translation>
 <translation id="3187472288455401631">Iragarkien neurketa</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> fitxa taldea</translation>
 <translation id="3200536777393523575">Oraingo leihoa itxi nahi duzu?</translation>
@@ -722,6 +723,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4164642020717536140">Webguneak bizkor eta segurtasunez arakatu</translation>
 <translation id="4165077084524712774">Tresna gehiago</translation>
 <translation id="4170577491341606575">Zure datuak eskuratzen\u2026</translation>
+<translation id="4176838562184310003">Chrome ez da behar bezala itxi. Galdutako leiho eta fitxak leheneratzen saia daiteke. Baliteke leiho batzuk minimizatuta leheneratzea.</translation>
 <translation id="4177222230309051052">Eskuratu laster-marka guztiak</translation>
 <translation id="4177501066905053472">Iragarkien gaiak</translation>
 <translation id="417865198503699526">Bilatu ezarpen bat</translation>

@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> катары кирдиңиз</translation>
 <translation id="1149401351239820326">Колдонуу мөөнөтү аяктаган ай</translation>
 <translation id="1150989369772528668">Жылнаама</translation>
+<translation id="1161444134753003495">Кирүү</translation>
 <translation id="1161663161838091892">Улантуу үчүн өтмөктөрдү жана таржымалды шайкештирүү</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} насыя картасы}other{{count} насыя картасы}}</translation>
 <translation id="1164891049599601209">Жалган сайтка киргизилди</translation>
@@ -824,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Бул сайт үчүн жаңы сырсөз}other{Бул сайт үчүн жаңы сырсөздөр}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> сайтына киресиз</translation>
 <translation id="3934905113567851655">Өлчөмүн өзгөртүү үчүн эки манжаңызды бириктириңиз</translation>
+<translation id="393732545649378031">Аккаунт</translation>
 <translation id="3940195383040445971">Бааларга өтмөктөрдө көз салуу</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} өтмөктү жабуу}other{{COUNT} өтмөктү жабуу}}</translation>
 <translation id="3946483119107054883">CSV'ге жүктөп алуу</translation>
@@ -1474,6 +1476,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6140948187512243695">Чоо-жайын көрсөтүү</translation>
 <translation id="6144589619057374135">${url} сайтын Жашыруун режимде ачуу</translation>
 <translation id="6146563240635539929">Видеолор</translation>
+<translation id="6148392728478209113">Дагы эле Live режиминдесизби? Gemini менен сүйлөшүүнү улантуу үчүн Live баскычын таптаңыз</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен жашыруун өтмөктөрдүн кулпусун ачуу</translation>
 <translation id="6152340033632117531">Жигерсиз</translation>
 <translation id="6152406514676263192">Контентти кызыккан нерселериңиздин негизинде шайкештириңиз.</translation>
@@ -2227,6 +2230,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8643403533759285912">Топту өчүрүү</translation>
 <translation id="8647280737650867362">Баага көз салуу токтотулган жок.</translation>
 <translation id="8654802032646794042">Жокко чыгаруу</translation>
+<translation id="8659875081143553823">Күтө туруңуз...</translation>
 <translation id="8660600697590740984">Сиз көчүрүп алган Lens сүрөтү</translation>
 <translation id="866266761389616183">Ой!</translation>
 <translation id="8663764600409216912">Божомолдоп билип алууга мүмкүн болбогон сырсөздөрдү колдонуп жатасыз</translation>

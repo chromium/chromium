@@ -3894,6 +3894,21 @@ SwiftShader は、ヘッドレス システムや仮想マシンなど、GPU ア
 このポリシーを無効に設定するか未設定のままにした場合、ハードウェアの GPU アクセラレーションを使用できないときに、WebGL コンテキストを作成できない可能性があります。この場合、WebGL コンテキストの作成エラーを適切に処理しないと、ウェブページが正しく動作しないことがあります。
 
 これは一時的なポリシーであり、将来的に削除される予定です。</translation>
+<translation id="3607939601300521364"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> エージェントが <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用できるようにするかどうかを制御します。
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可します
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可しません
+
+警告: <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可すると、<ph name="GEMINI_SPARK_PRODUCT_NAME" /> エージェントはアクティブなブラウザ セッションを使用して、<ph name="PRODUCT_NAME" /> クライアントで自律的なマルチステップのアクションを実行できるようになります。これには、認証情報の漏洩リスク、ローカル ネットワークへの侵入、コンテキストアウェア シグナルの損失など、重大なセキュリティ リスクが伴います。既存の管理設定およびセキュリティの制御が適用されない可能性があります。
+
+管理者は、この機能を有効にする前に、組織のネットワーク脅威モデル、コンプライアンスとプライバシーに関するガイドラインを慎重に検討することが推奨されます。
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> アプリまたは <ph name="PRODUCT_NAME" /> 自動ブラウジング ポリシーが無効になっている場合、このポリシーは無視されます。たとえば、<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。<ph name="PRODUCT_NAME" /> での <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> について詳しくは、https://support.google.com/chrome/a?p=gemini_in_chrome をご覧ください。
+
+国や言語によっては <ph name="PRODUCT_NAME" /> の自動ブラウジングと <ph name="GEMINI_SPARK_PRODUCT_NAME" /> を利用できない場合があります。このポリシーを 0（有効）に設定しても、機能が有効になるかどうかは、国や言語での提供状況に準じて決まります。リリースについて詳しくは、Enterprise リリースノート（https://chromeenterprise.google/resources/release-notes/）をご確認ください。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。</translation>
 <translation id="3608206578291537084">暗号化されたレポート パイプラインを有効にする</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> ランチャーや新しいタブページに Chrome ウェブストア アイコンを表示する</translation>
 <translation id="3612482251405108708">ロック画面でオンライン再認証を自動的に開始する</translation>
@@ -3927,14 +3942,6 @@ SwiftShader は、ヘッドレス システムや仮想マシンなど、GPU ア
 <translation id="3647212518036289905">このポリシーでは、HTTP 認証で使用する GSSAPI ライブラリを指定できます。ポリシーには、ライブラリ名またはフルパスのいずれかを指定します。
 
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> ではデフォルトのライブラリ名が使用されます。</translation>
-<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
-ServiceWorkerAutoPreload 機能では、ServiceWorker ブートストラップ プロセスの開始と同時にメインリソースのネットワーク リクエストをディスパッチします。
-
-このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で ServiceWorkerAutoPreload が有効になります。ナビゲーション リクエストは、特定の状況（ServiceWorker が実行されていない場合など）で ServiceWorker の起動時に自動的にディスパッチされます。
-
-この設定を無効に設定した場合、<ph name="PRODUCT_NAME" /> で ServiceWorkerAutoPreload は有効になりません。ナビゲーション リクエストは、必ず ServiceWorker の起動後にディスパッチされます。
-
-このポリシーは機能を制御するための一時的な措置で、M144 で削除される予定です。</translation>
 <translation id="3650122925429054129">ログイン画面でカーソルによるハイライト表示を無効にする</translation>
 <translation id="365093517647222762">関連付けられたユーザーのデバイスから、<ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> ポリシーで指定した許可リストの URL について、ウェブサイトのテレメトリー データをレポートします。
 
@@ -4931,6 +4938,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
 注: このポリシーの導入に伴い、<ph name="ARC_GLS_POLICY_NAME" /> ポリシーのサポートは終了しました。
 このポリシーを設定した場合、<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> は <ph name="ANDROID_NAME" /> の <ph name="PRODUCT_OS_NAME" /> の位置情報設定に影響しなくなります。</translation>
+<translation id="4340826578810728651"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可する</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> では、検索プロバイダによってサポートされる文字エンコードを指定できます。エンコードは、UTF-8、GB2312、ISO-8859-1 などのコードページ名であり、指定された順序で適用されます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> を未設定のままにした場合、UTF-8 が使用されます。</translation>
@@ -5797,6 +5805,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> 
       - このポリシーが <ph name="SKIP_TOS_DIALOG" /> の場合、ブラウザの機能が制限されます。
 
       - このポリシーが <ph name="SKIP_TOS_DIALOG" /> の場合、管理者はそのことをデバイスのエンドユーザーに知らせる必要があります。</translation>
+<translation id="4896469165628792802"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可する。</translation>
 <translation id="489760181463331251">このポリシーでは、メモリセーバーの節約設定を変更します。
 
 このポリシーは、設定または <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> ポリシーでメモリセーバーが有効になっている場合のみ有効で、ヒューリスティックを使ったタブを破棄するタイミングの決定に影響します。たとえば、非アクティブなタブを破棄するのではなく有効期間を短くすると、メモリを節約できますが、タブが頻繁に再読み込みされるため、ユーザー エクスペリエンスの低下やネットワーク トラフィックの増加につながる可能性があります。
@@ -6556,6 +6565,7 @@ Attribution Reporting API のサポート終了により、このポリシーは
 値を true に設定するか未設定のままにした場合、選択した教師は音声を文字に変換して生徒に送信できます。
 
 false に設定した場合、教師はこの機能にアクセスできません。</translation>
+<translation id="5377484655498931153"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可しない。</translation>
 <translation id="5377606826822211923">信頼できない提供元の Android アプリの使用をユーザー単位で管理する</translation>
 <translation id="537786648513450280">信頼できない提供元の Android アプリの使用をデバイス単位で管理する</translation>
 <translation id="5378885577701865339">クリップボードの共有機能を無効にする</translation>

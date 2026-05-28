@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Sinkronizacija povijesti</translation>
 <translation id="1111673857033749125">Ovdje će se prikazivati oznake koje ste spremili na drugim uređajima.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, kartica sa slikom u slici</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Vrati jedan prozor}one{Vrati # prozor}few{Vrati # prozora}other{Vrati # prozora}}</translation>
 <translation id="1126696498560056882">Upravljajte računima na ovom uređaju</translation>
 <translation id="1135018701024399762">Anonimni način štiti privatnost vašeg pregledavanja od drugih korisnika koji upotrebljavaju vaš uređaj</translation>
 <translation id="113752097246673894">Da biste mogli pristupati svojim oznakama i drugim podacima na svim svojim uređajima, prijavite se na Chrome kao <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1877073879466606884">Profil na koji ste prijavljeni upravljani je profil. Vaš administrator može daljinski unositi izmjene u postavke vašeg profila, analizirati podatke o pregledniku putem izvješćivanja i izvršavati druge potrebne zadatke.</translation>
 <translation id="1879904908408734349">Donja tablica za prijavu je zatvorena</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
-<translation id="1889626070177134359">Broj predloženih stavki na prethodnom popisu: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
 <translation id="1899175549411605574">Donja tablica s uvidima u cijene</translation>
 <translation id="1900260903084164610">Nastavkom upotrebe prihvaćate <ph name="BEGIN_TOS_LINK" />uvjete pružanja usluge<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3166827708714933426">Prečaci kartica i prozora</translation>
 <translation id="3167258285411721858">Možete zatražiti web-lokaciju za mobilne uređaje za <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, višestruko odabrana prikvačena anonimna kartica s isključenim zvukom</translation>
+<translation id="3183941812169784232">Želite li vratiti sve prozore?</translation>
 <translation id="3187472288455401631">Mjerenje izvedbe oglasa</translation>
 <translation id="3189635831478931757">Grupa kartica <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Želite li zatvoriti trenutačni prozor?</translation>
@@ -722,6 +723,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4164642020717536140">Brzo i sigurno pregledavanje weba</translation>
 <translation id="4165077084524712774">Više alata</translation>
 <translation id="4170577491341606575">Dohvaćanje vaših podataka\u2026</translation>
+<translation id="4176838562184310003">Chrome se nije ispravno zatvorio i može pokušati vratiti izgubljene prozore i kartice. Neki se prozori mogu minimizirati prilikom vraćanja.</translation>
 <translation id="4177222230309051052">Pristup svim vašim oznakama</translation>
 <translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="417865198503699526">Pretražite postavku</translation>

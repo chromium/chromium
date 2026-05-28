@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pestanya d'imatge sobre imatge</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Restaura 1 finestra}other{Restaura # finestres}}</translation>
 <translation id="1126696498560056882">Gestiona els comptes en aquest dispositiu</translation>
 <translation id="1135018701024399762">El mode d'incògnit manté la navegació privada perquè altres persones que utilitzin el teu dispositiu no la puguin veure</translation>
 <translation id="113752097246673894">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió a Chrome com a <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1877073879466606884">El perfil en què tens la sessió iniciada és un perfil gestionat. L'administrador pot fer canvis a la configuració del perfil de manera remota, analitzar informació sobre el navegador mitjançant informes i dur a terme altres tasques necessàries.</translation>
 <translation id="1879904908408734349">El full inferior d'inici de sessió està tancat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> elements suggerits a la llista anterior.</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
 <translation id="1899175549411605574">Full inferior d'estadístiques de preus</translation>
 <translation id="1900260903084164610">En continuar, acceptes les <ph name="BEGIN_TOS_LINK" />condicions del servei<ph name="END_TOS_LINK" />.</translation>
@@ -509,6 +509,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3166827708714933426">Dreceres per a pestanyes i finestres</translation>
 <translation id="3167258285411721858">Pots sol·licitar el lloc web per a mòbils de <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada i fixada multiseleccionada</translation>
+<translation id="3183941812169784232">Vols restaurar totes les finestres?</translation>
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
 <translation id="3189635831478931757">Grup de pestanyes <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Vols tancar la finestra actual?</translation>
@@ -719,6 +720,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4164642020717536140">Navegació web ràpida i segura</translation>
 <translation id="4165077084524712774">Més eines</translation>
 <translation id="4170577491341606575">S'estan obtenint les teves coses\u2026</translation>
+<translation id="4176838562184310003">Chrome no s'ha apagat correctament i pot provar de restaurar les finestres i les pestanyes perdudes. És possible que algunes finestres es minimitzin quan es restaurin.</translation>
 <translation id="4177222230309051052">Obtén totes les teves adreces d'interès</translation>
 <translation id="4177501066905053472">Temes d'anunci</translation>
 <translation id="417865198503699526">Cerca una opció de configuració</translation>

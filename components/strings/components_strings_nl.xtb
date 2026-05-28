@@ -138,6 +138,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="121201262018556460">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat geretourneerd met een zwakke sleutel. Een hacker kan de persoonlijke sleutel hebben aangepast en het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).</translation>
 <translation id="1212527389003717329">Download gestart. Houd je vinger op |<ph name="ACCELERATOR" />| om de download te bekijken.</translation>
 <translation id="1215738931000958575">Gebruik informatie die is opgeslagen in je Google-account om wachtwoorden, toegangssleutels, adressen, betaalmethoden en andere informatie automatisch in te vullen</translation>
+<translation id="1216257595811043403">Tabbladen automatisch delen</translation>
 <translation id="1219129156119358924">Systeembeveiliging</translation>
 <translation id="1219134100826635117">Je beheerder heeft deze actie geblokkeerd</translation>
 <translation id="1221024147024329929">PKCS nr. 1 MD2 met RSA-versleuteling</translation>
@@ -2191,6 +2192,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4434045419905280838">Pop-ups en omleidingen</translation>
 <translation id="443673843213245140">Er kan geen proxy worden gebruikt, maar er is wel een expliciete proxyconfiguratie opgegeven.</translation>
 <translation id="4438821706955556403">Gebruikelijke prijs</translation>
+<translation id="4439687924334332880">Krijg meer op maat gemaakte reacties door geopende tabbladen in dit venster automatisch te delen als ze gerelateerd zijn aan dit gesprek. Je kunt dit aanzetten voor alle threads via Instellingen.</translation>
 <translation id="4441832193888514600">Genegeerd omdat het beleid alleen kan worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="4444062564459679679">Al naar Chrome gestuurd op je <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Enter om tabbladen te doorzoeken</translation>
@@ -2293,7 +2295,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4640225694041297329">Resultaten van de afgelopen 7 dagen tonen</translation>
 <translation id="4642296966515958616">Update Chrome om deel te nemen aan deze tabbladgroep</translation>
 <translation id="464342062220857295">Zoekfuncties</translation>
-<translation id="4643958597583594452">Chrome verwerkt paginatitels en URL's op je apparaat of in een privégedeelte in de cloud</translation>
 <translation id="4644567637638438744">Je kunt bestanden alleen uploaden als je bent ingelogd bij Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Omgekeerde volgorde met de bedrukte zijde omlaag</translation>
 <translation id="4648262692072505866">Hash moet de indeling SHA-256 hebben.</translation>
@@ -3150,6 +3151,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5995727681868049093">Je gegevens, privacy en beveiliging beheren in je Google-account</translation>
 <translation id="5996255674476750320">Autobeurzen</translation>
 <translation id="5997247540087773573">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken om je account te beveiligen.</translation>
+<translation id="5997915162652837008">Je kunt tijd besparen door tabbladen automatisch te delen voor alle gesprekken. Meer informatie over</translation>
 <translation id="6000528814684428358">Hardrock en progressive rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002122790816966947">Je apparaten</translation>
@@ -3293,6 +3295,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6203231073485539293">Controleer je internetverbinding</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
+<translation id="6213685130162740188">Known Traveler Numbers</translation>
 <translation id="6215936431492593050">Metaal (satijn)</translation>
 <translation id="6217950634729714357">Keuken- en eetkamermeubilair</translation>
 <translation id="6218305986815100395">Kan virtuele kaart niet activeren</translation>
@@ -3711,11 +3714,13 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6874604403660855544">&amp;Opnieuw toevoegen</translation>
 <translation id="6875873347995743859">Naar de assistent sturen</translation>
 <translation id="6875894866901426843">Je beheerder verwijdert je lokale bestanden, inclusief bestanden in de prullenbak, op <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Altijd geopende tabbladen delen voor betere reacties?</translation>
 <translation id="6880941331070119097">Dure optie</translation>
 <translation id="6881240511396774766">Snel een nieuw Google-document maken</translation>
 <translation id="6883221904761970440">Blad voor beveiligde verificatie van betalingsgegevens is gesloten</translation>
 <translation id="6883745783646124431">werkadres</translation>
 <translation id="6886283082988906333">ZIP-archief</translation>
+<translation id="6886431827310382613">Relevante tabbladen delen</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Locatie gebruiken</translation>
 <translation id="6888584790432772780">Chrome heeft deze pagina vereenvoudigd om deze beter leesbaar te maken. Chrome heeft de originele pagina opgehaald via een niet-beveiligde verbinding.</translation>
@@ -4002,6 +4007,7 @@ Aanvullende informatie:
 <translation id="7337706099755338005">Niet beschikbaar op je platform.</translation>
 <translation id="733923710415886693">Het certificaat van de server is niet bekendgemaakt via Certificaattransparantie.</translation>
 <translation id="73398226265793546">Knop voor AI-modus, activeer om de AI-modus in Google Zoeken te vragen</translation>
+<translation id="7343620778718789463">ID-kaarten</translation>
 <translation id="7346048084945669753">Is gelieerd:</translation>
 <translation id="7346062987309535530">Servies</translation>
 <translation id="7346081071264046066">'antwoord vol enthousiasme ja op deze huwelijksuitnodiging'</translation>
@@ -4176,6 +4182,7 @@ Aanvullende informatie:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Creditcard verwijderen uit Chrome?</translation>
 <translation id="7569983096843329377">Zwart</translation>
+<translation id="7570862164055912832">Redress numbers</translation>
 <translation id="7571813784389228510">Google AI-modus</translation>
 <translation id="7574998639136359461">Benodigdheden voor wintersport</translation>
 <translation id="7575207903026901870">Suggestieknop verwijderen, druk op Enter om deze suggestie te verwijderen</translation>
@@ -4684,6 +4691,7 @@ Aanvullende informatie:
 <translation id="8381674639488873545">Deze kosten kunnen eenmalig of terugkerend zijn en zijn mogelijk niet duidelijk aangegeven. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatisch volledig scherm</translation>
 <translation id="838307841291975086">Stationcars</translation>
+<translation id="838953173259347825">Krijg meer op maat gemaakte reacties door geopende tabbladen in dit venster automatisch te delen als ze gerelateerd zijn aan dit gesprek. Je kunt dit aanzetten voor alle threads via</translation>
 <translation id="8389532092404711541">Normaal <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Aangepaste en bijzondere voertuigen</translation>
 <translation id="8390725133630534698">Delen van <ph name="ORIGIN_NAME" /> naar <ph name="VM_NAME" /> is geblokkeerd op basis van beheerdersbeleid</translation>
@@ -4967,6 +4975,7 @@ Aanvullende informatie:
 <translation id="8861482055962701239">Kan deze informatie niet opslaan in je Google Wallet. De informatie is opgeslagen in Chrome op dit apparaat. Chrome biedt je aan de informatie op te slaan in Wallet als je het de volgende keer gebruikt.</translation>
 <translation id="8863218129525348270">Sla je kaart op je apparaat op, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="8864939224504814334">Pakken en zakelijke kleding</translation>
+<translation id="8865650218866129025">Geopende tabbladen automatisch delen voor betere reacties in dit gesprek?</translation>
 <translation id="8866132857352163524">Soundtracks</translation>
 <translation id="8866481888320382733">Fout bij het parseren van beleidsinstellingen</translation>
 <translation id="8866928039507595380">Vouwen</translation>

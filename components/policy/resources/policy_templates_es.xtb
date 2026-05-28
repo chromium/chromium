@@ -2991,6 +2991,7 @@ Los niveles de complejidad se basan en las métricas de calidad de las contrase�
 
 Consulta el artículo del Centro de Ayuda para ver explicaciones detalladas de lo que implica cada nivel tanto para los PINs como para las contraseñas.</translation>
 <translation id="2926813071464307947">Inhabilitar el entorno aislado del contenedor de aplicaciones del renderizador</translation>
+<translation id="2930792103747180259">Inhabilitado: la recuperación en segundo plano de los service workers se permite sin restricciones.</translation>
 <translation id="2931888116345994552">Si se habilita o no se establece, se habilitarán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita, se desactivarán las actualizaciones de los componentes. Sin embargo, algunos componentes quedan exentos de esta política: las actualizaciones de los componentes que no contengan código ejecutable o que sean esenciales para proteger la seguridad del navegador no se inhabilitarán.
@@ -3105,6 +3106,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="2976033779241323433">Habilitar el teclado virtual táctil según la heurística predeterminada del sistema</translation>
 <translation id="2976429807269247880">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Forzar la implementación antigua</translation>
+<translation id="2984696342503554732">Habilitado: la recuperación en segundo plano desde service workers está restringida.</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API Bluetooth web</translation>
@@ -4034,6 +4036,21 @@ Si se habilita esta política, SwiftShader se usará como alternativa de softwar
 Si se inhabilita esta política o no se define, es posible que no se pueda crear el contexto de WebGL si la aceleración por hardware de la GPU no está disponible. Las páginas web pueden comportarse mal si no gestionan correctamente el error de creación de contexto de WebGL.
 
 Esta es una política temporal que se eliminará en el futuro.</translation>
+<translation id="3607939601300521364">Controla si el agente <ph name="GEMINI_SPARK_PRODUCT_NAME" /> puede conectarse a <ph name="PRODUCT_NAME" /> y usar la navegación automática.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> puede conectarse y usar la Navegación automática de <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> no puede conectarse ni usar la Navegación automática de <ph name="PRODUCT_NAME" />
+
+Advertencia: Si permites que <ph name="GEMINI_SPARK_PRODUCT_NAME" /> se conecte a <ph name="PRODUCT_NAME" /> y use Navegación automática, el agente <ph name="GEMINI_SPARK_PRODUCT_NAME" /> podrá realizar acciones autónomas de varios pasos en los clientes de <ph name="PRODUCT_NAME" /> mediante la sesión de navegador activa. Esto conlleva riesgos de seguridad significativos, como riesgos de credenciales, entrada de red local y pérdida de señales contextuales. Puede que no se respeten los controles de gestión y seguridad actuales.
+
+Se recomienda a los administradores que evalúen cuidadosamente el modelo de amenazas de red, las directrices de cumplimiento y las directrices de privacidad de su organización antes de habilitar esta función.
+
+Esta política no tiene efecto cuando la aplicación <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> o las políticas de Navegación automática de <ph name="PRODUCT_NAME" /> están inhabilitadas. Por ejemplo, la aplicación <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> se puede inhabilitar mediante la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Para obtener más información sobre <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> en <ph name="PRODUCT_NAME" />, consulta https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+<ph name="GEMINI_SPARK_PRODUCT_NAME" /> y la Navegación automática de <ph name="PRODUCT_NAME" /> no están disponibles en todos los países ni en todos los idiomas. Aunque se le asigne el valor 0 (Habilitado) a esta política, no se garantiza que la función se habilite, ya que sigue sujeta a disponibilidad. Para obtener más información sobre su lanzamiento, consulta las notas de la versión de Enterprise: https://chromeenterprise.google/resources/release-notes/
+
+Si no se define esta política, su comportamiento se determinará mediante la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
 <translation id="3612482251405108708">Inicio automático de la reautenticación online en la pantalla de bloqueo</translation>
@@ -4067,14 +4084,6 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="3647212518036289905">Si se define esta política, especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes definirla como un nombre de biblioteca o una ruta completa.
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
-<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
-La función ServiceWorkerAutoPreload envía una solicitud de red de un recurso principal al mismo tiempo que inicia el proceso de arranque de ServiceWorker.
-
-Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> habilitará ServiceWorkerAutoPreload. La solicitud de navegación se envía automáticamente al iniciar el ServiceWorker en algunos casos, como cuando el ServiceWorker no se está ejecutando.
-
-Si está inhabilitada, <ph name="PRODUCT_NAME" /> no habilitará ServiceWorkerAutoPreload. La solicitud de navegación se envía siempre después de iniciar el ServiceWorker.
-
-Esta política es una medida temporal para controlar la función y se eliminará en la versión M144.</translation>
 <translation id="3650122925429054129">Inhabilitar el resaltado del cursor en la pantalla de inicio de sesión</translation>
 <translation id="365093517647222762">Envía informes de datos de telemetría de sitios web sobre URLs permitidas especificadas en la política <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> correspondientes a usuarios afiliados.
 
@@ -5067,6 +5076,7 @@ Esta capa de control adicional está en un nivel inferior a la capa de permisos 
 Los usuarios no pueden anular la selección del administrador. Si no se define esta política, los usuarios tendrán una experiencia de consumidor, es decir, podrán modificar libremente los ajustes de ubicación del sistema y el valor predeterminado será <ph name="GLS_ALLOWED" />.
 
 Nota: Esta política desactiva la política <ph name="ARC_GLS_POLICY_NAME" />. Además, si se define esta política, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> dejará de afectar a la preferencia de ubicación de <ph name="ANDROID_NAME" /> en <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4340826578810728651">Permite que <ph name="GEMINI_SPARK_PRODUCT_NAME" /> se conecte y use la Navegación automática de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se utilizará la codificación UTF‑8.</translation>
@@ -5970,6 +5980,7 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> seguirá el proceso d
       - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, las funciones del navegador estarán limitadas.
 
       - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
+<translation id="4896469165628792802"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> tiene permiso para conectarse y usar la Navegación automática de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="489760181463331251">Esta política cambia el nivel de ahorro de la función Ahorro de memoria.
 
 Esta política solo tendrá efecto si la función Ahorro de memoria se habilita a través de la configuración o de la política <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> y afectará a la forma en que se usan métodos heurísticos para determinar cuándo se deben descartar las pestañas. Por ejemplo, reducir el tiempo que tardarán en descartarse las pestañas inactivas puede ahorrar memoria, pero las pestañas se volverán a cargar con más frecuencia, lo cual puede afectar negativamente a la experiencia de usuario y provocar un aumento del consumo de tráfico de red.
@@ -6810,6 +6821,7 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite est
 Si se asigna el valor true a esta política o no se le asigna ningún valor, los profesores seleccionados podrán subtitular su voz y enviar la transcripción a los alumnos.
 
 Si se le asigna el valor false, no podrán acceder a la función.</translation>
+<translation id="5377484655498931153"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> no tiene permiso para conectarse ni usar la Navegación automática de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5377606826822211923">Controlar el uso de aplicaciones Android de fuentes que no son de confianza para el usuario</translation>
 <translation id="537786648513450280">Controlar el uso de aplicaciones Android de fuentes que no son de confianza para el dispositivo</translation>
 <translation id="5378885577701865339">Inhabilitar la función de portapapeles compartido</translation>
@@ -9058,6 +9070,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
 Si se habilita esta política o no se le asigna ningún valor, el usuario podrá guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> desde el menú contextual. Si se inhabilita esta política, los usuarios no podrán ver esa opción en el menú contextual.
 Esta política no impide que los usuarios puedan guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> de otras formas distintas a la utilización del menú contextual.</translation>
 <translation id="6823711520976094072">Si a esta política se le asigna un valor inferior a 1 MB o no se le asigna ningún valor, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado de 256 MB para el almacenamiento en caché de aplicaciones y extensiones que deben instalar varios usuarios de un mismo dispositivo, lo que evitará que cada usuario deba volver a descargar cada elemento.</translation>
+<translation id="6828918560681256273">Restringir la API Background Fetch cuando se llama desde un service worker</translation>
 <translation id="6829632070341067746">Esta política controla la reciente refactorización para las APIs Graphics3D en el complemento PPAPI.
 
 La migración solo afecta a detalles de implementación interna y no debería cambiar ningún comportamiento. No obstante, esta política se puede utilizar en caso de que alguna aplicación PPAPI no funcione correctamente.
@@ -12078,6 +12091,14 @@ Esta política está obsoleta a partir de la versión 144 de <ph name="PRODUCT_N
 <translation id="8757552286070680084">Configuración de Wilco DTC</translation>
 <translation id="8758831693895931466">Activar el registro obligatorio en la gestión en la nube</translation>
 <translation id="8759829385824155666">Tipos de cifrado Kerberos admitidos</translation>
+<translation id="8762128467207353085">Una lista de orígenes de aplicaciones de cliente de escritorio remoto que pueden realizar solicitudes a la API WebAuthn que se originan en una sesión de navegador en un host remoto.
+
+Cualquier origen configurado en esta política puede hacer solicitudes WebAuthn para obtener IDs de entidad de confianza que normalmente no podría solicitar.
+
+Solo se permiten orígenes HTTPS válidos. No se admiten comodines.
+Las entradas no válidas se ignoran.
+
+Esta política solo se aplica a usuarios afiliados.</translation>
 <translation id="8765401957266318536">Habilitar la integración de Lens o de la aplicación Galería en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Si se habilita esta política, los usuarios podrán usar <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web (por ejemplo, para agilizar la tramitación de compras y los cambios de contraseña). El uso de <ph name="ASSISTANT_PRODUCT_NAME" /> requiere el consentimiento adicional de los usuarios y <ph name="ASSISTANT_PRODUCT_NAME" /> solo se ejecutará si los usuarios deciden dar este consentimiento, aunque la política se haya habilitado.
 

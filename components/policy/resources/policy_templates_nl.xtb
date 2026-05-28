@@ -2878,6 +2878,7 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2853757230661166968">Hiermee kunnen apps standaard systeemsnelkoppelingen vastleggen en overschrijven.</translation>
 <translation id="285480231336205327">Modus voor hoog contrast aanzetten</translation>
 <translation id="285627849510728211">Dagconfiguratie voor geavanceerde batterijoplaadmodus instellen</translation>
+<translation id="2856348870384508185">Chrome-suggesties uitzetten</translation>
 <translation id="2856932965866813330">Delen van inloggegevens met andere gebruikers aanzetten</translation>
 <translation id="28600673996840076">Aanpassing van afbeeldingen voor gebruikersavatars toestaan met een Google-profielafbeelding of lokale afbeeldingen.</translation>
 <translation id="2864207379891420023">Toelatingslijst voor installatie van extensies instellen</translation>
@@ -2984,6 +2985,7 @@ De complexiteitsniveaus zijn gebaseerd op de statistieken voor wachtwoordkwalite
 
 Raadpleeg het Helpcentrum-artikel voor gedetailleerde uitleg over wat elk niveau inhoudt voor zowel pincodes als wachtwoorden.</translation>
 <translation id="2926813071464307947">De sandbox voor de app-container van het weergaveprogramma uitzetten</translation>
+<translation id="2930792103747180259">Uitgezet: ophalen op de achtergrond via service workers is toegestaan zonder beperkingen.</translation>
 <translation id="2931888116345994552">Hiermee zet je componentupdates voor alle componenten in <ph name="PRODUCT_NAME" /> aan als het beleid wordt toegepast of niet is ingesteld.
 
       Als je het beleid niet toepast, staan updates voor componenten uit. Bepaalde componenten zijn wel uitgesloten van dit beleid. Updates voor componenten worden niet uitgezet als deze geen uitvoerbare code bevatten en essentieel zijn voor de beveiliging van de browser.
@@ -3098,6 +3100,7 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 <translation id="2976033779241323433">Virtueel aanraaktoetsenbord aanzetten op basis van de standaard systeemheuristiek</translation>
 <translation id="2976429807269247880">Instellingen voor gedrag van verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
+<translation id="2984696342503554732">Aangezet: achtergrond ophalen van service workers is beperkt.</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC aanzetten</translation>
 <translation id="2987227569419001736">Gebruik van de Web Bluetooth API beheren</translation>
@@ -4019,6 +4022,21 @@ Als je het beleid toepast, wordt SwiftShader gebruikt als software-reserveoptie 
 Als je het beleid niet toepast of niet instelt, kan het maken van een WebGL-context mislukken als hardwareversnelling via de GPU niet beschikbaar is. Webpagina's kunnen zich onvoorspelbaar gedragen als ze het mislukken van het maken van een WebGL-context niet correct verwerken.
 
 Dit is een tijdelijk beleid dat in de toekomst wordt verwijderd.</translation>
+<translation id="3607939601300521364">Hiermee bepaal je of de <ph name="GEMINI_SPARK_PRODUCT_NAME" />-agent verbinding mag maken met <ph name="PRODUCT_NAME" /> en automatisch browsen mag gebruiken.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag verbinding maken met en automatisch gebruiken browsen in <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag geen verbinding maken met of automatisch gebruiken browsen in <ph name="PRODUCT_NAME" />
+
+Waarschuwing: Als je <ph name="GEMINI_SPARK_PRODUCT_NAME" /> toestaat verbinding te maken met <ph name="PRODUCT_NAME" /> en automatisch browsen te gebruiken, kan de <ph name="GEMINI_SPARK_PRODUCT_NAME" />-agent zelfstandige acties in meerdere stappen uitvoeren op <ph name="PRODUCT_NAME" />-clients met de actieve browsersessie. Dit brengt aanzienlijke beveiligingsrisico's met zich mee, waaronder risico's voor inloggegevens, toegang tot het lokale netwerk en verlies van contextafhankelijke signalen. Bestaande beheer- en beveiligingsfuncties worden misschien niet gerespecteerd.
+
+We raden beheerders aan het model voor netwerkdreigingen, de nalevingsrichtlijnen en de privacyrichtlijnen van hun organisatie zorgvuldig te evalueren voordat ze deze functie aanzetten.
+
+Dit beleid heeft geen effect als de beleidsregels voor de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-app of automatisch browsen in <ph name="PRODUCT_NAME" /> niet worden toegepast. De <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-app kan bijvoorbeeld worden uitgezet met het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Ga voor meer informatie over <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> naar https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Automatisch browsen in <ph name="PRODUCT_NAME" /> en <ph name="GEMINI_SPARK_PRODUCT_NAME" /> zijn niet in alle landen of alle talen beschikbaar. Als je dit beleid instelt op 0 - Enabled (Aan), garandeert dit niet dat de functie wordt aangezet. De functie blijft afhankelijk van de beschikbaarheid. Check de release-opmerkingen voor Chrome Enterprise voor meer informatie over de uitrol: https://chromeenterprise.google/resources/release-notes/
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="3608206578291537084">De Encrypted Reporting Pipeline aanzetten</translation>
 <translation id="3608281460204780443">Het Chrome Web Store-icoon tonen in de <ph name="PRODUCT_OS_NAME" />-launcher en op de pagina Nieuw tabblad</translation>
 <translation id="3612482251405108708">Automatisch starten van online opnieuw verifiëren op het vergrendelscherm</translation>
@@ -4052,14 +4070,6 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een standaard bibliotheeknaam.</translation>
-<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
-De functie ServiceWorkerAutoPreload stuurt een netwerkverzoek voor een hoofdresource op hetzelfde moment dat het ServiceWorker-bootstrap-proces wordt gestart.
-
-Als je het beleid toepast of niet instelt, zet <ph name="PRODUCT_NAME" /> ServiceWorkerAutoPreload aan. Het navigatieverzoek wordt in sommige scenario's automatisch verstuurd terwijl de ServiceWorker wordt gestart, bijvoorbeeld als de ServiceWorker niet actief is.
-
-Als je het beleid niet toepast, zet <ph name="PRODUCT_NAME" /> ServiceWorkerAutoPreload niet aan. Het navigatieverzoek wordt altijd verstuurd nadat de ServiceWorker is gestart.
-
-Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt verwijderd in M144.</translation>
 <translation id="3650122925429054129">Cursormarkering op het inlogscherm uitzetten</translation>
 <translation id="365093517647222762">Rapporteert telemetriegegevens van websites voor toegestane URL's die zijn opgegeven in het beleid <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> voor aangesloten gebruikers.
 
@@ -5049,6 +5059,7 @@ Dit is een extra beheerlaag die zich onder de rechtenlaag voor apps en websites 
 Gebruikers kunnen de beheerdersselectie niet overschrijven. Als je het beleid niet instelt, hebben gebruikers de consumentenfunctionaliteit. Dat wil zeggen dat ze de locatie-instelling van het systeem zelf kunnen aanpassen. De standaard is dan <ph name="GLS_ALLOWED" />.
 
 Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> beëindigd. Als je dit beleid instelt, heeft <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> ook geen invloed meer op de <ph name="ANDROID_NAME" />-locatievoorkeur in <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4340826578810728651">Hiermee kan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> verbinding maken met en automatisch browsen gebruiken in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4341199399451274159">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> instelt, worden de tekencoderingen gespecificeerd die worden ondersteund door de zoekprovider. Deze coderingen zijn codepaginanamen zoals UTF-8, GB2312 en ISO-8859-1. Ze worden getest in de volgorde waarin ze worden opgegeven.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> niet instelt, wordt UTF-8 gebruikt.</translation>
@@ -5782,6 +5793,13 @@ Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggeg
 <translation id="4789450349513792856">Pop-ups blokkeren op deze sites</translation>
 <translation id="4790391579868456557">Essentiële en niet-essentiële cookies gebruiken voor zoeken.</translation>
 <translation id="4790588245699320140">De Google Assistent toegang geven tot schermcontext</translation>
+<translation id="4797001637482545491">Met deze instelling kan Chrome op relevante momenten AI-mogelijkheden voorstellen.
+
+0/niet ingesteld = Chrome-suggesties worden aangezet voor gebruikers.
+
+1 = Chrome-suggesties staan uit voor gebruikers.
+
+Ga voor meer informatie naar het Helpcentrum-artikel: https://support.google.com/chrome/a?p=chrome_suggestions</translation>
 <translation id="4799820756794591883">TLS 1.3 Early Data is een extensie van TLS 1.3 waarmee je een HTTP-verzoek tegelijkertijd met de TLS-handshake kunt sturen.
 
       Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor TLS 1.3 Early Data.
@@ -5931,6 +5949,7 @@ Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard u
       - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, beschikt de browser over beperkte functionaliteit.
 
       - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
+<translation id="4896469165628792802"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag verbinding maken met en van automatisch browsen gebruiken in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="489760181463331251">Met dit beleid wijzig je het besparingsniveau van Geheugenbesparing.
 
 Dit is alleen van kracht als Geheugenbesparing is aangezet via de instellingen of via het beleid <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> en heeft invloed op hoe heuristieken worden gebruikt om te bepalen wanneer tabbladen moeten worden verwijderd. Als je bijvoorbeeld de levensduur van een inactief tabblad verkort voordat je het verwijdert, kun je geheugen besparen. Het betekent ook dat tabbladen vaker worden geladen, wat kan leiden tot een slechte gebruikerservaring en meer netwerkverkeer.
@@ -6744,6 +6763,7 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 Als de waarde is ingesteld op Waar of niet is ingesteld, kunnen geselecteerde docenten ondertiteling voor doven en slechthorenden voor hun stem toevoegen en de transcriptie naar leerlingen sturen.
 
 Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</translation>
+<translation id="5377484655498931153"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag geen verbinding maken met of automatisch gebruiken browsen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5377606826822211923">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor de gebruiker</translation>
 <translation id="537786648513450280">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor het apparaat</translation>
 <translation id="5378885577701865339">De functie voor gedeeld klembord uitzetten</translation>
@@ -7990,6 +8010,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="624219423122512710">Acties bij inactieve browser</translation>
 <translation id="6244061205361004687">De gebruiker toestaan een VPN handmatig te ontkoppelen of aan te passen</translation>
 <translation id="6244210204546589761">URL's die worden geopend bij starten</translation>
+<translation id="6244263962918757383">Instellingen voor Chrome-suggesties</translation>
 <translation id="6245828368576563662">Met dit beleid kun je een lijst met regels definiëren om aangepaste HTTP-headers in te voegen in webverzoeken die overeenkomen met specifieke URL-patronen. Headers die zijn ingesteld door dit beleid, hebben voorrang op headers die oorspronkelijk aanwezig waren in het verzoek en op wijzigingen die gebruikers of extensies proberen aan te brengen.
 
 Een veelgebruikte use case voor dit beleid is om toegangsbeheer voor tenants af te dwingen door aangepaste headers te injecteren (bijvoorbeeld <ph name="EXAMPLE_HEADER_NAME" />).
@@ -8960,6 +8981,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
 Als je het beleid toepast of niet instelt, kan de gebruiker afbeeldingen vanuit het contextmenu opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />. Als je het beleid niet toepast, zien gebruikers de optie niet in het contextmenu.
 Dit beleid voorkomt niet dat gebruikers afbeeldingen opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> op andere manieren dan het contextmenu.</translation>
 <translation id="6823711520976094072">Als je het beleid instelt op een waarde lager dan 1 MB of als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte van 256 MB voor het cachen van apps en extensies voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
+<translation id="6828918560681256273">De Background Fetch API beperken als deze wordt aangeroepen vanuit een service worker</translation>
 <translation id="6829632070341067746">Dit beleid beheert de recente refactor voor Graphics3D-API's in PPAPI-plug-in.
 
 De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
@@ -11493,6 +11515,7 @@ Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor 
 
       Als het beleid is ingesteld, worden oude momentopnamen verwijderd als dat nodig is om aan de limiet te voldoen. Als het beleid is ingesteld op 0, worden er geen momentopnamen gemaakt.</translation>
 <translation id="8446679541472571487">Het AI-introductiescherm tonen tijdens het inloggen</translation>
+<translation id="8451205236854734195">Chrome-suggesties toestaan</translation>
 <translation id="8451988835943702790">De pagina 'Nieuw tabblad' als homepage gebruiken</translation>
 <translation id="8452787853105404870">Hardwaregegevens naar Google sturen om ChromeOS Flex te verbeteren</translation>
 <translation id="8453218444172088993">Zet de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen uit voor je gebruikers.</translation>
@@ -11957,6 +11980,14 @@ Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beë
 <translation id="8757552286070680084">Wilco DTC-configuratie</translation>
 <translation id="8758831693895931466">Inschrijving voor cloudbeheer verplichten</translation>
 <translation id="8759829385824155666">Toegestane Kerberos-versleutelingstypen</translation>
+<translation id="8762128467207353085">Een lijst met oorsprongen van Remote Desktop-client-apps die WebAuthn API-verzoeken kunnen uitvoeren die afkomstig zijn van een browsesessie op een externe host.
+
+Elke oorsprong die is ingesteld in dit beleid, kan WebAuthn-verzoeken indienen voor Relying Party-ID's (RP-ID's) die normaal gesproken niet kunnen worden geclaimd.
+
+Alleen geldige HTTPS-oorsprongen zijn toegestaan. Jokertekens worden niet ondersteund.
+Ongeldige vermeldingen worden genegeerd.
+
+Dit beleid geldt alleen voor aangesloten gebruikers.</translation>
 <translation id="8765401957266318536">Hiermee zet je de integratie van Lens/Galerij-app aan op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Als je het beleid toepast, kunnen gebruikers <ph name="ASSISTANT_PRODUCT_NAME" /> gebruiken op internet, bijvoorbeeld voor sneller betalen en wachtwoordwijzigingen. Voor het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> is aanvullende toestemming van gebruikers vereist. <ph name="ASSISTANT_PRODUCT_NAME" /> wordt alleen uitgevoerd als gebruikers ervoor kiezen deze toestemming te geven, ook als het beleid wordt toegepast.
 

@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1111673857033749125">Hier zie je bookmarks die je op andere apparaten hebt opgeslagen.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, tabblad voor scherm-in-scherm</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 venster herstellen}other{# vensters herstellen}}</translation>
 <translation id="1126696498560056882">Accounts op dit apparaat beheren</translation>
 <translation id="1135018701024399762">Met de incognitomodus kun je je browse-activiteit privé houden voor anderen die je apparaat gebruiken</translation>
 <translation id="113752097246673894">Log in bij Chrome met het e-mailadres <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
@@ -195,7 +196,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1877073879466606884">Het profiel waarop je bent ingelogd, is een beheerd profiel. Je beheerder kan op afstand wijzigingen aanbrengen in je profielinstellingen, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren.</translation>
 <translation id="1879904908408734349">Inlogblad onderaan is gesloten</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> voorgestelde items in de lijst hierboven.</translation>
 <translation id="189358972401248634">Andere talen</translation>
 <translation id="1899175549411605574">Blad onderaan met prijsinzichten</translation>
 <translation id="1900260903084164610">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3166827708714933426">Sneltoetsen voor tabbladen en vensters</translation>
 <translation id="3167258285411721858">Je kunt de mobiele site opvragen voor <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet incognitotabblad met geluid uit</translation>
+<translation id="3183941812169784232">Alle vensters herstellen?</translation>
 <translation id="3187472288455401631">Advertentiemeting</translation>
 <translation id="3189635831478931757">Tabbladgroep <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Je huidige venster sluiten?</translation>
@@ -722,6 +723,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4164642020717536140">Browse snel en beveiligd op internet</translation>
 <translation id="4165077084524712774">Meer tools</translation>
 <translation id="4170577491341606575">Je gegevens ophalen\u2026</translation>
+<translation id="4176838562184310003">Chrome is niet correct uitgezet en kan proberen je verloren vensters en tabbladen te herstellen. Sommige vensters worden misschien geminimaliseerd als ze worden hersteld.</translation>
 <translation id="4177222230309051052">Haal al je bookmarks op</translation>
 <translation id="4177501066905053472">Advertentieonderwerpen</translation>
 <translation id="417865198503699526">Zoek naar een instelling</translation>

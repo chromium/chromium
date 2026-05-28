@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Synchronizace historie</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, karta s obrazem v obraze</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Obnovit 1 okno}few{Obnovit # okna}many{Obnovit # okna}other{Obnovit # oken}}</translation>
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
 <translation id="1135018701024399762">Anonymní režim chrání soukromí vašeho prohlížení před ostatními uživateli vašeho zařízení</translation>
 <translation id="113752097246673894">Pokud své záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu jako <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1877073879466606884">Jste přihlášeni ke spravovanému profilu. Administrátor může vzdálené měnit nastavení profilu, analyzovat informace o prohlížeči prostřednictvím přehledů a provádět další nezbytné úkoly.</translation>
 <translation id="1879904908408734349">Spodní panel pro přihlášení je zavřený</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
-<translation id="1889626070177134359">Výše je seznam <ph name="SUGGESTIONS_COUNT" /> navrhovaných položek.</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
 <translation id="1899175549411605574">Spodní panel s informacemi o ceně</translation>
 <translation id="1900260903084164610">Pokračováním vyjadřujete souhlas se <ph name="BEGIN_TOS_LINK" />smluvními podmínkami<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3166827708714933426">Zkratky pro okna a karty</translation>
 <translation id="3167258285411721858">Můžete požádat o web <ph name="HOST_NAME" /> pro mobily</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých ztlumených anonymních karet</translation>
+<translation id="3183941812169784232">Obnovit všechna okna?</translation>
 <translation id="3187472288455401631">Měření reklam</translation>
 <translation id="3189635831478931757">Skupina karet <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Zavřít aktuální okno?</translation>
@@ -722,6 +723,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4164642020717536140">Rychlé a bezpečné prohlížení webu</translation>
 <translation id="4165077084524712774">Další nástroje</translation>
 <translation id="4170577491341606575">Načítání vašich věcí\u2026</translation>
+<translation id="4176838562184310003">Chrome nebyl řádně ukončen a může se pokusit obnovit ztracená okna a karty. Některá okna mohou být při obnovení minimalizována.</translation>
 <translation id="4177222230309051052">Získejte všechny své záložky</translation>
 <translation id="4177501066905053472">Témata reklam</translation>
 <translation id="417865198503699526">Vyhledat nastavení</translation>

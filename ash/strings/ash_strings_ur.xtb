@@ -27,6 +27,7 @@
         <ph name="BEGIN_PARAGRAPH3" />ایپ ڈیٹا رابطے، پیغامات اور تصاویر سمیت کوئی بھی ایسا ڈیٹا ہو سکتا ہے جسے کسی ایپ نے (ڈویلپر کی ترتیبات کی بنیاد پر) محفوظ کیا ہو۔<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />بیک اپ ڈیٹا کو آپ کے Drive اسٹوریج کوٹہ میں شمار نہیں کیا جائے گا۔<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />آپ اس سروس کو ترتیبات میں جا کر آف کر سکتے ہیں۔<ph name="END_PARAGRAPH5" /></translation>
+<translation id="106814709658156573">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے کی بورڈ کے نیچے بائیں کونے میں موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="1073899992769346247">بیٹری کو تبدیل یا ریچارج کریں</translation>
 <translation id="1081015718268701546">‏Linux ایپس فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
 <translation id="108486256082349153">سیلولر: <ph name="ADDRESS" /></translation>
@@ -117,6 +118,7 @@
 <translation id="1301513122398173424">‏کسی بھی وقت <ph name="LAUNCHER_KEY_NAME" /> + g دبائیں۔</translation>
 <translation id="130491383855577612">‏Linux کی ایپس اور فائلز کامیابی کے ساتھ بحال ہو گئیں</translation>
 <translation id="1306549533752902673">تجویز کردہ ایپس</translation>
+<translation id="1306606229401759371">ترتیبات تبدیل کریں</translation>
 <translation id="1310396869741602366">ٹون کو تبدیل کریں</translation>
 <translation id="1312604459020188865">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">اوپر کنارے والے ہینڈل کو منتخب کیا گیا، منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں</translation>
@@ -139,9 +141,11 @@
 <translation id="1372545819342940910">بعد کے لیے ڈیسک کو محفوظ کریں</translation>
 <translation id="1383597849754832576">اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
+<translation id="1390113502208199250">‏Education کی خصوصیات کا استعمال کرنے کے لیے آپ کو اس آلہ کو فیکٹری ری سیٹ کرنا ہوگا۔</translation>
 <translation id="1391102559483454063">آن</translation>
 <translation id="1394698770495054737">پورا دھندلا</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{‫1 دن پہلے}other{‫# دن پہلے}}</translation>
+<translation id="1403222014593521787">پراکسی سے منسلک ہونے سے قاصر</translation>
 <translation id="1404963891829069586">فوکس کی آوازیں</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />۔ تواریخ کے درمیان نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
@@ -289,6 +293,7 @@
 <translation id="1824922790784036530">مقام تک رسائی آن کریں</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> سے پن کو ختم کر دیا گیا</translation>
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> کھولنے کیلئے منتخب کریں۔</translation>
+<translation id="1832511806131704864">فون کی تبدیلی کو اپ ڈیٹ کر دیا گیا</translation>
 <translation id="1838011306813517425">فوکس کی ترتیبات</translation>
 <translation id="1838895407229022812">نائٹ لائٹ آف ہے۔</translation>
 <translation id="1840920496749066704">‎°C</translation>
@@ -306,11 +311,13 @@
 <translation id="1885785240814121742">فنگر پرنٹ کی مدد سے غیر مقفل کریں</translation>
 <translation id="1891362123137972260">ڈسک اسپیس انتہائی کم ہے۔ براہ کرم ڈسک اسپیس خالی کریں۔</translation>
 <translation id="1894024878080591367">اپنے کی بورڈ کے ساتھ کھیلنے کے لیے سیٹ اپ کریں</translation>
+<translation id="1896043844785689584">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے کی بورڈ کے نیچے دائیں کونے میں موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="1896383923047738322">اپنے کی بورڈ کو حسب ضرورت بنائيں</translation>
 <translation id="1904997243703671177">جب آپ بلوٹوتھ کو آف کرتے ہیں تو <ph name="DEVICE_COUNT" /> بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے، بشمول:</translation>
 <translation id="1908992311423394684">نئی انسٹال کردہ ایپ</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1918022425394817322">کیمرا اوپری دائیں کونے میں اسنیپ کیا گیا ہے</translation>
+<translation id="1919872106782726755">فنگر پرنٹ سیٹ اپ کرنے کے لیے اپنے بچے سے کی بورڈ کے اوپری دائیں کونے میں موجود پاور بٹن کے بغل میں فنگر پرنٹ سینسر کو چھونے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="1920390473494685033">رابطے</translation>
 <translation id="1923539912171292317">خودکار کلکس</translation>
 <translation id="1925320505152357008">1 منٹ سے کم</translation>
@@ -344,6 +351,7 @@
 <translation id="2034971124472263449">بہرحال محفوظ کریں</translation>
 <translation id="2041220428661959602">بیٹری لیول: <ph name="BATTERY_PERCENTAGE" /> فیصد</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> کا شارٹ کٹ فی الحال آف ہے</translation>
+<translation id="204622017488417136">‏آپ کا آلہ Chrome کے پچھلے انسٹال کردہ ورژن پر لوٹا دیا جائے گا۔ سبھی صارفین کے اکاؤنٹس اور مقامی ڈیٹا کو ہٹا دیا جائے گا۔ اسے کالعدم نہیں کیا جا سکتا ہے۔</translation>
 <translation id="204706822916043810">ورچوئل مشین کو چیک کیا جا رہا ہے</translation>
 <translation id="2048554637254265991">کنٹینر مینیجر کو شروع کرنے میں خرابی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2048653237708779538">کارروائی دستیاب نہیں ہے</translation>
@@ -372,6 +380,7 @@
 <translation id="2152796271648108398">موجودہ موسم</translation>
 <translation id="2152895518047545149">ایسا لگتا ہے کہ کچھ بھی غائب نہیں ہے۔ بہت اچھا!</translation>
 <translation id="2159568970844941445">فائلز میں کوئی تصویر نہیں ہے</translation>
+<translation id="2160985496866145279">‏‫Bruschetta کو شٹ ڈاؤن کریں</translation>
 <translation id="2161132820593978283">کیمرا فریمنگ کو آزمائیں تاکہ آپ ویڈیو کالز پر اسکرین کے وسط میں رہیں۔ فوری ترتیبات میں اسے آن کریں۔</translation>
 <translation id="216955976692983107">ٹائل شدہ ونڈو کا سائز دائیں طرف بدلیں</translation>
 <translation id="2185166372312820725">پچھلے ٹیب پر جائیں</translation>
@@ -412,12 +421,14 @@
 <translation id="2304702218354340897">کیا آپ واقعی چہرے سے کنٹرول کو آف کرنا چاہتے ہیں؟</translation>
 <translation id="2305738328104302723">‏Google Tasks کی فہرست: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: حالیہ اسکرین کیپچرز، ڈاؤن لوڈز اور پن کردہ فائلز</translation>
+<translation id="2316433409811863464">ایپ کی سلسلہ بندی</translation>
 <translation id="2318576281648121272">آج <ph name="TODAY_DATE" /></translation>
 <translation id="2318817390901984578">‏Android ایپس استعمال کرنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو چارج اور اپ ڈیٹ کریں۔</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> ، تلاش کے نتیجہ کا زمرہ</translation>
 <translation id="2322173485024759474">ایک حرف پیچھے جائیں</translation>
 <translation id="2326112202058075478">مزید ایموجیز دکھائیں</translation>
 <translation id="2335091074961603075">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے اندرونی مائیکروفون استعمال کریں۔</translation>
+<translation id="2336381494582898602">پاور واش</translation>
 <translation id="2339073806695260576">ایک نوٹ، اسکرین شاٹ لینے، لیزر پوائنٹر یا میگنیفائنگ گلاس استعمال کرنے کے لیے شیلف پر اسٹائلس بٹن تھپتھپائیں۔</translation>
 <translation id="2341729377289034582">عمودی پر مقفل ہے</translation>
 <translation id="2344032937402519675">‏سرور سے منسلک نہیں ہو سکا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر آپ کو اب بھی مشکل درپیش ہے تو اپنا Chromebook ری سٹارٹ کرنے کی کوشش کریں۔</translation>
@@ -442,6 +453,7 @@
 <translation id="2383521554963939360">ایپ اور ٹیب گروپس</translation>
 <translation id="2386292613071805067">صفحہ پر ہر چیز کو منتخب کریں</translation>
 <translation id="2389423187722941333">‏‫Gemini ٹوگل کریں</translation>
+<translation id="2390347491606624519">پراکسی سے منسلک نہیں ہو سکتے، براہ کرم دوبارہ سائن ان کریں</translation>
 <translation id="2392659840443812875">کوئی ہاٹ اسپاٹ دستیاب نہیں ہے۔ یہ یقینی بنائیں کہ آپ کا آلہ قریب میں ہے اور بلوٹوتھ آن ہے۔</translation>
 <translation id="2397416548179033562">‏Chrome مینیو دکھائیں</translation>
 <translation id="240006516586367791">میڈیا کنٹرولز</translation>
@@ -483,17 +495,21 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> کا پیش منظر۔ فعال ڈیسک۔</translation>
 <translation id="2486405091093637109">‏"<ph name="DISPLAY_NAME" />" کو <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ریزولوشن میں تبدیل کر دیا گیا۔ تصدیق کیے بغیر، گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="2487915095798731898">شامل ہوں</translation>
+<translation id="2489829450872380594">‏اگلی بار ایک نئے فون سے یہ <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں۔</translation>
 <translation id="2496180316473517155">براؤزنگ سرگزشت</translation>
 <translation id="2499445554382787206">ڈیسک پروفائل کے لیے مینیو۔ <ph name="DESK_NAME" /></translation>
+<translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
 <translation id="2504454902900101003">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="2505378917951323738">ٹاسک میں ترمیم نہیں کی جا سکی۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="2509468283778169019">‏CAPS LOCK آن ہے</translation>
+<translation id="2514326558286966059">اپنے فنگر پرنٹ سے تیزی سے غیر مقفل کریں</translation>
 <translation id="2514415433888497495">اسٹاپ <ph name="CAPTURE_MEDIUM" />۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515962024736506925">ایکسیسبیلٹی کے اختیارات کھولیں</translation>
 <translation id="2516416533263263796">فوکس آن ہے، 10 منٹ باقی ہے</translation>
 <translation id="2516637483312286228">گیم کنٹرولز میں ترمیم کریں</translation>
+<translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="252054055865191167">مارکر ٹول</translation>
 <translation id="2526581474998477112">ونڈوز غیر مقفل کریں</translation>
 <translation id="2528111225373402384">ہاٹ اسپاٹ کی ترتیبات</translation>
@@ -569,6 +585,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"حذف کریں"</translation>
 <translation id="2750941250130734256">فعال ونڈو کو غیر مقفل کیا گیا۔</translation>
+<translation id="2755349111255270002">اس <ph name="DEVICE_TYPE" /> کو ری سیٹ کریں</translation>
 <translation id="2761723519669354964">شیلف سے نمایاں کردہ آئٹم کھولیں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
@@ -613,10 +630,12 @@
 <translation id="2869095047958348710">اس پچھلے <ph name="DAY_OF_WEEK" /> کو</translation>
 <translation id="2872353916818027657">بنیادی مانیٹر کو سویپ کریں</translation>
 <translation id="2872961005593481000">بند کریں</translation>
+<translation id="2876336351874743617">فنگر 2</translation>
 <translation id="2876338922445400217">اسکرین پر زوم ان کریں</translation>
 <translation id="2876760662374103627">چہرے سے کنٹرول فعال ہے</translation>
 <translation id="2878884018241093801">کوئی حالیہ آئٹم نہیں</translation>
 <translation id="2880541185262491188">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ کوشش کریں</translation>
+<translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> تھوڑی دیر کیلئے دوبارہ شروع ہو جائے گا اور دوبارہ ترتیب دیا جائے گا</translation>
 <translation id="2883271196820422439">ماؤس کنٹرول کرنے کی کلیدیں دوبارہ شروع کریں</translation>
 <translation id="2885950158625301909">مزید جانیں</translation>
 <translation id="2891209721153296020">"غیر منتخب کریں"</translation>
@@ -656,6 +675,7 @@
 <translation id="2993956882370897557">‏‫End استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
 <translation id="3001391739687111021">اسکرین کے سائز میں ترمیم کریں</translation>
+<translation id="3001835006423291524">اپنے کی بورڈ کے نیچے دائیں کونے موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="301282384882049174">آپ کے منتظم کے ذریعے اشتراک کردہ</translation>
@@ -678,6 +698,8 @@
 <translation id="3062298103034426069">تعاون یافتہ نہیں ہے</translation>
 <translation id="3068622547379332530">ورژن <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">شیلف بائیں ہے</translation>
+<translation id="3075144191779656260">اپنے <ph name="DEVICE_TYPE" /> کے بائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
+<translation id="3075874217500066906">‏Powerwash کارروائی شروع کرنے کیلئے ایک بار دوبارہ شروع کرنا درکار ہے۔ دوبارہ شروع کرنے کے بعد آپ سے یہ توثیق کرنے کیلئے پوچھا جائے گا کہ آپ جاری رکھنا چاہتے ہیں۔</translation>
 <translation id="3077734595579995578">شفٹ</translation>
 <translation id="3081696990447829002">مینیو کو پھیلائیں</translation>
 <translation id="3087734570205094154">نیچے</translation>
@@ -703,6 +725,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">کلاس ورک کی قسم</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130528281680948470">آپ کا آلہ دوبارہ ترتیب دیا جائے گا اور سبھی صارف اکاؤنٹس اور مقامی ڈیٹا ہٹا دیے جائیں گے۔ اسے کالعدم نہیں کیا جا سکتا ہے۔</translation>
 <translation id="3130793786899299931">طوالت تبدیل کریں</translation>
 <translation id="3134486240968249588">ذہن میں رکھنے کے لیے چند چیزیں</translation>
 <translation id="3139188263101386725">اپ ڈیٹ کردہ شارٹ کٹ استعمال کریں</translation>
@@ -719,6 +742,7 @@
 <translation id="3174897399179348329">‏‫Page Up استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="3176221688814061633">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے بلوٹوتھ سپر ریزولوشن کو آن کریں یا اندرونی مائیکروفون استعمال کریں۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
+<translation id="3183700187146209259">سکینر سافٹ ویئر انسٹال نہیں کر سکتے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
 <translation id="3203405173652969239">سوئچ رسائی فعال ہو گئی</translation>
 <translation id="3204648577100496185">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹایا جا سکتا ہے۔</translation>
@@ -766,6 +790,7 @@
 <translation id="3346728094401457853"><ph name="EMAIL" /> کیلئے آلہ کا پاس ورڈ درج کریں</translation>
 <translation id="334927402682780278">کرسر سے لائن کے آخر تک ٹیکسٹ منتخب کریں</translation>
 <translation id="3349345708646875009">ٹاسک مینیجر کھولیں</translation>
+<translation id="3353786022389205125">سلیپ وضع سے بیدار وضع میں جاتے وقت "مقفل اسکرین دکھائیں" آن کریں اور دوبارہ کوشش کریں</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
 <translation id="3365281428003534650">ٹائمر، ٹاسک اور موسیقی سیٹ کریں</translation>
 <translation id="3365977133351922112">آپ کا فون بہت دور ہے۔ اپنے فون کو قریب لائیں۔</translation>
@@ -780,6 +805,7 @@
 <translation id="3394432020929931914">، کو پھیلایا گیا</translation>
 <translation id="3401474642070997151">تجاویز کو حسب ضرورت بنانے کے لیے، تجویز پر دائیں کلک کریں یا چھوئیں اور دبائے رکھیں</translation>
 <translation id="3405101454990027959">مائیکروفون تک رسائی آن کریں</translation>
+<translation id="3407967630066378878">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے اس <ph name="DEVICE_TYPE" /> کے بائیں ہاتھ کی طرف موجود فنگر پرنٹ کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="3409584356742878290">ڈویلپر ٹولز انسپکٹر دکھائیں یا چھپائیں</translation>
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
@@ -919,9 +945,11 @@
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
 <translation id="3743775386021959186">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے</translation>
 <translation id="3750403286520637847">موسم کی تجویز چھپائیں</translation>
+<translation id="3752253558646317685">فنگر پرنٹ کو بچانے کے لیے اپنے بچے سے کہیں کہ انگلی اٹھاتا رہے</translation>
 <translation id="3755239467337474637">‏<ph name="BEGIN_PARAGRAPH1" />ایپ کا ڈیٹا رابطے، پیغامات اور تصاویر سمیت کوئی بھی ایسا ڈیٹا ہو سکتا ہے جسے کسی ایپ نے (ڈویلپر کی ترتیبات کی بنیاد پر) محفوظ کیا ہو۔<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />بیک اپ ڈیٹا کا شمار آپ کے بچے کے Drive اسٹوریج کوٹہ میں نہیں کیا جائے گا۔<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />آپ اس سروس کو ترتیبات میں جا کر آف کر سکتے ہیں۔<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3755411799582650620">آپ کا <ph name="PHONE_NAME" /> اب اس <ph name="DEVICE_TYPE" /> کو بھی غیر مقفل کر سکتا ہے۔</translation>
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> شارٹ کٹ کو <ph name="OLD_SHORTCUT" /> سے <ph name="NEW_SHORTCUT" /> میں اپ ڈیٹ کیا گیا ہے</translation>
 <translation id="3765841986579723851">آج ترمیم کیا گیا</translation>
@@ -939,6 +967,7 @@
 <translation id="3799080171973636491">آپ نے پوری اسکرین کے مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="3804737937830804242">کیمرا سکیڑیں</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ایموجی۔ کوئی دوسرا نتیجہ نہیں ہے۔}other{# ایموجیز۔ کوئی دوسرا نتیجہ نہیں ہے۔}}</translation>
+<translation id="381202950560906753">کوئی دوسرا شامل کریں</translation>
 <translation id="3822403841174077928">فارمیٹنگ کے ساتھ کاپی نہیں کیا جا سکا</translation>
 <translation id="3824621460022590830">آلہ کے اندراج کا ٹوکن غلط ہے۔ براہ کرم اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="3824784079442479685">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP_NAME" />، اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
@@ -953,6 +982,7 @@
 <translation id="3848526302597027234">درج ذیل اجازتوں تک رسائی حاصل کریں:</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="385300504083504382">شروعات</translation>
+<translation id="3857807444929313943">اٹھائیں، پھر دوبارہ ٹچ کریں</translation>
 <translation id="3859364108019690">ایپس کی سلسلہ بندی نہیں کی جا سکتی</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" صارف نام دستیاب نہیں ہے</translation>
 <translation id="3861651314799684201">فُل اسکرین ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
@@ -971,6 +1001,7 @@
 <translation id="3923221004758245114">اپنے <ph name="DEVICE_TYPE" /> سے <ph name="VM_NAME" /> کو ہٹائیں؟ اس سے ورچوئل مشین میں موجود سبھی ایپس اور ڈیٹا حذف ہو جائیں گے!</translation>
 <translation id="3923494859158167397">کوئی موبائل نیٹ ورک سیٹ اپ نہیں کیا گیا</translation>
 <translation id="3925540965556789199"><ph name="DATE" />، ایونٹس لوڈ ہو رہے ہیں۔</translation>
+<translation id="3926002189479431949">‏Smart Lock فون تبدیل ہوگیا</translation>
 <translation id="3927049937406914450">موسم دستیاب نہیں ہے کیونکہ مقام تک رسائی بند ہے۔ آپ اسے ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="3934456833412894880">اڈاپٹیو چارجنگ آن ہے بیٹری لائف کو بڑھانے کے لیے آپ کی بیٹری %80 پر رہے گی اور جب آپ کو ضرورت ہو تو پوری طرح سے چارج ہو جائے گی۔</translation>
@@ -1030,6 +1061,7 @@
 <translation id="4113030288477039509">آپ کے منتظم کے زیر انتظام</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="4115378294792113321">میجنٹا</translation>
+<translation id="4116704186509653070">دوبارہ کھولیں</translation>
 <translation id="411881149140864134">بائیں ڈیسک کی طرف فعال کریں</translation>
 <translation id="4119928251231465047">‏‫PIN کی بہت زیادہ کوششیں</translation>
 <translation id="412298498316631026">ونڈو</translation>
@@ -1097,6 +1129,7 @@
 <translation id="4279490309300973883">مررنگ</translation>
 <translation id="4280601795273309128">سیکیورٹی اپ ڈیٹس ختم ہو گئیں۔ اپنے آلے کو اپ گریڈ کریں۔</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
+<translation id="4282196459431406533">‏Smart Lock آن ہے</translation>
 <translation id="4283888303416325161">مزید سیکیورٹی کے لیے پاس ورڈ درج کریں</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
@@ -1122,6 +1155,7 @@
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />، خاموش کردہ</translation>
 <translation id="4351244548802238354">ڈائیلاگ بند کریں</translation>
+<translation id="435527878592612277">اپنی تصویر منتخب کریں</translation>
 <translation id="4356872429719185452">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آن ہو رہا ہے۔</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ریکارڈ کیا جا رہا ہے</translation>
 <translation id="4368227575116094370">‏‫Google Sheet تخلیق کریں</translation>
@@ -1156,6 +1190,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="4451374464530248585">‏Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Page Down کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'نیچے تیر کا نشان' کو دبائیں۔</translation>
+<translation id="4453430595102511050">آپ کے کی بورڈ کے اوپر دائیں کونے موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="445765352722456792">تجاویز کو حسب ضرورت بنائیں</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
 <translation id="445923051607553918">‏Wi-Fi نیٹ ورک میں شامل ہوں</translation>
@@ -1172,6 +1207,7 @@
 <translation id="4485506555414638855">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="4493468155686877504">تجویز کردہ (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="450099669180426158">فجائیہ نشان کا آئیکن</translation>
 <translation id="450584155212756404">‏Dev چینل</translation>
 <translation id="4513044611477939680">فوری اشتراک</translation>
 <translation id="4513946894732546136">تاثرات</translation>
@@ -1181,6 +1217,7 @@
 <translation id="4527045527269911712">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔</translation>
 <translation id="4531536770443562276">صرف مکمل اسکرین دستیاب ہے</translation>
 <translation id="4533343294786968049">آپ کی بیٹری کی لائف کی توسیع کرنا۔ <ph name="FULLY_CHARGE_TIME" /> تک بیٹری مکمل طور پر چارج ہو جائے گی۔</translation>
+<translation id="4534661889221639075">دوبارہ کوشش کریں۔</translation>
 <translation id="453661520163887813">مکمل ہونے میں <ph name="TIME" /> باقی</translation>
 <translation id="4538824937723742295">فُل اسکرین کا اسکرین شاٹ لیں</translation>
 <translation id="4539127209940689201">موجودہ صفحہ پرنٹ کریں</translation>
@@ -1196,6 +1233,7 @@
 <translation id="4560576029703263363">آن</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4562091353415772246">‏اپ ڈیٹس اور ایپس انسٹال کریں۔ جاری رکھ کر، آپ اتفاق کرتے ہیں کہ یہ آلہ ممکنہ طور پر سیلولر ڈیٹا استعمال کر کے Google، آپ کے کیریئر، اور آپ کے آلے کے مینوفیکچرر سے اپ ڈیٹس اور ایپس خودکار طور پر ڈاؤن لوڈ اور انسٹال بھی کر سکتا ہے۔ ان میں سے کچھ ایپس درون ایپ خریداریوں کی پیشکش کر سکتی ہیں۔ <ph name="BEGIN_LINK1" />Play آٹو انسٹال کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
+<translation id="4563880231729913339">انگلی 3</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4566144812051858745">کسی بھی تجویز میں دلچسپی نہیں</translation>
 <translation id="4569753163207712681">اپنے فون کی حالیہ تصاویر، میڈیا اور ایپس دیکھیں</translation>
@@ -1208,7 +1246,9 @@
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
 <translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4596442969149038771"><ph name="USER" /> نے اشتراک کیا</translation>
+<translation id="4598776695426288251">‏متعدد آلات کے ذریعے Wi-Fi دستیاب ہے</translation>
 <translation id="4610493115106525653">اچھا آؤٹ پٹ</translation>
+<translation id="4611114513649582138">ڈیٹا کنکشن دستیاب ہے</translation>
 <translation id="4611292653554630842">لاگ ان کریں</translation>
 <translation id="4613144866899789710">‏Linux کی انسٹالیشن کا عمل منسوخ ہو رہا ہے...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> منسلک ہے</translation>
@@ -1323,6 +1363,7 @@
 <translation id="4937170330762390348">ڈکٹیشن کے ساتھ، آپ اپنی آواز کا استعمال کرتے ہوئے ٹائپ کر سکتے ہیں۔ جب آپ ٹیکسٹ فیلڈ پر ہوں تو ڈکٹیشن کلید دبائیں یا اسکرین کے نیچے مائیکروفون آئیکن کو منتخب کریں۔ آپ کی ڈکٹیشن زبان <ph name="LANGUAGE" /> پر سیٹ ہے۔ اسپیچ فائلز ڈاؤن لوڈ کی جائیں گی تاکہ آپ ڈکٹیشن آف لائن استعمال کر سکیں۔ آپ ترتیبات &gt; ایکسیسبیلٹی میں کسی بھی وقت ڈکٹیشن کی زبان تبدیل کر سکتے ہیں۔</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
 <translation id="4945196315133970626">اطلاعات آف کریں</translation>
+<translation id="4945439665401275950">فنگر پرنٹ کو سیٹ اپ کرنے کے لیے، اپنے بچے کو پاور بٹن ٹچ کرنے دیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
 <translation id="4950800194215951939">اپنے گیمنگ تجربے کو حسب ضرورت بنائیں</translation>
@@ -1342,6 +1383,7 @@
 <translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> کو ترمیم کیا گیا</translation>
 <translation id="4987738733603015246">ڈیسک 16</translation>
 <translation id="4989163558385430922">سبھی دیکھیں</translation>
+<translation id="4992458225095111526">پاور واش کی توثیق کریں</translation>
 <translation id="4995963195354861331">استقبالیہ ڈائیلاگ</translation>
 <translation id="4996265698919320288">ریکارڈ ہو رہا ہے</translation>
 <translation id="5003993274120026347">اگلا جملہ</translation>
@@ -1388,6 +1430,7 @@
 <translation id="5121628974188116412">صفحہ کے نچلے حصے پر جائیں</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> کا پیش منظر۔ غیر فعال ڈیسک۔</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
+<translation id="5137349216872139332">فوری ہاٹ اسپاٹ کنکشن ناکام ہوا</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> تلاش</translation>
 <translation id="5144005092084035179">آڈیو ان پٹ سوئچ کریں؟</translation>
 <translation id="5147567197700016471">غیر مقفل</translation>
@@ -1461,6 +1504,7 @@
 <translation id="5322611492012084517">آپ کا فون تلاش نہیں کیا جا سکا</translation>
 <translation id="5323994101633366939">ڈیسک نام چھپائیں</translation>
 <translation id="5327248766486351172">نام</translation>
+<translation id="532943162177641444">اس آلہ کے ذریعے استعمال کئے جانے والے موبائل ہاٹ اسپاٹ کو سیٹ اپ کرنے کیلئے اپنے <ph name="PHONE_NAME" /> پر اطلاع پر تھپتھپائيں۔</translation>
 <translation id="5329548388331921293">منسلک ہو رہا ہے…</translation>
 <translation id="5331975486040154427">‏USB-C آلہ (بائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="533282197239610265">‏cast آلات دکھائیں</translation>
@@ -1471,6 +1515,7 @@
 <translation id="5356963482258194581">گہری اور ہلکی تھیم کے درمیان سوئچ کریں۔ ڈیسک ٹاپ پر دایاں کلک کریں اور وال پیپر اور اسٹائل منتخب کریں۔</translation>
 <translation id="536019650977002321">آپ کا منتظم آڈیو کیپچر کی اجازت نہیں دیتا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> اسپیچ کی فائلز جزوی طور پر ڈاؤن لوڈ کی گئیں</translation>
+<translation id="5363109466694494651">پاور واش کریں اور لوٹیں</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> اس ٹیب پر جائیں</translation>
 <translation id="5364693579536176785">اسٹوریج کی جگہ</translation>
 <translation id="5369573834963677938">فیس کنٹرول آلے پر دوسرے صارفین کے لیے دستیاب ہوگا</translation>
@@ -1630,6 +1675,7 @@
 <translation id="5823239091726045201">‏ویب پر Google ٹاسکس</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> مزید</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> نہیں کھل سکتی</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="5840658767386246331">‏Google سے تلاش کریں</translation>
@@ -1647,6 +1693,7 @@
 <translation id="5876666360658629066">والد/والدہ کا کوڈ درج کریں</translation>
 <translation id="5881540930187678962">بعد میں فون ہب سیٹ اپ کریں</translation>
 <translation id="588258955323874662">پوری اسکرین</translation>
+<translation id="5886009770935151472">انگلی 1</translation>
 <translation id="5887954372087850114">ونڈو <ph name="WINDOW_TITLE" /> کو <ph name="DESK_TITLE" /> کو تفویض کیا گیا اور دیگر تمام ڈیسک سے غیر تفویض کیا گیا</translation>
 <translation id="588817334757907802">‏Chrome براؤزر میں فائل کھولیں</translation>
 <translation id="5892014525522223653">آپ آف لائن ہیں۔</translation>
@@ -1688,6 +1735,7 @@
 <translation id="6012623610530968780">صفحہ <ph name="TOTAL_PAGE_NUM" /> کا <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">اگلے آئٹم کو شیلف پر نمایاں کریں</translation>
 <translation id="6015573907265691211">بطور مکمل نشان زد کریں</translation>
+<translation id="6016551720757758985">پچھلے ورژن پر واپسی کے ساتھ پاور واش کی توثیق کریں</translation>
 <translation id="6018164090099858612">مرر وضع سے باہر نکل رہے ہیں</translation>
 <translation id="6019566113895157499">کی بورڈ شارٹ کٹس</translation>
 <translation id="602001110135236999">بائیں اسکرول کریں</translation>
@@ -1736,6 +1784,7 @@
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
 <translation id="6127395413317891856">آپ آف لائن ہیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6129953537138746214">اسپیس</translation>
+<translation id="6132714462430777655">اسکول میں اندراج کو نظر انداز کریں؟</translation>
 <translation id="6136872094979134163">‏‫Chromebook کیلئے Steam کے بارے میں خبریں بازیافت کرنے سے قاصر۔</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> کے لئے اکاؤنٹ ہٹائیں کا ڈائیلاگ کھولیں</translation>
 <translation id="6141205840878048728">آپ کس چیز پر فوکس کرنا چاہیں گے؟</translation>
@@ -1770,6 +1819,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> آف لائن ہے۔ انٹرنیٹ سے منسلک کر کے دوبارہ کوشش کریں۔</translation>
 <translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
+<translation id="6225475702458870625">آپ کے <ph name="PHONE_NAME" /> سے ڈیٹا کنکشن دستیاب ہے</translation>
 <translation id="6228457605945141550">چمک کم کریں</translation>
 <translation id="623116199192908855">‏اپنے Chromebook سے اپنی اسکرین کاسٹ کریں</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
@@ -1786,6 +1836,7 @@
 <translation id="6267036997247669271"><ph name="NAME" />: فعال کیا جا رہا ہے…</translation>
 <translation id="6274202259872570803">اسکرین کاسٹ</translation>
 <translation id="6274422179279280249">‏لنکس، ایموجیز اور مزید داخل کریں۔ ‫Google AI کے ساتھ لکھنے میں آپ بھی مدد حاصل کر سکتے ہیں۔ <ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="6276210637549544171">پراکسی <ph name="PROXY_SERVER" /> کیلئے ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="6276708887952587684">صفحہ کا ماخذ دیکھیں</translation>
 <translation id="6285871695023807425">کیلنڈر میں شامل کریں</translation>
 <translation id="628699625505156622">‏مقام استعمال کریں۔ مقام کی اجازت والے ChromeOS اور Android ایپس، ویب سائٹس اور سروسز کو اس آلے کا مقام استعمال کرنے کی اجازت دیں۔ مقام کی درستگی Android ایپس اور سروسز کے لیے مزید درست مقام فراہم کرتی ہے۔ ایسا کرنے کے لیے، Google وقتاً فوقتاً اس آلے سے وائرلیس سگنل کے مقامات کو کراؤڈ سورس کرنے کے لیے آلے کے سینسرز اور وائرلیس سگنلز سے متعلق معلومات پر کارروائی کرتا ہے۔ ان کا استعمال کسی فرد کی شناخت کیے بغیر مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے، ساتھ ہی Google اور فریقین ثالث کی جائز دلچسپیوں پر مبنی Google کی سروسز کو بھی بہتر بنانے، انہیں فراہم کرنے اور ان کو برقرار رکھنے کے لیے کیا جاتا ہے تاکہ صارفین کی ضروریات کو پورا کیا جا سکے۔ <ph name="BEGIN_LINK1" />مقام استعمال کرنے کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
@@ -1801,6 +1852,7 @@
 <translation id="6317369057005134371">ایپلیکیشن ونڈو کا انتظار ہے…</translation>
 <translation id="6319058840130157106">نیچے دائیں کونے، لانچر، ایڈریس بار، بُک مارکس بار، کھلی ہوئی ویب سائٹ اور ڈاؤن لوڈز کے درمیان پیچھے کی طرف منتقل ہوں</translation>
 <translation id="6319503618073410818">براؤزر میں تفصیلات دیکھیں</translation>
+<translation id="6322370287306604163">فنگر پرنٹ کے ساتھ تیزی سے غیر مقفل کریں</translation>
 <translation id="6324334979701518365">‏غیر تعاون یافتہ Chrome ایپ لانچ نہیں کر سکتے۔ اس مسئلے کے بارے میں اپنے منتظم کو مطلع کریں۔</translation>
 <translation id="6324916366299863871">شارٹ کٹ میں ترمیم کریں</translation>
 <translation id="6325525973963619867">ناکام</translation>
@@ -1810,6 +1862,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> کے زیر انتظام ایک نظم کردہ سیشن ہے</translation>
 <translation id="6340148837564298498">‏اگر آپ اپنا PIN بھول گئے ہیں تو اس صارف کو بازیاب کرنے کی کوشش کریں۔</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> منسلک ہے</translation>
+<translation id="6345418402353744910">پراکسی <ph name="PROXY" /> کیلئے آپ کا صارف نام اور پاس ورڈ درکار ہے تاکہ منتظم آپ کے نیٹ ورک کو ترتیب دے سکے</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پر <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ایپ کی تجاویز</translation>
 <translation id="6352082849089527770">نامعلوم نیٹ ورکس</translation>
@@ -1829,6 +1882,7 @@
 <translation id="6414618057231176439">منتخب کریں کہ <ph name="VM_NAME" /> کا کون سا ورژن انسٹال کرنا ہے۔</translation>
 <translation id="641469293210305670">اپ ڈیٹس اور ایپس انسٹال کریں</translation>
 <translation id="6417265370957905582">‏Google اسسٹنٹ</translation>
+<translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> کے ازیں قبل انسٹال کردہ ورژن پر واپس لوٹ رہا ہے</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6418511932144861495">اہم اپ ڈیٹ انسٹال کریں</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1897,6 +1951,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">کیمرا نیچے بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="6605415194043280389">فوکس آن ہے</translation>
+<translation id="6608773371844092260">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے اس <ph name="DEVICE_TYPE" /> کے دائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6612802754306526077">اسکرین ریکارڈنگ موڈ کا انتخاب کیا گیا</translation>
 <translation id="6612889377159412215">ذیلی ٹاسک</translation>
@@ -1919,6 +1974,7 @@
 <translation id="6650742588569439432">آئٹمز کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="6650933572246256093">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔ براہ کرم اس پاس کلید کو اس آلہ پر درج کریں: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
+<translation id="6663190258859265334">‏اپنا <ph name="DEVICE_TYPE" /> Powerwash کریں اور پچھلے ورژن پر واپس جائیں۔</translation>
 <translation id="666343722268997814">نمایاں کردہ آئٹم کے لیے دائیں کلک کا مینیو کھولیں</translation>
 <translation id="6665545700722362599">ویب سائٹس، ایپس اور ایکسٹینشنز کو مقام کی سروسز، آلہ کے مائیکروفون، کیمرا یا دیگر خصوصیات کے استعمال کی اجازت دیں</translation>
 <translation id="6667908387435388584">‏اپنے فون کے ہاٹ اسپاٹ سے منسلک ہوں، اپنے آلے کو خاموش کریں اور اس کا پتا لگائیں اور اپنے فون پر حال ہی میں کھولے گئے Chrome ٹیبز دیکھیں</translation>
@@ -1946,6 +2002,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">کیمرہ اور مائیکروفون استعمال میں ہیں</translation>
 <translation id="6739144137573853180">ترتیبات پر جائیں</translation>
+<translation id="6745592621698551453">ابھی اپ ڈیٹ کریں</translation>
 <translation id="6747985245839783873">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔ بیٹری سیور آن ہے۔</translation>
 <translation id="6751052314767925245">آپ کے منتظم کے ذریعے نافذ کیا گیا</translation>
 <translation id="6751826523481687655">کارکردگی کا پتا لگانا آن ہے</translation>
@@ -1953,6 +2010,7 @@
 <translation id="6753390234084146956">ٹیبز</translation>
 <translation id="6754918760968695779">فوری اندراج</translation>
 <translation id="6757237461819837179">کوئی میڈیا نہیں چل رہا ہے</translation>
+<translation id="6759193508432371551">فیکٹری ری سیٹ</translation>
 <translation id="6760438044935091345">گیم ڈیش بورڈ</translation>
 <translation id="6768043681523654438">اسٹوریج</translation>
 <translation id="6769195697113506406">تصویر داخل کر دی گئی</translation>
@@ -1967,6 +2025,7 @@
 <translation id="6792351896138862473">غیر تعاون یافتہ کیوسک ایپ لانچ نہیں کر سکتے۔ اس مسئلے کے بارے میں اپنے منتظم کو مطلع کریں۔</translation>
 <translation id="679368458793552943">میگنیفائر کے آن ہونے پر زوم ان کریں</translation>
 <translation id="6794287755901682422">اس آئٹم میں درج ذیل ہے: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />۔</translation>
+<translation id="6797493596609571643">افوہ، کچھ غلط ہو گیا۔</translation>
 <translation id="6797745268063125932">اسے آن رکھیں</translation>
 <translation id="6801878137098616817">حال ہی میں ترمیم کیا گیا</translation>
 <translation id="6802687695197837794">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ <ph name="APP1_NAME" />، <ph name="APP2_NAME" /> اور تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے</translation>
@@ -1980,6 +2039,7 @@
 <translation id="682971198310367122">‏Google کی رازداری کی پالیسی</translation>
 <translation id="6836499262298959512">خطرناک فائل</translation>
 <translation id="6837621009301897464">اسکرین شاٹ لینے کے لیے، دبائیں</translation>
+<translation id="6848716236260083778">فنگر پرنٹ کو سیٹ اپ کرنے کے لیے، اپنے بچے کو فنگر پرنٹ سینسر کو ٹچ کرنے دیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
 <translation id="6852628153543175788">10 منٹ شامل کریں</translation>
 <translation id="6855029042976311970">ابھی ابھی ترمیم کی گئی ہے</translation>
@@ -2088,6 +2148,7 @@
 <translation id="7188494361780961876">مینیو کو اسکرین کے اوپر بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
+<translation id="7228056665272655255">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے کی بورڈ کے اوپر دائیں کونے میں موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="7228968829656641943">میری اسکرین پر تلاش کرنے کے لیے منتخب کریں۔ کی بورڈ نیویگیشن کے لیے ٹیب پھر اسپیس دبائیں۔</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">‏Linux کی بحالی کا عمل منسوخ ہو رہا ہے</translation>
@@ -2102,6 +2163,7 @@
 <translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> کم کریں</translation>
+<translation id="7267875682732693301">اپنے فنگر پرنٹ کے مختلف حصوں کو شامل کرنے کیلئے اپنی انگلی کو اٹھاتے رہیں</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">اسکرین شاٹس لینے کیلئے فوری ترتیبات میں اسکرین کیپچر ٹول استعمال کریں</translation>
 <translation id="7301826272005790482">ونڈو کی تجاویز مسترد کریں</translation>
@@ -2126,6 +2188,7 @@
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
 <translation id="7360036564632145207">پیریفیرلزکی ترتیب کیلئے آپ کے ڈیٹا تک رسائی کے تحفظ کی تبدیلی کارکردگی کو بہتر بنا سکتی ہے</translation>
 <translation id="736045644501761622">وال پیپر اور اسٹائل سیٹ کریں</translation>
+<translation id="7361914392989692067">اپنی انگلی سے پاور بٹن کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="7368041336688136012">‏پڑھنے میں میری مدد کریں، لکھنے میں میری مدد کریں اور AI کے ساتھ تصاویر تخلیق کریں کا استعمال کرنے کے لیے آپ کی عمر کم از کم 18 سال ہونی چاہیے۔</translation>
 <translation id="7371404428569700291">ونڈو ریکارڈ کریں</translation>
 <translation id="7372069265635026568">کل <ph name="TOTAL_MEMORY" /> میں سے <ph name="AVAILABLE_MEMORY" /> میموری دستیاب ہے</translation>
@@ -2140,6 +2203,7 @@
 <translation id="7384028040782072252">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی دائیں طرف کلک کریں</translation>
 <translation id="7386767620098596324">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="7392563512730092880">آپ ترتیبات سے بعد میں کسی بھی وقت سیٹ اپ کر سکتے ہیں۔</translation>
+<translation id="7400839060291901923">اپنے <ph name="PHONE_NAME" /> پر کنکشن سیٹ اپ کریں</translation>
 <translation id="7401222354741467707">مکمل اسکرین شاٹ لیں یا مکمل اسکرین ریکارڈنگ کریں</translation>
 <translation id="7401788553834047908">فوسک کے دوران ڈسٹرب نہ کریں</translation>
 <translation id="7405710164030118432">‏آلہ کو غیر مقفل کرنے کیلئے، اپنے Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
@@ -2156,6 +2220,7 @@
 <translation id="7457027286267861992">ڈسک میں کافی اسپیس نہیں ہے۔ براہ کرم کچھ اور ڈسک اسپیس خالی کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="7459485586006128091">داخلی خرابی کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔ چند منٹوں میں دوبارہ منسلک ہونے کی کوشش کریں۔</translation>
 <translation id="7461924472993315131">پن کریں</translation>
+<translation id="746216226901520237">‏اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں۔</translation>
 <translation id="746232733191930409">اسکرین ریکارڈنگ کی وضع</translation>
 <translation id="7466449121337984263">براہ کرم سینسر کو ٹچ کریں</translation>
 <translation id="7477793887173910789">اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں</translation>
@@ -2210,6 +2275,7 @@
 <translation id="7579778809502851308">اسکرین کیپچر</translation>
 <translation id="7588317312481506627">کلپ بورڈ پر کاپی ہو گئی۔</translation>
 <translation id="7593891976182323525">تلاش یا شفٹ</translation>
+<translation id="7594725637786616550">‏آپ کے <ph name="DEVICE_TYPE" /> کو ری سیٹ کر کے بالکل نیا کرنے کے لیے Powerwash۔</translation>
 <translation id="7595453277607160340">‏Android ایپس استعمال کرنے اور <ph name="DEVICE_TYPE" /> کے ٹھیک طرح سے کام کرتے رہنے کیلئے، دوبارہ سائن ان اور اپ ڈیٹ کریں۔</translation>
 <translation id="7598054670902114203">‏CPU استعمال کا سنیپ شاٹ، <ph name="CPU_USEAGE" /> فیصد۔ درجہ حرارت <ph name="TEMPERATURE" /> ڈگری سیلسیس، موجودہ رفتار:<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">منتخب کردہ نتیجہ داخل کرنا</translation>
@@ -2230,6 +2296,7 @@
 <translation id="7632948528260659758">درج ذیل کیوسک ایپس اپ ڈیٹنگ کیلئے ناکام ہو گئی ہیں:</translation>
 <translation id="7634566076839829401">کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="7634648064048557203">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے</translation>
+<translation id="7637253234491814483">پاور بٹن کے آگے اپنے کی بورڈ کے اوپری دائیں کونے میں فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="7638572816805275740">ونڈو اسکرین شاٹ لیں یا اسکرین ریکارڈنگ کریں</translation>
 <translation id="7642106959537987271">رنگوں کی تقلیب کی وضع</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" /> کے لیے ترتیبات کھولیں</translation>
@@ -2281,6 +2348,7 @@
 <translation id="77747521138552256">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ PIN کی کوشش کریں، یا فوری طور پر سائن ان کرنے کے لیے پاسورڈ درج کریں۔</translation>
 <translation id="7780094051999721182">شارٹ کٹس</translation>
 <translation id="7780159184141939021">اسکرین کو گھمائیں</translation>
+<translation id="7781335840981796660">سبھی صارف اکاؤنٹس اور مقامی ڈیٹا کو ہٹا دیا جائے گا۔</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7787212146956232129">ان پٹ اور آؤٹ پٹ آلات سیٹ ہیں۔ تبدیل کرنے کے لیے ترتیبات پر جائیں۔</translation>
 <translation id="7792590255364786396">مرئی</translation>
@@ -2342,6 +2410,7 @@
 <translation id="7942349550061667556">سرخ</translation>
 <translation id="7943516765291457328">قریبی ہاٹ اسپاٹس اسکین کرنے کے لیے بلوٹوتھ کو آن کریں</translation>
 <translation id="7944023924886109030">آج کے سبھی ایونٹس دیکھیں</translation>
+<translation id="7944847494038629732">‏اسکینر کی USB کیبل کو ان پلگ کریں اور دوبارہ کوشش کرنے کے لیے اسے دوبارہ پلگ کریں</translation>
 <translation id="7945357288295809525">ایکسیسبیلٹی کی ترتیبات دکھائیں، "<ph name="ENABLED_FEATURES" />" فعال ہے۔</translation>
 <translation id="7946681191253332687">توسیعی سیکیورٹی اپ ڈیٹس دستیاب ہیں</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> آپ کا <ph name="DEVICE_NAME" /> استعمال کرنا چاہتی ہے</translation>
@@ -2373,6 +2442,7 @@
 <translation id="8004512796067398576">اضافہ</translation>
 <translation id="8005527720597583355">فوکس سیشن شروع کریں</translation>
 <translation id="8008356846765065031">انٹرنیٹ منقطع ہوگیا۔ براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں۔</translation>
+<translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> پہلے انسٹال کردہ ورژن پر لوٹنے سے قاصر ہے۔ اپنے آلہ کو پاور واش کرنے کیلئے براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8015361438441228492">ٹاسک میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="8027187124910699148">تجویز کردہ گروپ دوبارہ شروع کریں</translation>
 <translation id="802782383769312836">گزشتہ ڈیسک: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
@@ -2451,15 +2521,18 @@
 <translation id="8249048954461686687">‏OEM فولڈر</translation>
 <translation id="825129991941217170">‏‫Google Drive کا تمام مواد دکھائیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
+<translation id="8261625296061301062">سکینر سافٹ ویئر انسٹال ہو گیا</translation>
 <translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
 <translation id="8268302343625273732">‏‫Google کلاس روم میں تمام اسائنمنٹس دیکھیں</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
+<translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8282784978194352587">آپ نے کر دکھایا!</translation>
 <translation id="8287009018010202411">پروڈکٹیوٹی</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8289128870594824098">ڈسک کا سائز</translation>
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8300451473979404345">منتخب کردہ ہینڈل، منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں</translation>
+<translation id="8301242268274839723">اپنے کی بورڈ کے نیچے بائیں کونے پر موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="8308637677604853869">پچھلا مینیو</translation>
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8314772463905284467">‏Caps Lock آن ہے</translation>
@@ -2479,10 +2552,12 @@
 <translation id="8371991222807690464">پیریفرل کی کارکردگی مہمان وضع میں محدود ہو سکتی ہے</translation>
 <translation id="8374601332003098278">جزوی اسکرین کو ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="8375916635258623388">یہ <ph name="DEVICE_NAME" /> اور آپ کا فون خود کار طور پر منسلک ہو جائیں گے</translation>
+<translation id="8382677870544805359">انٹرپرائز کی خصوصیات کا استعمال کرنے کے لیے آپ کو اس آلہ کو فیکٹری ری سیٹ کرنا ہوگا۔</translation>
 <translation id="8382715499079447151">دیکھنے کا تحفظ</translation>
 <translation id="8383614331548401927">استقبالی خلاصہ</translation>
 <translation id="838540623579162843">‏‫Music Premium حاصل کریں</translation>
 <translation id="8388750414311082622">آخری ڈیسک ہٹایا نہیں جا سکا۔</translation>
+<translation id="8390392581097975659">سکینر سافٹ ویئر انسٹال ہو رہا ہے</translation>
 <translation id="8394567579869570560">آپ کے والد/والدہ نے اس آلے کو مقفل کر دیا</translation>
 <translation id="8401850874595457088">زبان مینیو درج کریں</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -2546,6 +2621,7 @@
 <translation id="857201607579416096">مینیو کو اسکرین کے نچلے دائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> دبائیں اور کسی لنک پر کلک کریں</translation>
 <translation id="8598235756057743477">اپنی ایپس کو نام یا رنگ کے لحاظ سے ترتیب دیں</translation>
+<translation id="8599864823732014237">انٹرپرائز اندراج کو نظر انداز کریں؟</translation>
 <translation id="8609384513243082612">نیا ٹیب کھولیں</translation>
 <translation id="861045123704058818">ایپس کو زمرہ کے لحاظ سے عارضی طور پر منظم کیا جاتا ہے</translation>
 <translation id="8612216344243590325">اہم فائلز کو ڈیسک ٹاپ کے بجائے <ph name="HOLDING_SPACE_TITLE" /> کے اندر رکھیں۔ بس فائلز کو <ph name="HOLDING_SPACE_TITLE" /> پر گھسیٹیں۔</translation>
@@ -2582,6 +2658,7 @@
 <translation id="8700087567921985940">‏مقام کا استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اپنے آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK1" />مقام کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8704155109538237473">تصویر میں تصویر ونڈو پر فوکس کریں</translation>
+<translation id="8705580154597116082">‏Wi-Fi بذریعہ فون دستیاب ہے</translation>
 <translation id="870917907284186124">ڈکٹیشن کو آن/آف کریں (اپنی آواز سے ٹائپ کریں)</translation>
 <translation id="8711169534266271368">گیم ڈیش بورڈ کے اختیارات</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
@@ -2590,6 +2667,8 @@
 <translation id="8717459106217102612">پچھلا لفظ یا حرف منتخب کریں</translation>
 <translation id="8721053961083920564">والیوم ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">فُل اسکرین کیپچر</translation>
+<translation id="8724405322205516354">جب آپ کو یہ آئیکن دکھائی دے تو آپ شناخت کرنے یا خریداریوں کی منظوری کے لیے اپنے فنگر پرنٹ کا استعمال کریں۔</translation>
+<translation id="8724409975248965964">فنگر پرنٹ شامل ہو گیا</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8725214031272624704">دستیاب ان پٹ طریقوں کی فہرست دکھائیں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
@@ -2613,6 +2692,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />، انسٹال کردہ ایپ، مسدود ہے</translation>
 <translation id="8782565991310229362">کیوسک ایپلیکیشن کی شروعات منسوخ ہو گئی۔</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> سے منسلک کریں</translation>
+<translation id="8786824282808281903">جب آپ کا بچہ یہ آئیکن دیکھتا ہے تو شناخت کے لیے یا خریداریوں کو منظوری دینے کے لیے فنگر پرنٹ کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />۔ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">نیچے دائیں کونے، لانچر، ایڈریس بار، بُک مارکس بار، کھلی ہوئی ویب سائٹ اور ڈاؤن لوڈز کے درمیان آگے کی طرف منتقل ہوں</translation>
 <translation id="8792626944327216835">مائیکروفون</translation>
@@ -2625,6 +2705,7 @@
 <translation id="8815390544836110344">‏اسکرین شاٹ لینے کا شارٹ کٹ، Ctrl پلس شفٹ پلس مجموعی جائزہ وضع کلید دبائیں</translation>
 <translation id="881757059229893486">اندراج کے طریقے کی ترتیبات</translation>
 <translation id="8819728065740986820">اڈاپٹیو چارجنگ آن ہے</translation>
+<translation id="882204272221080310">اضافی سیکیورٹی کیلئے فرم ویئر اپ ڈیٹ کریں۔</translation>
 <translation id="8822104519413696986">یہ ایک ٹچ گیم ہے</translation>
 <translation id="8825863694328519386">پیچھے جانے کیلئے بائیں سے سوائپ کریں</translation>
 <translation id="8832513206237979203">بُک مارکس بار دکھائیں یا چھپائیں</translation>
@@ -2688,6 +2769,8 @@
 <translation id="8991648557324317894">‏منسوخ کرنے کے لیے fn + فوری اندراج یا شفٹ دبائیں۔</translation>
 <translation id="899350903320462459">اطلاع کی کارروائی کرنے کیلئے، آلے کو بطور <ph name="LOGIN_ID" /> غیر مقفل کریں</translation>
 <translation id="8993733019280019776">کیا آپ بات کر رہے ہیں؟ آپ کا مائیک آف ہے۔ مائیک کو آن کرنے کے لیے اسے منتخب کریں۔</translation>
+<translation id="8993945059918628059">اپنی انگلی سے فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
+<translation id="9000185763019430629">اپنے <ph name="DEVICE_TYPE" /> کے دائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="9000771174482730261">اسٹوریج کا نظم کریں</translation>
 <translation id="9003374957546315126">ایموجیز اور مزید</translation>
 <translation id="9005984960510803406">‏Crosh ونڈو کھولیں</translation>
@@ -2701,6 +2784,7 @@
 <translation id="9030515284705930323">‏آپ کی تنظیم نے آپ کے اکاؤنٹ کیلئے Google Play اسٹور کو فعال نہیں کیا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="9030665205623277906">‏CPU کے استعمال کا اسنیپ شاٹ: %<ph name="CPU_USEAGE" /></translation>
 <translation id="9034924485347205037">‏Linux فائلز</translation>
+<translation id="9037818663270399707">آپ کا کنکشن تمام نیٹ ورک ٹریفک کیلئے نجی نہیں ہے</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> کے لیے ترتیبات کھولیں</translation>
 <translation id="9050012935252397793">بلوٹوتھ دستیاب نہیں ہے</translation>
 <translation id="9050999376345823055">ریلیز کرنے کے لیے "." دبائیں</translation>

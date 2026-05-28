@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Sincronizzazione della cronologia</translation>
 <translation id="1111673857033749125">I preferiti salvati sugli altri dispositivi verranno visualizzati qui.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, scheda Picture in picture</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Ripristina 1 finestra}other{Ripristina # finestre}}</translation>
 <translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
 <translation id="1135018701024399762">La modalità Incognito mantiene la navigazione nascosta agli altri utenti che utilizzano il tuo dispositivo</translation>
 <translation id="113752097246673894">Accedi a Chrome come <ph name="EMAIL" /> per trovare preferiti e altri dati su tutti i tuoi dispositivi</translation>
@@ -195,7 +196,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1877073879466606884">Il profilo a cui hai eseguito l'accesso è un profilo gestito. L'amministratore può apportare modifiche alle impostazioni del profilo da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie.</translation>
 <translation id="1879904908408734349">Riquadro inferiore di accesso chiuso</translation>
 <translation id="1883903952484604915">I miei file</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> elementi suggeriti nell'elenco sopra.</translation>
 <translation id="189358972401248634">Altre lingue</translation>
 <translation id="1899175549411605574">Riquadro inferiore di insight sul prezzo</translation>
 <translation id="1900260903084164610">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3166827708714933426">Scorciatoie di finestre e schede</translation>
 <translation id="3167258285411721858">Puoi richiedere il sito mobile di <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, schede Incognito con audio disattivato fissate selezionate</translation>
+<translation id="3183941812169784232">Ripristinare tutte le finestre?</translation>
 <translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3189635831478931757">Gruppo di schede <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Chiudere la finestra corrente?</translation>
@@ -722,6 +723,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4164642020717536140">Navigazione sul web veloce e sicura</translation>
 <translation id="4165077084524712774">Altri strumenti</translation>
 <translation id="4170577491341606575">Recupero dei tuoi dati in corso…</translation>
+<translation id="4176838562184310003">Chrome non è stato chiuso correttamente e può tentare di ripristinare le finestre e le schede andate perse. Alcune finestre potrebbero essere ridotte a icona durante il ripristino.</translation>
 <translation id="4177222230309051052">Recupera tutti i tuoi preferiti</translation>
 <translation id="4177501066905053472">Argomenti degli annunci</translation>
 <translation id="417865198503699526">Cerca un'impostazione</translation>

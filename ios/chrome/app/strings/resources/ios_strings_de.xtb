@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Angemeldet als <ph name="USER" /></translation>
 <translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1150989369772528668">Kalender</translation>
+<translation id="1161444134753003495">Anmelden</translation>
 <translation id="1161663161838091892">Tabs und Verlauf synchronisieren, um fortzufahren</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} Kreditkarte}other{{count} Kreditkarten}}</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Bild kopieren</translation>
 <translation id="1606899876897213121">Zusammenfassung letzter Aktivitäten schließen</translation>
 <translation id="1612754831519568745">Safe Browsing ist derzeit deaktiviert. Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
+<translation id="1617300545081951343">Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />, die <ph name="BEGIN_LINK" />Standortnutzungsbedingungen für Korea<ph name="END_LINK" /> und unsere <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Wähle „Zu Google Kalender hinzufügen“ oder „Zu Apple Kalender hinzufügen“ aus.</translation>
 <translation id="1629162218487290695">Identität bestätigen…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Du wirst abgemeldet und Browserdaten werden gelöscht</translation>
 <translation id="3124568093781685165">Passwörter mit deiner Familie teilen</translation>
 <translation id="3130863904455712965">Verlauf und mehr</translation>
+<translation id="3130973487775218359">Jetzt ansehen: <ph name="BEGIN_LINK" />5 wichtige Fakten über generative KI<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Redress-Nummer speichern</translation>
 <translation id="3132584647087998639">Daten importieren</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Neues Passwort für diese Website}other{Neue Passwörter für diese Website}}</translation>
 <translation id="3933372629914873850">Du meldest dich bei <ph name="URL" /> an</translation>
 <translation id="3934905113567851655">Auseinander- und zusammenziehen, um die Größe anzupassen</translation>
+<translation id="393732545649378031">Konto</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="3946483119107054883">Im CSV-Format herunterladen</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP-Signierung</translation>
 <translation id="4309403553630140242">Für weitere Informationen doppeltippen</translation>
 <translation id="4310738531374808763">Startseite anpassen</translation>
+<translation id="4316794575239200608">Deine Unterhaltungen mit Gemini und deine <ph name="BEGIN_LINK" />Daten in Google Workspace<ph name="END_LINK" /> werden nicht manuell überprüft und auch nicht verwendet, um generative KI-Modelle zu optimieren.</translation>
 <translation id="4320848494125124980">Zuletzt verwendet</translation>
 <translation id="4322394346347055525">Andere Tabs schließen</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="4632655012900268062">Karten anpassen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
+<translation id="4634633632339959267">Chats werden geprüft und zur Verbesserung von Google AI verwendet. <ph name="BEGIN_LINK" />Hier erfährst du mehr über deine Auswahlmöglichkeiten.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" /> werden auch in deinen Aktivitäten gespeichert.</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4641425577292284174">Du erfährst, ob du die sichersten Einstellungen verwendest oder etwas überprüfen musst</translation>
 <translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
@@ -1470,6 +1476,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6140948187512243695">Details ansehen</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
 <translation id="6146563240635539929">Videos</translation>
+<translation id="6148392728478209113">Verwendest du Gemini Live noch? Tippe auf den Button „Live“, um weiter mit Gemini zu sprechen.</translation>
 <translation id="6151006591088192882">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="6152340033632117531">Inaktiv</translation>
 <translation id="6152406514676263192">Aktiviere die Synchronisierung, um die relevantesten Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
@@ -1563,6 +1570,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6435236283694032571">Zur Leseliste hinzufügen</translation>
 <translation id="6435307030888827407">Abgemeldet bleiben</translation>
 <translation id="6436318499800111867">Für mich freigegeben: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respektiere die Privatsphäre anderer Nutzer<ph name="END_LINK" /> und bitte sie um Erlaubnis, bevor du sie aufzeichnest oder einem Live-Chat hinzufügst.</translation>
 <translation id="6442697326824312960">Tab loslösen</translation>
 <translation id="6443118737398455446">Ungültiges Ablaufdatum</translation>
 <translation id="6444435711855078002">Weitere Optionen</translation>
@@ -1805,6 +1813,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7253951228444156601">Passwörter werden geprüft…</translation>
 <translation id="7261217796641151584">Gruppe freigeben</translation>
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>
+<translation id="7270491814777319521">Es gelten die <ph name="BEGIN_LINK" />Google-Nutzungsbedingungen<ph name="END_LINK" /> und die <ph name="BEGIN_LINK" />Datenschutzhinweise für Gemini-Apps<ph name="END_LINK" />. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen.</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="728025568708172005">Tour starten</translation>
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
@@ -2125,6 +2134,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8345328955902001853">{count,plural, =1{Erledige noch 1 Aufgabe, um das nächste Level zu erreichen}other{Erledige noch {count} weitere Aufgaben, um aufzusteigen}}</translation>
 <translation id="8348530355586151720">Tippe auf das Dreipunkt-Menü</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
+<translation id="8360164927489392419">Aufzeichnungen deiner Interaktionen mit Gemini Live und Inhalte, die du für die Funktion freigibst, werden gemäß den <ph name="BEGIN_LINK" />Datenschutzhinweisen für Gemini-Apps<ph name="END_LINK" /> gespeichert und verarbeitet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} Lesezeichen importiert}other{{count} Lesezeichen importiert}}</translation>
 <translation id="8363484128299778310">Temporäres Wiederherstellungspasswort bei Problemen mit der Anmeldung</translation>
 <translation id="8364563001733875155">Wenn du deine PIN ändern möchtest, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
@@ -2220,6 +2230,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8643403533759285912">Gruppe löschen</translation>
 <translation id="8647280737650867362">Tracking des Preises konnte nicht beendet werden.</translation>
 <translation id="8654802032646794042">Abbrechen</translation>
+<translation id="8659875081143553823">Bitte warten</translation>
 <translation id="8660600697590740984">Aus Lens kopiertes Bild</translation>
 <translation id="866266761389616183">Oh nein!</translation>
 <translation id="8663764600409216912">Du verwendest Passwörter, die nicht einfach zu erraten sein dürften</translation>

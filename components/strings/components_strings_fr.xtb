@@ -138,6 +138,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="121201262018556460">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat contenant une clé faible. Il est possible qu'un pirate ait compromis la clé privée. Il est donc possible que le serveur auquel vous avez accédé ne soit pas celui que vous croyez, et que vous soyez en train de communiquer avec un pirate informatique.</translation>
 <translation id="1212527389003717329">Le téléchargement a commencé. Pour le voir, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Utilisez les infos enregistrées dans votre compte Google pour saisir automatiquement les mots de passe, clés d'accès, adresses, modes de paiement et d'autres infos</translation>
+<translation id="1216257595811043403">Partager automatiquement les onglets</translation>
 <translation id="1219129156119358924">Sécurité du système</translation>
 <translation id="1219134100826635117">Votre administrateur a bloqué cette action</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 avec chiffrement RSA</translation>
@@ -2197,6 +2198,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4434045419905280838">Pop-ups et redirections</translation>
 <translation id="443673843213245140">L'utilisation d'un proxy est désactivée, mais une configuration de proxy explicite est spécifiée.</translation>
 <translation id="4438821706955556403">Prix habituel</translation>
+<translation id="4439687924334332880">Obtenez des réponses plus personnalisées en partageant automatiquement les onglets ouverts dans cette fenêtre s'ils sont liés à ce fil de discussion. Vous pouvez activer cette option pour tous les fils de discussion dans les paramètres.</translation>
 <translation id="4441832193888514600">Règle ignorée, car elle ne peut être définie que comme règle relative aux utilisateurs du cloud.</translation>
 <translation id="4444062564459679679">Déjà envoyé à Chrome sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Entrée pour rechercher dans les onglets</translation>
@@ -2299,7 +2301,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4640225694041297329">Afficher les résultats des 7 derniers jours</translation>
 <translation id="4642296966515958616">Pour rejoindre ce groupe d'onglets, mettez à jour Chrome</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
-<translation id="4643958597583594452">Chrome traite les titres des pages et les URL sur votre appareil ou dans un espace privé dans le cloud</translation>
 <translation id="4644567637638438744">Vous ne pouvez importer des fichiers que si vous êtes connecté à Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre inverse, face vers le bas</translation>
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
@@ -3156,6 +3157,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5995727681868049093">Gérez vos infos, la confidentialité de vos données et votre sécurité dans votre compte Google</translation>
 <translation id="5996255674476750320">Salons de l'automobile</translation>
 <translation id="5997247540087773573">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement et de vérifier vos mots de passe enregistrés.</translation>
+<translation id="5997915162652837008">Gagnez du temps en activant le partage d'onglets automatique pour tous les fils de discussion. En savoir plus sur</translation>
 <translation id="6000528814684428358">Hard-rock et rock progressif</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
@@ -3300,6 +3302,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6203231073485539293">Vérifiez votre connexion Internet</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6212314149070368045">Fanfold américain</translation>
+<translation id="6213685130162740188">Numéros d'autorisation</translation>
 <translation id="6215936431492593050">Métal (satiné)</translation>
 <translation id="6217950634729714357">Meubles de cuisine et de salle à manger</translation>
 <translation id="6218305986815100395">Impossible d'activer la carte virtuelle</translation>
@@ -3718,11 +3721,13 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6874604403660855544">&amp;Rétablir l'ajout</translation>
 <translation id="6875873347995743859">Envoyer à l'assistant</translation>
 <translation id="6875894866901426843">Votre administrateur supprimera vos fichiers locaux, y compris ceux de la corbeille, le <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Toujours partager les onglets ouverts pour obtenir de meilleures réponses ?</translation>
 <translation id="6880941331070119097">Option à prix haut</translation>
 <translation id="6881240511396774766">Créez rapidement un document Google Docs</translation>
 <translation id="6883221904761970440">La fiche d'authentification concernant les infos de paiement sécurisé est fermée</translation>
 <translation id="6883745783646124431">adresse professionnelle</translation>
 <translation id="6886283082988906333">Archive ZIP</translation>
+<translation id="6886431827310382613">Partager les onglets pertinents</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Utiliser la position</translation>
 <translation id="6888584790432772780">Chrome a simplifié cette page pour qu'elle soit plus facile à lire. La page d'origine a été récupérée au moyen d'une connexion non sécurisée.</translation>
@@ -4010,6 +4015,7 @@ Informations supplémentaires :
 <translation id="7337706099755338005">Non disponible sur votre plate-forme</translation>
 <translation id="733923710415886693">Le certificat du serveur n'a pas été communiqué tel que le prévoient les règles de transparence des certificats.</translation>
 <translation id="73398226265793546">Bouton du Mode IA, l'activer pour demander au Mode IA dans la recherche Google</translation>
+<translation id="7343620778718789463">Cartes d'identité</translation>
 <translation id="7346048084945669753">Affilié :</translation>
 <translation id="7346062987309535530">Vaisselle</translation>
 <translation id="7346081071264046066">"accepte cette invitation à un mariage avec enthousiasme"</translation>
@@ -4184,6 +4190,7 @@ Informations supplémentaires :
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Supprimer les données de carte de paiement de Chrome ?</translation>
 <translation id="7569983096843329377">Noir</translation>
+<translation id="7570862164055912832">Numéros de recours</translation>
 <translation id="7571813784389228510">Mode IA de Google</translation>
 <translation id="7574998639136359461">Équipement pour sports d'hiver</translation>
 <translation id="7575207903026901870">Bouton "Supprimer la suggestion" (appuyez sur Entrée pour supprimer cette suggestion)</translation>
@@ -4692,6 +4699,7 @@ Informations supplémentaires :
 <translation id="8381674639488873545">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés. <ph name="BEGIN_LINK" />Je souhaite accéder malgré tout à ce site<ph name="END_LINK" />.</translation>
 <translation id="8382097126743287270">Plein écran automatique</translation>
 <translation id="838307841291975086">Breaks</translation>
+<translation id="838953173259347825">Obtenez des réponses plus personnalisées en partageant automatiquement les onglets ouverts dans cette fenêtre s'ils sont liés à ce fil de discussion. Vous pouvez activer cette option pour tous les fils de discussion dans les</translation>
 <translation id="8389532092404711541">Prix habituel : <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Véhicules puissants et personnalisés</translation>
 <translation id="8390725133630534698">Le règlement de l'administrateur bloque le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>
@@ -4975,6 +4983,7 @@ Informations supplémentaires :
 <translation id="8861482055962701239">Impossible d'enregistrer ces informations dans Google Wallet. Elles ont été enregistrées dans Chrome sur cet appareil à la place. Chrome vous proposera de les enregistrer dans Wallet la prochaine fois que vous l'utiliserez.</translation>
 <translation id="8863218129525348270">Pour payer plus rapidement la prochaine fois, enregistrez votre carte sur votre appareil</translation>
 <translation id="8864939224504814334">Costumes et tenues de ville</translation>
+<translation id="8865650218866129025">Partager automatiquement les onglets ouverts pour obtenir de meilleures réponses dans ce fil de discussion ?</translation>
 <translation id="8866132857352163524">Bandes-son</translation>
 <translation id="8866481888320382733">Erreur d'analyse des paramètres de la règle.</translation>
 <translation id="8866928039507595380">Pli</translation>

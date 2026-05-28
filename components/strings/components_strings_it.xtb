@@ -138,6 +138,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="121201262018556460">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato contenente una chiave debole. Un utente malitenzionato potrebbe avere decifrato la chiave privata e il server potrebbe non essere quello previsto (è possibile che tu stia comunicando con un attaccante).</translation>
 <translation id="1212527389003717329">Download iniziato. Per visualizzarlo, tieni premuto |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Usa le informazioni salvate nel tuo Account Google per compilare automaticamente password, passkey, indirizzi, metodi di pagamento e altri dati</translation>
+<translation id="1216257595811043403">Condividi automaticamente schede</translation>
 <translation id="1219129156119358924">Sicurezza del sistema</translation>
 <translation id="1219134100826635117">L'amministratore ha bloccato questa azione</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con crittografia RSA</translation>
@@ -2194,6 +2195,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
 <translation id="4438821706955556403">Prezzo tipico</translation>
+<translation id="4439687924334332880">Ricevi risposte personalizzate più efficaci condividendo automaticamente le schede aperte in questa finestra se sono correlate a questa conversazione. Puoi attivare questa opzione per tutte le conversazioni nelle Impostazioni.</translation>
 <translation id="4441832193888514600">Ignorata perché la policy può essere impostata solo da un utente cloud.</translation>
 <translation id="4444062564459679679">Già inviato a Chrome sul tuo <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per cercare nelle schede</translation>
@@ -2296,7 +2298,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4640225694041297329">Mostra i risultati degli ultimi 7 giorni</translation>
 <translation id="4642296966515958616">Per partecipare a questo gruppo di schede, aggiorna Chrome</translation>
 <translation id="464342062220857295">Funzionalità di ricerca</translation>
-<translation id="4643958597583594452">Chrome elabora i titoli delle pagine e gli URL sul tuo dispositivo o in uno spazio privato nel cloud</translation>
 <translation id="4644567637638438744">I file possono essere caricati solo se hai eseguito l'accesso a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordine inverso a faccia in giù</translation>
 <translation id="4648262692072505866">L'hash deve essere nel formato SHA-256.</translation>
@@ -3153,6 +3154,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5995727681868049093">Gestisci le tue informazioni, la privacy e la sicurezza nel tuo Account Google</translation>
 <translation id="5996255674476750320">Raduni di auto e moto</translation>
 <translation id="5997247540087773573">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di cambiarla subito e poi di controllare le password salvate.</translation>
+<translation id="5997915162652837008">Puoi risparmiare tempo attivando la condivisione automatica delle schede per tutte le conversazioni. Scopri di più su</translation>
 <translation id="6000528814684428358">Hard rock e progressive</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> risultati per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
@@ -3296,6 +3298,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6203231073485539293">Controlla la connessione a internet</translation>
 <translation id="6205314730813004066">Privacy per gli annunci</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
+<translation id="6213685130162740188">Known Traveler Number</translation>
 <translation id="6215936431492593050">Metallo (satinato)</translation>
 <translation id="6217950634729714357">Arredamento per sale da pranzo e cucine</translation>
 <translation id="6218305986815100395">Impossibile attivare la carta virtuale</translation>
@@ -3714,11 +3717,13 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6874604403660855544">&amp;Ripeti aggiunta</translation>
 <translation id="6875873347995743859">Invia all'assistente</translation>
 <translation id="6875894866901426843">L'amministratore eliminerà i tuoi file locali, inclusi quelli nel cestino, il giorno <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Condividere sempre le schede aperte per ottenere risposte migliori?</translation>
 <translation id="6880941331070119097">Opzione prezzo alto</translation>
 <translation id="6881240511396774766">Crea rapidamente un nuovo documento Google</translation>
 <translation id="6883221904761970440">Il foglio per l'autenticazione delle credenziali di pagamento sicure è chiuso</translation>
 <translation id="6883745783646124431">indirizzo di lavoro</translation>
 <translation id="6886283082988906333">File Zip</translation>
+<translation id="6886431827310382613">Condividi schede pertinenti</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Usa posizione</translation>
 <translation id="6888584790432772780">Chrome ha semplificato questa pagina per facilitarne la lettura. Chrome ha recuperato la pagina originale tramite una connessione non sicura.</translation>
@@ -4005,6 +4010,7 @@ Ulteriori dettagli:
 <translation id="7337706099755338005">Non disponibile sulla piattaforma in uso.</translation>
 <translation id="733923710415886693">Il certificato del server non è stato reso pubblico tramite Certificate Transparency.</translation>
 <translation id="73398226265793546">Pulsante AI Mode, attiva per chiedere ad AI Mode nella Ricerca Google</translation>
+<translation id="7343620778718789463">Carte di identità</translation>
 <translation id="7346048084945669753">Con affiliazione:</translation>
 <translation id="7346062987309535530">Vasellame</translation>
 <translation id="7346081071264046066">"rispondi sì a questo invito a nozze con entusiasmo"</translation>
@@ -4179,6 +4185,7 @@ Ulteriori dettagli:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Rimuovere la carta di credito da Chrome?</translation>
 <translation id="7569983096843329377">Nero</translation>
+<translation id="7570862164055912832">Redress Number</translation>
 <translation id="7571813784389228510">Google AI Mode</translation>
 <translation id="7574998639136359461">Attrezzature e articoli per sport invernali</translation>
 <translation id="7575207903026901870">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere questo suggerimento</translation>
@@ -4687,6 +4694,7 @@ Ulteriori dettagli:
 <translation id="8381674639488873545">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Schermo intero automatico</translation>
 <translation id="838307841291975086">Station wagon</translation>
+<translation id="838953173259347825">Ricevi risposte personalizzate più efficaci condividendo automaticamente le schede aperte in questa finestra se sono correlate a questa conversazione. Puoi attivare questa opzione per tutte le conversazioni nelle</translation>
 <translation id="8389532092404711541">In genere <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Veicoli ad alte prestazioni e personalizzati</translation>
 <translation id="8390725133630534698">La possibilità di condivisione da <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /> è stata bloccata da una policy dell'amministratore</translation>
@@ -4970,6 +4978,7 @@ Ulteriori dettagli:
 <translation id="8861482055962701239">Non è stato possibile salvare queste informazioni in Google Wallet. Sono state invece salvate in Chrome su questo dispositivo. Chrome ti proporrà di salvarle in Wallet la prossima volta che le utilizzerai.</translation>
 <translation id="8863218129525348270">Per pagare più velocemente la prossima volta, salva la carta sul tuo dispositivo</translation>
 <translation id="8864939224504814334">Completi e abiti professionali</translation>
+<translation id="8865650218866129025">Condividere automaticamente le schede aperte per ricevere risposte migliori in questa conversazione?</translation>
 <translation id="8866132857352163524">Colonne sonore</translation>
 <translation id="8866481888320382733">Errore durante l'analisi delle impostazioni policy</translation>
 <translation id="8866928039507595380">Piegatura</translation>

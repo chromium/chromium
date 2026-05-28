@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Έχετε συνδεθεί ως <ph name="USER" /></translation>
 <translation id="1149401351239820326">Μήνας λήξης</translation>
 <translation id="1150989369772528668">Ημερολόγιο</translation>
+<translation id="1161444134753003495">Σύνδεση</translation>
 <translation id="1161663161838091892">Συγχρονίστε τις καρτέλες και το ιστορικό, για να συνεχίσετε</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} πιστωτική κάρτα}other{{count} πιστωτικές κάρτες}}</translation>
 <translation id="1164891049599601209">Εισήχθη σε παραπλανητικό ιστότοπο</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Αντιγραφή εικόνας</translation>
 <translation id="1606899876897213121">Κλείσιμο σύνοψης πρόσφατης δραστηριότητας</translation>
 <translation id="1612754831519568745">Αυτή τη στιγμή, η Ασφαλής περιήγηση είναι απενεργοποιημένη. Προστατευτείτε από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις.</translation>
+<translation id="1617300545081951343">Ισχύουν οι <ph name="BEGIN_LINK" />Όροι<ph name="END_LINK" />, οι <ph name="BEGIN_LINK" />Όροι τοποθεσίας Κορέας<ph name="END_LINK" /> και η <ph name="BEGIN_LINK" />Σημείωση απορρήτου<ph name="END_LINK" />. Το Gemini είναι AI και μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622717322707146952">Επιλέξτε Προσθήκη στο Ημερολόγιο Google ή Προσθήκη στο Ημερολόγιο Apple.</translation>
 <translation id="1629162218487290695">Επαλήθευση ταυτότητας…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Θα αποσυνδεθείτε και τα δεδομένα περιήγησης θα διαγραφούν</translation>
 <translation id="3124568093781685165">Μοιραστείτε κωδικούς πρόσβασης με την οικογένειά σας</translation>
 <translation id="3130863904455712965">Ιστορικό και άλλα</translation>
+<translation id="3130973487775218359">Δείτε: <ph name="BEGIN_LINK" />5 πράγματα που πρέπει να γνωρίζετε για το παραγωγικό AI<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Αποθήκευση αριθμού άρσης συνωνυμίας</translation>
 <translation id="3132584647087998639">Εισαγωγή των δεδομένων σας</translation>
 <translation id="313283613037595347">Δημιουργία νέας καρτέλας ανώνυμης περιήγησης.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Νέος κωδικός πρόσβασης για αυτόν τον ιστότοπο}other{Νέοι κωδικοί πρόσβασης για αυτόν τον ιστότοπο}}</translation>
 <translation id="3933372629914873850">Θα συνδεθείτε στο <ph name="URL" /></translation>
 <translation id="3934905113567851655">Πλησιάστε για αλλαγή μεγέθους</translation>
+<translation id="393732545649378031">Λογαριασμός</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Κλείσιμο {COUNT} καρτέλας}other{Κλείσιμο {COUNT} καρτελών}}</translation>
 <translation id="3946483119107054883">Λήψη σε CSV</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">Υπογραφή OCSP</translation>
 <translation id="4309403553630140242">Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
 <translation id="4310738531374808763">Προσαρμόστε την αρχική σελίδα σας</translation>
+<translation id="4316794575239200608">Οι συνομιλίες σας με το Gemini και τα <ph name="BEGIN_LINK" />δεδομένα σας στο Google Workspace<ph name="END_LINK" /> δεν θα ελέγχονται από αναθεωρητές ούτε θα χρησιμοποιούνται για τη βελτίωση των μοντέλων παραγωγικού AI.</translation>
 <translation id="4320848494125124980">Πρόσφατα</translation>
 <translation id="4322394346347055525">Κλείσιμο Άλλων Καρτελών</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> επαναχρησιμοποιημένοι κωδικοί πρόσβασης</translation>
 <translation id="4632655012900268062">Προσαρμογή καρτών</translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
+<translation id="4634633632339959267">Οι συνομιλίες ελέγχονται και χρησιμοποιούνται για τη βελτίωση του Google AI. <ph name="BEGIN_LINK" />Μάθετε σχετικά με τις επιλογές σας.<ph name="END_LINK" /> Μαζί με τη δραστηριότητά σας αποθηκεύονται και <ph name="BEGIN_LINK" />πληροφορίες σχετικά με την τοποθεσία σας<ph name="END_LINK" />.</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
 <translation id="4641425577292284174">Μάθετε αν έχετε τις πιο ασφαλείς ρυθμίσεις ή αν πρέπει να ελέγξετε κάτι</translation>
 <translation id="4642472735733036929">Η παρακολούθηση τιμής σταμάτησε</translation>
@@ -1470,6 +1476,7 @@
 <translation id="6140948187512243695">Εμφάνιση λεπτομερειών</translation>
 <translation id="6144589619057374135">Άνοιγμα ${url} σε ανώνυμη περιήγηση</translation>
 <translation id="6146563240635539929">Βίντεο</translation>
+<translation id="6148392728478209113">Χρησιμοποιείτε ακόμα τη λειτουργία Live; Πατήστε το κουμπί Live, για να συνεχίσετε να μιλάτε με το Gemini</translation>
 <translation id="6151006591088192882">Ξεκλείδωμα Καρτελών ανώνυμης περιήγησης με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Ανενεργές</translation>
 <translation id="6152406514676263192">Συγχρονίστε για να βλέπετε το πιο σχετικό περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
@@ -1563,6 +1570,7 @@
 <translation id="6435236283694032571">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="6435307030888827407">Παραμείνετε αποσυνδεδεμένοι</translation>
 <translation id="6436318499800111867">Κοινοποιήθηκε σε εμένα <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Θα πρέπει να σέβεστε το απόρρητο των άλλων χρηστών<ph name="END_LINK" /> και να ζητάτε την άδειά τους πριν από την εγγραφή ή τη συμπερίληψή τους σε μια Συνομιλία Live.</translation>
 <translation id="6442697326824312960">Ξεκαρφίτσωμα καρτέλας</translation>
 <translation id="6443118737398455446">Μη έγκυρη ημερομηνία λήξης</translation>
 <translation id="6444435711855078002">Περισσότερες επιλογές</translation>
@@ -1806,6 +1814,7 @@
 <translation id="7253951228444156601">Έλεγχος κωδικών πρόσβασης…</translation>
 <translation id="7261217796641151584">Κοινοποίηση ομάδας</translation>
 <translation id="7266578100016339897">Αυτό θα σας βοηθήσει να παραμείνετε οργανωμένοι. Μπορείτε να αλλάξετε αυτή την επιλογή ανά πάσα στιγμή από τις ρυθμίσεις.</translation>
+<translation id="7270491814777319521">Ισχύουν οι <ph name="BEGIN_LINK" />Όροι Google<ph name="END_LINK" /> και η <ph name="BEGIN_LINK" />Σημείωση απορρήτου των Εφαρμογών Gemini<ph name="END_LINK" />. Το Gemini είναι AI και μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα.</translation>
 <translation id="7272437679830969316">Δεν είναι δυνατή η επαλήθευση της ταυτότητας σας. Ο κωδικός πρόσβασης δεν αντιγράφηκε.</translation>
 <translation id="728025568708172005">Ξενάγηση</translation>
 <translation id="7280980607183752256">Δεν είναι δυνατή η εισαγωγή αυτού του αρχείου</translation>
@@ -2126,6 +2135,7 @@
 <translation id="8345328955902001853">{count,plural, =1{Ολοκληρώστε 1 ακόμη εργασία για να ανεβείτε επίπεδο}other{Ολοκληρώστε {count} ακόμη εργασίες για να ανεβείτε επίπεδο}}</translation>
 <translation id="8348530355586151720">Πατήστε το μενού με τρεις κουκκίδες</translation>
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
+<translation id="8360164927489392419">Οι εγγραφές από τις αλληλεπιδράσεις σας με το Live και το περιεχόμενο που μοιράζεστε με αυτό αποθηκεύονται και υφίστανται επεξεργασία σύμφωνα με τη <ph name="BEGIN_LINK" />Σημείωση απορρήτου των Εφαρμογών Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Έγινε εισαγωγή {count} σελιδοδείκτη}other{Έγινε εισαγωγή {count} σελιδοδεικτών}}</translation>
 <translation id="8363484128299778310">Προσωρινή ανάκτηση σε περίπτωση προβλημάτων</translation>
 <translation id="8364563001733875155">Για να αλλάξετε το PIN, ορίστε πρώτα έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
@@ -2221,6 +2231,7 @@
 <translation id="8643403533759285912">Διαγραφή ομάδας</translation>
 <translation id="8647280737650867362">Δεν ήταν δυνατή η κατάργηση παρακολούθησης τιμής.</translation>
 <translation id="8654802032646794042">Ακύρωση</translation>
+<translation id="8659875081143553823">Περιμένετε μια στιγμή</translation>
 <translation id="8660600697590740984">Αντιγραμμένη εικόνα Lens</translation>
 <translation id="866266761389616183">Δυστυχώς, προέκυψε πρόβλημα!</translation>
 <translation id="8663764600409216912">Χρησιμοποιείτε κωδικούς πρόσβασης που δεν μπορεί κάποιος να μαντέψει εύκολα</translation>

@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Umlando wokuvumelanisa</translation>
 <translation id="1111673857033749125">Amabhukhimakhi alondolozwe kwamanye amadivayisi akho azovela lapha.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Ithebhu Yesithombe-Esithombeni</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Buyisela iwindi eli-1}one{Buyisela amawindi angu-#}other{Buyisela amawindi angu-#}}</translation>
 <translation id="1126696498560056882">Phatha ama-akhawunti kule divayisi</translation>
 <translation id="1135018701024399762">Imodi ye-Incognito igcina ukubhrawuza okugodliwe kwabanye abasebenzisa idivayisi yakho</translation>
 <translation id="113752097246673894">Ukuze uthole amabhukhimakhi akho kanye nokwengeziwe kuwo wonke amadivayisi akho, ngena ngemvume kuChrome njengo-<ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="1877073879466606884">Iphrofayela ongene kuyo ngemvume yiphrofayela ephethwe. Umlawuli wakho angenza izinguquko kumasethingi ephrofayela yakho ekude, ahlaziye ulwazi mayelana nebhrawuza ngokubika, futhi enze eminye imisebenzi edingekayo.</translation>
 <translation id="1879904908408734349">Ishidi lokungena ngemvume elingezansi livaliwe</translation>
 <translation id="1883903952484604915">Amafayela ami</translation>
-<translation id="1889626070177134359">Izinto eziphakanyisiwe ezingu-<ph name="SUGGESTIONS_COUNT" /> ohlwini olungaphezulu.</translation>
 <translation id="189358972401248634">Ezinye izilimi</translation>
 <translation id="1899175549411605574">Ishidi eliphansi lemininingwane yentengo</translation>
 <translation id="1900260903084164610">Ngokuqhubeka, wamukela <ph name="BEGIN_TOS_LINK" />Imigomo Yesevisi<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3166827708714933426">Izinqamuleli zethebhu nezewindi</translation>
 <translation id="3167258285411721858">Ungacela isayithi leselula le-<ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Ithebhu ye-Incognito Ephiniwe Ethulisiwe Enokukhethwa Okuningi</translation>
+<translation id="3183941812169784232">Buyisela wonke amawindi?</translation>
 <translation id="3187472288455401631">Isilinganiso sesikhangiso</translation>
 <translation id="3189635831478931757">Iqembu lethebhu le-<ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Vala iwindi okulo?</translation>
@@ -722,6 +723,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="4164642020717536140">Ukubhrawuza iwebhu okusheshayo nokuvikelekile</translation>
 <translation id="4165077084524712774">Amathuluzi amaningi</translation>
 <translation id="4170577491341606575">Ilanda izinto zakho\u2026</translation>
+<translation id="4176838562184310003">IChrome ayizange ivalwe ngokufanele futhi ingazama ukubuyisela amawindi akho namathebhu alahlekile. Amanye amawindi angase ancishiswe uma ebuyiselwa.</translation>
 <translation id="4177222230309051052">Thola wonke amabhukhimakhi akho</translation>
 <translation id="4177501066905053472">Izihloko zesikhangiso</translation>
 <translation id="417865198503699526">Sesha isethingi</translation>

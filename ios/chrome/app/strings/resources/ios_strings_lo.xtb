@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER" /></translation>
 <translation id="1149401351239820326">ເດືອນ​ໝົດອາຍຸ</translation>
 <translation id="1150989369772528668">ປະຕິທິນ</translation>
+<translation id="1161444134753003495">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="1161663161838091892">ຊິ້ງແຖບ ແລະ ປະຫວັດເພື່ອດຳເນີນການຕໍ່</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} ບັດເຄຣດິດ}other{{count} ບັດເຄຣດິດ}}</translation>
 <translation id="1164891049599601209">ມີການປ້ອນໃນເວັບໄຊຫຼອກລວງ</translation>
@@ -824,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{ລະຫັດຜ່ານໃໝ່ສຳລັບເວັບໄຊນີ້}other{ລະຫັດຜ່ານໃໝ່ສຳລັບເວັບໄຊນີ້}}</translation>
 <translation id="3933372629914873850">ທ່ານຈະເຂົ້າສູ່ລະບົບ <ph name="URL" /></translation>
 <translation id="3934905113567851655">ບີບນິ້ວເພື່ອປັບຂະໜາດ</translation>
+<translation id="393732545649378031">ບັນຊີ</translation>
 <translation id="3940195383040445971">ຕິດຕາມລາຄາໃນແຖບ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{ປິດ {COUNT} ແຖບ}other{ປິດ {COUNT} ແຖບ}}</translation>
 <translation id="3946483119107054883">ດາວໂຫຼດເປັນ CSV</translation>
@@ -1474,6 +1476,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6140948187512243695">ສະແດງລາຍລະອຽດ</translation>
 <translation id="6144589619057374135">ເປີດ ${url} ໃນໂໝດທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6146563240635539929">ວິດີໂອ</translation>
+<translation id="6148392728478209113">ທ່ານຍັງໃຊ້ຄຸນສົມບັດ Live ຢູ່ບໍ? ແຕະປຸ່ມ Live ເພື່ອລົມກັບ Gemini ຕໍ່</translation>
 <translation id="6151006591088192882">ປົດລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນດ້ວຍ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="6152406514676263192">ຊິ້ງຂໍ້ມູນສຳລັບເນື້ອຫາທີ່ກ່ຽວຂ້ອງທີ່ສຸດໂດຍອ້າງອີງໃສ່ຄວາມສົນໃຈຂອງທ່ານ.</translation>
@@ -2227,6 +2230,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8643403533759285912">ລຶບກຸ່ມ</translation>
 <translation id="8647280737650867362">ບໍ່ສາມາດຍົກເລີກການຕິດຕາມລາຄາໄດ້.</translation>
 <translation id="8654802032646794042">ຍົກເລີກ</translation>
+<translation id="8659875081143553823">ຖ້າບຶດໜຶ່ງ</translation>
 <translation id="8660600697590740984">ຮູບທີ່ສຳເນົາດ້ວຍ Lens</translation>
 <translation id="866266761389616183">ອ່າ, ຊວຍແທ້!</translation>
 <translation id="8663764600409216912">ທ່ານກຳລັງໃຊ້ລະຫັດຜ່ານທີ່ຄາດເດົາໄດ້ຍາກ</translation>

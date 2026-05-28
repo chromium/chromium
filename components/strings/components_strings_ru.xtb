@@ -1762,7 +1762,7 @@
 <translation id="3763752038825281594">Вы не предоставили этому сайту разрешение "<ph name="PERMISSION" />".</translation>
 <translation id="3765588406864124894">Почтовый ящик 9</translation>
 <translation id="3767485424735936570">Администратор не рекомендует копировать и вставлять этот контент в окно <ph name="VM_NAME" />.</translation>
-<translation id="3769584711865378220">Сайт "<ph name="URL" />" запрашивает доступ к данным о точном местоположении вместо приблизительного.</translation>
+<translation id="3769584711865378220">Сайт <ph name="URL" /> запрашивает доступ к данным о точном местоположении вместо приблизительного.</translation>
 <translation id="3772211998634047851">Бумага (высокосортная)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать заметку в Google Keep, нажмите Tab, а затем Ввод.</translation>
 <translation id="3780694243617746492">Выходной лоток</translation>
@@ -2300,7 +2300,6 @@
 <translation id="4640225694041297329">Показать результаты за последние 7 дней</translation>
 <translation id="4642296966515958616">Чтобы получить доступ к этой группе вкладок, обновите Chrome.</translation>
 <translation id="464342062220857295">Функции поиска</translation>
-<translation id="4643958597583594452">Chrome обрабатывает заголовки и URL страниц на вашем устройстве или в защищенном облачном пространстве.</translation>
 <translation id="4644567637638438744">Чтобы продолжить, войдите в Microsoft OneDrive.</translation>
 <translation id="4644670975240021822">В обратном порядке лицевой стороной вниз</translation>
 <translation id="4648262692072505866">Хеш должен быть в формате SHA-256.</translation>

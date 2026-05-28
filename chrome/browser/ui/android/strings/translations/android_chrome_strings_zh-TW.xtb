@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
 <translation id="1111673857033749125">儲存在您其他裝置上的書籤會顯示在這裡。</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />，子母畫面分頁</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{還原 1 個視窗}other{還原 # 個視窗}}</translation>
 <translation id="1126696498560056882">管理這部裝置上的帳戶</translation>
 <translation id="1135018701024399762">如果你與人共用裝置，但不想讓其他人查看你的瀏覽記錄，可以使用無痕模式</translation>
 <translation id="113752097246673894">如要在所有裝置上存取書籤和其他資料，請以「<ph name="EMAIL" />」身分登入 Chrome</translation>
@@ -195,7 +196,6 @@
 <translation id="1877073879466606884">你登入的是受管理設定檔。系統管理員可以從遠端變更你的設定檔設定、透過報告分析瀏覽器的資訊，以及執行其他必要工作。</translation>
 <translation id="1879904908408734349">登入底部功能表已關閉</translation>
 <translation id="1883903952484604915">我的檔案</translation>
-<translation id="1889626070177134359">上方清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1899175549411605574">價格分析底部功能表</translation>
 <translation id="1900260903084164610">選擇繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。</translation>
@@ -510,6 +510,7 @@
 <translation id="3166827708714933426">分頁與視窗快速鍵</translation>
 <translation id="3167258285411721858">你可以要求 <ph name="HOST_NAME" /> 顯示行動版網站</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />，多選的固定無痕分頁，已設為靜音</translation>
+<translation id="3183941812169784232">要還原所有視窗嗎？</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3189635831478931757">「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="3200536777393523575">要關閉目前的視窗嗎？</translation>
@@ -722,6 +723,7 @@
 <translation id="4164642020717536140">快速又安全的網路瀏覽體驗</translation>
 <translation id="4165077084524712774">更多工具</translation>
 <translation id="4170577491341606575">正在擷取你的資料\u2026</translation>
+<translation id="4176838562184310003">Chrome 上次未正確關閉，系統可嘗試還原遺失的視窗和分頁。還原後，部分視窗可能會處於最小化狀態。</translation>
 <translation id="4177222230309051052">取得所有書籤</translation>
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="417865198503699526">搜尋設定</translation>

@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">העתקת התמונה</translation>
 <translation id="1606899876897213121">סגירת הסיכום של הפעילות האחרונה</translation>
 <translation id="1612754831519568745">הגלישה הבטוחה מושבתת כרגע. כדאי להפעיל אותה כדי לקבל הגנה מפני אתרים, הורדות ותוספים מסוכנים.</translation>
+<translation id="1617300545081951343">‏השימוש כפוף <ph name="BEGIN_LINK" />לתנאי השימוש<ph name="END_LINK" />, <ph name="BEGIN_LINK" />לתנאים לגבי מיקום למשתמשים מקוריאה<ph name="END_LINK" /> ול<ph name="BEGIN_LINK" />הודעת הפרטיות<ph name="END_LINK" /> שלנו. ‫Gemini מבוסס על AI והוא עלול לטעות, גם בנוגע לאנשים.</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1622717322707146952">‏בוחרים באפשרות 'הוספה ליומן Google' או 'הוספה ל-Apple Calendar'.</translation>
 <translation id="1629162218487290695">אימות הזהות שלך…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">המערכת תוציא אותך מהחשבון ונתוני הגלישה יימחקו</translation>
 <translation id="3124568093781685165">שיתוף הסיסמאות שלך עם הקבוצה המשפחתית</translation>
 <translation id="3130863904455712965">היסטוריה ועוד</translation>
+<translation id="3130973487775218359">‏כדאי לצפות: <ph name="BEGIN_LINK" />5 דברים שצריך לדעת לגבי AI גנרטיבי<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">‏לשמור את מספר ה-Redress?</translation>
 <translation id="3132584647087998639">ייבוא של הנתונים שלך</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">‏חתימת OCSP</translation>
 <translation id="4309403553630140242">לחיצה פעמיים תציג מידע נוסף</translation>
 <translation id="4310738531374808763">התאמה אישית של דף הבית</translation>
+<translation id="4316794575239200608">‏השיחות שלך עם Gemini ו<ph name="BEGIN_LINK" />הנתונים שלך ב-Google Workspace<ph name="END_LINK" />לא ייבדקו על ידי בודקים אנושיים ולא ישמשו לשיפור מודלים של AI גנרטיבי.</translation>
 <translation id="4320848494125124980">מהזמן האחרון</translation>
 <translation id="4322394346347055525">סגירת כרטיסיות אחרות</translation>
 <translation id="4323122584592971322">‏OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="4632655012900268062">התאמה אישית של הכרטיסים</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
+<translation id="4634633632339959267">‏האינטראקציות שלך ייבדקו וישמשו כדי לשפר את ה-AI מבית Google. <ph name="BEGIN_LINK" />כאן מפורטות כל האפשרויות שקשורות לשמירת נתונים.<ph name="END_LINK" /> במסגרת הפעילות נשמר גם <ph name="BEGIN_LINK" />מידע על המיקום שלך<ph name="END_LINK" />.</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4641425577292284174">אפשר לבדוק אם ההגדרות הכי בטוחות הופעלו או שיש משהו שצריך לטפל בו</translation>
 <translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
@@ -1566,6 +1570,7 @@
 <translation id="6435236283694032571">הוספה לרשימת הקריאה</translation>
 <translation id="6435307030888827407">לא להיכנס לחשבון</translation>
 <translation id="6436318499800111867">תאריך השיתוף: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031">‏חשוב <ph name="BEGIN_LINK" />לכבד את הפרטיות של אנשים אחרים<ph name="END_LINK" /> ולבקש מהם רשות לפני שמקליטים אותם או מצרפים אותם לשיחה במצב Live.</translation>
 <translation id="6442697326824312960">ביטול הצמדה של כרטיסייה</translation>
 <translation id="6443118737398455446">תאריך התפוגה אינו חוקי</translation>
 <translation id="6444435711855078002">אפשרויות נוספות</translation>
@@ -1808,6 +1813,7 @@
 <translation id="7253951228444156601">הסיסמאות נבדקות…</translation>
 <translation id="7261217796641151584">שיתוף קבוצה</translation>
 <translation id="7266578100016339897">כך יהיה לך יותר קל לשמור על סדר. אפשר לשנות את הבחירה דרך ההגדרות בכל שלב.</translation>
+<translation id="7270491814777319521">‏השימוש כפוף ל<ph name="BEGIN_LINK" />תנאים של Google <ph name="END_LINK" />ול<ph name="BEGIN_LINK" />הודעת הפרטיות של ממשקי Gemini<ph name="END_LINK" />. ‫Gemini מבוסס על AI והוא עלול לטעות, גם בנוגע לאנשים.</translation>
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
 <translation id="728025568708172005">התחלת סיור</translation>
 <translation id="7280980607183752256">אי אפשר לייבא את הקובץ הזה</translation>
@@ -2128,6 +2134,7 @@
 <translation id="8345328955902001853">{count,plural, =1{כדי להתקדם לרמה הבאה, צריך להשלים עוד משימה אחת}one{כדי להתקדם לרמה הבאה, צריך להשלים עוד {count} משימות}two{כדי להתקדם לרמה הבאה, צריך להשלים עוד {count} משימות}other{כדי להתקדם לרמה הבאה, צריך להשלים עוד {count} משימות}}</translation>
 <translation id="8348530355586151720">לוחצים על סמל האפשרויות הנוספות (3 נקודות)</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
+<translation id="8360164927489392419">‏ההקלטות של השיחות והתכנים שלך שמשותפים במצב Live נשמרים ועוברים עיבוד בהתאם ל<ph name="BEGIN_LINK" />הודעת הפרטיות של ממשקי Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{יובאה סימנייה אחת ({count})}one{יובאו {count} סימניות}two{יובאו {count} סימניות}other{יובאו {count} סימניות}}</translation>
 <translation id="8363484128299778310">שחזור זמני במקרה של בעיות</translation>
 <translation id="8364563001733875155">כדי לשנות את קוד האימות, קודם עליך להגדיר קוד גישה במכשיר.</translation>
@@ -2223,6 +2230,7 @@
 <translation id="8643403533759285912">מחיקת הקבוצה</translation>
 <translation id="8647280737650867362">לא ניתן לבטל את המעקב אחר המחירים.</translation>
 <translation id="8654802032646794042">ביטול</translation>
+<translation id="8659875081143553823">רק רגע</translation>
 <translation id="8660600697590740984">‏תמונה שהועתקה מ-Lens</translation>
 <translation id="866266761389616183">אוי, לא!</translation>
 <translation id="8663764600409216912">בחרת סיסמאות שקשה לנחש</translation>

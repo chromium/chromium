@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Sisse logitud kasutajana <ph name="USER" /></translation>
 <translation id="1149401351239820326">Aegumiskuu</translation>
 <translation id="1150989369772528668">Kalender</translation>
+<translation id="1161444134753003495">Logi sisse</translation>
 <translation id="1161663161838091892">Jätkamiseks vahelehtede ja ajaloo sünkroonimine</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} krediitkaart}other{{count} krediitkaarti}}</translation>
 <translation id="1164891049599601209">Sisestati petturlikul saidil</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Kopeeri pilt</translation>
 <translation id="1606899876897213121">Hiljutise tegevuse kokkuvõtte sulgemine</translation>
 <translation id="1612754831519568745">Teie Google'i ohutu sirvimine on praegu välja lülitatud. Kaitske end ohtlike saitide, allalaadimiste ja laienduste eest.</translation>
+<translation id="1617300545081951343">Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korea asukohatingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />. Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu.</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1622717322707146952">Tehke valik „Lisa Google'i kalendrisse“ või „Lisa teenusesse Apple Calendar“.</translation>
 <translation id="1629162218487290695">Kinnitage oma isik …</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Teid logitakse välja ja sirvimisandmed kustutatakse</translation>
 <translation id="3124568093781685165">Paroolide jagamine perega</translation>
 <translation id="3130863904455712965">Ajalugu ja muu</translation>
+<translation id="3130973487775218359">Vaadake: <ph name="BEGIN_LINK" />viis asja, mida peaksite generatiivse AI kohta teadma<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Salvesta õiguskaitsenumber</translation>
 <translation id="3132584647087998639">Andmete importimine</translation>
 <translation id="313283613037595347">Looge uus inkognito vaheleht.</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
 <translation id="3933372629914873850">Logite sisse saidile <ph name="URL" />.</translation>
 <translation id="3934905113567851655">Suuruse muutmiseks liigutage sõrmi kokku.</translation>
+<translation id="393732545649378031">Konto</translation>
 <translation id="3940195383040445971">Jälgige vahelehtedel hindu</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Sulge {COUNT} vaheleht}other{Sulge {COUNT} vahelehte}}</translation>
 <translation id="3946483119107054883">Laadi alla CSV-failina</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP allkirjastamine</translation>
 <translation id="4309403553630140242">Topeltpuudutage lisateabe saamiseks</translation>
 <translation id="4310738531374808763">Avalehe kohandamine</translation>
+<translation id="4316794575239200608">Teie vestlusi Geminiga ega teie <ph name="BEGIN_LINK" />Google Workspace’i andmeid<ph name="END_LINK" /> ei vaadata inimeste poolt üle ega kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="4320848494125124980">Hiljutised</translation>
 <translation id="4322394346347055525">Sule muud vahelehed</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> korduvalt kasutatud parooli</translation>
 <translation id="4632655012900268062">Kohanda kaarte</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
+<translation id="4634633632339959267">Vestlused vaadatakse üle ja neid kasutatakse Google’i AI täiustamiseks. <ph name="BEGIN_LINK" />Lugege teavet oma valikute kohta.<ph name="END_LINK" /> Koos tegevusega salvestatakse ka <ph name="BEGIN_LINK" />teie asukohateave<ph name="END_LINK" />.</translation>
 <translation id="4636930964841734540">Teave</translation>
 <translation id="4641425577292284174">Saate olla teadlik sellest, kas teil on kõige turvalisemad seaded või peate midagi üle vaatama</translation>
 <translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
@@ -1470,6 +1476,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6140948187512243695">Üksikasjade kuvamine</translation>
 <translation id="6144589619057374135">Ava ${url} inkognito aknas</translation>
 <translation id="6146563240635539929">Videod</translation>
+<translation id="6148392728478209113">Kas kasutate endiselt Live'i? Geminiga vestluse jätkamiseks puudutage Live-nuppu.</translation>
 <translation id="6151006591088192882">Ava inkognito vahelehed meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Mitteaktiivne</translation>
 <translation id="6152406514676263192">Lubage sünkroonimine, et näha kõige asjakohasemat sisu, mis põhineb teie huvidel.</translation>
@@ -1563,6 +1570,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6435236283694032571">Lugemisloendisse lisamine</translation>
 <translation id="6435307030888827407">Jää väljalogituks</translation>
 <translation id="6436318499800111867">Minuga jagatud kuupäeval <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Austage teiste inimeste privaatsust<ph name="END_LINK" /> ja küsige enne salvestamise alustamist või kellegi Live-vestlusesse kaasamist luba.</translation>
 <translation id="6442697326824312960">Vahelehe vabastamine</translation>
 <translation id="6443118737398455446">Sobimatu aegumiskuupäev</translation>
 <translation id="6444435711855078002">Rohkem valikuid</translation>
@@ -1805,6 +1813,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7253951228444156601">Paroolide kontrollimine …</translation>
 <translation id="7261217796641151584">Grupi jagamine</translation>
 <translation id="7266578100016339897">See aitab segadust vältida. Seda saab igal ajal seadetes muuta.</translation>
+<translation id="7270491814777319521">Kehtivad <ph name="BEGIN_LINK" />Google’i tingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />Gemini rakenduste privaatsusteatis<ph name="END_LINK" />. Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu.</translation>
 <translation id="7272437679830969316">Teie isikut ei õnnestu tuvastada. Parooli ei kopeeritud.</translation>
 <translation id="728025568708172005">Alusta tutvustust</translation>
 <translation id="7280980607183752256">Seda faili ei saa importida.</translation>
@@ -2125,6 +2134,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8345328955902001853">{count,plural, =1{Taseme tõstmiseks täitke veel 1 ülesanne.}other{Taseme tõstmiseks täitke veel {count} ülesannet.}}</translation>
 <translation id="8348530355586151720">Puudutage kolme punktiga menüüd</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>
+<translation id="8360164927489392419">Teie Live’i interaktsioonide salvestised ja sisu, mida selle funktsiooniga jagate, salvestatakse ning neid töödeldakse <ph name="BEGIN_LINK" />Gemini rakenduste privaatsusteatise<ph name="END_LINK" /> kohaselt. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} järjehoidja imporditi}other{{count} järjehoidjat imporditi}}</translation>
 <translation id="8363484128299778310">Ajutine taaste probleemide korral</translation>
 <translation id="8364563001733875155">PIN-koodi muutmiseks seadistage kõigepealt oma seadmes pääsukood.</translation>
@@ -2220,6 +2230,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8643403533759285912">Kustuta grupp</translation>
 <translation id="8647280737650867362">Hinna jälgimist ei saanud lõpetada.</translation>
 <translation id="8654802032646794042">Tühista</translation>
+<translation id="8659875081143553823">Oodake pisut</translation>
 <translation id="8660600697590740984">Otsi kopeeritud pilti Lensiga</translation>
 <translation id="866266761389616183">Ups, ebaõnn!</translation>
 <translation id="8663764600409216912">Kasutate paroole, mida on raske ära arvata</translation>

@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">방문 기록 동기화</translation>
 <translation id="1111673857033749125">다른 기기에서 저장한 북마크가 여기에 표시됩니다.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, PIP 모드 탭</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{창 1개 복원}other{창 #개 복원}}</translation>
 <translation id="1126696498560056882">이 기기에서 계정 관리</translation>
 <translation id="1135018701024399762">시크릿 모드를 사용하면 내 기기를 사용하는 다른 사용자에게 내 탐색 기록을 비공개로 유지할 수 있습니다</translation>
 <translation id="113752097246673894">모든 기기에서 북마크 등을 사용하려면 Chrome에 <ph name="EMAIL" /> 계정을 사용하여 로그인하세요</translation>
@@ -195,7 +196,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1877073879466606884">로그인한 프로필이 관리 프로필입니다. 관리자는 프로필 설정을 원격으로 변경하고, 보고를 통해 브라우저에 관한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다.</translation>
 <translation id="1879904908408734349">로그인 하단 시트가 닫혔습니다</translation>
 <translation id="1883903952484604915">내 파일</translation>
-<translation id="1889626070177134359">위 목록에 추천된 항목이 <ph name="SUGGESTIONS_COUNT" />개 있습니다.</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1899175549411605574">가격 정보 하단 시트</translation>
 <translation id="1900260903084164610">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" />에 동의하는 것으로 간주됩니다.</translation>
@@ -510,6 +510,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />의 모바일 사이트를 요청할 수 있습니다.</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 음소거된 시크릿 탭</translation>
+<translation id="3183941812169784232">모든 창을 복원하시겠습니까?</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> 탭 그룹</translation>
 <translation id="3200536777393523575">현재 창을 닫으시겠습니까?</translation>
@@ -722,6 +723,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4164642020717536140">빠르고 안전하게 웹을 탐색하세요</translation>
 <translation id="4165077084524712774">도구 더보기</translation>
 <translation id="4170577491341606575">데이터를 가져오는 중\u2026</translation>
+<translation id="4176838562184310003">Chrome이 제대로 종료되지 않았으며, 손실된 창과 탭을 복원하려고 시도할 수 있습니다. 복원 시 일부 창이 최소화될 수 있습니다.</translation>
 <translation id="4177222230309051052">모든 북마크 가져오기</translation>
 <translation id="4177501066905053472">광고 주제</translation>
 <translation id="417865198503699526">설정을 검색합니다.</translation>

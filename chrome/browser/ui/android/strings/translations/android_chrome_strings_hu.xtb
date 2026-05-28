@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Előzmények szinkronizálása</translation>
 <translation id="1111673857033749125">A más eszközökön mentett könyvjelzők itt jelennek meg.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, lap kép a képben módban</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 ablak visszaállítása}other{# ablak visszaállítása}}</translation>
 <translation id="1126696498560056882">Fiókok kezelése ezen az eszközön</translation>
 <translation id="1135018701024399762">Az inkognitó mód használatával az Ön böngészési tevékenységei privát jellegűek maradnak az eszközt használó többi személy előtt</translation>
 <translation id="113752097246673894">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba a következő fiókkal: <ph name="EMAIL" /></translation>
@@ -195,7 +196,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1877073879466606884">A bejelentkezéshez használt profil felügyelt profil. A rendszergazda távolról módosíthatja az Ön profilbeállításait, jelentésekkel elemezheti a böngészőadatait, és egyéb szükséges feladatokat is elvégezhet.</translation>
 <translation id="1879904908408734349">Az alsó bejelentkezési lap bezárva</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
-<translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> javasolt elem a fenti listában.</translation>
 <translation id="189358972401248634">Más nyelvek</translation>
 <translation id="1899175549411605574">„Árváltozások és -összehasonlítások” alsó lap</translation>
 <translation id="1900260903084164610">A folytatással Ön elfogadja az <ph name="BEGIN_TOS_LINK" />Általános Szerződési Feltételeket<ph name="END_TOS_LINK" />.</translation>
@@ -510,6 +510,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3166827708714933426">Lapokkal és ablakokkal kapcsolatos billentyűparancsok</translation>
 <translation id="3167258285411721858">Kérheti mobilwebhely megjelenítését a következőhöz: <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, több kiválasztott rögzített némított inkognitó lap</translation>
+<translation id="3183941812169784232">Visszaállítja az összes ablakot?</translation>
 <translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> lapcsoport</translation>
 <translation id="3200536777393523575">Bezárja az aktuális ablakot?</translation>
@@ -722,6 +723,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4164642020717536140">Gyorsan és biztonságosan böngészhet az interneten</translation>
 <translation id="4165077084524712774">További eszközök</translation>
 <translation id="4170577491341606575">Adatok lekérése…</translation>
+<translation id="4176838562184310003">A Chrome nem megfelelően állt le, és megpróbálhatja visszaállítani az elveszett ablakokat és lapokat. Előfordulhat, hogy egyes ablakok a visszaállításkor kis méretre állítódnak.</translation>
 <translation id="4177222230309051052">Az összes könyvjelző megtekintése</translation>
 <translation id="4177501066905053472">Hirdetéstémák</translation>
 <translation id="417865198503699526">Keresse meg a kívánt beállítást</translation>

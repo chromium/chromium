@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1150989369772528668">Kalender</translation>
+<translation id="1161444134753003495">Logga in</translation>
 <translation id="1161663161838091892">Synkronisera flikar och historik för att fortsätta</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditkort}other{{count} kreditkort}}</translation>
 <translation id="1164891049599601209">Har angetts på en bedräglig webbplats</translation>
@@ -824,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Nytt lösenord för den här webbplatsen}other{Nya lösenord för den här webbplatsen}}</translation>
 <translation id="3933372629914873850">Du loggar in på <ph name="URL" /></translation>
 <translation id="3934905113567851655">Nyp för att ändra storlek</translation>
+<translation id="393732545649378031">Konto</translation>
 <translation id="3940195383040445971">Bevaka priser på flikar</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
 <translation id="3946483119107054883">Ladda ned till CSV</translation>
@@ -1474,6 +1476,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6140948187512243695">Visa detaljerad information</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
 <translation id="6146563240635539929">Videor</translation>
+<translation id="6148392728478209113">Använder du fortfarande Live? Tryck på Live-knappen för att fortsätta prata med Gemini.</translation>
 <translation id="6151006591088192882">Lås upp inkognitoflikar med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inaktivera</translation>
 <translation id="6152406514676263192">Synkronisera för att se det mest relevanta innehållet baserat på dina intressen.</translation>
@@ -2227,6 +2230,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8643403533759285912">Radera grupp</translation>
 <translation id="8647280737650867362">Det gick inte att avsluta prisbevakningen.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
+<translation id="8659875081143553823">Ett ögonblick</translation>
 <translation id="8660600697590740984">Sök efter kopierad bild med Lens</translation>
 <translation id="866266761389616183">Åh, nej!</translation>
 <translation id="8663764600409216912">Du använder lösenord som verkar svåra att lista ut</translation>

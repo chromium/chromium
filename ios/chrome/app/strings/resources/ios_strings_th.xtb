@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">คัดลอกรูปภาพ</translation>
 <translation id="1606899876897213121">ปิดข้อมูลสรุปกิจกรรมล่าสุด</translation>
 <translation id="1612754831519568745">Google Safe Browsing ปิดอยู่ รับการปกป้องให้พ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>
+<translation id="1617300545081951343">เป็นไปตาม<ph name="BEGIN_LINK" />ข้อกำหนด<ph name="END_LINK" /> <ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการตำแหน่งในประเทศเกาหลี<ph name="END_LINK" /> และ<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว<ph name="END_LINK" /> Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1622717322707146952">เลือก "เพิ่มใน Google ปฏิทิน" หรือ "เพิ่มใน Apple Calendar"</translation>
 <translation id="1629162218487290695">ยืนยันว่าเป็นคุณ…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">คุณจะออกจากระบบ และข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="3124568093781685165">แชร์รหัสผ่านกับครอบครัว</translation>
 <translation id="3130863904455712965">ประวัติการเข้าชมและอื่นๆ</translation>
+<translation id="3130973487775218359">ดู: <ph name="BEGIN_LINK" />5 สิ่งที่ต้องรู้เกี่ยวกับ Generative AI<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">บันทึกเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="3132584647087998639">นำเข้าข้อมูลของคุณ</translation>
 <translation id="313283613037595347">สร้างแท็บใหม่ที่ไม่ระบุตัวตน</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">การเซ็นชื่อ OCSP</translation>
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="4310738531374808763">ปรับแต่งหน้าแรกของคุณ</translation>
+<translation id="4316794575239200608">การสนทนาของคุณกับ Gemini หรือ<ph name="BEGIN_LINK" />ข้อมูลใน Google Workspace<ph name="END_LINK" /> จะไม่ได้รับการตรวจสอบจากเจ้าหน้าที่หรือนำไปใช้เพื่อปรับปรุง Generative AI</translation>
 <translation id="4320848494125124980">ล่าสุด</translation>
 <translation id="4322394346347055525">ปิดแท็บอื่นๆ</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366">มีรหัสผ่านที่ใช้ซ้ำ <ph name="COUNT" /> รายการ</translation>
 <translation id="4632655012900268062">ปรับแต่งการ์ด</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
+<translation id="4634633632339959267">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อปรับปรุง Google AI <ph name="BEGIN_LINK" />ดูข้อมูลเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /> ระบบจะจัดเก็บ<ph name="BEGIN_LINK" />ข้อมูลเกี่ยวกับตำแหน่ง<ph name="END_LINK" />รวมกับกิจกรรมของคุณด้วย</translation>
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4641425577292284174">แจ้งให้คุณทราบว่ามีการตั้งค่าที่ปลอดภัยที่สุดหรือไม่ หรือต้องตรวจสอบอะไรบ้าง</translation>
 <translation id="4642472735733036929">หยุดติดตามราคาแล้ว</translation>
@@ -1566,6 +1570,7 @@
 <translation id="6435236283694032571">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="6435307030888827407">อยู่ในโหมดออกจากระบบ</translation>
 <translation id="6436318499800111867">แชร์กับฉันแล้วเมื่อวันที่ <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />เคารพความเป็นส่วนตัวของผู้อื่น<ph name="END_LINK" /> และขออนุญาตก่อนบันทึกหรือเพิ่มผู้อื่นในแชท Live</translation>
 <translation id="6442697326824312960">ยกเลิกการปักหมุดแท็บ</translation>
 <translation id="6443118737398455446">วันหมดอายุไม่ถูกต้อง</translation>
 <translation id="6444435711855078002">ตัวเลือกเพิ่มเติม</translation>
@@ -1808,6 +1813,7 @@
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="7261217796641151584">แชร์กลุ่ม</translation>
 <translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
+<translation id="7270491814777319521">เป็นไปตาม<ph name="BEGIN_LINK" />ข้อกำหนดของ Google<ph name="END_LINK" /> และ<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวของแอป Gemini<ph name="END_LINK" /> Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="728025568708172005">ทัวร์ชม Chrome</translation>
 <translation id="7280980607183752256">นำเข้าไฟล์นี้ไม่ได้</translation>
@@ -2128,6 +2134,7 @@
 <translation id="8345328955902001853">{count,plural, =1{ทำงานอีก 1 รายการให้เสร็จเพื่อเลื่อนระดับ}other{ทำงานอีก {count} รายการให้เสร็จเพื่อเลื่อนระดับ}}</translation>
 <translation id="8348530355586151720">แตะเมนู 3 จุด</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
+<translation id="8360164927489392419">ระบบจะบันทึกและประมวลผลการโต้ตอบของคุณกับฟีเจอร์ Live และเนื้อหาที่คุณแชร์กับฟีเจอร์นี้ตาม<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวของแอป Gemini<ph name="END_LINK" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{นำเข้าบุ๊กมาร์ก {count} รายการแล้ว}other{นำเข้าบุ๊กมาร์ก {count} รายการแล้ว}}</translation>
 <translation id="8363484128299778310">การกู้คืนชั่วคราวในกรณีที่มีปัญหา</translation>
 <translation id="8364563001733875155">หากต้องการเปลี่ยน PIN ให้ตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
@@ -2223,6 +2230,7 @@
 <translation id="8643403533759285912">ลบกลุ่ม</translation>
 <translation id="8647280737650867362">ยกเลิกการติดตามราคาไม่ได้</translation>
 <translation id="8654802032646794042">ยกเลิก</translation>
+<translation id="8659875081143553823">รอสักครู่</translation>
 <translation id="8660600697590740984">รูปภาพที่คัดลอกด้วย Lens</translation>
 <translation id="866266761389616183">แย่จัง!</translation>
 <translation id="8663764600409216912">คุณใช้รหัสผ่านที่คาดเดาได้ยาก</translation>

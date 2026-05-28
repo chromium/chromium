@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">سرگزشت سِنک کریں</translation>
 <translation id="1111673857033749125">آپ کے دیگر آلات پر محفوظ کردہ بُک مارکس یہاں ظاہر ہوں گے۔</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />، تصویر میں تصویر ٹیب</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{‫1 ونڈو بحال کریں}other{‫# ونڈوز بحال کریں}}</translation>
 <translation id="1126696498560056882">اس آلے پر اکاؤنٹس کا نظم کریں</translation>
 <translation id="1135018701024399762">پوشیدگی وضع آپ کا آلہ استعمال کرنے والے دوسرے لوگوں سے آپ کے براؤزنگ ڈیٹا کو نجی رکھتی ہے</translation>
 <translation id="113752097246673894">‏اپنے تمام آلات پر اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور Chrome میں سائن ان کریں</translation>
@@ -195,7 +196,6 @@
 <translation id="1877073879466606884">آپ جس پروفائل میں سائن ان ہیں وہ ایک منظم پروفائل ہے۔ آپ کا منتظم آپ کی پروفائل کی ترتیبات میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔</translation>
 <translation id="1879904908408734349">سائن ان کرنے کیلئے نیچے کی شیٹ بند ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
-<translation id="1889626070177134359">اوپر کی فہرست میں تجویز کردہ <ph name="SUGGESTIONS_COUNT" /> آئٹمز۔</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
 <translation id="1899175549411605574">قیمت سے متعلق حقائق کی نیچے کی شیٹ</translation>
 <translation id="1900260903084164610">جاری رکھ کر آپ <ph name="BEGIN_TOS_LINK" />سروس کی شرائط<ph name="END_TOS_LINK" /> سے اتفاق کرتے ہیں۔</translation>
@@ -510,6 +510,7 @@
 <translation id="3166827708714933426">ٹیب اور ونڈو شارٹ کٹس</translation>
 <translation id="3167258285411721858">آپ <ph name="HOST_NAME" /> کے لیے موبائل سائٹ کی درخواست کر سکتے ہیں</translation>
 <translation id="3181145110929454111">‫<ph name="TAB_TITLE" />، متعدد منتخب کردہ پن کردہ خاموش کیا گیا پوشیدگی ٹیب</translation>
+<translation id="3183941812169784232">تمام ونڈوز کو بحال کریں؟</translation>
 <translation id="3187472288455401631">اشتہار کی اثرپذیری کی پیمائش</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
 <translation id="3200536777393523575">آپ کی موجودہ ونڈو بند کریں؟</translation>
@@ -722,6 +723,7 @@
 <translation id="4164642020717536140">تیز اور محفوظ ویب براؤزنگ</translation>
 <translation id="4165077084524712774">مزید ٹولز</translation>
 <translation id="4170577491341606575">‏آپ کا ڈیٹا حاصل کیا جا رہا ہے‎\u2026</translation>
+<translation id="4176838562184310003">‏‫Chrome صحیح طریقے سے شٹ ڈاؤن نہیں ہوا اور آپ کی کھوئی ہوئی ونڈوز اور ٹیبز کو بحال کرنے کی کوشش کر سکتا ہے۔ بحال ہونے پر کچھ ونڈوز کو چھوٹا کیا جا سکتا ہے۔</translation>
 <translation id="4177222230309051052">اپنے تمام بک مارکس حاصل کریں</translation>
 <translation id="4177501066905053472">اشتہار کے موضوعات</translation>
 <translation id="417865198503699526">ترتیب تلاش کریں</translation>
