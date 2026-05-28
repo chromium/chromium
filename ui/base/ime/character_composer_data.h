@@ -23518,7 +23518,6 @@ static const uint16_t kCompositionsTree[] = {
 
 static const ui::TreeComposeChecker::CompositionData kCompositions = {
   5, // maximum sequence length
-  15160, // tree array entries
   kCompositionsTree
 };
 

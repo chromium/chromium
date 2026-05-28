@@ -360,14 +360,13 @@ class Assembler:
 
     # Second pass: write the array.
     out.write('\nstatic const uint16_t {}Tree[] = {{\n'.format(self._name))
-    end = self.Pass(out, self._gtree)
+    self.Pass(out, self._gtree)
     out.write('};\n\n')
 
     # Write the description structure.
     out.write('static const {} {} = {{\n'
               .format(self._type, self._name))
     out.write('  {}, // maximum sequence length\n'.format(self._gtree.height))
-    out.write('  {}, // tree array entries\n'.format(end))
     out.write('  {}Tree\n'.format(self._name))
     out.write('};\n\n')
 

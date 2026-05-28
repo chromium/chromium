@@ -4,13 +4,11 @@
 
 #include "ui/base/ime/character_composer.h"
 
-#include <algorithm>
-#include <iterator>
 #include <optional>
 #include <string>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -299,16 +297,14 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
 
   uint16_t tree_index = 0;
   for (const auto& keystroke : sequence) {
-    DCHECK(tree_index < data_->tree_entries);
+    DCHECK(tree_index < data_->tree.size());
 
     // If we are looking up a dead key or the Compose key, skip over the
     // character tables.
     int32_t character = -1;
     if (keystroke.IsDeadKey() || keystroke.IsComposeKey()) {
-      tree_index += 2 * UNSAFE_TODO(data_->tree[tree_index]) +
-                    1;  // internal unicode table
-      tree_index +=
-          2 * UNSAFE_TODO(data_->tree[tree_index]) + 1;  // leaf unicode table
+      tree_index += 2 * data_->tree[tree_index] + 1;  // internal unicode table
+      tree_index += 2 * data_->tree[tree_index] + 1;  // leaf unicode table
       // The generate_character_composer_data.py script assigns 0 to the Compose
       // key.
       character = keystroke.IsComposeKey()
@@ -322,7 +318,7 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
 
     // Check the internal subtree table.
     uint16_t result = 0;
-    uint16_t entries = UNSAFE_TODO(data_->tree[tree_index++]);
+    uint16_t entries = data_->tree[tree_index++];
     if (entries &&
         Find(tree_index, entries, static_cast<uint16_t>(character), &result)) {
       tree_index = result;
@@ -331,7 +327,7 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
 
     // Skip over the internal subtree table and check the leaf table.
     tree_index += 2 * entries;
-    entries = UNSAFE_TODO(data_->tree[tree_index++]);
+    entries = data_->tree[tree_index++];
     if (entries &&
         Find(tree_index, entries, static_cast<uint16_t>(character), &result)) {
       *composed_character = result;
