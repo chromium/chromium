@@ -61,86 +61,85 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                 @Override
                 public void didFinishNavigationInPrimaryMainFrame(
                         NavigationHandle navigationHandle) {
-                    if (navigationHandle.hasCommitted()
-                            && UrlUtilities.isHttpOrHttps(navigationHandle.getUrl())) {
-                        GURL url = navigationHandle.getUrl();
-                        var delegate = mOpenInAppDelegate;
-                        if (delegate == null) return;
+                    if (!navigationHandle.hasCommitted()) return;
 
-                        delegate.setLastNavigatedUrl(url);
-                        Intent targetIntent = new Intent(Intent.ACTION_VIEW);
-                        targetIntent.setData(Uri.parse(url.getSpec()));
-                        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(targetIntent);
+                    if (mOpenInAppDelegate == null) return;
+                    var delegate = mOpenInAppDelegate;
 
-                        // New navigation committed, so we should clear the open in app info to
-                        // prevent trying to open an app based on outdated info.
-                        updateOpenInAppInfo(delegate, null);
+                    GURL url = navigationHandle.getUrl();
+                    delegate.setLastNavigatedUrl(url);
+                    // New navigation committed, so we should clear the open in app info to
+                    // prevent trying to open an app based on outdated info.
+                    updateOpenInAppInfo(delegate, null);
 
-                        new AsyncTask<ResolveResult>() {
-                            @Override
-                            protected ResolveResult doInBackground() {
-                                List<ResolveInfo> resolveInfos =
-                                        PackageManagerUtils.queryIntentActivities(
-                                                targetIntent,
-                                                PackageManager.GET_RESOLVED_FILTER
-                                                        | PackageManager.GET_META_DATA);
+                    if (!UrlUtilities.isHttpOrHttps(navigationHandle.getUrl())) return;
 
-                                var browserPackages =
-                                        ExternalNavigationHandler.getInstalledBrowserPackages();
+                    Intent targetIntent = new Intent(Intent.ACTION_VIEW);
+                    targetIntent.setData(Uri.parse(url.getSpec()));
+                    ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(targetIntent);
 
-                                ArrayList<ResolveInfo> suitableApps = new ArrayList<>();
-                                for (var info : resolveInfos) {
-                                    if (browserPackages.contains(info.activityInfo.packageName)) {
-                                        continue;
-                                    }
+                    new AsyncTask<ResolveResult>() {
+                        @Override
+                        protected ResolveResult doInBackground() {
+                            List<ResolveInfo> resolveInfos =
+                                    PackageManagerUtils.queryIntentActivities(
+                                            targetIntent,
+                                            PackageManager.GET_RESOLVED_FILTER
+                                                    | PackageManager.GET_META_DATA);
 
-                                    boolean isDefault =
-                                            info.filter != null
-                                                    && info.filter.hasCategory(
-                                                            Intent.CATEGORY_DEFAULT);
-                                    boolean isWebApk =
-                                            WebApkValidator.isValidWebApk(
-                                                    mContext, info.activityInfo.packageName);
+                            var browserPackages =
+                                    ExternalNavigationHandler.getInstalledBrowserPackages();
 
-                                    if (isDefault || isWebApk) {
-                                        suitableApps.add(info);
-                                    }
+                            ArrayList<ResolveInfo> suitableApps = new ArrayList<>();
+                            for (var info : resolveInfos) {
+                                if (browserPackages.contains(info.activityInfo.packageName)) {
+                                    continue;
                                 }
 
-                                if (suitableApps.isEmpty()) {
-                                    return new ResolveResult.None();
+                                boolean isDefault =
+                                        info.filter != null
+                                                && info.filter.hasCategory(Intent.CATEGORY_DEFAULT);
+                                boolean isWebApk =
+                                        WebApkValidator.isValidWebApk(
+                                                mContext, info.activityInfo.packageName);
+
+                                if (isDefault || isWebApk) {
+                                    suitableApps.add(info);
                                 }
-
-                                if (suitableApps.size() > 1) {
-                                    ResolveInfo resolveActivity =
-                                            PackageManagerUtils.resolveActivity(
-                                                    targetIntent,
-                                                    PackageManager.MATCH_DEFAULT_ONLY);
-
-                                    if (resolveActivity != null) {
-                                        if (ExternalNavigationHandler.resolvesToChooser(
-                                                resolveActivity, resolveInfos)) {
-                                            return new ResolveResult.ResolverActivity();
-                                        } else {
-                                            return new ResolveResult.Info(resolveActivity);
-                                        }
-                                    }
-                                }
-
-                                return new ResolveResult.Info(suitableApps.get(0));
                             }
 
-                            @Override
-                            protected void onPostExecute(ResolveResult result) {
-                                onResolveInfosFetched(
-                                        delegate,
-                                        result,
-                                        targetIntent,
-                                        url,
-                                        navigationHandle.getNavigationId());
+                            if (suitableApps.isEmpty()) {
+                                return new ResolveResult.None();
                             }
-                        }.executeWithTaskTraits(TaskTraits.UI_DEFAULT);
-                    }
+
+                            if (suitableApps.size() > 1) {
+                                ResolveInfo resolveActivity =
+                                        PackageManagerUtils.resolveActivity(
+                                                targetIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                                if (resolveActivity != null) {
+                                    if (ExternalNavigationHandler.resolvesToChooser(
+                                            resolveActivity, resolveInfos)) {
+                                        return new ResolveResult.ResolverActivity();
+                                    } else {
+                                        return new ResolveResult.Info(resolveActivity);
+                                    }
+                                }
+                            }
+
+                            return new ResolveResult.Info(suitableApps.get(0));
+                        }
+
+                        @Override
+                        protected void onPostExecute(ResolveResult result) {
+                            onResolveInfosFetched(
+                                    delegate,
+                                    result,
+                                    targetIntent,
+                                    url,
+                                    navigationHandle.getNavigationId());
+                        }
+                    }.executeWithTaskTraits(TaskTraits.UI_DEFAULT);
                 }
             };
 
