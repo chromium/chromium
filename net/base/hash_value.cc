@@ -26,10 +26,6 @@ constexpr std::string_view kSha256Slash = "sha256/";
 
 }  // namespace
 
-HashValue::HashValue(const SHA256HashValue& hash) : tag_(HASH_VALUE_SHA256) {
-  fingerprint.sha256 = hash;
-}
-
 HashValue::HashValue(HashValueTag tag, base::span<const uint8_t> hash)
     : tag_(tag) {
   CHECK_EQ(tag_, HASH_VALUE_SHA256);

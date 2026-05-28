@@ -136,20 +136,18 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   const net::HostPortPair host_port_pair2("example2.com", 443);
   const net::HostPortPair host_port_pair3("example3.com", 443);
 
-  std::array<uint8_t, crypto::hash::kSha256Size> zero_hash = {0};
-  net::HashValue first_key(net::HASH_VALUE_SHA256, zero_hash);
-  {
+  net::HashValue first_key = [&]() -> auto {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature1", base::Time::Now(),
                          net::ct::SCT_STATUS_OK, &sct_list);
-    ASSERT_TRUE(cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(),
-                                               sct_list));
-    ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
+    CHECK(cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(),
+                                         sct_list));
+    CHECK_EQ(1u, cache.GetCacheForTesting()->size());
 
     // Save the initial cache key for later inspection.
-    first_key = ComputeCacheKey(sct_list);
-  }
+    return ComputeCacheKey(sct_list);
+  }();
 
   {
     net::SignedCertificateTimestampAndStatusList sct_list;

@@ -30,9 +30,7 @@ class NET_EXPORT HashValue {
   using iterator = base::span<uint8_t>::iterator;
   using const_iterator = base::span<const uint8_t>::iterator;
 
-  explicit HashValue(const SHA256HashValue& hash);
   HashValue(HashValueTag tag, base::span<const uint8_t> hash);
-  HashValue() : tag_(HASH_VALUE_SHA256) {}
 
   // Serializes/Deserializes hashes in the form of
   // <hash-name>"/"<base64-hash-value>
@@ -67,7 +65,7 @@ class NET_EXPORT HashValue {
   NET_EXPORT friend bool operator>=(const HashValue& lhs, const HashValue& rhs);
 
  private:
-  HashValueTag tag_;
+  const HashValueTag tag_;
 
   union {
     SHA256HashValue sha256;
