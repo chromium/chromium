@@ -147,7 +147,9 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void VerifyRankedDicts() {
-    zxcvbn::RankedDicts& ranked_dicts = zxcvbn::default_ranked_dicts();
+    scoped_refptr<zxcvbn::RefCountedRankedDicts> dicts_ref =
+        zxcvbn::default_ranked_dicts();
+    const zxcvbn::RankedDicts& ranked_dicts = dicts_ref->Data();
     EXPECT_EQ(ranked_dicts.Find("english"), 1UL);
     EXPECT_EQ(ranked_dicts.Find("wikipedia"), 2UL);
     EXPECT_EQ(ranked_dicts.Find("female"), 1UL);
@@ -217,7 +219,8 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReadyForMissingFiles) {
   policy().ComponentReady(version(), GetPath(), manifest().Clone());
   task_env().RunUntilIdle();
 
-  EXPECT_FALSE(zxcvbn::default_ranked_dicts().Find("english").has_value());
+  EXPECT_FALSE(
+      zxcvbn::default_ranked_dicts()->Data().Find("english").has_value());
 }
 
 // Tests that ComponentReady reads in the file contents and properly populates

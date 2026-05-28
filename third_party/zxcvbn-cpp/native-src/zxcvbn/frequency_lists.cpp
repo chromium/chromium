@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -105,7 +106,18 @@ class RankedDictEntryRef {
 // Helper function that does nothing with the RankedDicts apart from letting
 // it destruct as it goes out of scope. This is called on the ThreadPool to
 // allow for potentially blocking behavior of `RankedDicts` destructor.
-void DoNothing(RankedDicts dicts) {}
+void DoNothing(scoped_refptr<RefCountedRankedDicts> dicts) {}
+
+base::Lock& GetRankedDictsLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+scoped_refptr<RefCountedRankedDicts>& GetRankedDictsPointer() {
+  static base::NoDestructor<scoped_refptr<RefCountedRankedDicts>> ptr(
+      base::MakeRefCounted<RefCountedRankedDicts>(RankedDicts()));
+  return *ptr;
+}
 
 }  // namespace
 
@@ -224,22 +236,31 @@ bool RankedDicts::IsRealMarker(size_t offset) const {
   return false;
 }
 
-void SetRankedDictsImplementation(RankedDicts dicts) {
-  default_ranked_dicts() = std::move(dicts);
-}
-
+// Safely updates the global `RankedDicts` using a read-copy-update (RCU) pattern.
+// A lock is held briefly to safely update the global `scoped_refptr`, preventing
+// data races against reader threads. The old `RankedDicts` obj is safely unmapped
+// asynchronously if it was using a `MemoryMappedFile`.
 void SetRankedDicts(RankedDicts dicts) {
-  // Destroying a `RankedDict` may block if it is based on a `MemoryMappedFile`.
-  // Therefore this helper moves the task of doing it to a thread pool.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&DoNothing, std::move(default_ranked_dicts())));
-  default_ranked_dicts() = std::move(dicts);
+  scoped_refptr<RefCountedRankedDicts> new_dicts =
+      base::MakeRefCounted<RefCountedRankedDicts>(std::move(dicts));
+  scoped_refptr<RefCountedRankedDicts> old_dicts;
+  {
+    base::AutoLock lock(GetRankedDictsLock());
+    old_dicts = std::exchange(GetRankedDictsPointer(), std::move(new_dicts));
+  }
+  if (old_dicts) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DoNothing, std::move(old_dicts)));
+  }
 }
 
-RankedDicts& default_ranked_dicts() {
-  static base::NoDestructor<RankedDicts> default_dicts;
-  return *default_dicts;
+// Safely grabs a reference to the global `RankedDicts`. The background threads
+// reading dictionaries will hold this snapshot safely across multiple lookups
+// via their own `scoped_refptr` ensuring thread-safe reads.
+scoped_refptr<RefCountedRankedDicts> default_ranked_dicts() {
+  base::AutoLock lock(GetRankedDictsLock());
+  return GetRankedDictsPointer();
 }
 
 }  // namespace zxcvbn

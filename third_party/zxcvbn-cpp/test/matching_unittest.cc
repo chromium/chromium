@@ -281,7 +281,7 @@ TEST(ZxcvbnTest, DictionaryMatching) {
     // default dictionaries
     SetRankedDicts(RankedDicts({{"wow"}}));
     std::vector<Match> matches =
-        dictionary_match("wow", default_ranked_dicts());
+        dictionary_match("wow", default_ranked_dicts()->Data());
     EXPECT_THAT(matches, ElementsAre(ExpectedDictionaryMatch{
                              .i = 0,
                              .j = 2,

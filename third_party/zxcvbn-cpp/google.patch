@@ -1,6 +1,6 @@
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
 deleted file mode 100644
-index 7e1ae349a8e0f..0000000000000
+index 7e1ae34..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
 +++ /dev/null
 @@ -1,49 +0,0 @@
@@ -54,7 +54,7 @@ index 7e1ae349a8e0f..0000000000000
 -
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
-index cba756c449a63..1f66367112aa8 100644
+index cba756c..1f66367 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
 @@ -1,7 +1,6 @@
@@ -99,7 +99,7 @@ index cba756c449a63..1f66367112aa8 100644
    bool l33t;
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
 deleted file mode 100644
-index 729cbad18709c..0000000000000
+index 729cbad..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
 +++ /dev/null
 @@ -1,515 +0,0 @@
@@ -620,7 +620,7 @@ index 729cbad18709c..0000000000000
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
 deleted file mode 100644
-index d22c296188973..0000000000000
+index d22c296..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
 +++ /dev/null
 @@ -1,174 +0,0 @@
@@ -800,7 +800,7 @@ index d22c296188973..0000000000000
 -
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp
 deleted file mode 100644
-index 6f6b62b9da054..0000000000000
+index 6f6b62b..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp
 +++ /dev/null
 @@ -1,20 +0,0 @@
@@ -825,10 +825,10 @@ index 6f6b62b9da054..0000000000000
 -
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
-index a4d65612d8a25..67a2aff5542f3 100644
+index a4d6561..4b328f1 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
-@@ -1,24 +1,245 @@
+@@ -1,24 +1,266 @@
  #include <zxcvbn/frequency_lists.hpp>
  
 -#include <zxcvbn/_frequency_lists.hpp>
@@ -844,6 +844,7 @@ index a4d65612d8a25..67a2aff5542f3 100644
 +#include "base/no_destructor.h"
 +#include "base/notreached.h"
 +#include "base/task/thread_pool.h"
++#include "base/synchronization/lock.h"
 +#include "third_party/abseil-cpp/absl/types/optional.h"
 +#include "third_party/abseil-cpp/absl/types/variant.h"
  
@@ -942,7 +943,18 @@ index a4d65612d8a25..67a2aff5542f3 100644
 +// Helper function that does nothing with the RankedDicts apart from letting
 +// it destruct as it goes out of scope. This is called on the ThreadPool to
 +// allow for potentially blocking behavior of `RankedDicts` destructor.
-+void DoNothing(RankedDicts dicts) {}
++void DoNothing(scoped_refptr<RefCountedRankedDicts> dicts) {}
++
++base::Lock& GetRankedDictsLock() {
++  static base::NoDestructor<base::Lock> lock;
++  return *lock;
++}
++
++scoped_refptr<RefCountedRankedDicts>& GetRankedDictsPointer() {
++  static base::NoDestructor<scoped_refptr<RefCountedRankedDicts>> ptr(
++      base::MakeRefCounted<RefCountedRankedDicts>(RankedDicts()));
++  return *ptr;
++}
 +
 +}  // namespace
 +
@@ -973,8 +985,7 @@ index a4d65612d8a25..67a2aff5542f3 100644
 +  }
 +  std::sort(merged_dicts.begin(), merged_dicts.end(),
 +            [](MergedEntry& a, MergedEntry& b) { return a.value < b.value; });
- 
--  return build;
++
 +  if (merged_dicts.size() == 0)
 +    return;
 +
@@ -986,7 +997,8 @@ index a4d65612d8a25..67a2aff5542f3 100644
 +  // 1 byte at the end for trailing marker byte (for finding last string size)
 +  std::vector<char> vec;
 +  vec.reserve(dict_size + 1);
-+
+ 
+-  return build;
 +  // second pass: place elements in allocated array
 +  for (MergedEntry& entry : merged_dicts)
 +    RankedDictEntryRef::AppendToVector(entry, vec);
@@ -1062,32 +1074,41 @@ index a4d65612d8a25..67a2aff5542f3 100644
 +    }
 +  }
 +  return false;
-+}
-+
-+void SetRankedDictsImplementation(RankedDicts dicts) {
-+  default_ranked_dicts() = std::move(dicts);
-+}
-+
-+void SetRankedDicts(RankedDicts dicts) {
-+  // Destroying a `RankedDict` may block if it is based on a `MemoryMappedFile`.
-+  // Therefore this helper moves the task of doing it to a thread pool.
-+  base::ThreadPool::PostTask(
-+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-+      base::BindOnce(&DoNothing, std::move(default_ranked_dicts())));
-+  default_ranked_dicts() = std::move(dicts);
-+}
-+
-+RankedDicts& default_ranked_dicts() {
-+  static base::NoDestructor<RankedDicts> default_dicts;
-+  return *default_dicts;
  }
++
++// Safely updates the global `RankedDicts` using a read-copy-update (RCU) pattern.
++// A lock is held briefly to safely update the global `scoped_refptr`, preventing
++// data races against reader threads. The old `RankedDicts` obj is safely unmapped
++// asynchronously if it was using a `MemoryMappedFile`.
++void SetRankedDicts(RankedDicts dicts) {
++  scoped_refptr<RefCountedRankedDicts> new_dicts =
++      base::MakeRefCounted<RefCountedRankedDicts>(std::move(dicts));
++  scoped_refptr<RefCountedRankedDicts> old_dicts;
++  {
++    base::AutoLock lock(GetRankedDictsLock());
++    old_dicts = std::exchange(GetRankedDictsPointer(), std::move(new_dicts));
++  }
++  if (old_dicts) {
++    base::ThreadPool::PostTask(
++        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
++        base::BindOnce(&DoNothing, std::move(old_dicts)));
++  }
++}
++
++// Safely grabs a reference to the global `RankedDicts`. The background threads
++// reading dictionaries will hold this snapshot safely across multiple lookups
++// via their own `scoped_refptr` ensuring thread-safe reads.
++scoped_refptr<RefCountedRankedDicts> default_ranked_dicts() {
++  base::AutoLock lock(GetRankedDictsLock());
++  return GetRankedDictsPointer();
++}
 +
 +}  // namespace zxcvbn
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
-index c75ea30d5a911..fed3aaa2ca6a3 100644
+index c75ea30..b495ff3 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
-@@ -1,37 +1,85 @@
+@@ -1,37 +1,102 @@
  #ifndef __ZXCVBN__FREQUENCY_LISTS_HPP
  #define __ZXCVBN__FREQUENCY_LISTS_HPP
  
@@ -1102,6 +1123,7 @@ index c75ea30d5a911..fed3aaa2ca6a3 100644
 +#include <vector>
 +
 +#include "base/files/memory_mapped_file.h"
++#include "base/memory/ref_counted.h"
 +#include "third_party/abseil-cpp/absl/types/optional.h"
 +#include "third_party/abseil-cpp/absl/types/variant.h"
  
@@ -1142,8 +1164,7 @@ index c75ea30d5a911..fed3aaa2ca6a3 100644
 +    // Returns a pointer to the data chunk belonging to the buffer. Returns a
 +    // non-null value only if `size()` is non-zero.
 +    const char* data() const { return data_; }
- 
--}
++
 +   private:
 +    size_t size_ = 0u;
 +    const char* data_ = nullptr;
@@ -1151,7 +1172,7 @@ index c75ea30d5a911..fed3aaa2ca6a3 100644
 +        content_;
 +  };
  
--namespace std {
+-}
 +  explicit RankedDicts(
 +      const std::vector<std::vector<std::string_view>>& ordered_dicts);
 +  explicit RankedDicts(std::unique_ptr<base::MemoryMappedFile>);
@@ -1159,13 +1180,14 @@ index c75ea30d5a911..fed3aaa2ca6a3 100644
 +  RankedDicts(RankedDicts&&) = default;
 +  RankedDicts(const RankedDicts&) = delete;
  
+-namespace std {
++  RankedDicts& operator=(RankedDicts&&) = default;
++  RankedDicts& operator=(const RankedDicts&) = delete;
+ 
 -template<>
 -struct hash<zxcvbn::DictionaryTag> {
 -  std::size_t operator()(const zxcvbn::DictionaryTag & v) const {
 -    return static_cast<std::size_t>(v);
-+  RankedDicts& operator=(RankedDicts&&) = default;
-+  RankedDicts& operator=(const RankedDicts&) = delete;
-+
 +  absl::optional<rank_t> Find(std::string_view needle) const;
 +
 +  std::string_view DataForTesting() const {
@@ -1180,13 +1202,29 @@ index c75ea30d5a911..fed3aaa2ca6a3 100644
 -namespace zxcvbn {
 +  Datawrapper data_;
 +};
++// Wrapper around `RankedDicts` to allow it to be ref-counted. This is used in a
++// read-copy-update (RCU) pattern to prevent a data race where a background
++// thread might read from the dictionary via `omnimatch()` while the UI thread
++// is simultaneously replacing the dictionary via `SetRankedDicts()`.
++class RefCountedRankedDicts
++    : public base::RefCountedThreadSafe<RefCountedRankedDicts> {
++ public:
++  explicit RefCountedRankedDicts(RankedDicts dicts)
++      : dicts_(std::move(dicts)) {}
++  const RankedDicts& Data() const { return dicts_; }
++
++ private:
++  friend class base::RefCountedThreadSafe<RefCountedRankedDicts>;
++  ~RefCountedRankedDicts() = default;
++  RankedDicts dicts_;
++};
  
 -using RankedDicts = std::unordered_map<DictionaryTag, const RankedDict &>;
 +void SetRankedDicts(RankedDicts dicts);
  
 -RankedDicts convert_to_ranked_dicts(std::unordered_map<DictionaryTag, RankedDict> & ranked_dicts);
 -RankedDicts default_ranked_dicts();
-+RankedDicts& default_ranked_dicts();
++scoped_refptr<RefCountedRankedDicts> default_ranked_dicts();
  
 -}
 +} // namespace zxcvbn
@@ -1194,7 +1232,7 @@ index c75ea30d5a911..fed3aaa2ca6a3 100644
  #endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
 deleted file mode 100644
-index 40eee250f244a..0000000000000
+index 40eee25..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
 +++ /dev/null
 @@ -1,28 +0,0 @@
@@ -1228,7 +1266,7 @@ index 40eee250f244a..0000000000000
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/js_frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/js_frequency_lists.cpp
 deleted file mode 100644
-index 510ba3f4307b8..0000000000000
+index 510ba3f..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/js_frequency_lists.cpp
 +++ /dev/null
 @@ -1,65 +0,0 @@
@@ -1298,7 +1336,7 @@ index 510ba3f4307b8..0000000000000
 -
 -}
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
-index 6d53664f884c0..e247818214d50 100644
+index 6d53664..dc6b329 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
 @@ -19,28 +19,44 @@
@@ -1363,7 +1401,7 @@ index 6d53664f884c0..e247818214d50 100644
  
  const auto DATE_MAX_YEAR = 2050;
  const auto DATE_MIN_YEAR = 1000;
-@@ -106,28 +122,22 @@ std::string dict_normalize(const std::string & str) {
+@@ -106,28 +122,23 @@ std::string dict_normalize(const std::string & str) {
    return util::ascii_lower(str);
  }
  
@@ -1375,7 +1413,8 @@ index 6d53664f884c0..e247818214d50 100644
 -  ranked_dictionaries.insert(std::make_pair(DictionaryTag::USER_INPUTS,
 -                                            std::cref(ranked_dict)));
 +std::vector<Match> omnimatch(const std::string& password) {
-+  RankedDicts& ranked_dictionaries = default_ranked_dicts();
++  scoped_refptr<RefCountedRankedDicts> dicts_ref = default_ranked_dicts();
++  const RankedDicts& ranked_dictionaries = dicts_ref->Data();
  
    std::vector<Match> matches;
 -  std::function<std::vector<Match>(const std::string &)> matchers[] = {
@@ -1406,7 +1445,7 @@ index 6d53664f884c0..e247818214d50 100644
    };
    for (const auto & matcher : matchers) {
      auto ret = matcher(password);
-@@ -143,29 +153,22 @@ std::vector<Match> omnimatch(const std::string & password,
+@@ -143,29 +154,22 @@ std::vector<Match> omnimatch(const std::string & password,
  std::vector<Match> dictionary_match(const std::string & password,
                                      const RankedDicts & ranked_dictionaries) {
    std::vector<Match> matches;
@@ -1452,7 +1491,7 @@ index 6d53664f884c0..e247818214d50 100644
        }
      }
    }
-@@ -344,12 +347,13 @@ std::vector<Match> spatial_match(const std::string & password,
+@@ -344,12 +348,13 @@ std::vector<Match> spatial_match(const std::string & password,
    return matches;
  }
  
@@ -1468,7 +1507,7 @@ index 6d53664f884c0..e247818214d50 100644
    std::vector<Match> matches;
    if (!password.length()) return matches;
    idx_t idx = 0;
-@@ -381,7 +385,7 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+@@ -381,7 +386,7 @@ std::vector<Match> spatial_match_helper(const std::string & password,
          if (it != graph.end()) {
            return it->second;
          }
@@ -1477,7 +1516,7 @@ index 6d53664f884c0..e247818214d50 100644
        }();
        // consider growing pattern by one character if j hasn't gone over the edge.
        if (j < clen) {
-@@ -390,10 +394,10 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+@@ -390,10 +395,10 @@ std::vector<Match> spatial_match_helper(const std::string & password,
          auto cur_char = password.substr(jdx, next_jdx - jdx);
          for (auto & adj : adjacents) {
            cur_direction += 1;
@@ -1490,7 +1529,7 @@ index 6d53664f884c0..e247818214d50 100644
                // index 1 in the adjacency means the key is shifted,
                // 0 means unshifted: A vs a, % vs 5, etc.
                // for example, 'q' is adjacent to the entry '2@'.
-@@ -440,69 +444,90 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+@@ -440,69 +445,90 @@ std::vector<Match> spatial_match_helper(const std::string & password,
  // repeats (aaa, abcabcabc) and sequences (abcdef) ------------------------------
  //-------------------------------------------------------------------------------
  
@@ -1618,7 +1657,7 @@ index 6d53664f884c0..e247818214d50 100644
      lastIndex = jdx;
    }
    return matches;
-@@ -536,19 +561,19 @@ std::vector<Match> sequence_match(const std::string & password) {
+@@ -536,19 +562,19 @@ std::vector<Match> sequence_match(const std::string & password) {
          SequenceTag sequence_name;
          unsigned sequence_space;
          if (std::regex_search(token, std::regex(R"(^[a-z]+$)"))) {
@@ -1643,7 +1682,7 @@ index 6d53664f884c0..e247818214d50 100644
          }
          result.push_back(Match(i, j, token,
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
-index 7ded5d89573fc..448603892a5e3 100644
+index 7ded5d8..4486038 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
 @@ -10,8 +10,8 @@
@@ -1669,7 +1708,7 @@ index 7ded5d89573fc..448603892a5e3 100644
  
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
 deleted file mode 100644
-index 1dfcb53bc42d4..0000000000000
+index 1dfcb53..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
 +++ /dev/null
 @@ -1,262 +0,0 @@
@@ -1936,7 +1975,7 @@ index 1dfcb53bc42d4..0000000000000
 -}
 -
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
-index 68b77e0e9b487..b3fb2577e169f 100644
+index 68b77e0..b3fb257 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
 @@ -7,6 +7,7 @@
@@ -1948,7 +1987,7 @@ index 68b77e0e9b487..b3fb2577e169f 100644
  #include <cstdint>
  #include <cassert>
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
-index c652e2d2d9dea..e5c120a86a5c4 100644
+index c652e2d..e5c120a 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
 @@ -9,6 +9,8 @@
@@ -2034,7 +2073,7 @@ index c652e2d2d9dea..e5c120a86a5c4 100644
    }
    // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
-index 901c71f15e3bc..1038ee34587cc 100644
+index 901c71f..1038ee3 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
 @@ -11,10 +11,10 @@
@@ -2063,7 +2102,7 @@ index 901c71f15e3bc..1038ee34587cc 100644
  guesses_t uppercase_variations(const Match & match);
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring_js_bindings.cpp
 deleted file mode 100644
-index ceb43f440de62..0000000000000
+index ceb43f4..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring_js_bindings.cpp
 +++ /dev/null
 @@ -1,181 +0,0 @@
@@ -2249,7 +2288,7 @@ index ceb43f440de62..0000000000000
 -
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
-index 084d3cc0cd7c8..06bf202b6a69c 100644
+index 084d3cc..06bf202 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
 @@ -1,74 +1,57 @@
@@ -2396,7 +2435,7 @@ index 084d3cc0cd7c8..06bf202b6a69c 100644
                       std::string::size_type & idx) {
    auto ret = _utf8_decode(start.begin() + idx, start.end());
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
-index b784c1f6c1d28..90fa99816c92f 100644
+index b784c1f..90fa998 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
 @@ -29,8 +29,6 @@ std::string::size_type character_len(const std::string &,
@@ -2410,7 +2449,7 @@ index b784c1f6c1d28..90fa99816c92f 100644
  
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.cpp
 deleted file mode 100644
-index d9b52916680f1..0000000000000
+index d9b5291..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.cpp
 +++ /dev/null
 @@ -1,50 +0,0 @@
@@ -2466,7 +2505,7 @@ index d9b52916680f1..0000000000000
 -}
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.h b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.h
 deleted file mode 100644
-index 67a6d03798a56..0000000000000
+index 67a6d03..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.h
 +++ /dev/null
 @@ -1,26 +0,0 @@
@@ -2498,7 +2537,7 @@ index 67a6d03798a56..0000000000000
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.hpp
 deleted file mode 100644
-index a48bcd8c11961..0000000000000
+index a48bcd8..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.hpp
 +++ /dev/null
 @@ -1,23 +0,0 @@
@@ -2527,7 +2566,7 @@ index a48bcd8c11961..0000000000000
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn_js_bindings.cpp
 deleted file mode 100644
-index f0ba44c3539d8..0000000000000
+index f0ba44c..0000000
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn_js_bindings.cpp
 +++ /dev/null
 @@ -1,104 +0,0 @@

@@ -70,6 +70,7 @@ Applied the following changes:
   //base equivalents as the former is deprecated in C++17.
 - Add a getter for testing and replace
   StringPiece with std::string_view.
+- Refactor zxcvbn RankedDicts to be thread-safe.
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp

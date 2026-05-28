@@ -123,7 +123,8 @@ std::string dict_normalize(const std::string & str) {
 }
 
 std::vector<Match> omnimatch(const std::string& password) {
-  RankedDicts& ranked_dictionaries = default_ranked_dicts();
+  scoped_refptr<RefCountedRankedDicts> dicts_ref = default_ranked_dicts();
+  const RankedDicts& ranked_dictionaries = dicts_ref->Data();
 
   std::vector<Match> matches;
   std::function<std::vector<Match>(const std::string&)> matchers[] = {
