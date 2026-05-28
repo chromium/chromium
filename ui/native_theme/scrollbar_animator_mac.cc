@@ -154,8 +154,8 @@ void OverlayScrollbarAnimatorMac::DidScroll() {
   FadeOutTimerUpdate();
 }
 
-void OverlayScrollbarAnimatorMac::FadeInScrollbar() {
-  fade_out_deferred_ = true;
+void OverlayScrollbarAnimatorMac::FadeInScrollbar(bool defer_fade_out) {
+  fade_out_deferred_ = defer_fade_out;
   DidScroll();
 }
 

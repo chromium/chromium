@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h"
 
 #import "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
@@ -101,7 +102,10 @@ bool MacScrollbarImplV2::DidScroll() {
 
 bool MacScrollbarImplV2::FadeInScrollbarIfExists() {
   if (overlay_animator_) {
-    overlay_animator_->FadeInScrollbar();
+    overlay_animator_->FadeInScrollbar(
+        base::FeatureList::IsEnabled(
+            blink::features::kFadeInScrollbarWhenMouseWheelMayBegin) &&
+        blink::features::kDeferFadeOutScrollbarUntilMouseWheelEnded.Get());
     return true;
   }
   return false;
