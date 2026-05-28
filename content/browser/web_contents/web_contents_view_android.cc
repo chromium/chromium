@@ -455,7 +455,7 @@ void WebContentsViewAndroid::StartDragging(
     const gfx::Rect& drag_obj_rect,
     const blink::mojom::DragEventSourceInfo& event_info) {
   // Disallow reentrant drag which could be an attempt to exploit drag state.
-  if (current_source_rwh_for_drag_) {
+  if (drag_security_info_.did_initiate()) {
     return;
   }
   RenderWidgetHostImpl* const source_rwh =
