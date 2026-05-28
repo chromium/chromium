@@ -2686,9 +2686,6 @@ BASE_FEATURE(kWebBluetoothCancelConnect,
 
 BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcAudioSinkUseTimestampAligner,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebRtcPqcForDtls, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRtcUseMediaThreadTypes, base::FEATURE_DISABLED_BY_DEFAULT);

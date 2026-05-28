@@ -486,10 +486,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "WebRtcEncodedTransformDirectCallback",
                 "Directly invoke WebRTC Encoded Transform callbacks in a worker."),
-        Flag.baseFeature(
-                "WebRtcAudioSinkUseTimestampAligner",
-                "Align WebRTC and Chrome clocks using a timestamp aligner for absolute capture"
-                        + " times in Audio RTP packets."),
         Flag.baseFeature("WebRtcPqcForDtls", "Enable Post-Quantum Cryptography in WebRTC"),
         Flag.baseFeature(
                 ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,

@@ -28,7 +28,6 @@
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/media_stream_track.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
-#include "third_party/webrtc/rtc_base/timestamp_aligner.h"
 
 namespace blink {
 
@@ -129,8 +128,6 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
         override;
     webrtc::AudioSourceInterface* GetSource() const override;
 
-    void UpdateTimestampAligner(base::TimeTicks capture_time);
-
    protected:
     ~Adapter() override;
 
@@ -163,11 +160,6 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
     // A vector of pointers to unowned WebRTC-internal objects which each
     // receive the audio data.
     Vector<webrtc::AudioTrackSinkInterface*> sinks_;
-
-    // Used for getting capture timestamps referenced on the
-    // webrtc::TimeMicros() clock. See the comment at the implementation of
-    // UpdateTimestampAligner() for more details.
-    webrtc::TimestampAligner timestamp_aligner_;
   };
 
   // WebMediaStreamAudioSink implementation.

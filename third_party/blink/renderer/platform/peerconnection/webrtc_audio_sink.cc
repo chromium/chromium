@@ -99,11 +99,6 @@ void WebRtcAudioSink::OnData(const media::AudioBus& audio_bus,
   // will be a joint effort, and should be carefully carried out.
   last_estimated_capture_time_ = estimated_capture_time;
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebRtcAudioSinkUseTimestampAligner)) {
-    adapter_->UpdateTimestampAligner(estimated_capture_time);
-  }
-
   // The following will result in zero, one, or multiple synchronous calls to
   // DeliverRebufferedAudio().
   fifo_.Push(audio_bus);
@@ -207,17 +202,6 @@ int WebRtcAudioSink::Adapter::DeliverPCMToWebRtcSinks(
   int64_t capture_timestamp_ms =
       estimated_capture_time.since_origin().InMilliseconds();
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebRtcAudioSinkUseTimestampAligner)) {
-    // This use |timestamp_aligner_| to transform |estimated_capture_timestamp|
-    // to webrtc::TimeMicros(). See the comment at UpdateTimestampAligner() for
-    // more details.
-    capture_timestamp_ms =
-        timestamp_aligner_.TranslateTimestamp(
-            estimated_capture_time.since_origin().InMicroseconds()) /
-        webrtc::kNumMicrosecsPerMillisec;
-  }
-
   int num_preferred_channels = -1;
   for (webrtc::AudioTrackSinkInterface* sink : sinks_) {
     sink->OnData(audio_data, sizeof(int16_t) * 8, sample_rate,
@@ -296,18 +280,6 @@ webrtc::AudioSourceInterface* WebRtcAudioSink::Adapter::GetSource() const {
   DCHECK(!signaling_task_runner_ ||
          signaling_task_runner_->RunsTasksInCurrentSequence());
   return source_.get();
-}
-
-void WebRtcAudioSink::Adapter::UpdateTimestampAligner(
-    base::TimeTicks capture_time) {
-  // The |timestamp_aligner_| stamps an audio frame as if it is captured 'now',
-  // taking webrtc::TimeMicros as the reference clock. It does not provide the
-  // time that the frame was originally captured, Using |timestamp_aligner_|
-  // rather than calling webrtc::TimeMicros is to take the advantage that it
-  // aligns its output timestamps such that the time spacing in the
-  // |capture_time| is maintained.
-  timestamp_aligner_.TranslateTimestamp(
-      capture_time.since_origin().InMicroseconds(), webrtc::TimeMicros());
 }
 
 }  // namespace blink
