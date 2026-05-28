@@ -190,6 +190,10 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, gradient-style GPay and Wallet branding logos will be used.
+BASE_FEATURE(kAutofillEnableGradientGoogleLogos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, updates the American Express network art in Autofill.
 BASE_FEATURE(kAutofillEnableNewAmexNetworkArt,
              base::FEATURE_ENABLED_BY_DEFAULT);
