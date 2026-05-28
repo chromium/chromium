@@ -4,6 +4,7 @@
 
 import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox_input.js';
+import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
@@ -56,6 +57,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      expanding_: {
+        reflect: true,
+        type: Boolean,
+      },
+      isCollapsible: {
+        reflect: true,
+        type: Boolean,
+      },
       entrypointName: {type: String, reflect: true},
       enableCarouselScrolling: {type: Boolean},
     };
@@ -64,6 +73,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   accessor entrypointName: string = 'Omnibox';
   accessor applyContextButtonBackground: boolean = false;
   accessor enableCarouselScrolling: boolean = false;
+  accessor isCollapsible: boolean = false;
+  protected accessor expanding_: boolean = false;
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -74,6 +85,11 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.expanding_ = !this.isCollapsible;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -143,6 +159,35 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     return super.shouldShowDivider();
   }
 
+  override computeSubmitEnabled(): boolean {
+    // `submitEnabled` controls the visibility of the submit button.
+    // Since files can be added but technically not be submittable (like
+    // injected inputs), this needs to check if any files are present to show
+    // the submit button. The button will still appear disabled because that is
+    // controlled by `canSubmitFilesAndInput`.
+    return this.hasValidQuery() || this.files.size > 0;
+  }
+
+  override hasValidQuery(): boolean {
+    // If there is at least one file that supports unimodal search, query is
+    // valid.
+    for (const file of this.files.values()) {
+      if (file.supportsUnimodal) {
+        return true;
+      }
+    }
+
+    // If an autocomplete match is selected, it's a valid query.
+    if (this.selectedMatchIndex >= 0 && !!this.result) {
+      return true;
+    }
+
+    if (this.input.trim().length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   addSearchContext(context: SearchContext|null) {
     if (context) {
       if (context.input.length > 0) {
@@ -169,6 +214,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   // TODO(crbug.com/486707998): Remove once this is added to mixin.
   playGlowAnimation() {
     return;
+  }
+
+  isExpanded(): boolean {
+    return this.expanding_;
   }
 
   private addFileFromAttachment_(fileAttachment: FileAttachment) {

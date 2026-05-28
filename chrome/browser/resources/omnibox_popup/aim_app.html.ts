@@ -16,12 +16,14 @@ export function getHtml(this: OmniboxAimAppElement) {
 <div id="content">
   ${this.composeboxForkEnabled_ ? html`
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
+      .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       .isOblongShape="${this.isOblongShape_}"
       .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"
       @embedded-voice-permission-prompt-changed=
           "${this.onEmbeddedVoicePermissionPromptChanged}"
-      @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
+      @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+      @composebox-submit="${this.onComposeboxSubmit_}">
   </cr-omnibox-composebox>` : html`
   <cr-composebox id="composebox" searchbox-next-enabled
       .submitButtonIconType="${SubmitButtonIconType.FORWARD}"

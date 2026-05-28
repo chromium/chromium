@@ -94,6 +94,17 @@ export function getHtml(this: OmniboxComposeboxElement) {
               ` : ''}
             </div>
           ` : ''}
+          ${this.shouldShowSubmitButton() &&
+                this.searchboxLayoutMode === 'TallBottomContext' ? html`
+              <cr-composebox-submit
+                exportparts="action-icon, submit, submit-icon, submit-overlay"
+                ?disabled="${!this.canSubmitFilesAndInput}"
+                .iconType="${this.submitButtonIconType}"
+                .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+                @submit-click="${this.onSubmitClick}"
+                @submit-focusin="${this.onSubmitFocusin}">
+              </cr-composebox-submit>
+          ` : ''}
         </div>
       </div>
     </div>

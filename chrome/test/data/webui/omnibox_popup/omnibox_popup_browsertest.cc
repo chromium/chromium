@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/config/coverage/buildflags.h"
+#include "chrome/test/base/test_switches.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -59,5 +61,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, App) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, Composebox) {
+  // TODO(crbug.com/486707998): Remove this skip once the coverage harness
+  // crash in DevToolsListener::RetrieveMissingScripts is fixed.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDevtoolsCodeCoverage)) {
+    GTEST_SKIP() << "Skipping test on coverage builders due to harness crash.";
+  }
+
   RunTest("omnibox_popup/omnibox_composebox_test.js", "mocha.run();");
 }
