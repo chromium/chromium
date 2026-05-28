@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/ai_mode_button_config.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
@@ -53,15 +54,14 @@ AiModePageActionIconView::AiModePageActionIconView(
 
   SetProperty(views::kElementIdentifierKey, kAiModePageActionIconElementId);
 
-  SetLabel(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL));
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  SetLabel(config.text);
   SetUseTonalColorsWhenExpanded(true);
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
 
   // The accessible name prompts the user to ask Google AI Mode.
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(
-          IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS),
-      ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().SetName(config.a11y_label,
+                                 ax::mojom::NameFrom::kAttribute);
 }
 
 AiModePageActionIconView::~AiModePageActionIconView() = default;

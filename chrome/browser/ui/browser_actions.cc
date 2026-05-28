@@ -31,6 +31,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/accelerator_table.h"
+#include "chrome/browser/ui/omnibox/ai_mode_button_config.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
@@ -1439,6 +1440,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               ui::kColorIcon))
           .Build());
 
+  const auto& ai_config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
@@ -1473,9 +1475,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionAiMode)
-          .SetText(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS))
+          .SetText(ai_config.text)
+          .SetTooltipText(ai_config.tooltip)
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                                 : omnibox::kSearchSparkOldIcon))

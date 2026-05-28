@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/omnibox/ai_mode_button_config.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -202,8 +203,8 @@ void LogOmniboxFocusToCutOrCopyAllTextTime(
 }
 
 std::u16string AimPlaceholderText() {
-  return u"\u21E5 " +
-         l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT);
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  return u"\u21E5 " + config.placeholder_text;
 }
 
 }  // namespace
@@ -407,8 +408,9 @@ void OmniboxViewViews::InstallPlaceholderText() {
     SetPlaceholderText(AimPlaceholderText());
     // Override the AIM accessibility placeholder text, so that the tab icon is
     // not announced.
+    const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
     GetViewAccessibility().SetPlaceholder(
-        l10n_util::GetStringUTF8(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT));
+        base::UTF16ToUTF8(config.placeholder_text));
   } else if (ShouldInstallContextualTasksPlaceholderText()) {
     // For Contextual Tasks page, use the page title as placeholder text.
     SetPlaceholderText(location_bar_view_->GetWebContents()->GetTitle());
@@ -2417,9 +2419,9 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
 
   if (omnibox::ShouldShowAimContextMenuOption(
           location_bar_view_->GetProfile())) {
-    menu_contents->AddCheckItemWithStringId(
-        IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
-        IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON);
+    const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+    menu_contents->AddCheckItem(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
+                                config.context_menu_label);
   }
 
   if (omnibox_feature_configs::Toolbelt::Get().enabled) {
