@@ -1393,6 +1393,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_ENABLE_DNS_PLATFORM,
                 "Enables the resolution of hostnames via platform DNS APIs in WebView."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_CPP_METRICS_FILTERING,
+                "Enables WebView UMA metrics filtering in C++ instead of Java."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
