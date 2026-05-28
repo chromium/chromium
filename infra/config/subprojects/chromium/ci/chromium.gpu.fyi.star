@@ -3760,12 +3760,23 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_amd_release_telemetry_tests",
         ],
         mixins = [
             "very_limited_capacity_bot",
             "gpu_amd_rx_9070_xt_win_experimental",
         ],
+        per_test_modifications = {
+            "gl_unittests": targets.mixin(
+                args = [
+                    # Skip failing tests inline instead of using filter files
+                    # since this config is not expected to stick around
+                    # long-term.
+                    "--gtest_filter=-DCompPresenterPixelTest.YUY2SwapChain*",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,

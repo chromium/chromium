@@ -283,8 +283,14 @@ crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] Web
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_prefer-software [ Failure ]
 
-# AMD RX 9070 XT failures
+# Linux/AMD RX 9070 XT failures
 crbug.com/515133241 [ amd-0x7550 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]
+
+# Win/AMD RX 9070 XT failures
+crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_capture [ Failure ]
+crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
+crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
