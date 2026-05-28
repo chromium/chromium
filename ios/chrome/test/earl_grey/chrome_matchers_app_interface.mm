@@ -328,8 +328,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabel:(NSString*)label {
-  return grey_allOf(grey_accessibilityLabel(label),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return grey_allOf(
+      grey_accessibilityLabel(label),
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_ancestor(grey_kindOfClassName(@"_UIContextMenuContainerView")), nil);
 }
 
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabelID:(int)messageID {
