@@ -232,8 +232,11 @@ void GridPlacement::PlaceGridItemsLockedToMajorAxis(
     DCHECK_EQ(AutoPlacement(*position, major_direction_),
               AutoPlacementType::kMinor);
 
+    // Clamp the authored indefinite minor-axis span so it cannot exceed the
+    // explicit grid's minor extent.
     const wtf_size_t minor_span_size =
-        position->Span(minor_direction_).IndefiniteSpanSize();
+        std::min(position->Span(minor_direction_).IndefiniteSpanSize(),
+                 minor_max_end_line_);
     const wtf_size_t major_start_line = position->StartLine(major_direction_);
 
     AutoPlacementCursor placement_cursor(placed_items->FirstPlacedItem());
@@ -294,8 +297,12 @@ void GridPlacement::PlaceAutoBothAxisGridItem(
 
   const wtf_size_t major_span_size =
       position->Span(major_direction_).IndefiniteSpanSize();
+
+  // Clamp the authored indefinite minor-axis span so it cannot exceed the
+  // explicit grid's minor extent.
   const wtf_size_t minor_span_size =
-      position->Span(minor_direction_).IndefiniteSpanSize();
+      std::min(position->Span(minor_direction_).IndefiniteSpanSize(),
+               minor_max_end_line_);
 
   placement_cursor->MoveCursorToFitGridSpan(major_span_size, minor_span_size,
                                             minor_max_end_line_,
