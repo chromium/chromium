@@ -67,14 +67,14 @@ _READELF_SIZES_METRICS = {
     ],
     'symbols': [
         '.dynsym', '.dynstr', '.dynamic', '.shstrtab', '.got', '.plt', '.iplt',
-        '.got.plt', '.hash', '.gnu.hash'
+        '.got.plt', '.hash', '.gnu.hash', '.symtab', '.strtab'
     ],
     'other': [
         '.init_array', '.preinit_array', '.ctors', '.fini_array', '.comment',
         '.note.gnu.gold-version', '.note.crashpad.info', '.note.android.ident',
         '.ARM.attributes', '.note.gnu.build-id', '.gnu.version',
         '.gnu.version_d', '.gnu.version_r', '.interp', '.gcc_except_table',
-        '.note.gnu.property'
+        '.note.gnu.property', '.ARM.extab__lcxx_override'
     ]
 }
 

@@ -129,10 +129,10 @@ def _DownloadAndAnalyze(signed_prefix,
           prefix=unsigned_prefix),
   ]
   trichrome_system_stubs = [
-      make_artifact('arm/TrichromeWebViewGoogleSystemStubStable.apk'),
-      make_artifact('arm/TrichromeLibraryGoogleSystemStubStable.apk'),
+      make_artifact('arm/TrichromeWebViewGoogleSystemStable-Stub.apk'),
+      make_artifact('arm/TrichromeLibraryGoogleSystemStable-Stub.apk'),
       make_artifact(
-          'arm/for-signing-only/TrichromeChromeGoogleSystemStubStable.apk',
+          'arm/for-signing-only/TrichromeChromeGoogleSystemStable-Stub.apk',
           prefix=unsigned_prefix),
   ]
 
@@ -228,7 +228,7 @@ def _DownloadAndAnalyze(signed_prefix,
   _DumpCsvAndClear(metrics)
 
 
-def _CheckGnArgs(unsigned_prefix, version):
+def _CheckGnArgs(unsigned_prefix):
   args = [_GSUTIL, 'cat', unsigned_prefix + '/arm/gn-args-derived.txt']
   logging.warning(' '.join(args))
   gn_args_data = subprocess.check_output(args, text=True)
@@ -245,16 +245,7 @@ def _CheckGnArgs(unsigned_prefix, version):
       return False
     return True
 
-  ret = True
-  if int(version.split('.')[0]) < 120:
-    if not check_arg('is_on_release_branch', 'true'):
-      ret = False
-  elif not check_arg('v8_is_on_release_branch', 'true'):
-    ret = False
-
-  if not check_arg('v8_enable_runtime_call_stats', 'false'):
-    ret = False
-  return ret
+  return check_arg('v8_enable_runtime_call_stats', 'false')
 
 
 def main():
@@ -275,7 +266,7 @@ def main():
 
   # Ensure the binary size isn't inflated by v8_is_on_release_branch=true
   # not being set yet.
-  if not _CheckGnArgs(unsigned_prefix, options.version):
+  if not _CheckGnArgs(unsigned_prefix):
     if not options.android_go_system_gz:
       sys.exit(1)
 
