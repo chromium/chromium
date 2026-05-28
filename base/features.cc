@@ -199,7 +199,6 @@ BASE_FEATURE(kUserBlockingAboveNormalPriority, FEATURE_DISABLED_BY_DEFAULT);
 // last error code.
 BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPumpPeekMessageWithObserver, FEATURE_DISABLED_BY_DEFAULT);
 
 // Prevents base::DeletePathRecursively on Windows from traversing NTFS reparse
 // points (such as directory junctions). This protects against TOCTOU

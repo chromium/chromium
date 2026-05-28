@@ -38,8 +38,6 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   void Run(Delegate* delegate) override;
   void Quit() override;
 
-  static void InitializeFeatures();
-
  protected:
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}

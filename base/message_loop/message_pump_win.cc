@@ -56,7 +56,6 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
   return saturated_cast<DWORD>(timeout_ms);
 }
 
-bool g_pump_peek_message_with_observer = false;
 
 }  // namespace
 
@@ -69,12 +68,6 @@ static const int kMsgHaveWork = WM_USER + 1;
 
 MessagePumpWin::MessagePumpWin() = default;
 MessagePumpWin::~MessagePumpWin() = default;
-
-// static
-void MessagePumpWin::InitializeFeatures() {
-  g_pump_peek_message_with_observer =
-      FeatureList::IsEnabled(base::features::kPumpPeekMessageWithObserver);
-}
 
 void MessagePumpWin::Run(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
@@ -368,12 +361,12 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
         MSG msg;
         TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                      "MessagePumpForUI::WaitForWork PeekMessage");
-        if (g_pump_peek_message_with_observer && native_event_observer_) {
+        if (native_event_observer_) {
           native_event_observer_->WillRunNativeEvent(
               next_peek_message_event_id_);
         }
         bool has_msg = ::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE) != FALSE;
-        if (g_pump_peek_message_with_observer && native_event_observer_) {
+        if (native_event_observer_) {
           native_event_observer_->DidRunNativeEvent(
               next_peek_message_event_id_++);
         }
@@ -589,11 +582,11 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
                 ctx.event()->set_chrome_message_pump();
             msg_pump_data->set_sent_messages_in_queue(more_work_is_plausible);
           });
-      if (g_pump_peek_message_with_observer && native_event_observer_) {
+      if (native_event_observer_) {
         native_event_observer_->WillRunNativeEvent(next_peek_message_event_id_);
       }
       has_msg = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
-      if (g_pump_peek_message_with_observer && native_event_observer_) {
+      if (native_event_observer_) {
         native_event_observer_->DidRunNativeEvent(
             next_peek_message_event_id_++);
       }

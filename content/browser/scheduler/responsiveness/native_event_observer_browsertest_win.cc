@@ -31,13 +31,16 @@ bool HandleMessage(UINT message,
 class ResponsivenessNativeEventObserverBrowserTest : public ContentBrowserTest {
  public:
   void WillRunEvent(uintptr_t opaque_id) {
-    ASSERT_FALSE(will_run_id_);
+    // Multiple overlapping events are expected because all peek operations
+    // trigger native events. Track the latest triggered event.
     will_run_id_ = opaque_id;
   }
   void DidRunEvent(uintptr_t opaque_id) {
-    ASSERT_FALSE(did_run_id_);
     did_run_id_ = opaque_id;
-    std::move(quit_closure_).Run();
+    // Trigger quit closure once we've dispatched our posted test message.
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
   }
 
  protected:
