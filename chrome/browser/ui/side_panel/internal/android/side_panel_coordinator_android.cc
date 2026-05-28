@@ -310,12 +310,16 @@ void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
 content::WebContents*
 SidePanelCoordinatorAndroid::GetWebContentsForTest(  // IN-TEST
     SidePanelEntryId id) {
-  // TODO(crbug.com/494001633): Implement this.
+  // On Android, side panels are built using native Android Views instead of
+  // WebContents.
   return nullptr;
 }
 
-void SidePanelCoordinatorAndroid::DisableAnimationsForTesting() {
-  // TODO(crbug.com/494000532): Implement this.
+void SidePanelCoordinatorAndroid::DisableAnimationsForTesting() {  // IN-TEST
+  if (java_coordinator()) {
+    Java_SidePanelCoordinatorAndroidImpl_disableAnimationsForTesting(  // IN-TEST
+        AttachCurrentThread(), java_coordinator());
+  }
 }
 
 void SidePanelCoordinatorAndroid::SetNoDelaysForTesting(  // IN-TEST

@@ -175,6 +175,7 @@ class SidePanelCoordinatorAndroidBrowserTest
     auto* tab_list = TabListInterface::From(window);
     auto* coordinator = SidePanelCoordinatorAndroid::From(window);
     coordinator->SetNoDelaysForTesting(true);
+    coordinator->DisableAnimationsForTesting();
 
     while (tab_list->GetTabCount() <
            static_cast<int>(tab_scoped_entry_ids.size())) {
@@ -212,6 +213,7 @@ class SidePanelCoordinatorAndroidBrowserTest
     tab_list_ = TabListInterface::From(browser_);
     coordinator_ = SidePanelCoordinatorAndroid::From(browser_);
     coordinator_->SetNoDelaysForTesting(true);
+    coordinator_->DisableAnimationsForTesting();
   }
 
   raw_ptr<BrowserWindowInterface> browser_;

@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +33,8 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     /** Address of the native {@code SidePanelCoordinatorAndroid}. */
     private long mNativeSidePanelCoordinatorAndroid;
+
+    private boolean mDisableAnimationsForTesting;
 
     public SidePanelCoordinatorAndroidImpl(
             SidePanelContainerCoordinator sidePanelContainerCoordinator) {
@@ -91,6 +94,12 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         mNativeSidePanelCoordinatorAndroid = 0;
     }
 
+    @CalledByNativeForTesting
+    private void disableAnimationsForTesting() {
+        log(TAG, "disableAnimationsForTesting");
+        mDisableAnimationsForTesting = true;
+    }
+
     /**
      * Populates the side panel with content.
      *
@@ -113,14 +122,15 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
                 new SidePanelContent(sidePanelNativeView),
                 result -> notifyOpenAnimationFinished(null),
                 createRectFromCoordinates(x, y, width, height),
-                suppressAnimations);
+                suppressAnimations || mDisableAnimationsForTesting);
     }
 
     @CalledByNative
     private void removeContentAndClose(boolean suppressAnimations) {
         log(TAG, "removeContentAndClose", suppressAnimations);
         mSidePanelContainerCoordinator.removeContentAndClose(
-                result -> notifyCloseAnimationFinished(null), suppressAnimations);
+                result -> notifyCloseAnimationFinished(null),
+                suppressAnimations || mDisableAnimationsForTesting);
     }
 
     private @Nullable Rect createRectFromCoordinates(int x, int y, int width, int height) {
