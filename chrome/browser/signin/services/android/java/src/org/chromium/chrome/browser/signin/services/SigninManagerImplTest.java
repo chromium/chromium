@@ -288,6 +288,17 @@ public class SigninManagerImplTest {
 
     @Test
     @MediumTest
+    public void testIsSwitchAccountAllowed_signinNotSupported() {
+        when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mSigninManager.isSwitchAccountAllowed());
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testDidAccountFetchSucceed() {
         assertTrue(mSigninManager.didAccountsFetchSucceed());
 

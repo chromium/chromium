@@ -83,6 +83,15 @@ public interface SigninManager {
     boolean isSigninSupported(boolean requireUpdatedPlayServices);
 
     /**
+     * Returns true if switching to the given account is allowed, meaning that:
+     *
+     * <p>1. No sign-in is in progress; 2. Sign-in is not disabled manually via the settings toggle;
+     * 3. Sign-in is not disabled by policy; 4. Google Play Services are available; 5. Sign out is
+     * allowed.
+     */
+    boolean isSwitchAccountAllowed();
+
+    /**
      * Adds a {@link SignInStateObserver} to be notified when the user signs in or out of Chrome.
      */
     void addSignInStateObserver(SignInStateObserver observer);

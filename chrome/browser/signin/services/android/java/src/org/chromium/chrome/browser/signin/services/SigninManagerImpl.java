@@ -241,6 +241,14 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     }
 
     @Override
+    public boolean isSwitchAccountAllowed() {
+        return mSignInState == null
+                && mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)
+                && isSigninSupported(/* requireUpdatedPlayServices= */ false)
+                && isSignOutAllowed();
+    }
+
+    @Override
     public void addSignInStateObserver(SignInStateObserver observer) {
         mSignInStateObservers.addObserver(observer);
     }

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.SigninFlow;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -367,7 +368,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                     mActivity,
                                     profile,
                                     config.historyOptInMode,
-                                    mSigninAccessPoint)) {
+                                    mSigninAccessPoint,
+                                    /* selectedEmail= */ null,
+                                    SigninFlow.DEFAULT_SIGNIN)) {
                                 onProfileAvailable(profile, this::finishLoadingAndSelectSigninFlow);
                             }
                         });

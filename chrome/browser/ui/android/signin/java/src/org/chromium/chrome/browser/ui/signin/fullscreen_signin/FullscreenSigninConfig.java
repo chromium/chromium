@@ -55,6 +55,10 @@ public final class FullscreenSigninConfig {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(subtitle);
         assert !TextUtils.isEmpty(dismissText);
+        // TODO(crbug.com/512202548): Replace with two separate builders with one having a mandatory
+        // email string for the account switch flow.
+        assert signinFlow != SigninAndHistorySyncCoordinator.SigninFlow.SWITCH_ACCOUNT
+                || selectedAccountEmail != null;
         this.title = title;
         this.subtitle = subtitle;
         this.dismissText = dismissText;

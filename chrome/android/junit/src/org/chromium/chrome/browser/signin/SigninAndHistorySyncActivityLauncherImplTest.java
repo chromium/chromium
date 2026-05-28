@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.SigninFlow;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -81,6 +82,16 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                             "dismiss",
                             "history sync title",
                             "history sync subtitle")
+                    .build();
+    private static final FullscreenSigninAndHistorySyncConfig FULLSCREEN_SWITCH_ACCOUNT_CONFIG =
+            new FullscreenSigninAndHistorySyncConfig.Builder(
+                            "title",
+                            "subtitle",
+                            "dismiss",
+                            "history sync title",
+                            "history sync subtitle")
+                    .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
+                    .signinFlow(SigninFlow.SWITCH_ACCOUNT)
                     .build();
     private static final BottomSheetSigninAndHistorySyncConfig BOTTOM_SHEET_CONFIG =
             new BottomSheetSigninAndHistorySyncConfig.Builder(
@@ -357,6 +368,50 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateFullscreenSigninIntent_switchAccountFlowAllowed() {
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mSigninManagerMock.isSwitchAccountAllowed()).thenReturn(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    @Nullable
+                    Intent intent =
+                            SigninAndHistorySyncActivityLauncherImpl.get()
+                                    .createFullscreenSigninIntent(
+                                            mContext,
+                                            mProfileMock,
+                                            FULLSCREEN_SWITCH_ACCOUNT_CONFIG,
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
+                    assertNotNull(intent);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateFullscreenSigninIntentOrShowError_switchAccountFlowNotAllowed() {
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mSigninManagerMock.isSwitchAccountAllowed()).thenReturn(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    @Nullable
+                    Intent intent =
+                            SigninAndHistorySyncActivityLauncherImpl.get()
+                                    .createFullscreenSigninIntentOrShowError(
+                                            mContext,
+                                            mProfileMock,
+                                            FULLSCREEN_SWITCH_ACCOUNT_CONFIG,
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
+                    assertNull(intent);
+                });
+
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
     }
 
     @Test

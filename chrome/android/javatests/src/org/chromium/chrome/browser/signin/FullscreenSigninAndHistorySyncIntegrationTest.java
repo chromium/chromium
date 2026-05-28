@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -857,6 +858,57 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSwitchAccount_signIn() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
+        FullscreenSigninAndHistorySyncConfig config =
+                getDefaultConfigBuilder()
+                        .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
+                        .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.SWITCH_ACCOUNT)
+                        .build();
+
+        launchActivity(/* shouldReplaceProgressBars= */ true, config);
+
+        // Verify that the fullscreen sign-in promo is shown with the specified account.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+
+        onView(withId(R.id.signin_fre_continue_button)).perform(scrollTo(), click());
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+
+        // Verify that the specified account is signed in.
+        mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT2);
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        Assert.assertEquals(TestAccounts.ACCOUNT2, mSigninTestRule.getPrimaryAccount());
+    }
+
+    @Test
+    @MediumTest
+    public void testSwitchAccount_dismiss() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
+        FullscreenSigninAndHistorySyncConfig config =
+                getDefaultConfigBuilder()
+                        .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
+                        .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.SWITCH_ACCOUNT)
+                        .build();
+
+        launchActivity(/* shouldReplaceProgressBars= */ true, config);
+
+        // Verify that the fullscreen sign-in promo is shown with the specified account.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+
+        // Dismiss the sign-in screen.
+        onViewWaiting(withId(R.id.signin_fre_dismiss_button)).perform(scrollTo(), click());
+
+        // Verify that the user is still signed in.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        Assert.assertEquals(TestAccounts.ACCOUNT1, mSigninTestRule.getPrimaryAccount());
     }
 
     private void launchActivity() {

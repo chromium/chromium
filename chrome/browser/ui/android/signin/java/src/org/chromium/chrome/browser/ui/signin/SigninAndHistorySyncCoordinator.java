@@ -29,6 +29,8 @@ import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -166,11 +168,34 @@ public abstract class SigninAndHistorySyncCoordinator {
      * <p>The sign-in UI can be skipped if the user is already signed-in, for instance.
      *
      * @param profile The current profile.
+     * @param signinFlow The sign-in flow.
+     * @param selectedEmail The email of the account that should be signed in.
      */
-    public static boolean willShowSigninUi(Profile profile) {
+    public static boolean willShowSigninUi(
+            Profile profile, @SigninFlow int signinFlow, @Nullable String selectedEmail) {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
-        return signinManager.isSigninAllowed();
+
+        if (signinFlow == SigninFlow.SWITCH_ACCOUNT) {
+            assert selectedEmail != null
+                    : "The SWITCH_ACCOUNT flow should not be triggered without a selected email.";
+            if (!signinManager.isSwitchAccountAllowed()) {
+                return false;
+            }
+
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(profile);
+            CoreAccountInfo primaryAccount = assumeNonNull(identityManager).getPrimaryAccountInfo();
+            AccountInfo targetAccount =
+                    identityManager.findExtendedAccountInfoByEmailAddress(selectedEmail);
+
+            // Should not show the Signin UI if the account being switched to is already signed in.
+            return primaryAccount == null
+                    || targetAccount == null
+                    || !primaryAccount.getId().equals(targetAccount.getId());
+        } else {
+            return signinManager.isSigninAllowed();
+        }
     }
 
     /**
@@ -182,13 +207,20 @@ public abstract class SigninAndHistorySyncCoordinator {
      * @param profile The current profile.
      * @param historyOptInMode Whether the history opt-in should be always, optionally or never
      *     shown.
+     * @param signinFlow The sign-in flow.
+     * @param selectedEmail The email of the account that should be signed in.
      */
     public static boolean willShowHistorySyncUi(
-            Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
+            Profile profile,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
+            @SigninFlow int signinFlow,
+            @Nullable String selectedEmail) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
-        if (!willShowSigninUi(profile) && !identityManager.hasPrimaryAccount()) {
+
+        if (!willShowSigninUi(profile, signinFlow, selectedEmail)
+                && !identityManager.hasPrimaryAccount()) {
             // Signin is suppressed because of something other than the user being signed in. Since
             // the user cannot sign in, we should not show history sync either.
             return false;
@@ -225,10 +257,11 @@ public abstract class SigninAndHistorySyncCoordinator {
             Context context,
             Profile profile,
             @HistorySyncConfig.OptInMode int historyOptInMode,
-            @SigninAccessPoint int accessPoint) {
-        if (SigninAndHistorySyncCoordinator.willShowSigninUi(profile)
-                || SigninAndHistorySyncCoordinator.willShowHistorySyncUi(
-                        profile, historyOptInMode)) {
+            @SigninAccessPoint int accessPoint,
+            @Nullable String selectedEmail,
+            @SigninFlow int signinFlow) {
+        if (willShowSigninUi(profile, signinFlow, selectedEmail)
+                || willShowHistorySyncUi(profile, historyOptInMode, signinFlow, selectedEmail)) {
             return true;
         }
         // TODO(crbug.com/354912290): Update the UI related to sign-in errors.

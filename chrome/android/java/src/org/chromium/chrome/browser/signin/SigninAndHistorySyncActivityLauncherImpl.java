@@ -66,7 +66,12 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @AccessPoint int accessPoint) {
 
         if (SigninAndHistorySyncCoordinator.canStartSigninAndHistorySyncOrShowError(
-                context, profile, config.historyOptInMode, accessPoint)) {
+                context,
+                profile,
+                config.historyOptInMode,
+                accessPoint,
+                null,
+                SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN)) {
             return SigninAndHistorySyncActivity.createIntent(context, config, accessPoint);
         }
 
@@ -106,9 +111,15 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             Profile profile,
             FullscreenSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
-        if (SigninAndHistorySyncCoordinator.willShowSigninUi(profile)
+        if (SigninAndHistorySyncCoordinator.willShowSigninUi(
+                        profile,
+                        config.signinConfig.signinFlow,
+                        config.signinConfig.selectedAccountEmail)
                 || SigninAndHistorySyncCoordinator.willShowHistorySyncUi(
-                        profile, config.historyOptInMode)) {
+                        profile,
+                        config.historyOptInMode,
+                        config.signinConfig.signinFlow,
+                        config.signinConfig.selectedAccountEmail)) {
             return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                     context, config, signinAccessPoint);
         }
@@ -122,7 +133,12 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             FullscreenSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
         if (SigninAndHistorySyncCoordinator.canStartSigninAndHistorySyncOrShowError(
-                context, profile, config.historyOptInMode, signinAccessPoint)) {
+                context,
+                profile,
+                config.historyOptInMode,
+                signinAccessPoint,
+                config.signinConfig.selectedAccountEmail,
+                config.signinConfig.signinFlow)) {
             return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                     context, config, signinAccessPoint);
         }
