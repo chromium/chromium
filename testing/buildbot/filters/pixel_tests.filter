@@ -65,6 +65,7 @@ FileSystemAccessUsageBubbleViewTest.*
 FirstRunDefaultBrowserPixelTest.*
 FirstRunDialogTest.*
 FirstRunFeatureShowcasePixelTest.*
+FirstRunFinishOrContinuePixelTest.*
 FirstRunIntroPixelTest.*
 FirstRunSignInCelebrationPixelTest.*
 GlobalErrorBubbleTest.*
