@@ -740,6 +740,8 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
 #endif
 
   const webapps::AppId app_id_;
+  base::AutoReset<bool> bypass_awaiting_dependencies_{
+      PreinstalledWebAppManager::BypassAwaitingDependenciesForTesting()};
 };
 
 TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorks) {
