@@ -96,7 +96,7 @@ Recovery::Recovery(Database* database, Strategy strategy)
   // Break any outstanding transactions on the original database, since the
   // recovery module opens a transaction on the database while recovery is in
   // progress.
-  db_->RollbackAllTransactions();
+  db_->RollbackAllTransactions(InternalApiToken());
 }
 
 Recovery::~Recovery() {

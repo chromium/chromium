@@ -1306,7 +1306,7 @@ bool Database::RazeAndPoison() {
   }
 
   // Raze() cannot run in a transaction.
-  RollbackAllTransactions();
+  RollbackAllTransactions(InternalApiToken());
 
   bool result = Raze();
 
@@ -1533,7 +1533,7 @@ void Database::RollbackTransactionDeprecated() {
   RollbackTransaction(InternalApiToken());
 }
 
-void Database::RollbackAllTransactions() {
+void Database::RollbackAllTransactions(InternalApiToken) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   TRACE_EVENT0("sql", "Database::RollbackAllTransactions");

@@ -674,7 +674,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Rollback all outstanding transactions.  Use with care, there may
   // be scoped transactions on the stack.
-  void RollbackAllTransactions();
+  void RollbackAllTransactions(InternalApiToken);
 
   bool HasActiveTransactions() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
