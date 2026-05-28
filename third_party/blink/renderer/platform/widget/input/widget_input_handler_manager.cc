@@ -351,6 +351,7 @@ void WidgetInputHandlerManager::SetHost(
 
 void WidgetInputHandlerManager::SetVizHost(
     mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> viz_host) {
+  base::AutoLock lock(viz_host_lock_);
   if (viz_host_) {
     DLOG(WARNING) << "Resetting an existing viz_host. This may indicate a "
                   << "missed disconnect notification during GPU restart.";
@@ -523,8 +524,7 @@ void WidgetInputHandlerManager::DidStartScrollingViewport() {
     host->DidStartScrollingViewport();
   }
 
-  if (mojom::blink::WidgetInputHandlerHost* viz_host =
-          GetVizWidgetInputHandlerHost()) {
+  if (auto viz_host = GetVizWidgetInputHandlerHost()) {
     viz_host->DidStartScrollingViewport();
   }
 }
@@ -541,8 +541,7 @@ void WidgetInputHandlerManager::ProcessTouchAction(
     host->SetTouchActionFromMain(touch_action);
   }
 
-  if (mojom::blink::WidgetInputHandlerHost* viz_host =
-          GetVizWidgetInputHandlerHost()) {
+  if (auto viz_host = GetVizWidgetInputHandlerHost()) {
     viz_host->SetTouchActionFromMain(touch_action);
   }
 }
@@ -554,12 +553,14 @@ WidgetInputHandlerManager::GetWidgetInputHandlerHost() {
   return nullptr;
 }
 
-mojom::blink::WidgetInputHandlerHost*
+mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>
 WidgetInputHandlerManager::GetVizWidgetInputHandlerHost() {
-  if (viz_host_) {
-    return viz_host_.get();
-  }
-  return nullptr;
+  base::AutoLock lock(viz_host_lock_);
+  // Returning a copy of the SharedRemote increments the refcount of the
+  // underlying state while under the lock, ensuring it remains valid for the
+  // caller even if viz_host_ is reset on another thread after the lock is
+  // released.
+  return viz_host_;
 }
 
 #if BUILDFLAG(IS_ANDROID)
