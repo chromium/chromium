@@ -323,7 +323,7 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
 
   Browser* browser = GetBrowserView()->browser();
 
-  int header_height = frame_header_ ? frame_header_->GetHeaderHeight() : 0;
+  int header_height = frame_header_->GetHeaderHeight();
   const gfx::Size toolbar_size =
       GetBrowserView()->GetWebAppFrameToolbarPreferredSize();
   if (!toolbar_size.IsEmpty()) {
@@ -458,7 +458,7 @@ void BrowserFrameViewChromeOS::UpdateWindowIcon() {
 }
 
 void BrowserFrameViewChromeOS::UpdateWindowTitle() {
-  if (!browser_widget()->IsFullscreen() && frame_header_) {
+  if (!browser_widget()->IsFullscreen()) {
     frame_header_->SchedulePaintForTitle();
   }
 
@@ -475,9 +475,7 @@ void BrowserFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  if (frame_header_) {
-    frame_header_->PaintHeader(canvas);
-  }
+  frame_header_->PaintHeader(canvas);
 }
 
 void BrowserFrameViewChromeOS::UpdateUnframedModeEnabled() {
@@ -494,17 +492,13 @@ void BrowserFrameViewChromeOS::Layout(PassKey) {
   // The header must be laid out before computing |painted_height| because the
   // computation of |painted_height| for app and popup windows depends on the
   // position of the window controls.
-  if (frame_header_) {
-    frame_header_->LayoutHeader();
-  }
+  frame_header_->LayoutHeader();
 
   const int painted_height =
       GetTopInset(false) +
       GetClientFrameElementInfo().tabstrip_preferred_height;
 
-  if (frame_header_) {
-    frame_header_->SetHeaderHeightForPainting(painted_height);
-  }
+  frame_header_->SetHeaderHeightForPainting(painted_height);
 
   if (profile_indicator_icon_) {
     LayoutProfileIndicator();
@@ -517,12 +511,10 @@ void BrowserFrameViewChromeOS::Layout(PassKey) {
   LayoutSuperclass<BrowserFrameView>(this);
   UpdateTopViewInset();
 
-  if (frame_header_) {
-    // The top right corner must be occupied by a caption button for easy mouse
-    // access. This check is agnostic to RTL layout.
-    DCHECK_EQ(caption_button_container_->y(), 0);
-    DCHECK_EQ(caption_button_container_->bounds().right(), width());
-  }
+  // The top right corner must be occupied by a caption button for easy mouse
+  // access. This check is agnostic to RTL layout.
+  DCHECK_EQ(caption_button_container_->y(), 0);
+  DCHECK_EQ(caption_button_container_->bounds().right(), width());
 }
 
 gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
@@ -543,8 +535,7 @@ gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
 
   gfx::Size min_client_view_size(
       browser_widget()->client_view()->GetMinimumSize());
-  const int min_frame_width =
-      frame_header_ ? frame_header_->GetMinimumHeaderWidth() : 0;
+  const int min_frame_width = frame_header_->GetMinimumHeaderWidth();
   int min_width = std::max(min_frame_width, min_client_view_size.width());
   if (GetBrowserView()->GetTabStripVisible()) {
     // Ensure that the minimum width is enough to hold a minimum width tab strip
@@ -590,11 +581,7 @@ void BrowserFrameViewChromeOS::ChildPreferredSizeChanged(views::View* child) {
 }
 
 views::View::Views BrowserFrameViewChromeOS::GetChildrenInZOrder() {
-  if (frame_header_) {
-    return frame_header_->GetAdjustedChildrenInZOrder(this);
-  }
-
-  return BrowserFrameView::GetChildrenInZOrder();
+  return frame_header_->GetAdjustedChildrenInZOrder(this);
 }
 
 SkColor BrowserFrameViewChromeOS::GetTitleColor() {
@@ -643,7 +630,7 @@ void BrowserFrameViewChromeOS::OnDisplayMetricsChanged(
   // For example, rotating from landscape display to portrait display layout
   // should update snap icons from left/right arrows to upward/downward arrows
   // for top and bottom snaps.
-  if ((changed_metrics & DISPLAY_METRIC_ROTATION) && frame_header_) {
+  if (changed_metrics & DISPLAY_METRIC_ROTATION) {
     frame_header_->InvalidateLayout();
   }
 }
@@ -755,7 +742,7 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
     const bool was_floated = static_cast<chromeos::WindowStateType>(old) ==
                              chromeos::WindowStateType::kFloated;
 
-    if (frame_header_ && (is_floated != was_floated)) {
+    if (is_floated != was_floated) {
       frame_header_->OnFloatStateChanged();
     }
 
@@ -777,10 +764,6 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
 
   if (key == chromeos::kIsShowingInOverviewKey) {
     OnAddedToOrRemovedFromOverview();
-    return;
-  }
-
-  if (!frame_header_) {
     return;
   }
 
@@ -873,9 +856,7 @@ void BrowserFrameViewChromeOS::PaintAsActiveChanged() {
 
   UpdateProfileIcons();
 
-  if (frame_header_) {
-    frame_header_->SetPaintAsActive(ShouldPaintAsActive());
-  }
+  frame_header_->SetPaintAsActive(ShouldPaintAsActive());
 }
 
 void BrowserFrameViewChromeOS::AddedToWidget() {
@@ -1070,10 +1051,8 @@ void BrowserFrameViewChromeOS::UpdateWindowRoundedCorners() {
 
   const gfx::RoundedCornersF window_radii = GetWindowRoundedCorners();
 
-  if (frame_header_) {
-    CHECK_EQ(window_radii.upper_left(), window_radii.upper_right());
-    frame_header_->SetHeaderCornerRadius(window_radii.upper_left());
-  }
+  CHECK_EQ(window_radii.upper_left(), window_radii.upper_right());
+  frame_header_->SetHeaderCornerRadius(window_radii.upper_left());
 
   if (GetBrowserView()->IsWindowControlsOverlayEnabled()) {
     // With window controls overlay enabled, the caption_button_container is
@@ -1125,9 +1104,7 @@ void BrowserFrameViewChromeOS::OnUpdateFrameColor() {
   window->SetProperty(chromeos::kFrameInactiveColorKey,
                       GetFrameColor(BrowserFrameActiveState::kInactive));
 
-  if (frame_header_) {
-    frame_header_->UpdateFrameColors();
-  }
+  frame_header_->UpdateFrameColors();
 }
 
 void BrowserFrameViewChromeOS::MaybeAnimateThemeChanged() {
