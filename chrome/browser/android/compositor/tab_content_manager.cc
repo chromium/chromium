@@ -187,8 +187,7 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
     auto result_callback = base::BindOnce(
         &TabReadbackRequest::OnFinishGetTabThumbnailBitmap,
         weak_factory_.GetWeakPtr(), std::move(should_retry_callback));
-    gfx::Size view_size_in_pixels =
-        rwhv->GetNativeView()->GetPhysicalBackingSize();
+    gfx::Size view_size_in_pixels = rwhv->GetNativeView()->GetSizeDevicePx();
     if (!rwhv->IsSurfaceAvailableForCopy() || view_size_in_pixels.IsEmpty()) {
       std::move(result_callback).Run(content::CopyFromSurfaceResult());
       return;
