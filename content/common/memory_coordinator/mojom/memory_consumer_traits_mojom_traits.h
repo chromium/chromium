@@ -50,10 +50,6 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
   static uint8_t recreate_memory_cost(const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.recreate_memory_cost);
   }
-  static uint8_t memory_release_behavior(
-      const base::MemoryConsumerTraits& input) {
-    return std::to_underlying(input.memory_release_behavior);
-  }
   static uint8_t release_gc_references(
       const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.release_gc_references);
@@ -80,8 +76,6 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
            ConvertToEnum(input.in_process(), &output->in_process) &&
            ConvertToEnum(input.recreate_memory_cost(),
                          &output->recreate_memory_cost) &&
-           ConvertToEnum(input.memory_release_behavior(),
-                         &output->memory_release_behavior) &&
            ConvertToEnum(input.release_gc_references(),
                          &output->release_gc_references) &&
            ConvertToEnum(input.garbage_collects_v8_heap(),

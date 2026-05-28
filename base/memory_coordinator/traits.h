@@ -120,18 +120,6 @@ struct BASE_EXPORT MemoryConsumerTraits {
     kDefaultValue = kNA,
   };
 
-  enum class MemoryReleaseBehavior : uint8_t {
-    // OnReleaseMemory() can be called repeatedly to release additional memory.
-    // i.e. Tab discarding.
-    kRepeatable,
-    // Once OnReleaseMemory() is called once, additional calls will not have any
-    // effect.  i.e. Cache clearing.
-    kIdempotent,
-
-    kMaxValue = kIdempotent,
-    kDefaultValue = kIdempotent,
-  };
-
   // Indicates if this consumer manages references to the v8 heap. In this case,
   // no memory is actually released until a garbage collection is done.
   enum class ReleaseGCReferences : uint8_t {
@@ -159,6 +147,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // A stateful consumer (kYes) is one that maintains a lasting internal memory
   // limit based on the `memory_limit()` it receives. When memory pressure
   // occurs, it updates this limit and expects to keep it until the next update.
+  // Because it maintains this limit, it is idempotent: subsequent calls to
+  // `OnReleaseMemory()` without a limit update will not have any effect.
   //
   // A stateless consumer (kNo) is one that does not maintain a lasting limit.
   // Instead, it reacts to memory pressure by performing a one-time eviction of
@@ -184,7 +174,6 @@ struct BASE_EXPORT MemoryConsumerTraits {
   using OptionalTraitsList = base::ParameterPack<SupportsMemoryLimit,
                                                  InProcess,
                                                  RecreateMemoryCost,
-                                                 MemoryReleaseBehavior,
                                                  ReleaseGCReferences,
                                                  GarbageCollectsV8Heap,
                                                  IsStateful>;
@@ -229,8 +218,6 @@ struct BASE_EXPORT MemoryConsumerTraits {
         in_process(internal::GetTraitOrDefault<InProcess>(args...)),
         recreate_memory_cost(
             internal::GetTraitOrDefault<RecreateMemoryCost>(args...)),
-        memory_release_behavior(
-            internal::GetTraitOrDefault<MemoryReleaseBehavior>(args...)),
         release_gc_references(
             internal::GetTraitOrDefault<ReleaseGCReferences>(args...)),
         garbage_collects_v8_heap(
@@ -263,7 +250,6 @@ struct BASE_EXPORT MemoryConsumerTraits {
   SupportsMemoryLimit supports_memory_limit;
   InProcess in_process;
   RecreateMemoryCost recreate_memory_cost;
-  MemoryReleaseBehavior memory_release_behavior;
   ReleaseGCReferences release_gc_references;
   GarbageCollectsV8Heap garbage_collects_v8_heap;
   IsStateful is_stateful;

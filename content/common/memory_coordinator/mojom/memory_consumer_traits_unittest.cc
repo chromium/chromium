@@ -24,7 +24,6 @@ using ExecutionType = base::MemoryConsumerTraits::ExecutionType;
 using SupportsMemoryLimit = base::MemoryConsumerTraits::SupportsMemoryLimit;
 using InProcess = base::MemoryConsumerTraits::InProcess;
 using RecreateMemoryCost = base::MemoryConsumerTraits::RecreateMemoryCost;
-using MemoryReleaseBehavior = base::MemoryConsumerTraits::MemoryReleaseBehavior;
 using ReleaseGCReferences = base::MemoryConsumerTraits::ReleaseGCReferences;
 using GarbageCollectsV8Heap = base::MemoryConsumerTraits::GarbageCollectsV8Heap;
 using IsStateful = base::MemoryConsumerTraits::IsStateful;
@@ -99,7 +98,6 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
         GenerateValue<InformationRetention>(i), GenerateValue<ExecutionType>(i),
         GenerateValue<SupportsMemoryLimit>(i), GenerateValue<InProcess>(i),
         GenerateValue<RecreateMemoryCost>(i),
-        GenerateValue<MemoryReleaseBehavior>(i),
         GenerateValue<ReleaseGCReferences>(i),
         GenerateValue<GarbageCollectsV8Heap>(i), GenerateValue<IsStateful>(i));
 
