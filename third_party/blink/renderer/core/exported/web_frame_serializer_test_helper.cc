@@ -53,7 +53,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   if (!only_body_parts) {
     WebThreadSafeData header_result = WebFrameSerializer::GenerateMHTMLHeader(
         boundary, frame, &mhtml_delegate);
-    mhtml.Append(base::as_byte_span(header_result));
+    mhtml.Append(header_result);
   }
 
   base::RunLoop run_loop;
@@ -62,7 +62,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
       blink::BindOnce(
           [](StringBuilder* mhtml, base::OnceClosure quit,
              WebThreadSafeData data) {
-            mhtml->Append(base::as_byte_span(data));
+            mhtml->Append(data);
             std::move(quit).Run();
           },
           Unretained(&mhtml), run_loop.QuitClosure()));

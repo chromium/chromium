@@ -38,8 +38,6 @@
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
-#else
-#include <string>
 #endif
 
 namespace blink {
@@ -56,10 +54,10 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
   // outside /public/, that would be a layering violation. So be conservative
   // and use `CheckedContiguousIterator` directyly, regardless of what the
   // underlying type does.
-  using iterator = base::CheckedContiguousIterator<const char>;
+  using iterator = base::CheckedContiguousIterator<const uint8_t>;
 
   WebThreadSafeData() = default;
-  explicit WebThreadSafeData(base::span<const char> data);
+  explicit WebThreadSafeData(base::span<const uint8_t> data);
 
   ~WebThreadSafeData() { Reset(); }
 
@@ -67,7 +65,7 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
   void Reset();
 
   size_t size() const;
-  const char* data() const;
+  const uint8_t* data() const;
 
   // Iterators, required to satisfy the `std::ranges::contiguous_range` concept.
   iterator begin() const;
@@ -81,11 +79,6 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
 #if INSIDE_BLINK
   explicit WebThreadSafeData(scoped_refptr<RawData>);
   WebThreadSafeData& operator=(scoped_refptr<RawData>);
-#else
-  operator std::string() const {
-    size_t len = size();
-    return len ? std::string(data(), len) : std::string();
-  }
 #endif
 
  private:
