@@ -21,6 +21,10 @@ __input_deps = {
 }
 
 def __step_config(ctx, step_config):
+    if runtime.os == "windows":
+        # TODO: b/515026786 - Re-enable typescript rules on Windows after fixing massive lstat performance issue.
+        return step_config
+
     remote_run = config.get(ctx, "googlechrome")
     step_config["input_deps"].update(typescript_all.input_deps)
 
@@ -87,6 +91,8 @@ def __step_config(ctx, step_config):
 
 # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
 def __filegroups(ctx):
+    if runtime.os == "windows":
+        return {}
     return {
         "third_party/node/node_modules:node_modules": {
             "type": "glob",
@@ -193,12 +199,17 @@ def _ts_definitions(ctx, cmd):
     print("_ts_definitions: tsconfig=%s, deps=%s" % (tsconfig, deps))
     ctx.actions.fix(inputs = cmd.inputs + deps)
 
-typescript_all = module(
-    "typescript_all",
-    handlers = {
+_handlers = {
+    True: {},
+    False: {
         "typescript_ts_library": _ts_library,
         "typescript_ts_definitions": _ts_definitions,
     },
+}[runtime.os == "windows"]
+
+typescript_all = module(
+    "typescript_all",
+    handlers = _handlers,
     step_config = __step_config,
     filegroups = __filegroups,
     input_deps = __input_deps,
