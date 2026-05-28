@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragmen
 import org.chromium.chrome.browser.autofill.settings.AutofillIdentityDocsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillShoppingFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillTravelFragment;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment;
@@ -135,6 +136,7 @@ public final class SearchIndexProviderRegistry {
                     AutofillIdentityDocsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillPaymentMethodsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillProfilesFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    AutofillShoppingFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillTravelFragment.SEARCH_INDEX_DATA_PROVIDER,
                     HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     ClearBrowsingDataFragment.SEARCH_INDEX_DATA_PROVIDER,

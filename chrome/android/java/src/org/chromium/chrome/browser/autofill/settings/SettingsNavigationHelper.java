@@ -63,6 +63,25 @@ public class SettingsNavigationHelper {
     }
 
     /**
+     * Tries showing the settings page for Shopping.
+     *
+     * @param context The {@link Context} required to start the settings page. Noop without it.
+     * @return True if the context is valid and `startSettings` was called.
+     */
+    public static boolean showAutofillShoppingSettings(@Nullable Context context) {
+        if (context == null) {
+            return false;
+        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        context,
+                        AutofillShoppingFragment.class,
+                        /* fragmentArgs= */ null,
+                        /* addToBackStack= */ true);
+        return true;
+    }
+
+    /**
      * Tries showing the settings page for Travel.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.

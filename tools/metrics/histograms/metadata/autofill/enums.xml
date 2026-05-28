@@ -2953,6 +2953,9 @@ Called by update_autofill_enums.py.-->
              fragment."/>
   <int value="6"
       label="User entered the autofill options via autofill travel fragment."/>
+  <int value="7"
+      label="User entered the autofill options via autofill shopping
+             fragment."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java:AutofillOptionsReferrer) -->

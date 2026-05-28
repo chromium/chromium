@@ -70,6 +70,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_IDENTITY_DOCS_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_TRAVEL_FRAGMENT,
+        AutofillOptionsReferrer.AUTOFILL_SHOPPING_FRAGMENT,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -95,8 +96,12 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Travel fragment in Chrome settings. */
         int AUTOFILL_TRAVEL_FRAGMENT = 6;
 
-        int COUNT = 7;
+        /** Shopping fragment in Chrome settings. */
+        int AUTOFILL_SHOPPING_FRAGMENT = 7;
+
+        int COUNT = 8;
     }
+
     // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillOptionsReferrer)
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
