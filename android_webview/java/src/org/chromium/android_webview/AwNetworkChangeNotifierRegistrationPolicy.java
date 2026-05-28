@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
@@ -17,6 +18,8 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect;
 public class AwNetworkChangeNotifierRegistrationPolicy
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy
         implements AwContentsLifecycleNotifier.Observer {
+    private static final String TAG = "AwNetworkChange";
+
     @Override
     protected void init(NetworkChangeNotifierAutoDetect notifier) {
         super.init(notifier);
@@ -36,6 +39,17 @@ public class AwNetworkChangeNotifierRegistrationPolicy
 
     @Override
     public void onLastWebViewDestroyed() {
-        unregister();
+        try {
+            unregister();
+        } catch (IllegalArgumentException e) {
+            // In rare cases, we receive an IllegalArgumentException when
+            // unregistering because the NetworkCallback was not registered.
+            // https://crbug.com/40778322
+            if ("NetworkCallback was not registered".equals(e.getMessage())) {
+                Log.w(TAG, "NetworkCallback was not registered", e);
+            } else {
+                throw e;
+            }
+        }
     }
 }
