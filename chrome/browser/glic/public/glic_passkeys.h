@@ -62,6 +62,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class ::PasswordChangeFromCheckupDelegate;
   friend class GlicInternalsPageHandler;
   friend class GlicInstanceCoordinatorBrowserTest;
+  friend class GlicInvokeBrowserTest;
   friend class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest;
   friend class GlicApiTestPasskeys;
   friend class ::GlicExperimentalTriggeringMessageHandler;

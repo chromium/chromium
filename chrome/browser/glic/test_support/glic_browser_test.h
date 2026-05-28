@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -43,12 +44,15 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/base_window.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -379,6 +383,162 @@ class GlicBrowserTestMixin : public T {
     T::GetTabListInterface()->ActivateTab(new_tab->GetHandle());
     CHECK(content::WaitForLoadStop(new_tab->GetContents()));
     return new_tab;
+  }
+
+  content::Visibility GetContentsVisibility(GlicInstanceImpl* instance) {
+    EXPECT_TRUE(instance);
+    content::WebContents* webui_contents = instance->host().webui_contents();
+    return webui_contents ? webui_contents->GetVisibility()
+                          : content::Visibility::HIDDEN;
+  }
+
+  std::string VisibilityAsString(content::Visibility visibility) {
+    switch (visibility) {
+      case content::Visibility::HIDDEN:
+        return "HIDDEN";
+      case content::Visibility::OCCLUDED:
+        return "OCCLUDED";
+      case content::Visibility::VISIBLE:
+        return "VISIBLE";
+    }
+    return "UNKNOWN";
+  }
+
+  [[nodiscard]] TestResult<> WaitForWebUiContentsVisibility(
+      GlicInstanceImpl* instance,
+      content::Visibility visibility) {
+    return RunUntilEqual(
+        [&]() { return VisibilityAsString(GetContentsVisibility(instance)); },
+        VisibilityAsString(visibility),
+        "Timeout waiting for webui WebContents visibility to be " +
+            VisibilityAsString(visibility));
+  }
+
+  void ActivateTab(tabs::TabInterface* tab) {
+    CHECK(tab);
+    tab->GetContents()->GetDelegate()->ActivateContents(tab->GetContents());
+  }
+
+  tabs::TabInterface* CreateUserInitiatedTab(const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+    auto* tab_list = T::GetTabListInterface();
+    CHECK(tab_list) << "TabListInterface is null";
+    auto* tab_model = static_cast<TabModel*>(tab_list);
+    Profile* profile = T::GetProfile();
+    CHECK(profile) << "Profile is null";
+
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile));
+    web_contents->GetController().LoadURL(
+        url, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+    tabs::TabInterface* new_tab =
+        tab_model->CreateTab(nullptr, std::move(web_contents), -1,
+                             TabModel::TabLaunchType::FROM_CHROME_UI, false);
+    tab_model->ActivateTab(new_tab->GetHandle());
+    return new_tab;
+#else
+    return CreateAndActivateTab(url);
+#endif
+  }
+
+  // Simulates a click on a link with the given modifiers.
+  // On Android, this uses a tap with modifiers, and injects a viewport meta tag
+  // to ensure coordinates are correct.
+  void SimulateLinkClick(tabs::TabInterface* tab,
+                         bool ctrl_key,
+                         bool shift_key) {
+    content::WebContents* contents = tab->GetContents();
+    std::string link_id = "simulator-link";
+    std::string script = base::StringPrintf(
+        R"(
+          (() => {
+            const meta = document.createElement('meta');
+            meta.name = 'viewport';
+            meta.content = 'width=device-width,minimum-scale=1';
+            document.head.appendChild(meta);
+
+            const a = document.createElement('a');
+            a.id = '%s';
+            a.href = 'about:blank';
+            a.innerText = 'Click me';
+            a.style.position = 'fixed';
+            a.style.left = '0';
+            a.style.top = '0';
+            a.style.width = '100vw';
+            a.style.height = '100vh';
+            a.style.zIndex = '9999';
+            document.body.appendChild(a);
+          })();
+        )",
+        link_id.c_str());
+
+    content::RenderFrameSubmissionObserver frame_observer(contents);
+
+    frame_observer.SetWaitForNextFrame();
+    EXPECT_TRUE(content::ExecJs(contents, script));
+
+    // Wait for the next frame to ensure the element is visible to the
+    // compositor. Without this wait, the click might happen too early and not
+    // trigger the navigation.
+    frame_observer.WaitForNextFrameSubmission();
+
+    int modifiers = 0;
+    if (ctrl_key) {
+#if BUILDFLAG(IS_MAC)
+      modifiers |= blink::WebInputEvent::kMetaKey;
+#else
+      modifiers |= blink::WebInputEvent::kControlKey;
+#endif
+    }
+    if (shift_key) {
+      modifiers |= blink::WebInputEvent::kShiftKey;
+    }
+
+    gfx::Point point = gfx::ToFlooredPoint(
+        content::GetCenterCoordinatesOfElementWithId(contents, link_id));
+
+#if BUILDFLAG(IS_ANDROID)
+    content::SimulateTapWithModifiersAt(contents, modifiers, point);
+#else
+    content::SimulateMouseClickAt(contents, modifiers,
+                                  blink::WebMouseEvent::Button::kLeft, point);
+#endif
+  }
+
+  TestResult<> WaitForActiveEmbedderToMatchTab(GlicInstanceImpl* instance,
+                                               tabs::TabInterface* tab) {
+    CHECK(tab);
+    CHECK(instance);
+    return RunUntilEqual(
+        [&]() { return instance->GetActiveEmbedderTabForTesting(); }, tab,
+        "Timeout waiting for active embedder to match tab");
+  }
+
+  TestResult<> WaitForEmbedderActivationOrPeek(GlicInstanceImpl* instance,
+                                               tabs::TabInterface* tab) {
+    CHECK(tab);
+    CHECK(instance);
+
+    auto* side_panel_coordinator = GlicSidePanelCoordinator::GetForTab(tab);
+    bool supports_peek =
+        side_panel_coordinator && side_panel_coordinator->SupportsPeek();
+
+    if (supports_peek) {
+      RETURN_IF_ERROR(RunUntilEqual(
+          [&]() { return instance->GetEmbedderForTab(tab) != nullptr; }, true,
+          "Timeout waiting for embedder to bind"));
+      RETURN_IF_ERROR(
+          WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kPeek));
+      return WaitForWebUiContentsVisibility(instance,
+                                            content::Visibility::HIDDEN);
+    } else {
+      RETURN_IF_ERROR(RunUntilEqual(
+          [&]() { return instance->GetActiveEmbedderTabForTesting(); }, tab,
+          "Timeout waiting for active embedder to match tab"));
+      return WaitForWebUiContentsVisibility(instance,
+                                            content::Visibility::VISIBLE);
+    }
   }
 
   [[nodiscard]] TestResult<> WaitForWebUiState(mojom::WebUiState state) {
