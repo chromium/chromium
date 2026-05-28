@@ -300,43 +300,50 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             SuggestionLayoutScrollListener suggestionLayoutScrollListener) {
         super(context, attrs, android.R.attr.dropDownListViewStyle);
 
-        mHandler = new Handler(Looper.getMainLooper());
+        try (TimingMetric metric =
+                        OmniboxMetrics.recordSuggestionsDropdownAsyncInflationThreadTime();
+                TimingMetric metric2 =
+                        OmniboxMetrics.recordSuggestionsDropdownAsyncInflationWallTime();
+                TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsDropdown.Constructor")) {
+            mHandler = new Handler(Looper.getMainLooper());
 
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        setId(R.id.omnibox_suggestions_dropdown);
+            setFocusable(true);
+            setFocusableInTouchMode(true);
+            setId(R.id.omnibox_suggestions_dropdown);
 
-        // By default RecyclerViews come with item animators.
-        setItemAnimator(null);
-        addItemDecoration(new SuggestionHorizontalDivider(context));
+            // By default RecyclerViews come with item animators.
+            setItemAnimator(null);
+            addItemDecoration(new SuggestionHorizontalDivider(context));
 
-        if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
-            addItemDecoration(new GroupSeparatorDecoration(context));
-            addItemDecoration(new HeaderDecoration(context));
+            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+                addItemDecoration(new GroupSeparatorDecoration(context));
+                addItemDecoration(new HeaderDecoration(context));
+            }
+
+            mLayoutScrollListener = suggestionLayoutScrollListener;
+            setLayoutManager(mLayoutScrollListener);
+
+            mSelectionController =
+                    new RecyclerViewSelectionController(
+                            mLayoutScrollListener, SelectionController.Mode.WRAPPING_WITH_SENTINEL);
+            addOnChildAttachStateChangeListener(mSelectionController);
+
+            final Resources resources = context.getResources();
+            mBaseBottomPadding =
+                    resources.getDimensionPixelOffset(
+                            R.dimen.omnibox_suggestion_list_padding_bottom);
+            mBaseTopPadding =
+                    resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
+            this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);
+
+            // Disable the scrollbar since it causes the hover events happening near the
+            // scrollbar not dispatched to the underlying views.
+            setVerticalScrollBarEnabled(false);
+
+            mViewHolderFactory = new OmniboxViewHolderFactory();
+            mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
+            setRecycledViewPool(mRecycledViewPool);
         }
-
-        mLayoutScrollListener = suggestionLayoutScrollListener;
-        setLayoutManager(mLayoutScrollListener);
-
-        mSelectionController =
-                new RecyclerViewSelectionController(
-                        mLayoutScrollListener, SelectionController.Mode.WRAPPING_WITH_SENTINEL);
-        addOnChildAttachStateChangeListener(mSelectionController);
-
-        final Resources resources = context.getResources();
-        mBaseBottomPadding =
-                resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
-        mBaseTopPadding =
-                resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
-        this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);
-
-        // Disable the scrollbar since it causes the hover events happening near the
-        // scrollbar not dispatched to the underlying views.
-        setVerticalScrollBarEnabled(false);
-
-        mViewHolderFactory = new OmniboxViewHolderFactory();
-        mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
-        setRecycledViewPool(mRecycledViewPool);
     }
 
     public void onNativeInitialized() {

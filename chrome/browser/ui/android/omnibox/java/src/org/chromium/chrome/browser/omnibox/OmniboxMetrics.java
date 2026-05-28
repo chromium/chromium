@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
@@ -169,6 +170,19 @@ public class OmniboxMetrics {
     /** Record the amount of wall time needed to create a new suggestion view. */
     public static TimingMetric recordSuggestionViewCreateWallTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime3");
+    }
+
+    /** Record thread time spent inflating the Suggestion dropdown on async background thread. */
+    public static @Nullable TimingMetric recordSuggestionsDropdownAsyncInflationThreadTime() {
+        if (ThreadUtils.runningOnUiThread()) return null;
+        return TimingMetric.shortThreadTime(
+                "Android.Omnibox.SuggestionsDropdown.AsyncInflationTime2");
+    }
+
+    /** Record wall time spent inflating the Suggestion dropdown on async background thread. */
+    public static @Nullable TimingMetric recordSuggestionsDropdownAsyncInflationWallTime() {
+        if (ThreadUtils.runningOnUiThread()) return null;
+        return TimingMetric.shortUptime("Android.Omnibox.SuggestionsDropdown.AsyncInflationTime3");
     }
 
     /**

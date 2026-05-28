@@ -4374,6 +4374,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionsDropdown.AsyncInflationTime2"
+    units="ms" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records thread time spent on construction of the Omnibox suggestions
+    dropdown on a background thread.
+
+    Measures the impact of offloading Omnibox suggestions dropdown inflation to
+    a background thread. Since layout inflation and view pool pre-warming occur
+    during construction, this metric reflects the overall amount of UI rendering
+    work saved from running on the main thread.
+
+    Recorded once per activity start when AsyncViewInflator inflates the
+    OmniboxSuggestionsDropdown.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionsDropdown.AsyncInflationTime3"
+    units="ms" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>ender@google.com</owner>
+  <summary>
+    Records wall time spent on construction of the Omnibox suggestions dropdown
+    on a background thread.
+
+    Measures the impact of offloading Omnibox suggestions dropdown inflation to
+    a background thread. Since layout inflation and view pool pre-warming occur
+    during construction, this metric reflects the overall amount of UI rendering
+    work saved from running on the main thread.
+
+    Recorded once per activity start when AsyncViewInflator inflates the
+    OmniboxSuggestionsDropdown.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
     enum="Boolean" expires_after="2026-08-30">
   <owner>ender@google.com</owner>
