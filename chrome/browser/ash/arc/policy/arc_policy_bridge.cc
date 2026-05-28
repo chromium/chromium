@@ -251,10 +251,6 @@ void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
                          std::move(cert_names));
 }
 
-bool LooksLikeAndroidPackageName(const std::string& name) {
-  return name.find(".") != std::string::npos;
-}
-
 void AddChoosePrivateKeyRuleToPolicy(
     policy::PolicyService* const policy_service,
     const CertStoreService* cert_store_service,
@@ -264,12 +260,10 @@ void AddChoosePrivateKeyRuleToPolicy(
   }
 
   auto app_ids = chromeos::platform_keys::ExtensionKeyPermissionsService::
-      GetCorporateKeyUsageAllowedAppIds(policy_service);
+      GetCorporateKeyUsageAllowedAndroidAppIds(policy_service);
   base::ListValue arc_app_ids;
   for (const auto& app_id : app_ids) {
-    if (LooksLikeAndroidPackageName(app_id)) {
-      arc_app_ids.Append(app_id);
-    }
+    arc_app_ids.Append(app_id);
   }
   if (arc_app_ids.empty() ||
       cert_store_service->get_required_cert_names().empty()) {

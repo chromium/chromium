@@ -149,9 +149,9 @@ class ExtensionKeyPermissionsService {
       const std::vector<uint8_t>& public_key_spki_der,
       ExtensionKeyPermissionOperationCallback callback);
 
-  // Returns the list of apps and extensions ids allowed to use corporate usage
-  // keys by policy in |profile_policies|.
-  static std::vector<std::string> GetCorporateKeyUsageAllowedAppIds(
+  // Returns the list of Android app ids allowed to use corporate usage keys by
+  // policy in |profile_policies|.
+  static std::vector<std::string> GetCorporateKeyUsageAllowedAndroidAppIds(
       policy::PolicyService* const profile_policies);
 
  private:

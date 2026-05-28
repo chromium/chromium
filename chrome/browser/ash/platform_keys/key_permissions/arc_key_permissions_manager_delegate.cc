@@ -133,7 +133,7 @@ void UserPrivateTokenArcKpmDelegate::CheckArcKeyAvailibility() {
 
   std::vector<std::string> corporate_key_usage_allowed_app_ids =
       chromeos::platform_keys::ExtensionKeyPermissionsService::
-          GetCorporateKeyUsageAllowedAppIds(policy_service_);
+          GetCorporateKeyUsageAllowedAndroidAppIds(policy_service_);
 
   for (const auto& package_name : corporate_key_usage_allowed_app_ids) {
     auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);

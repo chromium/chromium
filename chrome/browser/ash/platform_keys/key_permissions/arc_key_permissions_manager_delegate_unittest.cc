@@ -30,6 +30,7 @@ namespace {
 
 constexpr char kTestArcPackageName1[] = "com.example.app1";
 constexpr char kTestArcPackageName2[] = "com.example.app2";
+constexpr char kChromeExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 
 }  // namespace
 
@@ -299,6 +300,20 @@ TEST_F(ArcKeyPermissionsManagerDelegateTest, NoPrimaryDelegate) {
   ShutDownPrimaryUserDelegate();
 
   EXPECT_EQ(system_delegate()->AreCorporateKeysAllowedForArcUsage(), false);
+}
+
+TEST_F(ArcKeyPermissionsManagerDelegateTest, ExtensionIdsAreFilteredOut) {
+  SetCorporateUsageInPolicyForPackage(kChromeExtensionId, /*allowed=*/true);
+  ASSERT_FALSE(user_delegate()->AreCorporateKeysAllowedForArcUsage());
+  ASSERT_FALSE(system_delegate()->AreCorporateKeysAllowedForArcUsage());
+
+  EXPECT_CALL(mock_arc_kpm_delegate_observer_,
+              OnArcUsageAllowanceForCorporateKeysChanged(true))
+      .Times(0);
+  InstallArcPackage(kChromeExtensionId);
+
+  EXPECT_FALSE(user_delegate()->AreCorporateKeysAllowedForArcUsage());
+  EXPECT_FALSE(system_delegate()->AreCorporateKeysAllowedForArcUsage());
 }
 
 }  // namespace platform_keys
