@@ -10,22 +10,28 @@ import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
+import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarButtonManager.ActionConfig;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -41,6 +47,12 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
     private final BottomBarView mView;
     private final PropertyModelChangeProcessor<PropertyModel, BottomBarView, PropertyKey> mMcp;
     private final BottomBarButtonManager mButtonManager;
+    private final NullableObservableSupplier<PropertyModel> mGlicSupplier;
+    private final NullableObservableSupplier<PropertyModel> mNewTabSupplier;
+    private final Callback<@Nullable PropertyModel> mGlicModelObserver;
+    private final Callback<@Nullable PropertyModel> mNewTabModelObserver;
+    private final IphIntent mGlicIph;
+    private final IphIntent mNewTabIph;
 
     /**
      * @param parent The parent view to inflate the bottom bar into.
@@ -50,6 +62,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
      */
     public BottomBarCoordinator(
             ViewGroup parent,
+            UserEducationHelper userEducationHelper,
             ActionRegistry actionRegistry,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
@@ -57,6 +70,27 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             BottomBarMediator.VisibilityDelegate visibilityDelegate,
             NullableObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
+        mGlicSupplier = actionRegistry.get(ActionId.GLIC);
+        mNewTabSupplier = actionRegistry.get(ActionId.NEW_TAB);
+
+        mNewTabIph =
+                new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB)
+                        .setStringResId(R.string.iph_android_bottom_bar_new_tab)
+                        .setAccessibilityResId(R.string.iph_android_bottom_bar_new_tab)
+                        .build();
+
+        mGlicIph =
+                new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC)
+                        .setStringResId(R.string.iph_android_bottom_bar_glic)
+                        .setAccessibilityResId(R.string.iph_android_bottom_bar_glic)
+                        .build();
+
+        mGlicModelObserver = model -> onGlicModelChanged(model, userEducationHelper);
+        mGlicSupplier.addSyncObserverAndCallIfNonNull(mGlicModelObserver);
+
+        mNewTabModelObserver = model -> onNewTabModelChanged(model, userEducationHelper);
+        mNewTabSupplier.addSyncObserverAndCallIfNonNull(mNewTabModelObserver);
+
         mView =
                 (BottomBarView)
                         LayoutInflater.from(parent.getContext())
@@ -152,6 +186,22 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         return configs;
     }
 
+    private void onGlicModelChanged(
+            @Nullable PropertyModel model, UserEducationHelper userEducationHelper) {
+        if (model != null) {
+            model.set(ActionProperties.USER_EDUCATION_HELPER, userEducationHelper);
+            model.set(ActionProperties.IPH_INTENT, mGlicIph);
+        }
+    }
+
+    private void onNewTabModelChanged(
+            @Nullable PropertyModel model, UserEducationHelper userEducationHelper) {
+        if (model != null) {
+            model.set(ActionProperties.USER_EDUCATION_HELPER, userEducationHelper);
+            model.set(ActionProperties.IPH_INTENT, mNewTabIph);
+        }
+    }
+
     @Override
     public View getView() {
         return mView;
@@ -171,5 +221,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         mMediator.destroy();
         mMcp.destroy();
         mButtonManager.destroy();
+        mGlicSupplier.removeObserver(mGlicModelObserver);
+        mNewTabSupplier.removeObserver(mNewTabModelObserver);
     }
 }

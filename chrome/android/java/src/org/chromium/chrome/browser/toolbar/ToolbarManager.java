@@ -2412,6 +2412,7 @@ public class ToolbarManager
         BottomBarContainerCoordinator bottomBarContainerCoordinator =
                 new BottomBarContainerCoordinator(
                         bottomAppBarContainer.findViewById(R.id.bottom_container_slot),
+                        mUserEducationHelper,
                         mBottomControlsStacker::requestLayerUpdate,
                         assumeNonNull(mActionRegistry),
                         mCurrentTabSupplier,
@@ -2508,6 +2509,12 @@ public class ToolbarManager
             newTabModel.set(
                     ActionProperties.ON_PRESS_CALLBACK,
                     v -> {
+                        Tab currentTab = mActivityTabProvider.get();
+                        if (currentTab != null
+                                && BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
+                            TrackerFactory.getTrackerForProfile(currentTab.getProfile())
+                                    .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_NEW_TAB_USED);
+                        }
                         TabCreatorUtil.launchNtp(
                                 mTabCreatorManager.getTabCreator(
                                         tabModelSelector.isIncognitoSelected()));

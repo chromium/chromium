@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMediator;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
@@ -80,6 +81,7 @@ public class BottomBarContainerCoordinator
      */
     public BottomBarContainerCoordinator(
             FrameLayout bottomBarContainer,
+            UserEducationHelper userEducationHelper,
             Callback<Boolean> requestLayerUpdateCallback,
             ActionRegistry actionRegistry,
             NullableObservableSupplier<Tab> tabSupplier,
@@ -98,6 +100,7 @@ public class BottomBarContainerCoordinator
         mBottomBarCoordinator =
                 new BottomBarCoordinator(
                         bottomBarContainer,
+                        userEducationHelper,
                         actionRegistry,
                         themeColorProvider,
                         tabSupplier,

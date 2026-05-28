@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -65,6 +66,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ActionRegistry mActionRegistry;
     @Mock private Profile mProfile;
+    @Mock private UserEducationHelper mUserEducationHelper;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -95,6 +97,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mCoordinator =
                                     new BottomBarContainerCoordinator(
                                             mBottomBarContainer,
+                                            mUserEducationHelper,
                                             mRequestLayerUpdateCallback,
                                             mActionRegistry,
                                             mTabSupplier,
@@ -110,7 +113,7 @@ public class BottomBarContainerCoordinatorUnitTest {
         mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
         verify(mVisibilityController).setBottomControlsVisible(true);
         verify(mOnModelTokenChange).onResult(any());
-        verify(mActionRegistry, times(1)).get(ActionId.NEW_TAB);
+        verify(mActionRegistry, times(2)).get(ActionId.NEW_TAB);
     }
 
     @Test

@@ -5963,6 +5963,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_TAB_SWITCHER_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page. The 'open tabs' button name should match TC 3108541343994525384">
         To open tabs and visit different pages at the same time, tap the open tabs button
       </message>
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_GLIC" desc="IPH message for the GLIC button in the bottom bar.">
+        Ask AI questions as you browse
+      </message>
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_NEW_TAB" desc="IPH message for the New Tab button in the bottom bar.">
+        Create new tabs
+      </message>
       <message name="IDS_IPH_ANDROID_TAB_DECLUTTER_TEXT_WITH_TAB_GROUPS" desc="The in-product-help text for the android tab declutter feature.">
         Review your inactive tabs and groups here
       </message>

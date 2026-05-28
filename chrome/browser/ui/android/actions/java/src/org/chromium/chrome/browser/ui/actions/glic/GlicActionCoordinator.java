@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicButtonStateController;
 import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -114,6 +116,10 @@ public class GlicActionCoordinator {
 
     private void onGlicActionPressed(View view) {
         Tab currentTab = mTabSupplier.get();
+        if (currentTab != null) {
+            TrackerFactory.getTrackerForProfile(currentTab.getProfile())
+                    .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_GLIC_USED);
+        }
         List<ActorTask> tasks = mStateController.getActiveTasks();
 
         boolean isOnActingTab =

@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicButtonStateController;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -69,6 +71,7 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private ActorKeyedService mActorService;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Tracker mTracker;
 
     private ActionRegistry mActionRegistry;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -79,6 +82,7 @@ public class GlicActionCoordinatorUnitTest {
     public void setUp() {
         ActorKeyedServiceFactory.setForTesting(mActorService);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         mActionRegistry = new ActionRegistry();
         mTabSupplier = ObservableSuppliers.createNullable();
