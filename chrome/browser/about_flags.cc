@@ -452,6 +452,19 @@ const FeatureEntry::FeatureVariation kDefaultBrowserPromptSurfacesVariations[] =
      {"with Modal Dialog without Settings Illustration",
       kDefaultBrowserPromptSurfaces_ModalDialogWithoutSettingsIllustration,
       nullptr}};
+
+const FeatureEntry::FeatureParam
+    kDefaultBrowserSetterSelection_ShellIntegration[] = {
+        {"setter_option", "shell_integration"}};
+const FeatureEntry::FeatureParam kDefaultBrowserSetterSelection_VisualGuide[] =
+    {{"setter_option", "visual_guide"}};
+
+const FeatureEntry::FeatureVariation
+    kDefaultBrowserSetterSelectionVariations[] = {
+        {"with Shell Integration",
+         kDefaultBrowserSetterSelection_ShellIntegration, nullptr},
+        {"with Visual Guide", kDefaultBrowserSetterSelection_VisualGuide,
+         nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::FeatureParam kLocalNetworkAccessChecksBlock[] = {
@@ -10982,6 +10995,14 @@ const FeatureEntry kFeatureEntries[] = {
          default_browser::kDefaultBrowserPromptSurfaces,
          kDefaultBrowserPromptSurfacesVariations,
          "DefaultBrowserPromptSurfaces")},
+
+    {"default-browser-setter-selection",
+     flag_descriptions::kDefaultBrowserSetterSelectionName,
+     flag_descriptions::kDefaultBrowserSetterSelectionDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         default_browser::kDefaultBrowserSetterSelection,
+         kDefaultBrowserSetterSelectionVariations,
+         "DefaultBrowserSetterSelection")},
 #endif  // !BUILDFLAG(IS_ANDROID) && ! BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

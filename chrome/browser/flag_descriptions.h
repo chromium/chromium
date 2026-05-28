@@ -495,6 +495,12 @@ inline constexpr char kDefaultBrowserPromptSurfacesDescription[] =
 inline constexpr char kDefaultBrowserPromptSurfacesName[] =
     "Default Browser Prompt Surfaces";
 
+inline constexpr char kDefaultBrowserSetterSelectionDescription[] =
+    "Enables selecting a default browser setter (e.g. shell integration, "
+    "visual guide).";
+inline constexpr char kDefaultBrowserSetterSelectionName[] =
+    "Default Browser Setter Selection";
+
 inline constexpr char kDefaultSearchEnginePrewarmName[] =
     "Default search engine prewarm";
 inline constexpr char kDefaultSearchEnginePrewarmDescription[] =
