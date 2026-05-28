@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/gles2_cmd_clear_framebuffer.h"
 
-#include "base/functional/callback_helpers.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shader_manager.h"
@@ -119,23 +118,8 @@ void ClearFramebufferResourceManager::ClearFramebuffer(
   // Cannot use glUseProgram if transform feedback is active and not paused.
   // This is a workaround for glClear which isn't part of vertex processing
   // anyway.
-  base::ScopedClosureRunner resume_transform_feedback;
-  if (transform_feedback && transform_feedback->active() &&
-      !transform_feedback->paused()) {
-    transform_feedback->DoPauseTransformFeedback();
-
-    resume_transform_feedback = base::ScopedClosureRunner(base::BindOnce(
-        [](TransformFeedback* tf) {
-          // To resume, we need to
-          // - bind the paused feedback object (handled in
-          //   RestoreBufferBindings), and
-          // - bind the exact program or pipeline object that was used when
-          //   glBeginTransformFeedback was called (handled in
-          //   RestoreProgramBindings)
-          tf->DoResumeTransformFeedback();
-        },
-        base::Unretained(transform_feedback)));
-  }
+  ScopedPauseResumeTransformFeedback pause_transform_feedback(
+      transform_feedback);
 
   glUseProgram(program_);
 

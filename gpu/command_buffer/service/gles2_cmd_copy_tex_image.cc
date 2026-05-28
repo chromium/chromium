@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "gpu/command_buffer/service/gles2_cmd_copy_tex_image.h"
 
+#include <string>
+
+#include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/command_buffer/service/transform_feedback_manager.h"
 #include "ui/gl/gl_version_info.h"
-
-#include <string>
 
 namespace gpu {
 namespace gles2 {
@@ -27,6 +28,13 @@ void CopyTexImageResourceManager::Initialize(const DecoderContext* decoder) {
   if (initialized_) {
     return;
   }
+
+  // glUseProgram fails with INVALID_OPERATION if transform feedback is active
+  // and not paused. Pause TF for the duration of the initialization.
+  const ContextState* state =
+      const_cast<DecoderContext*>(decoder)->GetContextState();
+  ScopedPauseResumeTransformFeedback pause_transform_feedback(
+      state ? state->bound_transform_feedback.get() : nullptr);
 
   blit_program_ = glCreateProgram();
 
@@ -179,6 +187,13 @@ void CopyTexImageResourceManager::DoCopyTexSubImageToLUMACompatibilityTexture(
     GLuint source_framebuffer,
     GLenum source_framebuffer_internal_format) {
   DCHECK(initialized_);
+
+  // glUseProgram fails with INVALID_OPERATION if transform feedback is active
+  // and not paused. Pause TF for the duration of the internal blit.
+  const ContextState* state =
+      const_cast<DecoderContext*>(decoder)->GetContextState();
+  ScopedPauseResumeTransformFeedback pause_transform_feedback(
+      state ? state->bound_transform_feedback.get() : nullptr);
 
   // Copy the framebuffer to the first scratch texture
   // TODO(geofflang): This could be optimized further by detecting if the source

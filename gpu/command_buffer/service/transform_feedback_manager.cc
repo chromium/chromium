@@ -198,5 +198,22 @@ void TransformFeedbackManager::RemoveTransformFeedback(GLuint client_id) {
   }
 }
 
+ScopedPauseResumeTransformFeedback::ScopedPauseResumeTransformFeedback(
+    TransformFeedback* transform_feedback)
+    : transform_feedback_(transform_feedback) {
+  if (transform_feedback_ && transform_feedback_->active() &&
+      !transform_feedback_->paused()) {
+    transform_feedback_->DoPauseTransformFeedback();
+  } else {
+    transform_feedback_ = nullptr;
+  }
+}
+
+ScopedPauseResumeTransformFeedback::~ScopedPauseResumeTransformFeedback() {
+  if (transform_feedback_) {
+    transform_feedback_->DoResumeTransformFeedback();
+  }
+}
+
 }  // namespace gles2
 }  // namespace gpu
