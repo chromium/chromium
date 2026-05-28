@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
 namespace ash {

@@ -3345,26 +3345,6 @@
     Accept and continue
   </message>
 
-  <!-- Smart privacy protection OOBE screen -->
-  <message name="IDS_SMART_PRIVACY_PROTECTION_TITLE" desc="Title of the screen, which introduces privacy protection features.">
-    Keep your screen private
-  </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK" desc="Title of the lock-on-leave section.">
-    Lock-on-leave
-  </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK_DESCRIPTION" desc="Description of the lock-on-leave feature.">
-    If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.
-  </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_CONTENT" desc="Description of the privacy protection features implementation. This message is followed by a 'Learn more' link.">
-    Your Chromebook uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google.
-  </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_TURN_ON_BUTTON" desc="Label on a button to turn on the smart privacy protection feature and continue.">
-    Turn on
-  </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_TURN_OFF_BUTTON" desc="Label on a button to turn off the smart privacy protection feature and continue.">
-    No thanks
-  </message>
-
   <!-- Supervision transition OOBE screen. -->
   <message name="IDS_ADDING_MANAGEMENT_TITLE" desc="Title of the management transition OOBE scree when user transitions to managed state. MANAGER can be a domain or an email address.">
     Setting up management by <ph name="MANAGER">$1<ex>example.com</ex></ph>
