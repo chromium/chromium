@@ -153,11 +153,8 @@ void PopulateHitTestData(const GURL& absolute_link_url,
 
 AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  auto password_autofill_agent =
-      std::make_unique<autofill::PasswordAutofillAgent>(render_frame,
-                                                        &registry_);
-  new AutofillAgent(render_frame, std::move(password_autofill_agent), nullptr,
-                    &registry_);
+  new AutofillAgent(render_frame, /*password_autofill_agent=*/nullptr,
+                    /*password_generation_agent=*/nullptr, &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);
 

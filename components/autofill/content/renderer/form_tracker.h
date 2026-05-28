@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -86,7 +87,7 @@ class FormTracker : public content::RenderFrameObserver,
       base::StrongAlias<class UserGestureRequiredTag, bool>;
   explicit FormTracker(content::RenderFrame* render_frame,
                        AutofillAgent& autofill_agent,
-                       PasswordAutofillAgent& password_autofill_agent);
+                       PasswordAutofillAgent* password_autofill_agent);
 
   FormTracker(const FormTracker&) = delete;
   FormTracker& operator=(const FormTracker&) = delete;
@@ -258,7 +259,7 @@ class FormTracker : public content::RenderFrameObserver,
 
   // The respective agents for Autofill and PasswordManager.
   raw_ref<AutofillAgent> autofill_agent_;
-  raw_ref<PasswordAutofillAgent> password_autofill_agent_;
+  raw_ptr<PasswordAutofillAgent> password_autofill_agent_ = nullptr;
 
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 

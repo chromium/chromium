@@ -181,7 +181,7 @@ FieldRendererId FieldRef::GetId() const {
 
 FormTracker::FormTracker(content::RenderFrame* render_frame,
                          AutofillAgent& autofill_agent,
-                         PasswordAutofillAgent& password_autofill_agent)
+                         PasswordAutofillAgent* password_autofill_agent)
     : content::RenderFrameObserver(render_frame),
       blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       autofill_agent_(autofill_agent),
@@ -383,8 +383,8 @@ void FormTracker::OnJavaScriptChangedValue(
   }
 
   const auto input_element = element.DynamicTo<WebInputElement>();
-  if (input_element && input_element.IsTextField() &&
-      !element.Value().IsEmpty() &&
+  if (password_autofill_agent_ && input_element &&
+      input_element.IsTextField() && !element.Value().IsEmpty() &&
       (input_element.FormControlTypeForAutofill() ==
            blink::mojom::FormControlType::kInputPassword ||
        password_autofill_agent_->IsUsernameInputField(input_element))) {
@@ -531,10 +531,12 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   UpdateLastInteractedElement(form);
   // TODO(crbug.com/40281981): Figure out if this is still needed, and
   // document the reason, otherwise remove.
-  password_autofill_agent_->InformBrowserAboutUserInput(
-      form, WebInputElement(),
-      SynchronousFormCache(form_util::GetFormRendererId(form),
-                           provisionally_saved_form()));
+  if (password_autofill_agent_) {
+    password_autofill_agent_->InformBrowserAboutUserInput(
+        form, WebInputElement(),
+        SynchronousFormCache(form_util::GetFormRendererId(form),
+                             provisionally_saved_form()));
+  }
   // Fire the form submission event to avoid missing submissions where websites
   // cancel the onsubmit event. This also gets the form before Javascript's
   // submit event handler could change it. We don't clear submitted_forms_
@@ -593,8 +595,10 @@ void FormTracker::FireFormSubmission(
   if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
     // TODO(crbug.com/40281981): Investigate removing this and relying on the
     // call conditioned on the submitted form.
-    password_autofill_agent_->FireHostSubmitEvent(
-        FormRendererId(), /*submitted_form=*/std::nullopt, source);
+    if (password_autofill_agent_) {
+      password_autofill_agent_->FireHostSubmitEvent(
+          FormRendererId(), /*submitted_form=*/std::nullopt, source);
+    }
   }
 
   std::optional<FormData> form_data =
@@ -716,21 +720,23 @@ void FormTracker::FireHostSubmitEvents(const FormData& form_data,
     return af_sources.size() > 1;
   }();
 
-  // This checks whether another source, that is relevant for PasswordManager,
-  // already reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_password_manager = [&] {
-    DenseSet<mojom::SubmissionSource> pwm_sources = sources;
-    // PasswordManager doesn't consider FORM_SUBMISSION as a sufficient
-    // condition for "successful" submission.
-    pwm_sources.erase(mojom::SubmissionSource::FORM_SUBMISSION);
-    // PasswordManager completely ignores PROBABLY_FORM_SUBMITTED.
-    pwm_sources.erase(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
-    return pwm_sources.size() > 1;
-  }();
+  if (password_autofill_agent_) {
+    // This checks whether another source, that s relevant for PasswordManager,
+    // already reported the submission of `form_data`.
+    const bool is_duplicate_submission_for_password_manager = [&] {
+      DenseSet<mojom::SubmissionSource> pwm_sources = sources;
+      // PasswordManager doesn't consider FORM_SUBMISSION as a sufficient
+      // condition for "successful" submission.
+      pwm_sources.erase(mojom::SubmissionSource::FORM_SUBMISSION);
+      // PasswordManager completely ignores PROBABLY_FORM_SUBMITTED.
+      pwm_sources.erase(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
+      return pwm_sources.size() > 1;
+    }();
 
-  if (!is_duplicate_submission_for_password_manager) {
-    password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
-                                                  form_data, source);
+    if (!is_duplicate_submission_for_password_manager) {
+      password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
+                                                    form_data, source);
+    }
   }
   if (!is_duplicate_submission_for_autofill) {
     base::UmaHistogramEnumeration(kAutofillAgentSubmissionSourceHistogram,

@@ -66,7 +66,7 @@ class MockFormTracker : public FormTracker {
  public:
   MockFormTracker(content::RenderFrame* render_frame,
                   AutofillAgent& autofill_agent,
-                  PasswordAutofillAgent& password_autofill_agent)
+                  PasswordAutofillAgent* password_autofill_agent)
       : FormTracker(render_frame, autofill_agent, password_autofill_agent) {
     ON_CALL(*this, FireFormSubmission)
         .WillByDefault([this](mojom::SubmissionSource source,

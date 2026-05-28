@@ -159,9 +159,8 @@ class AutofillAgent : public content::RenderFrameObserver,
     base::flat_map<FieldRendererId, TokenInfo> email_verification_tokens_;
   };
 
-  // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
-  // PasswordGenerationAgent and AutofillAssistantAgent may be nullptr. If they
-  // are not, then they are also guaranteed to outlive AutofillAgent.
+  // `PasswordAutofillAgent` and `PasswordGenerationAgent` may be `nullptr`. If
+  // they are not, then they are also guaranteed to outlive `AutofillAgent`.
   AutofillAgent(
       content::RenderFrame* render_frame,
       std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,

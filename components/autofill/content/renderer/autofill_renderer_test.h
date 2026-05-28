@@ -163,7 +163,7 @@ class AutofillRendererTest : public content::RenderViewTest {
 
  protected:
   AutofillAgent& autofill_agent() { return *autofill_agent_; }
-  PasswordAutofillAgent& password_autofill_agent() {
+  PasswordAutofillAgent* password_autofill_agent() {
     return test_api(*autofill_agent_).password_autofill_agent();
   }
   MockAutofillDriver& autofill_driver() { return autofill_driver_; }

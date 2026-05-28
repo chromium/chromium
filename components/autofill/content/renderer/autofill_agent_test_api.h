@@ -56,8 +56,8 @@ class AutofillAgentTestApi {
 
   const FormCache& form_cache() { return agent_->form_cache_; }
 
-  PasswordAutofillAgent& password_autofill_agent() {
-    return *agent_->password_autofill_agent_;
+  PasswordAutofillAgent* password_autofill_agent() {
+    return agent_->password_autofill_agent_.get();
   }
 
   const base::OneShotTimer& process_forms_after_dynamic_change_timer() {
