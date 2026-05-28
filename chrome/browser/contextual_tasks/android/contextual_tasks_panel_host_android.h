@@ -70,6 +70,9 @@ class ContextualTasksPanelHostAndroid
   // associated TabAndroid.
   TabAndroid* GetTabAndroid() const;
 
+  // Creates a TabBottomSheetContentProvider to be used by TabBottomSheet.
+  base::android::ScopedJavaLocalRef<jobject> CreateBottomSheetContentProvider();
+
   // The browser window this host is attached to. Must outlive this object.
   const raw_ptr<BrowserWindowInterface> browser_window_;
   base::ObserverList<ContextualTasksPanelHost::Observer> observers_;

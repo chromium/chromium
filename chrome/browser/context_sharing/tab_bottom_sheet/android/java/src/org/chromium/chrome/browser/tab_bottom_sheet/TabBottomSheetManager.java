@@ -29,16 +29,6 @@ public interface TabBottomSheetManager extends Destroyable {
     /** Attempts to close the Tab BottomSheet. */
     void tryToCloseBottomSheet(boolean animate);
 
-    /**
-     * Sets whether the bottom sheet can not be suppressed.
-     *
-     * <p>This is only used when the bottom sheet is already showing, and another sheet wishes to be
-     * shown. This does not affect the priority of the bottom sheet.
-     *
-     * @param canNotBeSuppressed Whether the bottom sheet can not be suppressed.
-     */
-    void setCanNotBeSuppressed(boolean canNotBeSuppressed);
-
     /** Sets the model for the peek view. */
     void setPeekViewModel(PropertyModel model);
 

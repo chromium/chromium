@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -111,6 +112,7 @@ public class TabBottomSheetCoordinatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private TabBottomSheetWebUi mMockWebUi;
+    @Mock private TabBottomSheetContentProvider mMockContentProvider;
 
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
@@ -145,6 +147,16 @@ public class TabBottomSheetCoordinatorTest {
         View webUiView = new View(mContext);
         when(mMockWebUi.getWebUiView()).thenReturn(webUiView);
 
+        doAnswer(
+                        invocation -> {
+                            View view = invocation.getArgument(0);
+                            float heightRatio = invocation.getArgument(1);
+                            int bgColor = invocation.getArgument(2);
+                            return new TestTabBottomSheetContent(view, heightRatio, bgColor);
+                        })
+                .when(mMockContentProvider)
+                .create(any(View.class), anyFloat(), anyInt());
+
         mCoBrowseViews =
                 spy(
                         new CoBrowseViews(
@@ -153,7 +165,8 @@ public class TabBottomSheetCoordinatorTest {
                                 CoBrowseContainerType.BOTTOM_SHEET,
                                 mMockWebUi,
                                 null,
-                                0));
+                                0,
+                                mMockContentProvider));
         mView = containerViewSpy;
         assertNotNull(
                 "actor_control_container should be found in CoBrowseViews",
@@ -811,7 +824,8 @@ public class TabBottomSheetCoordinatorTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mMockWebUi,
                         null,
-                        0);
+                        0,
+                        mMockContentProvider);
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
@@ -879,7 +893,8 @@ public class TabBottomSheetCoordinatorTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mMockWebUi,
                         null,
-                        0);
+                        0,
+                        mMockContentProvider);
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,

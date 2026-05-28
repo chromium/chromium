@@ -2139,6 +2139,7 @@ if (is_android) {
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android:browser_tests",
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android:test_support_java",
       "//chrome/browser/engagement",
       "//chrome/browser/enterprise/data_controls",
       "//chrome/browser/enterprise/platform_auth:features",

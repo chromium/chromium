@@ -122,7 +122,8 @@ public class TabBottomSheetManagerTest {
                                     CoBrowseContainerType.BOTTOM_SHEET,
                                     null,
                                     null,
-                                    Color.WHITE);
+                                    Color.WHITE,
+                                    new TestTabBottomSheetContentProvider());
                     mManager =
                             (TabBottomSheetManagerImpl)
                                     tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
@@ -227,7 +228,8 @@ public class TabBottomSheetManagerTest {
                                         mWindowAndroid,
                                         webContents,
                                         TabBottomSheetClientType.UNKNOWN,
-                                        CoBrowseContainerType.BOTTOM_SHEET));
+                                        CoBrowseContainerType.BOTTOM_SHEET,
+                                        new TestTabBottomSheetContentProvider()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -278,7 +280,8 @@ public class TabBottomSheetManagerTest {
                                         mWindowAndroid,
                                         webContents,
                                         TabBottomSheetClientType.UNKNOWN,
-                                        CoBrowseContainerType.BOTTOM_SHEET));
+                                        CoBrowseContainerType.BOTTOM_SHEET,
+                                        new TestTabBottomSheetContentProvider()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -529,7 +532,8 @@ public class TabBottomSheetManagerTest {
                                         TabBottomSheetClientType.UNKNOWN,
                                         null,
                                         null,
-                                        Color.WHITE));
+                                        Color.WHITE,
+                                        new TestTabBottomSheetContentProvider()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

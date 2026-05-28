@@ -48,6 +48,7 @@ public class CoBrowseViewsTest {
     @Mock private View mPeekView;
     @Mock private WebContents mWebContents;
     @Mock private EventForwarder mEventForwarder;
+    @Mock private TabBottomSheetContentProvider mMockContentProvider;
 
     private Context mContext;
     private CoBrowseViews mCoBrowseViews;
@@ -67,7 +68,8 @@ public class CoBrowseViewsTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         mFusebox,
-                        Color.WHITE);
+                        Color.WHITE,
+                        null);
     }
 
     @Test
@@ -100,7 +102,8 @@ public class CoBrowseViewsTest {
                         CoBrowseContainerType.SIDE_PANEL,
                         mWebUi,
                         mFusebox,
-                        Color.WHITE);
+                        Color.WHITE,
+                        mMockContentProvider);
 
         View view = coBrowseViews.getView();
         View handleBar = view.findViewById(R.id.handle_bar);
@@ -158,6 +161,21 @@ public class CoBrowseViewsTest {
     public void testSetWebContents_withoutFocus() {
         mCoBrowseViews.setWebContents(mWebContents, false);
         verify(mWebUi).setWebContents(mWebContents, false);
+    }
+
+    @Test
+    public void testConstructor_WithContentProvider() {
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        CoBrowseViews coBrowseViews =
+                new CoBrowseViews(
+                        rootView,
+                        TabBottomSheetClientType.CONTEXTUAL_TASKS,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        mWebUi,
+                        mFusebox,
+                        Color.WHITE,
+                        mMockContentProvider);
+        assertEquals(mMockContentProvider, coBrowseViews.getContentProvider());
     }
 
     @Test

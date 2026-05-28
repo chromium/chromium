@@ -97,7 +97,8 @@ public class CoBrowseViewFactory {
             @Nullable WebContents webContents,
             @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType,
-            @CoBrowseContainerType int containerType) {
+            @CoBrowseContainerType int containerType,
+            @Nullable TabBottomSheetContentProvider bottomSheetContentProvider) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
         TabBottomSheetWebUi webUi =
@@ -134,7 +135,13 @@ public class CoBrowseViewFactory {
         webUi.setWebContents(webContents, false);
 
         return new CoBrowseViews(
-                containerView, clientType, containerType, webUi, fusebox, backgroundColor);
+                containerView,
+                clientType,
+                containerType,
+                webUi,
+                fusebox,
+                backgroundColor,
+                bottomSheetContentProvider);
     }
 
     @CalledByNative
@@ -143,7 +150,8 @@ public class CoBrowseViewFactory {
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @Nullable @JniType("content::WebContents*") WebContents webContents,
             @TabBottomSheetClientType int clientType,
-            @CoBrowseContainerType int containerType) {
+            @CoBrowseContainerType int containerType,
+            @Nullable TabBottomSheetContentProvider bottomSheetContentProvider) {
         CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
             return null;
@@ -154,6 +162,11 @@ public class CoBrowseViewFactory {
                 clientType == TabBottomSheetClientType.GLIC
                         ? factory.mActivity.getColor(R.color.tab_bottom_sheet_glic_bg)
                         : factory.mActivity.getColor(R.color.tab_bottom_sheet_base_bg);
-        return factory.buildCoBrowseViews(webContents, backgroundColor, clientType, containerType);
+        return factory.buildCoBrowseViews(
+                webContents,
+                backgroundColor,
+                clientType,
+                containerType,
+                bottomSheetContentProvider);
     }
 }

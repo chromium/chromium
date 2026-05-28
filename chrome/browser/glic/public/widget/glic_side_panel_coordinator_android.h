@@ -54,6 +54,7 @@ class GlicSidePanelCoordinatorAndroid
   void OnTabWillDeactivate(tabs::TabInterface* tab);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason detach_reason);
+  base::android::ScopedJavaLocalRef<jobject> CreateBottomSheetContentProvider();
 
   State state_ = State::kClosed;
   base::RepeatingCallbackList<void(State)> state_callbacks_;

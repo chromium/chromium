@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.actor;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Standard Chromium pattern for accessing ActorKeyedService in Java. */
@@ -36,7 +35,7 @@ public class ActorKeyedServiceFactory {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         ActorKeyedService getForProfile(Profile profile);
     }
 }

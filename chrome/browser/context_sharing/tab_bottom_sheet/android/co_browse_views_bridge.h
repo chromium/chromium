@@ -37,7 +37,9 @@ class CoBrowseViewsBridge {
   explicit CoBrowseViewsBridge(
       tabs::TabInterface& tab,
       context_sharing::TabBottomSheetClientType client_type,
-      context_sharing::CoBrowseContainerType container_type);
+      context_sharing::CoBrowseContainerType container_type,
+      const base::android::JavaRef<jobject>& bottom_sheet_content_provider =
+          nullptr);
   ~CoBrowseViewsBridge();
 
   CoBrowseViewsBridge(const CoBrowseViewsBridge&) = delete;
@@ -61,6 +63,7 @@ class CoBrowseViewsBridge {
   const context_sharing::TabBottomSheetClientType client_type_;
   const context_sharing::CoBrowseContainerType container_type_;
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
+  base::android::ScopedJavaGlobalRef<jobject> bottom_sheet_content_provider_;
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
 };
 

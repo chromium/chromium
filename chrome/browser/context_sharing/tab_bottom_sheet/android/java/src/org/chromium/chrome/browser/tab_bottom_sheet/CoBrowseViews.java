@@ -34,6 +34,7 @@ public class CoBrowseViews {
     private final View mContainerView;
     private final @TabBottomSheetClientType int mClientType;
     private final @CoBrowseContainerType int mContainerType;
+    private final @Nullable TabBottomSheetContentProvider mContentProvider;
     private @Nullable View mPeekView;
 
     /**
@@ -45,6 +46,7 @@ public class CoBrowseViews {
      * @param webUi The web UI for the view.
      * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
+     * @param contentProvider The provider for custom sheet content implementations.
      */
     public CoBrowseViews(
             View containerView,
@@ -52,15 +54,22 @@ public class CoBrowseViews {
             @CoBrowseContainerType int containerType,
             @Nullable TabBottomSheetWebUi webUi,
             @Nullable ContextualTasksFusebox fusebox,
-            @ColorInt int backgroundColor) {
+            @ColorInt int backgroundColor,
+            @Nullable TabBottomSheetContentProvider contentProvider) {
         mClientType = clientType;
         mContainerType = containerType;
         mWebUi = webUi;
         mFusebox = fusebox;
         mBackgroundColor = backgroundColor;
         mContainerView = containerView;
+        mContentProvider = contentProvider;
         populateViewHierarchy();
         updateForContainerType();
+    }
+
+    /** Returns the custom content provider if one was specified, null otherwise. */
+    public @Nullable TabBottomSheetContentProvider getContentProvider() {
+        return mContentProvider;
     }
 
     /** Destroys the co-browse view and its components. */

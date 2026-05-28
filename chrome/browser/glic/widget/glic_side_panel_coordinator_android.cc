@@ -6,12 +6,16 @@
 
 #include <climits>
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
+#include "chrome/browser/glic/android/jni_headers/GlicBottomSheetContentProvider_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +37,8 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
 
   views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
       *tab, context_sharing::TabBottomSheetClientType::kGlic,
-      context_sharing::CoBrowseContainerType::kBottomSheet);
+      context_sharing::CoBrowseContainerType::kBottomSheet,
+      CreateBottomSheetContentProvider());
   tab_bottom_sheet_bridge_ =
       std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
 }
@@ -182,6 +187,13 @@ void GlicSidePanelCoordinatorAndroid::OnSuppressed() {}
 
 void GlicSidePanelCoordinatorAndroid::OnOpened(bool is_expanded) {
   SetState(is_expanded ? State::kShown : State::kPeek);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+GlicSidePanelCoordinatorAndroid::CreateBottomSheetContentProvider() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_GlicBottomSheetContentProvider_createProvider(
+      env, tab_->GetProfile()->GetJavaObject());
 }
 
 }  // namespace glic

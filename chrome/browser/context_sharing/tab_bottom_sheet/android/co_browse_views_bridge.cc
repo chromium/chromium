@@ -37,8 +37,12 @@ CoBrowseViewsBridge::GetViewFromCoBrowseViews(
 CoBrowseViewsBridge::CoBrowseViewsBridge(
     tabs::TabInterface& tab,
     context_sharing::TabBottomSheetClientType client_type,
-    context_sharing::CoBrowseContainerType container_type)
-    : tab_(tab), client_type_(client_type), container_type_(container_type) {}
+    context_sharing::CoBrowseContainerType container_type,
+    const base::android::JavaRef<jobject>& bottom_sheet_content_provider)
+    : tab_(tab),
+      client_type_(client_type),
+      container_type_(container_type),
+      bottom_sheet_content_provider_(bottom_sheet_content_provider) {}
 
 CoBrowseViewsBridge::~CoBrowseViewsBridge() {
   DestroyCoBrowseViews();
@@ -72,7 +76,7 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
       env, window_android, web_contents, static_cast<int>(client_type_),
-      static_cast<int>(container_type_)));
+      static_cast<int>(container_type_), bottom_sheet_content_provider_));
 
   return !java_co_browse_views_.is_null();
 }
