@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -57,8 +58,10 @@ class TaskParametersExtractor : public KeyedService {
   void FinishExtraction();
 
  private:
-  // Returns a CSS selector for extracting values for the given key.
-  std::string GetSelectorForKey(const std::string& key) const;
+  // Returns a pair of (parameter_key, css_selector) for the given
+  // TaskParameter if valid.
+  std::optional<std::pair<std::string, std::string>>
+  GetParameterKeyAndCssSelector(const TaskParameter& task_parameter) const;
 
   // Active task definition under observation, if any.
   std::optional<TaskDefinition> active_task_definition_;

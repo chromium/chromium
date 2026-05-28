@@ -45,7 +45,7 @@ message TaskObservation {
 }
 
 message ExtractionStrategy {
-  // Stub message for M0.
+  optional string dom_css_selector = 1;
 }
 
 enum ExecutionSource {

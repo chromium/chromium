@@ -34,11 +34,13 @@ TEST_F(TaskParametersExtractorTest, ExtractsParameters) {
   param0_1->set_key("key1");
   param0_1->set_name("param1");
   param0_1->set_type("string");
+  param0_1->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-1");
 
   TaskParameter* param0_2 = step0->add_parameters();
   param0_2->set_key("key2");
   param0_2->set_name("param2");
   param0_2->set_type("string");
+  param0_2->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-2");
 
   extractor_.StartExtraction(task_definition);
 
@@ -163,6 +165,7 @@ TEST_F(TaskParametersExtractorTest,
   step0->set_url("https://example.com/step0");
   TaskParameter* param0 = step0->add_parameters();
   param0->set_key("key1");
+  param0->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-1");
 
   // Step 1
   TaskStep* step1 = task_definition.add_task_steps();
@@ -170,6 +173,7 @@ TEST_F(TaskParametersExtractorTest,
   step1->set_url("https://example.com/step1");
   TaskParameter* param1 = step1->add_parameters();
   param1->set_key("key2");
+  param1->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-2");
 
   // Step 2 (empty URL)
   TaskStep* step2 = task_definition.add_task_steps();
@@ -177,6 +181,7 @@ TEST_F(TaskParametersExtractorTest,
   step2->set_url("");
   TaskParameter* param2 = step2->add_parameters();
   param2->set_key("key1");
+  param2->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-1");
 
   // Step 3 (duplicate URL)
   TaskStep* step3 = task_definition.add_task_steps();
@@ -184,6 +189,7 @@ TEST_F(TaskParametersExtractorTest,
   step3->set_url("https://example.com/step0");
   TaskParameter* param3 = step3->add_parameters();
   param3->set_key("key2");
+  param3->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-2");
 
   extractor_.StartExtraction(std::move(task_definition));
 
@@ -193,8 +199,6 @@ TEST_F(TaskParametersExtractorTest,
     auto selectors = extractor_.GetParameterValueSelectorsForUrl(
         GURL("https://example.com/step0"));
     ASSERT_EQ(selectors.size(), 2U);
-    // TODO(crbug.com/511996748): Update the expected selectors after
-    // implementing selector lookup from the TaskDefinition.
     EXPECT_EQ(selectors["key1"], "#ui-id-1");
     EXPECT_EQ(selectors["key2"], "#ui-id-2");
   }
@@ -204,8 +208,6 @@ TEST_F(TaskParametersExtractorTest,
     auto selectors = extractor_.GetParameterValueSelectorsForUrl(
         GURL("https://example.com/step1"));
     ASSERT_EQ(selectors.size(), 1U);
-    // TODO(crbug.com/511996748): Update the expected selectors after
-    // implementing selector lookup from the TaskDefinition.
     EXPECT_EQ(selectors["key2"], "#ui-id-2");
     EXPECT_EQ(selectors.count("key1"), 0U);
   }
@@ -216,6 +218,37 @@ TEST_F(TaskParametersExtractorTest,
         GURL("https://example.com/unknown"));
     EXPECT_TRUE(selectors.empty());
   }
+
+  extractor_.FinishExtraction();
+}
+
+TEST_F(TaskParametersExtractorTest,
+       GetParameterValueSelectorsForUrl_EmptyKeySafeguard) {
+  TaskDefinition task_definition;
+  task_definition.set_url("https://example.com/");
+  task_definition.set_title("Test Task");
+
+  TaskStep* step0 = task_definition.add_task_steps();
+  step0->set_step_index(0);
+  step0->set_url("https://example.com/step0");
+
+  // Add a parameter with key
+  TaskParameter* param0 = step0->add_parameters();
+  param0->set_key("key1");
+  param0->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-1");
+
+  // Add an invalid parameter with empty key
+  TaskParameter* param1 = step0->add_parameters();
+  param1->set_key("");
+  param1->mutable_extraction_strategy()->set_dom_css_selector("#ui-id-2");
+
+  extractor_.StartExtraction(std::move(task_definition));
+
+  auto selectors = extractor_.GetParameterValueSelectorsForUrl(
+      GURL("https://example.com/step0"));
+  ASSERT_EQ(selectors.size(), 1U);
+  EXPECT_EQ(selectors["key1"], "#ui-id-1");
+  EXPECT_EQ(selectors.count(""), 0U);
 
   extractor_.FinishExtraction();
 }

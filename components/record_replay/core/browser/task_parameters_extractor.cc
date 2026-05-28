@@ -17,17 +17,18 @@ void TaskParametersExtractor::StartExtraction(TaskDefinition task_definition) {
   active_task_definition_ = std::move(task_definition);
 }
 
-std::string TaskParametersExtractor::GetSelectorForKey(
-    const std::string& expected_key) const {
-  // TODO(crbug.com/511996748): Implement dynamic selector lookup from the
-  // TaskDefinition extraction strategy instead of hard-coded dummy mapping.
-  if (expected_key == "key1") {
-    return "#ui-id-1";
+std::optional<std::pair<std::string, std::string>>
+TaskParametersExtractor::GetParameterKeyAndCssSelector(
+    const TaskParameter& task_parameter) const {
+  if (task_parameter.key().empty() ||
+      !task_parameter.has_extraction_strategy() ||
+      !task_parameter.extraction_strategy().has_dom_css_selector() ||
+      task_parameter.extraction_strategy().dom_css_selector().empty()) {
+    return std::nullopt;
   }
-  if (expected_key == "key2") {
-    return "#ui-id-2";
-  }
-  return "";
+  return std::make_pair(
+      task_parameter.key(),
+      task_parameter.extraction_strategy().dom_css_selector());
 }
 
 std::map<std::string, std::string>
@@ -40,9 +41,10 @@ TaskParametersExtractor::GetParameterValueSelectorsForUrl(const GURL& url) {
   for (const TaskStep& step : active_task_definition_->task_steps()) {
     if (!step.url().empty() && GURL(step.url()) == url) {
       for (const TaskParameter& task_parameter : step.parameters()) {
-        std::string css_selector = GetSelectorForKey(task_parameter.key());
-        if (!css_selector.empty()) {
-          parameter_value_selectors[task_parameter.key()] = css_selector;
+        if (auto key_and_selector =
+                GetParameterKeyAndCssSelector(task_parameter)) {
+          auto [key, selector] = *key_and_selector;
+          parameter_value_selectors[key] = selector;
         }
       }
     }
