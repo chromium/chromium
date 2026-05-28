@@ -29,22 +29,6 @@ namespace {
 // Text appearing on the navigation test page.
 const char kPageText[] = "Navigation testing page";
 
-// Waits for EG matcher element to be sufficiently visible. Useful when EG UI
-// sync is disabled.
-void WaitForMatcherVisible(id<GREYMatcher> matcher,
-                           NSString* matcher_description) {
-  ConditionBlock wait_for_matcher = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:matcher]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, wait_for_matcher),
-      @"Failed to wait %@ to be visible.", matcher_description);
-}
-
 // Handler for the infinite pending response.
 std::unique_ptr<net::test_server::HttpResponse> HandleInfiniteRequest(
     net::test_server::EmbeddedTestServer* test_server,
@@ -70,15 +54,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInfiniteRequest(
 
 @implementation StopLoadingTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testStopLoading)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
-  return config;
-}
-
 // Tests that tapping "Stop" button stops the loading.
 - (void)testStopLoading {
   self.testServer->RegisterRequestHandler(
@@ -100,10 +75,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInfiniteRequest(
     [ChromeEarlGreyUI openToolsMenu];
   }
   // Sleep for UI change because synchronization is disabled.
-  base::PlatformThread::Sleep(base::Seconds(1));
+  base::PlatformThread::Sleep(base::Seconds(2));
 
   // Wait and verify that stop button is visible and reload button is hidden.
-  WaitForMatcherVisible(chrome_test_util::StopButton(), @"stop button");
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::StopButton()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ReloadButton()]
       assertWithMatcher:grey_notVisible()];
 
@@ -111,14 +87,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInfiniteRequest(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::StopButton()]
       performAction:grey_tap()];
   // Sleep for UI change because synchronization is disabled.
-  base::PlatformThread::Sleep(base::Seconds(1));
+  base::PlatformThread::Sleep(base::Seconds(2));
   if (![ChromeEarlGrey isIPadIdiom]) {
     // On iPhone Stop/Reload button is a part of tools menu, so open it.
     [ChromeEarlGreyUI openToolsMenu];
   }
 
   // Wait and verify that reload button is visible and stop button is hidden.
-  WaitForMatcherVisible(chrome_test_util::ReloadButton(), @"reload button");
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::ReloadButton()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::StopButton()]
       assertWithMatcher:grey_notVisible()];
 }
