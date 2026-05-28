@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -17,8 +16,9 @@ import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.window.layout.WindowMetrics;
+import androidx.window.layout.WindowMetricsCalculator;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -67,6 +67,7 @@ class FuseboxPopup {
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
 
+    private final Activity mActivity;
     private final DynamicRectProvider mDynamicRectProvider;
     private final @Nullable InsetObserver mInsetObserver;
     private final int mInitialScrollPaddingBottom;
@@ -99,12 +100,13 @@ class FuseboxPopup {
             };
 
     FuseboxPopup(
-            Context context,
+            Activity activity,
             WindowAndroid windowAndroid,
             AnchoredPopupWindow popupWindow,
             View contentView,
             DynamicRectProvider dynamicRectProvider,
             boolean isBottomSheet) {
+        mActivity = activity;
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
         mPopupWindow.addOnDismissListener(this::restoreBackgroundAccessibility);
@@ -262,15 +264,11 @@ class FuseboxPopup {
 
     private void hideBackgroundAccessibility() {
         if (mPreviousAccessibilityImportance != null) return;
-        Activity activity = ContextUtils.activityFromContext(mViewGroup.getContext());
-        if (activity != null) {
-            mCachedContentView = activity.findViewById(android.R.id.content);
-            if (mCachedContentView != null) {
-                mPreviousAccessibilityImportance =
-                        mCachedContentView.getImportantForAccessibility();
-                mCachedContentView.setImportantForAccessibility(
-                        View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-            }
+        mCachedContentView = mActivity.findViewById(android.R.id.content);
+        if (mCachedContentView != null) {
+            mPreviousAccessibilityImportance = mCachedContentView.getImportantForAccessibility();
+            mCachedContentView.setImportantForAccessibility(
+                    View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         }
     }
 
@@ -358,17 +356,38 @@ class FuseboxPopup {
         mPopupWindow.addOnDismissListener(listener);
     }
 
+    private boolean shouldApplyBottomInsets(WindowInsetsCompat insets) {
+        if (!mActivity.isInMultiWindowMode()) return true;
+
+        WindowMetrics windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
+        WindowMetrics maxWindowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeMaximumWindowMetrics(mActivity);
+
+        int currentBottom = windowMetrics.getBounds().bottom;
+        int maxBottom = maxWindowMetrics.getBounds().bottom;
+
+        Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+        return (maxBottom - currentBottom) <= navBarInsets.bottom;
+    }
+
     private void updateInsets() {
         if (mInsetObserver == null || mCurrentState != PopupState.BOTTOM) return;
 
         WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
         if (insets == null) return;
 
-        Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        int bottomPadding = mInitialScrollPaddingBottom;
+        if (shouldApplyBottomInsets(insets)) {
+            Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+            bottomPadding += navBarInsets.bottom;
+        }
+
         mScrollView.setPaddingRelative(
                 mScrollView.getPaddingStart(),
                 mScrollView.getPaddingTop(),
                 mScrollView.getPaddingEnd(),
-                mInitialScrollPaddingBottom + navBarInsets.bottom);
+                bottomPadding);
     }
 }

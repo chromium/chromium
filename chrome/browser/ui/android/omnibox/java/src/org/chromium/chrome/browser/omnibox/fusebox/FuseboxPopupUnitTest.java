@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +28,11 @@ import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.window.layout.WindowMetrics;
+import androidx.window.layout.WindowMetricsCalculator;
+import androidx.window.layout.WindowMetricsCalculatorDecorator;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,8 +74,9 @@ public class FuseboxPopupUnitTest {
     private @Mock WindowAndroid mWindowAndroid;
     private @Mock InsetObserver mInsetObserver;
     private @Mock WindowInsetsCompat mWindowInsets;
+    private @Mock WindowMetricsCalculator mWindowMetricsCalculator;
 
-    private @Captor ArgumentCaptor<RectProvider.Observer> mRectProviderObserverCaptor;
+    private @Captor ArgumentCaptor<RectProvider.Observer> mObserverCaptor;
     private @Captor ArgumentCaptor<OnDismissListener> mDismissListenerCaptor;
 
     private Activity mActivity;
@@ -80,6 +86,14 @@ public class FuseboxPopupUnitTest {
 
     @Before
     public void setUp() {
+        WindowMetricsCalculator.overrideDecorator(
+                new WindowMetricsCalculatorDecorator() {
+                    @Override
+                    public WindowMetricsCalculator decorate(WindowMetricsCalculator calculator) {
+                        return mWindowMetricsCalculator;
+                    }
+                });
+
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mActivity.setContentView(mContentView);
@@ -95,6 +109,45 @@ public class FuseboxPopupUnitTest {
                         mContentView,
                         mDynamicRectProvider,
                         /* isBottomSheet= */ false);
+    }
+
+    @After
+    public void tearDown() {
+        WindowMetricsCalculator.overrideDecorator(
+                new WindowMetricsCalculatorDecorator() {
+                    @Override
+                    public WindowMetricsCalculator decorate(WindowMetricsCalculator calculator) {
+                        return calculator;
+                    }
+                });
+    }
+
+    private void recreateFuseboxPopup(boolean isBottomSheet) {
+        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mActivity.setContentView(mContentView);
+        mFuseboxPopup =
+                new FuseboxPopup(
+                        mActivity,
+                        mWindowAndroid,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        isBottomSheet);
+    }
+
+    private void setupMultiWindowMetrics(
+            Rect currentBounds, Rect maxBounds, int navBarBottomInset) {
+        WindowMetrics windowMetrics = new WindowMetrics(currentBounds, 1.0f);
+        WindowMetrics maxWindowMetrics = new WindowMetrics(maxBounds, 1.0f);
+        when(mWindowMetricsCalculator.computeCurrentWindowMetrics(mActivity))
+                .thenReturn(windowMetrics);
+        when(mWindowMetricsCalculator.computeMaximumWindowMetrics(mActivity))
+                .thenReturn(maxWindowMetrics);
+
+        Insets navBarInsets = Insets.of(0, 0, 0, navBarBottomInset);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mWindowInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()))
+                .thenReturn(navBarInsets);
     }
 
     @Test
@@ -224,11 +277,9 @@ public class FuseboxPopupUnitTest {
         assertNotNull(contentView);
         contentView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
-        // Capture dismiss listener during layout.
         mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         verify(mPopupWindow).addOnDismissListener(mDismissListenerCaptor.capture());
 
-        // Simulate dismiss.
         mDismissListenerCaptor.getValue().onDismiss();
 
         assertEquals(
@@ -240,15 +291,7 @@ public class FuseboxPopupUnitTest {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
 
         // Re-create content view and popup to trigger new inflation logic
-        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mFuseboxPopup =
-                new FuseboxPopup(
-                        mActivity,
-                        mWindowAndroid,
-                        mPopupWindow,
-                        mContentView,
-                        mDynamicRectProvider,
-                        /* isBottomSheet= */ false);
+        recreateFuseboxPopup(/* isBottomSheet= */ false);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -265,15 +308,7 @@ public class FuseboxPopupUnitTest {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
 
         // Re-create content view and popup to trigger new inflation logic
-        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mFuseboxPopup =
-                new FuseboxPopup(
-                        mActivity,
-                        mWindowAndroid,
-                        mPopupWindow,
-                        mContentView,
-                        mDynamicRectProvider,
-                        /* isBottomSheet= */ true);
+        recreateFuseboxPopup(/* isBottomSheet= */ true);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -363,15 +398,7 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testFlingDismissesPopup_whenBottomSheet() {
-        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mFuseboxPopup =
-                new FuseboxPopup(
-                        mActivity,
-                        mWindowAndroid,
-                        mPopupWindow,
-                        mContentView,
-                        mDynamicRectProvider,
-                        /* isBottomSheet= */ true);
+        recreateFuseboxPopup(/* isBottomSheet= */ true);
 
         // Call onFling directly on the exposed listener to avoid flaky MotionEvents.
         int minFlingVelocity = ViewConfiguration.get(mActivity).getScaledMinimumFlingVelocity();
@@ -382,15 +409,12 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testObserveDynamicRectProvider_callsUpdateLayout() {
-        // Mock showing state to allow updateLayout to proceed
         doReturn(true).when(mPopupWindow).isShowing();
         mFuseboxPopup.setPopupState(PopupState.FLOATING);
 
-        // Capture the observer passed to startObserving
-        verify(mDynamicRectProvider).startObserving(mRectProviderObserverCaptor.capture());
-        mRectProviderObserverCaptor.getValue().onRectChanged();
+        verify(mDynamicRectProvider).startObserving(mObserverCaptor.capture());
+        mObserverCaptor.getValue().onRectChanged();
 
-        // Verify that updateLayout was called (which calls updateDesiredContentSize)
         verify(mPopupWindow, atLeastOnce())
                 .updateDesiredContentSize(any(Integer.class), eq(0), eq(true));
     }
@@ -411,16 +435,7 @@ public class FuseboxPopupUnitTest {
                     mActivity.getResources().updateConfiguration(config, null);
                 });
 
-        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mActivity.setContentView(mContentView);
-        mFuseboxPopup =
-                new FuseboxPopup(
-                        mActivity,
-                        mWindowAndroid,
-                        mPopupWindow,
-                        mContentView,
-                        mDynamicRectProvider,
-                        /* isBottomSheet= */ false);
+        recreateFuseboxPopup(/* isBottomSheet= */ false);
 
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertEquals(View.LAYOUT_DIRECTION_RTL, mFuseboxPopup.mScrollView.getLayoutDirection());
@@ -437,18 +452,39 @@ public class FuseboxPopupUnitTest {
         config.setLayoutDirection(Locale.getDefault());
         mActivity.getResources().updateConfiguration(config, null);
 
-        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mActivity.setContentView(mContentView);
-        mFuseboxPopup =
-                new FuseboxPopup(
-                        mActivity,
-                        mWindowAndroid,
-                        mPopupWindow,
-                        mContentView,
-                        mDynamicRectProvider,
-                        /* isBottomSheet= */ false);
+        recreateFuseboxPopup(/* isBottomSheet= */ false);
 
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertEquals(View.LAYOUT_DIRECTION_LTR, mFuseboxPopup.mScrollView.getLayoutDirection());
+    }
+
+    @Test
+    public void testUpdateInsets_BottomSheet_MultiWindow_Top() {
+        recreateFuseboxPopup(/* isBottomSheet= */ true);
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
+        doReturn(true).when(mPopupWindow).isShowing();
+
+        Shadows.shadowOf(mActivity).setInMultiWindowMode(true);
+        setupMultiWindowMetrics(new Rect(0, 0, 800, 1000), new Rect(0, 0, 800, 2000), 100);
+
+        int initialPadding = mFuseboxPopup.mScrollView.getPaddingBottom();
+        mFuseboxPopup.updateLayout();
+
+        assertEquals(initialPadding, mFuseboxPopup.mScrollView.getPaddingBottom());
+    }
+
+    @Test
+    public void testUpdateInsets_BottomSheet_MultiWindow_Bottom() {
+        recreateFuseboxPopup(/* isBottomSheet= */ true);
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
+        doReturn(true).when(mPopupWindow).isShowing();
+
+        Shadows.shadowOf(mActivity).setInMultiWindowMode(true);
+        setupMultiWindowMetrics(new Rect(0, 1000, 800, 1900), new Rect(0, 0, 800, 2000), 100);
+
+        int initialPadding = mFuseboxPopup.mScrollView.getPaddingBottom();
+        mFuseboxPopup.updateLayout();
+
+        assertEquals(initialPadding + 100, mFuseboxPopup.mScrollView.getPaddingBottom());
     }
 }
