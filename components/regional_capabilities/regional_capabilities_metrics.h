@@ -140,6 +140,10 @@ enum class ProgramSpecificExclusion {
 
 void RecordProgramSpecificExclusion(ProgramSpecificExclusion exclusion);
 
+void RecordDebugTriggeringEligibility(
+    SearchEngineChoiceScreenConditions conditions,
+    bool is_first_run);
+
 }  // namespace regional_capabilities
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_METRICS_H_

@@ -10,6 +10,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service_factory.h"
@@ -58,6 +59,12 @@ bool ShouldDisplaySearchEngineChoiceScreen(
     condition = triggering_service->EvaluateTriggeringConditions(
         is_first_run_entrypoint, app_started_via_external_intent);
     search_engine_choice_service->RecordTriggeringEligibility(condition);
+
+    // `IsChromeFirstRun()` is used here instead of `is_first_run_entrypoint`
+    // because the record is relative to whether this is the first run session,
+    // not to the type of UI flow.
+    regional_capabilities::RecordDebugTriggeringEligibility(
+        condition, /*is_first_run=*/FirstRun::IsChromeFirstRun());
   } else {
     // TODO(crbug.com/468249096): This branch is added only to record the legacy
     // histograms. Investigate whether we need to keep it, or if we're fine with

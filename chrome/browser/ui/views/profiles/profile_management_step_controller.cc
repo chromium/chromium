@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +28,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -289,6 +293,27 @@ class SearchEngineChoiceStepController
       std::move(step_shown_callback.value()).Run(false);
       std::move(step_completed_callback_).Run();
       return;
+    }
+
+    auto eligibility = search_engine_choice_dialog_service_
+                           ->ComputeProfileManagementFlowConditions();
+
+    // `IsChromeFirstRun()` is used here instead of checking the entry point
+    // because the record is relative to whether this is the first run session,
+    // not to the type of UI flow.
+    regional_capabilities::RecordDebugTriggeringEligibility(
+        eligibility, first_run::IsChromeFirstRun());
+
+    if (base::FeatureList::IsEnabled(
+            switches::kWaffleRestrictToAssociatedCountries)) {
+      search_engine_choice_dialog_service_->RecordTriggeringEligibility(
+          eligibility);
+      if (!regional_capabilities::IsEligible(eligibility)) {
+        // Mark that this step was skipped and proceed with the next one.
+        std::move(step_shown_callback.value()).Run(false);
+        std::move(step_completed_callback_).Run();
+        return;
+      }
     }
 
     base::OnceClosure navigation_finished_closure =

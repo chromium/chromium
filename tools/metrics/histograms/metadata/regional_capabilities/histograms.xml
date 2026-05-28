@@ -109,6 +109,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="RegionalCapabilities.Debug.TriggeringEligibility.{SessionType}"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-07-05">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the eligibility when attempting to trigger the choice screen
+    relative to whether this was during the Chrome first run or not.
+
+    Aggregating both flows ends up being equivalent to looking at
+    &quot;RegionalCapabilities.FunnelStage.Triggering&quot;.
+  </summary>
+  <token key="SessionType">
+    <variant name="FirstRun"
+        summary="Variant of the histogram associated with the Chrome first
+                 run"/>
+    <variant name="NotFirstRun"
+        summary="Variant of the histogram associated with Chrome follow-up
+                 runs"/>
+  </token>
+</histogram>
+
 <histogram name="RegionalCapabilities.FallbackCountryMatching"
     enum="CountryMatchingStatus" expires_after="2026-11-15">
   <owner>dgn@chromium.org</owner>

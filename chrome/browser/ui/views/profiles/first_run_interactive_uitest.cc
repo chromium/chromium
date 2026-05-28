@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 
 #include "base/check_deref.h"
@@ -12,6 +13,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -49,9 +52,15 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/regional_capabilities/enums.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -419,6 +428,17 @@ class FirstRunInteractiveUiBaseTest
     url_loader_factory_helper_.SetUp();
   }
 
+  void SetUpCommandLineForChoiceScreen(base::CommandLine* command_line) {
+    // Change the country to belgium so that the search engine choice test works
+    // as intended.
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "BE");
+
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return url_loader_factory_helper_.test_url_loader_factory();
   }
@@ -595,6 +615,33 @@ class FirstRunInteractiveUiBaseTest
     }
   }
 
+  auto CompleteSearchEngineChoiceStep() {
+    return Steps(
+        WaitForWebContentsNavigation(
+            kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+        Do([&] {
+          histogram_tester().ExpectBucketCount(
+              search_engines::kSearchEngineChoiceScreenEventsHistogram,
+              search_engines::SearchEngineChoiceScreenEvents::
+                  kFreChoiceScreenWasDisplayed,
+              1);
+          EXPECT_EQ(user_action_tester_.GetActionCount(
+                        "SearchEngineChoiceScreenShown"),
+                    1);
+        }),
+        // Click on "More" to scroll to the bottom of the search engine list.
+        PressJsButton(kWebContentsId, GetSearchEngineChoiceActionButtonQuery()),
+        // The button should become disabled because we didn't make a choice.
+        WaitForButtonDisabled(kWebContentsId,
+                              GetSearchEngineChoiceActionButtonQuery()),
+        PressJsButton(kWebContentsId,
+                      GetSearchEngineChoiceCrRadioButtonQuery()),
+        WaitForButtonEnabled(kWebContentsId,
+                             GetSearchEngineChoiceActionButtonQuery()),
+        PressJsButton(kWebContentsId,
+                      GetSearchEngineChoiceActionButtonQuery()));
+  }
+
   void ExpectStepHistograms(Step step,
                             bool shown,
                             bool with_exit = false,
@@ -641,6 +688,7 @@ class FirstRunInteractiveUiBaseTest
 
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   base::ScopedClosureRunner
       enable_disclaimer_on_primary_account_change_resetter_;
 
@@ -874,14 +922,7 @@ class FirstRunParameterizedInteractiveUiTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunInteractiveUiBaseTest::SetUpCommandLine(command_line);
 
-    // Change the country to belgium so that the search engine choice test works
-    // as intended.
-    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
-    command_line->AppendSwitchASCII(
-        variations::switches::kVariationsOverrideCountry, "BE");
-
-    command_line->AppendSwitch(
-        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+    SetUpCommandLineForChoiceScreen(command_line);
 
     // The default browser step is normally only shown on Windows. If it's
     // forced, it should be shown on the other platforms for testing.
@@ -901,33 +942,6 @@ class FirstRunParameterizedInteractiveUiTest
 
   static bool WithSupervisedUser() {
     return GetParam().with_supervision.value_or(false);
-  }
-
-  auto CompleteSearchEngineChoiceStep() {
-    return Steps(
-        WaitForWebContentsNavigation(
-            kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
-        Do([&] {
-          histogram_tester().ExpectBucketCount(
-              search_engines::kSearchEngineChoiceScreenEventsHistogram,
-              search_engines::SearchEngineChoiceScreenEvents::
-                  kFreChoiceScreenWasDisplayed,
-              1);
-          EXPECT_EQ(user_action_tester_.GetActionCount(
-                        "SearchEngineChoiceScreenShown"),
-                    1);
-        }),
-        // Click on "More" to scroll to the bottom of the search engine list.
-        PressJsButton(kWebContentsId, GetSearchEngineChoiceActionButtonQuery()),
-        // The button should become disabled because we didn't make a choice.
-        WaitForButtonDisabled(kWebContentsId,
-                              GetSearchEngineChoiceActionButtonQuery()),
-        PressJsButton(kWebContentsId,
-                      GetSearchEngineChoiceCrRadioButtonQuery()),
-        WaitForButtonEnabled(kWebContentsId,
-                             GetSearchEngineChoiceActionButtonQuery()),
-        PressJsButton(kWebContentsId,
-                      GetSearchEngineChoiceActionButtonQuery()));
   }
 
   auto CompleteDefaultBrowserStep() {
@@ -958,7 +972,6 @@ class FirstRunParameterizedInteractiveUiTest
   }
 
  private:
-  base::UserActionTester user_action_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
 
@@ -2030,3 +2043,87 @@ IN_PROC_BROWSER_TEST_F(FirstRunDontSignInOnGaiaPageInteractiveUiTest,
   ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/false,
                        /*with_exit=*/false, /*count=*/0);
 }
+
+class FirstRunInSearchChoiceRegionInteractiveUiTest
+    : public base::test::WithFeatureOverride,
+      public FirstRunInteractiveUiBaseTest {
+ public:
+  FirstRunInSearchChoiceRegionInteractiveUiTest()
+      : base::test::WithFeatureOverride(
+            switches::kWaffleRestrictToAssociatedCountries) {
+    scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FirstRunInteractiveUiBaseTest::SetUpCommandLine(command_line);
+    SetUpCommandLineForChoiceScreen(command_line);
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
+};
+
+// TODO(crbug.com/366119368): Re-enable this test. (FRE does not open on Win)
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SkipChoiceScreenDynamically DISABLED_SkipChoiceScreenDynamically
+#else
+#define MAYBE_SkipChoiceScreenDynamically SkipChoiceScreenDynamically
+#endif
+IN_PROC_BROWSER_TEST_P(FirstRunInSearchChoiceRegionInteractiveUiTest,
+                       MAYBE_SkipChoiceScreenDynamically) {
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  auto* dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+
+  ASSERT_TRUE(dialog_service);  // The service should be created, indicating we
+                                // can prompt the user.
+
+  EXPECT_EQ(
+      regional_capabilities::SearchEngineChoiceScreenConditions::kEligible,
+      dialog_service->ComputeProfileManagementFlowConditions());
+
+  // Set the DSE to a custom search engine, which should result in an ineligible
+  // dynamic condition.
+  TemplateURLData custom_search_data;
+  custom_search_data.SetShortName(u"codesearch");
+  custom_search_data.SetKeyword(u"cs");
+  custom_search_data.SetURL("https://search.chromium.org?q={searchTerms}");
+  TemplateURL custom_search_engine(custom_search_data);
+  TemplateURLServiceFactory::GetForProfile(profile())
+      ->SetUserSelectedDefaultSearchProvider(&custom_search_engine);
+
+  ASSERT_EQ(regional_capabilities::SearchEngineChoiceScreenConditions::
+                kHasCustomSearchEngine,
+            dialog_service->ComputeProfileManagementFlowConditions());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/false),
+      If([&]() { return !IsParamFeatureEnabled(); },
+         Then(CompleteSearchEngineChoiceStep())));
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kFreChoiceScreenWasDisplayed,
+      IsParamFeatureEnabled() ? 0 : 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunInSearchChoiceRegionInteractiveUiTest,
+                         testing::Values(false, true));

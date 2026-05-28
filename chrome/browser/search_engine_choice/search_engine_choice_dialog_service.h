@@ -98,6 +98,11 @@ class SearchEngineChoiceDialogService : public KeyedService {
   void RecordChoiceScreenEvent(
       search_engines::SearchEngineChoiceScreenEvents event);
 
+  // Helper, forwards to
+  // `SearchEngineChoiceService::RecordTriggeringEligibility`.
+  void RecordTriggeringEligibility(
+      regional_capabilities::SearchEngineChoiceScreenConditions conditions);
+
   // Returns the eligibility status for newly triggering a choice screen dialog.
   //
   // If calling this ahead of requesting to show the dialog, prefer to call
@@ -105,6 +110,11 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // few more things and ensure we log the event correctly.
   regional_capabilities::SearchEngineChoiceScreenConditions
   ComputeDialogConditions(Browser& browser) const;
+
+  // Returns the eligibility status for triggering the choice screen step in the
+  // first run experience or profile creation flow.
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  ComputeProfileManagementFlowConditions() const;
 
   // Returns whether the dialog should be displayed over the passed URL.
   bool IsUrlSuitableForDialog(GURL url);
@@ -167,6 +177,10 @@ class SearchEngineChoiceDialogService : public KeyedService {
     // Returns whether a the provided browser is currently marked as having an
     // open dialog.
     bool HasOpenDialog(Browser& browser) const;
+
+    // Returns whether there is any browser currently marked as having an open
+    // dialog, in the registry associated with the current profile.
+    bool HasOpenDialog() const;
 
     // Registers that the browser wants to show a dialog. Returns whether the
     // registration is accepted. If `false` is returned, the browser should

@@ -240,4 +240,14 @@ void RecordProgramSpecificExclusion(ProgramSpecificExclusion exclusion) {
       "RegionalCapabilities.Debug.ProgramSpecificExclusion", exclusion);
 }
 
+void RecordDebugTriggeringEligibility(
+    SearchEngineChoiceScreenConditions conditions,
+    bool is_first_run) {
+  auto* histogram_name =
+      is_first_run
+          ? "RegionalCapabilities.Debug.TriggeringEligibility.FirstRun"
+          : "RegionalCapabilities.Debug.TriggeringEligibility.NotFirstRun";
+  base::UmaHistogramEnumeration(histogram_name, conditions);
+}
+
 }  // namespace regional_capabilities

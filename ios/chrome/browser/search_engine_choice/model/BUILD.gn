@@ -17,6 +17,7 @@ source_set("model") {
     "//components/regional_capabilities",
     "//components/search_engines",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/search_engine_choice/ui:ui_util",
     "//ios/chrome/browser/search_engines/model",

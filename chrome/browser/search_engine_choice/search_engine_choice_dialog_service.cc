@@ -60,6 +60,14 @@ bool IsBrowserTypeSupported(const Browser& browser) {
       return false;
   }
 }
+
+// Helper for `SearchEngineChoiceDialogService::BrowserRegistry` checks.
+bool HasOpenDialog(
+    const std::pair<raw_ref<Browser>, base::OnceClosure>& registration) {
+  // If the OnceCallback is null, then the dialog has already been closed.
+  return !registration.second.is_null();
+}
+
 }  // namespace
 
 // --- SearchEngineChoiceDialogService::BrowserRegistry -----------------------
@@ -121,8 +129,11 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::HasOpenDialog(
     return false;
   }
 
-  // If the OnceCallback is null, then the dialog has already been closed.
-  return !entry_iterator->second.is_null();
+  return ::HasOpenDialog(*entry_iterator);
+}
+
+bool SearchEngineChoiceDialogService::BrowserRegistry::HasOpenDialog() const {
+  return std::ranges::any_of(registered_browsers_, &::HasOpenDialog);
 }
 
 void SearchEngineChoiceDialogService::BrowserRegistry::CloseAllDialogs() {
@@ -339,6 +350,18 @@ SearchEngineChoiceDialogService::GetSearchEngines() {
 }
 
 SearchEngineChoiceScreenConditions
+SearchEngineChoiceDialogService::ComputeProfileManagementFlowConditions()
+    const {
+  // The profile management flow dialog is not supposed to be triggerable while
+  // there is any browser window open. Ineligibility conditions associated with
+  // browser windows are not relevant here.
+  CHECK(!browser_registry_.HasOpenDialog(), base::NotFatalUntil::M153);
+
+  return search_engine_choice_service_->GetDynamicChoiceScreenConditions(
+      *template_url_service_);
+}
+
+SearchEngineChoiceScreenConditions
 SearchEngineChoiceDialogService::ComputeDialogConditions(
     Browser& browser) const {
   if (g_dialog_disabled_for_testing) {
@@ -466,4 +489,9 @@ void SearchEngineChoiceDialogService::NotifyMoreButtonClicked(
 void SearchEngineChoiceDialogService::RecordChoiceScreenEvent(
     SearchEngineChoiceScreenEvents event) {
   search_engine_choice_service_->RecordChoiceScreenEvent(event);
+}
+
+void SearchEngineChoiceDialogService::RecordTriggeringEligibility(
+    SearchEngineChoiceScreenConditions conditions) {
+  search_engine_choice_service_->RecordTriggeringEligibility(conditions);
 }

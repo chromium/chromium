@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -106,6 +107,8 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
           browser->GetProfile());
   search_engine_choice_service->RecordTriggeringEligibility(conditions);
+  regional_capabilities::RecordDebugTriggeringEligibility(
+      conditions, /*is_first_run=*/first_run::IsChromeFirstRun());
 
   if (!regional_capabilities::IsEligible(conditions)) {
     return;
