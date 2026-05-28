@@ -115,6 +115,7 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state(), PROCESSING_MESSAGE);
   DCHECK(current_method_ != AuthenticationMethod::INVALID);
+
   switch (current_method_) {
     case AuthenticationMethod::INVALID:
       NOTREACHED();
@@ -126,26 +127,31 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
               base::BindRepeating(&Spake2Authenticator::CreateForClient,
                                   local_id_, remote_id_));
       current_authenticator_ = base::WrapUnique(pairing_authenticator);
+      ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
       pairing_authenticator->Start(preferred_initial_state,
                                    std::move(resume_callback));
       break;
     }
 
-    case AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519:
+    case AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519: {
+      auto weak_self = weak_factory_.GetWeakPtr();
       config_.fetch_secret_callback.Run(
           false,
           base::BindRepeating(
               &NegotiatingClientAuthenticator::CreateSharedSecretAuthenticator,
               weak_factory_.GetWeakPtr(), preferred_initial_state,
               base::Passed(std::move(resume_callback))));
+      if (!weak_self) {
+        return;
+      }
       break;
+    }
 
     case AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519:
     case AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
       NOTREACHED();
   }
 
-  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 void NegotiatingClientAuthenticator::CreateSharedSecretAuthenticator(
@@ -157,6 +163,7 @@ void NegotiatingClientAuthenticator::CreateSharedSecretAuthenticator(
 
   current_authenticator_ = Spake2Authenticator::CreateForClient(
       local_id_, remote_id_, shared_secret_hash, initial_state);
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
   std::move(resume_callback).Run();
 }
 
