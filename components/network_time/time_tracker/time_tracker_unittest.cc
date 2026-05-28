@@ -4,6 +4,7 @@
 
 #include "components/network_time/time_tracker/time_tracker.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -11,12 +12,18 @@
 
 namespace network_time {
 
+namespace {
+constexpr std::string_view kUncertaintyHistogramName =
+    "NetworkTime.EstimatedTimeUncertainty";
+}  // namespace
+
 class TimeTrackerTest : public ::testing::Test {
  public:
   ~TimeTrackerTest() override = default;
   TimeTrackerTest() = default;
 
  protected:
+  base::HistogramTester histogram_tester_;
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
 };
@@ -30,6 +37,7 @@ TEST_F(TimeTrackerTest, SystemClockIsWrong) {
   EXPECT_TRUE(tracker.GetTime(clock_.Now(), tick_clock_.NowTicks(),
                               &out_network_time, nullptr));
   EXPECT_EQ(in_network_time, out_network_time);
+  histogram_tester_.ExpectTotalCount(kUncertaintyHistogramName, 1);
 }
 
 TEST_F(TimeTrackerTest, SmallDivergence) {
@@ -43,6 +51,7 @@ TEST_F(TimeTrackerTest, SmallDivergence) {
   EXPECT_TRUE(tracker.GetTime(clock_.Now(), tick_clock_.NowTicks(),
                               &out_network_time, nullptr));
   EXPECT_EQ(in_network_time + base::Seconds(30), out_network_time);
+  histogram_tester_.ExpectTotalCount(kUncertaintyHistogramName, 1);
 }
 
 TEST_F(TimeTrackerTest, BigDivergence) {
@@ -55,6 +64,7 @@ TEST_F(TimeTrackerTest, BigDivergence) {
   base::Time out_network_time;
   EXPECT_FALSE(tracker.GetTime(clock_.Now(), tick_clock_.NowTicks(),
                                &out_network_time, nullptr));
+  histogram_tester_.ExpectTotalCount(kUncertaintyHistogramName, 0);
 }
 
 TEST_F(TimeTrackerTest, TimeRanBackwards) {
@@ -65,6 +75,7 @@ TEST_F(TimeTrackerTest, TimeRanBackwards) {
   base::Time out_network_time;
   EXPECT_FALSE(tracker.GetTime(clock_.Now(), tick_clock_.NowTicks(),
                                &out_network_time, nullptr));
+  histogram_tester_.ExpectTotalCount(kUncertaintyHistogramName, 0);
 }
 
 TEST_F(TimeTrackerTest, UncertaintyCalculation) {
@@ -81,6 +92,8 @@ TEST_F(TimeTrackerTest, UncertaintyCalculation) {
                               &out_network_time, &out_uncertainty));
   EXPECT_EQ(in_network_time + base::Seconds(3), out_network_time);
   EXPECT_EQ(out_uncertainty, base::Seconds(8));
+
+  histogram_tester_.ExpectUniqueSample(kUncertaintyHistogramName, 8000, 1);
 }
 
 }  // namespace network_time

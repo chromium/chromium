@@ -5,6 +5,7 @@
 #include "components/network_time/time_tracker/time_tracker.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace {
 // Amount of divergence allowed between wall clock and tick clock.
@@ -34,9 +35,15 @@ bool TimeTracker::GetTime(const base::Time& system_time,
     DVLOG(1) << "Time unavailable due to clocks diverging";
     return false;
   }
+
   *time = state_.known_time + tick_delta;
+
+  const base::TimeDelta total_uncertainty = state_.uncertainty + divergence;
+  base::UmaHistogramMediumTimes("NetworkTime.EstimatedTimeUncertainty",
+                                total_uncertainty);
+
   if (uncertainty) {
-    *uncertainty = state_.uncertainty + divergence;
+    *uncertainty = total_uncertainty;
   }
   return true;
 }

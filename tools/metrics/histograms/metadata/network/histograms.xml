@@ -5493,6 +5493,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkTime.EstimatedTimeUncertainty" units="ms"
+    expires_after="2027-05-20">
+  <owner>rogerm@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    The uncertainty of the estimated network time, recorded when the current
+    network time is estimated based on a previous network time synchronization.
+    The uncertainty is calculated based on the uncertainty inherent in the
+    previous network time update and any skew detected between the local wall
+    and tick clocks since that update.
+  </summary>
+</histogram>
+
 <histogram name="NetworkTime.NetworkTimeUncertainty" units="ms"
     expires_after="2027-05-20">
   <owner>rogerm@chromium.org</owner>
