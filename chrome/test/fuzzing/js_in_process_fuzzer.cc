@@ -159,6 +159,10 @@ int JsInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   // etc.)
   testing::AssertionResult res = content::ExecJs(rfh, js_str);
 #if BUILDFLAG(IS_FUZZILLI)
+  if (js_str.contains("EXPERIMENTAL_lock_manager_crash")) {
+    raise(SIGTERM);
+  }
+
   // Fuzzilli needs to know when an exception was uncaught.
   if (!res) {
     return -1;

@@ -347,6 +347,10 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
         return
     }
 
+    if probability(0.001) {
+        b.loadString("EXPERIMENTAL_lock_manager_crash")
+    }
+
     // Only call known Mojo methods to avoid random JS pollution
     guard let methodName = b.type(of: obj).randomMethod() else { return }
 
