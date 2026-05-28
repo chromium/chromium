@@ -356,7 +356,9 @@ export const ComposeboxEmbedderMixin =
               changedPrivateProperties.has('result') ||
               changedPrivateProperties.has('files') ||
               changedPrivateProperties.has('errorMessage')) {
-            this.showFileCarousel = this.files.size > 0;
+            this.showFileCarousel = this.tabFaviconChipsToCoinsEnabled ?
+              this.getFilteredCarouselFiles().length > 0 :
+              this.files.size > 0;
             this.showDropdown = this.computeShowDropdown();
           }
 

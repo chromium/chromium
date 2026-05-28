@@ -89,6 +89,7 @@
 }
 
 .context-menu-container {
+  --omnibox-context-menu-container-margin-top: 0px;
   margin-top: var(--omnibox-context-menu-container-margin-top);
 }
 

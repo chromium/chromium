@@ -153,6 +153,7 @@
 }
 
 #composebox::part(context-menu-and-tools) {
+  --omnibox-context-menu-container-margin-top: 0px;
   margin-top: var(--omnibox-context-menu-container-margin-top);
 }
 

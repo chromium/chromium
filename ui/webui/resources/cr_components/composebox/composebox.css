@@ -470,6 +470,11 @@ search-animated-glow {
   --input-bottom-spacing: 12px;
 }
 
+:host([searchbox-next-enabled][searchbox-layout-mode='Compact'][show-file-carousel]) {
+  /* Eliminate redundant bottom spacing above carousel */
+  --input-bottom-spacing: 0px;
+}
+
 :host([searchbox-next-enabled]) cr-composebox-submit::part(submit-icon) {
   --cr-icon-button-icon-size: 12px;
 }
@@ -573,11 +578,12 @@ search-animated-glow {
 }
 
 :host([searchbox-next-enabled]) #carousel {
-  --context-non-top-carousel-bottom-margin: 4px;
+  --context-non-top-carousel-bottom-margin: 12px;
   --context-non-top-carousel-top-margin: 6px;
 }
 
 :host([is-omnibox-in-compact-mode_]) #carousel {
+  --context-non-top-carousel-bottom-margin: 12px;
   margin-top: 12px !important;
 }
 
