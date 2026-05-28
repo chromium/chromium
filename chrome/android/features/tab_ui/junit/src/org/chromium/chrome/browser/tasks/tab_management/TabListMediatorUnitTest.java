@@ -99,6 +99,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -133,6 +134,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.SendTabToSelfTabCardLabelData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -6150,5 +6152,46 @@ public class TabListMediatorUnitTest {
                 .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
         assertFalse(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
         verify(mPropertyObserver).onPropertyChanged(eq(model), eq(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test
+    public void testTabCardLabelData() {
+        UserDataHost userDataHost = new UserDataHost();
+        userDataHost.setUserData(
+                SendTabToSelfTabCardLabelData.class,
+                new SendTabToSelfTabCardLabelData(
+                        mTab1, "Example Phone", System.currentTimeMillis()));
+        when(mTab1.getUserDataHost()).thenReturn(userDataHost);
+
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        initAndAssertAllProperties();
+
+        PropertyModel model = mModelList.get(0).model;
+        TabCardLabelData labelData = model.get(TabProperties.TAB_CARD_LABEL_DATA);
+        assertNotNull(labelData);
+    }
+
+    @Test
+    public void testTabCardLabelData_Expired() {
+        UserDataHost userDataHost = new UserDataHost();
+        SendTabToSelfTabCardLabelData data =
+                new SendTabToSelfTabCardLabelData(
+                        mTab1,
+                        "Example Phone",
+                        // Setting an expired timestamp will cause an assertion failure, so that's
+                        // done separately via a setter.
+                        System.currentTimeMillis());
+        data.setAdditionTimestampMsForTesting(
+                System.currentTimeMillis() - 6L * 24 * 60 * 60 * 1000); // 6 days old
+        userDataHost.setUserData(SendTabToSelfTabCardLabelData.class, data);
+        when(mTab1.getUserDataHost()).thenReturn(userDataHost);
+
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        initAndAssertAllProperties();
+
+        PropertyModel model = mModelList.get(0).model;
+        TabCardLabelData labelData = model.get(TabProperties.TAB_CARD_LABEL_DATA);
+        assertNull(labelData);
+        assertNull(userDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
     }
 }
