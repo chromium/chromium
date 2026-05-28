@@ -8,19 +8,16 @@ import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureMap;
 
 /** Helper methods covering Finds related feature checks and states. */
 @NullMarked
 public final class FindsFeatures {
-    // TODO(crbug.com/515416697): Create a native-based feature map for finds.
-
     // Feature Names
     public static final String CHROME_FINDS = "ChromeFinds";
 
     private static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
             String featureName, boolean defaultValue) {
-        return ChromeFeatureMap.getInstance().mutableFlagWithSafeDefault(featureName, defaultValue);
+        return FindsFeatureMap.getInstance().mutableFlagWithSafeDefault(featureName, defaultValue);
     }
 
     // Feature Flags

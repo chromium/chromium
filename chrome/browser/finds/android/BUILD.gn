@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/finds/FindsFeatureMap.java",
     "java/src/org/chromium/chrome/browser/finds/FindsService.java",
     "java/src/org/chromium/chrome/browser/finds/FindsServiceFactory.java",
   ]
@@ -16,6 +17,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome"
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/finds/FindsFeatureMap.java",
     "java/src/org/chromium/chrome/browser/finds/FindsFeatures.java",
     "java/src/org/chromium/chrome/browser/finds/FindsManager.java",
     "java/src/org/chromium/chrome/browser/finds/FindsMetrics.java",
@@ -46,6 +48,7 @@ android_library("java") {
 
 source_set("android") {
   sources = [
+    "finds_feature_map.cc",
     "finds_service_android.cc",
     "finds_service_android.h",
     "finds_service_factory_android.cc",
