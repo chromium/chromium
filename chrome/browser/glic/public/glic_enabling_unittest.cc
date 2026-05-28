@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -38,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/service/test_variations_service.h"
@@ -455,10 +457,16 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     profile_ = testing_profile_manager->CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName);
+        TestingProfile::kDefaultProfileUserName,
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories());
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
   }
 
   void TearDown() override {
+    identity_test_env_adaptor_.reset();
     profile_ = nullptr;
 
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
@@ -470,6 +478,8 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
 
  protected:
   Profile* profile() { return profile_.get(); }
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -512,13 +522,13 @@ class GlicEnablingProfileReadyStateTestBase
     GlicEnablingProfileEligibilityTest::SetUp();
 
     // Make sure we have a primary account so we don't fail the "capable" check.
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile());
-    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-        identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+    auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+    AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_model_execution_features(true);
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+    signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                        account_info);
   }
 
  private:
@@ -573,7 +583,12 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     profile_ = testing_profile_manager->CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName);
+        TestingProfile::kDefaultProfileUserName,
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories());
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 
     // Make sure we have a primary account so we don't fail the "capable" check.
     signin::IdentityManager* identity_manager =
@@ -586,6 +601,7 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   }
 
   void TearDown() override {
+    identity_test_env_adaptor_.reset();
     profile_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -594,6 +610,10 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   }
 
   Profile* profile() { return profile_.get(); }
+
+ protected:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -747,6 +767,23 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest,
 
   EXPECT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(GlicEnablingTrustFirstOnboardingTest, ResetFreOnSignOut) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  signin::ClearPrimaryAccount(identity_manager);
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(enabling.GetCompletedFre(), prefs::FreStatus::kNotStarted);
+#else
+  EXPECT_EQ(enabling.GetCompletedFre(), prefs::FreStatus::kCompleted);
+#endif
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 struct GatedFeatureParams {
   std::string name;

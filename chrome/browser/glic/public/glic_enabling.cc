@@ -1119,6 +1119,12 @@ base::CallbackListSubscription GlicEnabling::RegisterProfileReadyStateChanged(
 
 void GlicEnabling::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
+#if BUILDFLAG(IS_ANDROID)
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    SetCompletedFre(prefs::FreStatus::kNotStarted);
+  }
+#endif
   UpdateEnabledStatus();
 }
 

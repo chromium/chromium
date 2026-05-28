@@ -635,6 +635,7 @@ source_set("unit_tests") {
   sources = [
     "glic_settings_util_unittest.cc",
     "host/context/glic_sharing_utils_unittest.cc",
+    "public/glic_enabling_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
   ]
   deps = [
@@ -642,7 +643,10 @@ source_set("unit_tests") {
     ":glic_metrics",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser:global_features",
     "//chrome/browser/background/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/ui:ui_features",
     "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -666,7 +670,6 @@ source_set("unit_tests") {
       "host/guest_util_unittest.cc",
       "public/glic_context_menu_invocation_helper_unittest.cc",
       "public/glic_enabling_metrics_unittest.cc",
-      "public/glic_enabling_unittest.cc",
       "service/glic_instance_helper_unittest.cc",
       "service/metrics/glic_instance_coordinator_metrics_unittest.cc",
       "service/metrics/glic_instance_metrics_unittest.cc",
@@ -678,17 +681,14 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser:global_features",
       "//chrome/browser/background",
       "//chrome/browser/glic/browser_ui:unit_tests",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/fre:unit_tests",
       "//chrome/browser/glic/media:unit_tests",
       "//chrome/browser/glic/suggestions:test_support",
-      "//chrome/browser/glic/test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/status_icons",
-      "//chrome/browser/ui:ui_features",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
       "//components/live_caption",
