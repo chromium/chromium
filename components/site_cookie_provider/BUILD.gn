@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("site_cookie_provider") {
+  sources = [
+    "site_cookie_provider.cc",
+    "site_cookie_provider.h",
+    "site_cookie_provider_service.cc",
+    "site_cookie_provider_service.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "site_cookie_provider_unittest.cc" ]
+  deps = [
+    ":site_cookie_provider",
+    "//base",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+}

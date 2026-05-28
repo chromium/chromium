@@ -7313,6 +7313,7 @@ test("unit_tests") {
     "//chrome/browser/sharing",
     "//chrome/browser/sharing/click_to_call:unit_tests",
     "//chrome/browser/sharing/sms:unit_tests",
+    "//chrome/browser/site_cookie_provider:unit_tests",
     "//chrome/browser/site_isolation:unit_tests",
     "//chrome/browser/site_protection",
     "//chrome/browser/site_protection:utils",
