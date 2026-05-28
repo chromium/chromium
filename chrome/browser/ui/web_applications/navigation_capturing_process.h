@@ -250,8 +250,9 @@ class NavigationCapturingProcess
   // attached to a `NavigationHandle`, also creates or updates the
   // `WebAppLaunchNavigationHandleUserData` for that handle. A nullopt `app_id`
   // will cause the launch data to be cleared.
-  void SetLaunchedAppId(std::optional<webapps::AppId> app_id,
-                        bool force_iph_off = false);
+  void SetLaunchedAppIdAndUpdateLaunchParams(
+      std::optional<webapps::AppId> app_id,
+      bool force_iph_off = false);
 
   // Returns true if `initial_nav_handling_result_` is one of the values where
   // the navigation was captured by an app.

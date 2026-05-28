@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "components/captive_portal/core/captive_portal_types.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
@@ -392,6 +393,10 @@ struct NavigateParams {
 
   // Indicates whether this navigation was started by an ad.
   bool started_by_ad = false;
+
+  // Optional launch parameters to be attached to the resulting navigation, once
+  // the navigation commits.
+  std::optional<webapps::LaunchParams> launch_params;
 
  private:
   NavigateParams();

@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
@@ -986,5 +987,21 @@ void WebAppUiManagerImpl::OnBrowserCloseCancelled(
       GetAppIdForBrowser(browser));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void WebAppUiManagerImpl::NotifyDidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  auto* user_data =
+      WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (!user_data) {
+    return;
+  }
+
+  // Enqueue launch params once the navigation has committed and the navigation
+  // was successful.
+  if (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()) {
+    user_data->MaybePerformAppHandlingTasksInWebContents();
+  }
+}
 
 }  // namespace web_app

@@ -1102,7 +1102,8 @@ NavigationCapturingProcess::HandleRedirect() {
     }
   }
 
-  SetLaunchedAppId(decision.launched_app_id, force_iph_off);
+  SetLaunchedAppIdAndUpdateLaunchParams(decision.launched_app_id,
+                                        force_iph_off);
   return decision.action;
 }
 
@@ -1407,9 +1408,13 @@ NavigationCapturingProcess::HandleRedirectImpl() {
               [](const webapps::AppId& target_app_id,
                  base::TimeTicks time_navigation_started,
                  content::NavigationHandle& navigation_handle) {
-                WebAppLaunchNavigationHandleUserData::CreateForNavigationHandle(
-                    navigation_handle, target_app_id, /*force_iph_off=*/false,
+                auto* navigation_handle_user_data =
+                    WebAppLaunchNavigationHandleUserData::
+                        GetOrCreateForNavigationHandle(navigation_handle);
+                navigation_handle_user_data->SetLaunchParamsMetadata(
+                    target_app_id, navigation_handle.GetURL(),
                     time_navigation_started);
+                navigation_handle_user_data->set_is_navigation_capturing(true);
               },
               *target_app_id, time_navigation_started_));
       debug_data_.Set("!redirection_result", "cancel, navigate-existing");
@@ -1422,9 +1427,13 @@ NavigationCapturingProcess::HandleRedirectImpl() {
       // Perform post navigation operations, like recording app launch metrics,
       // or showing the navigation capturing IPH.
       CHECK(!time_navigation_started_.is_null());
-      EnqueueLaunchParams(pre_existing_contents, *target_app_id, final_url,
-                          /*wait_for_navigation_to_complete=*/false,
-                          time_navigation_started_);
+      webapps::LaunchParams launch_params;
+      launch_params.app_id = *target_app_id;
+      launch_params.target_url = final_url;
+      launch_params.time_navigation_started_for_enqueue =
+          time_navigation_started_;
+      WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
+          pre_existing_contents, std::move(launch_params));
       MaybeShowNavigationCaptureIph(*target_app_id, &*profile_,
                                     client_mode_and_browser.browser);
       RecordLaunchMetrics(*target_app_id,
@@ -1469,10 +1478,15 @@ void NavigationCapturingProcess::OnAttachedToNavigationHandle() {
     return;
   }
 
-  web_app::WebAppLaunchNavigationHandleUserData::CreateForNavigationHandle(
-      *navigation_handle(), *launched_app_id_,
-      /*force_iph_off=*/force_iph_off_ || isolated_web_app_navigation_,
+  auto* navigation_handle_user_data =
+      WebAppLaunchNavigationHandleUserData::GetOrCreateForNavigationHandle(
+          *navigation_handle());
+  navigation_handle_user_data->SetLaunchParamsMetadata(
+      *launched_app_id_, navigation_handle()->GetURL(),
       time_navigation_started_);
+  navigation_handle_user_data->set_force_iph_off(force_iph_off_ ||
+                                                 isolated_web_app_navigation_);
+  navigation_handle_user_data->set_is_navigation_capturing(true);
 }
 
 bool NavigationCapturingProcess::
@@ -1775,7 +1789,7 @@ NavigationCapturingProcess::AuxiliaryContextInAppWindow(Browser* app_browser) {
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kAuxiliaryContextAppWindow;
   if (first_navigation_app_id_.has_value()) {
-    SetLaunchedAppId(*first_navigation_app_id_);
+    SetLaunchedAppIdAndUpdateLaunchParams(*first_navigation_app_id_);
   }
   debug_data_.Set("!result", "auxiliary context in app window");
   CHECK_EQ(state_, PipelineState::kCreated);
@@ -1819,8 +1833,9 @@ NavigationCapturingProcess::ForcedNewAppContext(
   // Do not show iph when opening browser-tab-apps in a new browser tab, as
   // this matches what is 'normal' - clicking on a link opens a new browser
   // tab.
-  SetLaunchedAppId(*first_navigation_app_id_,
-                   /*force_iph_off=*/app_display_mode == DisplayMode::kBrowser);
+  SetLaunchedAppIdAndUpdateLaunchParams(
+      *first_navigation_app_id_,
+      /*force_iph_off=*/app_display_mode == DisplayMode::kBrowser);
   debug_data_.Set("!result", "forced new app context");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
@@ -1888,8 +1903,9 @@ NavigationCapturingProcess::CapturedNewClient(
   // Do not show iph when opening browser-tab-apps in a new browser tab, as
   // this matches what is 'normal' - clicking on a link opens a new browser
   // tab.
-  SetLaunchedAppId(*first_navigation_app_id_,
-                   /*force_iph_off=*/app_display_mode == DisplayMode::kBrowser);
+  SetLaunchedAppIdAndUpdateLaunchParams(
+      *first_navigation_app_id_,
+      /*force_iph_off=*/app_display_mode == DisplayMode::kBrowser);
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
   return NavigationCapturingOverride::CreateForNavigateNew(
@@ -1939,7 +1955,7 @@ NavigationCapturingProcess::CapturedNavigateExisting(Browser* app_browser,
             ? NavigationCapturingInitialResult::kNavigateExistingAppWindow
             : NavigationCapturingInitialResult::kNavigateExistingAppBrowserTab;
   }
-  SetLaunchedAppId(*first_navigation_app_id_);
+  SetLaunchedAppIdAndUpdateLaunchParams(*first_navigation_app_id_);
   debug_data_.Set("!result", "captured navigate existing");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
@@ -1962,12 +1978,12 @@ NavigationCapturingProcess::CapturedFocusExisting(Browser* browser,
   CHECK(!time_navigation_started_.is_null());
   bool is_current_container_window = WebAppBrowserController::IsWebApp(browser);
 
-  // Abort the navigation by returning a `nullptr`. Because this means
-  // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
-  // the launch params instantly and record the debug data.
-  EnqueueLaunchParams(contents, app_id, url,
-                      /*wait_for_navigation_to_complete=*/false,
-                      time_navigation_started_);
+  webapps::LaunchParams launch_params;
+  launch_params.app_id = app_id;
+  launch_params.target_url = url;
+  launch_params.time_navigation_started_for_enqueue = time_navigation_started_;
+  WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
+      contents, std::move(launch_params));
 
   MaybeShowNavigationCaptureIph(app_id, &*profile_, browser);
 
@@ -1991,13 +2007,31 @@ NavigationCapturingProcess::CapturedFocusExisting(Browser* browser,
       base::PassKey<NavigationCapturingProcess>(), contents);
 }
 
-void NavigationCapturingProcess::SetLaunchedAppId(
+void NavigationCapturingProcess::SetLaunchedAppIdAndUpdateLaunchParams(
     std::optional<webapps::AppId> app_id,
     bool force_iph_off) {
   CHECK(IsHandledByNavigationCapturing());
-  if (launched_app_id_ == app_id && force_iph_off_ == force_iph_off) {
+
+  std::optional<GURL> launch_queue_url = [&]() -> std::optional<GURL> {
+    if (!navigation_handle()) {
+      return std::nullopt;
+    }
+    auto* user_data =
+        WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
+            *navigation_handle());
+    return user_data
+               ? std::make_optional<GURL>(user_data->launch_params().target_url)
+               : std::nullopt;
+  }();
+
+  bool navigate_params_updated_for_url =
+      navigation_handle() && launch_queue_url == navigation_handle()->GetURL();
+
+  if (launched_app_id_ == app_id && force_iph_off_ == force_iph_off &&
+      navigate_params_updated_for_url) {
     return;
   }
+
   launched_app_id_ = app_id;
   force_iph_off_ = force_iph_off;
   debug_data_.Set("!result.launched_app_id", app_id.value_or("<none>"));
@@ -2006,14 +2040,13 @@ void NavigationCapturingProcess::SetLaunchedAppId(
     return;
   }
 
-  // Always delete the existing user data before optionally recreating new user
-  // data.
-  if (WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle())) {
-    WebAppLaunchNavigationHandleUserData::DeleteForNavigationHandle(
-        *navigation_handle());
-  }
-  if (launched_app_id_.has_value()) {
+  if (!launched_app_id_.has_value()) {
+    if (WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
+            *navigation_handle())) {
+      WebAppLaunchNavigationHandleUserData::DeleteForNavigationHandle(
+          *navigation_handle());
+    }
+  } else {
     OnAttachedToNavigationHandle();
   }
 }

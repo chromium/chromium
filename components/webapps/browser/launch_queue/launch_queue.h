@@ -49,21 +49,33 @@ class LaunchQueue : public content::WebContentsObserver {
 
   void Enqueue(LaunchParams launch_params);
 
+  bool IsInScope(const LaunchParams& launch_params, const GURL& url) const;
+
   const webapps::AppId* GetPendingLaunchAppId() const;
 
   void FlushForTesting() const;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
 
  private:
   // Reset self back to the initial state.
   void Reset();
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
-
-  void SendQueuedLaunchParams(const GURL& current_url);
   void SendLaunchParams(LaunchParams launch_params, const GURL& current_url);
 
-  // Launch params queued up to be sent to the WebContents.
+  // TODO(crbug.com/390252819): The `queue_` will be cleaned up in future CLs.
+  //
+  // Currently, the way launch params are
+  // enqueued for a web app rely on the fragile dependency of having the
+  // WebAppTabHelper be created before the LaunchQueue based on the registration
+  // order of WebContentsObserver. The reason it has been implemented this way
+  // is to support extensions, which enqueue launch params BEFORE navigation
+  // commits, unlike web apps. Future CLs in this chain will streamline
+  // that behavior so that all LaunchParams are enqueued post navigation
+  // commit, so we don't have to worry about "staging" launch params,
+  // and instead rely on a NavigationHandleUserData to enqueue them as
+  // soon as possible.
   std::vector<LaunchParams> queue_;
 
   // Whether to send the queue of launch params on the next navigation.

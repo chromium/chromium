@@ -7,10 +7,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
@@ -21,36 +23,101 @@ namespace web_app {
 WebAppLaunchNavigationHandleUserData::~WebAppLaunchNavigationHandleUserData() =
     default;
 
+// static
+void WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
+    content::WebContents* web_contents,
+    webapps::LaunchParams launch_params) {
+  CHECK(web_contents);
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+  launch_params.started_new_navigation = false;
+  tab_helper->EnqueueLaunchParams(std::move(launch_params));
+}
+
 WebAppLaunchNavigationHandleUserData::WebAppLaunchNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle,
-    webapps::AppId launched_app,
-    bool force_iph_off,
-    base::TimeTicks time_navigation_started)
-    : navigation_handle_(navigation_handle),
-      launched_app_(std::move(launched_app)),
-      force_iph_off_(force_iph_off),
-      time_navigation_started_(time_navigation_started) {}
+    content::NavigationHandle& navigation_handle)
+    : navigation_handle_(navigation_handle), force_iph_off_(false) {}
+
+void WebAppLaunchNavigationHandleUserData::SetLaunchParams(
+    webapps::LaunchParams launch_params) {
+  launch_params_ = std::move(launch_params);
+  content::WebContents* web_contents = navigation_handle_->GetWebContents();
+  if (web_contents) {
+    WebAppTabHelper* tab_helper =
+        WebAppTabHelper::FromWebContents(web_contents);
+    if (tab_helper) {
+      tab_helper->EnsureLaunchQueue();
+    }
+  }
+}
+
+void WebAppLaunchNavigationHandleUserData::SetLaunchParamsMetadata(
+    webapps::AppId app_id,
+    GURL target_url,
+    base::TimeTicks time_navigation_started) {
+  if (!launch_params_) {
+    launch_params_.emplace();
+  }
+  launch_params_->app_id = app_id;
+  launch_params_->target_url = target_url;
+  if (launch_params_->time_navigation_started_for_enqueue.is_null()) {
+    launch_params_->time_navigation_started_for_enqueue =
+        time_navigation_started;
+  }
+
+  content::WebContents* web_contents = navigation_handle_->GetWebContents();
+  if (web_contents) {
+    WebAppTabHelper* tab_helper =
+        WebAppTabHelper::FromWebContents(web_contents);
+    if (tab_helper) {
+      tab_helper->EnsureLaunchQueue();
+    }
+  }
+}
+
+const webapps::LaunchParams&
+WebAppLaunchNavigationHandleUserData::launch_params() const {
+  CHECK(launch_params_.has_value())
+      << "Attempted to access launch params after they were consumed/moved.";
+  return *launch_params_;
+}
 
 void WebAppLaunchNavigationHandleUserData::
     MaybePerformAppHandlingTasksInWebContents() {
-  const webapps::AppId& app_id = launched_app_;
-  content::WebContents* web_contents = navigation_handle_->GetWebContents();
+  if (!launch_params_) {
+    return;
+  }
 
-  EnqueueLaunchParams(
-      web_contents, app_id, navigation_handle_->GetURL(),
-      /*wait_for_navigation_to_complete=*/!navigation_handle_->HasCommitted(),
-      time_navigation_started_);
+  content::WebContents* web_contents = navigation_handle_->GetWebContents();
 
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
+  // Extract app_id and target_url before moving launch_params_.
+  const webapps::AppId app_id = launch_params_->app_id;
+  const GURL target_url = launch_params_->target_url;
+
+  // Keep started_new_navigation = true so Blink records correct metrics.
+  launch_params_->started_new_navigation = true;
+  if (tab_helper->EnsureLaunchQueue().IsInScope(*launch_params_,
+                                                navigation_handle_->GetURL())) {
+    tab_helper->EnqueueLaunchParams(std::move(*launch_params_));
+  }
+
+  launch_params_.reset();
+
+  if (!is_navigation_capturing_) {
+    return;
+  }
+
+  // Perform navigation capturing specific tasks below.
   apps::LaunchContainer container =
       tab_helper->is_in_app_window()
           ? apps::LaunchContainer::kLaunchContainerWindow
           : apps::LaunchContainer::kLaunchContainerTab;
   RecordLaunchMetrics(app_id, container,
-                      apps::LaunchSource::kFromNavigationCapturing,
-                      navigation_handle_->GetURL(), web_contents);
+                      apps::LaunchSource::kFromNavigationCapturing, target_url,
+                      web_contents);
 
   RecordNavigationCapturingDisplayModeMetrics(app_id, web_contents,
                                               !tab_helper->is_in_app_window());
@@ -61,9 +128,10 @@ void WebAppLaunchNavigationHandleUserData::
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             web_contents);
-    MaybeShowNavigationCaptureIph(
-        app_id, browser->GetProfile(),
-        browser->GetBrowserForMigrationOnly());
+    if (browser) {
+      MaybeShowNavigationCaptureIph(app_id, browser->GetProfile(),
+                                    browser->GetBrowserForMigrationOnly());
+    }
   }
 }
 

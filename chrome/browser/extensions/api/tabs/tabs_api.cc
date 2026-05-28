@@ -1243,12 +1243,16 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     if (registrar.AppMatches(iwa_id, web_app::WebAppFilter::IsIsolatedApp())) {
       NavigateParams navigate_params = create_nav_params(
           registrar.GetAppStartUrl(iwa_id), /*is_first_nav=*/true);
+      webapps::LaunchParams launch_params;
+      launch_params.app_id = iwa_id;
+      launch_params.target_url = original_url;
+      navigate_params.launch_params = std::move(launch_params);
+
+      // Navigate() takes care of enqueueing the launch params once the
+      // navigation commits.
       base::WeakPtr<content::NavigationHandle> handle =
           Navigate(&navigate_params);
       CHECK(handle);
-      web_app::EnqueueLaunchParams(
-          handle->GetWebContents(), iwa_id, original_url,
-          /*wait_for_navigation_to_complete=*/true, handle->NavigationStart());
     }
     navigated = true;
   }

@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -977,14 +978,20 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
 
-  // At this point, the `params->navigated_or_inserted_contents` is guaranteed
-  // to be non null, so perform tasks if the navigation has been captured by a
-  // web app, like enqueueing launch params.
+  // If launch_params are provided, store them in the navigation handle so that
+  // the LaunchQueue can pick them up once the navigation commits.
+  if (navigation_handle && params->launch_params) {
+    auto* user_data = web_app::WebAppLaunchNavigationHandleUserData::
+        GetOrCreateForNavigationHandle(*navigation_handle);
+    user_data->SetLaunchParams(std::move(*params->launch_params));
+  }
+
   if (app_navigation) {
     web_app::NavigationCapturingProcess::AfterWebContentsCreation(
         std::move(app_navigation), *params->navigated_or_inserted_contents,
         navigation_handle.get());
   }
+
   return navigation_handle;
 }
 

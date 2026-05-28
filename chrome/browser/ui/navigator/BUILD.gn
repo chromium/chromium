@@ -20,6 +20,7 @@ source_set("navigator") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//components/captive_portal/core",
     "//components/tab_groups",
+    "//components/webapps/browser",
     "//content/public/browser",
     "//content/public/common",
     "//services/network/public/cpp",
