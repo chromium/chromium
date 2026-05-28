@@ -91,6 +91,10 @@ BASE_FEATURE_PARAM(std::string,
 // Enables the resolution of hostnames via platform DNS APIs in Cronet.
 BASE_FEATURE(kCronetEnableDnsPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(
+    kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake,
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // Name of disk cache directory.
@@ -571,6 +575,12 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           map(quic_args.FindInt(kQuicRetransmittableOnWireTimeoutMilliseconds),
               base::Milliseconds<int>)
               .value_or(quic_params->retransmittable_on_wire_timeout);
+
+      if (base::FeatureList::IsEnabled(
+              kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake) &&
+          quic_params->migrate_sessions_early_v2) {
+        quic_params->retry_on_alternate_network_before_handshake = true;
+      }
 
       quic_params->retry_on_alternate_network_before_handshake =
           quic_args.FindBool(kQuicRetryOnAlternateNetworkBeforeHandshake)

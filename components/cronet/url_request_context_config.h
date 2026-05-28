@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cronet/cronet_context.h"
@@ -330,6 +331,9 @@ struct URLRequestContextConfigBuilder {
   // Do not specify for other targets.
   std::optional<int> network_thread_priority;
 };
+
+BASE_DECLARE_FEATURE(
+    kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake);
 
 }  // namespace cronet
 

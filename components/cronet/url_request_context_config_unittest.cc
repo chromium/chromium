@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -1574,5 +1575,105 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.
+
+struct RetryBeforeHandshakeParams {
+  bool feature_enabled;
+  bool migrate_sessions_early_v2;
+  std::optional<bool> retry_on_alternate_network_before_handshake_option;
+  bool expected_retry_on_alternate_network_before_handshake;
+};
+
+class URLRequestContextConfigRetryBeforeHandshakeTest
+    : public testing::TestWithParam<RetryBeforeHandshakeParams> {};
+
+TEST_P(URLRequestContextConfigRetryBeforeHandshakeTest,
+       ConfigureRetryOnAlternateNetworkBeforeHandshake) {
+  const RetryBeforeHandshakeParams& params = GetParam();
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (params.feature_enabled) {
+    scoped_feature_list.InitAndEnableFeature(
+        kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake);
+  }
+
+  base::DictValue options;
+  options.SetByDottedPath("QUIC.migrate_sessions_early_v2",
+                          params.migrate_sessions_early_v2);
+  if (params.retry_on_alternate_network_before_handshake_option.has_value()) {
+    options.SetByDottedPath(
+        "QUIC.retry_on_alternate_network_before_handshake",
+        *params.retry_on_alternate_network_before_handshake_option);
+  }
+  std::string options_json;
+  EXPECT_TRUE(base::JSONWriter::Write(options, &options_json));
+
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          /*enable_quic=*/true,
+          /*enable_spdy=*/true,
+          /*enable_brotli=*/false,
+          URLRequestContextConfig::HttpCacheType::DISABLED,
+          /*http_cache_max_size=*/0,
+          /*load_disable_cache=*/false,
+          /*storage_path=*/"",
+          /*accept_language=*/"",
+          /*user_agent=*/"", options_json, std::unique_ptr<net::CertVerifier>(),
+          /*enable_network_quality_estimator=*/false,
+          /*bypass_public_key_pinning_for_local_trust_anchors=*/true,
+          /*network_thread_priority=*/std::nullopt,
+          /*proxy_options=*/std::optional<cronet::proto::ProxyOptions>());
+
+  net::URLRequestContextBuilder builder;
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
+  builder.set_proxy_config_service(
+      std::make_unique<net::ProxyConfigServiceFixed>(
+          net::ProxyConfigWithAnnotation::CreateDirect()));
+
+  EXPECT_EQ(builder.Build()
+                ->quic_context()
+                ->params()
+                ->retry_on_alternate_network_before_handshake,
+            params.expected_retry_on_alternate_network_before_handshake);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    URLRequestContextConfigRetryBeforeHandshakeTestSuite,
+    URLRequestContextConfigRetryBeforeHandshakeTest,
+    testing::ValuesIn(std::vector<RetryBeforeHandshakeParams>{
+        {.feature_enabled = false,
+         .migrate_sessions_early_v2 = false,
+         .retry_on_alternate_network_before_handshake_option = std::nullopt,
+         .expected_retry_on_alternate_network_before_handshake = false},
+        {.feature_enabled = false,
+         .migrate_sessions_early_v2 = true,
+         .retry_on_alternate_network_before_handshake_option = std::nullopt,
+         .expected_retry_on_alternate_network_before_handshake = false},
+        {.feature_enabled = true,
+         .migrate_sessions_early_v2 = false,
+         .retry_on_alternate_network_before_handshake_option = std::nullopt,
+         .expected_retry_on_alternate_network_before_handshake = false},
+        {.feature_enabled = true,
+         .migrate_sessions_early_v2 = true,
+         .retry_on_alternate_network_before_handshake_option = std::nullopt,
+         .expected_retry_on_alternate_network_before_handshake = true},
+        {.feature_enabled = true,
+         .migrate_sessions_early_v2 = true,
+         .retry_on_alternate_network_before_handshake_option = false,
+         .expected_retry_on_alternate_network_before_handshake = false},
+        {.feature_enabled = true,
+         .migrate_sessions_early_v2 = true,
+         .retry_on_alternate_network_before_handshake_option = true,
+         .expected_retry_on_alternate_network_before_handshake = true},
+        {.feature_enabled = false,
+         .migrate_sessions_early_v2 = true,
+         .retry_on_alternate_network_before_handshake_option = true,
+         .expected_retry_on_alternate_network_before_handshake = true},
+    }));
 
 }  // namespace cronet
