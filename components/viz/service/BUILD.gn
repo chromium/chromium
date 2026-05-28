@@ -671,6 +671,7 @@ viz_source_set("unit_tests") {
     "main/viz_main_impl_unittest.cc",
     "performance_hint/boost_manager_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
+    "surfaces/surface_saved_frame_unittest.cc",
     "surfaces/surface_unittest.cc",
     "transitions/transferable_resource_tracker_unittest.cc",
   ]

@@ -89,6 +89,11 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting();
 
+  std::unique_ptr<CopyOutputRequest> CreateCopyRequestForTesting(
+      const CompositorRenderPass& render_pass,
+      bool is_software,
+      gfx::ContentColorUsage content_color_usage);
+
   base::flat_set<ViewTransitionElementResourceId> GetEmptyResourceIds(
       const CompositorRenderPassList& render_pass_list) const;
 

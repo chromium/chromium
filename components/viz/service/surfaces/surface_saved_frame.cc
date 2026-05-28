@@ -242,6 +242,11 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
 
   const auto& display_color_spaces = directive_.display_color_spaces();
   bool has_transparent_background = render_pass.has_transparent_background;
+  if (is_software) {
+    // Match LayerTreeHostImpl::GetTargetColorParams(): software compositing
+    // uses sRGB because it does not reliably color-convert resources.
+    content_color_usage = gfx::ContentColorUsage::kSRGB;
+  }
 
   auto image_format = display_color_spaces.GetOutputFormat(
       content_color_usage, has_transparent_background);
@@ -249,6 +254,7 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
       display_color_spaces.GetRasterAndCompositeColorSpace(content_color_usage);
 
   if (is_software) {
+    color_space = gfx::ColorSpace::CreateSRGB();
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
     shared_image =
         shared_image_interface_->CreateSharedImageForSoftwareCompositor(
@@ -356,6 +362,15 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
   }();
   weak_factory_.InvalidateWeakPtrs();
   DCHECK(IsValid());
+}
+
+std::unique_ptr<CopyOutputRequest>
+SurfaceSavedFrame::CreateCopyRequestForTesting(  // IN-TEST
+    const CompositorRenderPass& render_pass,
+    bool is_software,
+    gfx::ContentColorUsage content_color_usage) {
+  return CreateCopyRequestIfNeeded(render_pass, is_software,
+                                   content_color_usage);
 }
 
 SurfaceSavedFrame::OutputCopyResult::OutputCopyResult() = default;
