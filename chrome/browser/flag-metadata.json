@@ -9127,7 +9127,7 @@
   {
     "name": "translate-open-settings",
     "owners": [ "perrier@chromium.org", "taox4@illinois.edu", "chrome-language@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 155
   },
   {
     "name": "trees-in-viz",
