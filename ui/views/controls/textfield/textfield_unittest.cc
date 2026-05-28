@@ -2323,7 +2323,8 @@ TEST_F(TextfieldTest, DragAndDrop_AcceptDrop) {
   bad_data.SetFilename(base::FilePath(FILE_PATH_LITERAL("x")));
   ui::ClipboardFormatType fmt = ui::ClipboardFormatType::BitmapType();
   bad_data.SetPickledData(fmt, base::Pickle());
-  bad_data.SetFileContents(base::FilePath(L"x"), "x");
+  bad_data.SetFileContents(base::FilePath(L"x"),
+                           base::byte_span_from_cstring("x"));
   bad_data.SetHtml(std::u16string(u"x"), GURL("x.org"));
   ui::DownloadFileInfo download(base::FilePath(), nullptr);
   bad_data.provider().SetDownloadFileInfo(&download);

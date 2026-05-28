@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
@@ -190,9 +191,9 @@ bool OSExchangeDataProviderNonBacked::HasCustomFormat(
 
 void OSExchangeDataProviderNonBacked::SetFileContents(
     const base::FilePath& filename,
-    const std::string& file_contents) {
+    base::span<const uint8_t> file_contents) {
   file_contents_filename_ = filename;
-  file_contents_ = file_contents;
+  file_contents_ = base::ToVector(file_contents);
 }
 
 std::optional<OSExchangeDataProvider::FileContentsInfo>

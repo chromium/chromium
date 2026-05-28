@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // Adds the bytes of a file (CFSTR_FILECONTENTS and CFSTR_FILEDESCRIPTOR on
   // Windows).
   void SetFileContents(const base::FilePath& filename,
-                       const std::string& file_contents);
+                       base::span<const uint8_t> file_contents);
   using FileContentsInfo = OSExchangeDataProvider::FileContentsInfo;
   std::optional<FileContentsInfo> GetFileContents() const;
 

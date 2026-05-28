@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/point_f.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/containers/span.h"
 #include "base/win/windows_types.h"
 #endif
 
@@ -87,7 +88,7 @@ class DragAndDropSimulator {
   // success.
   bool SimulateDragEnter(
       const gfx::Point& location,
-      const std::vector<std::pair<base::FilePath, std::string>>&
+      const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>&
           filenames_and_contents,
       DWORD tymed);
 #endif  // BUILDFLAG(IS_WIN)

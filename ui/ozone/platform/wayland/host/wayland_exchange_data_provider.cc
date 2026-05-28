@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -164,8 +166,7 @@ void AddFileContents(const std::string& filename,
     return;
   }
 
-  provider->SetFileContents(base::FilePath(filename),
-                            BytesTo<std::string>(data));
+  provider->SetFileContents(base::FilePath(filename), data->as_vector());
 }
 
 // Parses |data| as if it had text/x-moz-url format, which is basically
@@ -335,7 +336,10 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   }
   if (mime_type.starts_with(ui::kMimeTypeOctetStream) && HasFileContents()) {
     std::optional<FileContentsInfo> file_contents = GetFileContents();
-    out_content->append(file_contents->file_contents);
+    // Transforming from the vector<int8_t> to string is awkward; should
+    // ExtractData() also return vector<int8_t>?
+    out_content->append(std::string_view(
+        base::as_chars(base::span(file_contents->file_contents))));
     return true;
   }
   if (mime_type == ui::kMimeTypeDataTransferCustomData &&

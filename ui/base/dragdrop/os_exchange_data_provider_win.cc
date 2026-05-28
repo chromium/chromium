@@ -85,7 +85,7 @@ const ClipboardFormatType& GetRendererTaintFormatType();
 const ClipboardFormatType& GetFromPrivilegedFormatType();
 const ClipboardFormatType& GetIgnoreFileContentsFormatType();
 // Creates the contents of an Internet Shortcut file for the given URL.
-std::string GetInternetShortcutFileContents(const GURL& url);
+std::vector<uint8_t> GetInternetShortcutFileContents(const GURL& url);
 // Creates a valid file name given a suggested title and URL.
 std::wstring CreateValidFileNameFromTitle(const GURL& url,
                                           const std::wstring& title);
@@ -395,7 +395,7 @@ void OSExchangeDataProviderWin::SetURLs(
   if (!HasFileContents()) {
     std::wstring valid_file_name = CreateValidFileNameFromTitle(
         url_infos.front().url, base::AsWString(url_infos.front().title));
-    std::string shortcut_url_file_contents =
+    std::vector<uint8_t> shortcut_url_file_contents =
         GetInternetShortcutFileContents(url_infos.front().url);
     SetFileContents(base::FilePath(valid_file_name),
                     shortcut_url_file_contents);
@@ -471,7 +471,7 @@ std::optional<GURL> OSExchangeDataProviderWin::GetPlainTextURL() const {
 }
 
 void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
-    const std::vector<std::pair<base::FilePath, std::string>>&
+    const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>&
         filenames_and_contents,
     DWORD tymed,
     bool show_cfhdrop_without_data) {
@@ -508,12 +508,9 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
               std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1u)));
 
     // Add the contents of each file as CFSTR_FILECONTENTS.
-    base::span<const uint8_t> data_buffer =
-        base::span(reinterpret_cast<const uint8_t*>(
-                       filenames_and_contents[i].second.data()),
-                   filenames_and_contents[i].second.length());
-    SetVirtualFileContentAtIndexForTesting(data_buffer, tymed,  // IN-TEST
-                                           static_cast<LONG>(i));
+    SetVirtualFileContentAtIndexForTesting(filenames_and_contents[i].second,
+                                           tymed,
+                                           static_cast<LONG>(i));  // IN-TEST
   }
 
   // This simulates ZIP Shell Folder behavior where data is available via format
@@ -604,7 +601,7 @@ void OSExchangeDataProviderWin::SetPickledData(
 
 void OSExchangeDataProviderWin::SetFileContents(
     const base::FilePath& filename,
-    const std::string& file_contents) {
+    base::span<const uint8_t> file_contents) {
   // Add CFSTR_FILEDESCRIPTORW.
   STGMEDIUM storage = CreateStorageForFileDescriptor(filename);
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
@@ -612,7 +609,7 @@ void OSExchangeDataProviderWin::SetFileContents(
 
   // Add CFSTR_FILECONTENTS as TYMED_ISTREAM.
   STGMEDIUM storage_contents =
-      CreateStorageForIStream(file_contents.data(), file_contents.length());
+      CreateStorageForIStream(file_contents.data(), file_contents.size());
   if (storage_contents.tymed == TYMED_NULL) {
     return;
   }
@@ -749,7 +746,7 @@ OSExchangeDataProviderWin::GetFileContents() const {
   }
 
   std::wstring filename_str;
-  std::string file_contents;
+  std::vector<uint8_t> file_contents;
   if (!clipboard_util::GetFileContents(source_object_.Get(), &filename_str,
                                        &file_contents) ||
       filename_str.empty()) {
@@ -1413,11 +1410,13 @@ const ClipboardFormatType& GetIgnoreFileContentsFormatType() {
   return *format;
 }
 
-std::string GetInternetShortcutFileContents(const GURL& url) {
+std::vector<uint8_t> GetInternetShortcutFileContents(const GURL& url) {
   static constexpr char kInternetShortcutFileStart[] =
       "[InternetShortcut]\r\nURL=";
   static constexpr char kInternetShortcutFileEnd[] = "\r\n";
-  return kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
+  std::string contents =
+      kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
+  return base::ToVector(base::as_bytes(base::span(std::string_view(contents))));
 }
 
 std::wstring CreateValidFileNameFromTitle(const GURL& url,

@@ -101,7 +101,7 @@ bool GetHtml(IDataObject* data_object,
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool GetFileContents(IDataObject* data_object,
                      std::wstring* filename,
-                     std::string* file_contents);
+                     std::vector<uint8_t>* file_contents);
 // This represents custom MIME types a web page might set to transport its
 // own types of data for drag and drop. It is sandboxed in its own CLIPFORMAT
 // to avoid polluting the ::RegisterClipboardFormat() namespace with random

@@ -7,8 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -303,7 +305,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFiles) {
 #endif
   data->SetFilenames(test_file_infos);
   data->SetFileContents(base::FilePath(FILE_PATH_LITERAL("ignored")),
-                        "ignored");
+                        base::byte_span_from_cstring("ignored"));
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -466,7 +468,8 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
 
   const base::FilePath filename(FILE_PATH_LITERAL("image.jpg"));
   const GURL source_url("file:///image.jpg");
-  const std::string file_contents = "contents";
+  const base::span<const uint8_t> file_contents =
+      base::byte_span_from_cstring("contents");
   const std::string url_spec = "http://example.com/image.jpg";
   const GURL url(url_spec);
   const std::u16string url_title = u"";
@@ -557,14 +560,14 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
   const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
-  const std::vector<std::pair<base::FilePath, std::string>>
+  const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>
       test_filenames_and_contents = {
           {base::FilePath(FILE_PATH_LITERAL("filename.txt")),
-           std::string("just some data")},
+           base::byte_span_from_cstring("just some data")},
           {base::FilePath(FILE_PATH_LITERAL("another filename.txt")),
-           std::string("just some data\0with\0nulls", 25)},
+           base::byte_span_from_cstring("just some data\0with\0nulls")},
           {base::FilePath(FILE_PATH_LITERAL("and another filename.txt")),
-           std::string("just some more data")},
+           base::byte_span_from_cstring("just some more data")},
       };
 
   // Simulate windows explorer behavior for files from zip
@@ -611,7 +614,6 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
 
   EXPECT_EQ(string_data, drop_complete_data_->drop_data.text);
 
-  std::string read_contents;
   base::FilePath temp_dir;
   EXPECT_TRUE(base::GetTempDir(&temp_dir));
 
@@ -628,9 +630,10 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
               base::MakeLongFilePath(retrieved_file_infos[i].path.DirName()));
     EXPECT_EQ(test_filenames_and_contents[i].first.Extension(),
               retrieved_file_infos[i].path.Extension());
-    EXPECT_TRUE(
-        base::ReadFileToString(retrieved_file_infos[i].path, &read_contents));
-    EXPECT_EQ(test_filenames_and_contents[i].second, read_contents);
+    std::optional<std::vector<uint8_t>> read_contents =
+        ReadFileToBytes(retrieved_file_infos[i].path);
+    ASSERT_TRUE(read_contents.has_value());
+    EXPECT_EQ(test_filenames_and_contents[i].second, read_contents.value());
   }
 }
 
@@ -641,14 +644,14 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
   const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
-  const std::vector<std::pair<base::FilePath, std::string>>
+  const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>
       test_filenames_and_contents = {
           {base::FilePath(FILE_PATH_LITERAL("filename.txt")),
-           std::string("just some data")},
+           base::byte_span_from_cstring("just some data")},
           {base::FilePath(FILE_PATH_LITERAL("another filename.txt")),
-           std::string("just some data\0with\0nulls", 25)},
+           base::byte_span_from_cstring("just some data\0with\0nulls")},
           {base::FilePath(FILE_PATH_LITERAL("and another filename.txt")),
-           std::string("just some more data")},
+           base::byte_span_from_cstring("just some more data")},
       };
 
   data->provider().SetVirtualFileContentsForTesting(test_filenames_and_contents,

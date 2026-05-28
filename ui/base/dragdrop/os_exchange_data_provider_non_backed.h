@@ -5,12 +5,16 @@
 #ifndef UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_NON_BACKED_H_
 #define UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_NON_BACKED_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/pickle.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
@@ -64,7 +68,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
   void SetFileContents(const base::FilePath& filename,
-                       const std::string& file_contents) override;
+                       base::span<const uint8_t> file_contents) override;
   std::optional<FileContentsInfo> GetFileContents() const override;
   bool HasFileContents() const override;
 
@@ -120,7 +124,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
 
   // For file contents.
   base::FilePath file_contents_filename_;
-  std::string file_contents_;
+  std::vector<uint8_t> file_contents_;
 
   // For HTML format
   std::u16string html_;

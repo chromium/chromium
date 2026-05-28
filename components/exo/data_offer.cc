@@ -305,11 +305,11 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     const std::string mime_type =
         base::StrCat({"application/octet-stream;name=\"", filename, "\""});
     auto callback = base::BindOnce(
-        [](scoped_refptr<base::RefCountedString> contents,
+        [](scoped_refptr<base::RefCountedMemory> contents,
            DataOffer::SendDataCallback callback) {
           std::move(callback).Run(std::move(contents));
         },
-        base::MakeRefCounted<base::RefCountedString>(
+        base::MakeRefCounted<base::RefCountedBytes>(
             std::move(file_contents->file_contents)));
 
     data_callbacks_.emplace(mime_type, std::move(callback));

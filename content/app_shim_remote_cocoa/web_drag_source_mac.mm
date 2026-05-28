@@ -245,7 +245,7 @@
   // File contents.
   if ([type isEqualToString:_fileType.identifier]) {
     return [NSData dataWithBytes:_dropData.file_contents.data()
-                          length:_dropData.file_contents.length()];
+                          length:_dropData.file_contents.size()];
   }
 
   // File instantiation promise.

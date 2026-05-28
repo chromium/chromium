@@ -9,6 +9,7 @@
 
 #include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -112,8 +113,9 @@ void WaylandDragDropTest::SendDndAction(uint32_t action) {
   });
 }
 
-void WaylandDragDropTest::ReadAndCheckData(const std::string& mime_type,
-                                           const std::string& expected_data) {
+void WaylandDragDropTest::ReadAndCheckData(
+    const std::string& mime_type,
+    base::span<const uint8_t> expected_data) {
   PostToServerAndWait([mime_type,
                        expected_data](wl::TestWaylandServerThread* server) {
     auto* server_data_source = server->data_device_manager()->data_source();
@@ -125,8 +127,7 @@ void WaylandDragDropTest::ReadAndCheckData(const std::string& mime_type,
     server_data_source->ReadData(
         mime_type, base::BindLambdaForTesting([&run_loop, &expected_data](
                                                   std::vector<uint8_t>&& data) {
-          std::string result(data.begin(), data.end());
-          EXPECT_EQ(expected_data, result);
+          EXPECT_EQ(expected_data, base::span(data));
           run_loop.Quit();
         }));
     run_loop.Run();

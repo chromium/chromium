@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -211,6 +212,12 @@ void SelectionData::AssignTo(std::string* result) const {
 
 void SelectionData::AssignTo(std::u16string* result) const {
   *result = RefCountedMemoryToString16(memory_);
+}
+
+void SelectionData::AssignTo(std::vector<uint8_t>* result) const {
+  CHECK(memory_.get());
+
+  *result = base::ToVector(*memory_);
 }
 
 scoped_refptr<base::RefCountedBytes> SelectionData::TakeBytes() {

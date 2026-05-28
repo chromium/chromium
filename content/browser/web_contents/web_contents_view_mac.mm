@@ -68,7 +68,7 @@ namespace {
 // stream.
 void PromiseWriterHelper(const DropData& drop_data, base::File file) {
   DCHECK(file.IsValid());
-  file.WriteAtCurrentPos(base::as_bytes(base::span(drop_data.file_contents)));
+  file.WriteAtCurrentPos(drop_data.file_contents);
 }
 
 WebContentsViewMac::RenderWidgetHostViewCreateFunction

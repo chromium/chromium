@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/win/scoped_hglobal.h"
@@ -312,11 +313,11 @@ TEST_F(ClipboardUtilWinTest, GetFileContents) {
       Microsoft::WRL::Make<MockVirtualFilesDataObject>();
 
   std::wstring filename;
-  std::string file_contents;
+  std::vector<uint8_t> file_contents;
   EXPECT_TRUE(clipboard_util::GetFileContents(data_object.Get(), &filename,
                                               &file_contents));
   EXPECT_EQ(filename, L"File1.txt");
-  EXPECT_EQ(file_contents, "test");
+  EXPECT_EQ(base::span(file_contents), base::byte_span_from_cstring("test"));
 }
 
 }  // namespace

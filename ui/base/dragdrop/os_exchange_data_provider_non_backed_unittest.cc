@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +27,8 @@ const char16_t kUrlTitle[] = u"example";
 const char kFileName[] = "file.pdf";
 const base::FilePath::CharType kFileContentsFileName[] =
     FILE_PATH_LITERAL("file.jpg");
-const char kFileContents[] = "test data";
+const base::span<const uint8_t> kFileContents =
+    base::byte_span_from_cstring("test data");
 const char16_t kHtml[] = u"<h1>Random Title</h1>";
 const char kBaseUrl[] = "www.example2.com";
 }  // namespace
@@ -45,7 +47,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   original.SetPickledData(ClipboardFormatType::PlainTextType(),
                           original_pickle);
   original.SetFileContents(base::FilePath(kFileContentsFileName),
-                           std::string(kFileContents));
+                           kFileContents);
   original.SetHtml(kHtml, GURL(kBaseUrl));
   original.MarkRendererTaintedFromOrigin(url::Origin());
   GURL url("https://www.example.com");
@@ -73,7 +75,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   ASSERT_TRUE(copy_file_contents.has_value());
   EXPECT_EQ(base::FilePath(kFileContentsFileName),
             copy_file_contents->filename);
-  EXPECT_EQ(std::string(kFileContents), copy_file_contents->file_contents);
+  EXPECT_EQ(kFileContents, copy_file_contents->file_contents);
 
   std::optional<OSExchangeDataProvider::HtmlInfo> html_content =
       copy->GetHtml();

@@ -6,7 +6,10 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/run_until.h"
@@ -100,7 +103,8 @@ TEST_F(WebContentsViewMacTest, DragPromisedFileTo_ImageDrag) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   DropData drop_data;
-  drop_data.file_contents = "fake data";
+  drop_data.file_contents =
+      base::ToVector(base::byte_span_from_cstring("fake data"));
 
   base::FilePath target_path = temp_dir.GetPath().AppendASCII("test.png");
   base::FilePath actual_path;
@@ -118,11 +122,13 @@ TEST_F(WebContentsViewMacTest, DragPromisedFileTo_ImageDrag) {
   // The actual file contents are written out by a task posted to the thread
   // pool.
   ASSERT_TRUE(base::test::RunUntil([&] {
-    std::string file_content;
-    if (base::ReadFileToString(actual_path, &file_content)) {
-      return drop_data.file_contents == file_content;
+    std::optional<std::vector<uint8_t>> file_content =
+        ReadFileToBytes(actual_path);
+    if (!file_content) {
+      return false;
     }
-    return false;
+
+    return drop_data.file_contents == file_content.value();
   }));
 }
 

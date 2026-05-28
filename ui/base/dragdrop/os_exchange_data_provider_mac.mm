@@ -286,7 +286,7 @@ bool OSExchangeDataProviderMac::HasCustomFormat(
 
 void OSExchangeDataProviderMac::SetFileContents(
     const base::FilePath& filename,
-    const std::string& file_contents) {
+    base::span<const uint8_t> file_contents) {
   NOTIMPLEMENTED();
 }
 

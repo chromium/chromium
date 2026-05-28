@@ -132,7 +132,7 @@ bool OSExchangeData::HasAnyFormat(
 }
 
 void OSExchangeData::SetFileContents(const base::FilePath& filename,
-                                     const std::string& file_contents) {
+                                     base::span<const uint8_t> file_contents) {
   provider_->SetFileContents(filename, file_contents);
 }
 

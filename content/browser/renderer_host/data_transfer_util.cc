@@ -240,8 +240,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
   }
   if (!drop_data.file_contents.empty()) {
     blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
-    item->data =
-        mojo_base::BigBuffer(base::as_byte_span(drop_data.file_contents));
+    item->data = mojo_base::BigBuffer(drop_data.file_contents);
     item->is_image_accessible = drop_data.file_contents_image_accessible;
     // source_url is synthesized from Content-Disposition for JS-constructed
     // File objects. If absent (e.g. dropped from a non-Chromium app), leave

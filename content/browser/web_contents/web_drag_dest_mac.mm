@@ -15,6 +15,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/byte_size.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -831,9 +832,8 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   constexpr base::ByteSize kMaxDragBinarySize = base::MiBU(256);
   if (file_data.length > 0 &&
       file_data.length <= kMaxDragBinarySize.InBytes()) {
-    auto file_span = base::apple::NSDataToSpan(file_data);
-    drop_data.file_contents.assign(
-        base::as_string_view(base::as_chars(file_span)));
+    drop_data.file_contents =
+        base::ToVector(base::apple::NSDataToSpan(file_data));
 
     if (content_type_id) {
       UTType* utType = [UTType typeWithIdentifier:content_type_id];

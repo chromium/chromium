@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <variant>
@@ -15,9 +16,11 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -92,35 +95,32 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
   ui::EndpointType last_dst_type_ = ui::EndpointType::kUnknownVm;
 };
 
-bool ReadString(base::ScopedFD fd, std::string* out) {
-  std::array<char, 1024> buffer;
-  char* it = buffer.data();
-  char* end = UNSAFE_TODO(it + buffer.size());
+std::vector<uint8_t> ReadFD(base::ScopedFD fd) {
+  std::vector<uint8_t> buffer(1024);
+  uint8_t* it = buffer.data();
+  uint8_t* end = UNSAFE_TODO(it + buffer.size());
   while (it != end) {
     int result = read(fd.get(), it, end - it);
     PCHECK(-1 != result);
-    if (result == 0)
+    if (result == 0) {
       break;
+    }
     UNSAFE_TODO(it += result);
   }
-  *out = std::string(reinterpret_cast<char*>(buffer.data()),
-                     (it - buffer.data()) / sizeof(char));
+  buffer.resize(it - buffer.data());
+  return buffer;
+}
+
+bool ReadString(base::ScopedFD fd, std::string* out) {
+  std::vector<uint8_t> buffer = ReadFD(std::move(fd));
+  *out = std::string(base::as_string_view(buffer));
   return true;
 }
 
 bool ReadString16(base::ScopedFD fd, std::u16string* out) {
-  std::array<char, 1024> buffer;
-  char* it = buffer.data();
-  char* end = UNSAFE_TODO(it + buffer.size());
-  while (it != UNSAFE_TODO(it + buffer.size())) {
-    int result = read(fd.get(), it, end - it);
-    PCHECK(-1 != result);
-    if (result == 0)
-      break;
-    UNSAFE_TODO(it += result);
-  }
-  *out = std::u16string(UNSAFE_TODO(reinterpret_cast<char16_t*>(buffer.data())),
-                        (it - buffer.data()) / sizeof(char16_t));
+  std::vector<uint8_t> buffer = ReadFD(std::move(fd));
+  *out = std::u16string(base::as_string_view(
+      base::subtle::reinterpret_span<const char16_t>(base::span(buffer))));
   return true;
 }
 
@@ -236,7 +236,7 @@ TEST_F(DataOfferTest, SetFileContentsDropData) {
   TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
   data.provider().SetFileContents(base::FilePath("\"test file\".jpg"),
-                                  std::string("test data"));
+                                  base::byte_span_from_cstring("test data"));
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   EXPECT_EQ(1u, delegate.mime_types().size());
@@ -409,7 +409,8 @@ TEST_F(DataOfferTest, ReceiveFileContentsDropData) {
 
   TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
-  const std::string expected = "test data";
+  const std::vector<uint8_t> expected =
+      base::ToVector(base::byte_span_from_cstring("test data"));
   data.provider().SetFileContents(base::FilePath("test.jpg"), expected);
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
@@ -419,9 +420,7 @@ TEST_F(DataOfferTest, ReceiveFileContentsDropData) {
 
   data_offer.Receive("application/octet-stream;name=\"test.jpg\"",
                      std::move(write_pipe));
-  std::string result;
-  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
-  EXPECT_EQ(expected, result);
+  EXPECT_EQ(expected, ReadFD(std::move(read_pipe)));
 }
 
 TEST_F(DataOfferTest, SetClipboardDataPlainText) {

@@ -73,7 +73,7 @@ bool DragAndDropSimulator::SimulateDragEnter(
 #if BUILDFLAG(IS_WIN)
 bool DragAndDropSimulator::SimulateDragEnter(
     const gfx::Point& location,
-    const std::vector<std::pair<base::FilePath, std::string>>&
+    const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>&
         filenames_and_contents,
     DWORD tymed) {
   os_exchange_data_ = std::make_unique<ui::OSExchangeData>();

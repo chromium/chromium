@@ -165,14 +165,14 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   // CF_HDROP will be advertised via QueryGetData but GetData will fail -
   // simulating ZIP Shell Folder behavior.
   void SetVirtualFileContentsForTesting(
-      const std::vector<std::pair<base::FilePath, std::string>>&
+      const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>&
           filenames_and_contents,
       DWORD tymed,
-      bool show_cfhdrop_without_data = false) override;
+      bool show_cfhdrop_without_data) override;
   void SetPickledData(const ClipboardFormatType& format,
                       const base::Pickle& data) override;
   void SetFileContents(const base::FilePath& filename,
-                       const std::string& file_contents) override;
+                       base::span<const uint8_t> file_contents) override;
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
 
   std::optional<std::u16string> GetString() const override;

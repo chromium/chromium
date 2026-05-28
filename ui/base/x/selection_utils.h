@@ -120,6 +120,9 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionData {
   void AssignTo(std::string* result) const;
   void AssignTo(std::u16string* result) const;
 
+  // Assigns the raw data to the vector.
+  void AssignTo(std::vector<uint8_t>* result) const;
+
   // Transfers ownership of |memory_| to the caller.
   scoped_refptr<base::RefCountedBytes> TakeBytes();
 

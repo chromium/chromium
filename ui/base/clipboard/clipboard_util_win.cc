@@ -20,6 +20,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -1057,7 +1058,7 @@ bool GetHtml(IDataObject* data_object,
   return true;
 }
 
-bool ReadStreamToString(IStream* stream, std::string* out) {
+bool ReadStreamToVector(IStream* stream, std::vector<uint8_t>* out) {
   DCHECK(stream);
   DCHECK(out);
   STATSTG statstg;
@@ -1071,7 +1072,7 @@ bool ReadStreamToString(IStream* stream, std::string* out) {
   stream->Seek(zero, STREAM_SEEK_SET, nullptr);
   // Loop to handle partial reads.
   size_t bytes_remaining = total_size;
-  char* ptr = out->data();
+  uint8_t* ptr = out->data();
   while (bytes_remaining > 0) {
     ULONG bytes_read = 0;
     HRESULT hr = stream->Read(ptr, base::checked_cast<ULONG>(bytes_remaining),
@@ -1088,7 +1089,7 @@ bool ReadStreamToString(IStream* stream, std::string* out) {
 
 bool GetFileContents(IDataObject* data_object,
                      std::wstring* filename,
-                     std::string* file_contents) {
+                     std::vector<uint8_t>* file_contents) {
   DCHECK(data_object && filename && file_contents);
   if (!HasFileContents(data_object))
     return false;
@@ -1109,10 +1110,10 @@ bool GetFileContents(IDataObject* data_object,
   // The call to GetData can be very slow depending on what is in |data_object|.
   if (SUCCEEDED(data_object->GetData(&format_etc, &content))) {
     if (TYMED_HGLOBAL == content.tymed) {
-      base::win::ScopedHGlobal<char*> data(content.hGlobal);
-      file_contents->assign(data.data(), data.size());
+      base::win::ScopedHGlobal<uint8_t*> data(content.hGlobal);
+      *file_contents = base::ToVector(data);
     } else if (TYMED_ISTREAM == content.tymed) {
-      if (!ReadStreamToString(content.pstm, file_contents)) {
+      if (!ReadStreamToVector(content.pstm, file_contents)) {
         file_contents->clear();
       }
     }

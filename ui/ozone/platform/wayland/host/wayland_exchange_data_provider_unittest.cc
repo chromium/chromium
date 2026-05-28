@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/pickle.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,7 +81,8 @@ TEST_F(WaylandExchangeDataProviderTest, FileNameAsUriList) {
 
 TEST_F(WaylandExchangeDataProviderTest, FileContents) {
   constexpr std::string kName("filename");
-  constexpr std::string kContents("contents");
+  const base::span<const uint8_t> kContents =
+      base::byte_span_from_cstring("contents");
   const std::string kMimeType("application/octet-stream;name=\"filename\"");
 
   WaylandExchangeDataProvider provider;
@@ -97,7 +99,7 @@ TEST_F(WaylandExchangeDataProviderTest, FileContents) {
 
   std::string extracted;
   EXPECT_TRUE(provider.ExtractData(kMimeType, &extracted));
-  EXPECT_EQ(kContents, extracted);
+  EXPECT_EQ(base::as_string_view(kContents), extracted);
 }
 
 }  // namespace ui

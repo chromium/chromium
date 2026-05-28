@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
   void SetFileContents(const base::FilePath& filename,
-                       const std::string& file_contents) override;
+                       base::span<const uint8_t> file_contents) override;
   std::optional<FileContentsInfo> GetFileContents() const override;
   bool HasFileContents() const override;
 

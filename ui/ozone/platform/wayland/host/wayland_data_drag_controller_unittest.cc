@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -288,7 +289,8 @@ TEST_P(WaylandDataDragControllerTest, StartDrag) {
   // objects are ready.
   ScheduleTestTask(base::BindLambdaForTesting([&]() {
     // Now the server can read the data and give it to our callback.
-    ReadAndCheckData(kMimeTypeUtf8PlainText, kSampleTextForDragAndDrop);
+    ReadAndCheckData(kMimeTypeUtf8PlainText,
+                     base::byte_span_from_cstring(kSampleTextForDragAndDrop));
 
     SendDndCancelled();
   }));
@@ -371,13 +373,14 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetFileContents(
       base::FilePath(FILE_PATH_LITERAL("t\\est\".jpg")),
-      kSampleTextForDragAndDrop);
+      base::byte_span_from_cstring(kSampleTextForDragAndDrop));
   int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
   drag_controller()->StartSession(os_exchange_data, operations,
                                   DragEventSource::kMouse);
 
   constexpr char kText[] = "application/octet-stream;name=\"t\\\\est\\\".jpg\"";
-  ReadAndCheckData(kText, kSampleTextForDragAndDrop);
+  ReadAndCheckData(kText,
+                   base::byte_span_from_cstring(kSampleTextForDragAndDrop));
   PostToServerAndWait([kText](wl::TestWaylandServerThread* server) {
     auto* source = server->data_device_manager()->data_source();
     ASSERT_TRUE(source);
@@ -510,7 +513,8 @@ TEST_P(WaylandDataDragControllerTest,
   // objects are ready.
   ScheduleTestTask(base::BindLambdaForTesting([&]() {
     // Now the server can read the data and give it to our callback.
-    ReadAndCheckData(kMimeTypeUtf8PlainText, kSampleTextForDragAndDrop);
+    ReadAndCheckData(kMimeTypeUtf8PlainText,
+                     base::byte_span_from_cstring(kSampleTextForDragAndDrop));
 
     EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
     SendDndDropPerformed();

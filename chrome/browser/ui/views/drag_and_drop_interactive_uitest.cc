@@ -79,6 +79,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/containers/span.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #endif
 
@@ -755,7 +756,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
 #if BUILDFLAG(IS_WIN)
   bool SimulateDragEnterToRightFrame(
-      const std::vector<std::pair<base::FilePath, std::string>>& file_infos,
+      const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>&
+          file_infos,
       DWORD tymed) {
     AssertTestPageIsLoaded();
     return drag_simulator_->SimulateDragEnter(kMiddleOfRightFrame, file_infos,
@@ -967,10 +969,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragAndDropVirtualFiles) {
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame("a.test", "drop_target.html"));
   // Prepare a test file with a known extension and temporary path.
-  std::vector<std::pair<base::FilePath, std::string>> file_infos;
+  std::vector<std::pair<base::FilePath, base::span<const uint8_t>>> file_infos;
   base::FilePath test_file = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("test_document.pdf"));
-  file_infos.emplace_back(test_file, std::string("just some data"));
+  file_infos.emplace_back(test_file,
+                          base::byte_span_from_cstring("just some data"));
 
   // Set up a script in the right frame to listen for dragenter, dragover, and
   // drop, and record file type for each event.

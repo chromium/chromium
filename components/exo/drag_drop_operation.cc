@@ -298,8 +298,7 @@ void DragDropOperation::OnFileContentsRead(const std::string& mime_type,
                                            const base::FilePath& filename,
                                            const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  os_exchange_data_->SetFileContents(filename,
-                                     std::string(data.begin(), data.end()));
+  os_exchange_data_->SetFileContents(filename, data);
   mime_type_ = mime_type;
   counter_.Run();
 }
