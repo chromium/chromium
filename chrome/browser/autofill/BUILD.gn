@@ -36,6 +36,8 @@ static_library("autofill") {
     "ml_log_router_factory.h",
     "one_time_token_service_factory.cc",
     "one_time_token_service_factory.h",
+    "personal_context_access_manager_factory.cc",
+    "personal_context_access_manager_factory.h",
     "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
     "subkey_requester_factory.cc",
