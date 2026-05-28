@@ -130,7 +130,10 @@ void ContentAnalysisDialogController::ShowDialogNow() {
     // accept/cancel the result immediately. See crbug.com/374120523 and
     // crbug.com/388049470 for more context.
     if (!dialog_delegate_->is_pending()) {
-      CancelButtonClicked();
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContentAnalysisDialogController::CancelButtonClicked,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
     return;
   }
