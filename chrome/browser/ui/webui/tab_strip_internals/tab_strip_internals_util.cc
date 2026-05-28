@@ -79,11 +79,7 @@ mojom::DataPtr BuildMojoCollection(const tabs::TabCollection* collection) {
           static_cast<const tabs::TabGroupTabCollection*>(collection);
       const TabGroup* tab_group = group_collection->GetTabGroup();
       if (tab_group) {
-        group_tabs->visualData = mojom::TabGroupVisualData::New();
-        group_tabs->visualData->title = tab_group->visual_data()->title();
-        group_tabs->visualData->color = tab_group->visual_data()->color();
-        group_tabs->visualData->is_collapsed =
-            tab_group->visual_data()->is_collapsed();
+        group_tabs->visualData = *tab_group->visual_data();
       }
       return mojom::Data::NewTabGroupCollection(std::move(group_tabs));
     }
@@ -170,11 +166,7 @@ mojom::TabRestoreTabPtr BuildTabRestoreTab(
     mojo_tab->group_id = tab.group->token();
   }
 
-  if (tab.group_visual_data.has_value()) {
-    const auto& data = *tab.group_visual_data;
-    mojo_tab->group_visual_data = mojom::TabGroupVisualData::New(
-        data.title(), data.color(), data.is_collapsed());
-  }
+  mojo_tab->group_visual_data = tab.group_visual_data;
 
   if (tab.split_id.has_value()) {
     mojo_tab->split_id = tab.split_id->token();
@@ -199,9 +191,7 @@ mojom::TabRestoreGroupPtr BuildTabRestoreGroup(
   mojo_group->restore_entry = BuildTabRestoreEntryBase(group);
   mojo_group->browser_id = mojom::SessionID::New(group.browser_id);
   mojo_group->group_id = group.group_id.token();
-  mojo_group->visual_data = mojom::TabGroupVisualData::New(
-      group.visual_data.title(), group.visual_data.color(),
-      group.visual_data.is_collapsed());
+  mojo_group->visual_data = group.visual_data;
 
   for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : group.tabs) {
     mojo_group->tabs.push_back(BuildTabRestoreTab(*tab));
@@ -292,9 +282,7 @@ mojom::SessionTabGroupPtr BuildSessionTabGroup(
     const sessions::SessionTabGroup& group) {
   auto mojo_group = mojom::SessionTabGroup::New();
   mojo_group->group_id = group.id.token();
-  mojo_group->visual_data = mojom::TabGroupVisualData::New(
-      group.visual_data.title(), group.visual_data.color(),
-      group.visual_data.is_collapsed());
+  mojo_group->visual_data = group.visual_data;
   return mojo_group;
 }
 

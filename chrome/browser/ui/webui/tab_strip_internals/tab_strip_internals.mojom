@@ -4,7 +4,7 @@
 
 module tab_strip_internals.mojom;
 
-import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom";
 import "components/tabs/public/mojom/tabs.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -134,14 +134,7 @@ struct UnpinnedCollection {
 // Collection for tab groups.
 struct GroupCollection {
   NodeId id;
-  TabGroupVisualData visualData;
-};
-
-// Additional metadata for group tabs.
-struct TabGroupVisualData {
-  mojo_base.mojom.String16 title;
-  tab_groups.mojom.Color color;
-  bool is_collapsed;
+  tabs_api.mojom.TabGroupVisualData visualData;
 };
 
 // Collection for split tabs.
@@ -217,7 +210,7 @@ struct TabRestoreTab {
   bool pinned;
   // Could be Null if the tab is not part of a group.
   mojo_base.mojom.Token? group_id;
-  TabGroupVisualData? group_visual_data;
+  tabs_api.mojom.TabGroupVisualData? group_visual_data;
   // Could be Null if the tab is not part of a split.
   mojo_base.mojom.Token? split_id;
   SplitTabVisualData? split_visual_data;
@@ -236,7 +229,7 @@ struct TabRestoreGroup {
   // May be 0 (an invalid SessionID) when restoring an entire session.
   SessionID browser_id;
   mojo_base.mojom.Token group_id;
-  TabGroupVisualData visual_data;
+  tabs_api.mojom.TabGroupVisualData visual_data;
   array<TabRestoreTab> tabs;
 };
 
@@ -309,7 +302,7 @@ struct SessionTab {
 struct SessionTabGroup {
   // Globally unique, even across different sessions.
   mojo_base.mojom.Token group_id;
-  TabGroupVisualData visual_data;
+  tabs_api.mojom.TabGroupVisualData visual_data;
 };
 
 // Session restore data for a Split referenced by a SessionTab.

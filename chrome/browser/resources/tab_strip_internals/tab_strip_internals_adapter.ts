@@ -4,7 +4,8 @@
 
 import type {TokenMojoType} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {Container, Node, SessionSplitTab, SessionTab, SessionTabGroup, SessionWindow, SplitTabVisualData, Tab, TabGroupVisualData, TabRestoreEntry, TabRestoreGroup, TabRestoreSplit, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
+import type {TabGroupVisualData} from './tab_strip_api_data_model.mojom-webui.js';
+import type {Container, Node, SessionSplitTab, SessionTab, SessionTabGroup, SessionWindow, SplitTabVisualData, Tab, TabRestoreEntry, TabRestoreGroup, TabRestoreSplit, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
 
 /**
  * Model layer: Represents a UI node used by the ViewModel to build a semantic

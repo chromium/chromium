@@ -863,10 +863,6 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [5230],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip_internals/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [5240],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_browser/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [5250],
@@ -894,6 +890,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/emulator/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5330],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip_internals/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [5350],
   },
   # END chrome/ WebUI resources section
 
