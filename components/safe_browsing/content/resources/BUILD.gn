@@ -36,10 +36,13 @@ action("make_file_types_protobuf") {
     target_arch = "unknown_target_arch"
   }
 
-  inputs = [ input_filename ]
+  inputs = [
+    input_filename,
+    "//components/resources/protobufs/binary_proto_generator.py",
+  ]
 
   deps = [
-    "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    "//components/safe_browsing/content/common/proto:download_file_types_proto_gen",
     "//third_party/protobuf:py_proto",
   ]
 
@@ -82,10 +85,13 @@ action("make_all_file_types_protobuf") {
   python_path_safe_browsing =
       "$proto_python_root/components/safe_browsing/content/common/proto"
 
-  inputs = [ input_filename ]
+  inputs = [
+    input_filename,
+    "//components/resources/protobufs/binary_proto_generator.py",
+  ]
 
   deps = [
-    "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    "//components/safe_browsing/content/common/proto:download_file_types_proto_gen",
     "//third_party/protobuf:py_proto",
   ]
 

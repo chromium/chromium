@@ -19,10 +19,14 @@ if (is_android && safe_browsing_mode == 2) {
     python_path_safe_browsing =
         "$proto_python_root/components/safe_browsing/core/common/proto"
 
-    inputs = [ input_filename ]
+    inputs = [
+      input_filename,
+      "validation_utils.py",
+      "//components/resources/protobufs/binary_proto_generator.py",
+    ]
 
     deps = [
-      "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
+      "//components/safe_browsing/core/common/proto:realtimeallowlist_proto_gen",
       "//third_party/protobuf:py_proto",
     ]
 
@@ -55,14 +59,18 @@ action("make_real_time_url_allowlist_protobuf_for_gcs") {
   python_path_safe_browsing =
       "$proto_python_root/components/safe_browsing/core/common/proto"
 
-  inputs = [ input_filename ]
+  inputs = [
+    input_filename,
+    "validation_utils.py",
+    "//components/resources/protobufs/binary_proto_generator.py",
+  ]
 
   deps = [
-    "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
+    "//components/safe_browsing/core/common/proto:realtimeallowlist_proto_gen",
     "//third_party/protobuf:py_proto",
   ]
 
-  outputs = [ output_dir ]
+  outputs = [ "$output_dir/android/$output_basename" ]
 
   args = [
     "-w",
