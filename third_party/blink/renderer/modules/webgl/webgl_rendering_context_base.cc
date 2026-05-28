@@ -9084,7 +9084,8 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
     if (!snapshot_provider) {
       break;
     }
-    if (!snapshot_provider->IsValid() || !info.Matches(*snapshot_provider)) {
+    if (!snapshot_provider->IsValid() ||
+        !info.Matches(snapshot_provider->GetInfo())) {
       continue;
     }
     tried_to_create_provider = true;

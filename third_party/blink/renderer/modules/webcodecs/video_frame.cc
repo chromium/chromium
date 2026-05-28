@@ -364,7 +364,8 @@ class CanvasNon2DResourceProviderCache
     auto required_provider_info =
         CreateSnapshotProviderInfoForVideoFrame(frame);
     for (const auto& provider : providers_) {
-      if (provider->IsValid() && required_provider_info.Matches(*provider)) {
+      if (provider->IsValid() &&
+          required_provider_info.Matches(provider->GetInfo())) {
         return provider.get();
       }
     }

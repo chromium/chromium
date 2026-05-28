@@ -31,20 +31,6 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
     viz::SharedImageFormat format;
     gfx::Size size;
 
-    bool Matches(const CanvasSnapshotProvider& provider) const {
-      return provider.Size() == size && provider.GetAlphaType() == alpha_type &&
-             provider.GetColorSpace() == color_space &&
-             // TODO(crbug.com/40767377): Restore strict format checks once the
-             // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
-             (provider.GetSharedImageFormat() == format ||
-              (provider.GetSharedImageFormat() ==
-                   viz::SinglePlaneFormat::kRGBA_8888 &&
-               format == viz::SinglePlaneFormat::kBGRA_8888) ||
-              (provider.GetSharedImageFormat() ==
-                   viz::SinglePlaneFormat::kBGRA_8888 &&
-               format == viz::SinglePlaneFormat::kRGBA_8888));
-    }
-
     bool Matches(const CanvasSnapshotProvider::Info& info) const {
       return info.size == size && info.alpha_type == alpha_type &&
              info.color_space == color_space &&
@@ -57,6 +43,15 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
                format == viz::SinglePlaneFormat::kRGBA_8888));
     }
   };
+
+  Info GetInfo() const {
+    return {
+        .alpha_type = GetAlphaType(),
+        .color_space = GetColorSpace(),
+        .format = GetSharedImageFormat(),
+        .size = Size(),
+    };
+  }
 };
 
 }  // namespace blink
