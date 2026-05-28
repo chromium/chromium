@@ -42,8 +42,9 @@ class SplitViewMetricsControllerTest : public AshTestBase {
   }
 
   void AdvanceClock(base::TimeDelta delta) {
-    task_environment()->AdvanceClock(delta);
-    task_environment()->RunUntilIdle();
+    // Run mock time by the exact elapsed duration under test so any delayed
+    // work due in that interval completes before histogram assertions.
+    task_environment()->FastForwardBy(delta);
   }
 
  protected:
