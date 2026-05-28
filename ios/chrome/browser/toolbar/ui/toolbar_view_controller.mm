@@ -75,11 +75,6 @@ constexpr CGFloat kFullscreenCollapsedThreshold = 0.05;
 const base::TimeDelta kProgressBarEndAnimationDuration =
     base::Milliseconds(250);
 
-// The vertical offset between the bottom of the location bar container and
-// the top of the outer separator. Used to keep the spacing symmetrical
-// around the URL text when the bottom toolbar is collapsed above the keyboard.
-constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
-
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate,

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -1102,7 +1103,12 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
 
 - (CGFloat)keyboardAttachedBottomOmniboxHeight {
   if (IsChromeNextIaEnabled()) {
-    return kKeyboardAttachedOmniboxBottomPadding;
+    if (self.browser->GetSceneState().layoutState.appBarPosition ==
+        AppBarPosition::kBottom) {
+      return kKeyboardAttachedOmniboxBottomPadding;
+    } else {
+      return kKeyboardAttachedOmniboxBottomPaddingLandscape;
+    }
   }
   return 0;
 }

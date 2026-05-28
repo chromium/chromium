@@ -38,4 +38,7 @@ constexpr CGFloat kToolbarHeightFullscreen = 40;
 constexpr CGFloat kTopToolbarIPhonePortraitHeightFullscreen = 32;
 constexpr CGFloat kLocationBarHeightFullscreen = 32;
 constexpr CGFloat kToolbarPaddingFullscreen = 4;
+constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 constexpr CGFloat kKeyboardAttachedOmniboxBottomPadding = 10;
+constexpr CGFloat kKeyboardAttachedOmniboxBottomPaddingLandscape =
+    kLocationBarHeightFullscreen - kOuterSeparatorVerticalOffset + 1;

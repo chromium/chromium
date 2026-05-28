@@ -2943,13 +2943,11 @@ bool IsFullscreenNextIAEnabled() {
       keyboardHeight +
       self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
   if (IsChromeNextIaEnabled()) {
-    // When the App Bar is at the bottom, the secondary toolbar is already
-    // taller by the height of the App Bar. If the App Bar is not at the bottom
-    // (e.g., in landscape), we subtract the safe area instead.
+    // When the App Bar is at the bottom (Portrait), the secondary toolbar is
+    // already taller by the height of the App Bar, so we subtract the App Bar
+    // height.
     if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
       keyboardAttachedOffset -= kAppBarHeightFullscreen;
-    } else {
-      keyboardAttachedOffset -= self.view.safeAreaInsets.bottom;
     }
   }
   CGFloat baseHeight = [self secondaryToolbarHeightWithInset];
