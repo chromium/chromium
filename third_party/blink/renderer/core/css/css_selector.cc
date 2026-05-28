@@ -34,9 +34,10 @@
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
 #include "style_rule.h"
+#include "third_party/blink/renderer/core/css/active_navigation_condition.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/core/css/link_condition.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -411,6 +412,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdOverscrollAreaParent;
     case kPseudoAnimatedImage:
     case kPseudoActive:
+    case kPseudoActiveNavigation:
     case kPseudoActiveOption:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -728,6 +730,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-internal-overscroll-area-parent",
      CSSSelector::kPseudoOverscrollAreaParent},
     {"-webkit-any", CSSSelector::kPseudoAny},
+    {"active-navigation", CSSSelector::kPseudoActiveNavigation},
     {"active-view-transition-type",
      CSSSelector::kPseudoActiveViewTransitionType},
     {"cue", CSSSelector::kPseudoCue},
@@ -1030,6 +1033,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       [[fallthrough]];
     // For pseudo-classes
     case kPseudoActive:
+    case kPseudoActiveNavigation:
     case kPseudoActiveOption:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -1361,9 +1365,16 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         break;
       }
       case kPseudoLinkTo: {
-        DCHECK(GetLinkCondition());
+        DCHECK(GetRouteLocation());
         builder.Append("(");
-        GetLinkCondition()->SerializeTo(builder);
+        GetRouteLocation()->SerializeTo(builder);
+        builder.Append(")");
+        break;
+      }
+      case kPseudoActiveNavigation: {
+        DCHECK(GetActiveNavigationCondition());
+        builder.Append("(");
+        GetActiveNavigationCondition()->SerializeTo(builder);
         builder.Append(")");
         break;
       }
@@ -1577,9 +1588,15 @@ void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   data_.rare_data_->selector_list_ = selector_list;
 }
 
-void CSSSelector::SetLinkCondition(LinkCondition* condition) {
+void CSSSelector::SetRouteLocation(RouteLocation* location) {
   CreateRareData();
-  data_.rare_data_->link_condition_ = condition;
+  data_.rare_data_->route_location_ = location;
+}
+
+void CSSSelector::SetActiveNavigationCondition(
+    ActiveNavigationCondition* condition) {
+  CreateRareData();
+  data_.rare_data_->active_navigation_condition_ = condition;
 }
 
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
@@ -1833,6 +1850,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoAutofillSelected:
     case kPseudoWebKitAutofill:
     case kPseudoActive:
+    case kPseudoActiveNavigation:
     case kPseudoActiveOption:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -2134,7 +2152,8 @@ void CSSSelector::Trace(Visitor* visitor) const {
 
 void CSSSelector::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(selector_list_);
-  visitor->Trace(link_condition_);
+  visitor->Trace(route_location_);
+  visitor->Trace(active_navigation_condition_);
 }
 
 const CSSSelector* CSSSelector::SelectorListOrParent() const {
@@ -2191,6 +2210,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
   switch (type) {
     case CSSSelector::kPseudoAnimatedImage:
     case CSSSelector::kPseudoActive:
+    case CSSSelector::kPseudoActiveNavigation:
     case CSSSelector::kPseudoActiveOption:
     case CSSSelector::kPseudoActiveViewTransition:
     case CSSSelector::kPseudoActiveViewTransitionType:

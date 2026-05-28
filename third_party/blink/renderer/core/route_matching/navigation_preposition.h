@@ -13,6 +13,7 @@ enum class NavigationPreposition : uint8_t {
   kAt,
   kFrom,
   kTo,
+  kWith,
 };
 
 }  // namespace blink

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>:active-navigation() with route argument, with pattern parameters</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#active-navigation-pseudo-class">
+<style>
+  @route --rte {
+    pathname: "/target/:match/*";
+  }
+  :active-navigation(to --rte) {
+    --to: matched;
+  }
+  :active-navigation(from --rte) {
+    --from: matched;
+  }
+  :active-navigation(with --rte) {
+    --with: matched;
+  }
+</style>
+<a id="link1" href="/target/foo/alpha">foo</a>
+<a id="link2" href="/target/bar/beta">bar</a>
+<a id="link3" href="/target/bar/alpha">bar</a>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-navigation.js"></script>
+<script>
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+    const match_params = [
+      [link1, "--to"],
+      [link1, "--from"],
+      [link1, "--with"],
+      [link2, "--to"],
+      [link2, "--from"],
+      [link2, "--with"],
+      [link3, "--to"],
+      [link3, "--from"],
+      [link3, "--with"],
+    ];
+
+    //                                                                               onnavigate             committed
+    //                                                                               link1  link2  link3    link1  link2  link3
+    //                                                                               T F W  T F W  T F W    T F W  T F W  T F W
+    await test_navigation(t, "t1", ()=> { navigation.navigate("/target/foo/1"); },  [1,0,1, 0,0,0, 0,0,0], [1,0,0, 0,0,0, 0,0,0], match_params);
+    await test_navigation(t, "t2", ()=> { navigation.navigate("/target/bar/2"); },  [0,1,0, 1,0,1, 1,0,1], [0,1,1, 1,0,0, 1,0,0], match_params);
+    await test_navigation(t, "t3", ()=> { navigation.navigate("/target/bar/3"); },  [0,0,0, 1,1,1, 1,1,1], [0,0,0, 1,1,1, 1,1,1], match_params);
+    await test_navigation(t, "BACK", ()=> { navigation.back(); },                   [0,0,0, 1,1,1, 1,1,1], [0,0,0, 1,1,1, 1,1,1], match_params);
+    await test_navigation(t, "FORWARD", ()=> { navigation.forward(); },             [0,0,0, 1,1,1, 1,1,1], [0,0,0, 1,1,1, 1,1,1], match_params);
+    await test_navigation(t, "t3b", ()=> { navigation.navigate("/target/bar/3"); }, [0,0,0, 1,1,1, 1,1,1], [0,0,0, 1,1,1, 1,1,1], match_params);
+    await test_navigation(t, "t1b", ()=> { navigation.navigate("/target/foo/1"); }, [1,0,1, 0,1,0, 0,1,0], [1,0,0, 0,1,1, 0,1,1], match_params);
+  }, "Navigate between URLs");
+</script>

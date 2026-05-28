@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
@@ -13,11 +14,11 @@
 
 namespace blink {
 
-void NavigationLocation::Trace(Visitor* v) const {
+void RouteLocation::Trace(Visitor* v) const {
   v->Trace(url_pattern_);
 }
 
-const Route* NavigationLocation::FindOrCreateRoute(Document& document) const {
+const Route* RouteLocation::FindOrCreateRoute(Document& document) const {
   if (url_pattern_) {
     // A URLPattern becomes an anonymous route. One route for each unique
     // URLPattern.
@@ -33,7 +34,20 @@ const Route* NavigationLocation::FindOrCreateRoute(Document& document) const {
   return route_map->FindRoute(GetRouteName());
 }
 
-void NavigationLocation::SerializeTo(StringBuilder& builder) const {
+bool RouteLocation::CheckSelectorMatch(
+    const Element& element,
+    std::optional<NavigationPreposition> preposition) const {
+  const auto* anchor = DynamicTo<HTMLAnchorElement>(&element);
+  if (!anchor) {
+    return false;
+  }
+
+  const Route* route = FindOrCreateRoute(element.GetDocument());
+  return route && route->MatchesUrl(anchor->Href()) &&
+         (!preposition || route->Matches(*preposition));
+}
+
+void RouteLocation::SerializeTo(StringBuilder& builder) const {
   DCHECK(!string_.IsNull());
   if (url_pattern_) {
     builder.Append("url-pattern(");
@@ -45,18 +59,25 @@ void NavigationLocation::SerializeTo(StringBuilder& builder) const {
 }
 
 void NavigationLocationTestExpression::Trace(Visitor* visitor) const {
-  visitor->Trace(navigation_location_);
+  visitor->Trace(route_location_);
   NavigationTestExpression::Trace(visitor);
 }
 
 bool NavigationLocationTestExpression::Matches(Document& document) const {
-  const Route* route = navigation_location_->FindOrCreateRoute(document);
+  const Route* route = route_location_->FindOrCreateRoute(document);
   return route && route->Matches(preposition_);
 }
 
 void NavigationLocationTestExpression::SerializeTo(
     StringBuilder& builder) const {
-  switch (preposition_) {
+  SerializePrepositionTo(preposition_, builder);
+  route_location_->SerializeTo(builder);
+}
+
+void NavigationLocationTestExpression::SerializePrepositionTo(
+    NavigationPreposition preposition,
+    StringBuilder& builder) {
+  switch (preposition) {
     case NavigationPreposition::kAt:
       builder.Append("at: ");
       break;
@@ -66,8 +87,10 @@ void NavigationLocationTestExpression::SerializeTo(
     case NavigationPreposition::kTo:
       builder.Append("to: ");
       break;
+    case NavigationPreposition::kWith:
+      builder.Append("with: ");
+      break;
   }
-  navigation_location_->SerializeTo(builder);
 }
 
 bool NavigationTypeTestExpression::Matches(Document& document) const {

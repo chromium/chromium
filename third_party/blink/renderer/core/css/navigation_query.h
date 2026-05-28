@@ -15,18 +15,22 @@
 namespace blink {
 
 class Document;
+class Element;
 class Route;
 class URLPattern;
 
-// <navigation-location>
+// <route-location>
 //
-// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-location
-class NavigationLocation : public GarbageCollected<NavigationLocation> {
+// https://drafts.csswg.org/css-navigation-1/#typedef-route-location
+//
+// TODO(crbug.com/436805487): Add support for url(). It can be route,
+// url-pattern() - OR url().
+class RouteLocation : public GarbageCollected<RouteLocation> {
  public:
-  explicit NavigationLocation(const AtomicString& navigation_name)
+  explicit RouteLocation(const AtomicString& navigation_name)
       : string_(navigation_name) {}
-  NavigationLocation(URLPattern* url_pattern,
-                     const AtomicString& original_url_pattern_string)
+  RouteLocation(URLPattern* url_pattern,
+                const AtomicString& original_url_pattern_string)
       : url_pattern_(url_pattern), string_(original_url_pattern_string) {}
 
   void Trace(Visitor*) const;
@@ -52,6 +56,9 @@ class NavigationLocation : public GarbageCollected<NavigationLocation> {
   // missing.
   const Route* FindOrCreateRoute(Document&) const;
 
+  bool CheckSelectorMatch(
+      const Element&,
+      std::optional<NavigationPreposition> = std::nullopt) const;
   void SerializeTo(StringBuilder&) const;
 
  private:
@@ -84,22 +91,24 @@ class NavigationTestExpression
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-location-test
 class NavigationLocationTestExpression : public NavigationTestExpression {
  public:
-  NavigationLocationTestExpression(NavigationLocation& location,
+  NavigationLocationTestExpression(RouteLocation& location,
                                    NavigationPreposition preposition)
-      : navigation_location_(&location), preposition_(preposition) {}
+      : route_location_(&location), preposition_(preposition) {}
 
   void Trace(Visitor* visitor) const override;
 
   bool IsNavigationLocationTestExpression() const override { return true; }
 
-  NavigationLocation& GetLocation() const { return *navigation_location_; }
+  RouteLocation& GetLocation() const { return *route_location_; }
   NavigationPreposition GetPreposition() const { return preposition_; }
 
   bool Matches(Document&) const override;
   void SerializeTo(StringBuilder&) const override;
 
+  static void SerializePrepositionTo(NavigationPreposition, StringBuilder&);
+
  private:
-  Member<NavigationLocation> navigation_location_;
+  Member<RouteLocation> route_location_;
   NavigationPreposition preposition_;
 };
 

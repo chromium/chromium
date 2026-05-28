@@ -28,6 +28,9 @@ class RouteMatchState : public GarbageCollected<RouteMatchState> {
   // Routes we're navigating to.
   RouteMap::MatchCollection to_routes_;
 
+  // Routes we're navigating towards, or away from (the one we're not "at").
+  RouteMap::MatchCollection with_routes_;
+
   RouteMap::HistoryTraverseType traverse_type_ = RouteMap::kNotTraversing;
 
   bool in_preview_ = false;

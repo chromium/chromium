@@ -35,6 +35,8 @@ class Route : public EventTarget {
         return matches_from_;
       case NavigationPreposition::kTo:
         return matches_to_;
+      case NavigationPreposition::kWith:
+        return matches_with_;
     }
   }
 
@@ -47,14 +49,8 @@ class Route : public EventTarget {
   // changes. Return true if match status changed.
   bool UpdateMatchStatus(const KURL& previous_url, const KURL& next_url);
 
-  bool FromOrToMatchesParamInHref(const KURL& from,
-                                  const KURL& to,
-                                  const AtomicString& param,
-                                  const KURL& href) const;
-
-  bool HrefMatchesParam(const KURL& href,
-                        const AtomicString& key,
-                        const AtomicString& expected_value) const;
+  bool URLPatternMatchesURLAndHref(const KURL& active_navigation_url,
+                                   const KURL& href_url) const;
 
  private:
   // EventTarget:
@@ -66,6 +62,7 @@ class Route : public EventTarget {
   bool matches_at_ = false;
   bool matches_from_ = false;
   bool matches_to_ = false;
+  bool matches_with_ = false;
 };
 
 }  // namespace blink

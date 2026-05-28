@@ -11,8 +11,10 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/core/css/active_navigation_condition.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/parser/conditional_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
@@ -20,7 +22,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
-#include "third_party/blink/renderer/core/css/parser/link_condition_parser.h"
+#include "third_party/blink/renderer/core/css/parser/navigation_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -195,6 +197,46 @@ base::span<CSSSelector> CSSSelectorParser::ParseScopeBoundary(
   }
   parser.RecordUsageAndDeprecations(result, nesting_type);
   return result;
+}
+
+// static
+ActiveNavigationCondition* CSSSelectorParser::ParseActiveNavigationCondition(
+    CSSParserTokenStream& stream,
+    const Document& document) {
+  // https://drafts.csswg.org/css-navigation-1/#typedef-active-navigation-condition
+  //
+  // <active-navigation-condition> =
+  //   <navigation-relation>? [ <route-location> | link-href ]?
+  // <navigation-relation> = at | with | from | to
+  NavigationPreposition preposition = NavigationPreposition::kWith;
+  if (stream.Peek().GetType() == kIdentToken) {
+    AtomicString ident(stream.Peek().Value().ToString());
+    // <navigation-relation>?
+    if (std::optional<NavigationPreposition> parsed_preposition =
+            NavigationParser::ParsePrepositionIdent(ident)) {
+      preposition = *parsed_preposition;
+      stream.ConsumeIncludingWhitespace();
+    }
+  }
+  RouteLocation* route_location = nullptr;
+  // [ <route-location> | link-href ]?
+  if (!stream.AtEnd()) {
+    // Leave route_location as nullptr if "link-href".
+    if (stream.Peek().GetType() != kIdentToken ||
+        stream.Peek().Value().ToString() != "link-href") {
+      route_location = NavigationParser::ParseLocation(stream, document);
+      if (!route_location) {
+        return nullptr;
+      }
+    }
+    stream.ConsumeWhitespace();
+  }
+
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<ActiveNavigationCondition>(route_location,
+                                                         preposition);
 }
 
 // static
@@ -1987,9 +2029,21 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
         return false;
       }
-      if (LinkCondition* link_condition =
-              LinkConditionParser::Parse(stream, *context_->GetDocument())) {
-        selector.SetLinkCondition(link_condition);
+      if (RouteLocation* location = NavigationParser::ParseLocation(
+              stream, *context_->GetDocument())) {
+        selector.SetRouteLocation(location);
+        output_.push_back(std::move(selector));
+        return true;
+      }
+      return false;
+    case CSSSelector::kPseudoActiveNavigation:
+      if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+        return false;
+      }
+      if (ActiveNavigationCondition* active_navigation_condition =
+              ParseActiveNavigationCondition(stream,
+                                             *context_->GetDocument())) {
+        selector.SetActiveNavigationCondition(active_navigation_condition);
         output_.push_back(std::move(selector));
         return true;
       }

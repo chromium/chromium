@@ -251,11 +251,21 @@ void RouteMap::OnNavigationStart(const KURL& previous_url,
   previous_url_ = previous_url;
   next_url_ = next_url;
   UpdateActiveRoutes();
+  if (MayHaveRoutelessNavigations()) {
+    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  }
 }
 
 void RouteMap::OnNavigationTraverse(HistoryTraverseType type) {
   history_traverse_type_ = type;
-  if (has_history_rules_) {
+  if (MayHaveRoutelessNavigations()) {
+    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  }
+}
+
+void RouteMap::OnNavigationCommitted() {
+  UpdateActiveRoutes();
+  if (MayHaveRoutelessNavigations()) {
     GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
   }
 }
@@ -265,7 +275,7 @@ void RouteMap::OnNavigationDone() {
   next_url_ = KURL();
   UpdateActiveRoutes();
   history_traverse_type_ = kNotTraversing;
-  if (has_history_rules_) {
+  if (MayHaveRoutelessNavigations()) {
     GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
   }
 }
@@ -284,6 +294,42 @@ void RouteMap::OnPreviewFinished() {
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
   in_preview_ = false;
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+}
+
+KURL RouteMap::GetWithURL() const {
+  if (previous_url_.IsEmpty() || next_url_.IsEmpty()) {
+    return KURL();
+  }
+  DCHECK(GetDocument().Url() == next_url_ ||
+         GetDocument().Url() == previous_url_);
+  // Return the URL that we're navigating towards or away from, i.e. the
+  // opposite of the "at" URL.
+  if (GetDocument().Url() == next_url_) {
+    return previous_url_;
+  }
+  return next_url_;
+}
+
+KURL RouteMap::GetAtURL() const {
+  // TODO(crbug.com/436805487): Should return KURL() if there's no active
+  // navigation.
+  return GetDocument().Url();
+}
+
+// Get the "active navigation URL", given the specified preposition.
+//
+// https://drafts.csswg.org/css-navigation-1/#active-navigation-url
+KURL RouteMap::GetActiveNavigationURL(NavigationPreposition preposition) const {
+  switch (preposition) {
+    case NavigationPreposition::kAt:
+      return GetAtURL();
+    case NavigationPreposition::kFrom:
+      return GetFromURL();
+    case NavigationPreposition::kTo:
+      return GetToURL();
+    case NavigationPreposition::kWith:
+      return GetWithURL();
+  }
 }
 
 RouteMap::ParseResult RouteMap::AddPatternToRoute(Route& route,

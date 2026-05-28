@@ -43,10 +43,11 @@
 
 namespace blink {
 
+class ActiveNavigationCondition;
 class CSSParserContext;
 class CSSSelectorList;
 class Document;
-class LinkCondition;
+class RouteLocation;
 class StyleRule;
 
 // This class represents a simple selector for a StyleRule.
@@ -416,8 +417,10 @@ class CORE_EXPORT CSSSelector {
     kPseudoOverscrollAreaParent,
     kPseudoOverscrollOpen,
 
-    // :link-to(<link-condition>)
+    // :link-to(<route-location>)
     kPseudoLinkTo,
+    // :active-navigation(<active-navigation-condition>)
+    kPseudoActiveNavigation,
 
     // https://drafts.csswg.org/selectors/#video-state
     kPseudoPlaying,
@@ -530,11 +533,17 @@ class CORE_EXPORT CSSSelector {
   const CSSSelectorList* SelectorList() const {
     return HasRareData() ? data_.rare_data_->selector_list_.Get() : nullptr;
   }
-  const LinkCondition* GetLinkCondition() const {
+  const RouteLocation* GetRouteLocation() const {
     if (!HasRareData()) {
       return nullptr;
     }
-    return data_.rare_data_->link_condition_.Get();
+    return data_.rare_data_->route_location_.Get();
+  }
+  const ActiveNavigationCondition* GetActiveNavigationCondition() const {
+    if (!HasRareData()) {
+      return nullptr;
+    }
+    return data_.rare_data_->active_navigation_condition_.Get();
   }
   // Similar to SelectorList(), but also works for kPseudoParent
   // (i.e., nested selectors); on &, will give the parent's selector list.
@@ -568,7 +577,8 @@ class CORE_EXPORT CSSSelector {
   void SetArgument(const AtomicString&);
   void SetArgumentList(std::unique_ptr<Vector<AtomicString>>);
   void SetSelectorList(CSSSelectorList*);
-  void SetLinkCondition(LinkCondition*);
+  void SetRouteLocation(RouteLocation*);
+  void SetActiveNavigationCondition(ActiveNavigationCondition*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
@@ -827,7 +837,9 @@ class CORE_EXPORT CSSSelector {
     std::unique_ptr<Vector<AtomicString>> argument_list_;  // Used for :lang
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
-    Member<LinkCondition> link_condition_;  // Used for :link-to().
+    Member<RouteLocation> route_location_;  // Used for :link-to().
+    Member<ActiveNavigationCondition>
+        active_navigation_condition_;  // Used for :active-navigation().
     std::unique_ptr<Vector<AtomicString>>
         ident_list_;  // Used for ::part(), :active-view-transition-type().
 

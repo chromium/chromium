@@ -451,6 +451,8 @@ class CORE_EXPORT SelectorChecker {
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoLinkTo(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoActiveNavigation(const SelectorCheckingContext&,
+                                   MatchResult&) const;
   bool MatchesAnyInList(const SelectorCheckingContext& context,
                         const CSSSelector* selector_list,
                         MatchResult& result) const;

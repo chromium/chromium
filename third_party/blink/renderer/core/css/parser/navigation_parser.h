@@ -5,20 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_NAVIGATION_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_NAVIGATION_PARSER_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/parser/conditional_parser.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 
 namespace blink {
 
+class AtomicString;
 class CSSParserTokenStream;
 class Document;
 class NavigationQuery;
-class NavigationLocation;
+class RouteLocation;
 
 class NavigationParser : public ConditionalParser {
  public:
   static NavigationQuery* ParseQuery(CSSParserTokenStream&, const Document&);
-  static NavigationLocation* ParseLocation(CSSParserTokenStream&,
-                                           const Document&);
+  static RouteLocation* ParseLocation(CSSParserTokenStream&, const Document&);
+  static std::optional<NavigationPreposition> ParsePrepositionIdent(
+      const AtomicString& ident);
 
   explicit NavigationParser(const Document& document) : document_(document) {}
 

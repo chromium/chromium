@@ -94,6 +94,10 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     return history_traverse_type_;
   }
 
+  void SetEverHadActiveNavigationCondition() {
+    ever_had_active_navigation_condition_ = true;
+  }
+
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
   void AddRouteFromRule(const String& dashed_ident, URLPattern*);
@@ -115,11 +119,15 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   void OnNavigationTraverse(HistoryTraverseType type);
 
   // The current URL has changed. This is used to match @route "at" rules.
-  void OnNavigationCommitted() { UpdateActiveRoutes(); }
+  void OnNavigationCommitted();
 
   // Clear the URL that we're navigating between when the navigation is
   // complete.
   void OnNavigationDone();
+
+  bool IsActiveNavigation() const {
+    return !previous_url_.IsNull() && !next_url_.IsNull();
+  }
 
   void OnPreviewStart();
   void OnPreviewFinished();
@@ -129,13 +137,27 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // Return the "from" URL of the current navigation, if any.
   KURL GetFromURL() const { return previous_url_; }
 
-  // Return the "from" URL of the current navigation, if any.
+  // Return the "to" URL of the current navigation, if any.
   KURL GetToURL() const { return next_url_; }
+
+  // Return the "with" URL of the current navigation, if any.
+  KURL GetWithURL() const;
+
+  // Return the "at" URL of the current navigation, if any.
+  KURL GetAtURL() const;
+
+  // Get the "active navigation URL", given the specified preposition.
+  //
+  // https://drafts.csswg.org/css-navigation-1/#active-navigation-url
+  KURL GetActiveNavigationURL(NavigationPreposition) const;
 
  private:
   ParseResult AddPatternToRoute(Route&, const JSONValue&);
   bool UpdateMatchStatus(Route&,
                          HeapVector<Member<Route>>* routes_needing_event);
+  bool MayHaveRoutelessNavigations() const {
+    return has_history_rules_ || ever_had_active_navigation_condition_;
+  }
 
   HeapHashMap<String, Member<Route>> routes_;
   HeapHashMap<String, Member<Route>> anonymous_routes_;
@@ -146,6 +168,7 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   HistoryTraverseType history_traverse_type_ = kNotTraversing;
   bool has_history_rules_ = false;
+  bool ever_had_active_navigation_condition_ = false;
   bool in_preview_ = false;
 
 #if DCHECK_IS_ON()
