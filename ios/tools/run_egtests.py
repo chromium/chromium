@@ -174,7 +174,7 @@ def _build_tests(out_dir: str, scheme: str) -> bool:
 
 
 def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
-               test_filters: List[str]) -> int:
+               test_filters: List[str], args: argparse.Namespace) -> int:
     """Runs the EG tests on the specified simulator.
 
     Args:
@@ -183,6 +183,7 @@ def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
         arch: The architecture of the simulator to use (e.g., 'arm64').
         scheme: The EG test scheme to run.
         test_filters: A list of test filters to apply.
+        args: Parsed arguments from argparse.
 
     Returns:
         The exit code of the test runner.
@@ -201,6 +202,15 @@ def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
     if test_filters:
         for test_filter in test_filters:
             launch_command.append(f'-only-testing:{scheme}/{test_filter}')
+
+    if args.test_iterations is not None:
+        launch_command.extend(['-test-iterations', str(args.test_iterations)])
+    if args.retry_tests_on_failure:
+        launch_command.append('-retry-tests-on-failure')
+    if args.run_tests_until_failure:
+        launch_command.append('-run-tests-until-failure')
+    if args.test_repetition_relaunch_enabled:
+        launch_command.extend(['-test-repetition-relaunch-enabled', args.test_repetition_relaunch_enabled])
 
     print_header("--- Running Tests ---")
     print_command(launch_command)
@@ -267,6 +277,7 @@ def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
             arch,
             scheme,
             tests,
+            args,
         )
         if exit_code != 0:
             final_exit_code = exit_code
@@ -302,6 +313,22 @@ def main() -> int:
                         help='The device type to use for the test.')
     parser.add_argument(
         '--os', help='The OS version to use for the test (e.g., 17.5).')
+    parser.add_argument(
+        '--test-iterations',
+        type=int,
+        help='If specified, tests will run <number> times.')
+    parser.add_argument(
+        '--retry-tests-on-failure',
+        action='store_true',
+        help='If specified, tests will retry on failure.')
+    parser.add_argument(
+        '--run-tests-until-failure',
+        action='store_true',
+        help='If specified, tests will run until they fail.')
+    parser.add_argument(
+        '--test-repetition-relaunch-enabled',
+        action='store_true',
+        help='Enable or disable tests repeating in a new process for each repetition.')
     args = parser.parse_args()
 
     return _build_and_run_eg_tests(args)
