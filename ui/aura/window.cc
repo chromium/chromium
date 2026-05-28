@@ -1577,6 +1577,8 @@ void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
                                   ui::PropertyChangeReason reason) {
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
+  ScopedDeleteBlocker blocker(this);
+
   bounds_ = layer()->bounds();
 
   if (!IsRootWindow() && old_bounds.size() != bounds_.size() &&
