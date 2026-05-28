@@ -382,8 +382,20 @@ class HeadlessProtocolBrowserTestWithAllowedCrashes
   std::unique_ptr<content::ScopedAllowRendererCrashes> allow_renderer_crashes_;
 };
 
+// Some platforms take very long time to handle crashes, and the test depends
+// on a large number of simulated crashes. See https://crbug.com/517040374 for
+// additional context.
+#define PLATFORM_SUPPORTS_CRASH_TEST()                                       \
+  !(BUILDFLAG(IS_WIN) && !defined(NDEBUG)) && !defined(ADDRESS_SANITIZER) && \
+      !defined(THREAD_SANITIZER)
+
+#if PLATFORM_SUPPORTS_CRASH_TEST()
+#define MAYBE_HiddenTargetSyncClose HiddenTargetSyncClose
+#else
+#define MAYBE_HiddenTargetSyncClose DISABLED_HiddenTargetSyncClose
+#endif
 HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithAllowedCrashes,
-                         DISABLED_HiddenTargetSyncClose,
+                         MAYBE_HiddenTargetSyncClose,
                          "shared/hidden-target-sync-close.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetCreateInvalidParams,
                        "shared/hidden-target-create-invalid-params.js")
