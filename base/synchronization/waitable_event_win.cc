@@ -36,12 +36,6 @@ namespace {
   return debug::ScopedCrashKeyString(key, NumberToString(last_error));
 }
 
-NOINLINE void ReportInvalidWaitableEventResult(DWORD result, DWORD last_error) {
-  SCOPED_CRASH_KEY_NUMBER("WaitableEvent", "result", result);
-  debug::ScopedCrashKeyString last_error_key = SetLastErrorCrashKey(last_error);
-  base::debug::DumpWithoutCrashing();  // https://crbug.com/1478972.
-}
-
 }  // namespace
 
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
@@ -70,9 +64,8 @@ void WaitableEvent::SignalImpl() {
 
 bool WaitableEvent::IsSignaled() const {
   DWORD result = WaitForSingleObject(handle_.get(), 0);
-  if (result != WAIT_OBJECT_0 && result != WAIT_TIMEOUT) {
-    ReportInvalidWaitableEventResult(result, ::GetLastError());
-  }
+  DPCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
+      << result;  // https://crbug.com/1478972.
   return result == WAIT_OBJECT_0;
 }
 
@@ -121,7 +114,8 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
     if (wait_delta.is_max()) {
       // The only other documented result value is `WAIT_ABANDONED`. This nor
       // any other result should ever be emitted.
-      ReportInvalidWaitableEventResult(result, ::GetLastError());
+      DPCHECK(result == WAIT_ABANDONED)
+          << result;  // https://crbug.com/1478972.
     }
   }
   return false;
