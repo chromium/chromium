@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -81,6 +83,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate,
+                                     ToolbarViewDelegate,
                                      UIContextMenuInteractionDelegate>
 @end
 
@@ -328,6 +331,12 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 
 #pragma mark - UIViewController
 
+- (void)loadView {
+  ToolbarView* view = [[ToolbarView alloc] init];
+  view.delegate = self;
+  self.view = view;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -343,25 +352,20 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [self updateToolbarVisibility];
   [self updateTabGroupIndicatorAvailability];
 
+  if (_topPosition) {
+    [self.layoutGuideCenter referenceView:self.view
+                                underName:kPrimaryToolbarGuide];
+    [self.layoutGuideCenter referenceView:_locationBarContainer
+                                underName:kTopOmniboxGuide];
+  } else {
+    [self.layoutGuideCenter referenceView:self.view
+                                underName:kSecondaryToolbarGuide];
+  }
+
   [self
       registerForTraitChanges:
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                    withAction:@selector(sizeClassDidChange)];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  [self updateLayoutGuideRegistration];
-}
-
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  [self updateLayoutGuideRegistration];
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  [self updateLayoutGuideRegistration];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -373,6 +377,12 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [super viewSafeAreaInsetsDidChange];
   _bannerPromoBackgroundHeightConstraint.constant = [self
       bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
+}
+
+#pragma mark - ToolbarViewDelegate
+
+- (void)toolbarViewDidMoveToWindow:(ToolbarView*)view {
+  [self updateTabSwitcherGuide];
 }
 
 #pragma mark - PopupMenuUIUpdating
@@ -476,7 +486,19 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
   [self updateTabGroupIndicatorAvailability];
-  [self updateLayoutGuideRegistration];
+
+  if (_visible) {
+    [self.layoutGuideCenter referenceView:_toolsMenuButton
+                                underName:kToolsMenuGuide];
+    [self.layoutGuideCenter referenceView:_backButton
+                                underName:kBackButtonGuide];
+    [self.layoutGuideCenter referenceView:_forwardButton
+                                underName:kForwardButtonGuide];
+    [self.layoutGuideCenter referenceView:_shareButton
+                                underName:kShareButtonGuide];
+
+    [self updateTabSwitcherGuide];
+  }
 }
 
 - (void)setNTPVisible:(BOOL)NTPVisible {
@@ -1540,36 +1562,23 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [self updateLayoutConstraints];
   [self updateToolbarVisibility];
   [self updateTabGroupIndicatorAvailability];
+  [self updateTabSwitcherGuide];
   if (_topPosition) {
     [self updateBannerConstraints];
     _bannerPromoBackgroundHeightConstraint.constant = [self
         bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
   }
-  [self updateLayoutGuideRegistration];
 }
 
-// Registers the toolbar's button views with the layout guide center if the view
-// is loaded and the toolbar is visible.
-- (void)updateLayoutGuideRegistration {
-  LayoutGuideCenter* layoutGuideCenter = self.layoutGuideCenter;
-  if ([self isViewLoaded] && _visible) {
-    [layoutGuideCenter referenceView:_toolsMenuButton
-                           underName:kToolsMenuGuide];
-    [layoutGuideCenter referenceView:_backButton underName:kBackButtonGuide];
-    [layoutGuideCenter referenceView:_forwardButton
-                           underName:kForwardButtonGuide];
-
-    // Check `!button.hidden` for shared layout guides to prevent tracking
-    // inactive buttons and overwriting active guides in other view
-    // controllers.
-    if (!_tabGridButton.hidden) {
-      [layoutGuideCenter referenceView:_tabGridButton
-                             underName:kTabSwitcherGuide];
-    }
-    if (!_shareButton.hidden) {
-      [layoutGuideCenter referenceView:_shareButton
-                             underName:kShareButtonGuide];
-    }
+// Conditionally registers the Tab Switcher layout guide.
+// It should only be registered to the toolbar if the App Bar is not visible.
+- (void)updateTabSwitcherGuide {
+  if (!_visible || !self.view.window) {
+    return;
+  }
+  if (self.layoutState.appBarPosition == AppBarPosition::kNone) {
+    [self.layoutGuideCenter referenceView:_tabGridButton
+                                underName:kTabSwitcherGuide];
   }
 }
 

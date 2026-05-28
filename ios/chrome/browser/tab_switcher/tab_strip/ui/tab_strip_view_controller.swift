@@ -92,13 +92,6 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
   // Leading constraint for the collectionView,
   public var collectionViewLeadingConstraint: NSLayoutConstraint?
 
-  /// The LayoutGuideCenter.
-  @objc public var layoutGuideCenter: LayoutGuideCenter? {
-    didSet {
-      layoutGuideCenter?.reference(view: newTabButton.layoutGuideView, under: kNewTabButtonGuide)
-    }
-  }
-
   init() {
     layout = TabStripLayout()
     collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)

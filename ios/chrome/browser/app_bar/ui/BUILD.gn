@@ -23,6 +23,8 @@ source_set("ui") {
     "app_bar_iph_background_view.h",
     "app_bar_iph_background_view.mm",
     "app_bar_mutator.h",
+    "app_bar_view.h",
+    "app_bar_view.mm",
     "app_bar_view_controller.h",
     "app_bar_view_controller.mm",
   ]

@@ -204,6 +204,10 @@ enum class TabGridOpeningMode {
 // migration.
 - (void)showManagedProfileCreation;
 
+// Shows/Hides the guided tour "NTP" step.
+- (void)showGuidedTourNTPStepWithCompletion:(ProceduralBlock)completion;
+- (void)hideGuidedTourNTPStep;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SCENE_COMMANDS_H_

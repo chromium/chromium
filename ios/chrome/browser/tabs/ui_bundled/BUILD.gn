@@ -27,6 +27,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

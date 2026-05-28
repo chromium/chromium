@@ -15,7 +15,9 @@ class Browser;
 // to the FirstRunProfileAgent. Will be removed when the code has been
 // refactored to no longer access this method (crbug.com/40606165).
 class FirstRunProfileAgentHelper;
-using BrowserProviderPassKey = base::PassKey<FirstRunProfileAgentHelper>;
+class SceneCoordinatorHelper;
+using BrowserProviderPassKey =
+    base::PassKey<FirstRunProfileAgentHelper, SceneCoordinatorHelper>;
 
 // A BrowserProvider is an abstraction that exposes an interface to the Chrome
 // user interface (and related model objects) to the application layer. Each

@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// A custom view for the app bar that handles top-edge masking for rounded
-// corners and touch transparency for the background area.
+// A custom background view for the app bar that handles top-edge masking for
+// rounded corners and touch transparency for the background area.
 @interface AppBarBackgroundView : UIView
 
 // Whether the app bar is in incognito mode.

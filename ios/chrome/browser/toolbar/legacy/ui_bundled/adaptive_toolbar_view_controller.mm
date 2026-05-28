@@ -170,7 +170,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   // Add the layout guide names to the buttons.
   self.view.toolsMenuButton.guideName = kToolsMenuGuide;
   self.view.tabGridButton.guideName = kTabSwitcherGuide;
-  self.view.openNewTabButton.guideName = kNewTabButtonGuide;
   self.view.forwardButton.guideName = kForwardButtonGuide;
   self.view.backButton.guideName = kBackButtonGuide;
   self.view.shareButton.guideName = kShareButtonGuide;

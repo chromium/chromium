@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
@@ -111,6 +112,15 @@
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
+
+// Used to create PassKey to access the UIViewController through the
+// BrowserProvider interface (crbug.com/40606165).
+class SceneCoordinatorHelper {
+ public:
+  static BrowserProviderPassKey CreateKey() {
+    return base::PassKey<SceneCoordinatorHelper>();
+  }
+};
 
 namespace {
 
@@ -230,6 +240,8 @@ void OnListFamilyMembersResponse(
   base::CancelableOnceClosure _familyMembersTimeoutClosure;
   // Navigation View controller for the settings.
   SettingsNavigationController* _settingsNavigationController;
+  // Coordinator for the first step of the guided tour (NTP).
+  GuidedTourCoordinator* _guidedTourCoordinator;
 }
 
 - (instancetype)initWithTabOpener:(id<TabOpening>)tabOpener {
@@ -348,6 +360,7 @@ void OnListFamilyMembersResponse(
   self.UIHandler = nil;
   self.tabGridDelegate = nil;
   self.sceneURLLoadingService = nullptr;
+  [self hideGuidedTourNTPStep];
 }
 
 #pragma mark - Public
@@ -1057,6 +1070,35 @@ void OnListFamilyMembersResponse(
   _managedConfirmationScreenCoordinator.delegate = self;
 
   [_managedConfirmationScreenCoordinator start];
+}
+
+- (void)showGuidedTourNTPStepWithCompletion:(ProceduralBlock)completion {
+  UIViewController* baseViewController;
+  if (IsChromeNextIaEnabled()) {
+    baseViewController = _viewController;
+  } else {
+    id<BrowserProvider> presentingInterface =
+        self.sceneState.browserProviderInterface.currentBrowserProvider;
+    baseViewController = [presentingInterface
+        viewController:SceneCoordinatorHelper::CreateKey()];
+  }
+  __weak __typeof(self) weakSelf = self;
+  _guidedTourCoordinator =
+      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStep::kNTP
+                               baseViewController:baseViewController
+                                          browser:self.currentBrowser
+                                  completionBlock:^{
+                                    [weakSelf hideGuidedTourNTPStep];
+                                    if (completion) {
+                                      completion();
+                                    }
+                                  }];
+  [_guidedTourCoordinator start];
+}
+
+- (void)hideGuidedTourNTPStep {
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
 }
 
 #pragma mark - ManagedProfileCreationCoordinatorDelegate

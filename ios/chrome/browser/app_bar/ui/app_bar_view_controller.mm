@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_iph_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
@@ -111,7 +112,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 }  // namespace
 
-@interface AppBarViewController () <LayoutStateObserver,
+@interface AppBarViewController () <AppBarViewDelegate,
+                                    LayoutStateObserver,
                                     UIContextMenuInteractionDelegate>
 @end
 
@@ -199,6 +201,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)layoutState:(LayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
   [self updateButtonsTitleAlpha];
+  [self updateTabSwitcherGuide];
 }
 
 #pragma mark - Accessors & Mutators
@@ -276,6 +279,12 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 #pragma mark - UIViewController
 
+- (void)loadView {
+  AppBarView* view = [[AppBarView alloc] init];
+  view.delegate = self;
+  self.view = view;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -294,6 +303,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   [self updateTabGridButtonForTabGridVisibility];
   [self updateNewTabButtonAccessibilityLabel];
   [self updateNewTabButtonAccessibilityHint];
+  [self updateTabSwitcherGuide];
 
   // When rotated in landscape, add spacers at the beginning and end of the
   // stack view so that the buttons width match the "height" of the stack view,
@@ -448,6 +458,12 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   [self updateAssistantButton];
 }
 
+#pragma mark - AppBarViewDelegate
+
+- (void)appBarViewDidMoveToWindow:(AppBarView*)view {
+  [self updateTabSwitcherGuide];
+}
+
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
@@ -485,6 +501,20 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
           ? _fullscreenProgress
           : 1.0;
   [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
+}
+
+// Conditionally registers the Tab Switcher layout guide.
+// It should only be registered to the App Bar if the App Bar is visible.
+- (void)updateTabSwitcherGuide {
+  if (!self.view.window) {
+    return;
+  }
+  if (self.layoutState.appBarPosition == AppBarPosition::kNone) {
+    [self.layoutGuideCenter referenceView:nil underName:kTabSwitcherGuide];
+  } else {
+    [self.layoutGuideCenter referenceView:_tabGridButton
+                                underName:kTabSwitcherGuide];
+  }
 }
 
 // Returns `fullTitle` if it fits within the available width for the
@@ -893,10 +923,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
         NSDirectionalEdgeInsetsMake(
             kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset,
             kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset));
-    [self.layoutGuideCenter referenceView:_spotlightView
-                                underName:kTabSwitcherGuide];
-  } else {
-    [self.layoutGuideCenter referenceView:button underName:kTabSwitcherGuide];
   }
 
   [button

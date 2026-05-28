@@ -1244,6 +1244,9 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   ToolbarViewController* toolbarViewController =
       [[ToolbarViewController alloc] initInIncognito:incognito
                                          topPosition:topPosition];
+  toolbarViewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(browser);
+  toolbarViewController.layoutState = browser->GetSceneState().layoutState;
   toolbarViewController.buttonFactory =
       [[ToolbarButtonFactory alloc] initWithIncognito:incognito];
   toolbarViewController.mutator = mediator;
@@ -1256,8 +1259,6 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   toolbarViewController.sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
-  toolbarViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(browser);
   toolbarViewController.locationBarViewController = locationBar;
   toolbarViewController.bannerPromoDelegate = mediator;
 

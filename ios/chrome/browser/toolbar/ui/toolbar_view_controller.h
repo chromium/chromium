@@ -15,6 +15,7 @@
 @protocol BannerPromoViewDelegate;
 @protocol BrowserCoordinatorCommands;
 @class LayoutGuideCenter;
+@class LayoutState;
 @protocol PopupMenuCommands;
 @protocol SceneCommands;
 @class TabGroupIndicatorView;
@@ -51,6 +52,9 @@
 
 // Layout Guide Center.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// The layout state.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // Whether this toolbar is currently visible or not.
 @property(nonatomic, assign) BOOL visible;

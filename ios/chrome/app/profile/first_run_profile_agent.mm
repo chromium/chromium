@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/coordinator/first_run_post_action_provider.h"
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
-#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_promo_coordinator.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
@@ -49,7 +48,9 @@
 // BrowserProvider interface (crbug.com/40606165).
 class FirstRunProfileAgentHelper {
  public:
-  static BrowserProviderPassKey CreateKey() { return BrowserProviderPassKey{}; }
+  static BrowserProviderPassKey CreateKey() {
+    return base::PassKey<FirstRunProfileAgentHelper>();
+  }
 };
 
 namespace first_run {
@@ -108,9 +109,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   // Coordinator for the Guided Tour Promo.
   GuidedTourPromoCoordinator* _guidedTourPromoCoordinator;
 
-  // Coordinator for the first step of the guided tour.
-  GuidedTourCoordinator* _guidedTourCoordinator;
-
   // The current step in the guided tour. nullopt if the tour is not in
   // progress.
   std::optional<GuidedTourStep> _currentGuidedTourStep;
@@ -126,7 +124,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   CHECK(!_firstRunUIBlocker, base::NotFatalUntil::M155);
   CHECK(!_firstRunCoordinator, base::NotFatalUntil::M155);
   CHECK(!_guidedTourPromoCoordinator, base::NotFatalUntil::M155);
-  CHECK(!_guidedTourCoordinator, base::NotFatalUntil::M155);
   CHECK(!_scopedForceOrientation, base::NotFatalUntil::M155);
   CHECK(!_displayLock, base::NotFatalUntil::M155);
 }
@@ -162,8 +159,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
           HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
       [handler stepCompleted:GuidedTourStep::kNTP];
 
-      [_guidedTourCoordinator stop];
-      _guidedTourCoordinator = nil;
+      id<SceneCommands> sceneHandler =
+          HandlerForProtocol([self commandDispatcher], SceneCommands);
+      [sceneHandler hideGuidedTourNTPStep];
       break;
     }
     // Both tab grid steps are exited in the same way.
@@ -189,9 +187,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   [self releaseUILocks];
-
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
 
   [_guidedTourPromoCoordinator stopWithCompletion:nil];
   _guidedTourPromoCoordinator = nil;
@@ -259,8 +254,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   [self showFirstRunUI];
 }
-
-
 
 #pragma mark - GuidedTourPromoCoordinatorDelegate
 
@@ -439,21 +432,14 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
       HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
   [handler highlightViewInStep:GuidedTourStep::kNTP];
 
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completionBlock = ^{
     [weakSelf guidedTourNTPStepCompleted];
   };
 
-  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
-            initWithStep:GuidedTourStep::kNTP
-      baseViewController:
-          [presentingInterface
-              viewController:FirstRunProfileAgentHelper::CreateKey()]
-                 browser:presentingInterface.browser
-         completionBlock:completionBlock];
-  [_guidedTourCoordinator start];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol([self commandDispatcher], SceneCommands);
+  [sceneHandler showGuidedTourNTPStepWithCompletion:completionBlock];
 }
 
 // Handles the completion of the NTP step of the Guided Tour.
@@ -470,8 +456,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [handler stepCompleted:GuidedTourStep::kNTP];
 
   [self stepCompleted:GuidedTourStep::kNTP];
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
 
   _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
   id<SceneCommands> sceneHandler =

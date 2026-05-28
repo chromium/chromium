@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tabs/ui_bundled/background_tab_animation_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -46,7 +47,14 @@ constexpr CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
     toTabGridButtonWithCompletion:(void (^)())completion {
   DCHECK(self.superview);
   CGPoint origin = [self.superview convertPoint:originPoint fromView:nil];
-  CGPoint destination = [self destinationPoint];
+
+  CGPoint destination;
+  if (IsChromeNextIaEnabled()) {
+    destination = [self.superview convertPoint:[self destinationPoint]
+                                      fromView:nil];
+  } else {
+    destination = [self destinationPointLegacy];
+  }
 
   // It can be negative.
   CGFloat xDiff = destination.x - origin.x;
@@ -133,9 +141,20 @@ constexpr CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
 
 #pragma mark - Private
 
-// Returns the destination point for the animation, in the superview
+// Returns the destination point for the animation, in the window
 // coordinates.
 - (CGPoint)destinationPoint {
+  CHECK(IsChromeNextIaEnabled());
+  UIView* tabGridButton =
+      [self.layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide];
+  CGRect frame = [tabGridButton convertRect:tabGridButton.bounds toView:nil];
+  return CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
+}
+
+// Returns the destination point for the animation, in the superview
+// coordinates.
+- (CGPoint)destinationPointLegacy {
+  CHECK(!IsChromeNextIaEnabled());
   DCHECK(self.layoutGuideCenter);
   UILayoutGuide* tabGridButtonLayoutGuide =
       [self.layoutGuideCenter makeLayoutGuideNamed:kTabSwitcherGuide];

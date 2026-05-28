@@ -85,9 +85,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
       LayoutGuideCenterForBrowser(self.browser);
   if (_step == GuidedTourStep::kNTP) {
     if (IsChromeNextIaEnabled()) {
-      UIButton* tabSwitcherButton = static_cast<UIButton*>(
-          [layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide]);
-      return tabSwitcherButton;
+      return [layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide];
     }
     LegacyToolbarButton* tabSwitcherButton = static_cast<LegacyToolbarButton*>(
         [layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide]);

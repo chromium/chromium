@@ -120,8 +120,6 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   ProfileIOS* profile = self.profile;
   CHECK(profile);
   self.tabStripViewController = [[TabStripViewController alloc] init];
-  self.tabStripViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
   self.tabStripViewController.overrideUserInterfaceStyle =
       profile->IsOffTheRecord() ? UIUserInterfaceStyleDark
                                 : UIUserInterfaceStyleUnspecified;
