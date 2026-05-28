@@ -396,12 +396,6 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(::contextual_cueing::kContextualCueingV2)) {
-    recorder->set_nudge_decision(
-        NudgeDecision::kNudgeNotShownContextualCueingV2);
-    return true;
-  }
-
   return false;
 }
 
@@ -443,6 +437,12 @@ void ContextualCueingHelper::OnCueingDecision(
         return;
       }
     }
+  }
+
+  if (base::FeatureList::IsEnabled(::contextual_cueing::kContextualCueingV2)) {
+    decision_recorder->set_nudge_decision(
+        NudgeDecision::kNudgeNotShownContextualCueingV2);
+    return;
   }
 
   if (can_show_decision != NudgeDecision::kSuccess) {
