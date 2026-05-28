@@ -546,9 +546,6 @@ if (use_fuzzing_engine_with_lpm) {
       "//third_party/blink/public/common:storage_key_proto_converter",
       "//third_party/libprotobuf-mutator",
     ]
-    if (is_android) {
-      deps += [ "//third_party/icu:icu_assets" ]
-    }
 
     # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
     is_fuzztest_compatible = false
@@ -561,9 +558,6 @@ if (use_fuzzing_engine_with_lpm) {
       "//base/test:test_support",
       "//third_party/blink/public/common",
     ]
-    if (is_android) {
-      deps += [ "//third_party/icu:icu_assets" ]
-    }
     seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
   }
 
