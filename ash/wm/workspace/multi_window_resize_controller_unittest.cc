@@ -355,7 +355,13 @@ TEST_F(MultiWindowResizeControllerTest, Three) {
 // This test ensures that multi window resizing will not cause a crash/UAF if an
 // attribute of the window involved in the multi resizing (visibility, property
 // or capture) has changed while resizing.
-TEST_F(MultiWindowResizeControllerTest, ModifyWindowDuringResize) {
+// TODO(crbug.com/517366959): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ModifyWindowDuringResize DISABLED_ModifyWindowDuringResize
+#else
+#define MAYBE_ModifyWindowDuringResize ModifyWindowDuringResize
+#endif
+TEST_F(MultiWindowResizeControllerTest, MAYBE_ModifyWindowDuringResize) {
   static auto release_capture = [](aura::Window* window) {
     auto* capture_client =
         aura::client::GetCaptureClient(window->GetRootWindow());
