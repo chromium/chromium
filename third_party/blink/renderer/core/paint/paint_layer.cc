@@ -1407,7 +1407,7 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
-  if (layout_object.StyleRef().HasBorderShape() &&
+  if (!is_occlusion_test && layout_object.StyleRef().HasBorderShape() &&
       layout_object.ShouldClipOverflowAlongBothAxis() &&
       HitTestClippedOutByBorderShape(transform_container,
                                      recursion_data.location)) {

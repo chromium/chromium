@@ -2455,7 +2455,9 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     const Path outer_path = ComputeBorderShapeOuterPath(
         style, rect, box_fragment_.GetLayoutObject());
     if (!hit_test.location.Intersects(outer_path)) {
-      return false;
+      if (!hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow()) {
+        return false;
+      }
     }
   } else if (style.HasBorderRadius() &&
              HitTestClippedOutByBorder(hit_test.location, physical_offset)) {
