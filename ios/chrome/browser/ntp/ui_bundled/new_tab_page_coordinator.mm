@@ -770,7 +770,8 @@
   headerViewController.baseViewController = self.baseViewController;
   headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
   headerViewController.mutator = self.NTPMediator;
-  [headerViewController setSearchEngineLogoMediator:_searchEngineLogoMediator];
+  [((NewTabPageHeaderView*)headerViewController.view)
+      setSearchEngineLogoMediator:_searchEngineLogoMediator];
 }
 
 // Configures `self.contentSuggestionsCoordinator`.
@@ -791,7 +792,8 @@
   NTPMediator.feedVisibilityObserver = self;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.NTPContentDelegate = self;
-  NTPMediator.headerConsumer = self.headerViewController;
+  NTPMediator.headerConsumer =
+      (NewTabPageHeaderView*)self.headerViewController.view;
   NTPMediator.consumer = self.NTPViewController;
   PlaceholderService* placeholderService =
       ios::PlaceholderServiceFactory::GetForProfile(self.profile);

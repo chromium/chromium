@@ -263,6 +263,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
 @property(nonatomic, assign) SearchEngineLogoState searchEngineLogoState;
 
+@property(nonatomic, assign) BOOL voiceSearchIsEnabled;
+@property(nonatomic, copy) NSString* defaultSearchEngineName;
+
 @end
 
 @implementation NewTabPageHeaderView {
@@ -308,6 +311,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // YES if there is an identity account error to show.
   BOOL _hasAccountError;
+
+  // YES if Google is the default search engine.
+  BOOL _isGoogleDefaultSearchEngine;
 
   // Identity disc constraints.
   NSLayoutConstraint* _identityDiscWidthConstraint;
@@ -393,21 +399,26 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)setPlaceholderText:(NSString*)placeholderText {
-  if (_placeholderText == placeholderText) {
+  if ([self.searchHintLabel.text isEqualToString:placeholderText]) {
     return;
   }
-  _placeholderText = placeholderText;
   [self.omnibox.textInput setDefaultPlaceholderText:placeholderText];
   self.searchHintLabel.text = placeholderText;
+  self.accessibilityButton.accessibilityLabel = placeholderText;
 }
 
-- (void)setOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
-  CHECK(IsBottomOmniboxAvailable());
-  CHECK(IsChromeNextIaEnabled());
-  _isBottomOmnibox = isBottomOmnibox;
+- (void)updatePlaceholderText {
+  NSString* placeholderText = [self placeholderText];
+  self.placeholderText = placeholderText;
+}
 
-  if (IsSplitToolbarMode(self)) {
-    [self resetSplitToolbarResizing];
+- (NSString*)placeholderText {
+  if (IsAIOmniboxAskPlaceholderEnabled() && _isGoogleDefaultSearchEngine) {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME,
+                                   self.defaultSearchEngineName.cr_UTF16String);
+  } else {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
+                                   self.defaultSearchEngineName.cr_UTF16String);
   }
 }
 
@@ -750,11 +761,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         constraintEqualToAnchor:self.searchHintLabel.centerYAnchor
                        constant:leadingViewYOffset]
   ]];
-}
-
-- (void)setDefaultSearchEngineLogo:(UIImage*)logo {
-  _dseLogo = logo;
-  _logoView.image = logo;
 }
 
 // Updates button styling for the current trait collection.
@@ -1311,14 +1317,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return [_buttonStack snapshotViewAfterScreenUpdates:NO];
 }
 
-- (void)setAIMAllowed:(BOOL)allowed {
-  _isAIMAllowed = allowed;
-}
-
-- (void)setFuseboxEligible:(BOOL)eligible {
-  _fuseboxEligible = eligible;
-}
-
 - (BOOL)shouldShowPlusButton {
   return IsPlusButtonInFakeboxEnabled() && _isAIMAllowed && _fuseboxEligible;
 }
@@ -1380,6 +1378,87 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return _fakeLocationBar;
 }
 
+#pragma mark - NewTabPageHeaderConsumer
+
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
+  CHECK(IsBottomOmniboxAvailable());
+  CHECK(IsChromeNextIaEnabled());
+  _isBottomOmnibox = isBottomOmnibox;
+
+  if (IsSplitToolbarMode(self)) {
+    [self resetSplitToolbarResizing];
+  }
+  [self.delegate didChangeOmniboxPosition:self];
+}
+
+- (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
+  if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
+    return;
+  }
+  _voiceSearchIsEnabled = voiceSearchIsEnabled;
+  self.voiceSearchButton.enabled = voiceSearchIsEnabled;
+  self.voiceSearchButton.isAccessibilityElement = voiceSearchIsEnabled;
+  [self layoutIfNeeded];
+}
+
+- (void)setDefaultSearchEngineName:(NSString*)defaultSearchEngineName {
+  if (_defaultSearchEngineName == defaultSearchEngineName) {
+    return;
+  }
+  _defaultSearchEngineName = defaultSearchEngineName;
+  [self updatePlaceholderText];
+}
+
+- (void)setSearchEngineLogoMediator:
+    (SearchEngineLogoMediator*)searchEngineLogoMediator {
+  if (_searchEngineLogoMediator) {
+    [_searchEngineLogoMediator.view removeFromSuperview];
+  }
+  _searchEngineLogoMediator = searchEngineLogoMediator;
+  if (_searchEngineLogoMediator) {
+    _searchEngineLogoMediator.consumer = self;
+    [self insertSubview:_searchEngineLogoMediator.view
+           belowSubview:self.toolBarView];
+    _searchEngineLogoMediator.view.translatesAutoresizingMaskIntoConstraints =
+        NO;
+    _searchEngineLogoMediator.view.accessibilityIdentifier =
+        ntp_home::NTPLogoAccessibilityID();
+    [self addConstraintsForLogoView:_searchEngineLogoMediator.view
+                        fakeOmnibox:self.fakeOmniboxContainer
+                      andHeaderView:self];
+    [self applyBackgroundTheme];
+  }
+}
+
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email {
+  if (hasAccountError == _hasAccountError) {
+    return;
+  }
+
+  _hasAccountError = hasAccountError;
+  if (_hasAccountError) {
+    [self setIdentityDiscErrorBadge];
+  } else {
+    [self removeIdentityDiscErrorBadge];
+  }
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
+}
+
+- (void)setDefaultSearchEngineImage:(UIImage*)image {
+  _dseLogo = image;
+  _logoView.image = image;
+}
+
+- (void)setAIMAllowed:(BOOL)allowed {
+  _isAIMAllowed = allowed;
+}
+
+- (void)setFuseboxEligible:(BOOL)eligible {
+  _fuseboxEligible = eligible;
+}
+
 #pragma mark - Setters
 
 // Sets tabgroupIndicatorView.
@@ -1406,27 +1485,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         constraintEqualToConstant:kTabGroupIndicatorHeight],
   ]];
   [self updateTabGroupIndicatorAvailabilityWithOffset:0];
-}
-
-- (void)setSearchEngineLogoMediator:
-    (SearchEngineLogoMediator*)searchEngineLogoMediator {
-  if (_searchEngineLogoMediator) {
-    [_searchEngineLogoMediator.view removeFromSuperview];
-  }
-  _searchEngineLogoMediator = searchEngineLogoMediator;
-  if (_searchEngineLogoMediator) {
-    _searchEngineLogoMediator.consumer = self;
-    [self insertSubview:_searchEngineLogoMediator.view
-           belowSubview:self.toolBarView];
-    _searchEngineLogoMediator.view.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    _searchEngineLogoMediator.view.accessibilityIdentifier =
-        ntp_home::NTPLogoAccessibilityID();
-    [self addConstraintsForLogoView:_searchEngineLogoMediator.view
-                        fakeOmnibox:self.fakeOmniboxContainer
-                      andHeaderView:self];
-    [self applyBackgroundTheme];
-  }
 }
 
 #pragma mark - Private
@@ -1509,12 +1567,14 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  self.voiceSearchButton.enabled = NO;
+  self.voiceSearchButton.isAccessibilityElement = NO;
   [_buttonStack addArrangedSubview:self.voiceSearchButton];
 
   // Lens.
   const BOOL useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-          LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
+          LensEntrypoint::NewTabPage, _isGoogleDefaultSearchEngine);
   if (useLens) {
     [self addVoiceAndLensDivider];
     self.lensButton =
@@ -2070,22 +2130,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   self.isSignedIn = YES;
 
-  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
-}
-
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
-                                name:(NSString*)name
-                               email:(NSString*)email {
-  if (hasAccountError == _hasAccountError) {
-    return;
-  }
-
-  _hasAccountError = hasAccountError;
-  if (_hasAccountError) {
-    [self setIdentityDiscErrorBadge];
-  } else {
-    [self removeIdentityDiscErrorBadge];
-  }
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 

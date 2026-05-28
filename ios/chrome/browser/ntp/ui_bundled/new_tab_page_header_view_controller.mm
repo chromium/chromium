@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
@@ -84,15 +84,6 @@ using base::UserMetricsAction;
   // Tracks if the mutator has already been notified of the Homepage
   // Customization "new" badge display.
   BOOL _didNotifyCustomizationBadgeDisplay;
-  // Whether AIM is allowed.
-  BOOL _isAIMAllowed;
-  // Whether the session is fusebox eligible.
-  BOOL _fuseboxEligible;
-  // Whether the omnibox is pinned to the bottom position.
-  BOOL _isBottomOmnibox;
-  // The logo for the default search engine. This is owned by the caching system
-  // backing this logo.
-  __weak UIImage* _dseLogo;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -114,14 +105,6 @@ using base::UserMetricsAction;
 
 - (NewTabPageHeaderView*)headerView {
   return (NewTabPageHeaderView*)self.view;
-}
-
-- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
-  CHECK(IsBottomOmniboxAvailable());
-  CHECK(IsChromeNextIaEnabled());
-  _isBottomOmnibox = isBottomOmnibox;
-  [self.headerView setOmniboxPositionIsBottom:isBottomOmnibox];
-  [self.delegate didChangeOmniboxPosition:self];
 }
 
 #pragma mark - Public
@@ -196,6 +179,13 @@ using base::UserMetricsAction;
 }
 #pragma mark - Accessors & Mutators
 
+- (void)setDelegate:(id<NewTabPageHeaderViewDelegate>)delegate {
+  _delegate = delegate;
+  if (self.isViewLoaded) {
+    self.headerView.delegate = delegate;
+  }
+}
+
 - (void)setShowing:(BOOL)showing {
   _showing = showing;
   if (self.isViewLoaded) {
@@ -206,7 +196,8 @@ using base::UserMetricsAction;
 - (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
   _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
   if (self.viewLoaded) {
-    self.headerView.isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+    [self.headerView
+        setIsGoogleDefaultSearchEngine:isGoogleDefaultSearchEngine];
   }
 }
 
@@ -248,31 +239,19 @@ using base::UserMetricsAction;
   self.headerView.layoutGuideCenter = self.layoutGuideCenter;
   self.headerView.commandHandler = self.commandHandler;
   self.headerView.toolbarDelegate = self.toolbarDelegate;
-  [self.headerView setAIMAllowed:_isAIMAllowed];
-  [self.headerView setFuseboxEligible:_fuseboxEligible];
-
-  if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
-    [self.headerView setOmniboxPositionIsBottom:_isBottomOmnibox];
-  }
+  self.headerView.delegate = self.delegate;
 
   self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
-  self.headerView.isGoogleDefaultSearchEngine =
-      self.isGoogleDefaultSearchEngine;
-  self.headerView.placeholderText = self.placeholderText;
+  [self.headerView
+      setIsGoogleDefaultSearchEngine:self.isGoogleDefaultSearchEngine];
   self.headerView.showing = self.showing;
 
   [self.headerView setupSubviews];
-
-  if (_dseLogo) {
-    [self.headerView setDefaultSearchEngineLogo:_dseLogo];
-  }
 
   if (self.headerView.lensButton) {
     [self.layoutGuideCenter referenceView:self.headerView.lensButton
                                 underName:kFakeboxLensIconGuide];
   }
-
-  [self updateVoiceSearchDisplay];
 
   [self addCustomizationMenu];
 
@@ -343,57 +322,6 @@ using base::UserMetricsAction;
 
 - (UIView*)fakeboxButtonsSnapshot {
   return [self.headerView fakeboxButtonsSnapshot];
-}
-
-- (void)setSearchEngineLogoMediator:
-    (SearchEngineLogoMediator*)searchEngineLogoMediator {
-  self.headerView.searchEngineLogoMediator = searchEngineLogoMediator;
-}
-
-- (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
-  if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
-    return;
-  }
-  _voiceSearchIsEnabled = voiceSearchIsEnabled;
-  [self updateVoiceSearchDisplay];
-}
-
-- (void)setDefaultSearchEngineName:(NSString*)defaultSearchEngineName {
-  if (_defaultSearchEngineName == defaultSearchEngineName) {
-    return;
-  }
-  _defaultSearchEngineName = defaultSearchEngineName;
-  [self updatePlaceholderText];
-}
-
-- (void)setDefaultSearchEngineImage:(UIImage*)image {
-  // The header view might not be created yet. Store the logo image until it is
-  // consumed.
-  if (!self.headerView) {
-    _dseLogo = image;
-    return;
-  }
-
-  [self.headerView setDefaultSearchEngineLogo:image];
-}
-
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
-                                name:(NSString*)name
-                               email:(NSString*)email {
-  [self.headerView updateADPBadgeWithErrorFound:hasAccountError
-                                           name:name
-                                          email:email];
-}
-
-- (void)setAIMAllowed:(BOOL)allowed {
-  [self.headerView setAIMAllowed:allowed];
-  _isAIMAllowed = allowed;
-}
-
-- (void)setFuseboxEligible:(BOOL)eligible {
-  [self.headerView setFuseboxEligible:eligible];
-  _fuseboxEligible = eligible;
-  [self updatePlaceholderText];
 }
 
 #pragma mark - Private
@@ -493,15 +421,6 @@ using base::UserMetricsAction;
                                   self.headerView.fakeOmniboxContainer);
 }
 
-// Ensures the state of the Voice Search button matches whether or not it's
-// enabled. If it's not, disables the button and removes it from the a11y loop
-// for VoiceOver.
-- (void)updateVoiceSearchDisplay {
-  self.headerView.voiceSearchButton.enabled = self.voiceSearchIsEnabled;
-  self.headerView.voiceSearchButton.isAccessibilityElement =
-      self.voiceSearchIsEnabled;
-}
-
 - (void)maybeShowSwitchAccountsIPH {
   if (!self.headerView.isSignedIn) {
     return;
@@ -524,24 +443,6 @@ using base::UserMetricsAction;
                    : [[UIColor colorNamed:kSolidWhiteColor]
                          colorWithAlphaComponent:0.75];
       }];
-}
-
-// Updates the placeholder text.
-- (void)updatePlaceholderText {
-  NSString* placeholderText = [self placeholderText];
-  self.headerView.placeholderText = placeholderText;
-  self.headerView.accessibilityButton.accessibilityLabel = placeholderText;
-}
-
-// Returns the omnibox placeholder text.
-- (NSString*)placeholderText {
-  if (IsAIOmniboxAskPlaceholderEnabled() && _isGoogleDefaultSearchEngine) {
-    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME,
-                                   self.defaultSearchEngineName.cr_UTF16String);
-  } else {
-    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
-                                   self.defaultSearchEngineName.cr_UTF16String);
-  }
 }
 
 @end

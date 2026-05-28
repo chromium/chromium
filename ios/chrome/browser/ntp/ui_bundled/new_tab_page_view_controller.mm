@@ -828,11 +828,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _isAIMAllowed = allowed;
 }
 
-#pragma mark - NewTabPageHeaderViewControllerDelegate
+#pragma mark - NewTabPageHeaderViewDelegate
 
-- (void)didChangeOmniboxPosition:
-    (NewTabPageHeaderViewController*)viewController {
-  CHECK_EQ(viewController, self.headerViewController);
+- (void)didChangeOmniboxPosition:(NewTabPageHeaderView*)headerView {
+  CHECK_EQ(headerView, (NewTabPageHeaderView*)self.headerViewController.view);
   [self updateFakeOmniboxForScrollPosition];
 }
 

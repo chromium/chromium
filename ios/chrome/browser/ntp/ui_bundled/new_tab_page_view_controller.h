@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 #import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
 
 @class ContentSuggestionsViewController;
@@ -33,10 +33,9 @@ class Tracker;
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
 @interface NewTabPageViewController
-    : UIViewControllerWithDisplayTracing <
-          NewTabPageConsumer,
-          NewTabPageHeaderViewControllerDelegate,
-          UIScrollViewDelegate>
+    : UIViewControllerWithDisplayTracing <NewTabPageConsumer,
+                                          NewTabPageHeaderViewDelegate,
+                                          UIScrollViewDelegate>
 
 // View controller wrapping the feed.
 @property(nonatomic, strong)

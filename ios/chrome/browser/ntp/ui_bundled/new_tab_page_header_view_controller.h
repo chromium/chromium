@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
 @protocol FakeboxFocuser;
 @protocol HelpCommands;
@@ -26,14 +26,13 @@
 // the interactions between the header and the collection, and the rest of the
 // application.
 @interface NewTabPageHeaderViewController
-    : UIViewController <FakeboxButtonsSnapshotProvider,
-                        NewTabPageHeaderConsumer>
+    : UIViewController <FakeboxButtonsSnapshotProvider>
 
 // Handlers for dispatched commands.
 @property(nonatomic, weak) id<FakeboxFocuser> fakeboxFocuserHandler;
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
-@property(nonatomic, weak) id<NewTabPageHeaderViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<NewTabPageHeaderViewDelegate> delegate;
 @property(nonatomic, weak) id<NewTabPageHeaderCommands> commandHandler;
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 

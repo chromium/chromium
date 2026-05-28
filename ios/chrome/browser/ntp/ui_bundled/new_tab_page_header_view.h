@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
 @class GradientView;
 @class LayoutGuideCenter;
@@ -24,8 +26,9 @@ enum class SearchEngineLogoState;
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
-@interface NewTabPageHeaderView
-    : UIView <UserAccountImageUpdateDelegate, SearchEngineLogoConsumer>
+@interface NewTabPageHeaderView : UIView <UserAccountImageUpdateDelegate,
+                                          SearchEngineLogoConsumer,
+                                          NewTabPageHeaderConsumer>
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
@@ -74,8 +77,8 @@ enum class SearchEngineLogoState;
 // View that contains tab group information.
 @property(nonatomic, weak) TabGroupIndicatorView* tabGroupIndicatorView;
 
-// `YES` if Google is the default search engine.
-@property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
+// Sets whether Google is the default search engine.
+- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine;
 
 // `YES` if the user is signed in.
 @property(nonatomic, assign, readonly) BOOL isSignedIn;
@@ -95,6 +98,9 @@ enum class SearchEngineLogoState;
 
 // Delegate for toolbar actions.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
+
+// Delegate for header view actions.
+@property(nonatomic, weak) id<NewTabPageHeaderViewDelegate> delegate;
 
 // Whether the NTP is currently showing.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;
@@ -139,9 +145,6 @@ enum class SearchEngineLogoState;
                    screenWidth:(CGFloat)screenWidth
                 safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
-// Configures the current default search engine logo.
-- (void)setDefaultSearchEngineLogo:(UIImage*)logo;
-
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
 
@@ -150,11 +153,6 @@ enum class SearchEngineLogoState;
 
 // Removes account disc particle error badge.
 - (void)removeIdentityDiscErrorBadge;
-
-// Updates the account particle disc error badge.
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
-                                name:(NSString*)name
-                               email:(NSString*)email;
 
 // Sets the Home customization menu entrypoint with a conditional "new feature"
 // badge.
@@ -171,15 +169,6 @@ enum class SearchEngineLogoState;
 // Returns a snapshot view of the fakebox's buttons to be used during focus
 // and defocus animations.
 - (UIView*)fakeboxButtonsSnapshot;
-
-// Whether AIM is allowed.
-- (void)setAIMAllowed:(BOOL)allowed;
-
-// Whether the current session is eligible for fusebox.
-- (void)setFuseboxEligible:(BOOL)eligible;
-
-// Sets whether the omnibox is pinned to the bottom position.
-- (void)setOmniboxPositionIsBottom:(BOOL)isBottomOmnibox;
 
 // Whether to show the plus button.
 - (BOOL)shouldShowPlusButton;
