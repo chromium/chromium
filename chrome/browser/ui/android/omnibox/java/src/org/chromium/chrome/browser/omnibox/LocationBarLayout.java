@@ -124,6 +124,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mUrlBar.setAccessibilityTraversalBefore(R.id.omnibox_suggestions_dropdown);
         setLayoutTransition(null);
 
         StatusView statusView = findViewById(R.id.location_bar_status);
