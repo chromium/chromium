@@ -10903,7 +10903,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   NotifyFrameSwapped(old_frame, new_frame);
 }
 
-void WebContentsImpl::PrimaryMainFrameSwapComplete(
+void WebContentsImpl::PrimaryMainFrameCommitted(
     RenderFrameHostImpl* new_frame) {
   CHECK(new_frame->GetView() == GetRenderWidgetHostView());
   SetPrimaryMainFrameViewVisibility(GetVisibility());

@@ -1123,15 +1123,9 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
   }
 
   // A same-RenderFrameHost navigation committed.
+  UpdateViewVisibilityAfterCommit(/*was_same_render_frame_host=*/true);
 
   if (render_frame_host_->is_local_root() && render_frame_host_->GetView()) {
-    // RenderFrames are created with a hidden RenderWidgetHost. When
-    // navigation finishes, we show it if the delegate is shown. CommitPending()
-    // takes care of this in the cross-process case, as well as other cases
-    // where a RenderFrameHost is swapped in.
-    if (!frame_tree_node_->frame_tree().IsHidden())
-      render_frame_host_->GetView()->Show();
-
     bool is_prerendering = render_frame_host_->lifecycle_state() ==
                            LifecycleStateImpl::kPrerendering;
     auto* rwhi = static_cast<RenderWidgetHostImpl*>(
@@ -1179,6 +1173,32 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
       UMA_HISTOGRAM_ENUMERATION(
           kBackForwardCachePageWithFormStorableHistogramName,
           BackForwardCacheMetrics::PageWithFormStorable::kPageSeen);
+    }
+  }
+}
+
+void RenderFrameHostManager::UpdateViewVisibilityAfterCommit(
+    bool was_same_render_frame_host) {
+  if (!render_frame_host_->GetView()) {
+    return;
+  }
+
+  RenderWidgetHostViewBase* view =
+      static_cast<RenderWidgetHostViewBase*>(render_frame_host_->GetView());
+
+  // RenderFrames are created with a hidden RenderWidgetHost. When navigation
+  // finishes, we show it if the delegate is shown.
+  if (frame_tree_node_->GetFrameType() == FrameType::kPrimaryMainFrame) {
+    delegate_->PrimaryMainFrameCommitted(render_frame_host_.get());
+  } else if (render_frame_host_->is_local_root()) {
+    if (!frame_tree_node_->frame_tree().IsHidden()) {
+      // Prerenders won't be a child view, but they'll be hidden so won't be
+      // shown.
+      CHECK(view->IsRenderWidgetHostViewChildFrame());
+      static_cast<RenderWidgetHostViewChildFrame*>(view)->Show();
+      if (!was_same_render_frame_host && render_frame_host_->child_count()) {
+        render_frame_host_->SetVisibilityForChildViews(true);
+      }
     }
   }
 }
@@ -5618,21 +5638,7 @@ void RenderFrameHostManager::CommitPending(
         allow_paint_holding);
   }
 
-  if (frame_tree_node_->GetFrameType() == FrameType::kPrimaryMainFrame) {
-    delegate_->PrimaryMainFrameSwapComplete(render_frame_host_.get());
-  } else if (render_frame_host_->is_local_root()) {
-    // RenderFrames are created with a hidden RenderWidgetHost. When navigation
-    // finishes, we show it if the delegate is shown.
-    if (!frame_tree_node_->frame_tree().IsHidden()) {
-      // Prerenders won't be a child view, but they'll be hidden so won't be
-      // shown.
-      CHECK(is_child_view);
-      static_cast<RenderWidgetHostViewChildFrame*>(new_view)->Show();
-      if (render_frame_host_->child_count()) {
-        render_frame_host_->SetVisibilityForChildViews(true);
-      }
-    }
-  }
+  UpdateViewVisibilityAfterCommit(/*was_same_render_frame_host=*/false);
 
   // If we took the fallback content, we mark paint-holding as active to start a
   // timeout to clear the fallback content in case the new renderer does not

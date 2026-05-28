@@ -1257,7 +1257,7 @@ class CONTENT_EXPORT WebContentsImpl
   void NotifySwappedRWHVChildFrameFromRenderManager(
       RenderWidgetHostViewChildFrame* new_view,
       bool allow_paint_holding) override;
-  void PrimaryMainFrameSwapComplete(RenderFrameHostImpl* new_frame) override;
+  void PrimaryMainFrameCommitted(RenderFrameHostImpl* new_frame) override;
 
   // PageDelegate -------------------------------------------------------------
 
