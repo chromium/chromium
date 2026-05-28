@@ -70,7 +70,7 @@ void RecordContextualCueingInteraction(
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::ContextualCueing_CueInteraction(source_id)
-      .SetProactiveCueShownDuration(ukm::GetExponentialBucketMinForUserTiming(
+      .SetProactiveCueShownDurationMs(ukm::GetExponentialBucketMinForUserTiming(
           shown_duration.InMilliseconds()))
       .Record(ukm_recorder);
 }

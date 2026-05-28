@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   const ukm::mojom::UkmEntry* entry = entries[0].get();
   const int64_t* duration_value = ukm_recorder.GetEntryMetric(
       entry, ukm::builders::ContextualCueing_CueInteraction::
-                 kProactiveCueShownDurationName);
+                 kProactiveCueShownDurationMsName);
   ASSERT_TRUE(duration_value);
   EXPECT_GE(*duration_value, 0);
 }
