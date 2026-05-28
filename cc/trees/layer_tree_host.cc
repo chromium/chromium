@@ -475,11 +475,9 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
     // ActiveCommitState() and return.
     pending_commit_state_ = std::move(activated_commit_state);
     pending_commit_state()->source_frame_number++;
+    property_trees()->ApplyChangeStateFrom(
+        pending_commit_state()->property_trees);
     pending_commit_state()->property_trees.clear();
-    property_trees()->ApplyChangeState(
-        pending_commit_state()->property_trees_change_state);
-    pending_commit_state()->property_trees_change_state =
-        PropertyTreesChangeState();
     // The completion event will be handled appropriately by the caller that
     // provided it.
     commit_completion_event_ = std::move(completion);
@@ -510,9 +508,8 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
 
   // Snapshot property trees now to lock in the commit state while paint event
   // handlers run.
-  property_trees()->GetChangeState(
-      pending_commit_state()->property_trees_change_state);
   pending_commit_state()->property_trees = *property_trees();
+  pending_commit_state()->property_trees.TakeChangeStateFrom(*property_trees());
   property_trees()->ResetAllChangeTracking();
 
   std::unique_ptr<CommitState> result = std::move(pending_commit_state_);

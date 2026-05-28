@@ -58,6 +58,7 @@
 #include "cc/trees/tree_synchronizer.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -664,60 +665,54 @@ OwnedLayerImplList LayerTreeImpl::SwapLayers(OwnedLayerImplList new_layers) {
 
 void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees,
                                      bool preserve_change_tracking) {
-  PropertyTreesChangeState change_state;
-  property_trees.GetChangeState(change_state);
-  SetPropertyTrees(property_trees, change_state, preserve_change_tracking);
-}
+  if (preserve_change_tracking) {
+    property_trees_.CollectChangeState();
+    property_trees.ApplyChangeStateFrom(property_trees_);
+  }
 
-void LayerTreeImpl::SetPropertyTrees(const PropertyTrees& property_trees,
-                                     PropertyTreesChangeState& change_state,
-                                     bool preserve_change_tracking) {
   // Updating the scroll tree shouldn't clobber the currently scrolling node so
   // stash it and restore it at the end of this method.  To maintain the
   // current scrolling node we need to use element ids which are stable across
   // the property tree update in SetPropertyTrees.
   ElementId scrolling_element_id;
   if (IsActiveTree()) {
-    if (ScrollNode* scrolling_node = CurrentlyScrollingNode())
+    if (ScrollNode* scrolling_node = CurrentlyScrollingNode()) {
       scrolling_element_id = scrolling_node->element_id;
+    }
   }
 
   std::vector<std::unique_ptr<RenderSurfaceImpl>> old_render_surfaces;
   property_trees_.effect_tree_mutable().TakeRenderSurfaces(
       &old_render_surfaces);
 
-  if (preserve_change_tracking) {
-    change_state.full_tree_damaged |= property_trees_.full_tree_damaged();
-    property_trees_.GetChangedNodes(change_state.changed_effect_nodes,
-                                    change_state.changed_transform_nodes);
-  }
-
   // TODO(crbug.com/492151880): This could use std::move semantics when
   // populating the pending tree, but the assignment operator for PropertyTrees
   // is full of non-standard behaviors.
   property_trees_ = property_trees;
 
-  property_trees_.ApplyChangedNodes(change_state.changed_effect_nodes,
-                                    change_state.changed_transform_nodes);
-  property_trees_.set_changed(change_state.changed);
-  property_trees_.set_needs_rebuild(change_state.needs_rebuild);
-  property_trees_.set_full_tree_damaged(change_state.full_tree_damaged);
-  property_trees_.effect_tree_mutable().ApplyRenderSurfaceChangedFlags(
-      change_state.surface_property_changed_flags);
+  property_trees_.ApplyChangedNodes(property_trees.changed_effect_nodes(),
+                                    property_trees.changed_transform_nodes());
+  property_trees_.set_changed(property_trees.changed());
+  property_trees_.set_needs_rebuild(property_trees.needs_rebuild());
+  property_trees_.set_full_tree_damaged(property_trees.full_tree_damaged());
   bool render_surfaces_changed =
       property_trees_.effect_tree_mutable().CreateOrReuseRenderSurfaces(
           &old_render_surfaces, this);
-  if (render_surfaces_changed)
+  property_trees_.effect_tree_mutable().ApplyRenderSurfaceChangedFlags(
+      property_trees.surface_property_changed_flags());
+  if (render_surfaces_changed) {
     set_needs_update_draw_properties();
-  property_trees_.effect_tree_mutable().PullCopyRequestsFrom(
-      change_state.effect_tree_copy_requests);
+  }
+  auto copy_requests = property_trees.effect_tree_mutable().TakeCopyRequests();
+  property_trees_.effect_tree_mutable().PullCopyRequestsFrom(copy_requests);
   property_trees_.set_is_main_thread(false);
   property_trees_.set_is_active(IsActiveTree());
   // The value of some effect node properties (like is_drawn) depends on
   // whether we are on the active tree or not. So, we need to update the
   // effect tree.
-  if (IsActiveTree())
+  if (IsActiveTree()) {
     property_trees_.effect_tree_mutable().set_needs_update(true);
+  }
 
   const ScrollNode* scrolling_node = nullptr;
   if (scrolling_element_id) {
@@ -834,9 +829,7 @@ void LayerTreeImpl::PullPropertyTreesFrom(
     }
   }
 
-  SetPropertyTrees(commit_state.property_trees,
-                   commit_state.property_trees_change_state,
-                   preserve_change_tracking);
+  SetPropertyTrees(commit_state.property_trees, preserve_change_tracking);
 }
 
 void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {

@@ -123,14 +123,10 @@ LayerImpl* FakeLayerTreeHost::CommitToTree(LayerTreeImpl* tree) {
   // pending_commit_state() is used in this function because this is a phony
   // commit that doesn't actually call WillCommit() or ActivateCommitState().
   tree->set_source_frame_number(SourceFrameNumber());
-  PropertyTreesChangeState change_state;
-  property_trees()->GetChangeState(change_state);
-  std::swap(change_state, pending_commit_state()->property_trees_change_state);
   pending_commit_state()->property_trees = *property_trees();
   host_impl_->FinishCommit(*pending_commit_state(),
                            thread_unsafe_commit_state());
   pending_commit_state()->picture_layer_ids_with_new_raster_source.clear();
-  std::swap(change_state, pending_commit_state()->property_trees_change_state);
   return tree->root_layer();
 }
 

@@ -1546,6 +1546,9 @@ void EffectTree::GetRenderSurfaceChangedFlags(
 
 void EffectTree::ApplyRenderSurfaceChangedFlags(
     const std::vector<RenderSurfacePropertyChangedFlags>& flags) {
+  if (flags.empty()) {
+    return;
+  }
   DCHECK_EQ(flags.size(), size());
   for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
        ++id) {
@@ -2450,13 +2453,6 @@ PropertyTreesCachedData::PropertyTreesCachedData()
 
 PropertyTreesCachedData::~PropertyTreesCachedData() = default;
 
-PropertyTreesChangeState::PropertyTreesChangeState() = default;
-PropertyTreesChangeState::~PropertyTreesChangeState() = default;
-PropertyTreesChangeState::PropertyTreesChangeState(PropertyTreesChangeState&&) =
-    default;
-PropertyTreesChangeState& PropertyTreesChangeState::operator=(
-    PropertyTreesChangeState&&) = default;
-
 PropertyTrees::PropertyTrees()
     : transform_tree_(this),
       effect_tree_(this),
@@ -2480,7 +2476,9 @@ bool PropertyTrees::operator==(const PropertyTrees& other) const {
          inner_viewport_container_bounds_delta() ==
              other.inner_viewport_container_bounds_delta() &&
          outer_viewport_container_bounds_delta() ==
-             other.outer_viewport_container_bounds_delta();
+             other.outer_viewport_container_bounds_delta() &&
+         changed_effect_nodes_ == other.changed_effect_nodes_ &&
+         changed_transform_nodes_ == other.changed_transform_nodes_;
 }
 #endif
 
@@ -2501,6 +2499,9 @@ PropertyTrees& PropertyTrees::operator=(const PropertyTrees& from) {
       from.outer_viewport_container_bounds_delta());
   SetTransformDeltaBySafeAreaInsetBottom(
       from.transform_delta_by_safe_area_inset_bottom());
+  changed_effect_nodes_ = from.changed_effect_nodes_;
+  changed_transform_nodes_ = from.changed_transform_nodes_;
+  surface_property_changed_flags_ = from.surface_property_changed_flags_;
   transform_tree_mutable().SetPropertyTrees(this);
   effect_tree_mutable().SetPropertyTrees(this);
   clip_tree_mutable().SetPropertyTrees(this);
@@ -2519,6 +2520,10 @@ void PropertyTrees::clear() {
   set_full_tree_damaged(false);
   set_changed(false);
   increment_sequence_number();
+
+  changed_effect_nodes_.clear();
+  changed_transform_nodes_.clear();
+  surface_property_changed_flags_.clear();
 
 #if DCHECK_IS_ON()
   PropertyTrees tree;
@@ -2726,32 +2731,31 @@ void PropertyTrees::ApplyChangedNodes(
   }
 }
 
-void PropertyTrees::GetChangeState(PropertyTreesChangeState& change_state) {
-  change_state.changed = changed();
-  change_state.needs_rebuild = needs_rebuild();
-  change_state.full_tree_damaged = full_tree_damaged();
+void PropertyTrees::CollectChangeState() {
+  GetChangedNodes(changed_effect_nodes_, changed_transform_nodes_);
+  effect_tree().GetRenderSurfaceChangedFlags(surface_property_changed_flags_);
+}
+
+void PropertyTrees::TakeChangeStateFrom(PropertyTrees& source) {
   // Note that EffectTree::TakeCopyRequest() can flip the value of
   // needs_rebuild(), but the prior value is the one we need to propagate, so we
   // snapshot that first.
-  change_state.effect_tree_copy_requests =
-      effect_tree_mutable().TakeCopyRequests();
-  GetChangedNodes(change_state.changed_effect_nodes,
-                  change_state.changed_transform_nodes);
-  effect_tree().GetRenderSurfaceChangedFlags(
-      change_state.surface_property_changed_flags);
+  auto copy_requests = source.effect_tree_mutable().TakeCopyRequests();
+  effect_tree_mutable().PullCopyRequestsFrom(copy_requests);
+  CollectChangeState();
 }
 
-void PropertyTrees::ApplyChangeState(PropertyTreesChangeState& change_state) {
-  changed_ |= change_state.changed;
-  needs_rebuild_ |= change_state.needs_rebuild;
-  full_tree_damaged_ |= change_state.full_tree_damaged;
-  // To preserve ordering, the copy requests in change_state should come before
-  // any requests added since change_state was created.
-  auto copy_requests = std::move(change_state.effect_tree_copy_requests);
+void PropertyTrees::ApplyChangeStateFrom(PropertyTrees& source) {
+  changed_ |= source.changed();
+  needs_rebuild_ |= source.needs_rebuild();
+  full_tree_damaged_ |= source.full_tree_damaged();
+  // To preserve ordering, the copy requests in source should come before
+  // any requests added since source was created.
+  auto copy_requests = source.effect_tree_mutable().TakeCopyRequests();
   copy_requests.merge(effect_tree_mutable().TakeCopyRequests());
   effect_tree_mutable().PullCopyRequestsFrom(copy_requests);
-  ApplyChangedNodes(change_state.changed_effect_nodes,
-                    change_state.changed_transform_nodes);
+  ApplyChangedNodes(source.changed_effect_nodes(),
+                    source.changed_transform_nodes());
 }
 
 void PropertyTrees::ResetAllChangeTracking() {
@@ -2759,6 +2763,9 @@ void PropertyTrees::ResetAllChangeTracking() {
   effect_tree_mutable().ResetChangeTracking();
   set_changed(false);
   set_full_tree_damaged(false);
+  changed_effect_nodes_.clear();
+  changed_transform_nodes_.clear();
+  surface_property_changed_flags_.clear();
 }
 
 std::unique_ptr<base::trace_event::TracedValue> PropertyTrees::AsTracedValue()

@@ -857,20 +857,10 @@ struct PropertyTreesCachedData {
   ~PropertyTreesCachedData();
 };
 
-struct CC_EXPORT PropertyTreesChangeState {
-  PropertyTreesChangeState();
-  ~PropertyTreesChangeState();
-  PropertyTreesChangeState(PropertyTreesChangeState&&);
-  PropertyTreesChangeState& operator=(PropertyTreesChangeState&&);
-  bool changed = false;
-  bool needs_rebuild = false;
-  bool full_tree_damaged = false;
-  EffectTree::CopyRequestMap effect_tree_copy_requests;
-  std::vector<int> changed_effect_nodes;
-  std::vector<int> changed_transform_nodes;
-  std::vector<RenderSurfacePropertyChangedFlags> surface_property_changed_flags;
-};
-
+// PropertyTrees is a container for the property trees (transform, effect, clip,
+// and scroll). It also optionally stores transient change tracking state that
+// is used during the commit process to synchronize changes between the main
+// thread and the compositor thread.
 class CC_EXPORT PropertyTrees final {
  public:
   PropertyTrees();
@@ -915,6 +905,17 @@ class CC_EXPORT PropertyTrees final {
   void increment_sequence_number() { sequence_number_++; }
   int sequence_number() const { return sequence_number_; }
 
+  const std::vector<int>& changed_effect_nodes() const {
+    return changed_effect_nodes_;
+  }
+  const std::vector<int>& changed_transform_nodes() const {
+    return changed_transform_nodes_;
+  }
+  const std::vector<RenderSurfacePropertyChangedFlags>&
+  surface_property_changed_flags() const {
+    return surface_property_changed_flags_;
+  }
+
   void clear();
 
   // Applies an animation state change for a particular element in
@@ -933,9 +934,19 @@ class CC_EXPORT PropertyTrees final {
                        std::vector<int>& transform_nodes) const;
   void ApplyChangedNodes(const std::vector<int>& effect_nodes,
                          const std::vector<int>& transform_nodes);
-  // Note that GetChangeState mutates the state of effect_tree_.
-  void GetChangeState(PropertyTreesChangeState& change_state);
-  void ApplyChangeState(PropertyTreesChangeState& change_state);
+
+  // Collects the changed nodes and surface property changed flags from the
+  // current trees and stores them in the internal change tracking vectors.
+  void CollectChangeState();
+
+  // Takes the change tracking state from the |source| property trees.
+  // Note that this mutates the state of |source| by taking its copy requests.
+  void TakeChangeStateFrom(PropertyTrees& source);
+
+  // Applies the change tracking state from |source| to this.
+  // Note that this mutates the state of |source| by taking its copy requests.
+  void ApplyChangeStateFrom(PropertyTrees& source);
+
   void ResetAllChangeTracking();
 
   gfx::Vector2dF inner_viewport_container_bounds_delta() const {
@@ -1006,6 +1017,11 @@ class CC_EXPORT PropertyTrees final {
   bool is_active_ = false;
 
   int sequence_number_ = 0;
+
+  std::vector<int> changed_effect_nodes_;
+  std::vector<int> changed_transform_nodes_;
+  std::vector<RenderSurfacePropertyChangedFlags>
+      surface_property_changed_flags_;
 
   gfx::Vector2dF inner_viewport_container_bounds_delta_;
   gfx::Vector2dF outer_viewport_container_bounds_delta_;

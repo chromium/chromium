@@ -169,9 +169,6 @@ struct CC_EXPORT CommitState {
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
-  // TODO(crbug.com/492147921): This shouldn't be tracked separately from
-  // property_trees.
-  PropertyTreesChangeState property_trees_change_state;
   base::flat_set<int> layer_ids_that_should_push_properties;
   base::flat_set<int> picture_layer_ids_with_new_raster_source;
   base::flat_map<int, gfx::Rect> layer_update_rects;
