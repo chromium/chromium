@@ -105,8 +105,11 @@ MEDIA_EXPORT extern const char kSystemAecEnabled[];
 MEDIA_EXPORT extern const char kUseCras[];
 #endif  // BUILDFLAG(USE_CRAS)
 
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
 MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
+#endif  // BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
+
+#if BUILDFLAG(USE_V4L2_CODEC)
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 

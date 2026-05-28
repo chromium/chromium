@@ -66,23 +66,10 @@ targets.legacy_matrix_compound_suite(
                 "CROS_LKGM",
             ],
         ),
-        "chromeos_system_friendly_gtests_fails_vmlab": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
-            mixins = [
-                "ci_only",
-                "experiments",
-                "skylab-rdb-gtest",
-            ],
-            variants = [
-                "CROS_LKGM",
-            ],
-        ),
         "chromeos_vaapi_gtests": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
             mixins = [
-                "ci_only",
-                "experiments",
                 "skylab-rdb-gtest",
+                "vaapi_unittest_libfake_args",
             ],
             variants = [
                 "CROS_LKGM",
@@ -201,23 +188,10 @@ targets.legacy_matrix_compound_suite(
                 "CROS_LKGM",
             ],
         ),
-        "chromeos_system_friendly_gtests_fails_vmlab": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
-            mixins = [
-                "ci_only",
-                "experiments",
-                "skylab-rdb-gtest",
-            ],
-            variants = [
-                "CROS_LKGM",
-            ],
-        ),
         "chromeos_vaapi_gtests": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
             mixins = [
-                "ci_only",
-                "experiments",
                 "skylab-rdb-gtest",
+                "vaapi_unittest_libfake_args",
             ],
             variants = [
                 "CROS_LKGM",

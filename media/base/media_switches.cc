@@ -306,13 +306,15 @@ const char kSystemAecEnabled[] = "system-aec-enabled";
 const char kUseCras[] = "use-cras";
 #endif  // BUILDFLAG(USE_CRAS)
 
-#if BUILDFLAG(USE_V4L2_CODEC)
-// This is needed for V4L2 testing using VISL (virtual driver) on cros VM with
-// arm64-generic-vm. Minigbm buffer allocation is done using dumb driver with
+#if BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
+// This is needed for V4L2/VAAPI testing using VISL or libfake (virtual drivers)
+// on cros VMs. Minigbm buffer allocation is done using the dumb driver with
 // vkms.
 const char kEnablePrimaryNodeAccessForVkmsTesting[] =
     "enable-primary-node-access-for-vkms-testing";
+#endif  // BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
 
+#if BUILDFLAG(USE_V4L2_CODEC)
 // Some (Qualcomm only at the moment) V4L2 video decoders require setting the
 // framerate so that the hardware decoder can scale the clocks efficiently.
 // This provides a mechanism during testing to lock the decoder framerate

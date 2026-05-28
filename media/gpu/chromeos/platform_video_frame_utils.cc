@@ -219,11 +219,11 @@ class GbmDeviceWrapper {
       return;
     }
 
-    // For V4L2 testing with VISL, dumb driver is used with vkms for minigbm
-    // backend. In this case, the primary node needs to be used instead of the
-    // render node.
+    // For V4L2/VAAPI testing with VISL or libfake (virtual drivers), the dumb
+    // driver is used with vkms for minigbm backend. In this case, the primary
+    // node needs to be used instead of the render node.
     // TODO(b/316993034): Remove this when having a render node for vkms.
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
     const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
     CHECK(cmd_line);
 

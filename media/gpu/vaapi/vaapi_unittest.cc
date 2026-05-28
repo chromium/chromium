@@ -1028,6 +1028,14 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // For VAAPI testing with libfake, the dumb driver is used with vkms for
+  // the minigbm backend. In this case, the primary node needs to be used
+  // instead of the render node.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnablePrimaryNodeAccessForVkmsTesting);
+#endif
+
   // PreSandboxInitialization() loads and opens the driver, queries its
   // capabilities and fills in the VASupportedProfiles.
   media::VaapiWrapper::PreSandboxInitialization();

@@ -558,84 +558,6 @@
       },
     },
 
-    'chromeos_system_friendly_gtests_fails_vmlab': {
-      'fake_libva_driver_unittest': {
-        'test_common': {
-          'args': [
-            '--env-var',
-            'LIBVA_DRIVERS_PATH',
-            './',
-            '--env-var',
-            'LIBVA_DRIVER_NAME',
-            'libfake',
-          ],
-        },
-        'skylab': {
-          'autotest_name': 'chromium',
-        },
-        'experiment_percentage': 100,
-      },
-      'video_decode_accelerator_tests_fake_vaapi_av1': {
-        'test_common': {
-          'args': [
-            '--env-var',
-            'LIBVA_DRIVERS_PATH',
-            './',
-            '--env-var',
-            'LIBVA_DRIVER_NAME',
-            'libfake',
-            '../../media/test/data/av1-1-b8-02-allintra.ivf',
-            '../../media/test/data/av1-1-b8-02-allintra.ivf.json',
-          ],
-        },
-        'test': 'video_decode_accelerator_tests',
-        'ci_only': True,
-        'skylab': {
-          'autotest_name': 'chromium',
-        },
-        'experiment_percentage': 100,
-      },
-      'video_decode_accelerator_tests_fake_vaapi_vp8': {
-        'test_common': {
-          'args': [
-            '--env-var',
-            'LIBVA_DRIVERS_PATH',
-            './',
-            '--env-var',
-            'LIBVA_DRIVER_NAME',
-            'libfake',
-            '../../media/test/data/test-25fps.vp8',
-            '../../media/test/data/test-25fps.vp8.json',
-          ],
-        },
-        'test': 'video_decode_accelerator_tests',
-        'ci_only': True,
-        'skylab': {
-          'autotest_name': 'chromium',
-        },
-        'experiment_percentage': 100,
-      },
-      'video_decode_accelerator_tests_fake_vaapi_vp9': {
-        'test_common': {
-          'args': [
-            '--env-var',
-            'LIBVA_DRIVERS_PATH',
-            './',
-            '--env-var',
-            'LIBVA_DRIVER_NAME',
-            'libfake',
-            '../../media/test/data/test-25fps.vp9',
-            '../../media/test/data/test-25fps.vp9.json',
-          ],
-        },
-        'test': 'video_decode_accelerator_tests',
-        'ci_only': True,
-        'skylab': {
-          'autotest_name': 'chromium',
-        },
-      },
-    },
-
     'chromeos_system_friendly_gtests_vmlab': {
       'aura_unittests': {
         'args': [
@@ -670,6 +592,21 @@
         },
       },
       'display_unittests': {
+        'skylab': {
+          'autotest_name': 'chromium',
+        },
+      },
+      'fake_libva_driver_unittest': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+          ],
+        },
         'skylab': {
           'autotest_name': 'chromium',
         },
@@ -758,6 +695,60 @@
         },
       },
       'url_unittests': {
+        'skylab': {
+          'autotest_name': 'chromium',
+        },
+      },
+      'video_decode_accelerator_tests_fake_vaapi_av1': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/av1-1-b8-02-allintra.ivf',
+            '../../media/test/data/av1-1-b8-02-allintra.ivf.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
+        'skylab': {
+          'autotest_name': 'chromium',
+        },
+      },
+      'video_decode_accelerator_tests_fake_vaapi_vp8': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.vp8',
+            '../../media/test/data/test-25fps.vp8.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
+        'skylab': {
+          'autotest_name': 'chromium',
+        },
+      },
+      'video_decode_accelerator_tests_fake_vaapi_vp9': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.vp9',
+            '../../media/test/data/test-25fps.vp9.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
         'skylab': {
           'autotest_name': 'chromium',
         },
@@ -3107,16 +3098,6 @@
           'CROS_LKGM',
         ],
       },
-      'chromeos_system_friendly_gtests_fails_vmlab': {
-        'mixins': [
-          'ci_only',
-          'experiments',
-          'skylab-rdb-gtest',
-        ],
-        'variants': [
-          'CROS_LKGM',
-        ],
-      },
       'chromeos_system_friendly_gtests_vmlab': {
         'mixins': [
           'skylab-rdb-gtest',
@@ -3127,9 +3108,8 @@
       },
       'chromeos_vaapi_gtests': {
         'mixins': [
-          'ci_only',
-          'experiments',
           'skylab-rdb-gtest',
+          'vaapi_unittest_libfake_args',
         ],
         'variants': [
           'CROS_LKGM',
@@ -3203,16 +3183,6 @@
           'CROS_LKGM',
         ],
       },
-      'chromeos_system_friendly_gtests_fails_vmlab': {
-        'mixins': [
-          'ci_only',
-          'experiments',
-          'skylab-rdb-gtest',
-        ],
-        'variants': [
-          'CROS_LKGM',
-        ],
-      },
       'chromeos_system_friendly_gtests_vmlab': {
         'mixins': [
           'skylab-rdb-gtest',
@@ -3223,9 +3193,8 @@
       },
       'chromeos_vaapi_gtests': {
         'mixins': [
-          'ci_only',
-          'experiments',
           'skylab-rdb-gtest',
+          'vaapi_unittest_libfake_args',
         ],
         'variants': [
           'CROS_LKGM',

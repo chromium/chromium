@@ -492,39 +492,25 @@ targets.legacy_basic_suite(
                 autotest_name = "chromium",
             ),
         ),
-    },
-)
-
-# TODO: merge back into chromeos_system_friendly_gtests once everything is fixed.
-targets.legacy_basic_suite(
-    name = "chromeos_system_friendly_gtests_fails_vmlab",
-    tests = {
         "video_decode_accelerator_tests_fake_vaapi_vp9": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
             ),
-            ci_only = True,
         ),
-        # TODO(b/370554776): Promote following tests out of experimental
         "video_decode_accelerator_tests_fake_vaapi_vp8": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
             ),
-            ci_only = True,
-            experiment_percentage = 100,
         ),
         "video_decode_accelerator_tests_fake_vaapi_av1": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
             ),
-            ci_only = True,
-            experiment_percentage = 100,
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
             ),
-            experiment_percentage = 100,
         ),
     },
 )

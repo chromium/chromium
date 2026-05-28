@@ -374,16 +374,15 @@
           "libfake"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
         "module_scheme": "gtest",
         "name": "fake_libva_driver_unittest LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "fake_libva_driver_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/",
         "use_lkgm": true,
@@ -645,19 +644,24 @@
       {
         "args": [
           "--stop-ui",
-          "--gtest_filter=\"VaapiTest.*\""
+          "--gtest_filter=\"VaapiTest.*\"",
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/vaapi:vaapi_unittest",
         "module_scheme": "gtest",
         "name": "vaapi_unittest LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "use_lkgm": true,
@@ -675,16 +679,15 @@
           "../../media/test/data/av1-1-b8-02-allintra.ivf.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_av1 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -702,16 +705,15 @@
           "../../media/test/data/test-25fps.vp8.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp8 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -729,16 +731,15 @@
           "../../media/test/data/test-25fps.vp9.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp9 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -877,16 +878,15 @@
           "libfake"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
         "module_scheme": "gtest",
         "name": "fake_libva_driver_unittest LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "fake_libva_driver_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/",
         "use_lkgm": true,
@@ -1148,19 +1148,24 @@
       {
         "args": [
           "--stop-ui",
-          "--gtest_filter=\"VaapiTest.*\""
+          "--gtest_filter=\"VaapiTest.*\"",
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/vaapi:vaapi_unittest",
         "module_scheme": "gtest",
         "name": "vaapi_unittest LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "use_lkgm": true,
@@ -1178,16 +1183,15 @@
           "../../media/test/data/av1-1-b8-02-allintra.ivf.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_av1 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1205,16 +1209,15 @@
           "../../media/test/data/test-25fps.vp8.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp8 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1232,16 +1235,15 @@
           "../../media/test/data/test-25fps.vp9.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp9 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1552,16 +1554,15 @@
           "libfake"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
         "module_scheme": "gtest",
         "name": "fake_libva_driver_unittest LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "fake_libva_driver_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/",
         "use_lkgm": true,
@@ -1823,19 +1824,24 @@
       {
         "args": [
           "--stop-ui",
-          "--gtest_filter=\"VaapiTest.*\""
+          "--gtest_filter=\"VaapiTest.*\"",
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/vaapi:vaapi_unittest",
         "module_scheme": "gtest",
         "name": "vaapi_unittest LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "use_lkgm": true,
@@ -1853,16 +1859,15 @@
           "../../media/test/data/av1-1-b8-02-allintra.ivf.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_av1 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1880,16 +1885,15 @@
           "../../media/test/data/test-25fps.vp8.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp8 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1907,16 +1911,15 @@
           "../../media/test/data/test-25fps.vp9.json"
         ],
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//media/gpu/test:video_decode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp9 LKGM",
         "resultdb": {
           "result_format": "gtest"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,

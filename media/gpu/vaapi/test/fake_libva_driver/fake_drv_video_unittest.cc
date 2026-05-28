@@ -67,6 +67,34 @@ class FakeDriverTest : public testing::Test {
       break;
     }
 
+    if (!drm_fd_.is_valid()) {
+      constexpr char kCardNodeFilePattern[] = "/dev/dri/card%d";
+      for (int i = 0;; i++) {
+        base::FilePath dev_path(FILE_PATH_LITERAL(
+            base::StringPrintf(kCardNodeFilePattern, i).c_str()));
+        base::File drm_file =
+            base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                     base::File::FLAG_WRITE);
+        if (!drm_file.IsValid()) {
+          break;
+        }
+        // Skip the virtual graphics memory manager device.
+        drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
+        if (!version) {
+          continue;
+        }
+        std::string version_name(
+            version->name,
+            base::checked_cast<std::string::size_type>(version->name_len));
+        drmFreeVersion(version);
+        if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
+          continue;
+        }
+        drm_fd_.reset(drm_file.TakePlatformFile());
+        break;
+      }
+    }
+
     ASSERT_TRUE(drm_fd_.is_valid());
     display_ = vaGetDisplayDRM(drm_fd_.get());
     ASSERT_TRUE(vaDisplayIsValid(display_));
