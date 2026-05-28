@@ -1,0 +1,118 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
+
+using chrome_test_util::TapWebElementWithId;
+
+namespace {
+
+constexpr char kFormElementNormal[] = "normal_field";
+constexpr char kFormElementReadonly[] = "readonly_field";
+
+constexpr char kFormHTMLFile[] = "/readonly_form.html";
+
+// Matcher for the address manual fill button.
+id<GREYMatcher> KeyboardAccessoryAddressManualFill() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA));
+}
+
+}  // namespace
+
+// Integration Tests for fallback coordinator.
+@interface FallbackViewControllerTestCase : ChromeTestCase
+@end
+
+@implementation FallbackViewControllerTestCase
+
+- (void)setUp {
+  [super setUp];
+  [AutofillAppInterface clearProfilesStore];
+  [AutofillAppInterface saveExampleProfile];
+
+  [AutofillAppInterface clearProfilePasswordStore];
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
+}
+
+- (void)tearDownHelper {
+  [AutofillAppInterface clearProfilesStore];
+  [AutofillAppInterface clearProfilePasswordStore];
+  [super tearDownHelper];
+}
+
+// Tests that readonly fields don't have Manual Fallback icons.
+- (void)testReadOnlyFieldDoesNotShowManualFallbackIcons {
+  // Tap the readonly field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementReadonly)];
+
+  // Verify that the address manual fill button is not visible.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests the visibility of manual fill buttons when switching from a regular
+// field to a read-only field.
+- (void)testReadOnlyFieldDoesNotShowManualFallbackIconsAfterNormalField {
+  // Tap the regular field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementNormal)];
+
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Verify that the address manual fill button is visible.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the readonly field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementReadonly)];
+
+  // Verify that the address manual fill button is not visible.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that normal fields have Manual Fallback icons after tapping a readonly
+// field.
+- (void)testNormalFieldHasManualFallbackIconsAfterReadonlyField {
+  // Tap the readonly field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementReadonly)];
+
+  // Verify that the address manual fill button is not visible.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Tap the regular field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementNormal)];
+
+  // Verify that the address manual fill button is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:KeyboardAccessoryAddressManualFill()];
+}
+
+@end

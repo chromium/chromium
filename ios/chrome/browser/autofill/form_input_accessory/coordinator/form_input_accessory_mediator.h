@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "ios/chrome/browser/autofill/manual_fill/coordinator/form_input_interaction_delegate.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_input_interaction_delegate.h"
 
 @protocol FormInputAccessoryConsumer;
 @protocol FormInputAccessoryMediatorHandler;

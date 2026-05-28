@@ -1,0 +1,513 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_injection_handler.h"
+
+#import <memory>
+#import <optional>
+#import <string>
+#import <vector>
+
+#import "base/apple/foundation_util.h"
+#import "base/debug/crash_logging.h"
+#import "base/functional/bind.h"
+#import "base/json/string_escape.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+#import "components/password_manager/ios/shared_password_controller.h"
+#import "ios/chrome/browser/autofill/manual_fill/model/form_observer_helper.h"
+#import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential.h"
+#import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
+#import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
+
+using base::UmaHistogramEnumeration;
+using password_manager::FillData;
+
+namespace {
+
+// Delay before queueing an utterance. It is required to ensure that standard
+// announcements have already started and thus won't be interrupted.
+constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
+
+// Returns true if the FormSuggestionClient is stateless.
+bool IsStateless() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
+}
+
+// Returns true if the `suggestion` is supported by the injection handler.
+bool IsSupportedSuggestion(FormSuggestion* suggestion) {
+  autofill::SuggestionType type = suggestion.type;
+  return type == autofill::SuggestionType::kAddressEntry ||
+         type == autofill::SuggestionType::kVirtualCreditCardEntry ||
+         type == autofill::SuggestionType::kCreditCardEntry;
+}
+
+}  // namespace
+
+@interface ManualFillInjectionHandler () <FormActivityObserver>
+
+// The object in charge of listening to form events and reporting back.
+@property(nonatomic, strong) FormObserverHelper* formHelper;
+
+// Interface for `reauthenticationModule`, handling mostly the case when no
+// hardware for authentication is available.
+@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+
+// YES if the last focused element is secure within its web frame. To be secure
+// means the web is HTTPS and the URL is trusted.
+@property(nonatomic, assign, getter=isLastFocusedElementSecure)
+    BOOL lastFocusedElementSecure;
+
+// YES if the last focused element is a password field.
+@property(nonatomic, assign, getter=isLastFocusedElementPasswordField)
+    BOOL lastFocusedElementPasswordField;
+
+// The last seen frame ID with focus activity.
+@property(nonatomic, assign) std::string lastFocusedElementFrameIdentifier;
+
+// Used to present alerts.
+@property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
+
+// Used to entirely fill the current form with a suggestion.
+@property(nonatomic, weak) id<FormSuggestionClient> formSuggestionClient;
+
+@end
+
+@implementation ManualFillInjectionHandler {
+  // Holds the FormActivityParams from the last focus. Can be nullopt if there
+  // wasn't any focus done.
+  std::optional<autofill::FormActivityParams> _lastFocusedElementParams;
+
+  // Injected getter that returns the Autofill FormSuggestionProvider for a
+  // given `webState`. This is there to solve a dependency cycle between model/
+  // and ui_bundled/.
+  AutofillProviderGetter _autofillProviderGetter;
+
+  // The WebStateList with the relevant active web state for the injection.
+  base::WeakPtr<WebStateList> _webStateList;
+}
+
+- (instancetype)
+      initWithWebStateList:(WebStateList*)webStateList
+      securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+      formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient
+    autofillProviderGetter:(AutofillProviderGetter)autofillProviderGetter {
+  self = [super init];
+  if (self) {
+    _webStateList = webStateList->AsWeakPtr();
+    _securityAlertHandler = securityAlertHandler;
+    _formHelper =
+        [[FormObserverHelper alloc] initWithWebStateList:webStateList];
+    _formHelper.delegate = self;
+    _reauthenticationModule = reauthenticationModule;
+    _formSuggestionClient = formSuggestionClient;
+    _autofillProviderGetter = autofillProviderGetter;
+  }
+  return self;
+}
+
+#pragma mark - ManualFillContentInjector
+
+- (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
+                       requiresHTTPS:(BOOL)requiresHTTPS {
+  if (passwordField && ![self isLastFocusedElementPasswordField]) {
+    NSString* alertBody = l10n_util::GetNSString(
+        IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_PASSWORD_BODY);
+    [self.securityAlertHandler presentSecurityWarningAlertWithText:alertBody];
+    return NO;
+  }
+  if (requiresHTTPS && ![self isLastFocusedElementSecure]) {
+    NSString* alertBody =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_GENERIC_BODY);
+    [self.securityAlertHandler presentSecurityWarningAlertWithText:alertBody];
+    return NO;
+  }
+  return YES;
+}
+
+- (void)userDidPickContent:(NSString*)content
+             passwordField:(BOOL)passwordField
+             requiresHTTPS:(BOOL)requiresHTTPS {
+  if (passwordField) {
+    UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                            ReauthenticationEvent::kAttempt);
+  }
+
+  if ([self canUserInjectInPasswordField:passwordField
+                           requiresHTTPS:requiresHTTPS]) {
+    // Store the current frame ID to make sure it isn't modified during the
+    // reauthentication process.
+    const std::string frameID = self.lastFocusedElementFrameIdentifier;
+    if (!passwordField) {
+      [self fillLastSelectedFieldWithString:content frameId:frameID];
+      return;
+    }
+
+    if ([self.reauthenticationModule canAttemptReauth]) {
+      NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+      __weak __typeof(self) weakSelf = self;
+      auto completionHandler = ^(ReauthenticationResult result) {
+        if (result != ReauthenticationResult::kFailure) {
+          UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                                  ReauthenticationEvent::kSuccess);
+          [weakSelf fillLastSelectedFieldWithString:content frameId:frameID];
+        } else {
+          UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                                  ReauthenticationEvent::kFailure);
+        }
+      };
+
+      [self.reauthenticationModule
+          attemptReauthWithLocalizedReason:reason
+                      canReusePreviousAuth:YES
+                                   handler:completionHandler];
+    } else {
+      UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                              ReauthenticationEvent::kMissingPasscode);
+      [self fillLastSelectedFieldWithString:content frameId:frameID];
+    }
+  }
+}
+
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth {
+  if (![self canUserInjectInPasswordField:NO requiresHTTPS:YES]) {
+    return;
+  }
+
+  if (shouldReauth && [self.reauthenticationModule canAttemptReauth]) {
+    NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+    __weak __typeof(self) weakSelf = self;
+    auto completionHandler = ^(ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        [weakSelf fillFormWithCredential:credential];
+      }
+    };
+
+    [self.reauthenticationModule
+        attemptReauthWithLocalizedReason:reason
+                    canReusePreviousAuth:YES
+                                 handler:completionHandler];
+  } else {
+    [self fillFormWithCredential:credential];
+  }
+}
+
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
+  if (IsStateless()) {
+    // It is really odd to not have params here as getting a suggestion for the
+    // manual fallback should correlate with a form activity. Only
+    // crash when stateless is enabled so we don't perturbate the current flow.
+    CHECK(_lastFocusedElementParams);
+
+    // Do not pass the params yet as the client will wrap its own params around
+    // the suggestion. This is to keep the status quo of how params are handled
+    // when doing a manual fill.
+    FormSuggestion* decoratedSuggestion =
+        [FormSuggestion copy:formSuggestion
+                andSetParams:std::nullopt
+                    provider:[self providerForSuggestion:formSuggestion]];
+    [self.formSuggestionClient didSelectSuggestion:decoratedSuggestion
+                                           atIndex:index
+                                        completion:nil];
+  } else {
+    [self.formSuggestionClient didSelectSuggestion:formSuggestion
+                                           atIndex:index
+                                        completion:nil];
+  }
+}
+
+- (BOOL)isActiveFormAPasswordForm {
+  if (!_webStateList) {
+    return NO;
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return NO;
+  }
+
+  PasswordTabHelper* tabHelper =
+      PasswordTabHelper::FromWebState(activeWebState);
+  if (!tabHelper) {
+    return NO;
+  }
+
+  const password_manager::PasswordForm* observedForm =
+      [self currentPasswordFormFromWebState:activeWebState tabHelper:tabHelper];
+
+  return observedForm != nullptr;
+}
+
+- (url::Origin)activeWebFrameOrigin {
+  if (!_webStateList) {
+    return url::Origin();
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return url::Origin();
+  }
+  web::WebFrame* frame =
+      [self activeWebFrameFromWebState:activeWebState
+                               frameId:self.lastFocusedElementFrameIdentifier];
+  return frame ? frame->GetSecurityOrigin() : url::Origin();
+}
+
+#pragma mark - FormActivityObserver
+
+- (void)webState:(web::WebState*)webState
+    didRegisterFormActivity:(const autofill::FormActivityParams&)params
+                    inFrame:(web::WebFrame*)frame {
+  // Ignore non-user triggered events so page JS can't control which fields
+  // receive data.
+  if (params.type != "focus" || !params.has_user_gesture) {
+    return;
+  }
+  _lastFocusedElementParams = params;
+  self.lastFocusedElementSecure =
+      autofill::IsContextSecureForWebState(webState);
+  self.lastFocusedElementPasswordField = params.field_type == "password";
+  DCHECK(frame);
+  self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
+  if (!GURL::SchemeIsCryptographic(frame->GetSecurityOrigin().scheme())) {
+    self.lastFocusedElementSecure = NO;
+  }
+}
+
+#pragma mark - Private
+
+// Returns the web frame with `frameId` associated with the given `webState`.
+- (web::WebFrame*)activeWebFrameFromWebState:(web::WebState*)webState
+                                     frameId:(const std::string&)frameId {
+  autofill::AutofillJavaScriptFeature* feature =
+      autofill::AutofillJavaScriptFeature::GetInstance();
+
+  return feature->GetWebFramesManager(webState)->GetFrameWithId(frameId);
+}
+
+// Injects the passed string to the active field and jumps to the next field.
+- (void)fillLastSelectedFieldWithString:(NSString*)string
+                                frameId:(const std::string&)frameId {
+  if (!_webStateList) {
+    return;
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  web::WebFrame* activeWebFrame =
+      [self activeWebFrameFromWebState:activeWebState frameId:frameId];
+  if (!activeWebFrame) {
+    return;
+  }
+
+  base::DictValue data;
+  data.Set("renderer_id",
+           static_cast<int>([self lastFocusedElementUniqueID].value()));
+  data.Set("value", base::SysNSStringToUTF16(string));
+  __weak __typeof(self) weakSelf = self;
+  autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
+      activeWebFrame, std::move(data), base::BindOnce(^(BOOL success) {
+        [weakSelf jumpToNextField];
+      }));
+}
+
+// Attempts to jump to the next field in the current form.
+- (void)jumpToNextField {
+  FormInputAccessoryViewHandler* handler =
+      [[FormInputAccessoryViewHandler alloc] init];
+  if (!_webStateList) {
+    return;
+  }
+  handler.webState = _webStateList->GetActiveWebState();
+  [handler setLastFocusFormActivityWebFrameID:
+               base::SysUTF8ToNSString(self.lastFocusedElementFrameIdentifier)];
+  [handler selectNextElementWithoutButtonPress];
+}
+
+// Fills the current form with the given `credential`. Only works if the current
+// form is a password form, otherwise it's a no-op.
+- (void)fillFormWithCredential:(ManualFillCredential*)credential {
+  if (!_webStateList) {
+    return;
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  PasswordTabHelper* tabHelper =
+      PasswordTabHelper::FromWebState(activeWebState);
+  if (!tabHelper) {
+    return;
+  }
+
+  const password_manager::PasswordForm* observedForm =
+      [self currentPasswordFormFromWebState:activeWebState tabHelper:tabHelper];
+  if (!observedForm) {
+    return;
+  }
+
+  FillData fillData = [self makeFillDataForCredential:credential
+                                          currentForm:*observedForm];
+  SharedPasswordController* sharedPasswordController =
+      tabHelper->GetSharedPasswordController();
+  [self fillFormWithFillData:fillData
+                    webState:activeWebState
+                  formHelper:sharedPasswordController.formHelper];
+}
+
+// Returns the observed parsed password form to which the last focused field
+// belongs. Might return `nil` if the PasswordManager doesn't observe any parsed
+// form.
+- (const password_manager::PasswordForm*)
+    currentPasswordFormFromWebState:(web::WebState*)webState
+                          tabHelper:(PasswordTabHelper*)tabHelper {
+  password_manager::PasswordManager* passwordManager =
+      tabHelper->GetPasswordManager();
+  CHECK(passwordManager);
+
+  web::WebFrame* frame =
+      [self activeWebFrameFromWebState:webState
+                               frameId:self.lastFocusedElementFrameIdentifier];
+  if (!frame) {
+    return nil;
+  }
+
+  password_manager::PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
+  CHECK(driver);
+
+  return passwordManager->GetParsedObservedForm(
+      driver, [self lastFocusedElementUniqueID]);
+}
+
+// Creates and returns FillData for the given `credential`.
+- (FillData)makeFillDataForCredential:(ManualFillCredential*)credential
+                          currentForm:(const password_manager::PasswordForm&)
+                                          currentForm {
+  FillData fillData;
+  fillData.origin = credential.URL;
+  fillData.form_id = [self lastFocusedElementFormIdentifier];
+  fillData.username_element_id = currentForm.username_element_renderer_id;
+  fillData.username_value = base::SysNSStringToUTF16(credential.username);
+  fillData.password_element_id = currentForm.password_element_renderer_id;
+  fillData.password_value = base::SysNSStringToUTF16(credential.password);
+
+  return fillData;
+}
+
+// Uses `fillData` to fill a password form.
+- (void)fillFormWithFillData:(FillData)fillData
+                    webState:(web::WebState*)webState
+                  formHelper:(PasswordFormHelper*)formHelper {
+  web::WebFrame* activeWebFrame =
+      [self activeWebFrameFromWebState:webState
+                               frameId:self.lastFocusedElementFrameIdentifier];
+  if (!activeWebFrame) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [formHelper fillPasswordFormWithFillData:fillData
+                                   inFrame:activeWebFrame
+                          triggeredOnField:[self lastFocusedElementUniqueID]
+                         triggerSubmission:NO
+                         completionHandler:^(BOOL success) {
+                           if (success) {
+                             [weakSelf announceFormWasFilled];
+                           }
+                         }];
+}
+
+// Announces by VoiceOver that the form was filled.
+- (void)announceFormWasFilled {
+  if (!UIAccessibilityIsVoiceOverRunning()) {
+    return;
+  }
+
+  // The announcement is done asynchronously with a certain delay to make sure
+  // it is not interrupted by (almost) immediate standard announcements.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    kA11yAnnouncementQueueDelay.InNanoseconds()),
+      dispatch_get_main_queue(), ^{
+        // Use the queue flag to preserve standard announcements, they are
+        // conveyed first and then announce this message. This is a tradeoff as
+        // there is no control over the standard utterances (they are
+        // interrupting) and it is not desirable to interrupt them. Hence
+        // acceptance announcement is done after standard ones (which takes
+        // seconds).
+        NSAttributedString* message = [[NSAttributedString alloc]
+            initWithString:l10n_util::GetNSString(
+                               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM)
+                attributes:@{
+                  UIAccessibilitySpeechAttributeQueueAnnouncement : @YES
+                }];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                        message);
+      });
+}
+
+// Returns the renderer ID of the last focused field. Returns the default
+// renderer ID if there are no params.
+- (autofill::FieldRendererId)lastFocusedElementUniqueID {
+  return _lastFocusedElementParams.value_or(autofill::FormActivityParams())
+      .field_renderer_id;
+}
+
+// Returns the renderer ID of the last focused form. Returns the default
+// renderer ID if there are no params.
+- (autofill::FormRendererId)lastFocusedElementFormIdentifier {
+  return _lastFocusedElementParams.value_or(autofill::FormActivityParams())
+      .form_renderer_id;
+}
+
+// Returns the provider that matches the type of `suggestion`. Returns nil if
+// no provider can be determined.
+- (id<FormSuggestionProvider>)providerForSuggestion:
+    (FormSuggestion*)suggestion {
+  if (IsSupportedSuggestion(suggestion)) {
+    if (!_webStateList) {
+      return nil;
+    }
+    return _autofillProviderGetter.Run(_webStateList->GetActiveWebState());
+  }
+
+  // The manual fill injector should not use Suggestion objects for any other
+  // types, even password types.
+  SCOPED_CRASH_KEY_NUMBER("ManualFillInjection", "suggestion_type",
+                          static_cast<int>(suggestion.type));
+  NOTREACHED();
+
+  return nil;
+}
+
+@end

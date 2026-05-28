@@ -1,0 +1,132 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
+
+#import "base/feature_list.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/webauthn/ios/features.h"
+
+namespace manual_fill {
+
+// Passwords
+
+NSString* const kAccessoryPasswordAccessibilityIdentifier =
+    @"ManualFillAccessoryPasswordAccessibilityIdentifier";
+
+NSString* const kExpandedManualFillPasswordFaviconID =
+    @"ExpandedManualFillPasswordFaviconID";
+
+NSString* const kPasswordDoneButtonAccessibilityIdentifier =
+    @"ManualFillPasswordDoneButtonAccessibilityIdentifier";
+
+NSString* const kPasswordTableViewAccessibilityIdentifier =
+    @"ManualFillPasswordTableViewAccessibilityIdentifier";
+
+NSString* const kManagePasswordsAccessibilityIdentifier =
+    @"ManualFillManagePasswordsAccessibilityIdentifier";
+
+NSString* const kManageSettingsAccessibilityIdentifier =
+    @"ManualFillManageSettingsAccessibilityIdentifier";
+
+NSString* const kOtherPasswordsAccessibilityIdentifier =
+    @"ManualFillOtherPasswordsAccessibilityIdentifier";
+
+NSString* const kSuggestPasswordAccessibilityIdentifier =
+    @"ManualFillSuggestPasswordAccessibilityIdentifier";
+
+NSString* const kMaskedPasswordButtonText = @"••••••••";
+
+// Format string for the subtitle when both host and type are present.
+NSString* const kSubtitleFormat = @"%@ • %@";
+
+// Payments
+
+NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
+
+NSString* const kCardTableViewAccessibilityIdentifier =
+    @"ManualFillCardTableViewAccessibilityIdentifier";
+
+NSString* const kManagePaymentMethodsAccessibilityIdentifier =
+    @"ManualFillManagePaymentMethodsAccessibilityIdentifier";
+
+NSString* const kAddPaymentMethodAccessibilityIdentifier =
+    @"ManualFillAddPaymentMethodAccessibilityIdentifier";
+
+// Addresses
+
+NSString* const kAddressTableViewAccessibilityIdentifier =
+    @"ManualFillManualFillAddressTableViewAccessibilityIdentifier";
+
+NSString* const kManageAddressAccessibilityIdentifier =
+    @"ManualFillManageAddressAccessibilityIdentifier";
+
+// Miscellaneous
+
+NSString* const kExpandedManualFillViewID = @"ExpandedManualFillViewID";
+
+NSString* const kExpandedManualFillHeaderViewID =
+    @"ExpandedManualFillHeaderViewID";
+
+NSString* const kExpandedManualFillHeaderTopViewID =
+    @"ExpandedManualFillHeaderTopViewID";
+
+NSString* const kExpandedManualFillChromeLogoID =
+    @"ExpandedManualFillChromeLogoID";
+
+NSString* const kExpandedManualFillAutofillFormButtonID =
+    @"ExpandedManualFillAutofillFormButtonID";
+
+NSString* const kAccessoryKeyboardAccessibilityIdentifier =
+    @"ManualFillAccessoryKeyboardAccessibilityIdentifier";
+
+}  // namespace manual_fill
+
+@implementation ManualFillUtil
+
++ (manual_fill::ManualFillDataType)manualFillDataTypeFromFillingProduct:
+    (autofill::FillingProduct)fillingProduct {
+  switch (fillingProduct) {
+    case autofill::FillingProduct::kAutofillAi:
+      // For AutofillAi suggestions, the manual fill menu opens to the Address
+      // tab and scrolls to the "Manage Addresses and More..." button, allowing
+      // users to manage AutofillAi related data.
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAiWithDataSchema)) {
+        // Only allow kAutofillAi if the associated feature is enabled.
+        NOTREACHED();
+      }
+      [[fallthrough]];
+    case autofill::FillingProduct::kAddress:
+      return manual_fill::ManualFillDataType::kAddress;
+    case autofill::FillingProduct::kCreditCard:
+    case autofill::FillingProduct::kIban:
+      return manual_fill::ManualFillDataType::kPaymentMethod;
+    case autofill::FillingProduct::kPassword:
+      return manual_fill::ManualFillDataType::kCredential;
+    case autofill::FillingProduct::kPasskey:
+      return IsConditionalPasskeyLoginEnabled()
+                 ? manual_fill::ManualFillDataType::kCredential
+                 : manual_fill::ManualFillDataType::kOther;
+    case autofill::FillingProduct::kAutocomplete:
+    case autofill::FillingProduct::kDataList:
+    case autofill::FillingProduct::kNone:
+      return manual_fill::ManualFillDataType::kOther;
+    case autofill::FillingProduct::kCompose:
+    case autofill::FillingProduct::kMerchantPromoCode:
+    case autofill::FillingProduct::kLoyaltyCard:
+    case autofill::FillingProduct::kIdentityCredential:
+    case autofill::FillingProduct::kOneTimePassword:
+    case autofill::FillingProduct::kAtMemory:
+      // These cases are currently not available on iOS.
+      NOTREACHED();
+  }
+}
+
++ (NSString*)expandedManualFillOverflowMenuID:(NSInteger)cellIndex {
+  return [NSString stringWithFormat:@"ExpandedManualFillOverflowMenuID_%ld",
+                                    (long)cellIndex];
+}
+
+@end

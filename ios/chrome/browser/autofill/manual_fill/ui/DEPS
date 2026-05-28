@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/passwords/password_suggestion/ui",
+  "+ios/chrome/browser/settings/ui_bundled/password",
+  # keep-sorted end
+]

@@ -1,0 +1,67 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "manual_fill_matchers.h",
+    "manual_fill_matchers.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autofill/manual_fill/public",
+    "//ios/chrome/browser/autofill/model:constants",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "address_view_controller_egtest.mm",
+    "card_view_controller_egtest.mm",
+    "expanded_manual_fill_egtest.mm",
+    "fallback_coordinator_egtest.mm",
+    "fallback_view_controller_egtest.mm",
+    "password_view_controller_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/autofill/core/browser:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:features",
+    "//components/strings",
+    "//components/webauthn/ios:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/manual_fill/public",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/passwords/bottom_sheet/test:eg_test_support+eg2",
+    "//ios/chrome/browser/passwords/password_suggestion/public",
+    "//ios/chrome/browser/settings/manage_sync/public",
+    "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_table_view_constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

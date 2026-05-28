@@ -81,9 +81,9 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/autofill/manual_fill/test:eg2_tests",
     "//ios/chrome/browser/autofill/ui_bundled:eg2_tests",
     "//ios/chrome/browser/autofill/ui_bundled/branding:eg2_tests",
-    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg2_tests",
     "//ios/chrome/browser/content_suggestions/tab_resumption/test:eg2_tests",
     "//ios/chrome/browser/content_suggestions/test:eg2_tests",
     "//ios/chrome/browser/context_menu/ui_bundled:eg2_tests",

@@ -1,0 +1,94 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "address_consumer.h",
+    "address_list_delegate.h",
+    "address_view_controller.h",
+    "address_view_controller.mm",
+    "card_consumer.h",
+    "card_list_delegate.h",
+    "card_view_controller.h",
+    "card_view_controller.mm",
+    "chip_button.h",
+    "chip_button.mm",
+    "expanded_manual_fill_view_controller+Testing.h",
+    "expanded_manual_fill_view_controller.h",
+    "expanded_manual_fill_view_controller.mm",
+    "fallback_view_controller.h",
+    "fallback_view_controller.mm",
+    "manual_fill_action_cell.h",
+    "manual_fill_action_cell.mm",
+    "manual_fill_address_cell.h",
+    "manual_fill_address_cell.mm",
+    "manual_fill_card_cell+Testing.h",
+    "manual_fill_card_cell.h",
+    "manual_fill_card_cell.mm",
+    "manual_fill_cell_button.h",
+    "manual_fill_cell_button.mm",
+    "manual_fill_cell_utils.h",
+    "manual_fill_cell_utils.mm",
+    "manual_fill_labeled_chip.h",
+    "manual_fill_labeled_chip.mm",
+    "manual_fill_password_cell.h",
+    "manual_fill_password_cell.mm",
+    "password_consumer.h",
+    "password_list_navigator.h",
+    "password_view_controller.h",
+    "password_view_controller.mm",
+  ]
+  deps = [
+    "//components/autofill/ios/browser",
+    "//components/google/core/common",
+    "//components/password_manager/core/browser",
+    "//components/strings",
+    "//components/webauthn/ios:features",
+    "//components/webauthn/ios:utils",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/manual_fill/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/passwords/password_suggestion/ui:password_suggestion_utils",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "address_view_controller_unittest.mm",
+    "card_view_controller_unittest.mm",
+    "chip_button_unittest.mm",
+    "expanded_manual_fill_view_controller_unittest.mm",
+    "fallback_view_controller_unittest.mm",
+    "manual_fill_cell_utils_unittest.mm",
+    "manual_fill_labeled_chip_unittest.mm",
+    "password_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//components/password_manager/core/browser:test_support",
+    "//components/webauthn/ios:features",
+    "//ios/chrome/browser/autofill/manual_fill/model",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//third_party/ocmock",
+  ]
+}
