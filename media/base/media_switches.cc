@@ -432,7 +432,7 @@ BASE_FEATURE(kUseSCContentSharingPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables application audio capture for getDisplayMedia (gDM) window capture in
 // macOS.
-BASE_FEATURE(kApplicationAudioCaptureMac, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApplicationAudioCaptureMac, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_MAC)
 
