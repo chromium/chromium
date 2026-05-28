@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/bookmark_activity.h"
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/copy_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/find_in_page_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/generate_qr_code_activity.h"
@@ -40,7 +41,10 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 
-@interface ActivityServiceMediator ()
+@interface ActivityServiceMediator () {
+  // The custom activities created by the mediator.
+  NSMutableArray<ChromeActivity*>* _activities;
+}
 
 @property(nonatomic, weak) id<BrowserCoordinatorCommands, FindInPageCommands>
     handler;
@@ -89,6 +93,7 @@
     _baseViewController = baseViewController;
     _navigationAgent = navigationAgent;
     _readingListBrowserAgent = readingListBrowserAgent;
+    _activities = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -181,6 +186,7 @@
     [applicationActivities addObject:printActivity];
   }
 
+  [_activities addObjectsFromArray:applicationActivities];
   return applicationActivities;
 }
 
@@ -203,6 +209,7 @@
                                        handler:self.handler
                             baseViewController:self.baseViewController];
 
+  [_activities addObject:printActivity];
   return @[ printActivity ];
 }
 
@@ -244,6 +251,13 @@
     base::RecordAction(base::UserMetricsAction("MobileShareMenuCancel"));
     RecordCancelledScenario(scenario);
   }
+}
+
+- (void)disconnect {
+  for (ChromeActivity* activity in _activities) {
+    [activity disconnect];
+  }
+  [_activities removeAllObjects];
 }
 
 @end

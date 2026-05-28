@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_READING_LIST_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_READING_LIST_ACTIVITY_H_
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
 class GURL;
 class ReadingListBrowserAgent;
 
 // Activity that triggers the add-to-reading-list service.
-@interface ReadingListActivity : UIActivity
+@interface ReadingListActivity : ChromeActivity
 
 - (instancetype)initWithURL:(const GURL&)activityURL
                       title:(NSString*)title

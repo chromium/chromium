@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_FIND_IN_PAGE_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_FIND_IN_PAGE_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
 @protocol FindInPageCommands;
 @class ShareToData;
 
 // Activity to trigger the find in page feature.
-@interface FindInPageActivity : UIActivity
+@interface FindInPageActivity : ChromeActivity
 
 // Initializes the find in page activity with the given `data` and the
 // `handler`.

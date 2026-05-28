@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/request_desktop_or_mobile_site_activity.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -25,12 +26,13 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 @property(nonatomic, assign) web::UserAgentType userAgent;
 // The handler that is invoked when the IPH bubble is displayed.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
-// The agent that is invoked when the activity is performed.
-@property(nonatomic, readonly) WebNavigationBrowserAgent* agent;
 
 @end
 
-@implementation RequestDesktopOrMobileSiteActivity
+@implementation RequestDesktopOrMobileSiteActivity {
+  // The agent that is invoked when the activity is performed.
+  raw_ptr<WebNavigationBrowserAgent> _agent;
+}
 
 - (instancetype)initWithUserAgent:(web::UserAgentType)userAgent
                       helpHandler:(id<HelpCommands>)helpHandler
@@ -66,7 +68,7 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return self.userAgent != web::UserAgentType::NONE;
+  return _agent && self.userAgent != web::UserAgentType::NONE;
 }
 
 + (UIActivityCategory)activityCategory {
@@ -75,17 +77,26 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 
 - (void)performActivity {
   [self activityDidFinish:YES];
+  if (!_agent) {
+    return;
+  }
   if (self.userAgent == web::UserAgentType::MOBILE) {
     base::RecordAction(
         base::UserMetricsAction("MobileShareActionRequestDesktop"));
-    self.agent->RequestDesktopSite();
+    _agent->RequestDesktopSite();
     [self.helpHandler
         presentInProductHelpWithType:InProductHelpType::kDefaultSiteView];
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileShareActionRequestMobile"));
-    self.agent->RequestMobileSite();
+    _agent->RequestMobileSite();
   }
+}
+
+#pragma mark - ChromeActivity
+
+- (void)disconnect {
+  _agent = nullptr;
 }
 
 @end

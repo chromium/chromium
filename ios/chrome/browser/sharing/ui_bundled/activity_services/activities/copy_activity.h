@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_COPY_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_COPY_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
 @class ShareToData;
 
 // Activity that copies the URL to the pasteboard.
-@interface CopyActivity : UIActivity
+@interface CopyActivity : ChromeActivity
 
 // Initializes the copy activity with the objects in `dataItems` holding URLs
 // and potentially, additional text to be copied. `dataItems` must be non-null

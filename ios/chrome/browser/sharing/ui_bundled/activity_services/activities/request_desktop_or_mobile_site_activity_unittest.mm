@@ -42,17 +42,31 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
     PlatformTest::SetUp();
 
     mocked_handler_ = OCMStrictProtocolMock(@protocol(HelpCommands));
+    activities_ = [[NSMutableArray alloc] init];
+  }
+
+  void TearDown() override {
+    for (RequestDesktopOrMobileSiteActivity* activity in activities_) {
+      [activity disconnect];
+    }
+    activities_ = nil;
+
+    PlatformTest::TearDown();
   }
 
   // Creates a RequestDesktopOrMobileSiteActivity instance.
   RequestDesktopOrMobileSiteActivity* CreateActivity(
       web::UserAgentType user_agent) {
-    return [[RequestDesktopOrMobileSiteActivity alloc]
-        initWithUserAgent:user_agent
-              helpHandler:mocked_handler_
-          navigationAgent:agent_];
+    RequestDesktopOrMobileSiteActivity* activity =
+        [[RequestDesktopOrMobileSiteActivity alloc]
+            initWithUserAgent:user_agent
+                  helpHandler:mocked_handler_
+              navigationAgent:agent_];
+    [activities_ addObject:activity];
+    return activity;
   }
 
+  NSMutableArray<RequestDesktopOrMobileSiteActivity*>* activities_ = nil;
   id mocked_handler_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;

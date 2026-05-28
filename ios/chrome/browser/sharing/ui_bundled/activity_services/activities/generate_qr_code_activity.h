@@ -5,13 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_GENERATE_QR_CODE_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_GENERATE_QR_CODE_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 #include "url/gurl.h"
 
 // Activity that ends up showing a QR code for the given URL.
-@interface GenerateQrCodeActivity : UIActivity
+@interface GenerateQrCodeActivity : ChromeActivity
 
 // Initializes the GenerateQrCodeActivity with the `activityURL` used to
 // generate the QR code, the `title` of the page at that URL, and a `dispatcher`

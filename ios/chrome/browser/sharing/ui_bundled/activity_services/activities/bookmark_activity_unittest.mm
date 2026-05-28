@@ -36,6 +36,16 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
     mocked_handler_ = OCMProtocolMock(@protocol(BookmarksCommands));
 
     RegisterPrefs();
+    activities_ = [[NSMutableArray alloc] init];
+  }
+
+  void TearDown() override {
+    for (BookmarkActivity* activity in activities_) {
+      [activity disconnect];
+    }
+    activities_ = nil;
+
+    BookmarkIOSUnitTestSupport::TearDown();
   }
 
   // Registers the edit bookmarks pref.
@@ -52,13 +62,17 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
 
   // Creates a BookmarkActivity instance with the given `URL`.
   BookmarkActivity* CreateActivity(const GURL& URL) {
-    return [[BookmarkActivity alloc] initWithURL:URL
-                                           title:kTestTitle
-                                   bookmarkModel:bookmark_model_
-                                         handler:mocked_handler_
-                                     prefService:&testing_pref_service_];
+    BookmarkActivity* activity =
+        [[BookmarkActivity alloc] initWithURL:URL
+                                        title:kTestTitle
+                                bookmarkModel:bookmark_model_
+                                      handler:mocked_handler_
+                                  prefService:&testing_pref_service_];
+    [activities_ addObject:activity];
+    return activity;
   }
 
+  NSMutableArray<BookmarkActivity*>* activities_ = nil;
   TestingPrefServiceSimple testing_pref_service_;
   id mocked_handler_;
 };
@@ -85,6 +99,7 @@ TEST_F(BookmarkActivityTest, NilBookmarkModel_NoCrash) {
                               bookmarkModel:nil
                                     handler:mocked_handler_
                                 prefService:&testing_pref_service_];
+  [activities_ addObject:activity];
 
   EXPECT_FALSE([activity canPerformWithActivityItems:@[]]);
 }

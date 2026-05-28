@@ -5,15 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_REQUEST_DESKTOP_OR_MOBILE_SITE_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_REQUEST_DESKTOP_OR_MOBILE_SITE_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
-
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 #include "ios/web/common/user_agent.h"
 
 @protocol HelpCommands;
 class WebNavigationBrowserAgent;
 
 // Activity to request the Desktop or Mobile version of the page.
-@interface RequestDesktopOrMobileSiteActivity : UIActivity
+@interface RequestDesktopOrMobileSiteActivity : ChromeActivity
 
 // Initializes an activity to change between Mobile versus Desktop user agent,
 // with the current `userAgent` and `helpHandler` to execute the action.

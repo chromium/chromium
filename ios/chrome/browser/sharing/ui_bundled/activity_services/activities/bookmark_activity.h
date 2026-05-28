@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_BOOKMARK_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_BOOKMARK_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -16,7 +16,7 @@ class GURL;
 class PrefService;
 
 // Activity that adds the page to bookmarks.
-@interface BookmarkActivity : UIActivity
+@interface BookmarkActivity : ChromeActivity
 
 // Initializes the bookmark activity with a page's `URL` and `title`. The
 // `bookmarkModel` to verify if the page has already been bookmarked or not. The

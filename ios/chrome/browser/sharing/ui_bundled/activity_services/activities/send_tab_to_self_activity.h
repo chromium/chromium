@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_SEND_TAB_TO_SELF_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_SEND_TAB_TO_SELF_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
 @protocol BrowserCoordinatorCommands;
 @class ShareToData;
 
 // Activity that sends the tab to another of the user's devices.
-@interface SendTabToSelfActivity : UIActivity
+@interface SendTabToSelfActivity : ChromeActivity
 
 // Initializes the send tab to self activity with the given `data` and the
 // `handler` that is used to add the tab to the other device.

@@ -95,6 +95,9 @@ class WebNavigationBrowserAgent;
                      activityType:(NSString*)activityType
                         completed:(BOOL)completed;
 
+// Disconnects the mediator and all created activities.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITY_SERVICE_MEDIATOR_H_

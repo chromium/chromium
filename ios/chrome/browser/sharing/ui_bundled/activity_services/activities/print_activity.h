@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_PRINT_ACTIVITY_H_
 #define IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_ACTIVITY_SERVICES_ACTIVITIES_PRINT_ACTIVITY_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
 @protocol BrowserCoordinatorCommands;
 @class ShareImageData;
 @class ShareToData;
 
 // Activity that triggers the printing service.
-@interface PrintActivity : UIActivity
+@interface PrintActivity : ChromeActivity
 
 // Initializes the print activity with the given tab `data` and the `handler`.
 // Print preview will be presented on top of `baseViewController`.

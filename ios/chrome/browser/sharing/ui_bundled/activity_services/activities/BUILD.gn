@@ -6,6 +6,8 @@ source_set("activities") {
   sources = [
     "bookmark_activity.h",
     "bookmark_activity.mm",
+    "chrome_activity.h",
+    "chrome_activity.mm",
     "copy_activity.h",
     "copy_activity.mm",
     "find_in_page_activity.h",

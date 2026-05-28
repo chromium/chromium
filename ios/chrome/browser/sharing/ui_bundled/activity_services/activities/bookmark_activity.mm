@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/bookmark_activity.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -25,19 +26,20 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 @interface BookmarkActivity ()
 // Whether or not the page is bookmarked.
 @property(nonatomic, assign) BOOL bookmarked;
-// The bookmark model used to validate if a page was bookmarked.
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 // The URL of the page to be bookmarked.
 @property(nonatomic, assign) GURL URL;
 // The title of the page to be bookmarked.
 @property(nonatomic, copy) NSString* title;
 // The handler invoked when the activity is performed.
 @property(nonatomic, weak) id<BookmarksCommands> handler;
-// User's preferences service.
-@property(nonatomic, assign) PrefService* prefService;
 @end
 
-@implementation BookmarkActivity
+@implementation BookmarkActivity {
+  // The bookmark model used to validate if a page was bookmarked.
+  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
+  // User's preferences service.
+  raw_ptr<PrefService> _prefService;
+}
 
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
@@ -80,7 +82,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
   // Don't show the add/remove bookmark activity if we have an invalid
   // bookmarkModel, or if editing bookmarks is disabled in the prefs.
-  return self.bookmarkModel && [self isEditBookmarksEnabledInPrefs];
+  return _bookmarkModel && [self isEditBookmarksEnabledInPrefs];
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {
@@ -100,11 +102,19 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
                                                     title:self.title]];
 }
 
+#pragma mark - ChromeActivity
+
+- (void)disconnect {
+  _bookmarkModel = nullptr;
+  _prefService = nullptr;
+}
+
 #pragma mark - Private
 
 // Verifies if, based on preferences, the user can edit their bookmarks or not.
 - (BOOL)isEditBookmarksEnabledInPrefs {
-  return self.prefService->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
+  return _prefService &&
+         _prefService->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
 }
 
 @end
