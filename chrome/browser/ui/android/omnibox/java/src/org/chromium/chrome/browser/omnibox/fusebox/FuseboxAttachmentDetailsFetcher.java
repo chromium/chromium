@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentSizeLimitCheck;
 import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.IOException;
@@ -125,14 +126,30 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         assert !TextUtils.isEmpty(mimeType);
         if (title == null || mimeType == null) return false;
 
+        boolean isMetered = DeviceConditions.isCurrentActiveNetworkMetered(mContext);
         long maxSize =
-                DeviceConditions.isCurrentActiveNetworkMetered(mContext)
+                isMetered
                         ? MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK
                         : MAX_ATTACHMENT_SIZE_BYTES;
 
         /* Only exempt images from size limits, as they should be downscaled */
         if (MimeTypeUtils.getTypeFromMimeType(mimeType) != MimeTypeUtils.Type.IMAGE
-                && (size == null || size > maxSize)) return false;
+                && (size == null || size > maxSize)) {
+
+            if (size == null) return false;
+
+            FuseboxMetrics.notifyAttachmentSizeLimitCheck(
+                    isMetered
+                            ? FuseboxAttachmentSizeLimitCheck.OVER_LIMIT_ON_METERED
+                            : FuseboxAttachmentSizeLimitCheck.OVER_LIMIT_ON_UNMETERED);
+
+            return false;
+        }
+
+        FuseboxMetrics.notifyAttachmentSizeLimitCheck(
+                isMetered
+                        ? FuseboxAttachmentSizeLimitCheck.UNDER_LIMIT_ON_METERED
+                        : FuseboxAttachmentSizeLimitCheck.UNDER_LIMIT_ON_UNMETERED);
 
         byte[] data;
 

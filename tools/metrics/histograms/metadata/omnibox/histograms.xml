@@ -2590,6 +2590,42 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentSizeLimitCheck"
+    enum="FuseboxAttachmentSizeLimitCheck" expires_after="2026-11-11">
+  <owner>jkoblinsky@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the result of the size limit check for a Fusebox file attachment.
+    (whether it is under the limit or exceeds the limit on metered or unmetered
+    networks), where exceeding the limit for a given file type and network
+    condition will result in the file not being attached (or sent to the
+    server).
+
+    A value is emitted when the user selects a file from the file picker, or
+    when they confirm their selection of multiple files from the file picker. In
+    the case of multiple files, a value will be independently emitted for each
+    selected file. Attaching the same file twice will result in duplicate
+    emissions.
+
+    An emission will certainly occur if the file is ultimately attached, and
+    thus appears as an attachment chip. An emission will still occur even if the
+    file is ultimately not attached on the client side (e.g., because its
+    content cannot be read from disk or upload fails later), given that the
+    title, mime type, and size can be resolved. If the title, mime type, or size
+    cannot be resolved, then no emission will occur. An emission will still
+    occur if the user dismisses the omnibox before the file is uploaded to the
+    server, that is, the omnibox is dismissed while the loading spinner is
+    shown. An emission will not occur if the user dismisses the file picker
+    without selecting any files.
+
+    At most one emission will occur per file attachment attempt. So, e.g., if a
+    file is so large that it would exceed the size limit on both metered and
+    unmetered networks, but the user is on a metered network, a value will be
+    emitted for the metered network case, but not for the unmetered network
+    case.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentsPopupButtonClickedInSession"
     enum="Boolean" expires_after="2026-11-11">
   <owner>pnoland@google.com</owner>

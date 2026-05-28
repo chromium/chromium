@@ -71,6 +71,41 @@ public class FuseboxMetricsTest {
     }
 
     @Test
+    public void testNotifyAttachmentSizeLimitCheck() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.FILE_ATTACHMENT_SIZE_LIMIT_CHECK_HISTOGRAM,
+                        FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.UNDER_LIMIT_ON_METERED);
+        FuseboxMetrics.notifyAttachmentSizeLimitCheck(
+                FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.UNDER_LIMIT_ON_METERED);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.FILE_ATTACHMENT_SIZE_LIMIT_CHECK_HISTOGRAM,
+                        FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.UNDER_LIMIT_ON_UNMETERED);
+        FuseboxMetrics.notifyAttachmentSizeLimitCheck(
+                FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.UNDER_LIMIT_ON_UNMETERED);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.FILE_ATTACHMENT_SIZE_LIMIT_CHECK_HISTOGRAM,
+                        FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.OVER_LIMIT_ON_METERED);
+        FuseboxMetrics.notifyAttachmentSizeLimitCheck(
+                FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.OVER_LIMIT_ON_METERED);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.FILE_ATTACHMENT_SIZE_LIMIT_CHECK_HISTOGRAM,
+                        FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.OVER_LIMIT_ON_UNMETERED);
+        FuseboxMetrics.notifyAttachmentSizeLimitCheck(
+                FuseboxMetrics.FuseboxAttachmentSizeLimitCheck.OVER_LIMIT_ON_UNMETERED);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testNotifyAttachmentButtonUsed() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

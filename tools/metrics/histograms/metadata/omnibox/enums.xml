@@ -187,6 +187,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentButtonType,//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:FuseboxAttachmentButtonType) -->
 
+<!-- LINT.IfChange(FuseboxAttachmentSizeLimitCheck) -->
+
+<enum name="FuseboxAttachmentSizeLimitCheck">
+  <int value="0" label="Under limit on metered"/>
+  <int value="1" label="Under limit on unmetered"/>
+  <int value="2" label="Over limit on metered"/>
+  <int value="3" label="Over limit on unmetered"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentSizeLimitCheck) -->
+
 <enum name="GroupId">
   <summary>
     Suggestion group IDs toggled visible or hidden in the omnibox result list.
