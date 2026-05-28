@@ -44,16 +44,14 @@ void ShowProjectorAccountReauthDialog(content::BrowserContext* browser_context,
                                       const std::string& email) {
   CHECK(browser_context);
 
-  account_manager::RecordAccountAdditionSource(
-      account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth);
-
   crosapi::AccountManagerMojoService* account_manager_mojo_service =
       ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
           browser_context->GetPath().value());
   CHECK(account_manager_mojo_service);
 
-  account_manager_mojo_service->ShowReauthAccountDialog(email,
-                                                        base::DoNothing());
+  account_manager_mojo_service->ShowReauthAccountDialog(
+      account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth,
+      email, base::DoNothing());
 }
 
 }  // namespace

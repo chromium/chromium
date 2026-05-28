@@ -75,6 +75,10 @@
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account_manager_metrics.h"
+#include "components/account_manager_core/account_upsertion_result.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -168,6 +172,16 @@ class FakeAuthInstance : public mojom::AuthInstance {
         account_name, base::BindOnce(&FakeAuthInstance::OnAccountInfoResponse,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      std::move(done_closure)));
+  }
+
+  void HandleAddAccountRequest() {
+    host_remote_->HandleAddAccountRequest();
+    host_remote_.FlushForTesting();
+  }
+
+  void HandleUpdateCredentialsRequest(const std::string& account_name) {
+    host_remote_->HandleUpdateCredentialsRequest(account_name);
+    host_remote_.FlushForTesting();
   }
 
   void GetGoogleAccounts(GetGoogleAccountsCallback callback) override {
@@ -561,6 +575,19 @@ class ArcAuthServiceTest : public MixinBasedInProcessBrowserTest {
   FakeArcAuthServiceDelegate& delegate() { return *delegate_; }
   FakeAuthInstance& auth_instance() { return auth_instance_; }
   ArcBridgeService& arc_bridge_service() { return *arc_bridge_service_; }
+  FakeAccountManagerUI& SetFakeAccountManagerUI() {
+    auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
+    FakeAccountManagerUI* fake_account_manager_ui_ptr =
+        fake_account_manager_ui.get();
+    crosapi::AccountManagerMojoService& account_manager_mojo_service =
+        CHECK_DEREF(
+            ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
+                profile()->GetPath().value()));
+    account_manager_mojo_service.SetAccountManagerUI(
+        std::move(fake_account_manager_ui));
+    return *fake_account_manager_ui_ptr;
+  }
+
   const std::vector<mojom::ArcAccountInfoPtr>& arc_google_accounts() const {
     return arc_google_accounts_;
   }
@@ -1419,6 +1446,62 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleRemoveAccountRequest) {
   auth_service().HandleRemoveAccountRequest("dummyemail@google.com");
 
   EXPECT_TRUE(delegate().is_open_settings_called());
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleAddAccountRequest) {
+  SetAccountAndProfile(user_manager::UserType::kRegular);
+  FakeAccountManagerUI& fake_account_manager_ui = SetFakeAccountManagerUI();
+
+  base::HistogramTester histogram_tester;
+  auth_instance().HandleAddAccountRequest();
+
+  EXPECT_EQ(1, fake_account_manager_ui.show_account_addition_dialog_calls());
+  EXPECT_EQ(
+      0, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_ui.show_manage_accounts_settings_calls());
+  ASSERT_TRUE(fake_account_manager_ui.last_add_account_options().has_value());
+  EXPECT_TRUE(
+      fake_account_manager_ui.last_add_account_options()->is_available_in_arc);
+  EXPECT_TRUE(fake_account_manager_ui.last_add_account_options()
+                  ->show_arc_availability_picker);
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kArc, 1);
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountUpsertionResultStatusHistogramName, 0);
+
+  fake_account_manager_ui.CloseDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountUpsertionResultStatusHistogramName,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleUpdateCredentialsRequest) {
+  SetAccountAndProfile(user_manager::UserType::kRegular);
+  FakeAccountManagerUI& fake_account_manager_ui = SetFakeAccountManagerUI();
+
+  base::HistogramTester histogram_tester;
+  auth_instance().HandleUpdateCredentialsRequest(kSecondaryAccountEmail);
+
+  EXPECT_EQ(
+      1, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_ui.show_account_addition_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_ui.show_manage_accounts_settings_calls());
+  ASSERT_TRUE(fake_account_manager_ui.last_reauth_email().has_value());
+  EXPECT_EQ(kSecondaryAccountEmail,
+            fake_account_manager_ui.last_reauth_email().value());
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kArc, 1);
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountUpsertionResultStatusHistogramName, 0);
+
+  fake_account_manager_ui.CloseDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountUpsertionResultStatusHistogramName,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser, 1);
 }
 
 }  // namespace arc

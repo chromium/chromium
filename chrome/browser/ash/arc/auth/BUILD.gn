@@ -91,6 +91,8 @@ source_set("browser_tests") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
+    "//components/account_manager_core",
+    "//components/account_manager_core:test_support",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/user_manager",

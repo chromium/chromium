@@ -24,11 +24,22 @@ namespace ash {
 class SigninHelper;
 }
 
+namespace account_manager {
+enum class AccountAdditionSource : int;
+}
+
 namespace crosapi {
 
 // Implements the |crosapi::mojom::AccountManager| interface in ash-chrome.
 // It enables lacros-chrome to interact with accounts stored in the Chrome OS
 // Account Manager.
+//
+// TODO(b/365741912, b/365902693): This service is a temporary stepping stone
+// for direct Ash callers that still need the current Account Manager dialog/UI
+// path. After all callers are off AccountManagerFacade, create an Ash-owned
+// dialog coordinator and switch those direct callers from this service to that
+// coordinator. Furthermore, once the remaining crosapi/facade users are gone,
+// delete this service and the crosapi::mojom::AccountManager interface.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
     : public mojom::AccountManager,
       public account_manager::AccountManager::Observer {
@@ -47,6 +58,16 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
 
   void OnAccountUpsertionFinishedForTesting(
       const account_manager::AccountUpsertionResult& result);
+
+  // Helpers for direct Ash callers. These record launch-source UMA before
+  // opening the dialog and result-status UMA before forwarding the completion
+  // callback.
+  void ShowAddAccountDialog(account_manager::AccountAdditionSource source,
+                            mojom::AccountAdditionOptionsPtr options,
+                            ShowAddAccountDialogCallback callback);
+  void ShowReauthAccountDialog(account_manager::AccountAdditionSource source,
+                               const std::string& email,
+                               ShowReauthAccountDialogCallback callback);
 
   // crosapi::mojom::AccountManager:
   void AddObserver(AddObserverCallback callback) override;

@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/access_token_fetcher.h"
@@ -50,6 +51,18 @@ void ReportErrorStatusFromHasDummyGaiaToken(
             CREDENTIALS_REJECTED_BY_CLIENT);
   }
   std::move(callback).Run(account_manager::ToMojoGoogleServiceAuthError(error));
+}
+
+void RecordMojoAccountUpsertionResultStatusAndRunCallback(
+    base::OnceCallback<void(mojom::AccountUpsertionResultPtr)> callback,
+    mojom::AccountUpsertionResultPtr mojo_result) {
+  const std::optional<account_manager::AccountUpsertionResult> result =
+      account_manager::FromMojoAccountUpsertionResult(mojo_result);
+  account_manager::RecordAccountUpsertionResultStatus(
+      result.has_value() ? result->status()
+                         : account_manager::AccountUpsertionResult::Status::
+                               kUnexpectedResponse);
+  std::move(callback).Run(std::move(mojo_result));
 }
 
 }  // namespace
@@ -107,6 +120,17 @@ void AccountManagerMojoService::GetPersistentErrorForAccount(
 }
 
 void AccountManagerMojoService::ShowAddAccountDialog(
+    account_manager::AccountAdditionSource source,
+    crosapi::mojom::AccountAdditionOptionsPtr options,
+    ShowAddAccountDialogCallback callback) {
+  account_manager::RecordAccountAdditionSource(source);
+  ShowAddAccountDialog(
+      std::move(options),
+      base::BindOnce(&RecordMojoAccountUpsertionResultStatusAndRunCallback,
+                     std::move(callback)));
+}
+
+void AccountManagerMojoService::ShowAddAccountDialog(
     crosapi::mojom::AccountAdditionOptionsPtr options,
     ShowAddAccountDialogCallback callback) {
   CHECK(account_manager_ui_);
@@ -127,6 +151,17 @@ void AccountManagerMojoService::ShowAddAccountDialog(
       maybe_options.value_or(account_manager::AccountAdditionOptions{}),
       base::BindOnce(&AccountManagerMojoService::OnSigninDialogClosed,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccountManagerMojoService::ShowReauthAccountDialog(
+    account_manager::AccountAdditionSource source,
+    const std::string& email,
+    ShowReauthAccountDialogCallback callback) {
+  account_manager::RecordAccountAdditionSource(source);
+  ShowReauthAccountDialog(
+      email,
+      base::BindOnce(&RecordMojoAccountUpsertionResultStatusAndRunCallback,
+                     std::move(callback)));
 }
 
 void AccountManagerMojoService::ShowReauthAccountDialog(

@@ -13,11 +13,13 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
@@ -218,10 +220,26 @@ class AccountManagerMojoServiceTest : public ::testing::Test {
                                                         std::move(callback));
   }
 
+  void ShowAddAccountDialog(
+      account_manager::AccountAdditionSource source,
+      crosapi::mojom::AccountAdditionOptionsPtr options,
+      AccountManagerMojoService::ShowAddAccountDialogCallback callback) {
+    account_manager_mojo_service_->ShowAddAccountDialog(
+        source, std::move(options), std::move(callback));
+  }
+
   void ShowReauthAccountDialog(
       const std::string& email,
       AccountManagerMojoService::ShowReauthAccountDialogCallback callback) {
     account_manager_mojo_service_->ShowReauthAccountDialog(email,
+                                                           std::move(callback));
+  }
+
+  void ShowReauthAccountDialog(
+      account_manager::AccountAdditionSource source,
+      const std::string& email,
+      AccountManagerMojoService::ShowReauthAccountDialogCallback callback) {
+    account_manager_mojo_service_->ShowReauthAccountDialog(source, email,
                                                            std::move(callback));
   }
 
@@ -427,6 +445,25 @@ TEST_F(AccountManagerMojoServiceTest,
 }
 
 TEST_F(AccountManagerMojoServiceTest,
+       ShowAddAccountDialogRecordsSourceAndResultUMA) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<mojom::AccountUpsertionResultPtr> future;
+  ShowAddAccountDialog(account_manager::AccountAdditionSource::kArc,
+                       crosapi::mojom::AccountAdditionOptions::New(),
+                       future.GetCallback());
+
+  GetFakeAccountManagerUI()->CloseDialog();
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kCancelledByUser,
+            future.Take()->status);
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kArc, 1);
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountUpsertionResultStatusHistogramName,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser, 1);
+}
+
+TEST_F(AccountManagerMojoServiceTest,
        ShowAddAccountDialogReturnsSuccessAfterAccountIsAdded) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
@@ -451,6 +488,25 @@ TEST_F(AccountManagerMojoServiceTest,
   EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
   // Check that dialog was called once.
   EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+}
+
+TEST_F(AccountManagerMojoServiceTest,
+       ShowReauthAccountDialogRecordsSourceAndResultUMA) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<mojom::AccountUpsertionResultPtr> future;
+  ShowReauthAccountDialog(
+      account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth,
+      kFakeEmail, future.GetCallback());
+
+  GetFakeAccountManagerUI()->CloseDialog();
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kCancelledByUser,
+            future.Take()->status);
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth, 1);
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountUpsertionResultStatusHistogramName,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser, 1);
 }
 
 TEST_F(AccountManagerMojoServiceTest,
