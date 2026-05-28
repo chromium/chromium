@@ -774,6 +774,27 @@ TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_NotifyLinkClicked) {
   page_handler_->OnWebviewMessage(serialized);
 }
 
+// Link click events where the URL is not HTTP or HTTPS should not trigger the
+// thread link click event.
+TEST_F(ContextualTasksPageHandlerTest,
+       OnWebviewMessage_NotifyLinkClicked_InvalidScheme) {
+  lens::AimToClientMessage message;
+  auto* notify_link_clicked = message.mutable_notify_link_clicked();
+  notify_link_clicked->set_url("chrome://settings");
+  notify_link_clicked->set_link_behavior(
+      lens::NotifyLinkClicked::LINK_BEHAVIOR_COBROWSE);
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  message.SerializeToArray(serialized.data(), size);
+
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
+              OnThreadLinkClicked(_, _, _, _))
+      .Times(0);
+
+  page_handler_->OnWebviewMessage(serialized);
+}
+
 TEST_F(ContextualTasksPageHandlerTest, OpenMyActivityUi) {
   // Navigation smoke test. We provide a null browser to safely exit early
   // and avoid crashes in Navigate() which requires a full TabStripModel.

@@ -496,11 +496,15 @@ void ContextualTasksPageHandler::OnWebviewMessage(
       tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
           web_ui_controller_->GetWebUIWebContents());
       BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
-      ui_service_->OnThreadLinkClicked(
-          GURL(aim_to_client_message.notify_link_clicked().url()),
-          web_ui_controller_->GetTaskId().value_or(base::Uuid()),
-          tab ? tab->GetWeakPtr() : nullptr,
-          browser ? browser->GetWeakPtr() : nullptr);
+      GURL target_url(aim_to_client_message.notify_link_clicked().url());
+
+      // Only accept valid URLs that are HTTP or HTTPS.
+      if (target_url.is_valid() && target_url.SchemeIsHTTPOrHTTPS()) {
+        ui_service_->OnThreadLinkClicked(
+            target_url, web_ui_controller_->GetTaskId().value_or(base::Uuid()),
+            tab ? tab->GetWeakPtr() : nullptr,
+            browser ? browser->GetWeakPtr() : nullptr);
+      }
     }
   }
 }
