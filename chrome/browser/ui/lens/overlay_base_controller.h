@@ -181,6 +181,12 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // exist.
   void SetOverlayWebViewOpacity(float opacity);
 
+  // Detaches the overlay views and takes ownership to preserve state.
+  void PreserveOverlayViews();
+
+  // Returns the host view that the overlay should be attached to. Can be null.
+  views::View* GetHostView() const;
+
  protected:
   // Whether the side panel is showing.
   virtual bool IsResultsSidePanelShowing() = 0;
@@ -356,12 +362,6 @@ class OverlayBaseController : public content::WebContentsDelegate,
 
   // Close the preselection bubble.
   void ClosePreselectionBubbleImpl();
-
-  // Returns the host view that the overlay should be attached to. Can be null.
-  views::View* GetHostView() const;
-
-  // Detaches the overlay views and takes ownership to preserve state.
-  void PreserveOverlayViews();
 
   // content::WebContentsObserver:
   void PrimaryMainFrameRenderProcessGone(

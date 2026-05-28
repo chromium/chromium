@@ -6,16 +6,13 @@
 
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -121,32 +118,20 @@ SelectionOverlayController::SelectionOverlayController(
     PrefService* pref_service)
     : OverlayBaseController(tab, pref_service),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
+      base::BindRepeating(&SelectionOverlayController::TabForegrounded,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
+      base::BindRepeating(&SelectionOverlayController::TabDeactivated,
+                          weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
       base::BindRepeating(&SelectionOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &SelectionOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
-  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-  CHECK(service);
-  tab_subscriptions_.push_back(
-      service->active_instance_sharing_manager().AddFocusedTabChangedCallback(
-          base::BindRepeating(&SelectionOverlayController::OnFocusedTabChanged,
-                              weak_factory_.GetWeakPtr())));
-  BrowserWindowInterface* window = tab_->GetBrowserWindowInterface();
-  CHECK(window);
-  TabStripModel* tab_strip_model = window->GetTabStripModel();
-  CHECK(tab_strip_model);
-  tab_strip_model->AddObserver(this);
 }
 
-SelectionOverlayController::~SelectionOverlayController() {
-  if (tab_ && tab_->GetBrowserWindowInterface()) {
-    if (auto* tab_strip_model =
-            tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
-      tab_strip_model->RemoveObserver(this);
-    }
-  }
-}
+SelectionOverlayController::~SelectionOverlayController() = default;
 
 void SelectionOverlayController::WillDiscardContents(
     tabs::TabInterface* tab,
@@ -281,32 +266,6 @@ void SelectionOverlayController::Show(mojom::GetTabContextOptionsPtr options) {
 
 void SelectionOverlayController::Close() {
   CloseUI();
-}
-
-void SelectionOverlayController::OnFocusedTabChanged(
-    const FocusedTabData& tab_data) {
-  if (tab_->IsVisible()) {
-    TabForegrounded(tab_);
-  } else if (!tab_->IsActivated()) {
-    TabDeactivated(tab_);
-  }
-}
-
-void SelectionOverlayController::OnSplitTabChanged(
-    const SplitTabChange& change) {
-  if (!tab_->IsSplit()) {
-    return;
-  }
-  if (tab_->GetSplit() != change.split_id) {
-    return;
-  }
-  // Not all split view changes require re-parenting. Only reparent the overlay
-  // view if the overlay view's parent is different from the container view that
-  // the current WebContents is inside.
-  if (overlay_view_ && overlay_view_->parent() != GetHostView()) {
-    TabDeactivated(tab_);
-    TabForegrounded(tab_);
-  }
 }
 
 void SelectionOverlayController::CloseUI() {
