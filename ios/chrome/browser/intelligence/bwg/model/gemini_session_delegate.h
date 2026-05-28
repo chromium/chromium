@@ -138,11 +138,27 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
                                           sessionID:(NSString*)sessionID
                                      conversationID:(NSString*)conversationID;
 
-// Called when the user barges in during Gemini Live session.
+#pragma mark - Gemini Live
+
+// Called when the user interrupts during Gemini Live session.
 - (void)geminiLiveUserDidBargeIn;
 
 // Called when the user taps the Live button in Gemini UI.
 - (void)geminiLiveUserDidTapLiveButton;
+
+// Called when the SDK has shown the Live intro sequence. Chrome should
+// update its preferences to record that the intro has been shown.
+- (void)geminiLiveIntroShown:(UIViewController*)viewController;
+
+// Called when the SDK detects that system microphone access is unavailable.
+// Chrome must present a microphone permission alert and invoke the completion.
+- (void)geminiLive:(UIViewController*)viewController
+    showMicrophoneAlertWithCompletion:(void (^)(BOOL granted))completion;
+
+// Called when the SDK needs Chrome to present the Live consent (FRE) screen.
+// Chrome must present the FRE consent UI and invoke the completion.
+- (void)geminiLive:(UIViewController*)viewController
+    showConsentScreenWithCompletion:(void (^)(BOOL accepted))completion;
 
 @end
 

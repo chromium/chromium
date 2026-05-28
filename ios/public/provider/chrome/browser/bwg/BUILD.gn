@@ -8,7 +8,6 @@ source_set("gemini_api") {
     "bwg_api.h",
     "bwg_gateway_protocol.h",
     "gemini_api.h",
-    "gemini_live_delegate.h",
   ]
   public_deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
