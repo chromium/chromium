@@ -1031,6 +1031,7 @@ void Window::RemoveOrDestroyChildren() {
 }
 
 void Window::AfterPropertyChange(const void* key, int64_t old_value) {
+  ScopedDeleteBlocker blocker(this);
   for (WindowObserver& observer : observers_)
     observer.OnWindowPropertyChanged(this, key, old_value);
 }
