@@ -2017,7 +2017,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragToSeparateWindow) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2094,7 +2094,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragToSeparateWindowDuringDragEnd) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2156,7 +2156,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachAndAttachThenCancel) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2210,7 +2210,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragToOccludedWindow) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2667,10 +2667,10 @@ IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateDeniesDrop) {
 // Validates behavior when the drag delegate moves the dragged tab back to the
 // source tab strip.
 IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateMovesTabToSourceTabStrip) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
+    GTEST_SKIP() << "Skipping test with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
   }
 #endif
 
@@ -2743,10 +2743,10 @@ IN_PROC_BROWSER_TEST_P(TabDragTargetTest,
 // tabs back to the source tab strip.
 IN_PROC_BROWSER_TEST_P(TabDragTargetTest,
                        DelegateMovesSubsetOfTabsToSourceTabStrip) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
+    GTEST_SKIP() << "Skipping test with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
   }
 #endif
 
@@ -2791,10 +2791,10 @@ IN_PROC_BROWSER_TEST_P(TabDragTargetTest,
 
 // Validates behavior when the drag delegate rearranges multiple dragged tabs.
 IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateRearrangesDraggedTabs) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
+    GTEST_SKIP() << "Skipping test with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
   }
 #endif
 
@@ -2835,10 +2835,10 @@ IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateRearrangesDraggedTabs) {
 // Validates behavior when the drag delegate moves a dragged tab that belongs
 // to a group.
 IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateRemovesDraggedTabFromGroup) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
+    GTEST_SKIP() << "Skipping test with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
   }
 #endif
 
@@ -2983,9 +2983,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Drags from browser to a separate window and releases mouse.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachToOwnWindowFromMaximizedWindow) {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Test crashes on Linux with InitialWebUI enabled. "
+    GTEST_SKIP() << "Skipping test with InitialWebUI enabled. "
                     "See crbug.com/477426026.";
   }
 #endif
@@ -3230,7 +3230,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DeleteTabsWhileDetached) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   AddTabsAndResetBrowser(browser(), 3);
@@ -3273,7 +3273,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragWhileDetached) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   AddTabsAndResetBrowser(browser(), 1);
@@ -3788,7 +3788,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragAllToSeparateWindowThenDrop) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -4285,7 +4285,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
+                    "enabled. See crbug.com/477426026.";
   }
 #endif
 
@@ -4404,7 +4404,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
+                    "enabled. See crbug.com/477426026.";
   }
 #endif
 
@@ -4490,7 +4490,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragCollapsedGroupHeaderToSeparateWindow) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -4540,9 +4540,10 @@ using DetachTabWithUrlControlledByWebApp = DetachToBrowserTabDragControllerTest;
 // The kTearOffWebAppTabOpensWebAppWindow experiment determines whether the new
 // browser window will be a normal browser window or an app window.
 IN_PROC_BROWSER_TEST_P(DetachTabWithUrlControlledByWebApp, TearOffWebApp) {
-#if defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled (crbug.com/477426026).";
+    GTEST_SKIP() << "Skipping test with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
   }
 #endif
 
@@ -5065,7 +5066,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        CancelOnNewTabWhenDragging) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+                    "See crbug.com/477426026.";
   }
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
