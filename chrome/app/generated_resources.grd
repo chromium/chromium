@@ -4381,35 +4381,11 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_DETAILS_CERTIFICATE" desc="The label of the Certificate element in the details page of the certificate info dialog.">
           Certificate
         </message>
-        <message name="IDS_CERT_DETAILS_VERSION" desc="The label of the Version element in the details page of the certificate info dialog.">
-          Version
-        </message>
         <message name="IDS_CERT_DETAILS_VERSION_FORMAT" desc="The format of the Version field value in the details page of the certificate info dialog.">
           Version <ph name="NUMBER">$1<ex>3</ex></ph>
         </message>
-        <message name="IDS_CERT_DETAILS_SERIAL_NUMBER" desc="The label of the Serial Number element in the details page of the certificate info dialog.">
-          Serial Number
-        </message>
         <message name="IDS_CERT_DETAILS_CERTIFICATE_SIG_ALG" desc="The label of the Certificate Signature Algorithm element in the details page of the certificate info dialog.">
           Certificate Signature Algorithm
-        </message>
-        <message name="IDS_CERT_DETAILS_ISSUER" desc="The label of the Issuer element in the details page of the certificate info dialog.">
-          Issuer
-        </message>
-        <message name="IDS_CERT_DETAILS_VALIDITY" desc="The label of the Validity element in the details page of the certificate info dialog.">
-          Validity
-        </message>
-        <message name="IDS_CERT_DETAILS_NOT_BEFORE" desc="The label of the Validity->Not Before element in the details page of the certificate info dialog.">
-          Not Before
-        </message>
-        <message name="IDS_CERT_DETAILS_NOT_AFTER" desc="The label of the Validity->Not After element in the details page of the certificate info dialog.">
-          Not After
-        </message>
-        <message name="IDS_CERT_DETAILS_SUBJECT" desc="The label of the Subject element in the details page of the certificate info dialog. (In this case, subject refers to the entity the certificate was issued to.)">
-          Subject
-        </message>
-        <message name="IDS_CERT_DETAILS_SUBJECT_KEY_INFO" desc="The label of the Subject Public Key Info element in the details page of the certificate info dialog. (In this case, subject refers to the entity the certificate was issued to.)">
-          Subject Public Key Info
         </message>
         <message name="IDS_CERT_DETAILS_SUBJECT_KEY_ALG" desc="The label of the Subject Public Key Algorithm element in the details page of the certificate info dialog. (In this case, subject refers to the entity the certificate was issued to.)">
           Subject Public Key Algorithm
@@ -4528,9 +4504,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_X509_SUBJECT_DIRECTORY_ATTR" desc="description of extension Certificate Subject Directory Attributes">
           Certificate Subject Directory Attributes
         </message>
-        <message name="IDS_CERT_X509_SUBJECT_KEYID" desc="description of extension Certificate Subject Key ID">
-          Certificate Subject Key ID
-        </message>
         <message name="IDS_CERT_KEYID_FORMAT" desc="format for key id in certificate extensions details">
           Key ID: <ph name="KEY_ID">$1<ex>19 EB 8E 93</ex></ph>
         </message>
@@ -4540,44 +4513,14 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_SERIAL_NUMBER_FORMAT" desc="format for serial number in certificate extensions details">
           Serial Number: <ph name="SERIAL_NUMBER">$1<ex>19 EB 8E 93</ex></ph>
         </message>
-        <message name="IDS_CERT_X509_KEY_USAGE" desc="description of extension Certificate Key Usage">
-          Certificate Key Usage
-        </message>
-        <message name="IDS_CERT_X509_ISSUER_ALT_NAME" desc="description of extension Certificate Issuer Alternative Name">
-          Certificate Issuer Alternative Name
-        </message>
-        <message name="IDS_CERT_X509_BASIC_CONSTRAINTS" desc="description of extension Certificate Basic Constraints">
-          Certificate Basic Constraints
-        </message>
         <message name="IDS_CERT_X509_NAME_CONSTRAINTS" desc="description of extension Certificate Name Constraints">
           Certificate Name Constraints
-        </message>
-        <message name="IDS_CERT_X509_CRL_DIST_POINTS" desc="description of extension CRL Distribution Points">
-          CRL Distribution Points
-        </message>
-        <message name="IDS_CERT_X509_CERT_POLICIES" desc="description of extension Certificate Policies">
-          Certificate Policies
-        </message>
-        <message name="IDS_CERT_X509_SCT_LIST" desc="description of extension Signed Certificate Timestamp List">
-          Signed Certificate Timestamp List
-        </message>
-        <message name="IDS_CERT_QC_STATEMENTS" desc="description of extension Qualified Certificate Statements">
-          Qualified Certificate Statements
         </message>
         <message name="IDS_CERT_X509_POLICY_MAPPINGS" desc="description of extension Certificate Policy Mappings">
           Certificate Policy Mappings
         </message>
         <message name="IDS_CERT_X509_POLICY_CONSTRAINTS" desc="description of extension Certificate Policy Constraints">
           Certificate Policy Constraints
-        </message>
-        <message name="IDS_CERT_X509_AUTH_KEYID" desc="description of extension Certification Authority Key Identifier">
-          Certification Authority Key ID
-        </message>
-        <message name="IDS_CERT_X509_EXT_KEY_USAGE" desc="description of extension Extended Key Usage">
-          Extended Key Usage
-        </message>
-        <message name="IDS_CERT_X509_KEY_USAGE_SIGNING" desc="description of certificate usage Signing">
-          Signing
         </message>
         <message name="IDS_CERT_X509_BASIC_CONSTRAINT_IS_CA" desc="description of certificate constraint Is a Certification Authority">
           Is a Certification Authority
@@ -4626,30 +4569,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_CERT_MULTILINE_INFO_START_FORMAT" desc="format for header line where further info will appear on the following lines">
           <ph name="OID">$1<ex>OID.1.23.45.6</ex></ph>:
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_RFC822_NAME" desc="label for the certRFC822Name general name type">
-          Email Address
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_DNS_NAME" desc="label for the certDNSName general name type">
-          DNS Name
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_X400_ADDRESS" desc="label for the certX400Address general name type">
-          X.400 Address
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_DIRECTORY_NAME" desc="label for the certDirectoryName general name type">
-          X.500 Name
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_EDI_PARTY_NAME" desc="label for the certEDIPartyName general name type">
-          EDI Party Name
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_URI" desc="label for the certURI general name type">
-          URI
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_IP_ADDRESS" desc="label for the certIPAddress general name type">
-          IP Address
-        </message>
-        <message name="IDS_CERT_GENERAL_NAME_REGISTERED_ID" desc="label for the certRegisteredID general name type">
-          Registered OID
         </message>
         <message name="IDS_CERT_EXT_MS_APP_POLICIES" desc="description of extension Microsoft Application Policies">
           Microsoft Application Policies
@@ -4721,12 +4640,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP" desc="description of extended key usage Netscape International Step-Up">
           Netscape International Step-Up
-        </message>
-        <message name="IDS_CERT_EXTENSION_CRITICAL" desc="The text displayed in the certificate details dialog for a given extension which is critical">
-          Critical
-        </message>
-        <message name="IDS_CERT_EXTENSION_NON_CRITICAL" desc="The text displayed in the certificate details dialog for a given extension which is not critical">
-          Not Critical
         </message>
         <message name="IDS_CERT_DUMP_ERROR" desc="The text displayed in the certificate viewer dialog for a given field which could not be decoded">
           Error: Unable to decode certificate
