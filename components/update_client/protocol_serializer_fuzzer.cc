@@ -22,7 +22,13 @@
 #include "components/update_client/protocol_handler.h"
 
 struct Environment {
-  Environment() { CHECK(base::CommandLine::Init(0, nullptr)); }
+  Environment() {
+    // Avoid crashing if CommandLine is already initialized, which can happen on
+    // Android.
+    if (!base::CommandLine::InitializedForCurrentProcess()) {
+      CHECK(base::CommandLine::Init(0, nullptr));
+    }
+  }
 };
 
 namespace update_client {
