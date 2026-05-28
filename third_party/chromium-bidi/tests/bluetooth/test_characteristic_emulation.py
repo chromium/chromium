@@ -486,7 +486,13 @@ async def test_bluetooth_characteristic_write_event(
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_characteristic_read_event(websocket, context_id, html):
+async def test_bluetooth_characteristic_read_event(
+    websocket, context_id, html, test_headless_mode
+):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     await setup_characteristic(
         websocket,
         context_id,

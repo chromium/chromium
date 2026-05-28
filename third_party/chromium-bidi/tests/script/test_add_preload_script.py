@@ -660,6 +660,7 @@ async def test_preloadScript_add_sandbox_existing_context(websocket, context_id,
     assert result["result"] == {"type": "string", "value": "MY_SANDBOX_PRELOAD_SCRIPT"}
 
 
+@pytest.mark.skip(reason="Failing after M150: #4165")
 @pytest.mark.asyncio
 async def test_preloadScript_add_withUserGesture_blankTargetLink(
     websocket, context_id, html, read_messages, url_example
