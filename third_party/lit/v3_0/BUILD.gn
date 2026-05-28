@@ -26,8 +26,6 @@ ts_library("build_ts") {
 
     "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/access_code_cast:build_ts",
-    "//chrome/browser/resources/accessibility_annotator_info:build_ts",
-    "//chrome/browser/resources/accessibility_annotator_internals:build_ts",
     "//chrome/browser/resources/actor_overlay:build_ts",
     "//chrome/browser/resources/ai_overlay_dialog:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
@@ -81,6 +79,8 @@ ts_library("build_ts") {
     "//chrome/browser/resources/on_device_internals:build_ts",
     "//chrome/browser/resources/on_device_translation_internals:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
+    "//chrome/browser/resources/personal_context_internals:build_ts",
+    "//chrome/browser/resources/personal_context_notice:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",

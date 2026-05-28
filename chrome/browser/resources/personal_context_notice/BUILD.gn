@@ -8,7 +8,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 if (is_chrome_branded) {
   generate_grd("build_google_g_grdp") {
-    grd_prefix = "accessibility_annotator_info"
+    grd_prefix = "personal_context_notice"
     out_grd = "$target_gen_dir/google_g_cr23.grdp"
     input_files = [ "google_g_cr23.svg" ]
     input_files_base_dir =
@@ -17,7 +17,7 @@ if (is_chrome_branded) {
 }
 
 build_webui("resources") {
-  grd_prefix = "accessibility_annotator_info"
+  grd_prefix = "personal_context_notice"
 
   static_files = [
     "personal_context_notice.html",
@@ -32,8 +32,10 @@ build_webui("resources") {
     "browser_proxy.ts",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/accessibility_annotator:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/accessibility_annotator/personal_context_notice.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/personal_context:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/personal_context/personal_context_notice.mojom-webui.ts" ]
 
   ts_composite = true
   ts_deps = [

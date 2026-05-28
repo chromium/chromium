@@ -12,7 +12,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog_controller.h"
+#include "chrome/browser/ui/views/personal_context/personal_context_notice_dialog_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #include "components/personal_context/first_run/personal_context_first_run_types.h"

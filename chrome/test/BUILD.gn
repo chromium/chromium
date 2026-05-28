@@ -3026,7 +3026,6 @@ if (!is_android) {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:browser_tests",
       "//chrome/browser/ui/views:file_system_access_test_support",
-      "//chrome/browser/ui/views/accessibility_annotator:browser_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/eye_dropper:browser_tests",
@@ -3037,6 +3036,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/new_tab_footer:browser_tests",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/personal_context:browser_tests",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/projects",
@@ -9112,7 +9112,7 @@ test("unit_tests") {
       "//chrome/browser/ui/passwords/settings:unit_tests",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/views/location_bar",
-      "//chrome/browser/ui/webui/accessibility_annotator:unit_tests",
+      "//chrome/browser/ui/webui/personal_context:unit_tests",
     ]
   }
 

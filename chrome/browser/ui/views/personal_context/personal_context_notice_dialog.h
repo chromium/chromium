@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_ANNOTATOR_PERSONAL_CONTEXT_NOTICE_DIALOG_H_
-#define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_ANNOTATOR_PERSONAL_CONTEXT_NOTICE_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERSONAL_CONTEXT_PERSONAL_CONTEXT_NOTICE_DIALOG_H_
+#define CHROME_BROWSER_UI_VIEWS_PERSONAL_CONTEXT_PERSONAL_CONTEXT_NOTICE_DIALOG_H_
 
 #include <memory>
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_ui.h"
+#include "chrome/browser/ui/webui/personal_context/personal_context_notice_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -34,4 +34,4 @@ class PersonalContextNoticeDialog : public WebUIBubbleDialogView {
 
 }  // namespace personal_context::notice
 
-#endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_ANNOTATOR_PERSONAL_CONTEXT_NOTICE_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERSONAL_CONTEXT_PERSONAL_CONTEXT_NOTICE_DIALOG_H_

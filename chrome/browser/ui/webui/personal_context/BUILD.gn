@@ -7,7 +7,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
-source_set("accessibility_annotator") {
+source_set("personal_context") {
   sources = [
     "personal_context_notice_page_handler.cc",
     "personal_context_notice_page_handler.h",
@@ -22,7 +22,7 @@ source_set("accessibility_annotator") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
-    "//chrome/browser/resources/accessibility_annotator_info:resources",
+    "//chrome/browser/resources/personal_context_notice:resources",
     "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
@@ -42,7 +42,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "personal_context_notice_page_handler_unittest.cc" ]
   deps = [
-    ":accessibility_annotator",
+    ":personal_context",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",

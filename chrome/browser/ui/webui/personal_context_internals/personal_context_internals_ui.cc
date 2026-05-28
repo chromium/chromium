@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_ui.h"
+#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals_ui.h"
 
 #include <memory>
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_page_handler.h"
+#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/personal_context_internals_resources.h"
 #include "chrome/grit/personal_context_internals_resources_map.h"

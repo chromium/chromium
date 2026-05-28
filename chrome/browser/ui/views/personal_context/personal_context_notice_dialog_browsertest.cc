@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog.h"
+#include "chrome/browser/ui/views/personal_context/personal_context_notice_dialog.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/personal_context/personal_context_notice_dialog_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/accessibility_annotator/core/url_constants.h"

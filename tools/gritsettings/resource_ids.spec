@@ -196,14 +196,6 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2740],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/accessibility_annotator_info/resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [2745],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/accessibility_annotator_internals/resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [2747],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/components/actor/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2750],
@@ -655,6 +647,14 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/pdf/resources.grd": {
     "META": {"sizes": {"includes": [200]}},
     "includes": [4540],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/personal_context_notice/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4550],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/personal_context_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4555],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/predictors/resources.grd": {
     "META": {"sizes": {"includes": [5],}},

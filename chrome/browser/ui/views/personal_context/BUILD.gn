@@ -2,7 +2,7 @@ import("//build/config/ui.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
-source_set("accessibility_annotator") {
+source_set("personal_context") {
   sources = [
     "personal_context_notice_dialog.cc",
     "personal_context_notice_dialog.h",
@@ -16,7 +16,7 @@ source_set("accessibility_annotator") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/bubble",
-    "//chrome/browser/ui/webui/accessibility_annotator",
+    "//chrome/browser/ui/webui/personal_context",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/constrained_window",
     "//components/web_modal",
@@ -35,12 +35,12 @@ source_set("browser_tests") {
   sources = [ "personal_context_notice_dialog_browsertest.cc" ]
 
   deps = [
-    ":accessibility_annotator",
+    ":personal_context",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/webui/accessibility_annotator",
+    "//chrome/browser/ui/webui/personal_context",
     "//chrome/test:test_support",
     "//components/personal_context/first_run",
     "//content/public/browser",

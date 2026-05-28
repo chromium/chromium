@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_ui.h"
+#include "chrome/browser/ui/webui/personal_context/personal_context_notice_ui.h"
 
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_page_handler.h"
-#include "chrome/grit/accessibility_annotator_info_resources.h"
-#include "chrome/grit/accessibility_annotator_info_resources_map.h"
+#include "chrome/browser/ui/webui/personal_context/personal_context_notice_page_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/personal_context_notice_resources.h"
+#include "chrome/grit/personal_context_notice_resources_map.h"
 #include "components/accessibility_annotator/core/url_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -42,8 +42,8 @@ PersonalContextNoticeUI::PersonalContextNoticeUI(content::WebUI* web_ui)
       "accessibility-annotator-info");
 
   webui::SetupWebUIDataSource(
-      source, kAccessibilityAnnotatorInfoResources,
-      IDR_ACCESSIBILITY_ANNOTATOR_INFO_PERSONAL_CONTEXT_NOTICE_HTML);
+      source, kPersonalContextNoticeResources,
+      IDR_PERSONAL_CONTEXT_NOTICE_PERSONAL_CONTEXT_NOTICE_HTML);
   source->AddLocalizedString("accessibilityAnnotatorInfoTitle",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_TITLE);
   source->AddLocalizedString(

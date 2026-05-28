@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_INTERNALS_PERSONAL_CONTEXT_INTERNALS_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_INTERNALS_PERSONAL_CONTEXT_INTERNALS_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_INTERNALS_PERSONAL_CONTEXT_INTERNALS_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_INTERNALS_PERSONAL_CONTEXT_INTERNALS_UI_H_
 
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals.mojom.h"
+#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,4 +53,4 @@ class PersonalContextInternalsUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_INTERNALS_PERSONAL_CONTEXT_INTERNALS_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_INTERNALS_PERSONAL_CONTEXT_INTERNALS_UI_H_

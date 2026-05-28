@@ -28,7 +28,7 @@ source_set("personal_context_internals") {
     ":mojo_bindings",
     "//chrome/browser/personal_context/first_run",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources/accessibility_annotator_internals:resources",
+    "//chrome/browser/resources/personal_context_internals:resources",
     "//chrome/common",
     "//components/personal_context/first_run",
   ]

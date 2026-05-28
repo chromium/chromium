@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog_controller.h"
+#include "chrome/browser/ui/views/personal_context/personal_context_notice_dialog_controller.h"
 
 #include <memory>
 #include <utility>
@@ -12,8 +12,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog.h"
-#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_ui.h"
+#include "chrome/browser/ui/views/personal_context/personal_context_notice_dialog.h"
+#include "chrome/browser/ui/webui/personal_context/personal_context_notice_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/constrained_window/constrained_window_views.h"

@@ -2,11 +2,11 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_PERSONAL_CONTEXT_NOTICE_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_PERSONAL_CONTEXT_NOTICE_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_PERSONAL_CONTEXT_NOTICE_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_PERSONAL_CONTEXT_NOTICE_UI_H_
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice.mojom.h"
+#include "chrome/browser/ui/webui/personal_context/personal_context_notice.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,4 +51,4 @@ class PersonalContextNoticeUI : public TopChromeWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 }  // namespace personal_context::notice
-#endif  // CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_PERSONAL_CONTEXT_NOTICE_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_PERSONAL_CONTEXT_NOTICE_UI_H_

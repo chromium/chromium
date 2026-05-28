@@ -314,7 +314,6 @@ if (!is_android) {
 group("dev_ui_resources") {
   public_deps = [
     "accessibility:resources",
-    "accessibility_annotator_internals:resources",
     "bluetooth_internals:resources",
     "browsing_topics:resources",
     "chrome_finds_internals:resources",
@@ -327,6 +326,7 @@ group("dev_ui_resources") {
     "memory_internals:resources",
     "net_internals:resources",
     "omnibox:resources",
+    "personal_context_internals:resources",
     "predictors:resources",
     "privacy_sandbox/internals:resources",
     "subresource_filter:resources",
@@ -364,13 +364,13 @@ group("dev_ui_resources") {
     ]
   } else {
     public_deps += [
-      "accessibility_annotator_info:resources",
       "color_pipeline_internals:resources",
       "indigo_internals:resources",
       "infobar_internals:resources",
       "media_router/internals:resources",
       "multistep_filter_internals:resources",
       "on_device_internals:resources",
+      "personal_context_notice:resources",
       "user_education_internals:resources",
       "webnn_internals:resources",
       "webui_js_error:resources",
@@ -445,13 +445,13 @@ repack("dev_ui_paks") {
     ]
   } else {
     sources += [
-      "$root_gen_dir/chrome/accessibility_annotator_info_resources.pak",
       "$root_gen_dir/chrome/color_pipeline_internals_resources.pak",
       "$root_gen_dir/chrome/indigo_internals_resources.pak",
       "$root_gen_dir/chrome/infobar_internals_resources.pak",
       "$root_gen_dir/chrome/media_router_internals_resources.pak",
       "$root_gen_dir/chrome/multistep_filter_internals_resources.pak",
       "$root_gen_dir/chrome/on_device_internals_resources.pak",
+      "$root_gen_dir/chrome/personal_context_notice_resources.pak",
       "$root_gen_dir/chrome/user_education_internals_resources.pak",
       "$root_gen_dir/chrome/webui_js_error_resources.pak",
     ]

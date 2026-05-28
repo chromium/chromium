@@ -14,6 +14,6 @@ class PersonalContextNoticeTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PersonalContextNoticeTest, App) {
-  RunTest("accessibility_annotator_info/personal_context_notice_test.js",
+  RunTest("personal_context_notice/personal_context_notice_test.js",
           "mocha.run()");
 }

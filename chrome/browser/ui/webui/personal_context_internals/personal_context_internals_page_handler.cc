@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_page_handler.h"
+#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals_page_handler.h"
 
 #include "chrome/browser/personal_context/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

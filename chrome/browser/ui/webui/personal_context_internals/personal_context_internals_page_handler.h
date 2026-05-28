@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_INTERNALS_PERSONAL_CONTEXT_INTERNALS_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_INTERNALS_PERSONAL_CONTEXT_INTERNALS_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_INTERNALS_PERSONAL_CONTEXT_INTERNALS_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_INTERNALS_PERSONAL_CONTEXT_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals.mojom.h"
+#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -41,4 +41,4 @@ class PersonalContextInternalsPageHandler
   raw_ptr<content::WebContents> web_contents_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ANNOTATOR_INTERNALS_PERSONAL_CONTEXT_INTERNALS_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PERSONAL_CONTEXT_INTERNALS_PERSONAL_CONTEXT_INTERNALS_PAGE_HANDLER_H_

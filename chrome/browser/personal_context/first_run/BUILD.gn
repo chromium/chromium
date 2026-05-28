@@ -38,7 +38,7 @@ source_set("first_run") {
       "//ui/android",
     ]
   } else {
-    deps += [ "//chrome/browser/ui/views/accessibility_annotator" ]
+    deps += [ "//chrome/browser/ui/views/personal_context" ]
   }
 }
 

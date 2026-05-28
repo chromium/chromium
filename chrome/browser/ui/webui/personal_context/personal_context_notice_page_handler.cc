@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_page_handler.h"
+#include "chrome/browser/ui/webui/personal_context/personal_context_notice_page_handler.h"
 
 #include <utility>
 
