@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -18,6 +19,10 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_util.h"
 #include "ui/gfx/render_text.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/test_support_android.h"
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
@@ -34,10 +39,18 @@ const char kFontDescription[] = "sans, 13px";
 #endif
 
 struct Environment {
-  Environment()
-      : task_environment((base::CommandLine::Init(0, nullptr),
-                          TestTimeouts::Initialize(),
-                          base::test::TaskEnvironment::MainThreadType::UI)) {
+  Environment() {
+    base::CommandLine::Init(0, nullptr);
+    TestTimeouts::Initialize();
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, TaskEnvironment with MainThreadType::UI creates a UI message
+    // pump that does not support RunLoop::Run(). This installs a stub pump to
+    // allow it in tests.
+    base::InitAndroidTestMessageLoop();
+#endif
+    task_environment = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::MainThreadType::UI);
+
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
 
     // Some platforms require discardable memory to use bitmap fonts.
@@ -55,7 +68,7 @@ struct Environment {
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
   base::AtExitManager at_exit_manager;
-  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment;
 };
 
 // Commands recognized to drive the API calls on RenderText.
@@ -254,7 +267,7 @@ const int kMaxStringLength = 128;
 }  // anonymous namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  static Environment env;
+  static base::NoDestructor<Environment> env;
 
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
