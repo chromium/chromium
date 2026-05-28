@@ -10,5 +10,4 @@ found in the LICENSE file.
     <dimen name="composeplate_view_button_margin">8dp</dimen>
     <dimen name="composeplate_view_height">44dp</dimen>
     <dimen name="composeplate_view_icon_size">24dp</dimen>
-    <dimen name="composeplate_view_max_width">680dp</dimen>
 </resources>

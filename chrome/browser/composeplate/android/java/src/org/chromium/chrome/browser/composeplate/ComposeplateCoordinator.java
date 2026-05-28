@@ -21,7 +21,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ComposeplateCoordinator {
     private final PropertyModel mModel;
     private final ComposeplateView mView;
-    private final int mComposeplateViewMaxiumWidth;
 
     /**
      * Constructs a new ComposeplateCoordinator.
@@ -33,11 +32,6 @@ public class ComposeplateCoordinator {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
         mView = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
-
-        mComposeplateViewMaxiumWidth =
-                parentView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.composeplate_view_max_width);
     }
 
     /**
@@ -83,23 +77,21 @@ public class ComposeplateCoordinator {
 
     /**
      * Sets the width of the composeplate view in LayoutParams and clears its margins. This should
-     * be called before the parent view's measure pass to avoid double measurement.
+     * be called before the parent view's measure pass to avoid double measurement. The width of the
+     * composeplate is set to be the same as that of the fake search box.
      *
      * @param searchBoxWidthPx The width of the fake search box.
      */
     public void setLayoutWidth(int searchBoxWidthPx) {
-        // In landscape mode on tablets, the composeplate view has a maximum width of 680dp.
-        // Otherwise, its width matches the fake search box.
-        int composeplateViewWidth = Math.min(searchBoxWidthPx, mComposeplateViewMaxiumWidth);
         ViewGroup.MarginLayoutParams layoutParams =
                 (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        if (layoutParams.width == composeplateViewWidth
+        if (layoutParams.width == searchBoxWidthPx
                 && layoutParams.leftMargin == 0
                 && layoutParams.rightMargin == 0) {
             return;
         }
 
-        layoutParams.width = composeplateViewWidth;
+        layoutParams.width = searchBoxWidthPx;
         layoutParams.leftMargin = 0;
         layoutParams.rightMargin = 0;
     }

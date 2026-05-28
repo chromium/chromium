@@ -120,6 +120,7 @@ found in the LICENSE file.
     <!-- Specific margins and paddings, ordered by appearance. -->
     <dimen name="ntp_search_box_transition_start_offset">16dp</dimen>
     <dimen name="ntp_search_box_transition_end_offset">4dp</dimen>
+    <dimen name="ntp_search_box_max_width">680dp</dimen>
     <dimen name="composeplate_view_margin_top">4dp</dimen>
     <dimen name="mvt_container_top_padding">17dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>

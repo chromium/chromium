@@ -139,6 +139,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
     private final boolean mEnableLogs;
+    private final int mSearchBoxMaxWidth;
 
     private @Nullable LogoCoordinator mLogoCoordinator;
     private @Nullable NtpSearchBox mNtpSearchBox;
@@ -269,6 +270,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 resources.getDimensionPixelSize(R.dimen.ntp_search_box_top_margin_if_no_logo);
         mNtpSearchBoxTransitionStartOffset =
                 resources.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
+        mSearchBoxMaxWidth = resources.getDimensionPixelSize(R.dimen.ntp_search_box_max_width);
 
         mEnableLogs = ChromeFeatureList.sNewTabPageCustomizationV2EnableLogs.getValue();
 
@@ -1357,9 +1359,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /** Makes the Search Box and Logo as wide as Most Visited. */
     private void unifyElementWidths(int width) {
-        int searchBoxWidth = width - mSearchBoxTwoSideMargin;
+        int boundedSearchBoxWidth = Math.min(width - mSearchBoxTwoSideMargin, mSearchBoxMaxWidth);
         if (mNtpSearchBox != null) {
-            mNtpSearchBox.setLayoutWidth(searchBoxWidth);
+            mNtpSearchBox.setLayoutWidth(boundedSearchBoxWidth);
         }
 
         if (mLogoCoordinator != null) {
@@ -1367,7 +1369,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.setLayoutWidth(searchBoxWidth);
+            mComposeplateCoordinator.setLayoutWidth(boundedSearchBoxWidth);
         }
 
         mContextMenuStartPosition = null;

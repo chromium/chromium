@@ -352,4 +352,24 @@ public class NewTabPageCoordinatorUnitTest {
         assertEquals(isHomeSurface, mCoordinator.isHomeSurface());
         assertNotNull(mCoordinator.getHomeModulesCoordinatorForTesting());
     }
+
+    @Test
+    public void testSearchBoxAndComposeplateMaxWidthLimit() {
+        NewTabPageLayout layout = mCoordinator.getNewTabPageLayout();
+        int maxSearchBoxWidthPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_max_width);
+
+        // Set the parent measure width to be significantly larger than the max allowed width
+        // to ensure the unconstrained width (width - margins) is guaranteed to exceed the cap.
+        int measureWidth = maxSearchBoxWidthPx * 10;
+        mCoordinator.onMeasure(measureWidth);
+
+        View searchBoxView = layout.findViewById(R.id.search_box);
+        assertNotNull(searchBoxView);
+        assertEquals(maxSearchBoxWidthPx, searchBoxView.getLayoutParams().width);
+
+        View composeplateView = layout.findViewById(R.id.composeplate_view);
+        assertNotNull(composeplateView);
+        assertEquals(maxSearchBoxWidthPx, composeplateView.getLayoutParams().width);
+    }
 }
