@@ -637,8 +637,16 @@ class BFCachedRenderWidgetHostViewBrowserTest
 };
 }  // namespace
 
+// TODO(crbug.com/517285763): This test is failing on Linux Wayland.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BFCacheRestoredPageHasNewLocalSurfaceId \
+  DISABLED_BFCacheRestoredPageHasNewLocalSurfaceId
+#else
+#define MAYBE_BFCacheRestoredPageHasNewLocalSurfaceId \
+  BFCacheRestoredPageHasNewLocalSurfaceId
+#endif
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
-                       BFCacheRestoredPageHasNewLocalSurfaceId) {
+                       MAYBE_BFCacheRestoredPageHasNewLocalSurfaceId) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
