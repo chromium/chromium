@@ -318,7 +318,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   // A paint layer should always have LocalBorderBoxProperties when it's ready
   // for paint.
   if (!object.FirstFragment().HasLocalBorderBoxProperties()) {
-    // TODO(crbug.com/848056): This can happen e.g. when we paint a filter
+    // TODO(crbug.com/40578621): This can happen e.g. when we paint a filter
     // referencing a SVG foreign object through feImage, especially when there
     // is circular references. Should find a better solution.
     return kMayBeClippedByCullRect;

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -102,9 +103,14 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
 
 gfx::RectF SVGLayoutSupport::ApplyFiltersToRect(const LayoutObject& object,
                                                 const gfx::RectF& rect) {
-  CHECK(!object.NeedsPaintPropertyUpdate());
   if (!object.StyleRef().HasFilter()) {
     return rect;
+  }
+  if (object.NeedsPaintPropertyUpdate()) {
+    // TODO(crbug.com/40578621): This can happen when we calculate visual
+    // overflow for an object that has not yet built paint properties. Assume
+    // the worst-case and return an infinite rect.
+    return gfx::RectF(InfiniteIntRect());
   }
   gfx::RectF float_rect = rect;
   const gfx::RectF filter_reference_box =
