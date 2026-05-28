@@ -506,7 +506,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
     // unpacked.
     String url = ToCoreString(isolate, script_url);
     probe::ExecuteScript probe(context, isolate->GetCurrentContext(), url,
-                               script->GetUnboundScript()->GetId());
+                               script->ScriptId());
     result = script->Run(isolate->GetCurrentContext(), host_defined_options);
   }
 
