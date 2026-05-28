@@ -13,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -347,9 +348,15 @@ class GlicButton : public GlicBaseShim<T>,
   void StateChanged(views::Button::ButtonState old_state) override {
     T::StateChanged(old_state);
 
-    if (old_state == views::Button::ButtonState::STATE_NORMAL &&
-        this->GetState() == views::Button::ButtonState::STATE_HOVERED) {
-      EstablishPrivateAiConnection(profile_);
+    if (this->GetState() == views::Button::ButtonState::STATE_HOVERED) {
+      if (old_state == views::Button::ButtonState::STATE_NORMAL) {
+        prewarm_timer_.Start(FROM_HERE,
+                             kZeroStateSuggestionsPrivateAiPrewarmDelay.Get(),
+                             base::BindOnce(&GlicButton::OnPrewarmTimerFired,
+                                            weak_ptr_factory_.GetWeakPtr()));
+      }
+    } else if (this->GetState() != views::Button::ButtonState::STATE_PRESSED) {
+      prewarm_timer_.Stop();
     }
 
     UpdateTextAndBackgroundColors();
@@ -449,6 +456,10 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   bool GetLabelEnabledForTesting() const { return this->label()->GetEnabled(); }
+
+  bool IsPrewarmTimerRunningForTesting() const {
+    return prewarm_timer_.IsRunning();
+  }
 
   // Updates the background painter to match the current border insets.
   void RefreshBackground() { UpdateColors(); }
@@ -638,6 +649,8 @@ class GlicButton : public GlicBaseShim<T>,
     // Setting label text seems to clear the margin. Set it again.
     SetLabelMargins();
   }
+
+  void OnPrewarmTimerFired() { EstablishPrivateAiConnection(profile_); }
 
   void NotifyClick(const ui::Event& event) override {
     if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
@@ -881,6 +894,8 @@ class GlicButton : public GlicBaseShim<T>,
   // Window active and inactive subscriptions for changing the hover color.
   base::CallbackListSubscription window_did_become_active_subscription_;
   base::CallbackListSubscription window_did_become_inactive_subscription_;
+
+  base::OneShotTimer prewarm_timer_;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };

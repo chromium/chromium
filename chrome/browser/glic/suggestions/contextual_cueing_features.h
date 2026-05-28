@@ -104,6 +104,10 @@ extern const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions;
 // Timeout before giving up on getting context from a page.
 extern const base::FeatureParam<base::TimeDelta> kZSSPageContextTimeout;
 
+// Prewarm connection delay when hovering over the entry point button.
+extern const base::FeatureParam<base::TimeDelta>
+    kZeroStateSuggestionsPrivateAiPrewarmDelay;
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_FEATURES_H_

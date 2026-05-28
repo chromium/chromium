@@ -156,4 +156,10 @@ const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions(
     "ZSSMaxPinnedPagesForTriggeringSuggestions",
     10);
 
+const base::FeatureParam<base::TimeDelta>
+    kZeroStateSuggestionsPrivateAiPrewarmDelay(
+        &kZeroStateSuggestionsUsePrivateAi,
+        "ZSSPrivateAiPrewarmDelay",
+        base::Milliseconds(150));
+
 }  // namespace glic

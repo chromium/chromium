@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -24,10 +28,15 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/private_ai/features.h"
+#include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/testing/mock_private_ai_client.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view_utils.h"
 
 namespace glic {
@@ -118,5 +127,128 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest,
   EXPECT_EQ(glic_button()->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE));
 }
+
+class GlicButtonPrewarmDelayedTest : public GlicButtonTest {
+ public:
+  GlicButtonPrewarmDelayedTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{private_ai::kPrivateAi, {{"api-key", "xxxxx"}}},
+         {glic::kZeroStateSuggestionsUsePrivateAi,
+          {{"ZSSPrivateAiPrewarmDelay", "0ms"}}}},
+        {});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    GlicButtonTest::SetUpOnMainThread();
+    auto mock_client = std::make_unique<
+        testing::StrictMock<private_ai::MockPrivateAiClient>>();
+    mock_client_ptr_ = mock_client.get();
+    private_ai::PrivateAiService* service =
+        private_ai::PrivateAiServiceFactory::GetForProfile(
+            browser()->profile());
+    ASSERT_TRUE(service);
+    service->SetClientForTesting(std::move(mock_client));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_client_ptr_ = nullptr;
+    private_ai::PrivateAiService* service =
+        private_ai::PrivateAiServiceFactory::GetForProfile(
+            browser()->profile());
+    if (service) {
+      service->SetClientForTesting(nullptr);
+    }
+    GlicButtonTest::TearDownOnMainThread();
+  }
+
+  raw_ptr<testing::StrictMock<private_ai::MockPrivateAiClient>>
+      mock_client_ptr_ = nullptr;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicButtonPrewarmDelayedTest, PrewarmDelayedOnHover) {
+  base::RunLoop run_loop;
+  bool connection_established = false;
+  EXPECT_CALL(*mock_client_ptr_,
+              EstablishConnection(
+                  private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION))
+      .WillOnce([&]() {
+        connection_established = true;
+        run_loop.Quit();
+      });
+
+  // Transition GlicButton to STATE_HOVERED.
+  glic_button()->SetState(views::Button::ButtonState::STATE_HOVERED);
+
+  // Connection should not be established immediately (still requires pumping
+  // the loop).
+  EXPECT_FALSE(connection_established);
+
+  // Run the loop until the timer fires and the callback quits the loop.
+  run_loop.Run();
+
+  EXPECT_TRUE(connection_established);
+}
+
+class GlicButtonPrewarmCancelledTest : public GlicButtonTest {
+ public:
+  GlicButtonPrewarmCancelledTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{private_ai::kPrivateAi, {{"api-key", "xxxxx"}}},
+         {glic::kZeroStateSuggestionsUsePrivateAi,
+          {{"ZSSPrivateAiPrewarmDelay", "10s"}}}},
+        {});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    GlicButtonTest::SetUpOnMainThread();
+    auto mock_client = std::make_unique<
+        testing::StrictMock<private_ai::MockPrivateAiClient>>();
+    mock_client_ptr_ = mock_client.get();
+    private_ai::PrivateAiService* service =
+        private_ai::PrivateAiServiceFactory::GetForProfile(
+            browser()->profile());
+    ASSERT_TRUE(service);
+    service->SetClientForTesting(std::move(mock_client));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_client_ptr_ = nullptr;
+    private_ai::PrivateAiService* service =
+        private_ai::PrivateAiServiceFactory::GetForProfile(
+            browser()->profile());
+    if (service) {
+      service->SetClientForTesting(nullptr);
+    }
+    GlicButtonTest::TearDownOnMainThread();
+  }
+
+  raw_ptr<testing::StrictMock<private_ai::MockPrivateAiClient>>
+      mock_client_ptr_ = nullptr;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicButtonPrewarmCancelledTest,
+                       PrewarmCancelledOnHoverExit) {
+  EXPECT_CALL(*mock_client_ptr_,
+              EstablishConnection(
+                  private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION))
+      .Times(0);
+
+  // Transition to STATE_HOVERED. Starts the prewarm timer.
+  glic_button()->SetState(views::Button::ButtonState::STATE_HOVERED);
+  EXPECT_TRUE(glic_button()->IsPrewarmTimerRunningForTesting());
+
+  // Transition back to STATE_NORMAL immediately, stopping the timer.
+  glic_button()->SetState(views::Button::ButtonState::STATE_NORMAL);
+  EXPECT_FALSE(glic_button()->IsPrewarmTimerRunningForTesting());
+}
+
 }  // namespace
 }  // namespace glic
