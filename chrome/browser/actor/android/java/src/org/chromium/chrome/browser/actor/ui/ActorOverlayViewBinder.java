@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -28,14 +27,15 @@ class ActorOverlayViewBinder {
             if (view.getVisibility() != visibility) {
                 view.setVisibility(visibility);
             }
-        } else if (key == ActorOverlayProperties.TOP_MARGIN
+        } else if (key == ActorOverlayProperties.LEFT_MARGIN
+                || key == ActorOverlayProperties.TOP_MARGIN
+                || key == ActorOverlayProperties.RIGHT_MARGIN
                 || key == ActorOverlayProperties.BOTTOM_MARGIN) {
+            int left = model.get(ActorOverlayProperties.LEFT_MARGIN);
             int top = model.get(ActorOverlayProperties.TOP_MARGIN);
+            int right = model.get(ActorOverlayProperties.RIGHT_MARGIN);
             int bottom = model.get(ActorOverlayProperties.BOTTOM_MARGIN);
-            MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
-            if (params == null || params.topMargin != top || params.bottomMargin != bottom) {
-                view.setMargins(top, bottom);
-            }
+            view.setMargins(left, top, right, bottom);
         } else if (key == ActorOverlayProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(model.get(ActorOverlayProperties.ON_CLICK_LISTENER));
         } else if (key == ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE) {

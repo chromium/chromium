@@ -11,6 +11,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTaskHelper;
 import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 
@@ -56,6 +58,7 @@ public class GlicUiCoordinator implements Destroyable {
      * @param overlayStub The {@link ViewStub} to inflate the overlay into.
      * @param bottomSheetController Controller for bottom sheets.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events.
+     * @param sideUiStateProvider The {@link SideUiStateProvider} providing state on the side UI.
      */
     public GlicUiCoordinator(
             Activity activity,
@@ -70,7 +73,8 @@ public class GlicUiCoordinator implements Destroyable {
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             ViewStub overlayStub,
             BottomSheetController bottomSheetController,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @Nullable SideUiStateProvider sideUiStateProvider) {
         mActivity = activity;
 
         mActorControlCoordinator =
@@ -97,7 +101,8 @@ public class GlicUiCoordinator implements Destroyable {
                         backPressHandlerRegistry,
                         layoutManagerSupplier,
                         profileSupplier,
-                        bottomSheetController);
+                        bottomSheetController,
+                        sideUiStateProvider);
 
         mActorTaskHelper =
                 new ActorTaskHelper(

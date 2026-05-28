@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -16,6 +17,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -41,6 +43,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -71,6 +76,7 @@ public class ActorOverlayViewRenderTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
     private TestBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     private TabObscuringHandler mTabObscuringHandler;
@@ -123,7 +129,8 @@ public class ActorOverlayViewRenderTest {
                                     mBackPressHandlerRegistry,
                                     mLayoutManagerSupplier,
                                     mProfileSupplier,
-                                    mBottomSheetController);
+                                    mBottomSheetController,
+                                    mSideUiStateProvider);
                 });
     }
 
@@ -144,6 +151,32 @@ public class ActorOverlayViewRenderTest {
                 "View did not get layout dimensions");
 
         mRenderTestRule.render(mParentView, "actor_overlay_default");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testActorOverlay_accountsForSideUi() throws Exception {
+        ArgumentCaptor<SideUiObserver> sideUiObserverCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(sideUiObserverCaptor.capture());
+
+        SideUiSpecs sideUiSpecs =
+                new SideUiSpecs(/* leftContainerWidth= */ 50, /* rightContainerWidth= */ 250);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sideUiObserverCaptor.getValue().onSideUiSpecsChanged(sideUiSpecs);
+                    mCoordinator.getMediator().setOverlayVisible(true);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mParentView.getChildAt(0) != null
+                            && mParentView.getChildAt(0).getWidth() > 0;
+                },
+                "View did not get layout dimensions");
+
+        mRenderTestRule.render(mParentView, "actor_overlay_side_ui");
     }
 
     @Test

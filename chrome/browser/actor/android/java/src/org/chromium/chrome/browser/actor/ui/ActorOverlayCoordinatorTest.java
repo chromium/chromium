@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,10 +57,14 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -77,6 +82,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
@@ -137,7 +143,8 @@ public class ActorOverlayCoordinatorTest {
                         mBackPressHandlerRegistry,
                         mLayoutManagerSupplier,
                         mProfileSupplier,
-                        mBottomSheetController);
+                        mBottomSheetController,
+                        mSideUiStateProvider);
         mLayoutManagerSupplier.set(mLayoutManager);
     }
 
@@ -620,10 +627,10 @@ public class ActorOverlayCoordinatorTest {
         verify(mBrowserControlsVisibilityManager).addObserver(observerCaptor.capture());
 
         observerCaptor.getValue().onTopControlsHeightChanged(100, 0);
-        verify(mView).setMargins(100, 0);
+        verify(mView).setMargins(0, 100, 0, 0);
 
         observerCaptor.getValue().onBottomControlsHeightChanged(50, 0);
-        verify(mView).setMargins(100, 50);
+        verify(mView).setMargins(0, 100, 0, 50);
     }
 
     @Test
@@ -725,12 +732,55 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
+    public void testSideUiIntegration() {
+        ArgumentCaptor<SideUiObserver> observerCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        SideUiObserver observer = observerCaptor.getValue();
+        Assert.assertNotNull(observer);
+
+        SideUiCoordinator.SideUiSpecs specs = new SideUiCoordinator.SideUiSpecs(120, 80);
+
+        // Test onSideUiSpecsChanged updates margins in model
+        observer.onSideUiSpecsChanged(specs);
+
+        PropertyModel model = mCoordinator.getModelForTesting();
+        Assert.assertEquals(120, model.get(ActorOverlayProperties.LEFT_MARGIN));
+        Assert.assertEquals(80, model.get(ActorOverlayProperties.RIGHT_MARGIN));
+
+        // Test onPreSideUiSpecsChange returns transition
+        Transition transition = observer.onPreSideUiSpecsChange(specs);
+        Assert.assertNotNull(transition);
+    }
+
+    @Test
+    public void testSideUiNullProvider() {
+        ActorOverlayCoordinator coordinator =
+                new ActorOverlayCoordinator(
+                        mViewStub,
+                        mTabModelSelector,
+                        mBrowserControlsVisibilityManager,
+                        mTabObscuringHandler,
+                        mSnackbarManager,
+                        mBackPressHandlerRegistry,
+                        mLayoutManagerSupplier,
+                        mProfileSupplier,
+                        mBottomSheetController,
+                        /* sideUiStateProvider= */ null);
+
+        PropertyModel model = coordinator.getModelForTesting();
+        Assert.assertEquals(0, model.get(ActorOverlayProperties.LEFT_MARGIN));
+        Assert.assertEquals(0, model.get(ActorOverlayProperties.RIGHT_MARGIN));
+    }
+
+    @Test
     public void testDestroy() {
         mCoordinator.destroy();
         verify(mBackPressHandlerRegistry).removeHandler(any());
         verify(mTab).removeObserver(any(TabObserver.class));
         verify(mBrowserControlsVisibilityManager).removeObserver(any());
         verify(mBottomSheetController).removeObserver(any());
+        verify(mSideUiStateProvider).removeObserver(any());
         Assert.assertFalse(mCurrentTabSupplier.hasObservers());
     }
 }

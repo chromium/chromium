@@ -18,8 +18,14 @@ class ActorOverlayProperties {
     /** Whether the overlay is currently visible. */
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
+    /** The left margin of the overlay. */
+    public static final WritableIntPropertyKey LEFT_MARGIN = new WritableIntPropertyKey();
+
     /** The top margin of the overlay. */
     public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
+
+    /** The right margin of the overlay. */
+    public static final WritableIntPropertyKey RIGHT_MARGIN = new WritableIntPropertyKey();
 
     /** The bottom margin of the overlay. */
     public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
@@ -41,6 +47,8 @@ class ActorOverlayProperties {
         VISIBLE,
         TOP_MARGIN,
         BOTTOM_MARGIN,
+        LEFT_MARGIN,
+        RIGHT_MARGIN,
         ON_CLICK_LISTENER,
         TAKE_OVER_TASK_BUTTON_VISIBLE,
         ON_TAKE_OVER_CLICK_LISTENER

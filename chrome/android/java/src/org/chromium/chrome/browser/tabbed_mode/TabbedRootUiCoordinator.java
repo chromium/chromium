@@ -1224,7 +1224,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mLayoutManagerSupplier,
                             actorOverlayStub,
                             assertNonNull(getBottomSheetController()),
-                            mActivityLifecycleDispatcher);
+                            mActivityLifecycleDispatcher,
+                            mSideUiStateProviderSupplier.get());
         }
 
         mForcedSigninController =
