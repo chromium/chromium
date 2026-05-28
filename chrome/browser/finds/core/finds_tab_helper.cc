@@ -102,6 +102,8 @@ FindsTabHelper::~FindsTabHelper() = default;
 
 void FindsTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  is_srp_return_opt_in_pending_ = false;
+
   if (!IsValidNavigation(navigation_handle)) {
     return;
   }
@@ -129,7 +131,7 @@ void FindsTabHelper::DidFinishNavigation(
   }
 
   if (features::kEnableSrpReturnCountOptIn.Get()) {
-    CheckSRPReturnCountAndMaybeTriggerOptIn(navigation_handle);
+    CheckSRPReturnCount(navigation_handle);
   }
 
   if (!opt_guide_service_ || !features::kEnableThemeUrlVisitCountOptIn.Get()) {
@@ -142,7 +144,16 @@ void FindsTabHelper::DidFinishNavigation(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FindsTabHelper::CheckSRPReturnCountAndMaybeTriggerOptIn(
+void FindsTabHelper::DidFirstVisuallyNonEmptyPaint() {
+  if (is_srp_return_opt_in_pending_) {
+    is_srp_return_opt_in_pending_ = false;
+    if (finds_service_) {
+      finds_service_->SRPBackNavigationCountForOptInReached();
+    }
+  }
+}
+
+void FindsTabHelper::CheckSRPReturnCount(
     content::NavigationHandle* navigation_handle) {
   if (!template_url_service_) {
     return;
@@ -158,9 +169,7 @@ void FindsTabHelper::CheckSRPReturnCountAndMaybeTriggerOptIn(
     srp_return_count_++;
 
     if (srp_return_count_ >= finds::features::kSRPReturnCountThreshold.Get()) {
-      if (finds_service_) {
-        finds_service_->SRPBackNavigationCountForOptInReached();
-      }
+      is_srp_return_opt_in_pending_ = true;
     }
   }
 }

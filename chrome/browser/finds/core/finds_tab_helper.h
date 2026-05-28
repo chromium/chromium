@@ -51,6 +51,7 @@ class FindsTabHelper : public content::WebContentsObserver,
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFirstVisuallyNonEmptyPaint() override;
 
   // Called when observing navigation metadata hints through an optimization
   // guide decision.
@@ -58,16 +59,15 @@ class FindsTabHelper : public content::WebContentsObserver,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Checks if the user has returned to the SRP enough from a backpress to
-  // trigger the opt in promo if the threshold is met.
-  void CheckSRPReturnCountAndMaybeTriggerOptIn(
-      content::NavigationHandle* navigation_handle);
+  // Checks if the user has returned to the SRP enough from a backpress.
+  void CheckSRPReturnCount(content::NavigationHandle* navigation_handle);
 
   raw_ptr<FindsService> finds_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<OptimizationGuideKeyedService> opt_guide_service_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   int srp_return_count_ = 0;
+  bool is_srp_return_opt_in_pending_ = false;
   base::WeakPtrFactory<FindsTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
