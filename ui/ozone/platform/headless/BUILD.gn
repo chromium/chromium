@@ -59,3 +59,18 @@ source_set("headless") {
     deps += [ "//gpu/vulkan" ]
   }
 }
+
+source_set("headless_unittests") {
+  testonly = true
+  sources = [ "headless_window_unittest.cc" ]
+  deps = [
+    ":headless",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+    "//ui/ozone:platform",
+    "//ui/ozone:test_support",
+  ]
+}

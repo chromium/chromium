@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
@@ -73,6 +74,10 @@ class HeadlessWindow : public PlatformWindow {
  protected:
   PlatformWindowDelegate* delegate() { return delegate_; }
 
+  base::WeakPtr<HeadlessWindow> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   enum class ActivationState {
     kUnknown,
@@ -90,6 +95,8 @@ class HeadlessWindow : public PlatformWindow {
   std::optional<gfx::Rect> restored_bounds_;
   PlatformWindowState window_state_ = PlatformWindowState::kUnknown;
   ActivationState activation_state_ = ActivationState::kUnknown;
+
+  base::WeakPtrFactory<HeadlessWindow> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
