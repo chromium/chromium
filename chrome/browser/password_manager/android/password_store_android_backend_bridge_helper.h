@@ -9,6 +9,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 
 namespace password_manager {
 
@@ -56,6 +57,10 @@ class PasswordStoreAndroidBackendBridgeHelper {
   [[nodiscard]] virtual JobId RemoveLogin(
       password_manager::StoredCredential credential,
       std::string account) = 0;
+  [[nodiscard]] virtual JobId RemoveLogin(
+      password_manager::StoredCredential credential,
+      std::string account,
+      sync_pb::DeletionOrigin deletion_origin) = 0;
 };
 
 }  // namespace password_manager

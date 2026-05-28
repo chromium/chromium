@@ -115,6 +115,20 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
+    @CalledByNative
+    void removeLogin(
+            @JobId int jobId,
+            byte[] pwdSpecificsData,
+            byte[] deletionOriginData,
+            String syncingAccount) {
+        mBackend.removeLogin(
+                pwdSpecificsData,
+                deletionOriginData,
+                getAccount(syncingAccount),
+                () -> mBackendReceiverBridge.onLoginChanged(jobId),
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
+    }
+
     private void handleAndroidBackendExceptionOnUiThread(@JobId int jobId, Exception exception) {
         // Error callback could be either triggered
         // - by the GMS Core on the UI thread

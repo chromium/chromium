@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 
 namespace password_manager {
 
@@ -56,6 +57,10 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
                                   std::string account) override;
   [[nodiscard]] JobId RemoveLogin(password_manager::StoredCredential credential,
                                   std::string account) override;
+  [[nodiscard]] JobId RemoveLogin(
+      password_manager::StoredCredential credential,
+      std::string account,
+      sync_pb::DeletionOrigin deletion_origin) override;
 
  private:
   JobId GetNextJobId();

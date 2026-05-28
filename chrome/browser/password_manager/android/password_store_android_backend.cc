@@ -14,6 +14,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/android/device_info.h"
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -45,8 +47,11 @@
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/service/sync_service.h"
+#include "components/version_info/version_info.h"
 
 namespace password_manager {
 
@@ -373,6 +378,21 @@ ActionableError GetLastErrorForOperation(
              : BackendErrorToActionableError(reported_error.type);
 }
 
+bool ShouldSendDeletionOrigin() {
+  if (!base::FeatureList::IsEnabled(
+          features::kPassDeletionOriginToAndroidBackend)) {
+    return false;
+  }
+
+  std::string gms_version_str = base::android::device_info::gms_version_code();
+  int gms_version = 0;
+  if (!base::StringToInt(gms_version_str, &gms_version)) {
+    return false;
+  }
+
+  return gms_version >= features::kPassDeletionOriginMinGmsVersion.Get();
+}
+
 }  // namespace
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
@@ -483,9 +503,21 @@ void PasswordStoreAndroidBackend::UpdateLoginInternal(
 void PasswordStoreAndroidBackend::RemoveLoginInternal(
     std::string account,
     StoredCredential credential,
+    const base::Location& location,
     PasswordChangesOrErrorReply callback) {
-  JobId job_id =
-      bridge_helper_->RemoveLogin(std::move(credential), std::move(account));
+  JobId job_id;
+  if (ShouldSendDeletionOrigin()) {
+    syncer::DeletionOrigin origin =
+        syncer::DeletionOrigin::FromLocation(location);
+    sync_pb::DeletionOrigin deletion_origin_pb =
+        origin.ToProto(version_info::GetVersionNumber());
+    job_id =
+        bridge_helper_->RemoveLogin(std::move(credential), std::move(account),
+                                    std::move(deletion_origin_pb));
+  } else {
+    job_id =
+        bridge_helper_->RemoveLogin(std::move(credential), std::move(account));
+  }
   QueueNewJob(job_id, std::move(callback), MethodName("RemoveLoginAsync"),
               PasswordStoreOperation::kRemoveLoginAsync,
               /*delay=*/base::Seconds(0));
@@ -541,6 +573,7 @@ void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsInternal(
 
 void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenInternal(
     std::string account,
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
@@ -553,7 +586,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenInternal(
   GetAllLoginsInternal(
       account,
       base::BindOnce(&PasswordStoreAndroidBackend::FilterAndRemoveLogins,
-                     weak_ptr_factory_.GetWeakPtr(), account,
+                     weak_ptr_factory_.GetWeakPtr(), account, location,
                      // Include all urls.
                      base::BindRepeating([](const GURL&) { return true; }),
                      delete_begin, delete_end,
@@ -880,6 +913,7 @@ PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
 
 void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
     std::string account,
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -912,7 +946,7 @@ void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
     callbacks_chain = base::BindOnce(
         &PasswordStoreAndroidBackend::RemoveLoginInternal,
         weak_ptr_factory_.GetWeakPtr(), account,
-        FromPasswordForm(std::move(login)),
+        FromPasswordForm(std::move(login)), location,
         base::BindOnce(barrier_callback).Then(std::move(callbacks_chain)));
   }
   std::move(callbacks_chain).Run();

@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
@@ -151,6 +152,23 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      data.SerializeAsString()),
+      GetJavaStringFromAccount(std::move(account)));
+}
+
+void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
+    JobId job_id,
+    const password_manager::StoredCredential& credential,
+    std::string account,
+    sync_pb::DeletionOrigin deletion_origin) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  sync_pb::PasswordSpecificsData data =
+      SpecificsDataFromStoredCredential(credential, /*base_password_data=*/{});
+  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_removeLogin(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                     data.SerializeAsString()),
+      base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                     deletion_origin.SerializeAsString()),
       GetJavaStringFromAccount(std::move(account)));
 }
 

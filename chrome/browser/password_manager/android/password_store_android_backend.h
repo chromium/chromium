@@ -12,6 +12,7 @@
 
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -116,6 +117,7 @@ class PasswordStoreAndroidBackend
                            PasswordChangesOrErrorReply callback);
   void RemoveLoginInternal(std::string account,
                            StoredCredential credential,
+                           const base::Location& location,
                            PasswordChangesOrErrorReply callback);
   void FillMatchingLoginsInternal(std::string account,
                                   LoginsOrErrorReply callback,
@@ -125,6 +127,7 @@ class PasswordStoreAndroidBackend
                                         const PasswordFormDigest& form_digest,
                                         LoginsOrErrorReply callback);
   void RemoveLoginsCreatedBetweenInternal(std::string account,
+                                          const base::Location& location,
                                           base::Time delete_begin,
                                           base::Time delete_end,
                                           PasswordChangesOrErrorReply callback);
@@ -291,6 +294,7 @@ class PasswordStoreAndroidBackend
   // |delay| is the amount of time by which the call to this method was delayed.
   void FilterAndRemoveLogins(
       std::string account,
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,

@@ -158,6 +158,13 @@ BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 #if BUILDFLAG(IS_ANDROID)
 // Enables OTP phishing checks.
 BASE_DECLARE_FEATURE(kOtpPhishGuard);
+
+// The minimum GMS version required to send deletion origin to Android Backend.
+extern const base::FeatureParam<int> kPassDeletionOriginMinGmsVersion;
+
+// When enabled, DeletionOrigin is sent to Android Backend for password
+// deletions.
+BASE_DECLARE_FEATURE(kPassDeletionOriginToAndroidBackend);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Populate the `date_last_filled` timestamp for passwords.

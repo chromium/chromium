@@ -108,6 +108,7 @@ source_set("backend") {
     "//components/prefs",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//components/version_info",
   ]
 }
 

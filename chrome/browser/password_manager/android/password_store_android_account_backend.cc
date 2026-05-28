@@ -178,7 +178,7 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
     return;
   }
   RemoveLoginInternal(GetSyncingAccount(sync_service_), std::move(cred),
-                      std::move(callback));
+                      location, std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(
@@ -190,7 +190,7 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(
     ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
     return;
   }
-  RemoveLoginsCreatedBetweenInternal(GetSyncingAccount(sync_service_),
+  RemoveLoginsCreatedBetweenInternal(GetSyncingAccount(sync_service_), location,
                                      delete_begin, delete_end,
                                      std::move(callback));
 }
