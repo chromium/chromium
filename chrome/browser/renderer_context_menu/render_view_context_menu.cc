@@ -1202,7 +1202,11 @@ void RenderViewContextMenu::InitMenu() {
   const bool use_simplified_menu_for_text_selection =
       ShouldUseSimplifiedTextSelection();
 
+  bool took_simplified_page_items_path = false;
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
+    took_simplified_page_items_path = features::IsMenuSimplificationEnabled() &&
+                                      params_.selection_text.empty() &&
+                                      !params_.is_editable;
     AppendPageItems();
   }
 
@@ -1228,7 +1232,9 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   if (features::IsMenuSimplificationEnabled()) {
-    AppendLensGeminiSection();
+    if (!took_simplified_page_items_path) {
+      AppendLensGeminiSection();
+    }
   } else {
     if (content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
@@ -2454,12 +2460,13 @@ void RenderViewContextMenu::AppendPageItems() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
     // Ask gemini
+    size_t count_before = menu_model_.GetItemCount();
     MaybeAppendOpenGlicItem();
     // Remove separator to group with Lens
-    size_t count = menu_model_.GetItemCount();
-    if (count > 0 &&
-        menu_model_.GetTypeAt(count - 1) == ui::MenuModel::TYPE_SEPARATOR) {
-      menu_model_.RemoveItemAt(count - 1);
+    if (menu_model_.GetItemCount() > count_before &&
+        menu_model_.GetTypeAt(menu_model_.GetItemCount() - 1) ==
+            ui::MenuModel::TYPE_SEPARATOR) {
+      menu_model_.RemoveItemAt(menu_model_.GetItemCount() - 1);
     }
 
     // Search with google lens
