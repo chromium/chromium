@@ -25,6 +25,9 @@ mod ffi {
         // a mutable reference, but since it's thread safe we need to be able to
         // call it with a shared reference.
         fn QuitRunLoop(run_loop: &UniquePtr<RunLoop>);
+
+        // Run until the loop is idle.
+        fn RunUntilIdle(run_loop: &UniquePtr<RunLoop>);
     }
 }
 
@@ -64,6 +67,24 @@ impl RunLoop {
                 ffi::QuitRunLoop(&run_loop)
             }
         }
+    }
+
+    /// Run the current RunLoop until it doesn't find any tasks or messages in
+    /// its queue. This calls out to the equivalent C++ function, and has the
+    /// same caveats:
+    ///
+    /// WARNING #1: This may run long (flakily timeout) and even never return!
+    ///             Do not use this when repeating tasks such as animated web
+    ///             pages are present.
+    /// WARNING #2: This may return too early! For example, if used to run until
+    ///             an incoming event has occurred but that event depends on a
+    ///             task in a different queue -- e.g. another TaskRunner or a
+    ///             system event.
+    ///
+    /// Per the warnings above, this tends to lead to flaky tests; prefer
+    /// `get_quit_closure` + `run` when at all possible.
+    pub fn run_until_idle(&self) {
+        ffi::RunUntilIdle(&self.run_loop);
     }
 }
 

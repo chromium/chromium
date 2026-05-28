@@ -18,4 +18,8 @@ void QuitRunLoop(const std::unique_ptr<RunLoop>& run_loop) {
   run_loop->Quit();
 }
 
+void RunUntilIdle(const std::unique_ptr<RunLoop>& run_loop) {
+  run_loop->RunUntilIdle();
+}
+
 }  // namespace base

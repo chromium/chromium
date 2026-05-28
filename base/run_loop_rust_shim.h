@@ -18,6 +18,9 @@ void RunRunLoop(const std::unique_ptr<RunLoop>& run_loop);
 // Quit the run loop.
 void QuitRunLoop(const std::unique_ptr<RunLoop>& run_loop);
 
+// Run until the loop is idle.
+void RunUntilIdle(const std::unique_ptr<RunLoop>& run_loop);
+
 }  // namespace base
 
 #endif  // BASE_RUN_LOOP_RUST_SHIM_H_
