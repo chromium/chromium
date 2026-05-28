@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
@@ -181,6 +182,7 @@ import java.util.function.Supplier;
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
                 this::onRequestTypeButtonClicked);
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_CLICKED, this::onActivationChipClicked);
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, this::onTabPickerClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED, this::onClipboardClicked);
@@ -329,6 +331,7 @@ import java.util.function.Supplier;
         mMetrics = null;
         mIsTextWrapping = false;
         updateFuseboxState();
+        updateActivationChip();
     }
 
     /**
@@ -881,6 +884,7 @@ import java.util.function.Supplier;
             mModelList.removeSuggestedTabs();
         }
 
+        updateActivationChip();
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             if (!isInInputSession()) return;
             InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
@@ -891,6 +895,16 @@ import java.util.function.Supplier;
             updateClientControlledToolButtonList();
             updatePopupButtonEnabledStates();
         }
+    }
+
+    private void updateActivationChip() {
+        boolean showActivationChip =
+                isInInputSession()
+                        && mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
+                                == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                        && mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                                == AutocompleteRequestType.SEARCH;
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, showActivationChip);
     }
 
     private void updatePopupButtonEnabledStates() {
@@ -1062,6 +1076,10 @@ import java.util.function.Supplier;
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
+    }
+
+    private void onActivationChipClicked() {
+        activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.DEDICATED_BUTTON);
     }
 
     private void onClipboardClicked() {

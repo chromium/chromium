@@ -22,6 +22,7 @@ class FuseboxViewHolder {
     public final FuseboxPopup popup;
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
+    public final ButtonCompat activationChip;
 
     FuseboxViewHolder(ConstraintLayout parent, FuseboxPopup popup) {
         parentView = parent;
@@ -29,6 +30,7 @@ class FuseboxViewHolder {
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
         requestType = parent.findViewById(R.id.fusebox_request_type);
         navigateButton = parent.findViewById(R.id.navigate_button);
+        activationChip = parent.findViewById(R.id.fusebox_activation_chip);
 
         this.popup = popup;
 

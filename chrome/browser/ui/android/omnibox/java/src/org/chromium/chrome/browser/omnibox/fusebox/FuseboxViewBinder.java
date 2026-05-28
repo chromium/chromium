@@ -59,7 +59,13 @@ class FuseboxViewBinder {
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, FuseboxViewHolder view, PropertyKey propertyKey) {
-        if (propertyKey == FuseboxProperties.ADAPTER) {
+        if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_CLICKED) {
+            view.activationChip.setOnClickListener(
+                    v -> model.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_VISIBLE) {
+            updateButtonVisibility(
+                    model, FuseboxProperties.ACTIVATION_CHIP_VISIBLE, view.activationChip);
+        } else if (propertyKey == FuseboxProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
         } else if (propertyKey == FuseboxProperties.ADD_BUTTON_VISIBLE) {
             updateAddButton(model, view);
@@ -526,6 +532,7 @@ class FuseboxViewBinder {
         updateNavigateButton(model, view);
         updateRequestTypeButton(model, view);
         updatePopupTheme(model, view);
+        updateActivationChip(model, view);
         Context context = view.parentView.getContext();
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Drawable background =
@@ -605,6 +612,23 @@ class FuseboxViewBinder {
         button.setTextAppearance(
                 OmniboxResourceProvider.getRequestTypeButtonTextRes(brandedColorScheme));
         button.setCompoundDrawablesRelative(startDrawable, null, endDrawable, null);
+    }
+
+    private static void updateActivationChip(
+            PropertyModel propertyModel, FuseboxViewHolder viewHolder) {
+        Context context = viewHolder.parentView.getContext();
+        @BrandedColorScheme
+        int brandedColorScheme = propertyModel.get(FuseboxProperties.COLOR_SCHEME);
+        @ColorInt
+        int buttonColor =
+                OmniboxResourceProvider.getColorSurfaceContainerHigh(context, brandedColorScheme);
+        ButtonCompat button = viewHolder.activationChip;
+        button.setButtonColor(ColorStateList.valueOf(buttonColor));
+
+        @ColorInt
+        int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
+        // TODO(pnoland): handle text color, selection, and hover states.
+        button.setCompoundDrawableTintList(ColorStateList.valueOf(colorOnSurface));
     }
 
     @SuppressLint("SwitchIntDef")

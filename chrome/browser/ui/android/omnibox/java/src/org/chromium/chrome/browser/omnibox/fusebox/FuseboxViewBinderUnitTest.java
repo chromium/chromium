@@ -83,6 +83,7 @@ public class FuseboxViewBinderUnitTest {
     @Mock private AnchoredPopupWindow mPopupWindow;
     @Mock private DynamicRectProvider mDynamicRectProvider;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Runnable mRunnable;
 
     private final PropertyModel mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
@@ -708,6 +709,20 @@ public class FuseboxViewBinderUnitTest {
         assertEquals(1, textView.getMaxLines());
         assertEquals(TextUtils.TruncateAt.END, textView.getEllipsize());
         assertNotNull(imageView.getDrawable());
+    }
+
+    @Test
+    public void activationChip() {
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, true);
+        assertEquals(View.VISIBLE, mViewHolder.activationChip.getVisibility());
+
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, false);
+        assertEquals(View.GONE, mViewHolder.activationChip.getVisibility());
+
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_CLICKED, mRunnable);
+
+        mViewHolder.activationChip.performClick();
+        verify(mRunnable).run();
     }
 
     private static class PopupButtonDataBuilder {

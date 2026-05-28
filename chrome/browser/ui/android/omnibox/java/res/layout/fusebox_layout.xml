@@ -77,4 +77,24 @@ found in the LICENSE file.
         app:layout_constraintEnd_toStartOf="@id/margin_spacer"
         app:layout_constraintTop_toBottomOf="@id/url_bar"/>
 
+    <org.chromium.ui.widget.ButtonCompat
+        style="@style/OutlinedButton"
+        android:id="@+id/fusebox_activation_chip"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:visibility="gone"
+        android:contentDescription="@string/starter_pack_ai_mode_action_hint"
+        android:drawableStart="@drawable/search_spark_black_24dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="12dp"
+        android:drawablePadding="8dp"
+        android:singleLine="true"
+        android:text="@string/ai_mode_entrypoint_label"
+        android:textAlignment="viewStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:buttonBorderStyle="solid"
+        app:verticalInset="6dp"
+        app:rippleCornerRadius="36dp"/>
+
 </merge>

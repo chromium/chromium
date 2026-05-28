@@ -90,6 +90,14 @@ class FuseboxProperties {
         }
     }
 
+    /** Action to perform when the user clicks the activation chip. */
+    public static final WritableObjectPropertyKey<Runnable> ACTIVATION_CHIP_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the activation chip should be visible. */
+    public static final WritableBooleanPropertyKey ACTIVATION_CHIP_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** The adapter for the attachments RecyclerView. */
     public static final WritableObjectPropertyKey<SimpleRecyclerViewAdapter> ADAPTER =
             new WritableObjectPropertyKey<>();
@@ -266,6 +274,8 @@ class FuseboxProperties {
 
     public static final PropertyKey[] ALL_KEYS = {
         // go/keep-sorted start
+        ACTIVATION_CHIP_CLICKED,
+        ACTIVATION_CHIP_VISIBLE,
         ADAPTER,
         ADD_BUTTON_VISIBLE,
         ATTACHMENTS_VISIBLE,
