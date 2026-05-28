@@ -352,6 +352,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private CharSequence mApplicationLabel;
     private @Nullable TipsOptInCoordinator mTipsOptInCoordinator;
     private @Nullable GlicPromoCoordinator mGlicPromoCoordinator;
+    private boolean mPromosEvaluatedForCurrentForeground;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
@@ -682,8 +683,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new InactivityObserver() {
                     @Override
                     public void onForegrounded(long timeSinceLastBackgroundedMs) {
-                        maybeShowTipsOptInPromo(timeSinceLastBackgroundedMs);
-                        maybeShowGlicPromo();
+                        // Reset the evaluation flag when the app is foregrounded, indicating a
+                        // new foreground session has started and promos should be re-evaluated.
+                        mPromosEvaluatedForCurrentForeground = false;
+                        maybeShowPromosOnForeground();
                     }
                 };
 
@@ -691,6 +694,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 (inactivityTracker) -> {
                     inactivityTracker.addObserver(mInactivityObserver);
                 });
+
+        maybeShowPromosOnForeground();
 
         mCrossDeviceSettingImporter =
                 DeviceInfo.isDesktop()
@@ -1578,6 +1583,35 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    // TODO(crbug.com/515566274): Move foreground promos coordination logic to its own class to
+    // facilitate testing and reduce TabbedRootUiCoordinator's complexity.
+    private void maybeShowPromosOnForeground() {
+        mTrackerInitializedOneshotSupplier.onAvailable(
+                mCallbackController.makeCancelable(
+                        (initialized) -> {
+                            if (!initialized) {
+                                return;
+                            }
+                            if (mInactivityTrackerSupplier.get() == null) {
+                                return;
+                            }
+                            if (mPromosEvaluatedForCurrentForeground) {
+                                return;
+                            }
+                            mPromosEvaluatedForCurrentForeground = true;
+
+                            if (maybeShowGlicPromo()) {
+                                return;
+                            }
+
+                            long timeSinceLastBackgroundedMs =
+                                    mInactivityTrackerSupplier
+                                            .get()
+                                            .getTimeSinceLastBackgroundedMs();
+                            maybeShowTipsOptInPromo(timeSinceLastBackgroundedMs);
+                        }));
+    }
+
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
         var bottomSheetController = getBottomSheetController();
         assert bottomSheetController != null;
@@ -1590,43 +1624,45 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 (coordinator) -> mTipsOptInCoordinator = coordinator);
     }
 
-    private void maybeShowGlicPromo() {
+    private boolean maybeShowGlicPromo() {
         Profile profile = mProfileSupplier.get();
         if (profile == null
                 || mActivity == null
                 || mActivity.isFinishing()
                 || mActivity.isDestroyed()) {
-            return;
+            return false;
         }
 
         // When the Android Bottom Bar is enabled the promo is not required as the button is
         // available by default.
-        if (!GlicEnabling.isEnabledForProfile(profile)
-                || BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
-            return;
+        boolean glicEnabled = GlicEnabling.isEnabledForProfile(profile);
+        boolean bottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(mActivity);
+        if (!glicEnabled || bottomBarEnabled) {
+            return false;
         }
-        if (ChromeSharedPreferences.getInstance()
-                .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED)) {
-            return;
-        }
-        if (!Boolean.TRUE.equals(mTrackerInitializedOneshotSupplier.get())) {
-            return;
+
+        boolean hasEvaluatedGlicPromo =
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+        if (hasEvaluatedGlicPromo) {
+            return false;
         }
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName =
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_GLIC_FEATURE;
 
+        boolean isGlicPinned =
+                AdaptiveToolbarPrefs.getCustomizationSetting() == AdaptiveToolbarButtonVariant.GLIC;
         boolean isToolbarPinned =
                 AdaptiveToolbarPrefs.getCustomizationSetting() != AdaptiveToolbarButtonVariant.AUTO;
-        if (tracker.shouldTriggerHelpUi(featureName) || isToolbarPinned) {
+        boolean shouldTrigger = tracker.wouldTriggerHelpUi(featureName);
+
+        if (!isGlicPinned && (shouldTrigger || isToolbarPinned)) {
             ChromeSharedPreferences.getInstance()
                     .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false);
 
             Runnable onAccepted = this::enableGlicButton;
-            Runnable onDismissed =
-                    () -> {
-                        tracker.dismissed(featureName);
-                    };
+            Runnable onDismissed = () -> {};
 
             var bottomSheetController = getBottomSheetController();
             assert bottomSheetController != null;
@@ -1634,10 +1670,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new GlicPromoCoordinator(
                             mActivity, bottomSheetController, onAccepted, onDismissed);
             mGlicPromoCoordinator.showBottomSheet();
-            return;
+            return true;
         }
 
         enableGlicButton();
+        return false;
     }
 
     private void enableGlicButton() {
