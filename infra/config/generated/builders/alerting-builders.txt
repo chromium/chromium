@@ -371,6 +371,7 @@ ci/linux-chromeos-rel
 ci/linux-crossbench
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
+ci/linux-no-initial-webui-rel
 ci/linux-oi-rel
 ci/linux-presubmit
 ci/linux-rel-cft

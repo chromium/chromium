@@ -102,6 +102,7 @@ ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
+ci/linux-no-initial-webui-rel
 ci/linux-oi-rel
 ci/linux-presubmit
 ci/linux-v4l2-codec-rel
