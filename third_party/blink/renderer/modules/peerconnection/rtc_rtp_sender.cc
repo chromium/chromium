@@ -584,7 +584,7 @@ RTCRtpHeaderExtensionParameters* ToRtpHeaderExtensionParameters(
   RTCRtpHeaderExtensionParameters* header =
       RTCRtpHeaderExtensionParameters::Create();
   header->setUri(webrtc_header.uri.c_str());
-  header->setId(webrtc_header.id);
+  header->setId(webrtc_header.id.value());
   header->setEncrypted(webrtc_header.encrypt);
   return header;
 }
