@@ -9075,7 +9075,7 @@ WebGLRenderingContextBase::LRUCanvasSnapshotProviderCache::
 
 CanvasSnapshotProvider* WebGLRenderingContextBase::
     LRUCanvasSnapshotProviderCache::GetCanvasSnapshotProvider(
-        const CanvasSnapshotProvider::Info& info,
+        const CanvasSnapshotInfo& info,
         bool& tried_to_create_provider) {
   tried_to_create_provider = false;
   wtf_size_t i;

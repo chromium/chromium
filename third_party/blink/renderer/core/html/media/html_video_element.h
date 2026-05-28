@@ -293,7 +293,7 @@ class CORE_EXPORT HTMLVideoElement final
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> snapshot_provider_;
-  std::optional<CanvasSnapshotProvider::Info> cached_draw_info_;
+  std::optional<CanvasSnapshotInfo> cached_draw_info_;
   HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 
   // Paint flags set based on CSS properties, which must be propagated to the

@@ -79,6 +79,7 @@ namespace blink {
 class AcceleratedStaticBitmapImage;
 class CanvasNon2DResourceProviderSharedImage;
 class CanvasSnapshotProvider;
+struct CanvasSnapshotInfo;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
 class V8UnionElementOrElementImage;
@@ -935,7 +936,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
     LRUCanvasSnapshotProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
     CanvasSnapshotProvider* GetCanvasSnapshotProvider(
-        const CanvasSnapshotProvider::Info& info,
+        const CanvasSnapshotInfo& info,
         bool& tried_to_create_provider);
 
    private:

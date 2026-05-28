@@ -60,7 +60,7 @@ class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
 
   media::PaintCanvasVideoRenderer video_renderer_;
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> snapshot_provider_;
-  std::optional<CanvasSnapshotProvider::Info> cached_draw_info_;
+  std::optional<CanvasSnapshotInfo> cached_draw_info_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ImageCaptureFrameGrabber> weak_factory_{this};

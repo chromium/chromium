@@ -88,7 +88,7 @@ CreateAcceleratedImageFromVideoFrame(
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
 CreateUnacceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    const CanvasSnapshotProvider::Info& draw_info,
+    const CanvasSnapshotInfo& draw_info,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
@@ -104,7 +104,7 @@ PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
 
 // Renders to a RAM-backed bitmap via an external (client-supplied) draw.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
-    const CanvasSnapshotProvider::Info& info,
+    const CanvasSnapshotInfo& info,
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation);
 
@@ -123,8 +123,7 @@ GetRasterContextProvider();
 //   format: Always GetN32FormatForCanvas() at the time of writing.
 //
 //   size: Set to frame.natural_size() unless `scaled_size` is provided.
-PLATFORM_EXPORT CanvasSnapshotProvider::Info
-CreateSnapshotProviderInfoForVideoFrame(
+PLATFORM_EXPORT CanvasSnapshotInfo CreateSnapshotProviderInfoForVideoFrame(
     const media::VideoFrame& frame,
     std::optional<gfx::Size> scaled_size = std::nullopt,
     bool reinterpret_video_as_srgb = false);

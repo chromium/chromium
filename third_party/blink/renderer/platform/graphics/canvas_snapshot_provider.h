@@ -5,11 +5,34 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_H_
 
 #include "base/functional/function_ref.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
+struct PLATFORM_EXPORT CanvasSnapshotInfo {
+  SkAlphaType alpha_type;
+  gfx::ColorSpace color_space;
+  viz::SharedImageFormat format;
+  gfx::Size size;
+
+  bool Matches(const CanvasSnapshotInfo& info) const {
+    return info.size == size && info.alpha_type == alpha_type &&
+           info.color_space == color_space &&
+           // TODO(crbug.com/40767377): Restore strict format checks once the
+           // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
+           (info.format == format ||
+            (info.format == viz::SinglePlaneFormat::kRGBA_8888 &&
+             format == viz::SinglePlaneFormat::kBGRA_8888) ||
+            (info.format == viz::SinglePlaneFormat::kBGRA_8888 &&
+             format == viz::SinglePlaneFormat::kRGBA_8888));
+  }
+};
 
 // This is an interface abstracting a class that can draw to a snapshot.
 class PLATFORM_EXPORT CanvasSnapshotProvider {
@@ -24,27 +47,7 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
   virtual bool IsGpuContextLost() const = 0;
   virtual bool IsExternalBitmapProvider() const { return false; }
 
-  // Helper structure and function for caching CanvasSnapshotProviders.
-  struct Info {
-    SkAlphaType alpha_type;
-    gfx::ColorSpace color_space;
-    viz::SharedImageFormat format;
-    gfx::Size size;
-
-    bool Matches(const CanvasSnapshotProvider::Info& info) const {
-      return info.size == size && info.alpha_type == alpha_type &&
-             info.color_space == color_space &&
-             // TODO(crbug.com/40767377): Restore strict format checks once the
-             // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
-             (info.format == format ||
-              (info.format == viz::SinglePlaneFormat::kRGBA_8888 &&
-               format == viz::SinglePlaneFormat::kBGRA_8888) ||
-              (info.format == viz::SinglePlaneFormat::kBGRA_8888 &&
-               format == viz::SinglePlaneFormat::kRGBA_8888));
-    }
-  };
-
-  Info GetInfo() const {
+  CanvasSnapshotInfo GetInfo() const {
     return {
         .alpha_type = GetAlphaType(),
         .color_space = GetColorSpace(),

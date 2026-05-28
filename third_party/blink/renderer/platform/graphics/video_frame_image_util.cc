@@ -81,8 +81,7 @@ class ImageProviderImpl : public cc::ImageProvider {
   gfx::ColorSpace color_space_;
 };
 
-sk_sp<SkSurface> CreateSoftwareSurface(
-    const CanvasSnapshotProvider::Info& info) {
+sk_sp<SkSurface> CreateSoftwareSurface(const CanvasSnapshotInfo& info) {
   const bool can_use_lcd_text = info.alpha_type == kOpaque_SkAlphaType;
   const auto props =
       skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
@@ -96,7 +95,7 @@ sk_sp<SkSurface> CreateSoftwareSurface(
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
-    std::optional<CanvasSnapshotProvider::Info> sw_draw_info,
+    std::optional<CanvasSnapshotInfo> sw_draw_info,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
@@ -168,7 +167,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 }  // namespace
 
 scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
-    const CanvasSnapshotProvider::Info& info,
+    const CanvasSnapshotInfo& info,
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation) {
   auto surface = CreateSoftwareSurface(info);
@@ -286,7 +285,7 @@ scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
 
 scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    const CanvasSnapshotProvider::Info& draw_info,
+    const CanvasSnapshotInfo& draw_info,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
@@ -325,7 +324,7 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
       wrapper->ContextProvider().RasterContextProvider());
 }
 
-CanvasSnapshotProvider::Info CreateSnapshotProviderInfoForVideoFrame(
+CanvasSnapshotInfo CreateSnapshotProviderInfoForVideoFrame(
     const media::VideoFrame& frame,
     std::optional<gfx::Size> scaled_size,
     bool reinterpret_video_as_srgb) {
