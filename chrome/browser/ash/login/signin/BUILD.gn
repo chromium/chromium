@@ -172,6 +172,7 @@ source_set("unit_tests") {
     "signin_error_notifier_unittest.cc",
     "token_handle_checker_unittest.cc",
     "token_handle_fetcher_unittest.cc",
+    "token_handle_store_factory_unittest.cc",
     "token_handle_store_unittest.cc",
   ]
 

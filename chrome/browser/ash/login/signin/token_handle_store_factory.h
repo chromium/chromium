@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_FACTORY_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/public/cpp/token_handle_store.h"
 #include "base/containers/flat_map.h"
@@ -63,11 +64,9 @@ class TokenHandleStoreFactory {
     void OnGetAuthFactorConfiguration(std::unique_ptr<UserContext> user_context,
                                       std::optional<AuthenticationError> error);
 
-    // Runs cleanup logic after replying to the request for `account_id`.
-    void OnRepliedToRequest(const AccountId account_id);
-
     std::unique_ptr<AuthFactorEditor> factor_editor_;
-    base::flat_map<AccountId, OnUserHasGaiaPasswordDetermined> callbacks_;
+    base::flat_map<AccountId, std::vector<OnUserHasGaiaPasswordDetermined>>
+        callbacks_;
     base::WeakPtrFactory<DoesUserHaveGaiaPassword> weak_factory_{this};
   };
 
@@ -78,7 +77,7 @@ class TokenHandleStoreFactory {
   TokenHandleStoreFactory();
   ~TokenHandleStoreFactory();
 
-  DoesUserHaveGaiaPassword does_user_have_gaia_password_;
+  std::unique_ptr<DoesUserHaveGaiaPassword> does_user_have_gaia_password_;
   std::unique_ptr<TokenHandleStore> token_handle_store_;
 };
 

@@ -30,12 +30,27 @@ TokenHandleStoreFactory::DoesUserHaveGaiaPassword::~DoesUserHaveGaiaPassword() =
 void TokenHandleStoreFactory::DoesUserHaveGaiaPassword::Run(
     const AccountId& account_id,
     base::OnceCallback<void(std::optional<bool>)> callback) {
-  CHECK(callbacks_.find(account_id) == std::end(callbacks_));
-  callbacks_[account_id] = std::move(callback);
+  CHECK(account_id.is_valid());
+  auto [it, inserted] = callbacks_.try_emplace(account_id);
+  it->second.push_back(std::move(callback));
+
+  if (!inserted) {
+    VLOG(1) << "Request in flight, queueing callback.";
+    return;
+  }
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  CHECK(user);
+  if (!user) {
+    LOG(WARNING)
+        << "User not found, replying with unknown Gaia password status.";
+    auto callbacks = std::move(it->second);
+    callbacks_.erase(it);
+    for (auto& cb : callbacks) {
+      std::move(cb).Run(std::nullopt);
+    }
+    return;
+  }
 
   factor_editor_->GetAuthFactorsConfiguration(
       std::make_unique<UserContext>(*user),
@@ -47,28 +62,33 @@ void TokenHandleStoreFactory::DoesUserHaveGaiaPassword::Run(
 void TokenHandleStoreFactory::DoesUserHaveGaiaPassword::
     OnGetAuthFactorConfiguration(std::unique_ptr<UserContext> user_context,
                                  std::optional<AuthenticationError> error) {
+  CHECK(user_context);
   const AccountId account_id = user_context->GetAccountId();
-  base::ScopedClosureRunner cleanup(base::BindOnce(
-      &TokenHandleStoreFactory::DoesUserHaveGaiaPassword::OnRepliedToRequest,
-      weak_factory_.GetWeakPtr(), account_id));
 
-  if (error.has_value()) {
-    // We don't know what auth factors the user has.
-    std::move(callbacks_[account_id]).Run(std::nullopt);
-    return;
+  std::optional<bool> result = std::nullopt;
+  if (!error.has_value()) {
+    CHECK(user_context->HasAuthFactorsConfiguration());
+    if (const cryptohome::AuthFactor* factor =
+            user_context->GetAuthFactorsConfiguration().FindFactorByType(
+                cryptohome::AuthFactorType::kPassword);
+        factor &&
+        factor->ref().label().value() == ash::kCryptohomeGaiaKeyLabel) {
+      // User is using their gaia password for authentication.
+      result = true;
+    } else {
+      // User is not using their gaia password for authentication.
+      result = false;
+    }
   }
 
-  if (const cryptohome::AuthFactor* factor =
-          user_context->GetAuthFactorsConfiguration().FindFactorByType(
-              cryptohome::AuthFactorType::kPassword);
-      factor && factor->ref().label().value() == ash::kCryptohomeGaiaKeyLabel) {
-    // User is using their gaia password for authentication.
-    std::move(callbacks_[account_id]).Run(true);
-    return;
-  }
+  auto it = callbacks_.find(account_id);
+  CHECK(it != callbacks_.end());
+  auto callbacks = std::move(it->second);
+  callbacks_.erase(it);
 
-  // User is not using their gaia password for authentication.
-  std::move(callbacks_[account_id]).Run(false);
+  for (auto& cb : callbacks) {
+    std::move(cb).Run(result);
+  }
 }
 
 TokenHandleStoreFactory::DoesUserHaveGaiaPassword::
@@ -80,20 +100,7 @@ TokenHandleStoreFactory::DoesUserHaveGaiaPassword::
       weak_factory_.GetWeakPtr());
 }
 
-void TokenHandleStoreFactory::DoesUserHaveGaiaPassword::OnRepliedToRequest(
-    const AccountId account_id) {
-  auto callback_iterator = callbacks_.find(account_id);
-  CHECK(callback_iterator != callbacks_.end());
-
-  // We should have already replied to the request.
-  CHECK(!callback_iterator->second);
-
-  callbacks_.erase(callback_iterator);
-}
-
-TokenHandleStoreFactory::TokenHandleStoreFactory()
-    : does_user_have_gaia_password_(
-          std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get())) {}
+TokenHandleStoreFactory::TokenHandleStoreFactory() = default;
 
 TokenHandleStoreFactory::~TokenHandleStoreFactory() = default;
 
@@ -105,10 +112,14 @@ TokenHandleStoreFactory* TokenHandleStoreFactory::Get() {
 
 std::unique_ptr<TokenHandleStore>
 TokenHandleStoreFactory::CreateTokenHandleStoreImpl() {
+  if (!does_user_have_gaia_password_) {
+    does_user_have_gaia_password_ = std::make_unique<DoesUserHaveGaiaPassword>(
+        std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get()));
+  }
   return std::make_unique<TokenHandleStoreImpl>(
       std::make_unique<user_manager::KnownUser>(
           g_browser_process->local_state()),
-      does_user_have_gaia_password_.CreateRepeatingCallback());
+      does_user_have_gaia_password_->CreateRepeatingCallback());
 }
 
 TokenHandleStore* TokenHandleStoreFactory::GetTokenHandleStore() {
@@ -126,6 +137,7 @@ TokenHandleStore* TokenHandleStoreFactory::GetTokenHandleStore() {
 
 void TokenHandleStoreFactory::DestroyTokenHandleStore() {
   token_handle_store_.reset();
+  does_user_have_gaia_password_.reset();
 }
 
 }  // namespace ash
