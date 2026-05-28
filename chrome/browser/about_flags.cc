@@ -13007,6 +13007,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(::features::kTextClassifierTimeout,
                                     kTextClassifierTimeoutVariations,
                                     "TextClassifierTimeout")},
+    {"incognito-as-window-full-screen",
+     flag_descriptions::kIncognitoAsWindowFullScreenName,
+     flag_descriptions::kIncognitoAsWindowFullScreenDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kIncognitoAsWindowFullScreen)},
 #endif
 
     {"autofill-enable-gradient-google-logos",

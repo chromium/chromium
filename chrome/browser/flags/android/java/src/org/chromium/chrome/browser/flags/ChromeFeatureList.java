@@ -487,6 +487,7 @@ public abstract class ChromeFeatureList {
     public static final String HOME_MODULE_PREF_REFACTOR = "HomeModulePrefRefactor";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String HTTPS_FIRST_DIALOG_UI = "HttpsFirstDialogUi";
+    public static final String INCOGNITO_AS_WINDOW_FULL_SCREEN = "IncognitoAsWindowFullScreen";
     public static final String INCOGNITO_MODE_FORCED_ANDROID = "IncognitoModeForcedAndroid";
     public static final String INCOGNITO_NTP_SMALL_ICON = "IncognitoNtpSmallIcon";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";

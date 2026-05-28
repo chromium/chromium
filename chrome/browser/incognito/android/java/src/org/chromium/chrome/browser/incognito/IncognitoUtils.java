@@ -125,6 +125,14 @@ public class IncognitoUtils {
     }
 
     /**
+     * @return Whether different model windows should open in full-screen.
+     */
+    public static boolean isIncognitoAsWindowFullScreenEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
+                && shouldOpenIncognitoAsWindow();
+    }
+
+    /**
      * Sets the value returned by {@link #shouldOpenIncognitoAsWindow()} for testing.
      *
      * @param enabled The value to force, or null to revert to default behavior.

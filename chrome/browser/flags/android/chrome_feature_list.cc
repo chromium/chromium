@@ -366,6 +366,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHistoryPaneAndroid,
     &kHomeButtonRemoval,
     &kHomeModulePrefRefactor,
+    &kIncognitoAsWindowFullScreen,
     &kIncognitoModeForcedAndroid,
     &kIncognitoNtpSmallIcon,
     &kIncognitoScreenshot,
@@ -720,6 +721,7 @@ BASE_FEATURE(kGroupNewTabWithParent, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHistoryPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHomeButtonRemoval, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHomeModulePrefRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIncognitoAsWindowFullScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoModeForcedAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoNtpSmallIcon, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);

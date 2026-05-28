@@ -623,7 +623,7 @@ import java.util.Set;
 
     private static void addOpenUrlInNewWindowIntentExtras(
             Activity sourceActivity, Intent intent, boolean isIncognitoWindow) {
-        if (!MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity)) {
+        if (!MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity, isIncognitoWindow)) {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
         intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.URL_LAUNCH);
@@ -642,7 +642,9 @@ import java.util.Set;
     private static boolean shouldMoveTabsInAdjacentWindow(
             Activity sourceActivity, int moveTabCount) {
         if (sourceActivity.isInMultiWindowMode()) return true;
+        boolean isSourceIncognito = false;
         if (sourceActivity instanceof ChromeTabbedActivity tabbedActivity) {
+            isSourceIncognito = tabbedActivity.isIncognitoWindow();
             int totalTabCount = tabbedActivity.getTabModelSelector().getTotalTabCount();
             if (totalTabCount == moveTabCount) {
                 // It is likely that some features will finish the source window's activity when the
@@ -652,7 +654,7 @@ import java.util.Set;
                 return false;
             }
         }
-        return MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
+        return MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity, isSourceIncognito);
     }
 
     private void onActivityStateChange(Activity activity, @ActivityState int newState) {

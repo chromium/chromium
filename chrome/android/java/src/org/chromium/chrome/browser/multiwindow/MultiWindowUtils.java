@@ -548,7 +548,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (isMultiInstanceApi31Enabled()) {
             boolean openAdjacently =
                     (canEnterMultiWindowMode() || isInMultiWindowMode || isInMultiDisplayMode)
-                            && shouldOpenInAdjacentWindow(sourceActivity);
+                            && shouldOpenInAdjacentWindow(sourceActivity, isIncognito);
 
             Intent intent =
                     createNewWindowIntent(
@@ -575,7 +575,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if (shouldOpenInAdjacentWindow(sourceActivity)) {
+        if (shouldOpenInAdjacentWindow(sourceActivity, isIncognito)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
 
@@ -1232,14 +1232,28 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Determines whether a new window should be opened adjacently or in full screen. This relies on
-     * an experimental param set on the server-side, with behavior defaulting to adjacent launch.
+     * Determines whether a new window should be opened adjacently (split-screen) or in full screen.
      *
-     * @param activity The current activity.
-     * @return {@code false} when a new window should be opened in full screen, {@code true}
-     *     otherwise.
+     * <p>Different-mode window launches (regular-to-incognito or incognito-to-regular) are forced
+     * to open in full screen if the {@link ChromeFeatureList#INCOGNITO_AS_WINDOW_FULL_SCREEN}
+     * feature is enabled. Same-mode launches are opened adjacently or in full screen depending on
+     * the {@link ChromeFeatureList#ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL} param.
+     *
+     * @param activity The current activity initiating the launch.
+     * @param isTargetIncognito Whether the target window to be opened is incognito.
+     * @return {@code false} when the new window should be opened in full screen, {@code true} when
+     *     it should be opened adjacently (split-screen).
      */
-    /* package */ static boolean shouldOpenInAdjacentWindow(Activity activity) {
+    /* package */ static boolean shouldOpenInAdjacentWindow(
+            Activity activity, boolean isTargetIncognito) {
+        boolean isSourceIncognito = false;
+        if (activity instanceof ChromeTabbedActivity) {
+            isSourceIncognito = ((ChromeTabbedActivity) activity).isIncognitoWindow();
+        }
+        if (isSourceIncognito != isTargetIncognito
+                && IncognitoUtils.isIncognitoAsWindowFullScreenEnabled()) {
+            return false;
+        }
         // Always open adjacently if the current activity is in multi-windowing mode.
         if (activity.isInMultiWindowMode()) return true;
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(

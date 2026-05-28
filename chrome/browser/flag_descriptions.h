@@ -2751,6 +2751,12 @@ inline constexpr char kImportExportFlagsName[] = "Import and export flags";
 inline constexpr char kImportExportFlagsDescription[] =
     "Enables importing and exporting flags from chrome://flags.";
 
+inline constexpr char kIncognitoAsWindowFullScreenName[] =
+    "Incognito as full-screen window";
+inline constexpr char kIncognitoAsWindowFullScreenDescription[] =
+    "Open incognito windows in full-screen when launched from a regular "
+    "window, and vice-versa.";
+
 inline constexpr char kIncognitoScreenshotName[] = "Incognito Screenshot";
 inline constexpr char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
