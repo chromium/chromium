@@ -60,10 +60,6 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
                          IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
-    details.emplace_back(ntp_modules::kFeedModuleId,
-                         IDS_NTP_MODULES_FEED_TITLE);
-  }
 
 #if !defined(OFFICIAL_BUILD)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDummyModules)) {

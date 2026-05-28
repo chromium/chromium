@@ -134,7 +134,7 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_OnlyPopulatesEnabledModules) {
   identity_test_env().SetCookieAccounts(
       {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
   const std::vector<base::test::FeatureRef>& some_module_features = {
-      ntp_features::kNtpFeedModule,
+      ntp_features::kNtpTabGroupsModule,
       ntp_features::kNtpMostRelevantTabResumptionModule};
   for (auto& feature : some_module_features) {
     base::test::ScopedFeatureList features;

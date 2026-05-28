@@ -19,7 +19,6 @@ MockHistoryService::~MockHistoryService() = default;
 const std::vector<base::test::FeatureRef>& kAllModuleFeatures = {
     ntp_features::kNtpCalendarModule,
     ntp_features::kNtpDriveModule,
-    ntp_features::kNtpFeedModule,
     ntp_features::kNtpMostRelevantTabResumptionModule,
     ntp_features::kNtpOutlookCalendarModule,
 };

@@ -143,8 +143,6 @@ BASE_FEATURE(kNtpOneGoogleBar, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, outlook calendar module will be shown.
 BASE_FEATURE(kNtpOutlookCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, Following Feed module will be shown.
-BASE_FEATURE(kNtpFeedModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, sharepoint module will be shown.
 BASE_FEATURE(kNtpSharepointModule, base::FEATURE_ENABLED_BY_DEFAULT);

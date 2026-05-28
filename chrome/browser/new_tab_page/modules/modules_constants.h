@@ -12,7 +12,6 @@ namespace ntp_modules {
 inline constexpr char kAllModulesId[] = "all";
 inline constexpr char kDriveModuleId[] = "drive";
 inline constexpr char kDummyModuleId[] = "dummy";
-inline constexpr char kFeedModuleId[] = "feed";
 inline constexpr char kGoogleCalendarModuleId[] = "google_calendar";
 inline constexpr char kMostRelevantTabResumptionModuleId[] = "tab_resumption";
 inline constexpr char kMicrosoftAuthenticationModuleId[] =
