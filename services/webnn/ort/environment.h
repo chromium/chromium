@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "gpu/config/gpu_feature_info.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/mojom/ep_package_info.mojom.h"
@@ -44,7 +43,6 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   // be shared by all sessions in WebNN.
   static base::expected<scoped_refptr<Environment>, std::string>
   GetOrCreateInstance(
-      const gpu::GpuFeatureInfo& gpu_feature_info,
       const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
           ep_package_info_map);
 
@@ -111,11 +109,8 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   std::vector<SessionConfigEntry> GetEpConfigEntries(
       OrtHardwareDeviceType device_type) const;
 
-  static bool is_npu_blocklisted() { return is_npu_blocklisted_; }
-
  private:
   static base::expected<scoped_refptr<Environment>, std::string> Create(
-      const gpu::GpuFeatureInfo& gpu_feature_info,
       const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
           ep_package_info_map);
 
@@ -135,8 +130,6 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   // `Environment::Create()` that is already protected by `GetLock()`.
   static base::flat_set<std::wstring>& GetDependentEpPackages()
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
-
-  static bool is_npu_blocklisted_;
 };
 
 }  // namespace webnn::ort

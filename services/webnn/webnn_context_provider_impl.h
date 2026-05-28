@@ -92,7 +92,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   enum class WebNNStatus {
     kWebNNGpuDisabled = 0,
-    kWebNNNpuDisabled = 1,
     kWebNNGpuFeatureStatusDisabled = 2,
     kWebNNEnabled = 3,
   };

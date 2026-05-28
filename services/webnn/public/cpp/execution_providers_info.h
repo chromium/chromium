@@ -47,6 +47,10 @@ struct EpWorkarounds {
   // because there will be only one NPU device EP.
   std::optional<uint32_t> npu_batched_matmul_k_dimension_limit;
 
+  // Whether the EP may report the NPU driver version in legacy concatenated
+  // format (e.g., "1004404") instead of 4-part dot-separated format.
+  bool npu_concatenated_driver_version = false;
+
   EpWorkarounds& operator|=(const EpWorkarounds& other) {
     resample2d_limit_to_nchw |= other.resample2d_limit_to_nchw;
     return *this;
@@ -71,6 +75,9 @@ struct EpInfo {
   bool enabled;
   EpWorkarounds workarounds;
   base::raw_span<const SessionConfigEntry> config_entries;
+  // The minimum driver versions required by the NPU device for this EP to work.
+  // Empty value means no version check is needed (default allow).
+  base::cstring_view min_npu_driver_version;
 };
 
 // The listed EPs must match the names of the histogram variants
@@ -131,6 +138,9 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                     // For more details, see GraphBuilderOrt::AddMatMulOperation
                     // in src/services/webnn/graph_builder_ort.cc.
                     .npu_batched_matmul_k_dimension_limit = 8192,
+                    // The OpenVINO EP currently reports NPU driver versions in
+                    // legacy concatenated format (e.g., "1004404").
+                    .npu_concatenated_driver_version = true,
                 },
             // OpenVINO EP configuration. Keys and values must align with the
             // ORT OpenVINO EP implementation. See:
@@ -163,6 +173,8 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                             }
                         })"},
                 },
+            // The minimum NPU driver version in 4-part dot-separated format.
+            .min_npu_driver_version = "32.0.100.4404",
         },
     },
     // Qualcomm

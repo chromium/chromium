@@ -721,7 +721,7 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
 
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ort::Environment::GetOrCreateInstance, gpu_feature_info_,
+      base::BindOnce(&ort::Environment::GetOrCreateInstance,
                      std::move(ep_package_info)),
       base::BindOnce(
           &WebNNContextProviderImpl::OnOrtEnvCreated, AsWeakPtr(),

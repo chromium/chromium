@@ -13,12 +13,13 @@
 #include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "gpu/config/gpu_driver_bug_workaround_type.h"
+#include "base/version.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
@@ -288,9 +289,102 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
   return selected_devices;
 }
 
+// Queries the OS driver version from the EP device metadata. Returns an
+// empty string view if the driver version metadata is not found.
+base::cstring_view GetOsDriverVersion(const OrtEpDevice* ep_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  const OrtKeyValuePairs* ep_metadata = ort_api->EpDevice_EpMetadata(ep_device);
+  CHECK(ep_metadata);
+
+  size_t num_entries = 0;
+  const char* const* keys = nullptr;
+  const char* const* values = nullptr;
+  ort_api->GetKeyValuePairs(ep_metadata, &keys, &values, &num_entries);
+
+  // For now, redefine the key for the EP OS driver version here according to
+  // https://github.com/microsoft/onnxruntime/blob/56c984ffc417987eafcd9efb252ab2c65f24398a/include/onnxruntime/core/session/onnxruntime_ep_device_ep_metadata_keys.h#L13
+  // TODO(crbug.com/474141335): Use the key from
+  // onnxruntime_ep_device_ep_metadata_keys.h once it's available.
+  constexpr base::cstring_view kOrtEpDeviceEpMetadataKeyOSDriverVersion =
+      "os_driver_version";
+  for (size_t i = 0; i < num_entries; ++i) {
+    // SAFETY: ORT guarantees that `keys[i]` is valid and null-terminated.
+    if (UNSAFE_BUFFERS(base::cstring_view(keys[i])) ==
+        kOrtEpDeviceEpMetadataKeyOSDriverVersion) {
+      // SAFETY: ORT guarantees that `values[i]` is valid and null-terminated.
+      return UNSAFE_BUFFERS(base::cstring_view(values[i]));
+    }
+  }
+
+  return base::cstring_view();
+}
+
+// Returns whether the NPU driver version is blocked based on the known EPs
+// info and the queried driver version from the EP device metadata.
+bool IsNpuDriverVersionBlocked(const OrtEpDevice* npu_ep_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  const char* ep_name = ort_api->EpDevice_EpName(npu_ep_device);
+  // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
+  const auto iter = kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+  // Currently, the NPU device must belong to a known EP.
+  CHECK(iter != kKnownEPs.end());
+
+  const EpInfo& ep_info = iter->second;
+  if (ep_info.min_npu_driver_version.empty()) {
+    // No minimum NPU driver version specified, allow all versions.
+    return false;
+  }
+
+  OrtHardwareDeviceType device_type =
+      ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(npu_ep_device));
+  CHECK_EQ(device_type, OrtHardwareDeviceType_NPU);
+
+  // The min_npu_driver_version is in 4-part dot-separated format (e.g.,
+  // "32.0.100.4404").
+  base::Version min_version(ep_info.min_npu_driver_version);
+  CHECK(min_version.IsValid());
+  CHECK_EQ(min_version.components().size(), 4u);
+
+  base::Version actual_version(GetOsDriverVersion(npu_ep_device));
+  if (!actual_version.IsValid()) {
+    // Unable to get or parse the driver version, consider it blocked.
+    return true;
+  }
+
+  // The actual driver version from the EP may be in either the legacy
+  // concatenated format (e.g., "1004404", formed by concatenating the last two
+  // parts of the 4-part version) or the 4-part dot-separated format (e.g.,
+  // "32.0.100.4404").
+  if (actual_version.components().size() == 1) {
+    // TODO(crbug.com/507885058): Remove this legacy path once the OV EP
+    // reports os_driver_version in 4-part dot-separated format.
+    //
+    // Convert the min version to concatenated format by concatenating its
+    // last two components for comparison.
+    if (!ep_info.workarounds.npu_concatenated_driver_version) {
+      // Unexpected single-component version from an EP that doesn't use
+      // the legacy concatenated format, consider it blocked.
+      return true;
+    }
+    std::string min_concatenated =
+        base::StrCat({base::NumberToString(min_version.components()[2]),
+                      base::NumberToString(min_version.components()[3])});
+    min_version = base::Version(min_concatenated);
+    CHECK(min_version.IsValid());
+    CHECK_EQ(min_version.components().size(), 1u);
+  } else if (actual_version.components().size() != 4) {
+    // Only 4-part and legacy concatenated formats are expected.
+    return true;
+  }
+
+  return actual_version < min_version;
+}
+
 // Select the first NPU device with CPU fallback. If no NPU device is found or
-// blocklisted, delegate to GPU device selection logic which selects the first
-// GPU device with CPU fallback.
+// the NPU driver version is blocked, delegate to GPU device selection logic
+// which selects the first GPU device with CPU fallback.
 std::vector<const OrtEpDevice*> SelectEpDevicesForNpu(
     base::span<const OrtEpDevice* const> sorted_devices) {
   const OrtEpDevice* first_npu = SelectFirstEpDeviceForDeviceType(
@@ -300,9 +394,10 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForNpu(
     return SelectEpDevicesForGpu(sorted_devices);
   }
 
-  if (Environment::is_npu_blocklisted()) {
-    LOG(WARNING) << "[WebNN] [WARNING] NPU device is disabled to create "
-                    "ONNX Runtime context. Falling back to GPU.";
+  if (IsNpuDriverVersionBlocked(first_npu)) {
+    LOG(WARNING) << "[WebNN] [WARNING] The NPU driver version is blocked "
+                 << "(actual: " << GetOsDriverVersion(first_npu)
+                 << "). Falling back to GPU.";
     return SelectEpDevicesForGpu(sorted_devices);
   }
 
@@ -562,19 +657,17 @@ std::optional<scoped_refptr<Environment>> Environment::GetInstance() {
 // static
 base::expected<scoped_refptr<Environment>, std::string>
 Environment::GetOrCreateInstance(
-    const gpu::GpuFeatureInfo& gpu_feature_info,
     const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
         ep_package_info_map) {
   base::AutoLock auto_lock(GetLock());
   if (instance_) {
     return base::WrapRefCounted(instance_);
   }
-  return Create(gpu_feature_info, ep_package_info_map);
+  return Create(ep_package_info_map);
 }
 
 // static
 base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
-    const gpu::GpuFeatureInfo& gpu_feature_info,
     const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
         ep_package_info_map) {
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.CreateEnvironment");
@@ -646,8 +739,6 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
                  "Registered OrtEpDevice");
   }
 
-  is_npu_blocklisted_ =
-      gpu_feature_info.IsWorkaroundEnabled(gpu::DISABLE_WEBNN_FOR_NPU);
   return base::MakeRefCounted<Environment>(base::PassKey<Environment>(),
                                            std::move(env));
 }
@@ -835,7 +926,5 @@ base::flat_set<std::wstring>& Environment::GetDependentEpPackages() {
   static base::NoDestructor<base::flat_set<std::wstring>> packages;
   return *packages;
 }
-
-bool Environment::is_npu_blocklisted_ = false;
 
 }  // namespace webnn::ort

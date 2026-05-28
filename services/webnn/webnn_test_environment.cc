@@ -206,10 +206,6 @@ WebNNTestEnvironment::WebNNTestEnvironment(
     gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(
         DISABLE_WEBNN_FOR_GPU);
   }
-  if (status == WebNNContextProviderImpl::WebNNStatus::kWebNNNpuDisabled) {
-    gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(
-        DISABLE_WEBNN_FOR_NPU);
-  }
 
   // Initialize a Gpu Scheduler so tests can also use a scheduler
   // runner without the Gpu service. We only need to initialize once for the

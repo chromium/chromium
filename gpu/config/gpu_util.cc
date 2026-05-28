@@ -362,18 +362,11 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info,
   }
   // If disable_webnn_for_gpu workaround is enabled for the GPU device, we need
   // to check to see if there is a NPU device available before setting the WebNN
-  // gpu feature status. If there is a NPU device, check the
-  // disable_webnn_for_npu workaround.
-  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_WEBNN_FOR_GPU)) {
-    if (gpu_info.npus.size() > 0) {
-      if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_WEBNN_FOR_NPU)) {
-        gpu_feature_info->status_values[GPU_FEATURE_TYPE_WEBNN] =
-            kGpuFeatureStatusSoftware;
-      }
-    } else {
-      gpu_feature_info->status_values[GPU_FEATURE_TYPE_WEBNN] =
-          kGpuFeatureStatusSoftware;
-    }
+  // gpu feature status to software.
+  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_WEBNN_FOR_GPU) &&
+      gpu_info.npus.empty()) {
+    gpu_feature_info->status_values[GPU_FEATURE_TYPE_WEBNN] =
+        kGpuFeatureStatusSoftware;
   }
 }
 

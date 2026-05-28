@@ -3101,36 +3101,6 @@
       ]
     },
     {
-      "id": 430,
-      "cr_bugs": [
-        341327464
-      ],
-      "description": "Block all Intel NPU drivers versions less than 4404 except those between 3159 and 4023 for WebNN",
-      "vendor_id": "0x8086",
-      "driver_version": {
-        "op": "<",
-        "value": "32.0.100.4404"
-      },
-      "os": {
-        "type": "win"
-      },
-      "multi_gpu_category": "npu",
-      "exceptions": [
-        {
-          "multi_gpu_category": "npu",
-          "vendor_id": "0x8086",
-          "driver_version": {
-            "op": "between",
-            "value": "32.0.100.3159",
-            "value2": "32.0.100.4023"
-          }
-        }
-      ],
-      "features": [
-        "disable_webnn_for_npu"
-      ]
-    },
-    {
       "id": 431,
       "cr_bugs": [
         1501767
