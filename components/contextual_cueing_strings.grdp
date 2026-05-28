@@ -42,4 +42,14 @@
   <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK" desc="Text for the link to the sync settings page in the 'consider' column on the suggestions settings subpage.">
     sync settings
   </message>
+
+  <!-- Contextual Cueing Tab Sharing Indicator -->
+  <message name="IDS_CONTEXTUAL_CUEING_TAB_SHARING_HEADING" desc="Heading for the list of tabs that will be shared with the target feature if the contextual cue action is clicked.">
+    {NUM_TABS, plural,
+    =1 {Will share 1 tab}
+    other {Will share {NUM_TABS} tabs}}
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_TAB_SHARING_CURRENT_TAB" desc="Marker for the active tab in the contextual cue tab sharing list.">
+    Current tab
+  </message>
 </grit-part>
