@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.side_ui;
 
 import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.EMPTY_SIDE_UI_SPECS;
 
+import android.animation.TimeInterpolator;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.transition.Transition;
@@ -19,6 +20,7 @@ import android.view.ViewParent;
 import android.view.ViewStub;
 
 import androidx.annotation.Px;
+import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
@@ -30,7 +32,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.interpolators.Interpolators;
 
 /** Implementation of {@link SideUiCoordinator}. */
 @NullMarked
@@ -297,11 +298,14 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     private TransitionSet collectTransitions(SideUiSpecs sideUiSpecs, @AnchorSide int anchorSide) {
         assert mSideUiContainer != null;
 
+        // Rather than use a standard Android or Material interpolator, we instead match the desktop
+        // impl's curve found at chrome/browser/ui/views/animations/side_panel_animations.cc.
+        TimeInterpolator interpolator = PathInterpolatorCompat.create(0.45f, 0f, 0.12f, 1f);
         TransitionSet transitionSet =
                 new TransitionSet()
                         .setDuration(TRANSITION_DURATION_MS)
                         .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                        .setInterpolator(Interpolators.STANDARD_ACCELERATE);
+                        .setInterpolator(interpolator);
 
         // Add transitions for the side UI container.
         // TODO(crbug.com/478338737): Update to account for multiple side containers.
