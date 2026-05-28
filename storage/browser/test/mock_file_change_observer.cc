@@ -19,25 +19,39 @@ MockFileChangeObserver::~MockFileChangeObserver() = default;
 
 // static
 ChangeObserverList MockFileChangeObserver::CreateList(
-    MockFileChangeObserver* observer) {
+    scoped_refptr<MockFileChangeObserver> observer) {
   ChangeObserverList list;
   return list.AddObserver(
-      observer, base::SingleThreadTaskRunner::GetCurrentDefault().get());
+      std::move(observer),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get());
+}
+
+void MockFileChangeObserver::Disable() {
+  is_disabled_ = true;
 }
 
 void MockFileChangeObserver::OnCreateFile(const FileSystemURL& url) {
+  if (is_disabled_) {
+    return;
+  }
   create_file_count_++;
   changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnCreateFileFrom(const FileSystemURL& url,
                                               const FileSystemURL& src) {
+  if (is_disabled_) {
+    return;
+  }
   create_file_from_count_++;
   changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnMoveFileFrom(const FileSystemURL& url,
                                             const FileSystemURL& src) {
+  if (is_disabled_) {
+    return;
+  }
   create_file_from_count_++;
   remove_file_count_++;
   changed_urls_.insert(url);
@@ -45,21 +59,33 @@ void MockFileChangeObserver::OnMoveFileFrom(const FileSystemURL& url,
 }
 
 void MockFileChangeObserver::OnRemoveFile(const FileSystemURL& url) {
+  if (is_disabled_) {
+    return;
+  }
   remove_file_count_++;
   changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnModifyFile(const FileSystemURL& url) {
+  if (is_disabled_) {
+    return;
+  }
   modify_file_count_++;
   changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnCreateDirectory(const FileSystemURL& url) {
+  if (is_disabled_) {
+    return;
+  }
   create_directory_count_++;
   changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnRemoveDirectory(const FileSystemURL& url) {
+  if (is_disabled_) {
+    return;
+  }
   remove_directory_count_++;
   changed_urls_.insert(url);
 }

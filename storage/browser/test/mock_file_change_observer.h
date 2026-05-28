@@ -23,9 +23,13 @@ class MockFileChangeObserver : public FileChangeObserver {
   ~MockFileChangeObserver() override;
 
   // Creates a ChangeObserverList which only contains given |observer|.
-  static ChangeObserverList CreateList(MockFileChangeObserver* observer);
+  static ChangeObserverList CreateList(
+      scoped_refptr<MockFileChangeObserver> observer);
 
   // FileChangeObserver overrides.
+  void AddRef() const override {}
+  void Release() const override {}
+
   void OnCreateFile(const FileSystemURL& url) override;
   void OnCreateFileFrom(const FileSystemURL& url,
                         const FileSystemURL& src) override;
@@ -35,6 +39,8 @@ class MockFileChangeObserver : public FileChangeObserver {
   void OnModifyFile(const FileSystemURL& url) override;
   void OnCreateDirectory(const FileSystemURL& url) override;
   void OnRemoveDirectory(const FileSystemURL& url) override;
+
+  void Disable() override;
 
   void ResetCount() {
     create_file_count_ = 0;
@@ -101,6 +107,7 @@ class MockFileChangeObserver : public FileChangeObserver {
   }
 
  private:
+  bool is_disabled_ = false;
   FileSystemURLSet changed_urls_;
 
   int create_file_count_;

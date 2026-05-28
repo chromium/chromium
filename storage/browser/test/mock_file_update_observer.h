@@ -27,20 +27,20 @@ class MockFileUpdateObserver : public FileUpdateObserver {
   ~MockFileUpdateObserver() override;
 
   // Creates a ChangeObserverList which only contains given |observer|.
-  static UpdateObserverList CreateList(MockFileUpdateObserver* observer);
+  static UpdateObserverList CreateList(
+      scoped_refptr<MockFileUpdateObserver> observer);
 
   // FileUpdateObserver overrides.
+  void AddRef() const override {}
+  void Release() const override {}
+
   void OnStartUpdate(const FileSystemURL& url) override;
   void OnUpdate(const FileSystemURL& url, int64_t delta) override;
   void OnEndUpdate(const FileSystemURL& url) override;
 
   void Enable() { is_ready_ = true; }
 
-  void Disable() {
-    start_update_count_.clear();
-    end_update_count_.clear();
-    is_ready_ = false;
-  }
+  void Disable() override;
 
  private:
   std::map<FileSystemURL, int, FileSystemURL::Comparator> start_update_count_;
