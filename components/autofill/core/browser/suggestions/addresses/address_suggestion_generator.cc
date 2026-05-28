@@ -677,10 +677,19 @@ SuggestionType GetSuggestionType(FormFieldData trigger_field) {
 std::vector<AddressOnTypingSuggestionData>
 MaybeFetchAddressOnTypingSuggestionData(
     const AddressDataManager& address_data_manager,
-    const FormFieldData& trigger_field) {
+    const FormFieldData& trigger_field,
+    const AutofillField* trigger_autofill_field) {
   if (!trigger_field.should_autocomplete() ||
       !base::FeatureList::IsEnabled(
           features::kAutofillAddressSuggestionsOnTyping)) {
+    return {};
+  }
+
+  const bool is_classified =
+      trigger_autofill_field &&
+      trigger_autofill_field->Type().GetAddressType() != UNKNOWN_TYPE;
+  if (is_classified &&
+      features::kAutofillOnTypingAllowOnlyOnUnclassifiedFields.Get()) {
     return {};
   }
 
@@ -1045,7 +1054,7 @@ void AddressSuggestionGenerator::GenerateSuggestions(
   if (std::vector<AddressOnTypingSuggestionData> addresses_to_suggest =
           MaybeFetchAddressOnTypingSuggestionData(
               client.GetPersonalDataManager().address_data_manager(),
-              trigger_field);
+              trigger_field, trigger_autofill_field);
       !addresses_to_suggest.empty()) {
     callback({SuggestionDataSource::kAddressOnTyping,
               GenerateAddressOnTypingSuggestions(addresses_to_suggest)});

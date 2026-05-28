@@ -119,6 +119,14 @@ BASE_FEATURE_PARAM(std::string,
                    "field_types",
                    "");
 
+// This parameter controls whether Autofill on typing suggestions should be
+// displayed only on unclassified fields.
+BASE_FEATURE_PARAM(bool,
+                   kAutofillOnTypingAllowOnlyOnUnclassifiedFields,
+                   &kAutofillAddressSuggestionsOnTyping,
+                   "allow_only_on_unclassified_fields",
+                   false);
+
 // Feature flag to controls whether Autofill on typing suggestions will have a
 // strike database.
 BASE_FEATURE(kAutofillAddressSuggestionsOnTypingHasStrikeDatabase,

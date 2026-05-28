@@ -284,6 +284,61 @@ TEST_F(
   EXPECT_TRUE(GetSuggestionsOnTypingWithPrefix(u"Sun").empty());
 }
 
+// Tests that Autofill on typing suggestions are not shown on classified fields
+// if `allow_only_on_unclassified_fields` is set to true.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsOnTypingForProfile_AllowOnlyOnUnclassifiedFields) {
+  // 1. Set up profiles.
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125123");
+  address_data().AddProfile(profile);
+  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 1u);
+
+  // 2. Create a triggering field.
+  FormFieldData email_field;
+  email_field.set_value(u"439");  // Matches ZIP, but not email.
+
+  // Test Case A: allow_only_on_unclassified_fields = false
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kAutofillAddressSuggestionsOnTyping,
+                               {{"allow_only_on_unclassified_fields",
+                                 "false"}}}},
+        /*disabled_features=*/{});
+
+    // Trigger suggestions. Since regular suggestions fail (no matching email),
+    // it falls back to "on typing" and should return the ZIP code suggestion
+    // since it is allowed on classified fields as well.
+    std::vector<Suggestion> suggestions =
+        GetSuggestionsForProfiles(email_field, EMAIL_ADDRESS);
+
+    EXPECT_THAT(
+        suggestions,
+        ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                     u"4398125123"),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageAddress)));
+  }
+
+  // Test Case B: allow_only_on_unclassified_fields = true
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kAutofillAddressSuggestionsOnTyping,
+                               {{"allow_only_on_unclassified_fields",
+                                 "true"}}}},
+        /*disabled_features=*/{});
+
+    // Trigger suggestions. Since the field is classified (EMAIL_ADDRESS) and
+    // the param is true, it should NOT fall back to "on typing" suggestions.
+    std::vector<Suggestion> suggestions =
+        GetSuggestionsForProfiles(email_field, EMAIL_ADDRESS);
+
+    EXPECT_TRUE(suggestions.empty());
+  }
+}
+
 // Tests that special characters will be used while prefix matching the user's
 // field input with the available emails to suggest.
 TEST_F(AddressSuggestionGeneratorTest,
