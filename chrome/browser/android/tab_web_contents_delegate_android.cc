@@ -490,6 +490,12 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   // When handled is |true|, ownership has been passed to java, which in turn
   // creates a new TabAndroid instance to own the WebContents.
   if (handled) {
+    if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+      // For Document PiP, immediately enter PiP mode on the native side so that
+      // we start observing the opener for navigations immediately.
+      PictureInPictureWindowManager::GetInstance()
+          ->EnterDocumentPictureInPicture(source, new_contents.get());
+    }
     return new_contents.release();
   }
 

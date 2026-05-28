@@ -14,7 +14,10 @@ class DocumentPictureInPictureCCTActivity {
   void NonStatic(JNIEnv* env);
 };
 
-static void JNI_DocumentPictureInPictureActivity_OnActivityStart(
+// This JNI call serves as a fallback for test environments that launch the
+// Activity directly, bypassing the standard AddNewContents pipeline.
+static void
+JNI_DocumentPictureInPictureActivity_OnActivityStartForTesting(  // IN-TEST
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& parentWebContent,
     const jni_zero::JavaRef<jobject>& webContent) {

@@ -55,6 +55,8 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.WindowInsetsUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
 @NullMarked
@@ -501,6 +503,17 @@ public class PopupCreatorImpl implements PopupCreator {
         intent.putExtra(DocumentPictureInPictureActivity.WEB_CONTENTS_KEY, webContents);
         intent.putExtra(
                 DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY, windowOptions.toBundle());
+
+        // Record the opener's origin at the time of the request to prevent origin spoofing
+        // if the opener navigates before the Activity completes its launch.
+        WebContents opener = webContents.getDocumentPictureInPictureOpener();
+        if (opener != null) {
+            GURL openerUrl = opener.getLastCommittedUrl();
+            Origin openerOrigin = Origin.create(openerUrl != null ? openerUrl : GURL.emptyGURL());
+            intent.putExtra(
+                    DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY,
+                    openerOrigin.toString());
+        }
 
         intent.setAction(Intent.ACTION_VIEW);
 

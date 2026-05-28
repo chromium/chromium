@@ -81,6 +81,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 @NullMarked
 public class DocumentPictureInPictureActivity extends AsyncInitializationActivity
@@ -92,6 +93,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WebContents";
     public static final String WINDOW_OPTIONS_KEY =
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WindowOptions";
+    public static final String INITIAL_OPENER_ORIGIN_KEY =
+            "org.chromium.chrome.browser.media.DocumentPictureInPicture.InitialOpenerOrigin";
     private static final String IS_FROM_ACTIVITY_RECREATION_KEY =
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.IsFromActivityRecreation";
     private WebContents mWebContents;
@@ -155,6 +158,11 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         }
         mParentWebContents = parentWebContents;
 
+        if (!verifyOpenerOrigin(intent, parentWebContents)) {
+            finish();
+            return;
+        }
+
         Bundle windowOptionsBundle =
                 getWindowOptionsBundleFromInstanceStateOrIntent(intent, savedInstanceState);
         if (windowOptionsBundle == null) {
@@ -207,9 +215,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         super.onStart();
         assert isContentsInitialized();
 
-        if (!mIsFromActivityRecreation) {
-            DocumentPictureInPictureActivityJni.get()
-                    .onActivityStart(mParentWebContents, mWebContents);
+        if (!verifyOpenerOrigin(getIntent(), mParentWebContents)) {
+            finish();
+            return;
         }
 
         mInitiatorTabObserver =
@@ -832,6 +840,48 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     }
 
     /**
+     * Enters Picture-in-Picture mode for testing. This is intended for test environments that
+     * launch the Activity directly.
+     */
+    public static void onActivityStartForTesting(
+            WebContents parentWebContents, WebContents webContents) {
+        DocumentPictureInPictureActivityJni.get()
+                .onActivityStartForTesting(parentWebContents, webContents); // IN-TEST
+    }
+
+    /**
+     * Verifies that the current opener's origin matches the origin captured when the PiP window was
+     * requested. This protects against a race condition where the opener window navigates during
+     * the asynchronous Activity startup.
+     *
+     * @param intent The launch intent.
+     * @param parentWebContents The opener's WebContents.
+     * @return True if the origins match, or if verification is skipped; false on mismatch.
+     */
+    private boolean verifyOpenerOrigin(Intent intent, WebContents parentWebContents) {
+        if (mIsFromActivityRecreation) {
+            return true; // Already verified on initial startup.
+        }
+        final String initialOpenerOriginStr = intent.getStringExtra(INITIAL_OPENER_ORIGIN_KEY);
+        if (initialOpenerOriginStr == null) {
+            Log.e(TAG, "No initial opener origin in intent! Finishing.");
+            return false;
+        }
+        final GURL currentOpenerUrl = parentWebContents.getLastCommittedUrl();
+        final String currentOpenerOriginStr = Origin.create(currentOpenerUrl).toString();
+        if (!initialOpenerOriginStr.equals(currentOpenerOriginStr)) {
+            Log.e(
+                    TAG,
+                    "Opener origin mismatch! Initial: "
+                            + initialOpenerOriginStr
+                            + ", Current: "
+                            + currentOpenerOriginStr);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Sets the parent WebContents directly on this instance for testing. Use this in unit tests
      * where the activity is created without running the full startup flow.
      */
@@ -854,7 +904,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     @NativeMethods
     public interface Natives {
-        void onActivityStart(WebContents parentWebContent, WebContents webContents);
+        void onActivityStartForTesting( // IN-TEST
+                WebContents parentWebContent, WebContents webContents);
 
         void onBackToTab();
     }
