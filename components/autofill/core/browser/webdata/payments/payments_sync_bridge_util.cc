@@ -43,6 +43,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -1310,10 +1311,19 @@ bool IsGenericPaymentInstrumentSupported() {
   return IsEwalletAccountSupported() || IsBnplIssuerSupported();
 }
 
+bool IsEwalletCreationOptionSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      ::payments::facilitated::kEnableEwalletNewAccountLinking);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 bool IsPaymentInstrumentCreationOptionSupported() {
-  // Currently only BNPL issuer is using the payment instrument
-  // creation option proto for read/write.
-  return IsBnplIssuerSupported();
+  // Currently only BNPL issuer and eWallet creation options are using the
+  // `PaymentInstrumentCreationOption` proto for read/write.
+  return IsBnplIssuerSupported() || IsEwalletCreationOptionSupported();
 }
 
 }  // namespace autofill

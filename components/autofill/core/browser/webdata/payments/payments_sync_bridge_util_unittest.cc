@@ -34,6 +34,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -1675,8 +1676,8 @@ TEST_F(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Tests that payment instrument creation option is supported if the BNPL
-// syncing experiment flag is enabled.
+// Tests that `IsPaymentInstrumentCreationOptionSupported()` returns true if
+// the BNPL syncing experiment flag is enabled.
 TEST_F(PaymentsSyncBridgeUtilTest,
        IsPaymentInstrumentCreationOptionSupportedBnplFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1686,8 +1687,8 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_TRUE(IsPaymentInstrumentCreationOptionSupported());
 }
 
-// Tests that payment instrument creation option is not supported if the BNPL
-// syncing experiment flag is disabled.
+// Tests that `IsPaymentInstrumentCreationOptionSupported()` returns false if
+// the BNPL syncing experiment flag is disabled.
 TEST_F(PaymentsSyncBridgeUtilTest,
        IsPaymentInstrumentCreationOptionSupportedBnplFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1698,6 +1699,77 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+struct PaymentInstrumentCreationOptionSupportTestCase {
+  bool ewallet_feature_enabled;
+  bool bnpl_feature_enabled;
+  bool expected_result;
+};
+
+class PaymentsSyncBridgeUtilTest_PaymentInstrumentCreationOptionSupport
+    : public PaymentsSyncBridgeUtilTest,
+      public ::testing::WithParamInterface<
+          PaymentInstrumentCreationOptionSupportTestCase> {
+ public:
+  PaymentsSyncBridgeUtilTest_PaymentInstrumentCreationOptionSupport() {
+    auto test_case = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (test_case.ewallet_feature_enabled) {
+      enabled_features.push_back(
+          ::payments::facilitated::kEnableEwalletNewAccountLinking);
+    } else {
+      disabled_features.push_back(
+          ::payments::facilitated::kEnableEwalletNewAccountLinking);
+    }
+
+    if (test_case.bnpl_feature_enabled) {
+      enabled_features.push_back(
+          features::kAutofillEnableBuyNowPayLaterSyncing);
+    } else {
+      disabled_features.push_back(
+          features::kAutofillEnableBuyNowPayLaterSyncing);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  ~PaymentsSyncBridgeUtilTest_PaymentInstrumentCreationOptionSupport()
+      override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PaymentsSyncBridgeUtilTest_PaymentInstrumentCreationOptionSupport,
+       IsPaymentInstrumentCreationOptionSupported) {
+  EXPECT_EQ(IsPaymentInstrumentCreationOptionSupported(),
+            GetParam().expected_result);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PaymentsSyncBridgeUtil,
+    PaymentsSyncBridgeUtilTest_PaymentInstrumentCreationOptionSupport,
+    ::testing::Values(
+        PaymentInstrumentCreationOptionSupportTestCase{
+            .ewallet_feature_enabled = true,
+            .bnpl_feature_enabled = true,
+            .expected_result = true},
+        PaymentInstrumentCreationOptionSupportTestCase{
+            .ewallet_feature_enabled = true,
+            .bnpl_feature_enabled = false,
+            .expected_result = true},
+        PaymentInstrumentCreationOptionSupportTestCase{
+            .ewallet_feature_enabled = false,
+            .bnpl_feature_enabled = true,
+            .expected_result = true},
+        PaymentInstrumentCreationOptionSupportTestCase{
+            .ewallet_feature_enabled = false,
+            .bnpl_feature_enabled = false,
+            .expected_result = false}));
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill

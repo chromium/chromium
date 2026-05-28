@@ -1351,6 +1351,20 @@ CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id) {
   return payment_instrument_creation_option;
 }
 
+sync_pb::PaymentInstrumentCreationOption
+CreatePaymentInstrumentCreationOptionWithEwallet(const std::string& id) {
+  sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option;
+  payment_instrument_creation_option.set_id(id);
+
+  sync_pb::EwalletCreationOption* ewallet_option =
+      payment_instrument_creation_option.mutable_ewallet_creation_option();
+  ewallet_option->set_issuer_id("dana");
+  ewallet_option->set_issuer_display_name("DANA");
+  ewallet_option->add_supported_payment_link_uris("payment_link_uri");
+
+  return payment_instrument_creation_option;
+}
+
 namespace {
 
 // Verifies that the histogram `histogram_name` has a single sample with the

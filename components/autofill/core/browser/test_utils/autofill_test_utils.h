@@ -477,6 +477,11 @@ BnplIssuer GetTestUnlinkedBnplIssuer();
 sync_pb::PaymentInstrumentCreationOption
 CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id);
 
+// Returns a payment instrument creation option with an eWallet filled with
+// fake data using `id` as the `PaymentInstrumentCreationOption.id`.
+sync_pb::PaymentInstrumentCreationOption
+CreatePaymentInstrumentCreationOptionWithEwallet(const std::string& id);
+
 // For the key metrics as used for different data types, this struct allows to
 // define expectations. The values are marked optional. `std::nullopt` means
 // that no value was recorded to the histogram.

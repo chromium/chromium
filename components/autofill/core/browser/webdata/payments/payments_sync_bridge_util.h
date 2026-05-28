@@ -200,6 +200,8 @@ bool IsBnplIssuerSupported();
 
 bool IsEwalletAccountSupported();
 
+bool IsEwalletCreationOptionSupported();
+
 bool IsGenericPaymentInstrumentSupported();
 
 bool IsPaymentInstrumentCreationOptionSupported();
