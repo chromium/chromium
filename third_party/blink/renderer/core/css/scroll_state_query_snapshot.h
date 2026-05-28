@@ -47,6 +47,8 @@ class ScrollStateQuerySnapshot
   void Trace(Visitor* visitor) const override;
 
  private:
+  bool CanExposeScrollOffsets();
+
   Member<Element> container_;
   ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;

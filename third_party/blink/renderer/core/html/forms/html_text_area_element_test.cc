@@ -11,10 +11,13 @@
 #include "base/strings/to_string.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkFontTypes.h"
 
@@ -609,6 +612,46 @@ TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollLeftLeak) {
   textarea.setScrollLeft(0);
 
   EXPECT_EQ(preview_scroll_left_2, 0);
+}
+
+TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollStateLeak) {
+  SetBodyContent(R"HTML(
+    <style>
+      textarea {
+        width: 30px;
+        height: 100px;
+        letter-spacing: 2000px;
+        overflow: auto;
+        writing-mode: vertical-lr;
+        container-type: scroll-state;
+      }
+      textarea::before { color: green; }
+      @container scroll-state(scrollable) {
+        textarea::before { color: lime; }
+      }
+    </style>
+    <textarea id="test"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+
+  // Set suggested value (simulate autofill preview)
+  textarea.SetSuggestedValue("XXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  const ComputedStyle* autofill_style =
+      textarea.EnsureComputedStyle(kPseudoIdBefore);
+  EXPECT_EQ(autofill_style->VisitedDependentColor(GetCSSPropertyColor()),
+            Color::FromRGB(0, 128, 0));
+
+  // Scroll-state query should match after replacing autofill preview
+  textarea.SetValue("XXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  const ComputedStyle* non_autofill_style =
+      textarea.EnsureComputedStyle(kPseudoIdBefore);
+  EXPECT_EQ(non_autofill_style->VisitedDependentColor(GetCSSPropertyColor()),
+            Color::FromRGB(0, 255, 0));
 }
 
 }  // namespace blink

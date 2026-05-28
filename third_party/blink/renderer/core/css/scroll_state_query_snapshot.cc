@@ -50,8 +50,9 @@ bool ScrollStateQuerySnapshot::UpdateSnapshot() {
     if (layout_object->IsDocumentElement()) {
       layout_object = layout_object->View();
     }
-    if (PaintLayerScrollableArea* scrollable_area =
-            layout_object->GetScrollableArea()) {
+    PaintLayerScrollableArea* scrollable_area =
+        layout_object->GetScrollableArea();
+    if (scrollable_area && CanExposeScrollOffsets()) {
       ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
       ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
       ScrollOffset offset = scrollable_area->GetScrollOffset();
@@ -107,6 +108,14 @@ bool ScrollStateQuerySnapshot::UpdateSnapshot() {
 
 bool ScrollStateQuerySnapshot::ShouldScheduleNextService() {
   return false;
+}
+
+bool ScrollStateQuerySnapshot::CanExposeScrollOffsets() {
+  HTMLFormControlElement* form_control =
+      DynamicTo<HTMLFormControlElement>(container_.Get());
+  // Autofill preview rendering could expose private data via text size and
+  // scrollable overflow.
+  return !form_control || !form_control->IsPreviewed();
 }
 
 void ScrollStateQuerySnapshot::Trace(Visitor* visitor) const {
