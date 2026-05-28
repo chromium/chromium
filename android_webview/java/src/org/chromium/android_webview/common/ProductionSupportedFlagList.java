@@ -691,6 +691,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8Flag_verify_bytecode_light"),
         Flag.baseFeature("V8Flag_enforce_global_heap_limit"),
         Flag.baseFeature("V8Flag_turbolev"),
+        Flag.baseFeature("V8Flag_sqrt_allocation_limits"),
         Flag.baseFeature("V8FlushBaselineCode"),
         Flag.baseFeature("V8FlushCodeBasedOnTabVisibility"),
         Flag.baseFeature("V8FlushCodeBasedOnTime"),

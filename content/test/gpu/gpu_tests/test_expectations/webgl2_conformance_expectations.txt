@@ -838,7 +838,7 @@ crbug.com/angleproject/4417 [ android-16 android-brya angle-vulkan desktop graph
 crbug.com/951628 [ android no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 
-crbug.com/906737 [ android angle-disabled no-passthrough qualcomm ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
+crbug.com/906737 [ android angle-disabled no-passthrough qualcomm ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure Slow ]
 crbug.com/1176485 [ android qualcomm ] conformance2/glsl3/uint-int-shift-bug.html [ Failure ]
 crbug.com/1027125 [ android angle-disabled no-passthrough qualcomm ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 
