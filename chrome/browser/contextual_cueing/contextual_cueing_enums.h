@@ -84,6 +84,15 @@ enum class ContextualCueingInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingInteraction)
 
+// LINT.IfChange(CueFormFactor)
+enum class CueFormFactor {
+  kIcon = 0,
+  kChip = 1,
+  kAnchoredMessage = 2,
+  kMaxValue = kAnchoredMessage,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:CueFormFactor)
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_ENUMS_H_

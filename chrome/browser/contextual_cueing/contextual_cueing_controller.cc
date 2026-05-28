@@ -113,18 +113,42 @@ bool AreTabsEqual(optimization_guide::proto::Tab tab1,
 class ContextualCueingPageActionObserver
     : public page_actions::PageActionObserver {
  public:
-  explicit ContextualCueingPageActionObserver(
-      base::RepeatingClosure hidden_callback)
+  ContextualCueingPageActionObserver(
+      base::RepeatingCallback<void(CueFormFactor)> shown_callback,
+      base::RepeatingCallback<void(CueFormFactor)> hidden_callback)
       : page_actions::PageActionObserver(kActionAnchoredContextualCue),
-        hidden_callback_(hidden_callback) {}
+        shown_callback_(std::move(shown_callback)),
+        hidden_callback_(std::move(hidden_callback)) {}
 
-  void OnPageActionIconHidden(
-      const page_actions::PageActionState& page_action) override {
-    hidden_callback_.Run();
+  void OnPageActionIconShown(const page_actions::PageActionState&) override {
+    shown_callback_.Run(CueFormFactor::kIcon);
+  }
+
+  void OnPageActionIconHidden(const page_actions::PageActionState&) override {
+    hidden_callback_.Run(CueFormFactor::kIcon);
+  }
+
+  void OnPageActionChipShown(const page_actions::PageActionState&) override {
+    shown_callback_.Run(CueFormFactor::kChip);
+  }
+
+  void OnPageActionChipHidden(const page_actions::PageActionState&) override {
+    hidden_callback_.Run(CueFormFactor::kChip);
+  }
+
+  void OnPageActionAnchoredMessageShown(
+      const page_actions::PageActionState&) override {
+    shown_callback_.Run(CueFormFactor::kAnchoredMessage);
+  }
+
+  void OnPageActionAnchoredMessageHidden(
+      const page_actions::PageActionState&) override {
+    hidden_callback_.Run(CueFormFactor::kAnchoredMessage);
   }
 
  private:
-  base::RepeatingClosure hidden_callback_;
+  base::RepeatingCallback<void(CueFormFactor)> shown_callback_;
+  base::RepeatingCallback<void(CueFormFactor)> hidden_callback_;
 };
 #endif
 
@@ -151,7 +175,9 @@ ContextualCueingController::ContextualCueingController(
           browser_window_interface_->GetProfile())) {
 #if !BUILDFLAG(IS_ANDROID)
   page_action_observer_ = std::make_unique<ContextualCueingPageActionObserver>(
-      base::BindRepeating(&ContextualCueingController::OnCueHidden,
+      base::BindRepeating(&ContextualCueingController::OnCueFormFactorShown,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ContextualCueingController::OnCueFormFactorHidden,
                           weak_ptr_factory_.GetWeakPtr()));
 #endif
   if (page_content_annotations_service_) {
@@ -599,8 +625,6 @@ void ContextualCueingController::ShowCue(
 
   RecordCueShownMetrics(GetActiveTabSourceId(), response.suggested_cuj(),
                         tab_metrics, show_latency);
-
-  cue_shown_time_ = base::TimeTicks::Now();
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
       << "Contextual cueing anchored message UI is not implemented for Android";
@@ -667,6 +691,24 @@ void ContextualCueingController::ShowCue(
 
 void ContextualCueingController::OnCueHidden() {
   cue_shown_time_ = base::TimeTicks();
+}
+
+void ContextualCueingController::OnCueFormFactorShown(
+    CueFormFactor form_factor) {
+  RecordCueFormFactorShown(form_factor);
+  if (form_factor == CueFormFactor::kAnchoredMessage) {
+    cue_shown_time_ = base::TimeTicks::Now();
+  }
+}
+
+void ContextualCueingController::OnCueFormFactorHidden(
+    CueFormFactor form_factor) {
+  RecordCueFormFactorHidden(form_factor);
+  // Resets the cue state and shown timer only when the entire page action
+  // icon is hidden, preserving the original contextual cue lifecycle behavior.
+  if (form_factor == CueFormFactor::kIcon) {
+    OnCueHidden();
+  }
 }
 
 void ContextualCueingController::OnSidePanelShown() {

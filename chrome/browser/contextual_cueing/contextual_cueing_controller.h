@@ -126,6 +126,8 @@ class ContextualCueingController
                     actions::ActionItem*,
                     actions::ActionInvocationContext);
   void OnCueHidden();
+  void OnCueFormFactorShown(CueFormFactor form_factor);
+  void OnCueFormFactorHidden(CueFormFactor form_factor);
 
   void OnSidePanelShown();
 

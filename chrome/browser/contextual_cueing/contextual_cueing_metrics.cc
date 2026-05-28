@@ -92,4 +92,14 @@ void RecordContextualCueingDecision(
   }
 }
 
+void RecordCueFormFactorShown(CueFormFactor form_factor) {
+  base::UmaHistogramEnumeration("ContextualCueing.V2.CueFormFactor.Shown",
+                                form_factor);
+}
+
+void RecordCueFormFactorHidden(CueFormFactor form_factor) {
+  base::UmaHistogramEnumeration("ContextualCueing.V2.CueFormFactor.Hidden",
+                                form_factor);
+}
+
 }  // namespace contextual_cueing

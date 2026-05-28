@@ -14,6 +14,7 @@ namespace contextual_cueing {
 
 enum class ContextualCueingInteraction;
 enum class ContextualCueingDecision;
+enum class CueFormFactor;
 
 // Counts of tabs received from the contextual cue server and whether they are
 // still relevant, or why they aren't.
@@ -37,6 +38,9 @@ void RecordContextualCueingInteraction(
 void RecordContextualCueingDecision(
     ukm::SourceId source_id,
     ContextualCueingDecision contextual_cueing_decision);
+
+void RecordCueFormFactorShown(CueFormFactor form_factor);
+void RecordCueFormFactorHidden(CueFormFactor form_factor);
 
 }  // namespace contextual_cueing
 

@@ -283,6 +283,18 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(CueFormFactor) -->
+
+<enum name="CueFormFactor">
+  <int value="0" label="Icon">The page action icon form factor.</int>
+  <int value="1" label="Chip">The page action chip form factor.</int>
+  <int value="2" label="AnchoredMessage">
+    The page action anchored message form factor.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:CueFormFactor) -->
+
 <!-- LINT.IfChange(GlicAutoOpenResult) -->
 
 <enum name="GlicAutoOpenResult">
