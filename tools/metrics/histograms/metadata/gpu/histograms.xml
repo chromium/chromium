@@ -1244,6 +1244,7 @@ chromium-metrics-reviews@google.com.
   <owner>sunnyps@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time spent waiting to acquire the lock in GraphiteSharedContext.
     Recorded when AutoLock is created. This is subsampled at 1%. Only reported
@@ -1257,6 +1258,7 @@ chromium-metrics-reviews@google.com.
   <owner>sunnyps@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time spent waiting to acquire the lock in GraphiteSharedContext
     when the thread holding the lock was in insertRecording. Recorded when
@@ -1271,6 +1273,7 @@ chromium-metrics-reviews@google.com.
   <owner>sunnyps@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time spent waiting to acquire the lock in GraphiteSharedContext
     when the thread holding the lock was in submit or submitAndFlushBackend.
@@ -1468,6 +1471,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-06-28">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time that the GPU's main CPU thread spends waiting for previous frames'
     GPU work to complete. Recorded at every frame. This metric is only collected
@@ -1673,6 +1677,7 @@ chromium-metrics-reviews@google.com.
   <owner>magchen@chromium.org</owner>
   <owner>vmiura@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The VSync callback delay from the system CVDisplayLink or CADisplaylink
     source to CrGpuMain. Recorded once per frame when OnVSyncPresentation is
@@ -1747,6 +1752,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2026-10-10">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the percentage of time each GPU scheduler task spent executing while
     at least one other task was also executing on another thread.
@@ -1763,6 +1769,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-10-10">
   <owner>vikassoni@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the wall time for GPU Scheduler task at various stages and with
     various priorities. Only recorded for clients with high resolution clocks.
@@ -2387,6 +2394,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-03-31">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric tracks the IPC (Mojo) latency for forwarding CADisplayLink VSync
     signals on Mac. The duration is measured from
@@ -2414,6 +2422,7 @@ chromium-metrics-reviews@google.com.
   <owner>magchen@chromium.org</owner>
   <owner>vmiura@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The VSync callback delay from the system CVDisplayLink or CADisplaylink
     source to VizCompositorThread. Recorded once per frame when
@@ -2563,6 +2572,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2027-05-14">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time elapsed from when ExternalBeginFrameSourceMac is constructed to
     when the first OnDisplayLinkCallback or OnTimerTick is called. This measures
@@ -2581,6 +2591,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2027-05-14">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time elapsed from when the first OnNeedsBeginFrames(true) is called to
     when the first OnDisplayLinkCallback or OnTimerTick is called. This measures
