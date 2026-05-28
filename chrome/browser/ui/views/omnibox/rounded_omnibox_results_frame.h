@@ -14,7 +14,6 @@
 #include "ui/views/widget/widget.h"
 
 class LocationBar;
-class OmniboxPopupWebUIBaseContent;
 
 // A class that wraps a Widget's content view to provide a custom results frame.
 class RoundedOmniboxResultsFrame : public views::View {
@@ -47,10 +46,6 @@ class RoundedOmniboxResultsFrame : public views::View {
 
   // Returns the `contents_` view.
   views::View* GetContents();
-
-  // Returns the nested `OmniboxPopupWebUIBaseContent` if the contents of the
-  // frame contains one.
-  OmniboxPopupWebUIBaseContent* GetOmniboxPopupWebUIBaseContent();
 
   void SetCutoutVisibility(bool visible);
 

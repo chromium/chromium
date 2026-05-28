@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,7 +29,6 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
-#include "ui/views/view_utils.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -326,18 +324,6 @@ std::unique_ptr<views::View> RoundedOmniboxResultsFrame::ExtractContents() {
 
 views::View* RoundedOmniboxResultsFrame::GetContents() {
   return contents_;
-}
-
-OmniboxPopupWebUIBaseContent*
-RoundedOmniboxResultsFrame::GetOmniboxPopupWebUIBaseContent() {
-  views::View* container = GetContents();
-  // `container` holds the `OmniboxPopupWebUIBaseContent` as a child. It can be
-  // empty before the WebUI content wrapper has finished loading, or after the
-  // widget/popup is closed and contents are extracted.
-  return container && !container->children().empty()
-             ? views::AsViewClass<OmniboxPopupWebUIBaseContent>(
-                   container->children().front())
-             : nullptr;
 }
 
 void RoundedOmniboxResultsFrame::SetCutoutVisibility(bool visible) {
