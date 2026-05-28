@@ -262,6 +262,13 @@ const base::FeatureParam<int>
 // preferred deadline is not achievable.
 BASE_FEATURE(kSelectFutureFrameDeadline, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, DisplayScheduler will use a custom FrameDeadlineDecider to
+// dynamically select VSync deadlines based on input timestamps.
+BASE_FEATURE(kUseAndroidCustomFrameDeadlines,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, SDR maximum luminance nits of then current display will be used
 // as the HDR metadata NDWL nits for PQ content (if none was specified). This
 // has the effect that its "opts-out" PQ content from being affected by the OS'

@@ -19,6 +19,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_scheduler_base.h"
+#include "components/viz/service/display/frame_deadline_decider.h"
 #include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -187,6 +188,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
     ~AdpfSessionState();
   };
   std::vector<AdpfSessionState> session_states_;
+
+  FrameDeadlineDecider decider_;
 
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };
