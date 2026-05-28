@@ -224,39 +224,69 @@ SanitizedImageSource::RequestAttributes::~RequestAttributes() = default;
 void SanitizedImageSource::StartImageDownload(
     RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("sanitized_image_source", R"(
-        semantics {
-          sender: "WebUI Sanitized Image Source"
-          description:
-            "This data source fetches an arbitrary image to be displayed in a "
-            "WebUI."
-          trigger:
-            "When a WebUI triggers the download of chrome://image?<URL> or "
-            "chrome://image?url=<URL>&isGooglePhotos=<bool> by e.g. setting "
-            "that URL as a src on an img tag."
-          data: "OAuth credentials for the user's Google Photos account when "
-                "isGooglePhotos is true."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled by settings."
-          policy_exception_justification:
-            "This is a helper data source. It can be indirectly disabled by "
-            "disabling the requester WebUI."
-        })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = request_attributes.image_url;
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (request_attributes.image_url.host() == "drive.google.com") {
+    request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+  } else {
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
   if (request_attributes.access_token_info) {
     request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         "Bearer " + request_attributes.access_token_info->token);
   }
 
-  auto loader =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  std::unique_ptr<network::SimpleURLLoader> loader;
+  if (request_attributes.image_url.host() == "drive.google.com") {
+    loader = network::SimpleURLLoader::Create(
+        std::move(request),
+        net::DefineNetworkTrafficAnnotation("drive_thumbnail_source", R"(
+        semantics {
+          sender: "Drive Thumbnail Source"
+          description:
+            "This request fetches a Google Drive thumbnail image to be "
+            "displayed in a Chrome internal page or dialog."
+          trigger:
+            "When the user opens the Drive File Picker and uploads image/video "
+            "files."
+          data: "Cookies are sent to authenticate the user to Google Drive."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting: "This feature cannot be disabled by settings."
+          policy_exception_justification:
+            "This is a helper request that can be indirectly disabled by "
+            "controlling the calling feature (e.g., by disabling Drive File "
+            "Picker)."
+        })"));
+  } else {
+    loader = network::SimpleURLLoader::Create(
+        std::move(request),
+        net::DefineNetworkTrafficAnnotation("sanitized_image_source", R"(
+        semantics {
+          sender: "WebUI Sanitized Image Source"
+          description:
+            "This request fetches an image from an external source to be "
+            "displayed in a Chrome internal page or dialog."
+          trigger:
+            "When the user opens a Chrome page or dialog that displays an "
+            "image, such as a Google Photos image on the New Tab Page."
+          data: "OAuth credentials for the user's Google Photos account when "
+                "fetching Google Photos images."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled by settings."
+          policy_exception_justification:
+            "This is a helper request that can be indirectly disabled by "
+            "controlling the calling feature (e.g., by disabling New Tab Page "
+            "customization via policy)."
+        })"));
+  }
   auto* loader_ptr = loader.get();
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),

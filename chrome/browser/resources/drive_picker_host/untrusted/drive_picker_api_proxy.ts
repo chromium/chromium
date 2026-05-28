@@ -7,7 +7,7 @@ import {PromiseResolver} from 'chrome-untrusted://resources/js/promise_resolver.
 import {getTrustedScriptURL} from 'chrome-untrusted://resources/js/static_types.js';
 
 import {DrivePickerError} from './drive_picker_result_handler.mojom-webui.js';
-import {DrivePickerSanitizer, SanitizationError} from './sanitizer.js';
+import {DRIVE_THUMBNAIL_BASE_URL, DRIVE_THUMBNAIL_ID_PARAM_PREFIX, DRIVE_THUMBNAIL_SIZE_PARAM, DrivePickerSanitizer, SanitizationError} from './sanitizer.js';
 import type {SanitizedDriveFile} from './sanitizer.js';
 
 /**
@@ -192,7 +192,6 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       TYPE: google.picker.Document.TYPE,
       SIZE_BYTES: 'sizeBytes',
       RESOURCE_KEY: 'resourceKey',
-      THUMBNAIL_URL: 'thumbnailUrl',
       ICON_URL: google.picker.Document.ICON_URL,
     };
     // Note: 'file' is used as a string literal instead of
@@ -207,8 +206,19 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
 
     for (const doc of documents) {
       try {
+        const docObj = doc as Record<string, unknown>;
+        const id = docObj['id'] as string;
+        const type = docObj['type'] as string;
+        // The `thumbnailUrl` field is not returned for photos or videos that
+        // are owned in the user's Google Drive. Therefore, we need to create
+        // our own `thumbnailUrl` by constructing it from the file ID.
+        const thumbnailUrl = (type === 'photo' || type === 'video') ?
+            `${DRIVE_THUMBNAIL_BASE_URL}?${DRIVE_THUMBNAIL_SIZE_PARAM}${
+                DRIVE_THUMBNAIL_ID_PARAM_PREFIX}${id}` :
+            null;
+
         const sanitized = DrivePickerSanitizer.sanitizeDocument(
-            doc as Record<string, unknown>, pickerKeys, allowedTypes);
+            docObj, pickerKeys, thumbnailUrl, allowedTypes);
         sanitizedFiles.push(sanitized);
       } catch (e) {
         if (e instanceof Error) {

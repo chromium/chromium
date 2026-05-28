@@ -1731,7 +1731,8 @@ export const ComposeboxEmbedderMixin =
             const attachment = ComposeboxFile.createFromFile(
                 token, file, ContextUploadStatus.kNotUploaded, {
                   dataUrl: null,
-                  objectUrl: file.type.includes('image') ?
+                  objectUrl: (file.type.includes('image') ||
+                              file.type.includes('video')) ?
                       URL.createObjectURL(file) :
                       null,
                   iconName: null,

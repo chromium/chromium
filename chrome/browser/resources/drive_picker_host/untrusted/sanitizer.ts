@@ -15,6 +15,23 @@ export enum DriveFileType {
 }
 
 /**
+ * The base URL used for manually fetching thumbnails from Google Drive.
+ */
+export const DRIVE_THUMBNAIL_BASE_URL: string =
+    'https://drive.google.com/thumbnail';
+
+/**
+ * The size parameter ('sz') specifies the requested thumbnail dimensions.
+ * 'w320' requests a thumbnail with a width of 320 pixels.
+ */
+export const DRIVE_THUMBNAIL_SIZE_PARAM: string = 'sz=w320';
+
+/**
+ * The prefix for the ID parameter used to fetch a specific file's thumbnail.
+ */
+export const DRIVE_THUMBNAIL_ID_PARAM_PREFIX: string = '&id=';
+
+/**
  * Sanitized file metadata. Matches the DriveFile struct in Mojom.
  */
 export interface SanitizedDriveFile {
@@ -55,9 +72,9 @@ export class DrivePickerSanitizer {
         TYPE: string,
         SIZE_BYTES: string,
         RESOURCE_KEY: string,
-        THUMBNAIL_URL: string,
         ICON_URL: string,
       },
+      thumbnailUrl: string|null,
       allowedTypes: Set<string>): SanitizedDriveFile {
     const id = doc[pickerKeys.ID];
     const mimeType = doc[pickerKeys.MIME_TYPE];
@@ -65,7 +82,6 @@ export class DrivePickerSanitizer {
     const type = doc[pickerKeys.TYPE];
     const sizeBytes = doc[pickerKeys.SIZE_BYTES];
     const resourceKey = doc[pickerKeys.RESOURCE_KEY];
-    const thumbnailUrl = doc[pickerKeys.THUMBNAIL_URL];
     const iconUrl = doc[pickerKeys.ICON_URL];
 
     if (!this.isValidId(id)) {
@@ -99,7 +115,8 @@ export class DrivePickerSanitizer {
       type,
       sizeBytes: sizeBytesBigInt,
       resourceKey: this.isValidId(resourceKey) ? resourceKey : null,
-      thumbnailUrl: type === DriveFileType.PHOTO ?
+      thumbnailUrl:
+          (type === DriveFileType.PHOTO || type === DriveFileType.VIDEO) ?
           this.sanitizeThumbnailUrl(thumbnailUrl) :
           null,
       iconUrl: this.sanitizeIconUrl(iconUrl),
@@ -115,6 +132,33 @@ export class DrivePickerSanitizer {
   }
 
   /**
+   * Helper function to validate if a string is a properly formatted
+   * UserContent thumbnail URL.
+   */
+  static isValidUserContentThumbnailUrl(url: string): boolean {
+    // Matches
+    // https://lh[3-6].googleusercontent.com/(drive-storage|rd-d|d)/[safe_chars]
+    const lhRegex =
+        /^https:\/\/lh[3-6]\.googleusercontent\.com\/(drive-storage|rd-d|d)\/[a-zA-Z0-9\-_=]+$/;
+    return lhRegex.test(url);
+  }
+
+  /**
+   * Helper function to validate if a string is a properly formatted
+   * Drive thumbnail URL.
+   */
+  static isValidGoogleDriveThumbnailUrl(url: string): boolean {
+    const expectedPrefix = `${DRIVE_THUMBNAIL_BASE_URL}?${
+        DRIVE_THUMBNAIL_SIZE_PARAM}${DRIVE_THUMBNAIL_ID_PARAM_PREFIX}`;
+    if (!url.startsWith(expectedPrefix)) {
+      return false;
+    }
+
+    const id = url.substring(expectedPrefix.length);
+    return this.isValidId(id);
+  }
+
+  /**
    * Validates that a thumbnail URL points to a trusted Google domain.
    */
   static sanitizeThumbnailUrl(url: unknown): Url|null {
@@ -122,10 +166,15 @@ export class DrivePickerSanitizer {
       return null;
     }
 
-    // Matches https://lh[3-6].googleusercontent.com/drive-storage/[safe_chars]
-    const urlRegex =
-        /^https:\/\/lh[3-6]\.googleusercontent\.com\/drive-storage\/[a-zA-Z0-9\-_=]+$/;
-    return urlRegex.test(url) ? url : null;
+    if (this.isValidUserContentThumbnailUrl(url)) {
+      return (url as unknown) as Url;
+    }
+
+    if (this.isValidGoogleDriveThumbnailUrl(url)) {
+      return (url as unknown) as Url;
+    }
+
+    return null;
   }
 
   /**
