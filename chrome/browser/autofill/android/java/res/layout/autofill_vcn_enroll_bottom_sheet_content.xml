@@ -13,6 +13,7 @@ found in the LICENSE file.
 
     <!-- Drag handlebar -->
     <ImageView
+        android:id="@+id/drag_handler"
         android:importantForAccessibility="no"
         android:layout_gravity="center_horizontal"
         android:layout_height="@dimen/autofill_bottom_sheet_drag_handlebar_height"

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.iban;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,12 +16,16 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
 
 /** This class inflates the layout for the Autofill save IBAN bottom sheet. */
 @NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;
+
+    /** The drag handler of the bottom sheet. */
+    final ImageView mDragHandler;
 
     /** The view that optionally scrolls the contents on smaller screens. */
     final ScrollView mScrollView;
@@ -54,6 +59,7 @@ import org.chromium.chrome.R;
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.autofill_save_iban_bottom_sheet, null);
+        mDragHandler = mContentView.findViewById(R.id.autofill_save_iban_drag_handler);
         mScrollView = mContentView.findViewById(R.id.autofill_save_iban_scroll_view);
         mLogoIcon = mContentView.findViewById(R.id.autofill_save_iban_google_pay_icon);
         mTitle = mContentView.findViewById(R.id.autofill_save_iban_title_text);
@@ -63,5 +69,10 @@ import org.chromium.chrome.R;
         mAcceptButton = mContentView.findViewById(R.id.autofill_save_iban_confirm_button);
         mCancelButton = mContentView.findViewById(R.id.autofill_save_iban_cancel_button);
         mLegalMessage = mContentView.findViewById(R.id.autofill_save_iban_legal_message);
+
+        // Drag handler is not useful when shown as a dialog.
+        if (AutofillSheetUiControllerFactory.shouldUseNonBlockingDialog(context)) {
+            mDragHandler.setVisibility(View.GONE);
+        }
     }
 }

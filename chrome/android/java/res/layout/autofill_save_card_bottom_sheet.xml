@@ -12,6 +12,7 @@ found in the LICENSE file.
     android:layout_height="match_parent">
 
   <ImageView
+      android:id="@+id/autofill_save_card_drag_handler"
       android:importantForAccessibility="no"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
