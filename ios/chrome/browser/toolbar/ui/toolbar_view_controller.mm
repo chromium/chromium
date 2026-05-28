@@ -373,6 +373,21 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _bannerPromoBackgroundHeightConstraint.constant = [self
       bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
 }
+#pragma mark - UIContentContainer
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  __weak __typeof(self) weakSelf = self;
+  CGFloat progress = _fullscreenProgress;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        [weakSelf updateForFullscreenProgress:progress];
+      }
+                      completion:nil];
+}
 
 #pragma mark - ToolbarViewDelegate
 
