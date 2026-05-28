@@ -198,17 +198,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/sync_device_info/device_info.h:GlicExperimentalTriggeringState) -->
 
-<!-- LINT.IfChange(GlicFeatureDisabledReason) -->
-
 <enum name="GlicFeatureDisabledReason">
   <int value="0" label="Feature Flag Disabled"/>
   <int value="1" label="Country Disabled"/>
   <int value="2" label="Locale Disabled"/>
   <int value="3" label="System Requirement Not Met"/>
-  <int value="4" label="OS Version Not Supported"/>
 </enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/public/glic_enabling.h:FeatureDisabledReason) -->
 
 <!-- LINT.IfChange(GlicFilteringResult) -->
 
