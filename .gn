@@ -169,6 +169,11 @@ exec_script_allowlist =
       "//tools/gritsettings/BUILD.gn",
 
       "//third_party/blink/renderer/build/scripts/scripts.gni",
+
+      # Mesa currently is built using Meson which is run via a python wrapper
+      # script. exec_script only happens when the checkout_mesa gclient arg is
+      # set. If/when a 'proper' GN build for Mesa exists, this can be removed.
+      "//third_party/dawn/third_party/meson/meson_target.gni",
     ]
 
 expand_directory_allowlist = build_dotfile_settings.expand_directory_allowlist
