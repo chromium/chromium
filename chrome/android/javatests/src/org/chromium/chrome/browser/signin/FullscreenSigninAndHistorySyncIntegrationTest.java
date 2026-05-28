@@ -56,6 +56,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisableLeakChecks;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -835,6 +836,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/512202548")
     @MediumTest
     public void testWithSelectedAccountEmail_nonExistingAccount() {
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
