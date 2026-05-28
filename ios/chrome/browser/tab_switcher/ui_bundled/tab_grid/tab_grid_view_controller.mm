@@ -457,15 +457,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Methods
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
-    [self setContentVisible:YES];
-  }
   [self setupChildViewsIfNeeded];
 
   _pageChangedSinceEntering = NO;
   _backgroundedSinceEntering = NO;
   [self resetIdlePageStatus];
   self.viewVisible = YES;
+  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+    [self setContentVisible:YES];
+  }
   [self.topToolbar.pageControl setSelectedPage:self.currentPage animated:NO];
   [self configureViewControllerForCurrentSizeClassesAndPage];
 
