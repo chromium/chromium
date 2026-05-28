@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -204,7 +205,7 @@ class CapturedSurfaceControlPermissionManagerTest
     if (has_activation) {
       rfh->SimulateUserActivation();
     } else {
-      rfh->frame_tree_node()->UpdateUserActivationState(
+      std::ignore = rfh->frame_tree_node()->UpdateUserActivationState(
           blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
           blink::mojom::UserActivationNotificationType::kTest);
     }

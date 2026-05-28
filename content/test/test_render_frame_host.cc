@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -272,7 +273,7 @@ void TestRenderFrameHost::SimulateUnloadACK() {
 }
 
 void TestRenderFrameHost::SimulateUserActivation() {
-  frame_tree_node()->UpdateUserActivationState(
+  std::ignore = frame_tree_node()->UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);
 }

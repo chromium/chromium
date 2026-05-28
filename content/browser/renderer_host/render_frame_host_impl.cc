@@ -3913,9 +3913,9 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
     // TODO(mustaq): The render-to-browser state update caused by the below
     // JavaScriptExecuteRequestsForTests call is redundant with this update. We
     // should determine if the redundancy can be removed.
-    owner_->UpdateUserActivationState(
+    CHECK(owner_->UpdateUserActivationState(
         blink::mojom::UserActivationUpdateType::kNotifyActivation,
-        blink::mojom::UserActivationNotificationType::kTest);
+        blink::mojom::UserActivationNotificationType::kTest));
   }
 
   GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
@@ -9585,7 +9585,13 @@ void RenderFrameHostImpl::UpdateUserActivationState(
   }
 
   CHECK(owner_);  // See `owner_` invariants about `lifecycle_state_`.
-  owner_->UpdateUserActivationState(update_type, notification_type);
+  // It would be nice to pass this along to our caller, but it turns out to be a
+  // bit of a rabbit hole.  We are the mojo IPC boundary, so blink::{Local,
+  // Remote}Frame would have to deal with the async callback.  Given that the
+  // renderer should already know whether it's asking us to consume a gesture it
+  // doesn't have, this is of marginal value.
+  std::ignore =
+      owner_->UpdateUserActivationState(update_type, notification_type);
 }
 
 void RenderFrameHostImpl::DidConsumeHistoryUserActivation() {

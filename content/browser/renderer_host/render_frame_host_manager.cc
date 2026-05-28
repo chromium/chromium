@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -2748,8 +2749,11 @@ void RenderFrameHostManager::UpdateUserActivationState(
           blink::mojom::UserActivationUpdateType::kNotifyActivation) {
     outer_delegate_proxy->GetAssociatedRemoteFrame()->UpdateUserActivationState(
         update_type, notification_type);
-    GetOuterDelegateNode()->UpdateUserActivationState(update_type,
-                                                      notification_type);
+    // Ignore the result here, since a failure when providing a user activation
+    // isn't really why `UpdateUserActivationState` is [[nodiscard]].  It's
+    // when a gesture can't be consumed that it's potentially an issue.
+    std::ignore = GetOuterDelegateNode()->UpdateUserActivationState(
+        update_type, notification_type);
   }
 }
 

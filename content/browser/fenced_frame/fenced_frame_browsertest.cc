@@ -4971,9 +4971,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   };
 
   auto Activate = [](FrameTreeNode* node) {
-    node->UpdateUserActivationState(
+    EXPECT_TRUE(node->UpdateUserActivationState(
         blink::mojom::UserActivationUpdateType::kNotifyActivation,
-        blink::mojom::UserActivationNotificationType::kTest);
+        blink::mojom::UserActivationNotificationType::kTest));
   };
 
   auto EXPECT_STICKY = [&nodes](std::vector<bool> should_be_activated) {
@@ -5056,9 +5056,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   };
 
   auto Consume = [](FrameTreeNode* node) {
-    node->UpdateUserActivationState(
+    EXPECT_TRUE(node->UpdateUserActivationState(
         blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-        blink::mojom::UserActivationNotificationType::kTest);
+        blink::mojom::UserActivationNotificationType::kTest));
   };
 
   auto EXPECT_TRANSIENT = [&nodes](std::vector<bool> should_be_activated) {

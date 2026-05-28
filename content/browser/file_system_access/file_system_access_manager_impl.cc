@@ -621,9 +621,16 @@ void FileSystemAccessManagerImpl::ChooseEntries(
           ->browser()
           ->IsTransientActivationRequiredForShowFileOrDirectoryPicker(
               WebContents::FromRenderFrameHost(rfh))) {
-    FrameTreeNode::From(rfh)->UpdateUserActivationState(
-        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-        blink::mojom::UserActivationNotificationType::kNone);
+    if (!FrameTreeNode::From(rfh)->UpdateUserActivationState(
+            blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+            blink::mojom::UserActivationNotificationType::kNone)) {
+      std::move(callback).Run(
+          file_system_access_error::FromStatus(
+              FileSystemAccessStatus::kPermissionDenied,
+              "User activation required."),
+          std::vector<blink::mojom::FileSystemAccessEntryPtr>());
+      return;
+    }
   }
 
   // Don't show the file picker if there is an already active file picker for

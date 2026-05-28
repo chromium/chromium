@@ -128,9 +128,14 @@ void FontAccessManager::EnumerateLocalFonts(
         base::ReadOnlySharedMemoryRegion());
     return;
   }
-  rfh->frame_tree_node()->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-      blink::mojom::UserActivationNotificationType::kNone);
+  if (!rfh->frame_tree_node()->UpdateUserActivationState(
+          blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+          blink::mojom::UserActivationNotificationType::kNone)) {
+    std::move(callback).Run(
+        blink::mojom::FontEnumerationStatus::kNeedsUserActivation,
+        base::ReadOnlySharedMemoryRegion());
+    return;
+  }
 
   permission_controller->RequestPermissionFromCurrentDocument(
       rfh,

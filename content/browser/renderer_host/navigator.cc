@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigator.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
@@ -628,14 +629,17 @@ void Navigator::DidNavigate(
   // activation, and does not need to match the same-site checks used in the
   // process model. See: crbug.com/736415, and crbug.com/40228985 for the
   // specific regression that resulted in this requirement.
+  //
+  // Since we're only clearing or providing a new activation, we don't care if
+  // `UpdateUserActivationState` succeeds or not.
   if (!was_within_same_document) {
     if (!navigation_request->commit_params()
              .should_have_sticky_user_activation) {
-      frame_tree_node->UpdateUserActivationState(
+      std::ignore = frame_tree_node->UpdateUserActivationState(
           blink::mojom::UserActivationUpdateType::kClearActivation,
           blink::mojom::UserActivationNotificationType::kNone);
     } else {
-      frame_tree_node->UpdateUserActivationState(
+      std::ignore = frame_tree_node->UpdateUserActivationState(
           blink::mojom::UserActivationUpdateType::kNotifyActivationStickyOnly,
           blink::mojom::UserActivationNotificationType::kNone);
     }
