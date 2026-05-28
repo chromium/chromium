@@ -82,7 +82,11 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
-  SetVSyncDisplayID(display_id, /*force_update=*/true);
+  // The |display_id_| default is display::kInvalidDisplayId. If the incoming
+  // display_id happens to be invalid, force SetVSyncDisplayID() to set up the
+  // timer correctly.
+  bool force_update = display_id == display_id_;
+  SetVSyncDisplayID(display_id, force_update);
 }
 
 ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() {
