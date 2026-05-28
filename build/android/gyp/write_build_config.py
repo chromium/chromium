@@ -512,7 +512,10 @@ def _SuffixAssets(config, target_config):
 
   all_assets = target_config['assets'] + target_config['uncompressed_assets']
   suffix = '+' + target_config['package_name'] + '+'
-  suffix_names = {x.split(':', 1)[1].replace(suffix, '') for x in all_assets}
+  suffix_names = {
+      x.split(':', 1)[1].replace(suffix, '')
+      for x in all_assets if 'pinlist.meta' not in x
+  }
   config['assets'] = helper(suffix_names, suffix, config['assets'])
   config['uncompressed_assets'] = helper(suffix_names, suffix,
                                          config['uncompressed_assets'])
