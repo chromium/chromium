@@ -32,8 +32,7 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
     gfx::Size size;
 
     bool Matches(const CanvasSnapshotProvider& provider) const {
-      return provider.IsValid() && provider.Size() == size &&
-             provider.GetAlphaType() == alpha_type &&
+      return provider.Size() == size && provider.GetAlphaType() == alpha_type &&
              provider.GetColorSpace() == color_space &&
              // TODO(crbug.com/40767377): Restore strict format checks once the
              // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
