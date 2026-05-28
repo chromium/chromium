@@ -98,6 +98,12 @@ inline unsigned ComputeLengthForAPIValue(const String& text) {
   return text.length() - crlf_count;
 }
 
+struct TextInfoContext {
+  std::vector<WebFormControlElement::TypefaceRunInfo> typeface_runs
+      ALLOW_DISCOURAGED_TYPE("blink/public type");
+  size_t start_index;
+};
+
 // Callback passed into ShapeResultView::ForEachGlyph().
 void GetTextInfoForGlyphCallback(void* context,
                                  unsigned character_index,
@@ -107,9 +113,9 @@ void GetTextInfoForGlyphCallback(void* context,
                                  bool is_horizontal,
                                  CanvasRotationInVertical canvas_rotation,
                                  const SimpleFontData* font_data) {
-  auto& results =
-      *static_cast<std::vector<WebFormControlElement::TypefaceRunInfo>*>(
-          context);
+  std::vector<WebFormControlElement::TypefaceRunInfo>& results =
+      static_cast<TextInfoContext*>(context)->typeface_runs;
+  size_t start_index = static_cast<TextInfoContext*>(context)->start_index;
 
   sk_sp<SkTypeface> typeface = font_data->PlatformData().TypefaceSp();
   if (results.empty() || results.back().typeface != typeface) {
@@ -119,7 +125,8 @@ void GetTextInfoForGlyphCallback(void* context,
   }
 
   CHECK_EQ(results.back().is_horizontal, is_horizontal);
-  results.back().glyphs.emplace_back(glyph, glyph_offset, total_advance);
+  results.back().glyphs.emplace_back(glyph, glyph_offset, total_advance,
+                                     character_index - start_index);
 }
 
 }  // namespace
@@ -914,24 +921,37 @@ WebFormControlElement::TextInfo HTMLTextAreaElement::GetTextInfo() const {
       continue;
     }
     const PhysicalOffset paragraph_offset = paragraph_block->PhysicalLocation();
+    InlineCursor line_cursor;
     for (InlineCursor cursor(*paragraph_block); cursor; cursor.MoveToNext()) {
       const FragmentItem* text_item = cursor.CurrentItem();
-      if (!text_item || !text_item->IsText()) {
+      if (!text_item) {
+        continue;
+      }
+      if (text_item->Type() == blink::FragmentItem::kLine) {
+        line_cursor = cursor.CursorForDescendants();
+        continue;
+      }
+      if (!text_item->IsText()) {
         continue;
       }
       const ShapeResultView* shape = text_item->TextShapeResult();
       if (!shape) {
         continue;  // Skip \n characters
       }
+
       // Split `text_item` into multiple TypefaceRunInfo objects if it has
       // more than one font.
-      std::vector<WebFormControlElement::TypefaceRunInfo> typeface_runs;
+      TextInfoContext context;
+      // Adjust the `character_index` values for the substring this TextRunInfo
+      // represents so that they are indexes into TextRunInfo::text.
+      context.start_index = shape->StartIndex();
       shape->ForEachGlyph(
-          /*initial_advance*/ 0.0f, GetTextInfoForGlyphCallback,
-          &typeface_runs);
+          /*initial_advance*/ 0.0f, GetTextInfoForGlyphCallback, &context);
+      CHECK(line_cursor.HasRoot());
       results.text_runs.emplace_back(
-          std::move(typeface_runs),
-          gfx::RectF(text_item->RectInContainerFragment() + paragraph_offset));
+          std::move(context.typeface_runs),
+          gfx::RectF(text_item->RectInContainerFragment() + paragraph_offset),
+          WebString(text_item->Text(line_cursor.Items()).ToString()));
     }
   }
 

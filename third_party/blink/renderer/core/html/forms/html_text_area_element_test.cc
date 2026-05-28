@@ -32,7 +32,8 @@ namespace blink {
 
 void PrintTo(const WebFormControlElement::GlyphInfo& info, std::ostream* os) {
   *os << "{glyph: " << info.glyph << ", offset: " << info.offset.ToString()
-      << ", tot_adv: " << info.total_advance << "}";
+      << ", tot_adv: " << info.total_advance
+      << ", char_index: " << info.character_index << "}";
 }
 
 void PrintTo(const WebFormControlElement::TypefaceRunInfo& info,
@@ -52,7 +53,8 @@ void PrintTo(const WebFormControlElement::TypefaceRunInfo& info,
 }
 
 void PrintTo(const WebFormControlElement::TextRunInfo& info, std::ostream* os) {
-  *os << "<location: " << info.location.ToString() << "\n";
+  *os << "<location: " << info.location.ToString() << ", text: \""
+      << info.text.Utf8() << "\",\n";
   for (size_t i = 0; i < info.typeface_runs.size(); ++i) {
     *os << "TypefaceRunInfo #" << i << ":"
         << testing::PrintToString(info.typeface_runs[i]);
@@ -91,7 +93,10 @@ class TextRunIsMatcher {
     }
 
     size_t typeface_runs_index = 0;
+    std::string expected_text;
+    size_t expected_character_index = 0;
     for (const std::string& expected_str : strs_) {
+      expected_text.append(expected_str);
       const WebFormControlElement::TypefaceRunInfo& run =
           arg.typeface_runs[typeface_runs_index++];
 
@@ -125,7 +130,26 @@ class TextRunIsMatcher {
           }
           return false;
         }
+        // Assumes that 1 glyph represents 1 UTF-16 Code Unit in the test case
+        // data. Otherwise it would be necessary to pass in expected indexes.
+        if (run.glyphs[i].character_index != expected_character_index) {
+          if (os) {
+            *os << "glyph at index " << i << " expected character_index "
+                << expected_character_index << " but got "
+                << run.glyphs[i].character_index;
+          }
+          return false;
+        }
+        ++expected_character_index;
       }
+    }
+
+    if (arg.text.Utf8() != expected_text) {
+      if (os) {
+        *os << "expected text to be \"" << expected_text << "\"  but got \""
+            << arg.text.Utf8() << "\"";
+      }
+      return false;
     }
 
     return true;

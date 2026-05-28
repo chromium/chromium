@@ -60,6 +60,7 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
     uint16_t glyph;
     gfx::Vector2dF offset;
     float total_advance;
+    unsigned character_index;
   };
 
   struct TypefaceRunInfo {
@@ -71,6 +72,7 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   struct TextRunInfo {
     std::vector<TypefaceRunInfo> typeface_runs;
     gfx::RectF location;
+    WebString text;
   };
 
   struct TextInfo {
