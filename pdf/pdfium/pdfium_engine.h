@@ -918,7 +918,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   void FinishPaint(size_t progressive_index, SkBitmap& image_data);
 
   // Stops any paints that are in progress.
-  void CancelPaints();
+  // Returns the rectangles, in screen coordinates, that had painting canceled.
+  std::vector<gfx::Rect> CancelPaints();
 
   // Invalidates all pages. Use this when some global parameter, such as page
   // orientation, has changed.
