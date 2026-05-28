@@ -64,12 +64,6 @@ using chrome_test_util::SettingsDoneButton;
         "<dict><key>SyncTypesListDisabled</key><array><string>bookmarks</"
         "string></array></dict>");
   }
-
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self
-          isRunningTest:@selector(testAccountSettingsHiddenFromIncognitoTab)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
