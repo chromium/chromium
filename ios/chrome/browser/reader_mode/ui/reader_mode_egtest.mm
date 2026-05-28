@@ -52,14 +52,15 @@ namespace {
 
 using ::chrome_test_util::PrimaryToolbar;
 
-// Returns the badge used to open Reader Mode customization UI.
-id<GREYMatcher> ReaderModeCustomizationBadge() {
-  NSString* const badgeIdentifier =
+// Returns a matcher for the Reader Mode badge button that is sufficiently
+// visible.
+id<GREYMatcher> ReaderModeBadge() {
+  NSString* const badge_identifier =
       [ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]
           ? kBadgeButtonReaderModeAccessibilityIdentifier
           : kReaderModeChipViewAccessibilityIdentifier;
-  return grey_allOf(grey_accessibilityID(badgeIdentifier), grey_interactable(),
-                    nil);
+  return grey_allOf(grey_accessibilityID(badge_identifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Base font size for Reader Mode, in pixels. This is the font size that is
@@ -237,6 +238,20 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
     config.features_enabled.push_back(kEnableContentSettingsOptionForLinks);
   }
 
+  // TODO(crbug.com/517120013): Fix or clean up legacy contextual panel and
+  // incognito badge tests under Chrome Next.
+  if ([self
+          isRunningTest:@selector
+          (testToggleReaderModeInContextualPanelEntrypointForDistillablePage)] ||
+      [self isRunningTest:@selector(testReaderModeDistillationFailure)] ||
+      [self isRunningTest:@selector(testReaderModeDistillationTimeout)] ||
+      [self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
+      [self isRunningTest:@selector
+            (testToggleReaderModeForDistillablePageInIncognitoMode)] ||
+      [self isRunningTest:@selector(testReaderModeBadgeVisibleInIncognito)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+
   if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
     config.additional_args.push_back(
         "--" + std::string(switches::kForceReaderModeDistillationTimeout));
@@ -273,8 +288,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 #endif
     config.features_enabled.push_back(kContextualPanelForceShowEntrypoint);
   }
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -357,8 +370,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:ReaderModeCustomizationBadge()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ReaderModeBadge()];
 }
 
 // Asserts that the Reader Mode UI attributes, the distilled page and the
@@ -367,7 +379,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
-  [[EarlGrey selectElementWithMatcher:ReaderModeCustomizationBadge()]
+  [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -375,11 +387,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 - (void)openReaderModeCustomizationOptions {
   if ([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
     // Tap the Reader Mode chip.
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(grey_accessibilityID(
-                           kBadgeButtonReaderModeAccessibilityIdentifier),
-                       grey_interactable(), nil)] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
+        performAction:grey_tap()];
 
     // Verify the bottom sheet appears.
     id<GREYMatcher> bottomSheet =
@@ -396,9 +405,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
         performAction:grey_tap()];
   } else {
     // Tap the Reader Mode chip.
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)]
+    [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
         performAction:grey_tap()];
   }
 
@@ -436,9 +443,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
   GREYAssertTrue(
       [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
       @"Reader mode content could not be loaded");
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ReaderModeBadge()];
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -513,7 +518,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
   [self assertReaderModePageIsVisible];
 
   // Check that the chip is a button with the expected accessibility label.
-  [[EarlGrey selectElementWithMatcher:ReaderModeCustomizationBadge()]
+  [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
       assertWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                             IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL)];
 }
@@ -968,7 +973,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
   [self assertReaderModePageIsVisible];
 
   // Tap the chip to open the options view.
-  [[EarlGrey selectElementWithMatcher:ReaderModeCustomizationBadge()]
+  [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
@@ -1083,9 +1088,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
       selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       assertWithMatcher:grey_notVisible()];
   // The Reader mode badge button should be visible instead.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kBadgeButtonReaderModeAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1123,7 +1126,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
   [self assertReaderModePageIsVisible];
 
   // Tap the Reader mode customization badge.
-  [[EarlGrey selectElementWithMatcher:grey_allOf(ReaderModeCustomizationBadge(),
+  [[EarlGrey selectElementWithMatcher:grey_allOf(ReaderModeBadge(),
                                                  grey_interactable(), nil)]
       performAction:grey_tap()];
 
@@ -1237,9 +1240,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
       @"Reader mode content could not be loaded");
 
   // Reader mode and incognito badge should be visible.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ReaderModeBadge()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kBadgeButtonIncognitoAccessibilityIdentifier)];
