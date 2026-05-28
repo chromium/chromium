@@ -67,12 +67,7 @@
     {
         "name": "asynclayoutinflater",
         "group": "androidx.asynclayoutinflater",
-        "version": "1.1.0"
-    },
-    {
-        "name": "asynclayoutinflater-appcompat",
-        "group": "androidx.asynclayoutinflater",
-        "version": "1.1.0"
+        "version": "1.0.0"
     },
     {
         "name": "autofill",

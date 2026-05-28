@@ -12,7 +12,6 @@
     "committed/libs/androidx_arch_core_core_common",
     "committed/libs/androidx_arch_core_core_runtime",
     "committed/libs/androidx_asynclayoutinflater_asynclayoutinflater",
-    "committed/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat",
     "committed/libs/androidx_autofill_autofill",
     "committed/libs/androidx_benchmark_benchmark_common",
     "committed/libs/androidx_benchmark_benchmark_junit4",
