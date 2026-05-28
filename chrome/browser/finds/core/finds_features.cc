@@ -43,7 +43,7 @@ constexpr base::FeatureParam<int> kMaxHistoryEntries{
     &kChromeFinds, "max_history_entries", /*default_value=*/0};
 
 constexpr base::FeatureParam<int> kSRPReturnCountThreshold{
-    &kChromeFinds, "srp_return_count_threshold", /*default_value=*/3};
+    &kChromeFinds, "srp_return_count_threshold", /*default_value=*/2};
 
 constexpr base::FeatureParam<bool> kEnableSrpReturnCountOptIn{
     &kChromeFinds, "enable_srp_return_count_opt_in", /*default_value=*/true};
