@@ -345,6 +345,7 @@
     "linux-blink-wpt-reset-rel": "ci/linux-blink-wpt-reset-rel/gn-args.json",
     "linux-chromeos-annotator-rel": "ci/linux-chromeos-annotator-rel/gn-args.json",
     "linux-chromeos-treesinviz-disabled-rel": "ci/linux-chromeos-treesinviz-disabled-rel/gn-args.json",
+    "linux-chromeos-tsgo-rel": "ci/linux-chromeos-tsgo-rel/gn-args.json",
     "linux-fieldtrial-rel": "ci/linux-fieldtrial-rel/gn-args.json",
     "linux-headless-shell-rel": "ci/linux-headless-shell-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "ci/linux-multiscreen-fyi-rel/gn-args.json",
@@ -352,6 +353,7 @@
     "linux-rel-no-external-ip": "ci/linux-rel-no-external-ip/gn-args.json",
     "linux-surface-embed-rel": "ci/linux-surface-embed-rel/gn-args.json",
     "linux-treesinviz-enabled-rel": "ci/linux-treesinviz-enabled-rel/gn-args.json",
+    "linux-tsgo-rel": "ci/linux-tsgo-rel/gn-args.json",
     "linux-upload-perfetto": "ci/linux-upload-perfetto/gn-args.json",
     "linux-wpt-chromium-rel": "ci/linux-wpt-chromium-rel/gn-args.json",
     "mac-osxbeta-rel": "ci/mac-osxbeta-rel/gn-args.json",
@@ -688,7 +690,8 @@
     "linux-chromeos-compile-dbg": "try/linux-chromeos-compile-dbg/gn-args.json",
     "linux-chromeos-dbg": "try/linux-chromeos-dbg/gn-args.json",
     "linux-chromeos-rel": "try/linux-chromeos-rel/gn-args.json",
-    "linux-chromeos-treesinviz-disabled-rel": "try/linux-chromeos-treesinviz-disabled-rel/gn-args.json"
+    "linux-chromeos-treesinviz-disabled-rel": "try/linux-chromeos-treesinviz-disabled-rel/gn-args.json",
+    "linux-chromeos-tsgo-rel": "try/linux-chromeos-tsgo-rel/gn-args.json"
   },
   "tryserver.chromium.codesearch": {
     "gen-android-try": "codesearch/gen-android-try/gn-args.json",
@@ -857,6 +860,7 @@
     "linux-rel": "try/linux-rel/gn-args.json",
     "linux-surface-embed-rel": "try/linux-surface-embed-rel/gn-args.json",
     "linux-treesinviz-enabled-rel": "try/linux-treesinviz-enabled-rel/gn-args.json",
+    "linux-tsgo-rel": "try/linux-tsgo-rel/gn-args.json",
     "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",
     "linux-wayland-mutter-rel": "try/linux-wayland-mutter-rel/gn-args.json",

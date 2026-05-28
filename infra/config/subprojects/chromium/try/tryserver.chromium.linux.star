@@ -1227,3 +1227,12 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "linux-tsgo-rel",
+    mirrors = [
+        "ci/linux-tsgo-rel",
+    ],
+    gn_args = "ci/linux-tsgo-rel",
+    contact_team_email = "chrome-webui@google.com",
+)

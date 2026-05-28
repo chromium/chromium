@@ -1,0 +1,4 @@
+ci/linux-chromeos-tsgo-rel
+ci/linux-tsgo-rel
+try/linux-chromeos-tsgo-rel
+try/linux-tsgo-rel
