@@ -8,17 +8,12 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WebRtcUdpPortRange": "10000-11999"
-        },
-        "prefs": {
-          "webrtc.udp_port_range": {
-            "value": "10000-11999"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webrtc.udp_port_range",
+      "default_value": "",
+      "values_to_test": [
+        "10000-11999"
+      ]
+    }
   }
 ]

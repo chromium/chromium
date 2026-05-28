@@ -3,18 +3,14 @@
     "os": [
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WindowOcclusionEnabled": true
-        },
-        "prefs": {
-          "policy.native_window_occlusion_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.native_window_occlusion_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

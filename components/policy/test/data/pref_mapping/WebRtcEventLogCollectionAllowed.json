@@ -7,17 +7,13 @@
       "chromeos",
       "desktop_android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WebRtcEventLogCollectionAllowed": false
-        },
-        "prefs": {
-          "webrtc.event_logs_collection": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webrtc.event_logs_collection",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
