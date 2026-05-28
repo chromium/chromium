@@ -156,6 +156,23 @@ public class DownloadLocationDialogCoordinator
         }
         mDialogModel = null;
         mCustomView = null;
+        resetDialogState();
+    }
+
+    // Drop references to per-dialog activity-scoped objects so the (long-lived) coordinator
+    // does not keep them alive after a dialog is dismissed.
+    private void resetDialogState() {
+        mContext = null;
+        mModalDialogManager = null;
+        mSuggestedPath = null;
+        mProfile = null;
+        mDirectoryAdapter = null;
+        mDownloadLocationHelper = null;
+        mDownloadLocationDialogModel = null;
+        if (mPropertyModelChangeProcessor != null) {
+            mPropertyModelChangeProcessor.destroy();
+            mPropertyModelChangeProcessor = null;
+        }
     }
 
     /**
@@ -182,6 +199,7 @@ public class DownloadLocationDialogCoordinator
                 mController.onDownloadLocationDialogComplete(
                         mSuggestedPath, /* didUserConfirm= */ false);
             }
+            resetDialogState();
             return;
         }
 

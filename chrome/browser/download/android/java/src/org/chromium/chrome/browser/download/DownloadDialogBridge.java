@@ -70,6 +70,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     void destroy() {
         mNativeDownloadDialogBridge = 0;
         mLocationDialog.destroy();
+        resetDialogState();
     }
 
     @CalledByNative
@@ -139,19 +140,41 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     }
 
     private void onComplete() {
-        if (mNativeDownloadDialogBridge == 0) return;
+        if (mNativeDownloadDialogBridge == 0) {
+            resetDialogState();
+            return;
+        }
 
         DownloadDialogBridgeJni.get()
                 .onComplete(mNativeDownloadDialogBridge, mSuggestedPath, mDidUserConfirm);
+        resetDialogState();
     }
 
     private void onCancel() {
-        if (mNativeDownloadDialogBridge == 0) return;
+        if (mNativeDownloadDialogBridge == 0) {
+            resetDialogState();
+            return;
+        }
         DownloadDialogBridgeJni.get().onCanceled(mNativeDownloadDialogBridge);
         if (mWindowAndroid != null) {
             NewDownloadTab.closeExistingNewDownloadTab(mWindowAndroid);
-            mWindowAndroid = null;
         }
+        resetDialogState();
+    }
+
+    // Drop references to per-dialog activity-scoped objects so this bridge (owned by native
+    // and thus long-lived) does not keep them alive after a dialog completes.
+    private void resetDialogState() {
+        mContext = null;
+        mModalDialogManager = null;
+        mWindowAndroid = null;
+        mProfile = null;
+        mSuggestedPath = null;
+    }
+
+    @VisibleForTesting
+    @Nullable Context getContextForTesting() {
+        return mContext;
     }
 
     // DownloadLocationDialogController implementation.
