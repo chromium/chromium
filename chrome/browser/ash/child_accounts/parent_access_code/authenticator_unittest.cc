@@ -357,5 +357,35 @@ TEST_F(ParentAccessCodeAuthenticatorTest, UnixEpoch) {
   EXPECT_EQ(generated, validated);
 }
 
+TEST_F(ParentAccessCodeAuthenticatorTest, LargeTimestamp) {
+  // Test authenticator with a large timestamp that would cause 32-bit overflow
+  // if the loop counter was a 32-bit int.
+  base::Time large_timestamp;
+  ASSERT_TRUE(
+      base::Time::FromString("01 Jan 6100 00:00:00 UTC", &large_timestamp));
+
+  Authenticator authenticator(GetDefaultTestConfig());
+
+  std::optional<AccessCode> generated = authenticator.Generate(large_timestamp);
+  ASSERT_NO_FATAL_FAILURE(Verify(generated, large_timestamp));
+
+  std::optional<AccessCode> validated =
+      authenticator.Validate(generated->code(), large_timestamp);
+  ASSERT_NO_FATAL_FAILURE(Verify(validated, large_timestamp));
+  EXPECT_EQ(generated, validated);
+
+  // Verify that an incorrect code is still rejected.
+  // We use conditional logic to ensure 'incorrect_code' is always different
+  // from 'generated->code()', avoiding rare test failures if the valid code
+  // happens to be "000000".
+  std::string incorrect_code = generated->code();
+  if (incorrect_code == "000000") {
+    incorrect_code = "000001";
+  } else {
+    incorrect_code = "000000";
+  }
+  EXPECT_FALSE(authenticator.Validate(incorrect_code, large_timestamp));
+}
+
 }  // namespace parent_access
 }  // namespace ash
