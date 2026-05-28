@@ -155,6 +155,9 @@ template("generated_json_strings") {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
     inputs = compiler_sources + invoker.sources
+    if (defined(invoker.inputs)) {
+      inputs += invoker.inputs
+    }
     outputs = [
       "$target_gen_dir/generated_schemas.cc",
       "$target_gen_dir/generated_schemas.h",
@@ -270,6 +273,9 @@ template("function_registration") {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
     inputs = compiler_sources + invoker.sources
+    if (defined(invoker.inputs)) {
+      inputs += invoker.inputs
+    }
     outputs = [
       "$gen_child_dir/generated_api_registration.cc",
       "$gen_child_dir/generated_api_registration.h",
@@ -365,6 +371,9 @@ template("generated_types") {
     script = compiler_script
     sources = invoker.sources
     inputs = compiler_sources + invoker.sources
+    if (defined(invoker.inputs)) {
+      inputs += invoker.inputs
+    }
     outputs = [
       "$target_gen_dir/{{source_name_part}}.cc",
       "$target_gen_dir/{{source_name_part}}.h",

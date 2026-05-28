@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//chrome/common/controlled_frame/api/api_sources.gni")
+import("//chrome/common/extensions/api/api_sources.gni")
 import("//chrome/common/features.gni")
+import("//extensions/common/api/schema.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
@@ -33,6 +35,7 @@ generated_json_strings("generated_api_json_strings") {
   schema_include_rules = controlled_frame_api_schema_include_rules
   root_namespace = controlled_frame_api_root_namespace
   deps = [ "//chrome/common/extensions/api" ]
+  inputs = chrome_extensions_api_schema_sources + extensions_api_schema_files
   visibility = [ ":api" ]
 }
 
@@ -42,6 +45,7 @@ generated_types("generated_api_types") {
   schema_include_rules = controlled_frame_api_schema_include_rules
   root_namespace = controlled_frame_api_root_namespace
   deps = [ "//chrome/common/extensions/api" ]
+  inputs = chrome_extensions_api_schema_sources + extensions_api_schema_files
   visibility = [ ":api" ]
 }
 

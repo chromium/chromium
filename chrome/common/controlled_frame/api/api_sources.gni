@@ -6,9 +6,10 @@ import("//chrome/common/features.gni")
 
 assert(enable_extensions)
 
-schema_sources_ = [ "controlled_frame_internal.json" ]
+controlled_frame_schema_sources_ = [ "controlled_frame_internal.json" ]
 
-controlled_frame_api_schema_sources = get_path_info(schema_sources_, "abspath")
+controlled_frame_api_schema_sources =
+    get_path_info(controlled_frame_schema_sources_, "abspath")
 
 controlled_frame_api_root_namespace = "controlled_frame::api::%(namespace)s"
 

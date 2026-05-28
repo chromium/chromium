@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 import("//chrome/common/extensions/api/api_sources.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//extensions/common/api/schema.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
@@ -66,6 +67,7 @@ generated_json_strings("generated_api_json_strings") {
 
   root_namespace = chrome_extensions_api_root_namespace
   deps = [ "//extensions/common/api" ]
+  inputs = extensions_api_schema_files
 
   visibility = [ ":api" ]
 }
@@ -79,6 +81,7 @@ generated_types("generated_api_types") {
 
   root_namespace = chrome_extensions_api_root_namespace
   deps = [ "//extensions/common/api" ]
+  inputs = extensions_api_schema_files
 
   visibility = [ ":api" ]
 }
