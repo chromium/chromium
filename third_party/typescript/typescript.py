@@ -33,6 +33,10 @@ def RunTypeScriptRaw(cmd_parts, stdout=None):
 
 
 def RunTypeScript(cmd_parts, stdout=None):
+  # Force pretty output.
+  if '--pretty' not in cmd_parts:
+    cmd_parts = cmd_parts + ['--pretty']
+
   code, stdout, stderr = RunTypeScriptRaw(cmd_parts, stdout)
   if code != 0:
     errs = []
