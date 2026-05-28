@@ -36,6 +36,7 @@
 
 #include "base/containers/span.h"
 #include "cc/paint/paint_canvas.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -115,6 +116,10 @@ class WebPlugin {
 
   virtual void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) = 0;
   virtual void Paint(cc::PaintCanvas*, const gfx::Rect&) = 0;
+
+  // If this plugin uses cc::SurfaceLayer for painting, returns the FrameSinkId
+  // used by that Layer. Otherwise, returns an empty FrameSinkId.
+  virtual viz::FrameSinkId GetFrameSinkId() { return viz::FrameSinkId(); }
 
   // Coordinates are relative to the containing window.
   virtual void UpdateGeometry(const gfx::Rect& window_rect,

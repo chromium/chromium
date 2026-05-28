@@ -239,27 +239,64 @@ void ForEachRemoteFrameChildrenControlledByWidget(
   }
 }
 
-viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
-  Node* node = result.InnerNode();
-  auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node);
-  if (!frame_owner || !frame_owner->ContentFrame() ||
-      !frame_owner->ContentFrame()->IsRemoteFrame())
+viz::FrameSinkId GetFrameSinkIdForPluginElement(
+    HTMLPlugInElement* plugin_element) {
+  WebPluginContainerImpl* plugin_container = plugin_element->OwnedPlugin();
+  if (!plugin_container) {
     return viz::FrameSinkId();
+  }
+
+  WebPlugin* plugin = plugin_container->Plugin();
+  if (!plugin) {
+    return viz::FrameSinkId();
+  }
+
+  return plugin->GetFrameSinkId();
+}
+
+viz::FrameSinkId GetFrameSinkIdForFrameOwnerElement(
+    HTMLFrameOwnerElement* frame_owner) {
+  if (!frame_owner->ContentFrame() ||
+      !frame_owner->ContentFrame()->IsRemoteFrame()) {
+    return viz::FrameSinkId();
+  }
 
   RemoteFrame* remote_frame = To<RemoteFrame>(frame_owner->ContentFrame());
-  if (remote_frame->IsIgnoredForHitTest())
+  if (remote_frame->IsIgnoredForHitTest()) {
     return viz::FrameSinkId();
+  }
+
+  return remote_frame->GetFrameSinkId();
+}
+
+viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
+  Node* node = result.InnerNode();
+  if (!node) {
+    return viz::FrameSinkId();
+  }
+
   LayoutObject* object = node->GetLayoutObject();
-  DCHECK(object);
-  if (!object->IsBox())
+  if (!object || !object->IsBox()) {
     return viz::FrameSinkId();
+  }
 
   PhysicalOffset local_point(ToRoundedPoint(result.LocalPoint()));
   if (!To<LayoutBox>(object)->PhysicalContentBoxRect().Contains(local_point)) {
     return viz::FrameSinkId();
   }
 
-  return remote_frame->GetFrameSinkId();
+  if (auto* plugin_element = DynamicTo<HTMLPlugInElement>(node)) {
+    viz::FrameSinkId id = GetFrameSinkIdForPluginElement(plugin_element);
+    if (id.is_valid()) {
+      return id;
+    }
+  }
+
+  if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
+    return GetFrameSinkIdForFrameOwnerElement(frame_owner);
+  }
+
+  return viz::FrameSinkId();
 }
 
 bool IsElementNotNullAndEditable(Element* element) {

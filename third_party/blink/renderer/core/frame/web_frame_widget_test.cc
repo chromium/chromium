@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
+#include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -42,6 +43,8 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
+#include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
+#include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -218,6 +221,81 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
           gfx::PointF(150.27, 150.25), &point);
   EXPECT_EQ(main_frame_sink_id, frame_sink_id);
   EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
+}
+
+class FrameSinkIdTestPlugin : public FakeWebPlugin {
+ public:
+  FrameSinkIdTestPlugin(const WebPluginParams& params,
+                        viz::FrameSinkId frame_sink_id)
+      : FakeWebPlugin(params), frame_sink_id_(frame_sink_id) {}
+
+  viz::FrameSinkId GetFrameSinkId() override { return frame_sink_id_; }
+
+ private:
+  viz::FrameSinkId frame_sink_id_;
+};
+
+class FrameSinkIdPluginWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  explicit FrameSinkIdPluginWebFrameClient(viz::FrameSinkId frame_sink_id)
+      : frame_sink_id_(frame_sink_id) {}
+
+  WebPlugin* CreatePlugin(const WebPluginParams& params) override {
+    return new FrameSinkIdTestPlugin(params, frame_sink_id_);
+  }
+
+ private:
+  viz::FrameSinkId frame_sink_id_;
+};
+
+class WebFrameWidgetPluginHitTestTest : public SimTest {
+ public:
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    return std::make_unique<FrameSinkIdPluginWebFrameClient>(
+        plugin_frame_sink_id_);
+  }
+
+ protected:
+  viz::FrameSinkId plugin_frame_sink_id_{42, 42};
+  ScopedFakePluginRegistry fake_plugins_;
+};
+
+TEST_F(WebFrameWidgetPluginHitTestTest, GetFrameSinkIdAtPointPlugin) {
+  WebView().GetPage()->GetSettings().SetPluginsEnabled(true);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <style>
+      html, body {
+        margin: 0px;
+        padding: 0px;
+      }
+      </style>
+      <embed id='plugin' type='application/x-webkit-test-webplugin'
+             style='width: 200px; height: 100px; margin: 0px; padding: 0px;'></embed>
+      )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  gfx::PointF point;
+  viz::FrameSinkId frame_sink_id =
+      WebView().MainFrameViewWidget()->GetFrameSinkIdAtPoint(
+          gfx::PointF(100.0f, 50.0f), &point);
+  EXPECT_EQ(plugin_frame_sink_id_, frame_sink_id);
+  EXPECT_EQ(gfx::PointF(100.0f, 50.0f), point);
+
+  // Test a point outside of the plugin.
+  viz::FrameSinkId frame_sink_id_outside =
+      WebView().MainFrameViewWidget()->GetFrameSinkIdAtPoint(
+          gfx::PointF(250.0f, 150.0f), &point);
+  EXPECT_EQ(WebView().MainFrameViewWidget()->GetFrameSinkId(),
+            frame_sink_id_outside);
+  EXPECT_EQ(gfx::PointF(250.0f, 150.0f), point);
 }
 
 #if BUILDFLAG(IS_ANDROID)

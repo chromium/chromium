@@ -117,6 +117,10 @@ void SurfaceEmbedWebPlugin::Paint(cc::PaintCanvas* canvas,
   // No action needed as we're using a compositor layer to render.
 }
 
+viz::FrameSinkId SurfaceEmbedWebPlugin::GetFrameSinkId() {
+  return frame_sink_id_;
+}
+
 void SurfaceEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                            const gfx::Rect& clip_rect,
                                            const gfx::Rect& unobscured_rect,
@@ -351,6 +355,7 @@ void SurfaceEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
 }
 
 void SurfaceEmbedWebPlugin::ChildProcessGone() {
+  frame_sink_id_ = viz::FrameSinkId();
   crashed_layer_ = cc::PictureLayer::Create(this);
   crashed_layer_->SetMasksToBounds(true);
   crashed_layer_->SetIsDrawable(true);
