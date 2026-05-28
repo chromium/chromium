@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -330,19 +331,42 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   EXPECT_TRUE(future.Wait());
 }
 
-// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
-// builders.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PerformOCR_Empty DISABLED_PerformOCR_Empty
-#else
-#define MAYBE_PerformOCR_Empty PerformOCR_Empty
-#endif
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, MAYBE_PerformOCR_Empty) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
   ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
 
   SkBitmap bitmap =
       LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL("ocr/empty.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
+
+  // If OCR service crashes while performing OCR, `perform_future` will not be
+  // set. A timer is used to check the connection state and stop the waiting if
+  // connection state changes.
+  // This is done as a temporary workaround to gather more information about the
+  // test timeouts.
+  // TODO(crbug.com/470431038): Remove this workaround once the bug is resolved.
+  base::RepeatingTimer timer;
+  screen_ai::ScreenAIServiceRouter* router =
+      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+  if (router->IsProcessRunningForTesting(
+          screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
+    timer.Start(
+        FROM_HERE, base::Milliseconds(100),
+        base::BindRepeating(
+            [](screen_ai::ScreenAIServiceRouter* router,
+               base::test::TestFuture<mojom::VisualAnnotationPtr>*
+                   perform_future,
+               base::RepeatingTimer* timer) {
+              if (!router->IsProcessRunningForTesting(
+                      screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
+                perform_future->SetValue(mojom::VisualAnnotation::New());
+                timer->Stop();
+                LOG(ERROR) << "PerformOCR aborted as connection lost.";
+              }
+            },
+            base::Unretained(router), base::Unretained(&perform_future),
+            base::Unretained(&timer)));
+  }
+
   ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
   ASSERT_TRUE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
