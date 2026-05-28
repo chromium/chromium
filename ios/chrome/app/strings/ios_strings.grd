@@ -2327,6 +2327,23 @@
       <message name="IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON" desc="Button of a dialog that is shown when the user starts to switch accounts; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string follows the heading 'Some data isn't saved yet' or the heading ‘Unsaved account data will be deleted’; the user can choose to tap on the buttons 'Cancel' or 'Delete and Switch'. If the user chooses to continue to switch accounts, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
                 Switch and Delete
       </message>
+      <message name="IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_NO_THANKS" desc="Secondary button text of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
+        No thanks
+      </message>
+      <message name="IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_SUBTITLE" desc="Subtitle of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
+        You’re signed in as <ph name="SIGNED_EMAIL">$1<ex>john.doe@gmail.com</ex></ph>.
+
+To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>. You’ll get the passwords, bookmarks, and more from this account.
+      </message>
+      <message name="IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_TITLE" desc="Title of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
+        Switch accounts?
+      </message>
+      <message name="IDS_IOS_DEEPLINK_SIGNIN_SUBTITLE" desc="Subtitle of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
+        You scanned a QR code to sign in to Chrome. You’ll get the passwords, bookmarks, and more from this account.
+      </message>
+      <message name="IDS_IOS_DEEPLINK_SIGNIN_TITLE" desc="Title of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
+        Sign in as <ph name="FIRST_NAME">$1<ex>john</ex></ph>?
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app.">
         Better browsing by default
       </message>
