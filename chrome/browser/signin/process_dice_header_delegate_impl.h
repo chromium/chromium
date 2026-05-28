@@ -85,6 +85,8 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
   signin_metrics::AccessPoint GetAccessPoint() override;
+  void OnDiceSigninSessionComplete(
+      std::vector<CoreAccountId> secondary_accounts) override;
   void OnDiceSigninHeaderReceived() override;
 
  private:
@@ -108,6 +110,8 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   EnableHistorySyncOptinCallback history_sync_optin_callback_;
   OnSigninHeaderReceived on_signin_header_received_;
   ShowSigninErrorCallback show_signin_error_callback_;
+
+  CoreAccountId initiator_account_id_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_

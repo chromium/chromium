@@ -291,6 +291,7 @@ void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
     CoreAccountId account_id,
     bool is_new_account) {
+  initiator_account_id_ = account_id;
   AttemptChromeSignin(account_id);
 
   // is_sync_signin_tab_ tells whether the current signin is happening in a tab
@@ -311,6 +312,16 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
                                  is_sync_signin_tab_});
     tab_helper->OnTokenExchangeSuccess(
         std::move(retry_interception_bubble_callback));
+  }
+}
+
+void ProcessDiceHeaderDelegateImpl::OnDiceSigninSessionComplete(
+    std::vector<CoreAccountId> secondary_accounts) {
+  auto* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get());
+  if (interceptor) {
+    interceptor->OnDiceSigninSessionComplete(initiator_account_id_,
+                                             std::move(secondary_accounts));
   }
 }
 

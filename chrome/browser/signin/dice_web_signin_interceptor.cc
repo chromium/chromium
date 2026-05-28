@@ -659,6 +659,12 @@ void DiceWebSigninInterceptor::Shutdown() {
   Reset();
 }
 
+void DiceWebSigninInterceptor::OnDiceSigninSessionComplete(
+    const CoreAccountId& initiator_account_id,
+    std::vector<CoreAccountId> secondary_accounts) {
+  // TODO(crbug.com/438165525): Remove stub.
+}
+
 void DiceWebSigninInterceptor::Reset() {
   state_ = std::make_unique<ResetableState>();
   account_info_update_observation_.Reset();

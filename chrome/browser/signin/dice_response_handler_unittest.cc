@@ -136,6 +136,12 @@ class DiceResponseHandlerTest : public testing::Test,
     auth_error_ = error;
   }
 
+  void OnDiceSigninSessionComplete(
+      std::vector<CoreAccountId> secondary_accounts) {
+    session_complete_called_ = true;
+    completed_secondary_accounts_ = std::move(secondary_accounts);
+  }
+
  protected:
   DiceResponseHandlerTest()
       : task_environment_(
@@ -280,6 +286,8 @@ class DiceResponseHandlerTest : public testing::Test,
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableChromeRefreshTokenBinding};
   base::HistogramTester histogram_tester_;
+  bool session_complete_called_ = false;
+  std::vector<CoreAccountId> completed_secondary_accounts_;
 };
 
 class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
@@ -312,6 +320,11 @@ class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
   }
 
   void OnDiceSigninHeaderReceived() override {}
+
+  void OnDiceSigninSessionComplete(
+      std::vector<CoreAccountId> secondary_accounts) override {
+    owner_->OnDiceSigninSessionComplete(std::move(secondary_accounts));
+  }
 
  private:
   raw_ptr<DiceResponseHandlerTest> owner_;
@@ -1395,6 +1408,11 @@ TEST_F(DiceResponseHandlerTest,
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
   EXPECT_EQ(GoogleServiceAuthError::SERVICE_UNAVAILABLE, auth_error_.state());
   EXPECT_TRUE(token_exchange_account_id_.empty());
+
+  // Verify completion signal contains expected secondary.
+  EXPECT_TRUE(session_complete_called_);
+  EXPECT_THAT(completed_secondary_accounts_,
+              testing::UnorderedElementsAre(secondary_account_id));
 }
 
 // Checks that failure of secondary account doesn't prevent initiator account
@@ -1450,6 +1468,11 @@ TEST_F(DiceResponseHandlerTest,
   // Check there is no pending fetchers.
   EXPECT_EQ(
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+
+  // Verify completion signal contains expected secondary.
+  EXPECT_TRUE(session_complete_called_);
+  EXPECT_THAT(completed_secondary_accounts_,
+              testing::UnorderedElementsAre(secondary_account_id));
 }
 
 // Checks that timeout of one fetcher doesn't prevent others from succeeding.

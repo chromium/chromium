@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
@@ -114,6 +115,10 @@ class DiceWebSigninInterceptor : public KeyedService,
                                        signin_metrics::AccessPoint access_point,
                                        bool is_new_account,
                                        bool is_sync_signin);
+
+  void OnDiceSigninSessionComplete(
+      const CoreAccountId& initiator_account_id,
+      std::vector<CoreAccountId> secondary_accounts);
 
   // Called after the new profile was created during a signin interception.
   // The token has been moved to the new profile, but the account is not yet in
