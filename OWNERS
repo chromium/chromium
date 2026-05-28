@@ -44,6 +44,11 @@ per-file WATCHLISTS=*
 per-file .../SECURITY_OWNERS=set noparent
 per-file .../SECURITY_OWNERS=file://SECURITY_OWNERS
 
+# Release Branch ownership, managed by branch-managers@chromium.org
+file://BRANCH_FEATURE_OWNERS
+per-file BRANCH_FEATURE_OWNERS=file://BRANCH_OWNERS
+per-file BRANCH_OWNERS=file://BRANCH_OWNERS
+
 # git submodules
 per-file agents/internal=*
 per-file agents/shared=*
