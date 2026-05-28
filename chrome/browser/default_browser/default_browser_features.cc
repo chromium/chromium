@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chrome/common/webui_url_constants.h"
 #include "url/gurl.h"
 
 namespace default_browser {
@@ -43,9 +44,7 @@ DefaultBrowserSetterType GetDefaultBrowserSetterType() {
 
 GURL GetDefaultBrowserVisualGuideURL() {
   if (!base::FeatureList::IsEnabled(kDefaultBrowserSetterSelection)) {
-    // TODO(https://crbugs.com/454597786): Replace this with the const webui
-    // url.
-    GURL("chrome://default-browser/");
+    GURL(kChromeUIDefaultBrowserVisualGuidedSetterURL);
   }
 
   return GURL(kDefaultBrowserVisualGuideUrlParam.Get());
