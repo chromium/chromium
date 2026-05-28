@@ -196,7 +196,7 @@ const base::FeatureParam<base::TimeDelta> kPreviousTabRecencyThreshold(
     base::Seconds(30));
 
 const base::FeatureParam<std::string> kQueryEmbeddingTask{
-    &kContextualTasksContext, "ContextualTasksContextQueryEmbeddingTask", ""};
+    &kContextualTasksContext, "ContextualTasksContextQueryEmbeddingTask", "question answering"};
 
 const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing(
     &kContextualTasksContext,
