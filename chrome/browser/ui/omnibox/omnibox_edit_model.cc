@@ -800,41 +800,6 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
-void OmniboxEditModel::RecordAiModeButtonClick() {
-  OmniboxEventProto::PageClassification classification =
-      GetPageClassification();
-  const char* surface = "WebOmnibox";
-  if (omnibox::IsNtpOmnibox(classification)) {
-    surface = "NtpOmnibox";
-  } else if (omnibox::IsSearchResultsPage(classification)) {
-    surface = "SrpOmnibox";
-  }
-  std::string action =
-      base::StrCat({"ContextualSearch.AiModeButtonClick.", surface});
-  base::RecordAction(base::UserMetricsAction(action.c_str()));
-  base::UmaHistogramBoolean(action, true);
-}
-
-contextual_search::ContextualSearchSessionHandle*
-OmniboxEditModel::GetOrCreateContextualSearchSessionHandle(Profile* profile) {
-  if (!session_handle_) {
-    auto* service = ContextualSearchServiceFactory::GetForProfile(profile);
-    if (!service) {
-      return nullptr;
-    }
-    auto config_params = std::make_unique<
-        contextual_search::ContextualSearchContextController::ConfigParams>();
-    session_handle_ = service->CreateSession(
-        std::move(config_params),
-        contextual_search::ContextualSearchSource::kOmnibox,
-        lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
-    if (session_handle_) {
-      session_handle_->CheckSearchContentSharingSettings(profile->GetPrefs());
-    }
-  }
-  return session_handle_.get();
-}
-
 void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   AutocompleteMatch current_match =
       CurrentMatchAndAlternateNavUrl(/*alternate_nav_url=*/nullptr);
@@ -848,40 +813,9 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
     RecordAiModeButtonClick();
   }
 
-  bool force_navigation_to_aim =
-      !via_context_menu &&
-      base::FeatureList::IsEnabled(omnibox::kAiModeEntryPointAlwaysNavigates);
-  if (!force_navigation_to_aim && controller_->client()->IsAimPopupEnabled()) {
-    // In general, adding a context will always open the AIM popup, while the
-    // AIM button will prefer to navigate to the AI page with a query
-    // prepopulated.
-    bool open_aim_popup = via_context_menu;
-    // When the default suggestion is selected and the text is unmodified or
-    // clobbered, then there is no text to prepopulate, so resort to opening the
-    // AIM popup. `kNoMatch` is used on NTP focus and some other edge cases.
-    open_aim_popup |=
-        (popup_selection_.line == 0 ||
-         popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&
-        (!user_input_in_progress_ || user_text_.empty());
-    // If a URL match has been selected, there are privacy concerns
-    // with prepopulating the URL when navigating to the AI page, so instead
-    // open the AIM popup. This also applies to when the default suggestion is
-    // still selected with a user edit that defaults a URL.
-    open_aim_popup |= !AutocompleteMatch::IsSearchType(current_match.type);
-    // In summary:
-    // - Default suggestion selected:
-    //   - The text is unmodified -> AIM popup
-    //   - The text is clobbered -> AIM popup
-    //   - The text is modified, not empty, and defaults a URL -> AIM popup
-    //   - The text is modified, not empty, and defaults a search -> AI page
-    // - A non default suggestion is selected, regardless of user input state:
-    //   - if a URL suggestion is selected -> AIM popup
-    //   - if a search suggestion is selected -> AI page
-    if (open_aim_popup) {
-      controller_->popup_state_manager()->SetPopupState(
-          OmniboxPopupState::kAim);
-      return;
-    }
+  if (ShouldOpenAimPopup(via_context_menu, current_match.type)) {
+    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
+    return;
   }
 
   // Queries from the AI mode button will never have tab context.
@@ -894,65 +828,14 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
         contextual_search::ContextualSearchContextState::kMaxValue);
   }
 
-  if (!query_contextualizer_initialized_) {
-    query_contextualizer_initialized_ = true;
-#if !BUILDFLAG(IS_ANDROID)
-    if (controller_->client()->IsChromeOmniboxClient()) {
-      auto* chrome_omnibox_client =
-          static_cast<ChromeOmniboxClient*>(controller_->client());
-      auto* profile = chrome_omnibox_client->profile();
-      if (profile && chrome_omnibox_client->browser()) {
-        auto get_session_callback = base::BindRepeating(
-            &OmniboxEditModel::GetOrCreateContextualSearchSessionHandle,
-            base::Unretained(this), profile);
-        auto get_viewport_options_callback = base::BindRepeating(
-            []() -> std::optional<lens::ImageEncodingOptions> {
-              return std::nullopt;
-            });
-
-        query_contextualizer_delegate_ = std::make_unique<
-            contextual_tasks::DesktopQueryContextualizerDelegate>(
-            std::move(get_session_callback),
-            std::move(get_viewport_options_callback),
-            contextual_tasks::ContextualTasksContextServiceFactory::
-                GetForProfile(profile),
-            chrome_omnibox_client->browser());
-        auto* service =
-            contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-                profile);
-        query_contextualizer_ =
-            std::make_unique<contextual_tasks::QueryContextualizer>(
-                service, query_contextualizer_delegate_.get());
-      }
-    }
-#endif
-  }
+  InitializeQueryContextualizerIfNeeded();
 
   if (query_contextualizer_) {
-    if (session_handle_) {
-      session_handle_.reset();
-    }
-    query_contextualizer_->Contextualize(
-        /*task_id=*/std::nullopt, base::UTF16ToUTF8(query_text),
-        /*tabs_to_recontextualize=*/{},
-        /*tabs_to_force_contextualize=*/{},
-        /*on_ineligible_callback=*/base::DoNothing(),
-        /*on_processed_callback=*/base::DoNothing(),
-        base::BindOnce(&OmniboxEditModel::OnContextualizationComplete,
-                       weak_factory_.GetWeakPtr(), query_text,
-                       WindowOpenDisposition::CURRENT_TAB),
-        /*enable_smart_tab_selection=*/false);
-    return;
+    NavigateToAiModeWithContextualizer(query_text);
+  } else {
+    // Fallback if contextualizer is not available (e.g. service is null).
+    NavigateToAiModeWithoutContextualizer(query_text);
   }
-
-  // Fallback if contextualizer is not available (e.g. service is null).
-  GURL ai_mode_url =
-      GetUrlForAim(controller_->client()->GetTemplateURLService(),
-                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
-                   /*query_start_time=*/base::Time::Now(), query_text,
-                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
-                   /*additional_params=*/{});
-  controller_->client()->OpenUrl(ai_mode_url);
 }
 
 void OmniboxEditModel::OpenLensSearch() {
@@ -964,111 +847,6 @@ void OmniboxEditModel::OpenLensSearch() {
         WindowOpenDisposition::CURRENT_TAB, GURL(), std::u16string(),
         base::TimeTicks::Now());
   }
-}
-
-void OmniboxEditModel::OnContextualizationComplete(
-    const std::u16string& query_text,
-    WindowOpenDisposition disposition,
-    base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
-        session_handle) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!controller_->client()->IsChromeOmniboxClient()) {
-    return;
-  }
-  auto* chrome_omnibox_client =
-      static_cast<ChromeOmniboxClient*>(controller_->client());
-
-  if (session_handle) {
-    auto request_info =
-        std::make_unique<contextual_search::ContextualSearchContextController::
-                             CreateSearchUrlRequestInfo>();
-    request_info->query_text = base::UTF16ToUTF8(query_text);
-    request_info->query_start_time = base::Time::Now();
-    request_info->search_url_type = contextual_search::
-        ContextualSearchContextController::SearchUrlType::kAim;
-    request_info->aim_entry_point =
-        omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT;
-    request_info->invocation_source =
-        lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
-
-    session_handle->CreateSearchUrl(
-        std::move(request_info),
-        base::BindOnce(&OmniboxEditModel::NavigateToUrlWithSession,
-                       weak_factory_.GetWeakPtr(), std::move(session_handle),
-                       query_text, disposition));
-    return;
-  }
-
-  GURL ai_mode_url =
-      GetUrlForAim(chrome_omnibox_client->GetTemplateURLService(),
-                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
-                   /*query_start_time=*/base::Time::Now(), query_text,
-                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
-                   /*additional_params=*/{});
-
-  NavigateToUrlWithSession(nullptr, query_text, disposition, ai_mode_url);
-#endif
-}
-
-void OmniboxEditModel::NavigateToUrlWithSession(
-    base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
-        session_handle,
-    const std::u16string& query_text,
-    WindowOpenDisposition disposition,
-    GURL url) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto* chrome_omnibox_client =
-      static_cast<ChromeOmniboxClient*>(controller_->client());
-  auto* location_bar = chrome_omnibox_client->GetLocationBar();
-  content::WebContents* web_contents =
-      location_bar ? location_bar->GetWebContents() : nullptr;
-
-  std::unique_ptr<contextual_search::ContextualSearchSessionHandle> new_handle;
-  auto* service = ContextualSearchServiceFactory::GetForProfile(
-      chrome_omnibox_client->profile());
-  if (session_handle && service) {
-    new_handle = service->GetSession(session_handle->session_id(),
-                                     session_handle->invocation_source());
-    if (new_handle) {
-      new_handle->set_submitted_context_tokens(
-          session_handle->GetSubmittedContextTokens());
-      new_handle->CheckSearchContentSharingSettings(
-          chrome_omnibox_client->profile()->GetPrefs());
-    }
-  }
-
-  if (new_handle && web_contents) {
-    auto navigation_handle_callback = base::BindOnce(
-        [](std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-               handle,
-           base::WeakPtr<content::WebContents> web_contents,
-           base::WeakPtr<content::NavigationHandle> navigation_handle) {
-          if (!web_contents) {
-            return;
-          }
-          auto* helper =
-              ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-                  web_contents.get());
-          helper->SetTaskSession(std::nullopt, std::move(handle), nullptr);
-        },
-        std::move(new_handle), web_contents->GetWeakPtr());
-
-    chrome_omnibox_client->OpenUrlWithCallback(
-        url, disposition, std::move(navigation_handle_callback));
-
-    // Manually close the popup and revert text synchronously here because
-    // `OpenUrlWithCallback` uses the asynchronous version of `Navigate()`.
-    // In the `else` block, `OpenUrl` uses the synchronous `Navigate()`, which
-    // causes the browser to immediately shift focus and reset state. For the
-    // async branch, doing it manually ensures immediate UI feedback.
-    if (view_) {
-      base::AutoReset<bool> tmp(&in_revert_, true);
-      view_->RevertAll();
-    }
-  } else {
-    chrome_omnibox_client->OpenUrl(url);
-  }
-#endif
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
@@ -3478,4 +3256,267 @@ void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query_text,
       base::StrCat({kOmniboxAimEntrypointActivatedViaKeyboard,
                     ".ByPageContext.", page_context}),
       via_keyboard);
+}
+
+void OmniboxEditModel::RecordAiModeButtonClick() {
+  OmniboxEventProto::PageClassification classification =
+      GetPageClassification();
+  const char* surface = "WebOmnibox";
+  if (omnibox::IsNtpOmnibox(classification)) {
+    surface = "NtpOmnibox";
+  } else if (omnibox::IsSearchResultsPage(classification)) {
+    surface = "SrpOmnibox";
+  }
+  std::string action =
+      base::StrCat({"ContextualSearch.AiModeButtonClick.", surface});
+  base::RecordAction(base::UserMetricsAction(action.c_str()));
+  base::UmaHistogramBoolean(action, true);
+}
+
+bool OmniboxEditModel::ShouldOpenAimPopup(
+    bool via_context_menu,
+    AutocompleteMatchType::Type current_match_type) {
+  if (!controller_->client()->IsAimPopupEnabled()) {
+    return false;
+  }
+
+  // In general, adding a context will always open the AIM popup, while the AIM
+  // button will prefer to navigate to the AI page with a query prepopulated.
+  if (via_context_menu) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(omnibox::kAiModeEntryPointAlwaysNavigates)) {
+    return false;
+  }
+
+  // When the default suggestion is selected and the text is unmodified or
+  // clobbered, then there is no text to prepopulate, so resort to opening the
+  // AIM popup. `kNoMatch` is used on NTP focus and some other edge cases.
+  if ((popup_selection_.line == 0 ||
+       popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&
+      (!user_input_in_progress_ || user_text_.empty())) {
+    return true;
+  }
+
+  // If a URL match has been selected, there are privacy concerns with
+  // prepopulating the URL when navigating to the AI page, so instead open the
+  // AIM popup. This also applies to when the default suggestion is still
+  // selected with a user edit that defaults a URL.
+  if (!AutocompleteMatch::IsSearchType(current_match_type)) {
+    return true;
+  }
+
+  return false;
+
+  // In summary:
+  // - Default suggestion selected:
+  //   - The text is unmodified -> AIM popup
+  //   - The text is clobbered -> AIM popup
+  //   - The text is modified, not empty, and defaults a URL -> AIM popup
+  //   - The text is modified, not empty, and defaults a search -> AI page
+  // - A non default suggestion is selected, regardless of user input state:
+  //   - If a URL suggestion is selected -> AIM popup
+  //   - If a search suggestion is selected -> AI page
+}
+
+void OmniboxEditModel::InitializeQueryContextualizerIfNeeded() {
+  if (query_contextualizer_initialized_) {
+    return;
+  }
+
+  query_contextualizer_initialized_ = true;
+#if !BUILDFLAG(IS_ANDROID)
+  if (!controller_->client()->IsChromeOmniboxClient()) {
+    return;
+  }
+
+  auto* chrome_omnibox_client =
+      static_cast<ChromeOmniboxClient*>(controller_->client());
+  auto* profile = chrome_omnibox_client->profile();
+  if (!profile || !chrome_omnibox_client->browser()) {
+    return;
+  }
+
+  auto get_session_callback = base::BindRepeating(
+      &OmniboxEditModel::GetOrCreateContextualSearchSessionHandle,
+      base::Unretained(this), profile);
+  auto get_viewport_options_callback =
+      base::BindRepeating([]() -> std::optional<lens::ImageEncodingOptions> {
+        return std::nullopt;
+      });
+
+  query_contextualizer_delegate_ =
+      std::make_unique<contextual_tasks::DesktopQueryContextualizerDelegate>(
+          std::move(get_session_callback),
+          std::move(get_viewport_options_callback),
+          contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
+              profile),
+          chrome_omnibox_client->browser());
+  auto* service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
+  query_contextualizer_ =
+      std::make_unique<contextual_tasks::QueryContextualizer>(
+          service, query_contextualizer_delegate_.get());
+#endif
+}
+
+contextual_search::ContextualSearchSessionHandle*
+OmniboxEditModel::GetOrCreateContextualSearchSessionHandle(Profile* profile) {
+  if (!session_handle_) {
+    auto* service = ContextualSearchServiceFactory::GetForProfile(profile);
+    if (!service) {
+      return nullptr;
+    }
+    auto config_params = std::make_unique<
+        contextual_search::ContextualSearchContextController::ConfigParams>();
+    session_handle_ = service->CreateSession(
+        std::move(config_params),
+        contextual_search::ContextualSearchSource::kOmnibox,
+        lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+    if (session_handle_) {
+      session_handle_->CheckSearchContentSharingSettings(profile->GetPrefs());
+    }
+  }
+  return session_handle_.get();
+}
+
+void OmniboxEditModel::NavigateToAiModeWithContextualizer(
+    std::u16string query_text) {
+  if (session_handle_) {
+    session_handle_.reset();
+  }
+  query_contextualizer_->Contextualize(
+      /*task_id=*/std::nullopt, base::UTF16ToUTF8(query_text),
+      /*tabs_to_recontextualize=*/{},
+      /*tabs_to_force_contextualize=*/{},
+      /*on_ineligible_callback=*/base::DoNothing(),
+      /*on_processed_callback=*/base::DoNothing(),
+      base::BindOnce(
+          &OmniboxEditModel::
+              NavigateToAiModeWithContextualizerOnContextualizationComplete,
+          weak_factory_.GetWeakPtr(), query_text,
+          WindowOpenDisposition::CURRENT_TAB),
+      /*enable_smart_tab_selection=*/false);
+}
+
+void OmniboxEditModel::
+    NavigateToAiModeWithContextualizerOnContextualizationComplete(
+        const std::u16string& query_text,
+        WindowOpenDisposition disposition,
+        base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+            session_handle) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!controller_->client()->IsChromeOmniboxClient()) {
+    return;
+  }
+  auto* chrome_omnibox_client =
+      static_cast<ChromeOmniboxClient*>(controller_->client());
+
+  if (session_handle) {
+    auto request_info =
+        std::make_unique<contextual_search::ContextualSearchContextController::
+                             CreateSearchUrlRequestInfo>();
+    request_info->query_text = base::UTF16ToUTF8(query_text);
+    request_info->query_start_time = base::Time::Now();
+    request_info->search_url_type = contextual_search::
+        ContextualSearchContextController::SearchUrlType::kAim;
+    request_info->aim_entry_point =
+        omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT;
+    request_info->invocation_source =
+        lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
+
+    session_handle->CreateSearchUrl(
+        std::move(request_info),
+        base::BindOnce(
+            &OmniboxEditModel::
+                NavigateToAiModeWithContextualizerNavigateToUrlWithSession,
+            weak_factory_.GetWeakPtr(), std::move(session_handle), query_text,
+            disposition));
+    return;
+  }
+
+  GURL ai_mode_url =
+      GetUrlForAim(chrome_omnibox_client->GetTemplateURLService(),
+                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
+                   /*query_start_time=*/base::Time::Now(), query_text,
+                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+                   /*additional_params=*/{});
+
+  NavigateToAiModeWithContextualizerNavigateToUrlWithSession(
+      nullptr, query_text, disposition, ai_mode_url);
+#endif
+}
+
+void OmniboxEditModel::
+    NavigateToAiModeWithContextualizerNavigateToUrlWithSession(
+        base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+            session_handle,
+        const std::u16string& query_text,
+        WindowOpenDisposition disposition,
+        GURL url) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto* chrome_omnibox_client =
+      static_cast<ChromeOmniboxClient*>(controller_->client());
+  auto* location_bar = chrome_omnibox_client->GetLocationBar();
+  content::WebContents* web_contents =
+      location_bar ? location_bar->GetWebContents() : nullptr;
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle> new_handle;
+  auto* service = ContextualSearchServiceFactory::GetForProfile(
+      chrome_omnibox_client->profile());
+  if (session_handle && service) {
+    new_handle = service->GetSession(session_handle->session_id(),
+                                     session_handle->invocation_source());
+    if (new_handle) {
+      new_handle->set_submitted_context_tokens(
+          session_handle->GetSubmittedContextTokens());
+      new_handle->CheckSearchContentSharingSettings(
+          chrome_omnibox_client->profile()->GetPrefs());
+    }
+  }
+
+  if (new_handle && web_contents) {
+    auto navigation_handle_callback = base::BindOnce(
+        [](std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+               handle,
+           base::WeakPtr<content::WebContents> web_contents,
+           base::WeakPtr<content::NavigationHandle> navigation_handle) {
+          if (!web_contents) {
+            return;
+          }
+          auto* helper =
+              ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+                  web_contents.get());
+          helper->SetTaskSession(std::nullopt, std::move(handle), nullptr);
+        },
+        std::move(new_handle), web_contents->GetWeakPtr());
+
+    chrome_omnibox_client->OpenUrlWithCallback(
+        url, disposition, std::move(navigation_handle_callback));
+
+    // Manually close the popup and revert text synchronously here because
+    // `OpenUrlWithCallback` uses the asynchronous version of `Navigate()`.
+    // In the `else` block, `OpenUrl` uses the synchronous `Navigate()`, which
+    // causes the browser to immediately shift focus and reset state. For the
+    // async branch, doing it manually ensures immediate UI feedback.
+    if (view_) {
+      base::AutoReset<bool> tmp(&in_revert_, true);
+      view_->RevertAll();
+    }
+  } else {
+    chrome_omnibox_client->OpenUrl(url);
+  }
+#endif
+}
+
+void OmniboxEditModel::NavigateToAiModeWithoutContextualizer(
+    std::u16string query_text) {
+  GURL ai_mode_url =
+      GetUrlForAim(controller_->client()->GetTemplateURLService(),
+                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
+                   /*query_start_time=*/base::Time::Now(), query_text,
+                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+                   /*additional_params=*/{});
+  controller_->client()->OpenUrl(ai_mode_url);
 }

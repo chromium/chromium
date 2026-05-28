@@ -261,16 +261,13 @@ class OmniboxEditModel {
                       AutocompleteMatch* match,
                       GURL* alternate_nav_url) const;
 
-  void RecordAiModeButtonClick();
-
   // Navigates to AI Mode, with the contents of the currently selected match, if
-  // any.
-  // `via_keyboard` is set to `true` if AI Mode was invoked via keyboard event
-  // and is set to `false` if AI Mode was invoked via mouse / gesture event.
-  // Virtual for testing.
-  // `via_context_menu` is used to differentiate between users that open
+  // any. `via_keyboard` is set to `true` if AI Mode was invoked via keyboard
+  // event and is set to `false` if AI Mode was invoked via mouse / gesture
+  // event. `via_context_menu` is used to differentiate between users that open
   // the popup via the AI mode button vs context menu and allow for the popup
   // to open rather than navigate to the Google AI page when context is added.
+  // Virtual for testing.
   virtual void OpenAiMode(bool via_keyboard, bool via_context_menu);
 
   // Returns true if the popup is open and is in in AI-Mode.
@@ -762,21 +759,47 @@ class OmniboxEditModel {
                            bool activated,
                            bool via_keyboard);
 
-  void OnContextualizationComplete(
+  // TODO(niharm): Add comment.
+  void RecordAiModeButtonClick();
+
+  // Helper for `OpenAiMode()` to determine whether the AIM popup should open or
+  // a navigation should occur.
+  bool ShouldOpenAimPopup(bool via_context_menu,
+                          AutocompleteMatchType::Type current_match_type);
+
+  // Helper for `OpenAiMode()` to initialize `query_contextualizer_`. No-op if
+  // called before. `query_contextualizer_` may be null after this is called.
+  void InitializeQueryContextualizerIfNeeded();
+
+  // TODO(hujasonx): Add comment.
+  // Helper for `InitializeQueryContextualizerIfNeeded()`...
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateContextualSearchSessionHandle(Profile* profile);
+
+  // TODO(hujasonx): Add comment.
+  // Helper for `OpenAiMode()`...
+  void NavigateToAiModeWithContextualizer(std::u16string query_text);
+
+  // TODO(hujasonx): Add comment and possibly rename.
+  // Helper for `OpenAiMode()`...
+  void NavigateToAiModeWithContextualizerOnContextualizationComplete(
       const std::u16string& query_text,
       WindowOpenDisposition disposition,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
-  contextual_search::ContextualSearchSessionHandle*
-  GetOrCreateContextualSearchSessionHandle(Profile* profile);
-
-  void NavigateToUrlWithSession(
+  // TODO(hujasonx): Add comment and possibly rename.
+  // Helper for `OpenAiMode()`...
+  void NavigateToAiModeWithContextualizerNavigateToUrlWithSession(
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
       const std::u16string& query_text,
       WindowOpenDisposition disposition,
       GURL url);
+
+  // Helper for `OpenAiMode()` to navigate to the DSE's AI mode page without
+  // including context.
+  void NavigateToAiModeWithoutContextualizer(std::u16string query_text);
 
   // Owns this.
   const raw_ptr<OmniboxController> controller_;
