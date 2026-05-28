@@ -237,6 +237,9 @@ id<GREYMatcher> ContextMenuButtonContainingText(NSString* text);
 // toolbar).
 id<GREYMatcher> TabShareButton();
 
+// Returns a matcher for the Share button in the overflow menu.
+id<GREYMatcher> OverflowMenuShareButton();
+
 // Returns a matcher for show tabs button.
 // DO NOT use this matcher to open the tab grid. Instead use one of the helpers:
 // `[ChromeEarlGrey  showTabSwitcher]` or `[ChromeEarlGreyUI openTabGrid]`.

@@ -164,6 +164,10 @@
 // This method requires that there is at least one tab open.
 - (void)openShareMenu;
 
+// Shares the current page. It taps the share button on the toolbar if visible,
+// or opens the tools menu and taps the share action.
+- (void)shareCurrentPage;
+
 // Waits for toolbar to become visible if `isVisible` is YES, otherwise waits
 // for it to disappear. If the condition is not met within a timeout, a
 // GREYAssert is induced.

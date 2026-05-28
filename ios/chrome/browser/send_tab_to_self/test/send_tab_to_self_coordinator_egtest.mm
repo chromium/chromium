@@ -15,6 +15,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -78,8 +79,6 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
     config.features_enabled.push_back(
         send_tab_to_self::kSendTabToSelfPostSendToast);
   }
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -97,8 +96,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI shareCurrentPage];
 
   NSString* sendTabToSelf =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
@@ -112,8 +110,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI shareCurrentPage];
 
   NSString* sendTabToSelf =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
@@ -138,8 +135,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
@@ -165,8 +161,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
@@ -188,8 +183,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
@@ -237,8 +231,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];

@@ -447,6 +447,17 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tap()];
 }
 
+- (void)shareCurrentPage {
+  if ([ChromeEarlGrey isChromeNextEnabled] &&
+      ![ChromeEarlGrey isCompactHeight]) {
+    [self openToolsMenu];
+    [self tapToolsMenuAction:chrome_test_util::OverflowMenuShareButton()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+        performAction:grey_tap()];
+  }
+}
+
 - (void)waitForToolbarVisible:(BOOL)isVisible {
   ConditionBlock condition = ^{
     NSError* error = nil;

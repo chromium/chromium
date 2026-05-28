@@ -754,6 +754,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)overflowMenuShareButton {
+  return grey_allOf(grey_accessibilityID(kToolsMenuShareId),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)showTabsButton {
   NSString* accessibilityIdentifier = kToolbarStackButtonIdentifier;
   if (IsChromeNextIaEnabled()) {

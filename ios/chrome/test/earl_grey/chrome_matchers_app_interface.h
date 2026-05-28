@@ -221,6 +221,9 @@
 // Matcher for the tab Share button (either in the omnibox or the toolbar).
 + (id<GREYMatcher>)tabShareButton;
 
+// Matcher for the Share button in the overflow menu.
++ (id<GREYMatcher>)overflowMenuShareButton;
+
 // Matcher for show tabs button.
 + (id<GREYMatcher>)showTabsButton;
 

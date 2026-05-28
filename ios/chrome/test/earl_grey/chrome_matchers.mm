@@ -295,6 +295,10 @@ id<GREYMatcher> TabShareButton() {
   return [ChromeMatchersAppInterface tabShareButton];
 }
 
+id<GREYMatcher> OverflowMenuShareButton() {
+  return [ChromeMatchersAppInterface overflowMenuShareButton];
+}
+
 id<GREYMatcher> ShowTabsButton() {
   return [ChromeMatchersAppInterface showTabsButton];
 }
