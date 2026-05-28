@@ -49,7 +49,7 @@ struct PageEmbeddingsService::Pending {
 
 // Embedding computation is currently in progress for the page.
 struct PageEmbeddingsService::Computing {
-  passage_embeddings::Embedder::TaskId task_id;
+  passage_embeddings::Embedder::Job job;
 };
 
 // Embeddings have been successfully computed for the page and are available.
@@ -94,10 +94,6 @@ class PageEmbeddingsService::WebContentsEventsObserver
     auto loc =
         page_embeddings_service_->web_contents_states_.find(web_contents());
     if (loc != page_embeddings_service_->web_contents_states_.end()) {
-      if (auto* computing =
-              std::get_if<Computing>(&loc->second.embeddings_state)) {
-        page_embeddings_service_->embedder_->TryCancel(computing->task_id);
-      }
       loc->second.page = nullptr;
       loc->second.embeddings_state = Unavailable{};
     }
@@ -295,8 +291,8 @@ void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
   }
 
   WebContentsState& state = loc->second;
-  if (auto* computing = std::get_if<Computing>(&state.embeddings_state)) {
-    embedder_->TryCancel(computing->task_id);
+  if (std::holds_alternative<Computing>(state.embeddings_state)) {
+    state.embeddings_state = Unavailable{};
   }
 
   state.page = page.GetWeakPtr();
@@ -353,13 +349,14 @@ void PageEmbeddingsService::ComputeEmbeddings(content::Page& page) {
     passage_types.push_back(passage.second);
   }
 
-  auto task_id = embedder_->ComputePassagesEmbeddings(
-      ConvertToPassagePriority(current_priority_), std::move(string_passages),
-      base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(passage_types),
-                     web_contents->GetWeakPtr(), state.page));
-
-  state.embeddings_state = Computing{.task_id = task_id};
+  state.embeddings_state =
+      Computing{.job = embedder_->ComputePassagesEmbeddings(
+                    ConvertToPassagePriority(current_priority_),
+                    std::move(string_passages),
+                    base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(passage_types),
+                                   web_contents->GetWeakPtr(), state.page))};
 }
 
 void PageEmbeddingsService::ComputeEmbeddingsOnHide(content::Page& page) {
@@ -407,7 +404,7 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
   }
 
   auto* computing = std::get_if<Computing>(&loc->second.embeddings_state);
-  if (!computing || computing->task_id != task_id) {
+  if (!computing || computing->job.task_id() != task_id) {
     return;
   }
 
@@ -454,7 +451,7 @@ PageEmbeddingsService::Priority PageEmbeddingsService::GetActivePriority(
 }
 
 void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
-  if (priority == current_priority_) {
+  if (current_priority_ == priority) {
     return;
   }
 
@@ -464,7 +461,7 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
   for (const auto& [web_contents, web_contents_state] : web_contents_states_) {
     if (auto* computing =
             std::get_if<Computing>(&web_contents_state.embeddings_state)) {
-      tasks.insert(computing->task_id);
+      tasks.insert(computing->job.task_id());
     }
   }
 

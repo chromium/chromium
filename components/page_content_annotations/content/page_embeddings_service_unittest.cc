@@ -15,6 +15,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -64,9 +65,9 @@ Candidates GenerateCandidates(const PageContent& page_content,
       page_content);
 }
 
-class EmbedderMock : public passage_embeddings::Embedder {
+class EmbedderMock : public passage_embeddings::TestEmbedder {
  public:
-  MOCK_METHOD(passage_embeddings::Embedder::TaskId,
+  MOCK_METHOD(passage_embeddings::Embedder::Job,
               ComputePassagesEmbeddings,
               (passage_embeddings::PassagePriority priority,
                std::vector<std::string> passages,
@@ -111,6 +112,20 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
                                      &page_content_extraction_service_.value(),
                                      &embedder_mock_,
                                      /*embedder_metadata_provider=*/nullptr);
+
+    ON_CALL(embedder_mock_, ComputePassagesEmbeddings)
+        .WillByDefault(
+            [this](
+                passage_embeddings::PassagePriority priority,
+                std::vector<std::string> passages,
+                passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                    callback) {
+              return embedder_mock_
+                  .passage_embeddings::TestEmbedder::ComputePassagesEmbeddings(
+                      priority, std::move(passages), std::move(callback));
+            });
+    EXPECT_CALL(embedder_mock_, TryCancel(testing::_))
+        .Times(testing::AnyNumber());
   }
 
   void TearDown() override {
@@ -145,10 +160,12 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
 
   EmbedderMock& embedder_mock() { return embedder_mock_; }
 
+ protected:
+  testing::NiceMock<EmbedderMock> embedder_mock_;
+
  private:
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<PageContentExtractionService> page_content_extraction_service_;
-  testing::NiceMock<EmbedderMock> embedder_mock_;
   std::optional<PageEmbeddingsService> page_embeddings_service_;
 };
 
@@ -162,12 +179,13 @@ TEST_F(PageEmbeddingsServiceTest, GeneratesCandidatePassages) {
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
       .WillByDefault(
-          [](passage_embeddings::PassagePriority priority,
-             std::vector<std::string> passages,
-             passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
-                 callback) {
+          [this](passage_embeddings::PassagePriority priority,
+                 std::vector<std::string> passages,
+                 passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                     callback) {
             EXPECT_THAT(passages, ElementsAre("passage text"));
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -199,7 +217,8 @@ TEST_F(PageEmbeddingsServiceTest, NotifiesObserver) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -240,7 +259,8 @@ TEST_F(PageEmbeddingsServiceTest,
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -274,7 +294,8 @@ TEST_F(PageEmbeddingsServiceTest, GetEmbeddings) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -314,7 +335,8 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsNotPresentOnError) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -343,7 +365,11 @@ TEST_F(PageEmbeddingsServiceTest, NewPageContentCancelsExistingEmbeddingTask) {
       CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
 
   // Return the task id and don't compute the embeddings.
-  ON_CALL(embedder_mock(), ComputePassagesEmbeddings).WillByDefault(Return(1));
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault([this](auto, auto, auto) {
+        return passage_embeddings::Embedder::Job(embedder_mock_.GetWeakPtr(),
+                                                 1);
+      });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(2);
 
@@ -355,7 +381,11 @@ TEST_F(PageEmbeddingsServiceTest, NewPageContentCancelsExistingEmbeddingTask) {
       web_contents->GetPrimaryPage(),
       base::MakeRefCounted<RefCountedAnnotatedPageContent>());
 
-  ON_CALL(embedder_mock(), ComputePassagesEmbeddings).WillByDefault(Return(2));
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault([this](auto, auto, auto) {
+        return passage_embeddings::Embedder::Job(embedder_mock_.GetWeakPtr(),
+                                                 2);
+      });
   EXPECT_CALL(embedder_mock(), TryCancel(1));
 
   page_embeddings_service().OnPageContentExtracted(
@@ -379,7 +409,8 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnWebContentsDestroyed) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -425,7 +456,8 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback1 = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   page_embeddings_service().OnPageContentExtracted(
@@ -439,7 +471,8 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback2 = std::move(callback);
-            return 2;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 2);
           });
 
   // Providing page content a second time should try to cancel the first
@@ -492,7 +525,8 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback1 = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   page_embeddings_service().OnPageContentExtracted(
@@ -506,7 +540,8 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback2 = std::move(callback);
-            return 2;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 2);
           });
 
   // Providing page content a second time should try to cancel the first
@@ -561,13 +596,14 @@ TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
   const auto set_priority_expectation =
       [this](passage_embeddings::PassagePriority expected_priority) {
         ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
-            .WillByDefault([expected_priority](
+            .WillByDefault([this, expected_priority](
                                passage_embeddings::PassagePriority priority,
                                std::vector<std::string> passages,
                                passage_embeddings::Embedder::
                                    ComputePassagesEmbeddingsCallback callback) {
               EXPECT_EQ(expected_priority, priority);
-              return 1;
+              return passage_embeddings::Embedder::Job(
+                  embedder_mock_.GetWeakPtr(), 1);
             });
       };
 
@@ -638,14 +674,19 @@ TEST_F(PageEmbeddingsServiceTest, TasksReprioritized) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents1->GetPrimaryPage(),
       base::MakeRefCounted<RefCountedAnnotatedPageContent>());
 
-  ON_CALL(embedder_mock(), ComputePassagesEmbeddings).WillByDefault(Return(2));
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault([this](auto, auto, auto) {
+        return passage_embeddings::Embedder::Job(embedder_mock_.GetWeakPtr(),
+                                                 2);
+      });
   page_embeddings_service().OnPageContentExtracted(
       web_contents2->GetPrimaryPage(),
       base::MakeRefCounted<RefCountedAnnotatedPageContent>());
@@ -695,13 +736,14 @@ TEST_F(PageEmbeddingsServiceTest, ScopedPriority) {
   const auto set_priority_expectation =
       [this](passage_embeddings::PassagePriority expected_priority) {
         ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
-            .WillByDefault([expected_priority](
+            .WillByDefault([this, expected_priority](
                                passage_embeddings::PassagePriority priority,
                                std::vector<std::string> passages,
                                passage_embeddings::Embedder::
                                    ComputePassagesEmbeddingsCallback callback) {
               EXPECT_EQ(expected_priority, priority);
-              return 1;
+              return passage_embeddings::Embedder::Job(
+                  embedder_mock_.GetWeakPtr(), 1);
             });
       };
 
@@ -753,13 +795,14 @@ TEST_F(PageEmbeddingsServiceTest, ScopedPriorityWithHigherPriorityObserver) {
   const auto set_priority_expectation =
       [this](passage_embeddings::PassagePriority expected_priority) {
         ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
-            .WillByDefault([expected_priority](
+            .WillByDefault([this, expected_priority](
                                passage_embeddings::PassagePriority priority,
                                std::vector<std::string> passages,
                                passage_embeddings::Embedder::
                                    ComputePassagesEmbeddingsCallback callback) {
               EXPECT_EQ(expected_priority, priority);
-              return 1;
+              return passage_embeddings::Embedder::Job(
+                  embedder_mock_.GetWeakPtr(), 1);
             });
       };
 
@@ -831,7 +874,8 @@ TEST_F(PageEmbeddingsServiceTest,
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
 
@@ -875,7 +919,8 @@ TEST_F(PageEmbeddingsServiceTest,
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
 
@@ -933,7 +978,8 @@ TEST_F(PageEmbeddingsServiceTest,
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
 
@@ -979,7 +1025,8 @@ TEST_F(PageEmbeddingsServiceTest,
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
 
@@ -1110,7 +1157,8 @@ TEST_F(PageEmbeddingsServiceTest, NewPageWithNoPassagesClearsOldEmbeddings) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -1154,12 +1202,13 @@ TEST_F(PageEmbeddingsServiceTest, GeneratesCandidatePassagesFromPDFText) {
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
       .WillByDefault(
-          [](passage_embeddings::PassagePriority priority,
-             std::vector<std::string> passages,
-             passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
-                 callback) {
+          [this](passage_embeddings::PassagePriority priority,
+                 std::vector<std::string> passages,
+                 passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                     callback) {
             EXPECT_THAT(passages, ElementsAre("pdf text content"));
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
@@ -1193,7 +1242,8 @@ TEST_F(PageEmbeddingsServiceTest, BFCacheRaceReproduction) {
               passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                   callback) {
             compute_passages_embeddings_callback = std::move(callback);
-            return 1;
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
           });
 
   // 1. Initial page load (attacker.com).

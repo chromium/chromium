@@ -26,17 +26,24 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo();
 // An Embedder that generates Embeddings asynchronously.
 class TestEmbedder : public Embedder {
  public:
-  TestEmbedder() = default;
-  ~TestEmbedder() override = default;
+  TestEmbedder();
+  ~TestEmbedder() override;
 
   // Embedder:
-  TaskId ComputePassagesEmbeddings(
+  Job ComputePassagesEmbeddings(
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+  base::WeakPtr<Embedder> GetWeakPtr() override;
+
+ protected:
   void ReprioritizeTasks(PassagePriority priority,
                          const std::set<TaskId>& tasks) override;
   bool TryCancel(TaskId task_id) override;
+
+ private:
+  TaskId next_task_id_ = 1;
+  base::WeakPtrFactory<TestEmbedder> weak_ptr_factory_{this};
 };
 
 ////////////////////////////////////////////////////////////////////////////////

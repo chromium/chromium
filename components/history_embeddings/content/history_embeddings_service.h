@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -365,8 +366,13 @@ class HistoryEmbeddingsService
   // search loop while running so the atomic is needed for thread safety.
   std::atomic<size_t> query_id_ = 0u;
 
+  // A list of in-flight jobs for rebuilding absent embeddings.
+  base::flat_set<passage_embeddings::Embedder::Job,
+                 passage_embeddings::Embedder::JobTaskIdComparator>
+      rebuild_jobs_;
+
   // Used to cancel the in-flight embedding task for the previous stale query.
-  std::optional<passage_embeddings::Embedder::TaskId> query_embedding_task_id_;
+  std::optional<passage_embeddings::Embedder::Job> query_embedding_job_;
 
   base::ScopedObservation<
       page_content_annotations::PageEmbeddingsService,

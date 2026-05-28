@@ -89,7 +89,7 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
   ~FakeEmbedder() override = default;
 
   // passage_embeddings::TestEmbedder:
-  passage_embeddings::Embedder::TaskId ComputePassagesEmbeddings(
+  passage_embeddings::Embedder::Job ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
@@ -106,23 +106,22 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
                       passages.size(),
                       passage_embeddings::Embedding({1.0f, 0.0f, 0.0f}));
                   std::move(callback).Run(std::move(passages),
-                                          std::move(embeddings), 0, status);
+                                          std::move(embeddings), 1, status);
                 },
                 std::move(callback), std::move(passages), status_),
             *timeout_);
-        return 0;
+        return passage_embeddings::Embedder::Job(GetWeakPtr(), 1);
       }
 
-      passage_embeddings::TestEmbedder::ComputePassagesEmbeddings(
+      return passage_embeddings::TestEmbedder::ComputePassagesEmbeddings(
           priority, std::move(passages), std::move(callback));
-      return 0;
     }
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(passages),
                                   std::vector<passage_embeddings::Embedding>(),
-                                  0, status_));
-    return 0;
+                                  1, status_));
+    return passage_embeddings::Embedder::Job(GetWeakPtr(), 1);
   }
 
   void set_status(passage_embeddings::ComputeEmbeddingsStatus status) {

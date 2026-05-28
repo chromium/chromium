@@ -132,7 +132,7 @@ TEST_F(SchedulingEmbedderTest, TranslatesServiceOutput) {
       });
 
   ComputePassagesEmbeddingsFuture future;
-  Embedder::TaskId task_id = embedder->ComputePassagesEmbeddings(
+  Embedder::Job job = embedder->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 1", "test passage 2"},
       future.GetCallback());
 
@@ -141,7 +141,7 @@ TEST_F(SchedulingEmbedderTest, TranslatesServiceOutput) {
   ASSERT_EQ(embeddings.size(), 2u);
   EXPECT_THAT(embeddings[0].GetData(), ElementsAre(1.0f, 0.0f));
   EXPECT_THAT(embeddings[1].GetData(), ElementsAre(0.0f, 1.0f));
-  EXPECT_EQ(task_id, received_task_id);
+  EXPECT_EQ(job.task_id(), received_task_id);
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
 }
 
@@ -173,15 +173,15 @@ TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
       .WillOnce(save_call_parameters);
 
   // Submit a passive priority task.
-  embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
-                                      {"test passage 1", "test passage 2"},
-                                      base::BindOnce(&IgnoreResults));
+  Embedder::Job job1 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 1", "test passage 2"},
+      base::BindOnce(&IgnoreResults));
 
   // Submit a user-initiated priority task. This will suspend the partially
   // completed passive priority task.
-  embedder->ComputePassagesEmbeddings(PassagePriority::kUserInitiated,
-                                      {"query"},
-                                      base::BindOnce(&IgnoreResults));
+  Embedder::Job job2 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kUserInitiated, {"query"},
+      base::BindOnce(&IgnoreResults));
 
   ASSERT_EQ(calls.size(), 1u);
   EXPECT_THAT(calls.back().passages, ElementsAre("test passage 1"));
@@ -236,11 +236,11 @@ TEST_F(SchedulingEmbedderTest, TryCancel) {
                                       {"test passage 1"},
                                       base::BindOnce(&IgnoreResults));
 
-  Embedder::TaskId second_task_id = embedder->ComputePassagesEmbeddings(
-      PassagePriority::kPassive, {"test passage 2"},
-      base::BindOnce(&IgnoreResults));
-
-  embedder->TryCancel(second_task_id);
+  {
+    Embedder::Job second_job = embedder->ComputePassagesEmbeddings(
+        PassagePriority::kPassive, {"test passage 2"},
+        base::BindOnce(&IgnoreResults));
+  }
 
   EXPECT_THAT(requested_passages, ElementsAre("test passage 1"));
 
@@ -273,18 +273,20 @@ TEST_F(SchedulingEmbedderTest, RecordsHistograms) {
       .WillOnce(record_callback);
 
   ComputePassagesEmbeddingsFuture future1;
-  embedder->ComputePassagesEmbeddings(
+  Embedder::Job job1 = embedder->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 1"}, future1.GetCallback());
 
   ComputePassagesEmbeddingsFuture future2;
-  Embedder::TaskId task_id = embedder->ComputePassagesEmbeddings(
-      PassagePriority::kUserInitiated, {"test passage 2a", "test passage 2b"},
-      future2.GetCallback());
+  std::optional<Embedder::Job> job_to_cancel =
+      embedder->ComputePassagesEmbeddings(
+          PassagePriority::kUserInitiated,
+          {"test passage 2a", "test passage 2b"}, future2.GetCallback());
 
   ComputePassagesEmbeddingsFuture future3;
-  embedder->ComputePassagesEmbeddings(
+  Embedder::Job job3 = embedder->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 3"}, future3.GetCallback());
-  embedder->TryCancel(task_id);
+
+  job_to_cancel.reset();
 
   ASSERT_EQ(callbacks.size(), 1u);
   ASSERT_FALSE(callbacks.back().is_null());
@@ -363,15 +365,15 @@ TEST_F(SchedulingEmbedderTest, LimitsJobCount) {
       .WillOnce(record_callback);
 
   ComputePassagesEmbeddingsFuture future1;
-  embedder->ComputePassagesEmbeddings(
+  Embedder::Job job1 = embedder->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 1"}, future1.GetCallback());
 
   ComputePassagesEmbeddingsFuture future2;
-  embedder->ComputePassagesEmbeddings(
+  Embedder::Job job2 = embedder->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 2"}, future2.GetCallback());
 
   ComputePassagesEmbeddingsFuture future3;
-  embedder->ComputePassagesEmbeddings(
+  Embedder::Job job3 = embedder->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 3"}, future3.GetCallback());
 
   ASSERT_EQ(callbacks.size(), 1u);

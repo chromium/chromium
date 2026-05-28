@@ -61,4 +61,58 @@ float Embedding::ScoreWith(const Embedding& other_embedding) const {
   return embedding_score;
 }
 
+Embedder::Embedder() = default;
+
+Embedder::Job::Job(base::WeakPtr<Embedder> embedder, TaskId task_id)
+    : embedder_(std::move(embedder)), task_id_(task_id) {
+  DCHECK_NE(task_id_, 0u);
+}
+
+Embedder::Job::Job(Job&& other)
+    : embedder_(std::move(other.embedder_)), task_id_(other.task_id_) {
+  other.task_id_ = 0;
+}
+
+Embedder::Job& Embedder::Job::operator=(Job&& other) {
+  if (this != &other) {
+    if (task_id_ != 0) {
+      // Job handles must not outlive the Embedder that generated them.
+      CHECK(embedder_);
+      embedder_->TryCancel(task_id_);
+    }
+    embedder_ = std::move(other.embedder_);
+    task_id_ = other.task_id_;
+    other.task_id_ = 0;
+  }
+  return *this;
+}
+
+Embedder::Job::~Job() {
+  if (task_id_ != 0) {
+    // Job handles must not outlive the Embedder that generated them.
+    CHECK(embedder_);
+    embedder_->TryCancel(task_id_);
+  }
+}
+
+void Embedder::Job::Reprioritize(PassagePriority priority) {
+  DCHECK_NE(task_id_, 0u);
+  // Job handles must not outlive the Embedder that generated them.
+  CHECK(embedder_);
+  embedder_->ReprioritizeTasks(priority, {task_id_});
+}
+
+bool Embedder::JobTaskIdComparator::operator()(const Job& a,
+                                               const Job& b) const {
+  return a.task_id() < b.task_id();
+}
+
+bool Embedder::JobTaskIdComparator::operator()(const Job& a, TaskId b) const {
+  return a.task_id() < b;
+}
+
+bool Embedder::JobTaskIdComparator::operator()(TaskId a, const Job& b) const {
+  return a < b.task_id();
+}
+
 }  // namespace passage_embeddings

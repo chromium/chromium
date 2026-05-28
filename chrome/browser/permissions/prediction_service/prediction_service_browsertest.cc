@@ -1086,7 +1086,7 @@ struct Aiv4ModelFailureTestCase {
   std::string inner_text;
   SkBitmap snapshot;
   ComputeEmbeddingsStatus compute_embeddings_status;
-  std::optional<PassageEmbedderMock> passage_embedder;
+  bool has_passage_embedder;
   passage_embeddings::EmbedderMetadata embedder_metadata;
 };
 
@@ -1116,7 +1116,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*snapshot=*/SkBitmap(),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
-            /*passage_embedder=*/PassageEmbedderMock(),
+            /*has_passage_embedder=*/true,
             /*embedder_metadata=*/
             EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
@@ -1127,7 +1127,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
-            /*passage_embedder=*/PassageEmbedderMock(),
+            /*has_passage_embedder=*/true,
             /*embedder_metadata=*/
             EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
@@ -1138,7 +1138,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kExecutionFailure,
-            /*passage_embedder=*/PassageEmbedderMock(),
+            /*has_passage_embedder=*/true,
             /*embedder_metadata=*/
             EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
@@ -1149,7 +1149,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
-            /*passage_embedder=*/std::nullopt,
+            /*has_passage_embedder=*/false,
             /*embedder_metadata=*/
             EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
@@ -1160,7 +1160,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
-            /*passage_embedder=*/PassageEmbedderMock(),
+            /*has_passage_embedder=*/true,
             /*embedder_metadata=*/
             EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
@@ -1171,7 +1171,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
-            /*passage_embedder=*/PassageEmbedderMock(),
+            /*has_passage_embedder=*/true,
             /*embedder_metadata=*/
             EmbedderMetadataProviderFake::GetInvalidEmbedderMetadata(),
         },
@@ -1192,9 +1192,8 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
   set_dummy_inner_text_for_testing(GetParam().inner_text);
   std::unique_ptr<PassageEmbedderMock> passage_embedder;
 
-  if (GetParam().passage_embedder.has_value()) {
-    passage_embedder = std::make_unique<PassageEmbedderMock>(
-        GetParam().passage_embedder.value());
+  if (GetParam().has_passage_embedder) {
+    passage_embedder = std::make_unique<PassageEmbedderMock>();
     passage_embedder->set_status(GetParam().compute_embeddings_status);
     model_handler_provider()->set_passage_embedder_for_testing(
         passage_embedder.get());

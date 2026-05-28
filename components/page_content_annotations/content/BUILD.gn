@@ -136,6 +136,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:features",
     "//components/passage_embeddings/core:passage_embeddings_types",
+    "//components/passage_embeddings/core:test_support",
     "//content/test:test_support",
     "//pdf:buildflags",
     "//testing/gmock",

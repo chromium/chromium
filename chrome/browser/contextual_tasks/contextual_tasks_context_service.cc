@@ -433,15 +433,14 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
 
   // TODO: crbug.com/452036470 - De-couple embeddings and recency signal
   // computation.
-  passage_embeddings::Embedder::TaskId task_id =
-      embedder_->ComputePassagesEmbeddings(
-          passage_embeddings::PassagePriority::kUrgent,
-          {GetFormattedQueryString(query)},
-          base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
-                         weak_ptr_factory_.GetWeakPtr(), query, options, now,
-                         active_tab_at_query_time, explicit_urls, request_id));
+  passage_embeddings::Embedder::Job job = embedder_->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kUrgent,
+      {GetFormattedQueryString(query)},
+      base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
+                     weak_ptr_factory_.GetWeakPtr(), query, options, now,
+                     active_tab_at_query_time, explicit_urls, request_id));
   pending_requests_[request_id] =
-      std::make_unique<PendingRequest>(task_id, std::move(callback));
+      std::make_unique<PendingRequest>(std::move(job), std::move(callback));
 }
 
 // TODO: crbug.com/503189770 - Integrate the multi-turn ML model. For now, just
@@ -616,8 +615,6 @@ void ContextualTasksContextService::OnRequestTimedOut(int64_t request_id) {
     return;
   }
 
-  passage_embeddings::Embedder::TaskId task_id = request_it->second->task_id;
-  embedder_->TryCancel(task_id);
   base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
       callback = std::move(request_it->second->callback);
   pending_requests_.erase(request_id);
@@ -1029,10 +1026,10 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
 }
 
 ContextualTasksContextService::PendingRequest::PendingRequest(
-    passage_embeddings::Embedder::TaskId task_id,
+    passage_embeddings::Embedder::Job job,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         callback)
-    : task_id(task_id), callback(std::move(callback)) {}
+    : job(std::move(job)), callback(std::move(callback)) {}
 ContextualTasksContextService::PendingRequest::~PendingRequest() = default;
 
 TabSelectionOptions::TabSelectionOptions() = default;

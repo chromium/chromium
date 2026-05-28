@@ -38,8 +38,8 @@ using SemanticMatchEmbeddingsCallback = base::OnceCallback<void(
 // embedding and the precomputed embeddings for each category.
 // Calls the `callback` with the parsed rules and their corresponding
 // embeddings. The embeddings vector corresponds to the passages extracted from
-// the rules. Returns a TaskId for cancellation.
-passage_embeddings::Embedder::TaskId
+// the rules. Returns a Job handle for cancellation.
+[[nodiscard]] std::optional<passage_embeddings::Embedder::Job>
 ComputeEmbeddingsForSemanticMatchClassifier(
     std::string_view rules_json,
     passage_embeddings::Embedder* embedder,

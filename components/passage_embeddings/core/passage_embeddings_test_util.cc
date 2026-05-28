@@ -52,22 +52,30 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Embedder::TaskId TestEmbedder::ComputePassagesEmbeddings(
+TestEmbedder::TestEmbedder() = default;
+TestEmbedder::~TestEmbedder() = default;
+
+Embedder::Job TestEmbedder::ComputePassagesEmbeddings(
     PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
+  TaskId task_id = next_task_id_++;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](std::vector<std::string> passages,
+                     [](std::vector<std::string> passages, TaskId task_id,
                         ComputePassagesEmbeddingsCallback callback) {
                        std::vector<Embedding> embeddings(
                            passages.size(), Embedding({1.0f, 0.0f, 0.0f}));
                        std::move(callback).Run(
-                           passages, std::move(embeddings),
-                           /*task_id=*/0, ComputeEmbeddingsStatus::kSuccess);
+                           passages, std::move(embeddings), task_id,
+                           ComputeEmbeddingsStatus::kSuccess);
                      },
-                     passages, std::move(callback)));
-  return 0;
+                     passages, task_id, std::move(callback)));
+  return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), task_id);
+}
+
+base::WeakPtr<Embedder> TestEmbedder::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void TestEmbedder::ReprioritizeTasks(PassagePriority priority,

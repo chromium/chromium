@@ -112,7 +112,7 @@ ActiveQuery::ActiveQuery(
 
   // Kick off embeddings
   page_embeddings_service_->ProcessEmbeddingsOnDemand();
-  query_embedding_task_id_ = embedder_->ComputePassagesEmbeddings(
+  query_embedding_job_ = embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kUserInitiated,
       {base::UTF16ToUTF8(query_)},
       base::BindOnce(&ActiveQuery::OnQueryEmbeddingComputed,
@@ -233,9 +233,9 @@ void ActiveQuery::OnQueryEmbeddingComputed(
     std::vector<passage_embeddings::Embedding> query_embeddings,
     passage_embeddings::Embedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
-  DCHECK(query_embedding_task_id_.has_value());
-  DCHECK_EQ(query_embedding_task_id_.value(), task_id);
-  query_embedding_task_id_.reset();  // Indicates that task is completed.
+  DCHECK(query_embedding_job_.has_value());
+  DCHECK_EQ(query_embedding_job_->task_id(), task_id);
+  query_embedding_job_.reset();  // Indicates that task is completed.
 
   std::optional<passage_embeddings::Embedding> query_embedding;
   if (status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess &&
@@ -267,9 +267,7 @@ void ActiveQuery::OnQueryEmbeddingComputed(
 
 void ActiveQuery::OnQueryTimeout() {
   // Cancel the query embedding task if it's still pending.
-  if (query_embedding_task_id_) {
-    embedder_->TryCancel(*query_embedding_task_id_);
-  }
+  query_embedding_job_.reset();
 
   base::WeakPtr<ActiveQuery> weak_this = weak_ptr_factory_.GetWeakPtr();
   std::vector<content::GlobalRenderFrameHostId> pending_page_ids = page_ids_;

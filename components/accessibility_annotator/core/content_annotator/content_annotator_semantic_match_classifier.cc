@@ -42,7 +42,7 @@ void OnEmbeddingsReady(SemanticMatchRulesMap rules,
 
 }  // namespace
 
-passage_embeddings::Embedder::TaskId
+std::optional<passage_embeddings::Embedder::Job>
 ComputeEmbeddingsForSemanticMatchClassifier(
     std::string_view rules_json,
     passage_embeddings::Embedder* embedder,
@@ -51,7 +51,7 @@ ComputeEmbeddingsForSemanticMatchClassifier(
   if (rules.empty() || !embedder) {
     std::move(callback).Run(
         {}, {}, passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
-    return 0;
+    return std::nullopt;
   }
 
   std::vector<std::string> passages = GetPassagesToEmbed(rules);

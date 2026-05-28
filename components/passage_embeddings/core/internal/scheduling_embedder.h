@@ -49,10 +49,14 @@ class SchedulingEmbedder
   ~SchedulingEmbedder() override;
 
   // Embedder:
-  TaskId ComputePassagesEmbeddings(
+  Embedder::Job ComputePassagesEmbeddings(
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+  base::WeakPtr<Embedder> GetWeakPtr() override;
+
+ protected:
+  // Embedder:
   void ReprioritizeTasks(PassagePriority priority,
                          const std::set<TaskId>& tasks) override;
   bool TryCancel(TaskId task_id) override;

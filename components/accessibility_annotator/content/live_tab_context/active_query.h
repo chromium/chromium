@@ -107,7 +107,7 @@ class ActiveQuery
   const std::vector<content::GlobalRenderFrameHostId> page_ids_;
   base::OnceCallback<void(std::vector<ScoredPassage>)> callback_;
 
-  std::optional<passage_embeddings::Embedder::TaskId> query_embedding_task_id_;
+  std::optional<passage_embeddings::Embedder::Job> query_embedding_job_;
   base::flat_map<content::GlobalRenderFrameHostId, PageSearch>
       page_computations_;
   std::vector<ScoredPassage> aggregated_results_;

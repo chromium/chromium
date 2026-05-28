@@ -108,7 +108,7 @@ class ContentClassifier {
       std::vector<passage_embeddings::Embedding> embeddings,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
-  passage_embeddings::Embedder::TaskId semantic_classifier_task_id_ = 0;
+  std::optional<passage_embeddings::Embedder::Job> semantic_classifier_job_;
 
   // Runs the title keyword classifier.
   void RunTitleKeywordClassifier(

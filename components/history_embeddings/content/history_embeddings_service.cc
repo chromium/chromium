@@ -282,11 +282,9 @@ SearchResult HistoryEmbeddingsService::Search(
   }
 
   // Try to cancel the embedding task for the previous query, if any.
-  if (query_embedding_task_id_) {
-    embedder_->TryCancel(*query_embedding_task_id_);
-  }
+  query_embedding_job_.reset();
 
-  query_embedding_task_id_ = embedder_->ComputePassagesEmbeddings(
+  query_embedding_job_ = embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kUserInitiated, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -311,13 +309,13 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
           << (query_passages.empty() ? "(NONE)" : query_passages[0]) << "'";
 
   // Ignore the previous query if a new one has been submitted to the embedder.
-  if (query_embedding_task_id_ && *query_embedding_task_id_ != task_id) {
+  if (query_embedding_job_ && query_embedding_job_->task_id() != task_id) {
     std::move(callback).Run(std::move(result));
     return;
   }
 
   // Reset the query embedding task ID to avoid attempting to cancel it later.
-  query_embedding_task_id_.reset();
+  query_embedding_job_.reset();
 
   if (!succeeded) {
     std::move(callback).Run(std::move(result));
@@ -736,6 +734,8 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     std::vector<passage_embeddings::Embedding> embeddings,
     passage_embeddings::Embedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
+  rebuild_jobs_.erase(task_id);
+
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
     return;
   }
@@ -1048,11 +1048,11 @@ void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
     if (GetFeatureParameters().erase_non_ascii_characters) {
       EraseNonAsciiCharacters(passages);
     }
-    embedder_->ComputePassagesEmbeddings(
+    rebuild_jobs_.insert(embedder_->ComputePassagesEmbeddings(
         passage_embeddings::PassagePriority::kLatent, std::move(passages),
         base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
                        weak_ptr_factory_.GetWeakPtr(),
-                       std::move(url_passages)));
+                       std::move(url_passages))));
   }
 }
 

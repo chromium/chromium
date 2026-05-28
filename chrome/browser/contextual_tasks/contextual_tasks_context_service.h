@@ -335,12 +335,12 @@ class ContextualTasksContextService
 
   struct PendingRequest {
     PendingRequest(
-        passage_embeddings::Embedder::TaskId task_id,
+        passage_embeddings::Embedder::Job job,
         base::OnceCallback<
             void(std::vector<base::WeakPtr<content::WebContents>>)> callback);
     ~PendingRequest();
 
-    passage_embeddings::Embedder::TaskId task_id;
+    passage_embeddings::Embedder::Job job;
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         callback;
   };

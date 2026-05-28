@@ -19,14 +19,11 @@ class PassageEmbedderMock : public passage_embeddings::TestEmbedder {
   PassageEmbedderMock();
   ~PassageEmbedderMock() override;
 
-  PassageEmbedderMock(const PassageEmbedderMock&);
-  PassageEmbedderMock& operator=(const PassageEmbedderMock&);
-
-  PassageEmbedderMock(PassageEmbedderMock&&);
-  PassageEmbedderMock& operator=(PassageEmbedderMock&&);
+  PassageEmbedderMock(const PassageEmbedderMock&) = delete;
+  PassageEmbedderMock& operator=(const PassageEmbedderMock&) = delete;
 
   // passage_embeddings::TestEmbedder:
-  passage_embeddings::Embedder::TaskId ComputePassagesEmbeddings(
+  passage_embeddings::Embedder::Job ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
@@ -58,7 +55,7 @@ class DelayedPassageEmbedderMock : public PassageEmbedderMock {
   // computing the embeddings, it captures the arguments and the callback. The
   // actual computation (in this case a fake) is deferred until
   // `ReleaseCallback` is called.
-  passage_embeddings::Embedder::TaskId ComputePassagesEmbeddings(
+  passage_embeddings::Embedder::Job ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;

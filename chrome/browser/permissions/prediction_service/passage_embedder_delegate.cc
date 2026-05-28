@@ -74,19 +74,19 @@ void PassageEmbedderDelegate::CreatePassageEmbeddingsFromRenderedText(
 
   if (Embedder* passage_embedder = GetPassageEmbedder()) {
     bool previous_task_needs_canceling =
-        (passage_embeddings_task_id_ != std::nullopt);
+        (passage_embeddings_job_ != std::nullopt);
     PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
         PredictionModelType::kOnDeviceAiV4Model, previous_task_needs_canceling);
 
     if (previous_task_needs_canceling) {
       VLOG(1) << "[PermissionsAIv4]: The embedding task did not return yet.";
       // Try to cancel the embedding task for the previous query, if any.
-      passage_embedder->TryCancel(*passage_embeddings_task_id_);
+      passage_embeddings_job_.reset();
     }
 
     VLOG(1)
         << "[PermissionsAIv4]: Starting Embedder::ComputePassagesEmbeddings";
-    passage_embeddings_task_id_ = passage_embedder->ComputePassagesEmbeddings(
+    passage_embeddings_job_ = passage_embedder->ComputePassagesEmbeddings(
         passage_embeddings::PassagePriority::kUserInitiated,
         std::move(passages),
         base::BindOnce(&PassageEmbedderDelegate::OnPassageEmbeddingsComputed,
@@ -112,12 +112,7 @@ void PassageEmbedderDelegate::CreatePassageEmbeddingsFromRenderedText(
 
 void PassageEmbedderDelegate::Reset() {
   timeout_timer_.Stop();
-  if (passage_embeddings_task_id_.has_value()) {
-    if (Embedder* passage_embedder = GetPassageEmbedder()) {
-      passage_embedder->TryCancel(*passage_embeddings_task_id_);
-    }
-  }
-  passage_embeddings_task_id_ = std::nullopt;
+  passage_embeddings_job_.reset();
   on_passage_embeddings_computed_.Reset();
   fallback_callback_.Reset();
 }
@@ -151,22 +146,23 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
           << (succeeded ? "" : "no ") << "success.";
 
   if (!succeeded || passages.empty()) {
-    if (passage_embeddings_task_id_ == task_id) {
-      passage_embeddings_task_id_ = std::nullopt;
+    if (passage_embeddings_job_ &&
+        passage_embeddings_job_->task_id() == task_id) {
+      passage_embeddings_job_.reset();
     }
     return std::move(fallback_callback_).Run();
   }
 
-  bool is_outdated_task = passage_embeddings_task_id_ != task_id;
+  bool is_outdated_task =
+      !passage_embeddings_job_ || passage_embeddings_job_->task_id() != task_id;
   PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
       PredictionModelType::kOnDeviceAiV4Model, is_outdated_task);
   if (is_outdated_task) {
     // If the task id is different, a new permission request has started
     // in the meantime and the request that started this call is stale.
     return;
-  } else {
-    passage_embeddings_task_id_ = std::nullopt;
   }
+  passage_embeddings_job_.reset();
 
   if (embeddings.empty()) {
     std::move(fallback_callback_).Run();

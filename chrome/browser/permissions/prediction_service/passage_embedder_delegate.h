@@ -65,10 +65,10 @@ class PassageEmbedderDelegate {
   // This will invoke the `fallback_callback_`.
   void OnTimeout();
 
-  // The ID of the current passage embedding task. This is used to cancel
-  // a still running embedding task for a previous, stale query.
-  std::optional<passage_embeddings::Embedder::TaskId>
-      passage_embeddings_task_id_;
+  // The handle for the current passage embedding task. This is used to
+  // automatically cancel a still running embedding task for a previous,
+  // stale query when it is reset or replaced by a new task.
+  std::optional<passage_embeddings::Embedder::Job> passage_embeddings_job_;
 
   // The profile used to access the passage embedder model.
   raw_ptr<Profile> profile_;

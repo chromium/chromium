@@ -51,14 +51,14 @@ namespace {
 
 class ControllableTestEmbedder : public passage_embeddings::TestEmbedder {
  public:
-  passage_embeddings::Embedder::TaskId ComputePassagesEmbeddings(
+  passage_embeddings::Embedder::Job ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
     TaskId id = next_task_id_++;
     callbacks_.emplace(id, std::move(callback));
     passages_.emplace(std::move(passages));
-    return id;
+    return Job(GetWeakPtr(), id);
   }
 
   void FireNextCallback(passage_embeddings::ComputeEmbeddingsStatus status) {

@@ -100,7 +100,7 @@ SchedulingEmbedder::SchedulingEmbedder(
 
 SchedulingEmbedder::~SchedulingEmbedder() = default;
 
-SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
+Embedder::Job SchedulingEmbedder::ComputePassagesEmbeddings(
     PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
@@ -123,7 +123,7 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
         base::BindOnce(std::move(callback), std::vector<std::string>(),
                        std::vector<Embedding>(), task_id,
                        ComputeEmbeddingsStatus::kSuccess));
-    return task_id;
+    return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), task_id);
   }
 
   // Limit the number of jobs accepted to avoid high memory use when
@@ -138,7 +138,11 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
 
   SubmitWorkToEmbedder();
 
-  return task_id;
+  return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), task_id);
+}
+
+base::WeakPtr<Embedder> SchedulingEmbedder::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void SchedulingEmbedder::SubmitWorkToEmbedder() {
