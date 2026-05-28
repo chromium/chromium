@@ -324,7 +324,8 @@ FFmpegDemuxerStream::~FFmpegDemuxerStream() {
   DCHECK(buffer_queue_.IsEmpty());
 }
 
-base::span<const uint8_t> GetSideData(const AVPacket* packet) {
+base::span<const uint8_t> GetMatroskaBlockAdditionalSideData(
+    const AVPacket* packet) {
   size_t side_data_size = 0;
   uint8_t* side_data = av_packet_get_side_data(
       packet, AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, &side_data_size);
@@ -338,6 +339,28 @@ base::span<const uint8_t> GetSideData(const AVPacket* packet) {
   // Since we are not allocating memory, and it is considered a valid use case
   // to construct a base::span<> from nullptr with size zero, this is safe.
   return UNSAFE_BUFFERS(base::span<const uint8_t>(side_data, side_data_size));
+}
+
+std::vector<uint8_t> GetAgtmSideData(const AVPacket* packet) {
+  std::vector<uint8_t> data;
+  size_t side_data_size = 0;
+  AVDynamicHDRSmpte2094App5* side_data =
+      reinterpret_cast<AVDynamicHDRSmpte2094App5*>(av_packet_get_side_data(
+          packet, AV_PKT_DATA_DYNAMIC_HDR_SMPTE_2094_APP5, &side_data_size));
+  if (side_data == nullptr || side_data_size == 0) {
+    return data;
+  }
+  size_t size = 0;
+  if (av_dynamic_hdr_smpte2094_app5_to_t35(side_data, nullptr, &size) != 0) {
+    return data;
+  }
+  data.resize(size);
+  uint8_t* vector_data = data.data();
+  if (av_dynamic_hdr_smpte2094_app5_to_t35(side_data, &vector_data, &size) !=
+      0) {
+    data.clear();
+  }
+  return data;
 }
 
 void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
@@ -407,7 +430,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
 
   scoped_refptr<DecoderBuffer> buffer;
 
-  base::span<const uint8_t> side_data = GetSideData(packet.get());
+  base::span<const uint8_t> matroska_block_additional_side_data =
+      GetMatroskaBlockAdditionalSideData(packet.get());
+  std::vector<uint8_t> agtm_side_data = GetAgtmSideData(packet.get());
 
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset = 0;
@@ -459,19 +484,20 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // into memory we control.
   buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
 
-  if (side_data.size() > 8) {
+  if (matroska_block_additional_side_data.size() > 8) {
     // First 8 bytes of side data is the side_data_id in big endian. This is the
     // same as the matroska BlockAddID whose values are documented here:
     // https://www.matroska.org/technical/codec_specs.html#block-addition-mappings
-    const uint64_t side_data_id = base::U64FromBigEndian(side_data.first<8u>());
+    const uint64_t side_data_id =
+        base::U64FromBigEndian(matroska_block_additional_side_data.first<8u>());
     if (side_data_id == 1) {
       buffer->WritableSideData().alpha_data =
-          base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
-    } else if (side_data_id == 4) {
-      if (auto agtm = GetAgtmFromT35(side_data.subspan(8u))) {
-        buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(*agtm);
-      }
+          base::HeapArray<uint8_t>::CopiedFrom(
+              matroska_block_additional_side_data.subspan(8u));
     }
+  }
+  if (agtm_side_data.size() > 0) {
+    buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(agtm_side_data);
   }
 
   if (decrypt_config) {

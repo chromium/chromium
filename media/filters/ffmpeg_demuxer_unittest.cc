@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -49,6 +50,7 @@
 #include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/switches.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -195,6 +197,7 @@ class FFmpegDemuxerTest : public testing::Test {
     base::TimeDelta discard_front_padding;
     bool is_key_frame = true;
     DemuxerStream::Status status = DemuxerStream::Status::kOk;
+    bool has_agtm_side_data = false;
   };
 
   // Verifies that |buffer| has a specific |size| and |timestamp|.
@@ -227,6 +230,10 @@ class FFmpegDemuxerTest : public testing::Test {
                 discard_padding.has_value() ? discard_padding->first
                                             : base::TimeDelta());
       EXPECT_EQ(read_expectation.is_key_frame, buffer.is_key_frame());
+      const bool has_agtm_side_data =
+          buffer.side_data() != nullptr &&
+          buffer.side_data()->hdr_metadata.HasAgtm();
+      EXPECT_EQ(read_expectation.has_agtm_side_data, has_agtm_side_data);
     }
     OnReadDoneCalled(read_expectation.size, read_expectation.timestamp_us);
     std::move(quit_closure).Run();
@@ -249,10 +256,11 @@ class FFmpegDemuxerTest : public testing::Test {
             int64_t timestamp_us,
             bool is_key_frame,
             DemuxerStream::Status status = DemuxerStream::Status::kOk,
-            base::TimeDelta discard_front_padding = base::TimeDelta()) {
+            base::TimeDelta discard_front_padding = base::TimeDelta(),
+            bool has_agtm_side_data = false) {
     Read(stream, location,
          ReadExpectation{size, timestamp_us, discard_front_padding,
-                         is_key_frame, status});
+                         is_key_frame, status, has_agtm_side_data});
   }
 
   void Read(DemuxerStream* stream,
@@ -1929,6 +1937,16 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
   // With newly enabled demuxer streams the amount of memory used by the demuxer
   // is much higher.
   EXPECT_EQ(GetExpectedMemoryUsage(896, 156011), demuxer_->GetMemoryUsage());
+}
+
+TEST_F(FFmpegDemuxerTest, AgtmMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
+  CreateDemuxer("vp9-agtm.webm");
+  InitializeDemuxer();
+
+  DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
+  Read(video, FROM_HERE, 3792, 0, true, DemuxerStream::Status::kOk,
+       base::TimeDelta(), true);
 }
 
 }  // namespace media

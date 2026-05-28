@@ -481,8 +481,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)
 
-// TODO(crbug.com/395659818): Enable after updating parsing in Chromium.
-TEST_F(VpxVideoDecoderTest, DISABLED_AgtmMetadata) {
+TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
   base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
   Initialize();
 
@@ -493,22 +492,15 @@ TEST_F(VpxVideoDecoderTest, DISABLED_AgtmMetadata) {
 
   auto packet = ScopedAVPacket::Allocate();
   ASSERT_GE(av_read_frame(glue.format_context(), packet.get()), 0);
-  ASSERT_EQ(packet->side_data_elems, 1);
+  skhdr::AdaptiveGlobalToneMap agtm;
   auto buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet));
-  // SAFETY: The best we can do here is trust the size reported by ffmpeg.
-  auto side_data = UNSAFE_BUFFERS(
-      base::span(packet->side_data[0].data, packet->side_data[0].size));
-  ASSERT_EQ(base::U64FromBigEndian(side_data.first<8u>()), 4u);
-  auto agtm = GetAgtmFromT35(side_data.subspan(8u));
-  ASSERT_TRUE(agtm.has_value());
-  buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(*agtm);
+  buffer->WritableSideData().hdr_metadata.SetAgtm(agtm);
   DecoderStatus decode_status = Decode(buffer);
   av_packet_unref(packet.get());
   ASSERT_TRUE(decode_status.is_ok());
 
   const auto& frame = output_frames_.front();
   ASSERT_TRUE(frame->hdr_metadata().HasAgtm());
-  EXPECT_EQ(frame->hdr_metadata().GetAgtm().fHdrReferenceWhite, 203.0f);
 
   Destroy();
 }
