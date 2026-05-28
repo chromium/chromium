@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/osauth/auth_factor_migrator.h"
 #include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -22,9 +25,10 @@ class UserContext;
 // `AuthFactorMigrator` and applies policies by running `AuthPolicyEnforcer`.
 class AuthFactorUpdater {
  public:
-  AuthFactorUpdater(AuthPolicyConnector* connector,
-                    UserDataAuthClient* user_data_auth,
-                    PrefService* local_state);
+  // `local_state` must be non-null and must outlive `this`.
+  AuthFactorUpdater(PrefService* local_state,
+                    AuthPolicyConnector* connector,
+                    UserDataAuthClient* user_data_auth);
   ~AuthFactorUpdater();
 
   AuthFactorUpdater(const AuthFactorUpdater&) = delete;
@@ -39,9 +43,9 @@ class AuthFactorUpdater {
                      std::unique_ptr<UserContext> context,
                      std::optional<AuthenticationError> error);
 
+  const raw_ref<PrefService> local_state_;
   raw_ptr<AuthPolicyConnector> connector_;
   raw_ptr<UserDataAuthClient> user_data_auth_;
-  raw_ptr<PrefService> local_state_;
   std::unique_ptr<AuthFactorMigrator> auth_factor_migrator_;
   std::unique_ptr<AuthPolicyEnforcer> auth_policy_enforcer_;
   // Must be the last member.

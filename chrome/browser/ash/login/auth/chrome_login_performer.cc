@@ -160,8 +160,8 @@ void ChromeLoginPerformer::OnEarlyPrefsRead(
       std::make_unique<EarlyLoginAuthPolicyConnector>(
           context->GetAccountId(), std::move(early_prefs_reader_)));
   auth_factor_updater_ = std::make_unique<AuthFactorUpdater>(
-      AuthParts::Get()->GetAuthPolicyConnector(), UserDataAuthClient::Get(),
-      g_browser_process->local_state());
+      g_browser_process->local_state(),
+      AuthParts::Get()->GetAuthPolicyConnector(), UserDataAuthClient::Get());
   auth_factor_updater_->Run(std::move(context), std::move(callback));
 }
 

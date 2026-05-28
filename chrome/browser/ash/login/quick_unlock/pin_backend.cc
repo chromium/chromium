@@ -491,7 +491,9 @@ void PinBackend::OnIsCryptohomeBackendSupported(bool is_supported) {
   CHECK(cryptohome_state_.IsResolving());
 
   if (is_supported) {
-    cryptohome_state_.Set(std::make_unique<PinStorageCryptohome>());
+    CHECK(local_state_);
+    cryptohome_state_.Set(
+        std::make_unique<PinStorageCryptohome>(local_state_.get()));
   } else {
     cryptohome_state_.Set(nullptr);
   }

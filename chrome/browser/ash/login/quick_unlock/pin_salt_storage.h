@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
+
 class AccountId;
+class PrefService;
 
 namespace ash {
 namespace quick_unlock {
@@ -23,7 +26,8 @@ class PinSaltStorage {
 
 class PinSaltStorageImpl : public PinSaltStorage {
  public:
-  PinSaltStorageImpl();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit PinSaltStorageImpl(PrefService* local_state);
   PinSaltStorageImpl(const PinSaltStorageImpl&) = delete;
   PinSaltStorageImpl& operator=(const PinSaltStorageImpl&) = delete;
   ~PinSaltStorageImpl() override;
@@ -31,6 +35,9 @@ class PinSaltStorageImpl : public PinSaltStorage {
   // PinSaltStorage overrides:
   std::string GetSalt(const AccountId& account_id) const override;
   void WriteSalt(const AccountId& account_id, const std::string& salt) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace quick_unlock
