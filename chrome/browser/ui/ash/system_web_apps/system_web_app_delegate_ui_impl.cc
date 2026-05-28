@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -51,7 +53,6 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
           ? FindSystemWebAppBrowser(profile, GetType(), BrowserType::kAppPopup)
           : GetWindowForLaunch(profile, url);
 
-  bool started_new_navigation = false;
   if (!browser) {
     BrowserController::CreateParams create_params;
     create_params.allow_resize = ShouldAllowResize();
@@ -72,36 +73,49 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     if (!browser) {
       return nullptr;
     }
+  }
 
-    started_new_navigation = true;
+  // Send launch files.
+  base::FilePath launch_dir = GetLaunchDirectory(params);
+  const bool has_launch_params =
+      !launch_dir.empty() || !params.launch_files.empty();
+
+  // Launch params to be enqueued once the navigation commits.
+  std::optional<webapps::LaunchParams> launch_params;
+  if (has_launch_params) {
+    webapps::LaunchParams params_to_send;
+    params_to_send.started_new_navigation = true;
+    params_to_send.app_id = params.app_id;
+    params_to_send.target_url = url;
+    params_to_send.dir = std::move(launch_dir);
+    params_to_send.paths = params.launch_files;
+    launch_params = std::move(params_to_send);
   }
 
   // Navigate application window to application's |url| if necessary.
   // Help app always navigates because its url might not match the url inside
   // the iframe, and the iframe's url is the one that matters.
+  // This is reached whenever the `browser` is created above, with the else
+  // block executed whenever an existing browser window is reused.
   content::WebContents* web_contents = browser->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
       GetType() == SystemWebAppType::HELP) {
     // TODO(crbug.com/40829466): Migrate to use PWA pinned home tab when ready.
     web_contents = browser->NavigateWebApp(
-        url, ShouldPinTab(url) ? BrowserDelegate::TabPinning::kYes
-                               : BrowserDelegate::TabPinning::kNo);
-    started_new_navigation = true;
-  }
-
-  // Send launch files.
-  base::FilePath launch_dir = GetLaunchDirectory(params);
-
-  if (!launch_dir.empty() || !params.launch_files.empty()) {
-    webapps::LaunchParams launch_params;
-    launch_params.started_new_navigation = started_new_navigation;
-    launch_params.app_id = params.app_id;
-    launch_params.target_url = web_contents->GetURL();
-    launch_params.dir = std::move(launch_dir);
-    launch_params.paths = params.launch_files;
-    web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->EnsureLaunchQueue()
-        .Enqueue(std::move(launch_params));
+        url,
+        ShouldPinTab(url) ? BrowserDelegate::TabPinning::kYes
+                          : BrowserDelegate::TabPinning::kNo,
+        std::move(launch_params));
+  } else {
+    // Launch params need to account for the use-case where it needs to be
+    // dispatched immediately, because a new navigation has not started. Update
+    // it to show that behavior.
+    if (launch_params.has_value()) {
+      launch_params->started_new_navigation = false;
+      launch_params->target_url = web_contents->GetURL();
+      web_app::WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
+          web_contents, std::move(*launch_params));
+    }
   }
 
   return browser;

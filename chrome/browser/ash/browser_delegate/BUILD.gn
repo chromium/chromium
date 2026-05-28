@@ -17,6 +17,7 @@ static_library("browser_delegate") {
     "//base",
     "//components/account_id",
     "//components/sessions:session_id",
+    "//components/webapps/browser",
     "//components/webapps/common",
     "//content/public/browser",
     "//ui/gfx/geometry",

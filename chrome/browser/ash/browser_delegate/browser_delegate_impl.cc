@@ -166,8 +166,10 @@ void BrowserDelegateImpl::CloseWebContentsAt(size_t index,
                  : TabCloseTypes::CLOSE_NONE);
 }
 
-content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,
-                                                          TabPinning pin_tab) {
+content::WebContents* BrowserDelegateImpl::NavigateWebApp(
+    const GURL& url,
+    TabPinning pin_tab,
+    std::optional<webapps::LaunchParams> launch_params) {
   CHECK(GetType() == BrowserType::kApp || GetType() == BrowserType::kAppPopup)
       << "Unexpected browser type " << static_cast<int>(GetType()) << "("
       << browser_->type() << ")";
@@ -176,6 +178,9 @@ content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,
                             ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   if (pin_tab == TabPinning::kYes) {
     nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
+  }
+  if (launch_params) {
+    nav_params.launch_params = std::move(launch_params);
   }
 
   return web_app::NavigateWebAppUsingParams(nav_params);

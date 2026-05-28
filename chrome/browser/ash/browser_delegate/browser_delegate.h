@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/account_id/account_id.h"
 #include "components/sessions/core/session_id.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -138,14 +139,18 @@ class BrowserDelegate {
   enum class UserGesture { kYes, kNo };
   virtual void CloseWebContentsAt(size_t index, UserGesture user_gesture) = 0;
 
-  // Navigates the browser to the given URL.
+  // Navigates the browser to the given URL, and enqueues the launch params
+  // passed as an input if they are available once the navigation commits
+  // to the LaunchQueue.
   // The browser must be of `kApp` or `kAppPopup` type.
   // In the case of a tabbed web app (e.g. ChromeOS Terminal), performs tab
   // pinning as requested and ensures that home tab URL navigation happens in
   // the home tab.
   enum class TabPinning { kYes, kNo };
-  virtual content::WebContents* NavigateWebApp(const GURL& url,
-                                               TabPinning pin_tab) = 0;
+  virtual content::WebContents* NavigateWebApp(
+      const GURL& url,
+      TabPinning pin_tab,
+      std::optional<webapps::LaunchParams> launch_params = std::nullopt) = 0;
 
   // Creates the specified tab group.
   virtual void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) = 0;
