@@ -526,11 +526,8 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
     }
 #if BUILDFLAG(IS_CHROMEOS)
     constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
-
-    // TODO(b:513258292): Remove the bypassing once Glic is fully launched.
     const bool bypass_cbx_requirement =
-        base::FeatureList::IsEnabled(
-            chromeos::features::kGlicEnableFor8GbDevices) &&
+        GlicEnabling::IsLikelyDogfoodClient() &&
         base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() >=
             kMinimumMemoryThreshold;
 
@@ -1020,9 +1017,7 @@ GlicEnabling::GetExperimentalTriggeringState() const {
   bool is_managed = is_device_managed || has_managed_account;
 
   // Apply policy if managed, unless it's a dogfood client.
-  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
-
-  if (is_managed && !is_likely_dogfood_client) {
+  if (is_managed && !IsLikelyDogfoodClient()) {
     // Check policy
     auto* pref_service = profile_->GetPrefs();
     auto policy_state = static_cast<glic::prefs::GlicSparkPolicyState>(

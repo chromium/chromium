@@ -7,10 +7,13 @@
 #include "base/command_line.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
@@ -34,6 +37,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -439,6 +443,84 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutV2Test, EnabledForProfileTest) {
   SetUserTier(0);
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 }
+
+struct SystemRequirementsTestParams {
+  base::ByteSize memory_size;
+  bool is_dogfood;
+  bool expected_result;
+};
+
+class GlicDogfoodMockExtraParts : public ChromeBrowserMainExtraParts {
+ public:
+  explicit GlicDogfoodMockExtraParts(bool is_dogfood)
+      : is_dogfood_(is_dogfood) {}
+  ~GlicDogfoodMockExtraParts() override = default;
+
+  void PreProfileInit() override {
+    g_browser_process->variations_service()->SetIsLikelyDogfoodClientForTesting(
+        is_dogfood_);
+  }
+
+ private:
+  const bool is_dogfood_;
+};
+
+class GlicEnablingSystemRequirementsTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<SystemRequirementsTestParams> {
+ public:
+  GlicEnablingSystemRequirementsTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kFeatureManagementGlic);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+  void SetUp() override {
+    memory_override_.emplace(GetParam().memory_size);
+    InProcessBrowserTest::SetUp();
+  }
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
+    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+        std::make_unique<GlicDogfoodMockExtraParts>(GetParam().is_dogfood));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<base::test::ScopedAmountOfPhysicalMemoryOverride>
+      memory_override_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicEnablingSystemRequirementsTest,
+                       IsSystemRequirementMet) {
+  GlicGlobalEnabling::Delegate delegate;
+  EXPECT_EQ(GetParam().expected_result,
+            GlicGlobalEnabling(delegate).IsSystemRequirementMet());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicEnablingSystemRequirementsTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(SystemRequirementsTestParams{.memory_size = base::GiBU(7),
+                                                 .is_dogfood = true,
+                                                 .expected_result = false},
+                    SystemRequirementsTestParams{.memory_size = base::GiBU(8),
+                                                 .is_dogfood = true,
+                                                 .expected_result = true},
+                    // On ChromeOS, we expect that a non-dogfood client with
+                    // >= 8GB RAM doesn't met system requirements since we
+                    // explicitly gate Gemini-in-Chrome to Chromebook Plus
+                    // devices via FeatureManagementGlic.
+                    SystemRequirementsTestParams{.memory_size = base::GiBU(8),
+                                                 .is_dogfood = false,
+                                                 .expected_result = false})
+#else
+    testing::Values(SystemRequirementsTestParams{.memory_size = base::MiBU(256),
+                                                 .is_dogfood = false,
+                                                 .expected_result = true})
+#endif
+);
 
 }  // namespace
 }  // namespace glic
