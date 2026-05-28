@@ -222,11 +222,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
       deleteAllItemsFromSectionWithIdentifier:SectionIdentifierLanguages];
   [self populateLanguagesSectionFromDataSource:fromDataSource];
 
-  // Update the table view.
+  // Update the table view. Wrap the reload in -performWithoutAnimation:
+  // because -reloadSections:withRowAnimation:UITableViewRowAnimationNone does
+  // not suppress per-cell height transitions when cells use
+  // estimatedRowHeight. UIKit interpolates between the estimated and final
+  // autolayout-computed heights across a runloop tick, which made rows
+  // visibly slide and overlap on every keystroke while the search filter
+  // changed. -layoutIfNeeded forces the final layout to commit in the same
+  // tick so the new filtered list renders with stable, final cell heights.
   NSUInteger index = [self.tableViewModel
       sectionForSectionIdentifier:SectionIdentifierLanguages];
-  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
-                withRowAnimation:UITableViewRowAnimationNone];
+  [UIView performWithoutAnimation:^{
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                  withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView layoutIfNeeded];
+  }];
 }
 
 // Shows the scrim overlay.
