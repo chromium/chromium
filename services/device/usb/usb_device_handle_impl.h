@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -129,6 +130,16 @@ class UsbDeviceHandleImpl : public UsbDeviceHandle {
   // interface containing the endpoint is not found.
   scoped_refptr<InterfaceClaimer> GetClaimedInterfaceForEndpoint(
       uint8_t endpoint_address);
+
+  // Returns the first colliding endpoint address if the given
+  // |interface_number| has any endpoints that collide with other currently
+  // claimed interfaces' active alternate settings. Returns std::nullopt if no
+  // collision is found. If |alternate_setting| is provided, only that specific
+  // alternate setting is checked; otherwise, all alternate settings of the
+  // interface are checked.
+  std::optional<uint8_t> FindFirstCollidingEndpointAddress(
+      int interface_number,
+      std::optional<int> alternate_setting);
 
   void ReportIsochronousTransferError(
       UsbDeviceHandle::IsochronousTransferCallback callback,
