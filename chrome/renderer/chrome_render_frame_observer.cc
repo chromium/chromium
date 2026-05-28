@@ -49,6 +49,7 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread.h"
@@ -207,8 +208,15 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
   SetClientSidePhishingDetection();
 #endif
 
-  translate_agent_ =
-      new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
+  bool skip_translate = base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+                        features::kInitialWebUIWithoutTranslate.Get() &&
+                        base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            switches::kTopChromeWebUI);
+
+  if (!skip_translate) {
+    translate_agent_ = new translate::TranslateAgent(
+        render_frame, ISOLATED_WORLD_ID_TRANSLATE);
+  }
 }
 
 ChromeRenderFrameObserver::~ChromeRenderFrameObserver() = default;

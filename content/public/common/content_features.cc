@@ -561,6 +561,13 @@ BASE_FEATURE_PARAM(bool,
                    "without_spellcheck",
                    true);
 
+// If enabled, the initial WebUI translation initialization is skipped.
+BASE_FEATURE_PARAM(bool,
+                   kInitialWebUIWithoutTranslate,
+                   &features::kInitialWebUI,
+                   "without_translate",
+                   false);
+
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
 BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
