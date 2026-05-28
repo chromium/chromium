@@ -179,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
                   ->HasFocus());
 }
 
-// TODO(crbug.com/40818881): Flaky failures.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40818881, 517292406): Flaky failures.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
 #else
 #define MAYBE_RestoreMinimizedWindow RestoreMinimizedWindow
