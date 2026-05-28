@@ -139,6 +139,7 @@ class WebInstallServiceImpl
           callback);
 
   void OnPermissionDecided(
+      blink::mojom::InstallOptionsPtr install_options,
       InstallCallbackWithMetrics callback_with_metrics,
       const std::vector<content::PermissionResult>& permission_result);
 
@@ -171,9 +172,6 @@ class WebInstallServiceImpl
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
 
-  // The original parameters received from the blink sides - a required
-  // `install_url` and an optional `manifest_id`.
-  blink::mojom::InstallOptionsPtr install_options_;
   const content::GlobalRenderFrameHostId frame_routing_id_;
   GURL last_committed_url_;
   // Active data retrievers. They are destroyed when this service is destroyed

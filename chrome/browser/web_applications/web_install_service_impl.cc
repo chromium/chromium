@@ -331,10 +331,6 @@ void WebInstallServiceImpl::InstallInternal(
     return;
   }
 
-  // Store the original install params for later. Current document doesn't need
-  // these, as only the 0 parameter signature can do current document installs.
-  install_options_ = std::move(options);
-
   // Skip requesting permission in two cases:
   // 1. The install URL matches the current document URL (user is installing
   //    the page they're currently on, just using background install syntax).
@@ -342,7 +338,7 @@ void WebInstallServiceImpl::InstallInternal(
   // In both cases, the install dialog is always shown.
   if (triggered_from_element || install_target == last_committed_url_) {
     OnPermissionDecided(
-        std::move(callback_with_metrics),
+        std::move(options), std::move(callback_with_metrics),
         std::vector<content::PermissionResult>({content::PermissionResult(
             PermissionStatus::GRANTED,
             content::PermissionStatusSource::UNSPECIFIED)}));
@@ -358,9 +354,10 @@ void WebInstallServiceImpl::InstallInternal(
     return;
   }
 
-  RequestWebInstallPermission(base::BindOnce(
-      &WebInstallServiceImpl::OnPermissionDecided,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics)));
+  RequestWebInstallPermission(
+      base::BindOnce(&WebInstallServiceImpl::OnPermissionDecided,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                     std::move(callback_with_metrics)));
 }
 
 void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
@@ -593,8 +590,10 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
 }
 
 void WebInstallServiceImpl::OnPermissionDecided(
+    blink::mojom::InstallOptionsPtr install_options,
     InstallCallbackWithMetrics callback_with_metrics,
     const std::vector<content::PermissionResult>& permission_result) {
+  CHECK(install_options);
   CHECK_EQ(permission_result.size(), 1u);
   if (permission_result[0].status != PermissionStatus::GRANTED) {
     std::move(callback_with_metrics)
@@ -638,7 +637,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
   // launch dialog instead of the install dialog. See definition for details
   // on how we check if the app is installed.
   std::optional<webapps::AppId> app_id = IsAppInstalled(
-      *provider, install_options_->install_url, install_options_->manifest_id);
+      *provider, install_options->install_url, install_options->manifest_id);
   if (app_id) {
     // See `IsAppInstalled` for why this can be unsafe.
     const GURL& installed_manifest_id =
@@ -649,7 +648,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
     CHECK(valid_manifest_id.has_value());
     // Get the information to display in the launch dialog.
     provider->scheduler().FetchInstallInfoFromInstallUrl(
-        *valid_manifest_id, install_options_->install_url,
+        *valid_manifest_id, install_options->install_url,
         base::BindOnce(
             &WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics),
@@ -665,8 +664,8 @@ void WebInstallServiceImpl::OnPermissionDecided(
           webapps::WebappInstallSource::WEB_INSTALL);
 
   provider->ui_manager().TriggerInstallDialogForBackgroundInstall(
-      web_contents, std::move(install_tracker), install_options_->install_url,
-      install_options_->manifest_id, last_committed_url_,
+      web_contents, std::move(install_tracker), install_options->install_url,
+      install_options->manifest_id, last_committed_url_,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_with_metrics)));
