@@ -274,20 +274,6 @@ public class NtpCustomizationUtils {
         }
     }
 
-    /**
-     * Returns the resource ID for the accessibility string announced when the bottom sheet is
-     * closed.
-     */
-    public static int getSheetClosedAccessibilityStringId(
-            @NtpCustomizationCoordinator.BottomSheetType int type) {
-        switch (type) {
-            case THEME_TIP:
-                return R.string.ntp_customization_theme_tip_bottom_sheet_closed;
-            default:
-                return R.string.ntp_customization_main_bottom_sheet_closed;
-        }
-    }
-
     /** Returns whether custom Ntp's background theme is enabled by flag and policy. */
     public static boolean isNtpThemeCustomizationEnabled() {
         return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
