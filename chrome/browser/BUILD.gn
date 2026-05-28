@@ -3010,6 +3010,7 @@ static_library("browser") {
       "//components/app_constants",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
+      "//components/browser_apis/tab_drag:mojom",
       "//components/cbor",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:discounts_db_content_proto",
@@ -5441,6 +5442,7 @@ group("browser_generated_files") {
       "//chrome/browser/webauthn/proto",
       "//components/accessibility_annotator/core/logging:mojo_bindings",
       "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
+      "//components/browser_apis/tab_drag:mojom",
       "//components/browser_apis/tab_strip:mojom",
     ]
     if (!is_official_build) {

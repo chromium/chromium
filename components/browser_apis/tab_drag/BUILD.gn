@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "tab_drag_api.mojom" ]
+
+  public_deps = [
+    "//components/browser_apis/tab_strip:mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  webui_module_path = "/"
+}
+
+source_set("tab_drag") {
+  sources = [
+    "tab_drag_service_impl.cc",
+    "tab_drag_service_impl.h",
+  ]
+
+  public_deps = [
+    ":mojom",
+    "//components/browser_apis/tab_strip:mojom",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "tab_drag_service_impl.cc" ]
+
+  deps = [
+    ":tab_drag",
+    "//base",
+    "//components/browser_apis/tab_strip/types",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}

@@ -97,6 +97,7 @@ class TabsFromOtherDevicesSidePanelCoordinator;
 class TabListBridge;
 class TabStripModel;
 class TabStripServiceFeature;
+class TabDragServiceFeature;
 class ToastController;
 class ToastService;
 class TranslateBubbleController;
@@ -382,6 +383,10 @@ class BrowserWindowFeatures {
   // Only fetch the tab_strip_service to register a pending receiver.
   TabStripServiceFeature* tab_strip_service_feature() {
     return tab_strip_service_feature_.get();
+  }
+
+  TabDragServiceFeature* tab_drag_service_feature() {
+    return tab_drag_service_feature_.get();
   }
 
   tabs_api::TabStripUIControllerImpl* tab_strip_ui_controller() {
@@ -746,6 +751,7 @@ class BrowserWindowFeatures {
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceFeature> tab_strip_service_feature_;
+  std::unique_ptr<TabDragServiceFeature> tab_drag_service_feature_;
 
   // Controller for managing TabStrip UI decoupled TabStrip platform.
   std::unique_ptr<tabs_api::TabStripUIControllerImpl> tab_strip_ui_controller_;

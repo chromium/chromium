@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Service coordinates browser-side global dragging sessions for the TabStrip.
+[GenerateDirectReturnStub]
+interface TabDragService {
+  // Initiates a global drag session for specified node ids.
+  StartDrag(array<NodeId> node_ids, gfx.mojom.Point start_point)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+};
+
+// Interface implemented by the client UI to receive coordinated drag updates
+// globally.
+interface DropTarget {
+  // Retrieves the element's client bounds relative to the viewport bounds.
+  GetBounds() => result<gfx.mojom.Rect, mojo_base.mojom.Error>;
+
+  // Called when the dragged nodes crosses boundaries and enters this target
+  // bounds. Initiates the tracking sequence; clients will subsequently receive
+  // `OnDrag` updates.
+  OnDragEntered(array<NodeId> source_tab_ids, gfx.mojom.Point local_point);
+
+  // Called in high frequency as dragging cursor moves across this
+  // target.
+  OnDrag(gfx.mojom.Point local_point);
+
+  // Called when pointer leaves the target bounds without dropping. Stops
+  // `OnDrag` updates. New sequence requires another `OnDragEntered`.
+  OnDragLeave();
+
+  // Called when input detects mouse release over this target (session commits
+  // drop).
+  OnDrop(array<NodeId> source_tab_ids, gfx.mojom.Point local_point);
+
+  // Called if the drag session aborts (e.g. ESC pressed, capture focus lost,
+  // target widget closes).
+  OnDragCancelled();
+};

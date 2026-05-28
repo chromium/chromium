@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui_browser/bookmark_bar.mojom.h"
 #include "chrome/browser/ui/webui_browser/browser.mojom.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "components/browser_apis/tab_drag/tab_drag_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_ui_controller.mojom.h"
@@ -80,6 +81,8 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<tabs_api::mojom::TabDragService> receiver);
   void BindInterface(
       mojo::PendingReceiver<tabs_api::mojom::TabStripUIController> receiver);
   void BindInterface(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/tabs/tab_drag_api/tab_drag_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -203,6 +204,14 @@ void WebUIBrowserUI::BindInterface(
       browser_->browser_window_features()->tab_strip_service_feature();
   CHECK(tab_strip_service_feature) << "Browser missing TabStripService";
   tab_strip_service_feature->AcceptExperimental(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<tabs_api::mojom::TabDragService> receiver) {
+  auto* tab_drag_service_feature =
+      browser_->browser_window_features()->tab_drag_service_feature();
+  CHECK(tab_drag_service_feature) << "Browser missing TabDragService";
+  tab_drag_service_feature->AcceptDragService(std::move(receiver));
 }
 
 void WebUIBrowserUI::BindInterface(
