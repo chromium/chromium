@@ -403,6 +403,7 @@ template("chrome_common_apk_or_module_tmpl") {
       deps += [ ":${target_name}__all_dfm_resources" ]
     } else {
       deps += [ "//chrome/android:chrome_all_java" ]
+      mergeable_android_manifests = []
       if (defined(invoker.module_descs)) {
         _module_descs = invoker.module_descs
       } else {
@@ -410,6 +411,9 @@ template("chrome_common_apk_or_module_tmpl") {
       }
       foreach(_desc, _module_descs) {
         deps += _desc.java_deps
+        if (defined(_desc.android_manifest) && _desc.name == "xr") {
+          mergeable_android_manifests += [ _desc.android_manifest ]
+        }
         if (defined(_desc.jni_registration)) {
           srcjar_deps += [ _desc.jni_registration ]
         }
