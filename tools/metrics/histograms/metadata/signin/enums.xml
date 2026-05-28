@@ -1078,6 +1078,7 @@ chromium-metrics-reviews@google.com.
   <int value="103" label="Age mismatch signout (iOS only)"/>
   <int value="104" label="Gemini Toolbar button (iOS only)"/>
   <int value="105" label="Indigo"/>
+  <int value="106" label="Overflow Menu (iOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

@@ -63,6 +63,7 @@ NSString* GetPromoLabelString(
                  : l10n_util::GetNSString(
                        IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN);
     case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kOverflowMenu:
       // This could check `sync_types_disabled_by_policy` only for the types
       // mentioned in the regular string, but don't bother.
       return sync_transport_disabled_by_policy ||

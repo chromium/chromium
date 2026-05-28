@@ -351,10 +351,12 @@ enum class AccessPoint : int {
   kIosGeminiButtonToolbar = 104,
   // Sign in via Indigo.
   kIndigo = 105,
+  // Access point from the overflow menu (three dots menu on iOS).
+  kOverflowMenu = 106,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kIndigo,  // This must be last.
+  kMaxValue = kOverflowMenu,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

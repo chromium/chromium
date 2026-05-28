@@ -258,6 +258,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AgeMismatchSignout";
       case AccessPoint::kIndigo:
         return "Indigo";
+      case AccessPoint::kOverflowMenu:
+        return "OverflowMenu";
     }
   }
 };
