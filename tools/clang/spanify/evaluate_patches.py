@@ -319,6 +319,7 @@ if __name__ == "__main__":
     rewrite_project = project
     submodule = PROJECTS[project].get('submodule', '.')
     standalone = submodule != '.'
+    run_gn_check = PROJECTS[project].get('run_gn_check', True)
 
     print(f"Running evaluate_patches.py for project {project}...")
 
@@ -522,9 +523,9 @@ if __name__ == "__main__":
                     error_msg = analyze_error(stdout_clean, stderr_clean)
                     report_failure(index, total_patches_count, error_msg, diff,
                                    final_file)
-                elif not run(f'gn check out/{platform}',
-                             exit_on_error=False,
-                             cwd=cwd):
+                elif run_gn_check and not run(f'gn check out/{platform}',
+                                              exit_on_error=False,
+                                              cwd=cwd):
                     error_msg = "failed gn check"
                     report_failure(index, total_patches_count, error_msg, diff,
                                    final_file)

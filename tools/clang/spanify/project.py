@@ -27,6 +27,7 @@ PROJECTS = {
         'spreadsheet_id': '1dJ5PIQMsQ4IBYTcZUrshOJUIOmoa0MOwedK-jGzHYxI',
         'submodule': 'third_party/skia',
         'compile_dirs': '.',
+        'run_gn_check': False,
     },
     # http://go/autospan-angle-tracker
     'angle': {
