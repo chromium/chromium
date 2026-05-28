@@ -119,6 +119,7 @@ public class TabBottomSheetManagerTest {
                             new CoBrowseViews(
                                     rootView,
                                     TabBottomSheetClientType.UNKNOWN,
+                                    CoBrowseContainerType.BOTTOM_SHEET,
                                     null,
                                     null,
                                     Color.WHITE);
@@ -524,6 +525,7 @@ public class TabBottomSheetManagerTest {
                                 new CoBrowseViews(
                                         LayoutInflater.from(mActivity)
                                                 .inflate(R.layout.tab_bottom_sheet, null),
+                                        CoBrowseContainerType.BOTTOM_SHEET,
                                         TabBottomSheetClientType.UNKNOWN,
                                         null,
                                         null,

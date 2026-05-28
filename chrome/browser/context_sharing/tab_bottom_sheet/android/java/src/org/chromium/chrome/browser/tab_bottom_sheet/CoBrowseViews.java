@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -32,6 +33,7 @@ public class CoBrowseViews {
     private final @ColorInt int mBackgroundColor;
     private final View mContainerView;
     private final @TabBottomSheetClientType int mClientType;
+    private final @CoBrowseContainerType int mContainerType;
     private @Nullable View mPeekView;
 
     /**
@@ -39,6 +41,7 @@ public class CoBrowseViews {
      *
      * @param containerView The root view for the co-browse content.
      * @param clientType The client using the bottom sheet.
+     * @param containerType The type of container hosting the views.
      * @param webUi The web UI for the view.
      * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
@@ -46,15 +49,18 @@ public class CoBrowseViews {
     public CoBrowseViews(
             View containerView,
             @TabBottomSheetClientType int clientType,
+            @CoBrowseContainerType int containerType,
             @Nullable TabBottomSheetWebUi webUi,
             @Nullable ContextualTasksFusebox fusebox,
             @ColorInt int backgroundColor) {
         mClientType = clientType;
+        mContainerType = containerType;
         mWebUi = webUi;
         mFusebox = fusebox;
         mBackgroundColor = backgroundColor;
         mContainerView = containerView;
         populateViewHierarchy();
+        updateForContainerType();
     }
 
     /** Destroys the co-browse view and its components. */
@@ -197,5 +203,20 @@ public class CoBrowseViews {
         if (parent == null) return;
 
         parent.removeView(view);
+    }
+
+    private void updateForContainerType() {
+        ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
+
+        if (mContainerType == CoBrowseContainerType.SIDE_PANEL) {
+            View handleBar = mContainerView.findViewById(R.id.handle_bar);
+            if (handleBar != null) {
+                handleBar.setVisibility(View.GONE);
+            }
+
+            MarginLayoutParams layoutParams = (MarginLayoutParams) webUiContainer.getLayoutParams();
+            layoutParams.topMargin = 0;
+            webUiContainer.setLayoutParams(layoutParams);
+        }
     }
 }

@@ -150,6 +150,7 @@ public class TabBottomSheetCoordinatorTest {
                         new CoBrowseViews(
                                 containerViewSpy,
                                 TabBottomSheetClientType.UNKNOWN,
+                                CoBrowseContainerType.BOTTOM_SHEET,
                                 mMockWebUi,
                                 null,
                                 0));
@@ -804,7 +805,13 @@ public class TabBottomSheetCoordinatorTest {
     public void testMetrics_Glic_CurrentStateAndTransitions() {
         // Re-create coordinator with GLIC client type
         mCoBrowseViews =
-                new CoBrowseViews(mView, TabBottomSheetClientType.GLIC, mMockWebUi, null, 0);
+                new CoBrowseViews(
+                        mView,
+                        TabBottomSheetClientType.GLIC,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        mMockWebUi,
+                        null,
+                        0);
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
@@ -867,7 +874,12 @@ public class TabBottomSheetCoordinatorTest {
         // Re-create coordinator with CONTEXTUAL_TASKS client type
         mCoBrowseViews =
                 new CoBrowseViews(
-                        mView, TabBottomSheetClientType.CONTEXTUAL_TASKS, mMockWebUi, null, 0);
+                        mView,
+                        TabBottomSheetClientType.CONTEXTUAL_TASKS,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        mMockWebUi,
+                        null,
+                        0);
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,

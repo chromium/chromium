@@ -90,13 +90,14 @@ public class CoBrowseViewFactory {
      * @param webContents The {@link WebContents} to be displayed in the thin web view.
      * @param backgroundColor The background color for the content.
      * @param clientType The client using coBrowseViews.
+     * @param containerType The type of container hosting the views.
      * @return The {@link CoBrowseViews} instance.
      */
     CoBrowseViews buildCoBrowseViews(
             @Nullable WebContents webContents,
             @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType,
-            @SuppressWarnings("unused") @CoBrowseContainerType int containerType) {
+            @CoBrowseContainerType int containerType) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
         TabBottomSheetWebUi webUi =
@@ -132,7 +133,8 @@ public class CoBrowseViewFactory {
 
         webUi.setWebContents(webContents, false);
 
-        return new CoBrowseViews(containerView, clientType, webUi, fusebox, backgroundColor);
+        return new CoBrowseViews(
+                containerView, clientType, containerType, webUi, fusebox, backgroundColor);
     }
 
     @CalledByNative

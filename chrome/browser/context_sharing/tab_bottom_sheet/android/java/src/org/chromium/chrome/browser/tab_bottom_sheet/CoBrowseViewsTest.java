@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -63,6 +64,7 @@ public class CoBrowseViewsTest {
                 new CoBrowseViews(
                         rootView,
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
+                        CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         mFusebox,
                         Color.WHITE);
@@ -75,12 +77,37 @@ public class CoBrowseViewsTest {
 
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
         ViewGroup fuseboxContainer = view.findViewById(R.id.fusebox_container);
+        View handleBar = view.findViewById(R.id.handle_bar);
 
         assertEquals(1, webUiContainer.getChildCount());
         assertEquals(mWebUiView, webUiContainer.getChildAt(0));
 
         assertEquals(1, fuseboxContainer.getChildCount());
         assertEquals(mFuseboxView, fuseboxContainer.getChildAt(0));
+
+        assertEquals(View.VISIBLE, handleBar.getVisibility());
+        assertTrue(((ViewGroup.MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin > 0);
+    }
+
+    @Test
+    public void testConstructor_SidePanel_HidesHandleBarAndRemovesMargin() {
+        // Create a new CoBrowseViews object with the desired container type (SIDE_PANEL).
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        CoBrowseViews coBrowseViews =
+                new CoBrowseViews(
+                        rootView,
+                        TabBottomSheetClientType.CONTEXTUAL_TASKS,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        mWebUi,
+                        mFusebox,
+                        Color.WHITE);
+
+        View view = coBrowseViews.getView();
+        View handleBar = view.findViewById(R.id.handle_bar);
+        ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
+
+        assertEquals(View.GONE, handleBar.getVisibility());
+        assertEquals(0, ((MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin);
     }
 
     @Test
