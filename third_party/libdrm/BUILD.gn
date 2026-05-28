@@ -11,7 +11,7 @@ action("make_generated_static_table_fourcc") {
   script = "src/gen_table_fourcc.py"
   args = [
     rebase_path(fourcc_file, root_build_dir),
-    rebase_path(generated_static_table_fourcc_file),
+    rebase_path(generated_static_table_fourcc_file, root_build_dir),
   ]
   outputs = [ generated_static_table_fourcc_file ]
   inputs = [ fourcc_file ]
