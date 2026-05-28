@@ -715,7 +715,11 @@ void PrintDialogLinuxPortal::ShowDialog(
     bool has_selection,
     PrintingContextLinux::PrintSettingsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  parent_view_ = parent_view;
+  parent_view_tracker_.RemoveAll();
+  parent_view_provided_ = parent_view != nullptr;
+  if (parent_view) {
+    parent_view_tracker_.Add(parent_view);
+  }
   callback_ = std::move(callback);
 
   dbus_xdg::RequestXdgDesktopPortal(
@@ -733,13 +737,21 @@ void PrintDialogLinuxPortal::OnPortalAvailable(bool has_selection,
 
   // Export the window handle to the portal.
   if (auto* delegate = ui::LinuxUiDelegate::GetInstance()) {
-    aura::Window* window = parent_view_ ? parent_view_ : nullptr;
+    aura::Window* window = parent_view_tracker_.windows().empty()
+                               ? nullptr
+                               : parent_view_tracker_.windows()[0];
     if (window && window->GetRootWindow()) {
       // Assuming aura::Window* as NativeView.
       delegate->ExportWindowHandle(
           window->GetHost()->GetAcceleratedWidget(),
           base::BindOnce(&PrintDialogLinuxPortal::OnWindowHandleExported,
                          weak_factory_.GetWeakPtr(), has_selection));
+      return;
+    }
+
+    if (parent_view_provided_) {
+      // Window was provided but is now gone. Cancel the dialog.
+      std::move(callback_).Run(mojom::ResultCode::kCanceled);
       return;
     }
   }
@@ -906,8 +918,15 @@ void PrintDialogLinuxPortal::UseFallback(bool has_selection) {
     fallback_dialog_->UseDefaultSettings();
   }
 
-  fallback_dialog_->ShowDialog(parent_view_, has_selection,
-                               std::move(callback_));
+  aura::Window* window = parent_view_tracker_.windows().empty()
+                             ? nullptr
+                             : parent_view_tracker_.windows()[0];
+  if (parent_view_provided_ && !window) {
+    std::move(callback_).Run(mojom::ResultCode::kCanceled);
+    return;
+  }
+
+  fallback_dialog_->ShowDialog(window, has_selection, std::move(callback_));
 }
 
 }  // namespace printing
