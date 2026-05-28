@@ -144,22 +144,3 @@ IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest, AnimationDisabled) {
                               return !button->GetAnimateOnStateChange();
                             }));
 }
-
-class BrowserAppMenuButtonGlowUpInteractiveTest
-    : public InteractiveBrowserTest {
- public:
-  BrowserAppMenuButtonGlowUpInteractiveTest() {
-    feature_list_.InitAndEnableFeature(features::kToolbarGlowUp);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonGlowUpInteractiveTest,
-                       AnimationEnabled) {
-  RunTestSequence(CheckView(kToolbarAppMenuButtonElementId,
-                            [](BrowserAppMenuButton* button) {
-                              return button->GetAnimateOnStateChange();
-                            }));
-}

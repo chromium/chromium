@@ -50,8 +50,7 @@ class VIEWS_EXPORT LabelButtonImageContainer {
 
 // The common-case implementation of LabelButtonImageContainer, which provides a
 // single image that tracks the LabelButton's ButtonState.
-class VIEWS_EXPORT SingleImageContainer final
-    : public LabelButtonImageContainer {
+class VIEWS_EXPORT SingleImageContainer : public LabelButtonImageContainer {
  public:
   SingleImageContainer() = default;
   SingleImageContainer(const SingleImageContainer&) = delete;

@@ -27,6 +27,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/single_animated_image_container.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -258,6 +259,10 @@ class ToolbarButton : public views::LabelButton,
   // Callers should use SetHighlight() instead which sets an optional color as
   // well.
   void SetText(std::u16string_view text) override;
+
+  views::SingleAnimatedImageContainer* animated_image_container() {
+    return static_cast<views::SingleAnimatedImageContainer*>(image_container());
+  }
 
  private:
   friend test::ToolbarButtonTestApi;

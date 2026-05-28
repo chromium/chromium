@@ -22,6 +22,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/single_animated_image_container.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/widget/widget_observer.h"
@@ -132,6 +133,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
     return image_container_view();
   }
   views::View* GetImageContainerView() { return image_container_view(); }
+
+  views::SingleAnimatedImageContainer* animated_image_container() {
+    return static_cast<views::SingleAnimatedImageContainer*>(image_container());
+  }
 
   // Exposed for testing.
   views::View* separator_view() const { return separator_view_; }

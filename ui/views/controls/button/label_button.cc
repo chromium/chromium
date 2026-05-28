@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -18,6 +19,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -28,6 +30,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"

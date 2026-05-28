@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
-#include "chrome/browser/ui/views/toolbar/lottie_icon_source.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -55,7 +54,6 @@
 namespace {
 constexpr int kChromeRefreshImageLabelPadding = 2;
 constexpr int kGlowUpImageLabelPadding = 4;
-constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 constexpr int kHideTextForFlexPadding = 4;
 }  // namespace
 
@@ -74,12 +72,6 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   label()->SetSkipSubpixelRenderingOpacityCheck(true);
   label()->layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
-  if (features::IsToolbarGlowUpEnabled()) {
-    SetAnimateOnStateChange(true);
-    SetAnimationDuration(kAnimationDuration);
-    click_animation_ = std::make_unique<gfx::ThrobAnimation>(this);
-    click_animation_->SetSlideDuration(kAnimationDuration);
-  }
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() = default;
@@ -136,7 +128,9 @@ AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
 
 void BrowserAppMenuButton::OnMenuClosed() {
   if (features::IsToolbarGlowUpEnabled()) {
-    click_animation_->Hide();
+    views::SingleAnimatedImageContainer* image_container =
+        animated_image_container();
+    image_container->HideAnimation();
   }
   AppMenuButton::OnMenuClosed();
 }
@@ -167,50 +161,15 @@ void BrowserAppMenuButton::UpdateIcon() {
       : features::IsRoundedIconsEnabled() ? kMoreVertIcon
                                           : kBrowserToolsChromeRefreshOldIcon;
 
-  const double click_animation_value = features::IsToolbarGlowUpEnabled()
-                                           ? click_animation_->GetCurrentValue()
-                                           : 0;
-  const int icon_size = GetIconSize();
-
   for (auto state : kButtonStates) {
     SkColor icon_color = GetForegroundColor(state);
-    ui::ImageModel model =
-        ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size);
-
-    if (features::IsToolbarGlowUpEnabled() && click_animation_value > 0 &&
-        GetColorProvider()) {
-      if (!lottie_animation_) {
-        std::optional<std::vector<uint8_t>> lottie_bytes =
-            ui::ResourceBundle::GetSharedInstance().GetLottieData(
-                IDR_APP_MENU_BUTTON_HOVER_LOTTIE);
-        CHECK(lottie_bytes);
-        scoped_refptr<cc::SkottieWrapper> skottie =
-            cc::SkottieWrapper::UnsafeCreateSerializable(
-                std::move(*lottie_bytes));
-        lottie_animation_ = std::make_unique<lottie::Animation>(skottie);
-      }
-
-      model = ui::ImageModel::FromImageSkia(
-          gfx::CanvasImageSource::MakeImageSkia<LottieIconSource>(
-              lottie_animation_.get(), click_animation_value, icon_size,
-              icon_color));
-    }
-    SetImageModel(state, model);
+    SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
   }
 }
 
 void BrowserAppMenuButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ToolbarButton::OnBoundsChanged(previous_bounds);
   UpdateLayoutInsets();
-}
-
-void BrowserAppMenuButton::AnimationProgressed(
-    const gfx::Animation* animation) {
-  if (features::IsToolbarGlowUpEnabled() &&
-      animation == click_animation_.get()) {
-    UpdateIcon();
-  }
-  AppMenuButton::AnimationProgressed(animation);
 }
 
 void BrowserAppMenuButton::UpdateInkdrop() {
@@ -311,8 +270,14 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  views::SingleAnimatedImageContainer* image_container =
+      animated_image_container();
   if (features::IsToolbarGlowUpEnabled()) {
-    click_animation_->Show();
+    if (!image_container->animated_image()) {
+      image_container->SetAnimatedImage(IDR_APP_MENU_BUTTON_HOVER_LOTTIE,
+                                        GetForegroundColor(GetState()));
+    }
+    image_container->ShowAnimation();
   }
 
   ShowMenu(event.IsKeyEvent() ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
