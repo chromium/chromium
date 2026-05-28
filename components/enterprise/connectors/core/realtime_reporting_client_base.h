@@ -80,6 +80,17 @@ class RealtimeReportingClientBase : public KeyedService,
       const std::string& dm_token,
       base::OnceCallback<void(bool)> upload_callback);
 
+  // Report a browser launch event to the reporting server. The `per_profile`
+  // parameter determines if the browser or profile client will be used. The
+  // `dm_token` parameter is used to validate and initialize the client if it
+  // is not already initialized. The `upload_callback` will be called with the
+  // upload result.
+  virtual void ReportBrowserLaunchEvent(
+      ::chrome::cros::reporting::proto::Event event,
+      bool per_profile,
+      const std::string& dm_token,
+      base::OnceCallback<void(bool)> upload_callback);
+
   // Return the user name associated with the profile.
   virtual std::string GetProfileUserName() = 0;
 
@@ -198,14 +209,17 @@ class RealtimeReportingClientBase : public KeyedService,
 
   const std::string GetProfilePolicyClientDescription();
 
-  void UploadSaasUsageEvent(::chrome::cros::reporting::proto::Event event,
-                            policy::CloudPolicyClient* client,
-                            bool per_profile,
-                            const std::string& dm_token,
-                            base::OnceCallback<void(bool)> callback);
+  // Helper method to report an event that is independent of the reporting
+  // connector policy.
+  void ReportStandaloneEvent(::chrome::cros::reporting::proto::Event event,
+                             EnterpriseReportingEventType event_type,
+                             bool per_profile,
+                             const std::string& dm_token,
+                             base::OnceCallback<void(bool)> callback);
 
-  void OnSaasUsageEventUploadCompleted(
+  void OnStandaloneEventUploadCompleted(
       base::OnceCallback<void(bool)> callback,
+      EnterpriseReportingEventType event_type,
       base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result);
 

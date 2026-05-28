@@ -213,8 +213,32 @@ void RealtimeReportingClientBase::ReportSaasUsageEvent(
     const std::string& dm_token,
     base::OnceCallback<void(bool)> callback) {
   CHECK(event.has_saas_usage_report_event());
+  ReportStandaloneEvent(std::move(event),
+                        EnterpriseReportingEventType::kSaasUsageReportEvent,
+                        per_profile, dm_token, std::move(callback));
+}
+
+void RealtimeReportingClientBase::ReportBrowserLaunchEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    bool per_profile,
+    const std::string& dm_token,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(event.has_browser_launch_event());
+  ReportStandaloneEvent(std::move(event),
+                        EnterpriseReportingEventType::kBrowserLaunchEvent,
+                        per_profile, dm_token, std::move(callback));
+}
+
+void RealtimeReportingClientBase::ReportStandaloneEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    EnterpriseReportingEventType event_type,
+    bool per_profile,
+    const std::string& dm_token,
+    base::OnceCallback<void(bool)> callback) {
   policy::CloudPolicyClient* client = GetReportingClient(dm_token, per_profile);
   if (!client) {
+    LOG(ERROR) << "Could not find a reporting client for standalone event: "
+               << GetEventName(event.event_case());
     std::move(callback).Run(false);
     return;
   }
@@ -223,35 +247,24 @@ void RealtimeReportingClientBase::ReportSaasUsageEvent(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
   }
 
-  UploadSaasUsageEvent(std::move(event), client, per_profile, dm_token,
-                       std::move(callback));
-}
-
-void RealtimeReportingClientBase::UploadSaasUsageEvent(
-    ::chrome::cros::reporting::proto::Event event,
-    policy::CloudPolicyClient* client,
-    bool per_profile,
-    const std::string& dm_token,
-    base::OnceCallback<void(bool)> callback) {
   ::chrome::cros::reporting::proto::UploadEventsRequest request =
       CreateUploadEventsRequest();
   request.add_events()->Swap(&event);
 
   auto on_upload_completed = base::BindOnce(
-      &RealtimeReportingClientBase::OnSaasUsageEventUploadCompleted,
-      AsWeakPtr(), std::move(callback), base::TimeTicks::Now());
+      &RealtimeReportingClientBase::OnStandaloneEventUploadCompleted,
+      AsWeakPtr(), std::move(callback), event_type, base::TimeTicks::Now());
 
   client->UploadSecurityEvent(ShouldIncludeDeviceInfo(per_profile),
                               std::move(request),
                               std::move(on_upload_completed));
 }
 
-void RealtimeReportingClientBase::OnSaasUsageEventUploadCompleted(
+void RealtimeReportingClientBase::OnStandaloneEventUploadCompleted(
     base::OnceCallback<void(bool)> callback,
+    EnterpriseReportingEventType event_type,
     base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
-  auto event_type = enterprise_connectors::GetUmaEnumFromEventCase(
-      EventCase::kSaasUsageReportEvent);
   base::UmaHistogramEnumeration(upload_result.IsSuccess()
                                     ? "Enterprise.ReportingEventUploadSuccess"
                                     : "Enterprise.ReportingEventUploadFailure",

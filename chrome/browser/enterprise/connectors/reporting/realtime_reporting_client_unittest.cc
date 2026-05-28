@@ -172,6 +172,17 @@ class RealtimeReportingClientTestBase : public testing::Test {
         profile_,
         base::BindRepeating(
             &enterprise_connectors::test::BuildRealtimeReportingClient));
+
+    reporting_client_ =
+        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+            profile_);
+  }
+
+  void SetUpReportingClient(bool per_profile) {
+    per_profile ? reporting_client_->SetProfileCloudPolicyClientForTesting(
+                      client_.get())
+                : reporting_client_->SetBrowserCloudPolicyClientForTesting(
+                      client_.get());
   }
 
  protected:
@@ -179,6 +190,8 @@ class RealtimeReportingClientTestBase : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<RealtimeReportingClient> reporting_client_ = nullptr;
+  base::HistogramTester histogram_;
 };
 }  // namespace
 
@@ -207,16 +220,7 @@ class RealtimeReportingClientUmaTest
  public:
   bool is_profile_reporting() { return GetParam(); }
 
-  void SetUp() override {
-    RealtimeReportingClientTestBase::SetUp();
-    reporting_client_ =
-        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-            profile_);
-  }
-
  protected:
-  base::HistogramTester histogram_;
-  raw_ptr<RealtimeReportingClient> reporting_client_ = nullptr;
   policy::CloudPolicyClient::ResultCallback upload_callback_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -229,9 +233,7 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   }
 #endif
 
-  is_profile_reporting()
-      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
-      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+  SetUpReportingClient(is_profile_reporting());
 
   ReportingSettings settings;
   settings.per_profile = is_profile_reporting();
@@ -277,9 +279,7 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   }
 #endif
 
-  is_profile_reporting()
-      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
-      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+  SetUpReportingClient(is_profile_reporting());
 
   ReportingSettings settings;
   settings.per_profile = is_profile_reporting();
@@ -328,9 +328,10 @@ TEST_F(RealtimeReportingClientTestBase,
                               kAllReportingEnabledEvents.end());
   all_reporting_events.insert(kAllReportingOptInEvents.begin(),
                               kAllReportingOptInEvents.end());
-  // Saas usage event is independent from reporting connector, so it is
-  // neither enabled nor opt-in event.
+  // Saas usage event and browser launch event are independent from reporting
+  // connector, so it is neither enabled nor opt-in event.
   all_reporting_events.insert(kKeySaasUsageEvent);
+  all_reporting_events.insert(kKeyBrowserLaunchEvent);
 
   EXPECT_EQ(all_reporting_events.size(), kEventNameToUmaEnumMap.size());
   for (std::string eventName : all_reporting_events) {
@@ -440,10 +441,7 @@ class RealtimeReportingClientUrlTruncationTest
       public testing::WithParamInterface<Event::EventCase> {};
 
 TEST_P(RealtimeReportingClientUrlTruncationTest, TestUrlTruncation) {
-  RealtimeReportingClient* reporting_client =
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          profile_);
-  reporting_client->SetBrowserCloudPolicyClientForTesting(client_.get());
+  SetUpReportingClient(/*per_profile=*/false);
 
   ReportingSettings settings;
   settings.per_profile = false;
@@ -614,7 +612,7 @@ TEST_P(RealtimeReportingClientUrlTruncationTest, TestUrlTruncation) {
                 policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
             run_loop.Quit();
           });
-  reporting_client->ReportEvent(std::move(event_variant), std::move(settings));
+  reporting_client_->ReportEvent(std::move(event_variant), std::move(settings));
   run_loop.Run();
 }
 
@@ -652,7 +650,7 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-class RealtimeReportingClientSaasTest
+class RealtimeReportingClientStandaloneTest
     : public RealtimeReportingClientTestBase,
       public testing::WithParamInterface<
           std::tuple<bool, policy::DeviceManagementStatus>> {
@@ -667,17 +665,29 @@ class RealtimeReportingClientSaasTest
     return dm_status() == policy::DM_STATUS_SUCCESS;
   }
 
-  void SetUp() override {
-    RealtimeReportingClientTestBase::SetUp();
-    reporting_client_ =
-        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-            profile_);
+ protected:
+  void SetUpStandaloneReportingClient() {
+    SetUpReportingClient(is_profile_reporting());
   }
 
- protected:
-  base::HistogramTester histogram_;
-  raw_ptr<RealtimeReportingClient> reporting_client_ = nullptr;
+  void VerifyStandaloneMetrics(EnterpriseReportingEventType event_type,
+                               const std::string& success_metric,
+                               const std::string& failure_metric) {
+    if (should_succeed()) {
+      histogram_.ExpectUniqueSample("Enterprise.ReportingEventUploadSuccess",
+                                    event_type, 1);
+      histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
+      histogram_.ExpectTotalCount(success_metric, 1);
+    } else {
+      histogram_.ExpectUniqueSample("Enterprise.ReportingEventUploadFailure",
+                                    event_type, 1);
+      histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
+      histogram_.ExpectTotalCount(failure_metric, 1);
+    }
+  }
 };
+
+using RealtimeReportingClientSaasTest = RealtimeReportingClientStandaloneTest;
 
 TEST_P(RealtimeReportingClientSaasTest, ReportSaasUsageEvent) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -686,9 +696,7 @@ TEST_P(RealtimeReportingClientSaasTest, ReportSaasUsageEvent) {
   }
 #endif
 
-  is_profile_reporting()
-      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
-      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+  SetUpStandaloneReportingClient();
 
   ::chrome::cros::reporting::proto::Event event;
   event.mutable_saas_usage_report_event();
@@ -716,21 +724,10 @@ TEST_P(RealtimeReportingClientSaasTest, ReportSaasUsageEvent) {
 
   run_loop.Run();
   EXPECT_EQ(success_result, should_succeed());
-  if (should_succeed()) {
-    histogram_.ExpectUniqueSample(
-        "Enterprise.ReportingEventUploadSuccess",
-        EnterpriseReportingEventType::kSaasUsageReportEvent, 1);
-    histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
-    histogram_.ExpectTotalCount(
-        "Enterprise.ReportingEvent.SaasUsage.UploadSuccess.Duration", 1);
-  } else {
-    histogram_.ExpectUniqueSample(
-        "Enterprise.ReportingEventUploadFailure",
-        EnterpriseReportingEventType::kSaasUsageReportEvent, 1);
-    histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
-    histogram_.ExpectTotalCount(
-        "Enterprise.ReportingEvent.SaasUsage.UploadFailure.Duration", 1);
-  }
+  VerifyStandaloneMetrics(
+      EnterpriseReportingEventType::kSaasUsageReportEvent,
+      "Enterprise.ReportingEvent.SaasUsage.UploadSuccess.Duration",
+      "Enterprise.ReportingEvent.SaasUsage.UploadFailure.Duration");
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -739,5 +736,54 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),  // is_profile_reporting
                      testing::Values(policy::DM_STATUS_SUCCESS,
                                      policy::DM_STATUS_REQUEST_FAILED)));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+using RealtimeReportingClientBrowserLaunchTest =
+    RealtimeReportingClientStandaloneTest;
+
+TEST_P(RealtimeReportingClientBrowserLaunchTest, ReportBrowserLaunchEvent) {
+  // Browser Launch reporting is a Desktop-only feature (Win/Mac/Linux).
+
+  SetUpStandaloneReportingClient();
+
+  ::chrome::cros::reporting::proto::Event event;
+  event.mutable_browser_launch_event();
+
+  base::RunLoop run_loop;
+  bool success_result = false;
+
+  EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
+      .WillOnce(
+          [&](bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            EXPECT_EQ(request.events_size(), 1);
+            EXPECT_TRUE(request.events(0).has_browser_launch_event());
+            std::move(callback).Run(
+                policy::CloudPolicyClient::Result(dm_status()));
+          });
+
+  reporting_client_->ReportBrowserLaunchEvent(
+      event, is_profile_reporting(), "fake-token",
+      base::BindLambdaForTesting([&](bool success) {
+        success_result = success;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+  EXPECT_EQ(success_result, should_succeed());
+  VerifyStandaloneMetrics(
+      EnterpriseReportingEventType::kBrowserLaunchEvent,
+      "Enterprise.ReportingEvent.BrowserLaunch.UploadSuccess.Duration",
+      "Enterprise.ReportingEvent.BrowserLaunch.UploadFailure.Duration");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RealtimeReportingClientBrowserLaunchTest,
+    testing::Combine(testing::Bool(),  // is_profile_reporting
+                     testing::Values(policy::DM_STATUS_SUCCESS,
+                                     policy::DM_STATUS_REQUEST_FAILED)));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

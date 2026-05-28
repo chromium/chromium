@@ -48,6 +48,8 @@ inline constexpr auto kUmaEnumToStringMap =
          kExtensionTelemetryUmaMetricName},
         {EnterpriseReportingEventType::kSaasUsageReportEvent,
          kSaasUsageUmaMetricName},
+        {EnterpriseReportingEventType::kBrowserLaunchEvent,
+         kBrowserLaunchUmaMetricName},
     });
 
 inline constexpr auto kEventCaseToUmaEnumMap =
@@ -77,6 +79,8 @@ inline constexpr auto kEventCaseToUmaEnumMap =
          EnterpriseReportingEventType::kExtensionTelemetryEvent},
         {EventCase::kSaasUsageReportEvent,
          EnterpriseReportingEventType::kSaasUsageReportEvent},
+        {EventCase::kBrowserLaunchEvent,
+         EnterpriseReportingEventType::kBrowserLaunchEvent},
     });
 
 ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(

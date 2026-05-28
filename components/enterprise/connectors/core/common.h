@@ -110,7 +110,12 @@ enum class EnterpriseReportingEventType {
   // - SaasUsageReportingDomainUrlsForBrowsers
   // - SaasUsageReportingDomainUrlsForProfiles
   kSaasUsageReportEvent = 13,
-  kMaxValue = kSaasUsageReportEvent,
+
+  // Browser launch event is not reported through reporting connector; it is
+  // sent by all managed browsers and profiles for auditing purposes.
+  kBrowserLaunchEvent = 14,
+
+  kMaxValue = kBrowserLaunchEvent,
 };
 
 // Mapping from event name to UMA enum for logging histogram.
@@ -140,6 +145,10 @@ inline constexpr auto kEventNameToUmaEnumMap =
          EnterpriseReportingEventType::kExtensionTelemetryEvent},
         {kKeySaasUsageEvent,
          EnterpriseReportingEventType::kSaasUsageReportEvent},
+#if !BUILDFLAG(IS_IOS)
+        {kKeyBrowserLaunchEvent,
+         EnterpriseReportingEventType::kBrowserLaunchEvent},
+#endif
     });
 
 // Struct holding the necessary data to tweak the behavior of the reporting

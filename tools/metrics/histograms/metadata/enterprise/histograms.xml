@@ -191,6 +191,7 @@ chromium-metrics-reviews@google.com.
 <variants name="EnterpriseReportingEventType">
   <variant name="All" summary="All events"/>
   <variant name="BrowserCrash" summary="Browser crash events"/>
+  <variant name="BrowserLaunch" summary="Browser launch events"/>
   <variant name="DangerousDownload" summary="Dangerous download events"/>
   <variant name="ExtensionInstall" summary="Extension install events"/>
   <variant name="ExtensionTelemetry" summary="Extension telemetry events"/>
