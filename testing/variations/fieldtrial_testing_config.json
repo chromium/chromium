@@ -23366,6 +23366,21 @@
             ]
         }
     ],
+    "TextClassifierTimeout": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TextClassifierTimeout"
+                    ]
+                }
+            ]
+        }
+    ],
     "TextInputHostMojoCapabilityControlWorkaround": [
         {
             "platforms": [
