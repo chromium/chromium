@@ -24,15 +24,6 @@ using ::chrome_test_util::SecondaryToolbar;
 
 @implementation SideSwipeTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testSideSwipeBottomToolbar)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey setBoolValue:NO
@@ -47,6 +38,11 @@ using ::chrome_test_util::SecondaryToolbar;
     EARL_GREY_TEST_SKIPPED(
         @"This tests should only be tested if the secondary toolbar is "
         @"present");
+  }
+
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [ChromeEarlGrey setBoolValue:YES
+               forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   }
 
   [self checkSideSwipeOnToolbarMatcher:SecondaryToolbar()];
