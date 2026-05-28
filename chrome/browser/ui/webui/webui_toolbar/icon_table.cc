@@ -86,6 +86,15 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:omnibox_page_info", IconType::kIconSet}},
           {{&omnibox::kStarIcon},
            {"webui-toolbar:omnibox_star", IconType::kIconSet}},
+          {{&vector_icons::kSearchIcon},
+           {"webui-toolbar:vector_icons_search", IconType::kIconSet}},
+
+          // Old, that is, current, versions of omnibox icons.
+          {{&omnibox::kBookmarkChromeRefreshOldIcon},
+           {"webui-toolbar:omnibox_bookmark_chrome_refresh_old",
+            IconType::kIconSet}},
+          {{&vector_icons::kSearchOldIcon},
+           {"webui-toolbar:vector_icons_search_old", IconType::kIconSet}},
 
           // LHS icons:
           {{&vector_icons::kDangerousChromeRefreshOldIcon},
