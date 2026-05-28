@@ -38,10 +38,13 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {
+  "app_time_controller\\.cc": [
+    "+chrome/grit",
+  ],
+
   ".*test.*": [
     "+chrome/browser/ash/login/test",
     "+chrome/browser/extensions/test_extension_system.h",

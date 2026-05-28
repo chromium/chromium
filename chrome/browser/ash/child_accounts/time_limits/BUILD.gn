@@ -46,6 +46,7 @@ static_library("time_limits") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts/constants",
     "//chrome/browser/notifications",

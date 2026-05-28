@@ -2988,6 +2988,30 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STATUS_TRAY_DUAL_ROLE_MESSAGE" desc="The message body of a notification, which indicates that the user can click the notification to see and change which device is being used as a power source.">
         Click for more options
       </message>
+
+      <!-- Per-App Time Limits -->
+      <message name="IDS_APP_TIME_LIMIT_APP_BLOCKED_NOTIFICATION_MESSAGE" desc="PerAppTimeLimit system notification message specifying that the application has been blocked.">
+        <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is blocked
+      </message>
+      <message name="IDS_APP_TIME_LIMIT_APP_AVAILABLE_NOTIFICATION_MESSAGE" desc="PerAppTimeLimit system notification message specifying that the application is no longer blocked.">
+        <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is now available
+      </message>
+      <message name="IDS_APP_TIME_LIMIT_APP_WILL_PAUSE_SYSTEM_NOTIFICATION_TITLE" desc="PerAppTimeLimit system notification title specifying that the application will pause soon.">
+        <ph name="APP_NAME">$1<ex>App x</ex></ph> will pause soon
+      </message>
+      <message name="IDS_APP_TIME_LIMIT_APP_WILL_PAUSE_SYSTEM_NOTIFICATION_MESSAGE" desc="PerAppTimeLimit system notification message specifying that the application will pause in the specified time.">
+        <ph name="TIME">$1<ex> 5 minutes</ex></ph> left
+      </message>
+      <message name="IDS_APP_TIME_LIMIT_APP_TIME_LIMIT_SET_SYSTEM_NOTIFICATION_TITLE" desc="PerAppTimeLimit system notification title specifying that the application's time limit has been set by a parent.">
+        Update from your parent
+      </message>
+      <message name="IDS_APP_TIME_LIMIT_APP_TIME_LIMIT_SET_SYSTEM_NOTIFICATION_MESSAGE" desc="PerAppTimeLimit system notification message specifying that the application's time limit has been set by a parent.">
+        <ph name="TIME">$1<ex> 1 hour 30 minutes</ex></ph> time limit set for <ph name="APP_NAME">$2<ex>Gmail</ex></ph>
+      </message>
+      <message name="IDS_APP_TIME_LIMIT_APP_TIME_LIMIT_REMOVED_SYSTEM_NOTIFICATION_MESSAGE" desc="PerAppTimeLimit system notification message specifying that the application's time limit has been removed by parent.">
+        Time limit removed for <ph name="APP_NAME">$1<ex>Gmail</ex></ph>
+      </message>
+
       <message name="IDS_ASH_POWER_SOURCE_PORT_LEFT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the left side of this device.">
         USB-C device (left port)
       </message>
