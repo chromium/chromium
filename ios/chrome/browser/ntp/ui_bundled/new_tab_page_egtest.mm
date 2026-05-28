@@ -98,13 +98,6 @@ enum class QuickActionsVisibility {
 
 @implementation NewTabPageTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
-  return config;
-}
-
 - (void)tearDownHelper {
   [self releaseHistogramTester];
   policy_test_utils::ClearPolicies();
@@ -401,6 +394,10 @@ enum class QuickActionsVisibility {
   // Set the policy's NTP Location value at runtime.
   [self setNTPPolicyValue:expectedURL.spec()];
 
+  // Open a new incognito tab to expose the "New Tab" item in the long press
+  // menu.
+  [ChromeEarlGrey openNewIncognitoTab];
+
   // Open tab via the UI.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
@@ -414,6 +411,8 @@ enum class QuickActionsVisibility {
       performAction:grey_tap()];
 
   [self validateNTPURL:expectedURL];
+
+  [ChromeEarlGrey closeAllIncognitoTabs];
 }
 
 // Verifies opening a new tab from the tab grid view by tapping on the New Tab
