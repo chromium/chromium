@@ -148,6 +148,17 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOnScreenMode);
 // Returns true if the on screen AXMode is enabled.
 AX_BASE_EXPORT bool IsAccessibilityOnScreenAXModeEnabled();
 
+// Controls canvas accessibility mode.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCanvas);
+
+enum class CanvasAccessibilityMode {
+  kDisabled,
+  kBasic,     // Only rendered text.
+  kAdvanced,  // Rendered text + OCR.
+};
+
+AX_BASE_EXPORT CanvasAccessibilityMode GetCanvasAccessibilityMode();
+
 #if BUILDFLAG(IS_WIN)
 // This is a killswitch. Controls whether
 // HWNDMessageHandler::GetParentOfAXFragmentRoot returns nullptr (legacy) or

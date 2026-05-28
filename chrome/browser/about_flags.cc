@@ -4639,6 +4639,15 @@ const FeatureEntry::FeatureParam kWebAuthnAmbientSignin_AnchoredMessage[] = {
 const FeatureEntry::FeatureVariation kWebAuthnAmbientSigninVariations[] = {
     {"Anchored Message", kWebAuthnAmbientSignin_AnchoredMessage, nullptr}};
 
+const FeatureEntry::FeatureParam kCanvasAccessibilityBasic[] = {
+    {"CanvasAccessibilityMode", "Basic"}};
+const FeatureEntry::FeatureParam kCanvasAccessibilityAdvanced[] = {
+    {"CanvasAccessibilityMode", "Advanced"}};
+
+const FeatureEntry::FeatureVariation kCanvasAccessibilityChoices[] = {
+    {"Basic (Rendered Text)", kCanvasAccessibilityBasic, nullptr},
+    {"Advanced (Rendered Text + OCR)", kCanvasAccessibilityAdvanced, nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12996,6 +13005,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableGradientGoogleLogosDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableGradientGoogleLogos)},
+
+    {"canvas-accessibility", flag_descriptions::kCanvasAccessibilityName,
+     flag_descriptions::kCanvasAccessibilityDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(::features::kAccessibilityCanvas,
+                                    kCanvasAccessibilityChoices,
+                                    "CanvasAccessibility")},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
