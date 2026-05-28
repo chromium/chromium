@@ -109,6 +109,7 @@ def CommonChecks(input_api, output_api, *, is_upload):
       J('pylib', 'local', 'device',
         'local_device_instrumentation_test_run_test.py'),
       J('pylib', 'local', 'device', 'local_device_test_run_test.py'),
+      J('pylib', 'local', 'emulator', 'avd_test.py'),
       J('pylib', 'local', 'emulator', 'ini_test.py'),
       J('pylib', 'local', 'machine', 'local_machine_junit_test_run_test.py'),
       J('pylib', 'output', 'local_output_manager_test.py'),

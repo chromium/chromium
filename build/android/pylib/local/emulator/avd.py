@@ -8,11 +8,14 @@ import glob
 import json
 import logging
 import os
+import shutil
 import socket
 import stat
 import subprocess
+import tempfile
 import threading
 import time
+import zipfile
 
 from google.protobuf import text_format  # pylint: disable=import-error
 
@@ -177,6 +180,21 @@ def ProcessDebugTags(debug_tags_str, default_debug_tags=None):
   # the logging will not work properly.
   return sorted(tags, key=lambda t: (t.startswith('-'), t))
 
+
+def _ProcessSourceProps(source_prop_path):
+  """Process a given source.properties file.
+
+  It includes:
+   * Parsing the file source.properties
+   * Generating necessary props for the package.xml.template file
+   * Creating the package.xml file under the same directory.
+
+  Returns:
+    Package path as string, i.e. "system-images;<version>;<tag_id>;<abi>"
+  """
+  # TODO(https://crbug.com/513266525): Add the implementation
+  assert source_prop_path
+  return ''
 
 class _AvdManagerAgent:
   """Private utility for interacting with avdmanager."""
@@ -534,6 +552,10 @@ class AvdConfig:
     avd_settings = self.GetAvdSettings(avd_variant_name)
     logging.info('avd_settings: %r', avd_settings)
 
+    if self._config.HasField('raw_system_image_package'):
+      logging.info('Processing raw system image.')
+      self._ProcessRawSystemImage()
+
     logging.info('Installing required packages.')
     self._InstallCipdPackages(_PACKAGES_CREATION)
 
@@ -720,6 +742,73 @@ class AvdConfig:
         logging.info('Deleting AVD.')
         avd_manager.Delete(avd_name=self.avd_name)
 
+  def _ProcessRawSystemImage(self):
+    """Given a raw system image CIPD package, process it to make it ready for
+    emulator, which includes:
+      * Extract all files to a temp dir
+      * Create the package.xml file from source.properties file.
+      * Place the files to the correct path.
+    """
+    is_processed = False
+    dest_path = os.path.join(
+        COMMON_CIPD_ROOT,
+        self.GetDestPath(self._config.raw_system_image_package),
+    )
+    for root, _, files in os.walk(os.path.join(dest_path, 'system-images')):
+      if 'package.xml' in files:
+        logging.info('Skip as raw system image already processed at %r', root)
+        is_processed = True
+        break
+
+    if is_processed:
+      return
+
+    # The process steps include:
+    #  * Install the raw package (zip file) from CIPD and unzip to a temp dir
+    #  * Create the "package.xml" from the "source.properties" file
+    #  * Move all the content to the desired path.
+    self._InstallCipdPackages([self._config.raw_system_image_package])
+    zip_pattern = os.path.join(dest_path, 'sdk-repo-linux-system-images-*.zip')
+    zip_files = glob.glob(zip_pattern)
+    if not zip_files:
+      raise AvdException(f'Cannot find raw system image file {zip_pattern!r}')
+    image_file = zip_files[0]
+    with tempfile.TemporaryDirectory() as temp_dir:
+      logging.info('Extracting raw system image %r', image_file)
+      with zipfile.ZipFile(image_file, 'r') as z:
+        z.extractall(temp_dir)
+
+      # Locate the directory containing the extracted source.properties
+      source_properties_dir = None
+      for root, _, files in os.walk(temp_dir):
+        if 'source.properties' in files:
+          if source_properties_dir:
+            raise AvdException('Found multiple source.properties files.')
+          source_properties_dir = root
+      if not source_properties_dir:
+        raise AvdException(
+            'Failed to locate source.properties after extracting the zip.')
+
+      package_path = _ProcessSourceProps(
+          os.path.join(source_properties_dir, 'source.properties'))
+
+      system_image_path = os.path.join(self.emulator_sdk_root,
+                                       *package_path.split(';'))
+      logging.info('Moving system_image files to the final destination %r.',
+                   system_image_path)
+      # Clear destination path if it already exists, to ensure the shutil.move
+      # call below puts contents in the desired path.
+      if os.path.exists(system_image_path):
+        logging.info('The directory already exists. Cleaning it now.')
+        shutil.rmtree(system_image_path)
+      # Ensure that parent directory exists
+      parent_dir = os.path.dirname(system_image_path)
+      if not os.path.exists(parent_dir):
+        os.makedirs(parent_dir)
+      # Move processed contents to destination
+      shutil.move(source_properties_dir, system_image_path)
+      logging.info('Successfully processed raw system image.')
+
   def GetAvdSettings(self, avd_variant_name=None):
     # python generated codes are simplified since Protobuf v3.20.0 and cause
     # pylint error: https://github.com/protocolbuffers/protobuf/issues/9730
@@ -805,6 +894,7 @@ class AvdConfig:
     Artifacts includes:
      - CIPD packages specified in the avd config.
      - The local AVD created by `Create`, if present.
+     - Processed raw system image file.
 
     """
     # Delete any existing local AVD. This must occur before deleting CIPD
@@ -842,6 +932,17 @@ class AvdConfig:
         raise AvdException('Failed to uninstall CIPD packages: %s' % str(e),
                            command=ensure_cmd)
 
+    # Delete processed raw system image file
+    if self._config.HasField('raw_system_image_package'):
+      logging.info('Deleting processed raw system image.')
+      target_path = os.path.join(
+          COMMON_CIPD_ROOT,
+          self.GetDestPath(self._config.raw_system_image_package),
+          'system-images',
+      )
+      if os.path.exists(target_path):
+        shutil.rmtree(target_path)
+
   def Install(self):
     """Installs the requested CIPD packages and prepares them for use.
 
@@ -852,6 +953,10 @@ class AvdConfig:
     Raises: AvdException on failure to install.
     """
     with measures.time_consumption('emulator', 'install', 'cipd_packages'):
+      if self._config.HasField('raw_system_image_package'):
+        logging.info('Processing raw system image.')
+        self._ProcessRawSystemImage()
+
       self._InstallCipdPackages(_PACKAGES_RUNTIME)
     self._MakeWriteable()
     self._UpdateConfigs()

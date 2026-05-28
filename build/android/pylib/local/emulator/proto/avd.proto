@@ -71,13 +71,18 @@ message AvdLaunchSettings {
 }
 
 message Avd {
-  // Next ID: 13
+  // Next ID: 14
 
   // The emulator to use in running the AVD.
   CIPDPackage emulator_package = 1;
 
   // The system image to use.
-  CIPDPackage system_image_package = 2;
+  oneof system_image {
+    // system image fetched from android sdkmanager
+    CIPDPackage system_image_package = 2;
+    // The raw system image, fetched directly from android ci system
+    CIPDPackage raw_system_image_package = 13;
+  }
   // The name of the system image to use, as reported by sdkmanager.
   string system_image_name = 3;
 
