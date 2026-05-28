@@ -9017,7 +9017,7 @@
   {
     "name": "tls-trust-anchor-ids",
     "owners": ["trusty-transport@chromium.org"],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "toolbar-app-menu-label-resizing",
