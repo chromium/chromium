@@ -57,6 +57,7 @@ action("embed_mobile_devices_in_cpp") {
   ts_files = [ "//third_party/devtools-frontend/src/front_end/models/emulation/EmulatedDevices.ts" ]
   inputs = [
     "//chrome/VERSION",
+    "chrome_paths.py",
     "cpp_source.py",
   ]
   inputs += ts_files

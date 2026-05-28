@@ -32,7 +32,6 @@ def __step_config(ctx, step_config):
         "build/private_code_test/ninja_parser.py",
         "build/rust/gni_impl/rustc_print_cfg.py",
         "build/rust/gni_impl/write_rustflags.py",
-        "chrome/test/chromedriver/embed_mobile_devices_in_cpp.py",
         "chrome/installer/linux/debian/build.py",
         "chrome/installer/linux/debian/calculate_package_deps.py",
         "chrome/installer/linux/debian/merge_package_versions.py",
