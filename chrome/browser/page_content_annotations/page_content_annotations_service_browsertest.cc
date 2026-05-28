@@ -2556,8 +2556,14 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionPdfTest,
   }
 }
 
+// TODO(crbug.com/517335503): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TwoPDFPageLoads DISABLED_TwoPDFPageLoads
+#else
+#define MAYBE_TwoPDFPageLoads TwoPDFPageLoads
+#endif
 IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionPdfTest,
-                       TwoPDFPageLoads) {
+                       MAYBE_TwoPDFPageLoads) {
   base::HistogramTester histogram_tester;
 
   // Set up the observer for page content and PDF text extraction.
