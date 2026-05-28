@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -75,6 +76,13 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
         doReturn(mUrlBar)
                 .when(mHeaderView)
                 .findViewById(R.id.document_picture_in_picture_header_url_bar);
+
+        ViewGroup.LayoutParams securityIconLayoutParams = new ViewGroup.LayoutParams(0, 0);
+        ViewGroup.LayoutParams backToTabButtonLayoutParams = new ViewGroup.LayoutParams(0, 0);
+        ViewGroup.LayoutParams urlBarLayoutParams = new ViewGroup.LayoutParams(0, 0);
+        doReturn(securityIconLayoutParams).when(mSecurityIcon).getLayoutParams();
+        doReturn(backToTabButtonLayoutParams).when(mBackToTabButton).getLayoutParams();
+        doReturn(urlBarLayoutParams).when(mUrlBar).getLayoutParams();
 
         mModel =
                 new PropertyModel.Builder(DocumentPictureInPictureHeaderProperties.ALL_KEYS)
@@ -215,5 +223,16 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
                 DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR,
                 TextUtils.TruncateAt.END);
         verify(mUrlBar).setEllipsize(TextUtils.TruncateAt.END);
+    }
+
+    @Test
+    @SmallTest
+    public void testComponentSize() {
+        int size = 42;
+        mModel.set(DocumentPictureInPictureHeaderProperties.COMPONENT_SIZE, size);
+
+        verify(mBackToTabButton).setLayoutParams(any());
+        verify(mSecurityIcon).setLayoutParams(any());
+        verify(mUrlBar).setLayoutParams(any());
     }
 }

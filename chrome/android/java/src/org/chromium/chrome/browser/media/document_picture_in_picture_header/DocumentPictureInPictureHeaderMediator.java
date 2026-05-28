@@ -14,6 +14,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -84,18 +85,27 @@ public class DocumentPictureInPictureHeaderMediator
         mDelegate = delegate;
         mOpenerWebContents = openerWebContents;
         mWebContents = webContents;
-        mMinHeaderHeight =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_min_height);
-        mComponentSize =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_component_size);
+
+        boolean isDesktop = DeviceInfo.isDesktop();
+        int minHeaderHeightRes =
+                isDesktop
+                        ? R.dimen.document_picture_in_picture_header_min_height_desktop
+                        : R.dimen.document_picture_in_picture_header_min_height;
+        int componentSizeRes =
+                isDesktop
+                        ? R.dimen.document_picture_in_picture_header_component_size_desktop
+                        : R.dimen.document_picture_in_picture_header_component_size;
+        int minUnoccludedWidthPxRes =
+                isDesktop
+                        ? R.dimen.document_picture_in_picture_header_min_unoccluded_width_desktop
+                        : R.dimen.document_picture_in_picture_header_min_unoccluded_width;
+
+        mMinHeaderHeight = mContext.getResources().getDimensionPixelSize(minHeaderHeightRes);
+        mComponentSize = mContext.getResources().getDimensionPixelSize(componentSizeRes);
         mMinUnoccludedWidthPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+                mContext.getResources().getDimensionPixelSize(minUnoccludedWidthPxRes);
+
+        mModel.set(DocumentPictureInPictureHeaderProperties.COMPONENT_SIZE, mComponentSize);
         mModel.set(DocumentPictureInPictureHeaderProperties.IS_BACK_TO_TAB_SHOWN, isBackToTabShown);
 
         mModel.set(

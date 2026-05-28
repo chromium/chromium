@@ -22,10 +22,8 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:id="@+id/document_picture_in_picture_header_security_icon"
         android:tooltipText="@string/accessibility_menu_info"
         android:background="@drawable/default_icon_background"
-        android:layout_width=
-            "@dimen/document_picture_in_picture_header_component_size"
-        android:layout_height=
-            "@dimen/document_picture_in_picture_header_component_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:scaleType="center" />
 
     <!-- Ellipsize START is set as the default here for layout editor previewing and
@@ -37,8 +35,7 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:background="@null"
         android:singleLine="true"
         android:layout_width="0dp"
-        android:layout_height=
-            "@dimen/document_picture_in_picture_header_component_size"
+        android:layout_height="wrap_content"
         android:layout_marginStart=
             "@dimen/document_picture_in_picture_url_bar_margin"
         android:layout_marginEnd=
@@ -58,9 +55,7 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@string/document_picture_in_picture_back_to_tab"
         android:tooltipText="@string/document_picture_in_picture_back_to_tab"
         android:background="@drawable/default_icon_background"
-        android:layout_width=
-            "@dimen/document_picture_in_picture_header_component_size"
-        android:layout_height=
-            "@dimen/document_picture_in_picture_header_component_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:scaleType="center" />
 </LinearLayout>

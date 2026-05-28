@@ -38,6 +38,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -179,6 +180,17 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 TextUtils.TruncateAt.START,
                 mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
+        int expectedComponentSize =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                DeviceInfo.isDesktop()
+                                        ? R.dimen
+                                                .document_picture_in_picture_header_component_size_desktop
+                                        : R.dimen
+                                                .document_picture_in_picture_header_component_size);
+        assertEquals(
+                expectedComponentSize,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.COMPONENT_SIZE));
     }
 
     @Test
@@ -279,7 +291,11 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         int minWidthPx =
                 mContext.getResources()
                         .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+                                DeviceInfo.isDesktop()
+                                        ? R.dimen
+                                                .document_picture_in_picture_header_min_unoccluded_width_desktop
+                                        : R.dimen
+                                                .document_picture_in_picture_header_min_unoccluded_width);
 
         int unoccludedWidthPx = minWidthPx - 20;
         when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(unoccludedWidthPx);
@@ -300,7 +316,11 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         int minWidthPx =
                 mContext.getResources()
                         .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+                                DeviceInfo.isDesktop()
+                                        ? R.dimen
+                                                .document_picture_in_picture_header_min_unoccluded_width_desktop
+                                        : R.dimen
+                                                .document_picture_in_picture_header_min_unoccluded_width);
 
         int unoccludedWidthPx = minWidthPx + 20;
         when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(unoccludedWidthPx);
@@ -320,7 +340,11 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         int minWidthPx =
                 mContext.getResources()
                         .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+                                DeviceInfo.isDesktop()
+                                        ? R.dimen
+                                                .document_picture_in_picture_header_min_unoccluded_width_desktop
+                                        : R.dimen
+                                                .document_picture_in_picture_header_min_unoccluded_width);
 
         int unoccludedWidthPx = minWidthPx - 20;
         when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(unoccludedWidthPx);
@@ -375,11 +399,18 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         var minHeaderHeight =
                 mContext.getResources()
                         .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_min_height);
+                                DeviceInfo.isDesktop()
+                                        ? R.dimen
+                                                .document_picture_in_picture_header_min_height_desktop
+                                        : R.dimen.document_picture_in_picture_header_min_height);
         var componentSize =
                 mContext.getResources()
                         .getDimensionPixelSize(
-                                R.dimen.document_picture_in_picture_header_component_size);
+                                DeviceInfo.isDesktop()
+                                        ? R.dimen
+                                                .document_picture_in_picture_header_component_size_desktop
+                                        : R.dimen
+                                                .document_picture_in_picture_header_component_size);
         var headerHeight = minHeaderHeight - 10;
         var expectedPaddingBottom = minHeaderHeight - componentSize;
 

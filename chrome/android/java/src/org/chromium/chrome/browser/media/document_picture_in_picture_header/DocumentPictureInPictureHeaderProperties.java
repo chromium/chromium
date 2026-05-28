@@ -51,6 +51,7 @@ public class DocumentPictureInPictureHeaderProperties {
     public static final WritableObjectPropertyKey<TextUtils.TruncateAt> URL_ELLIPSIZE_BEHAVIOR =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey BRANDED_COLOR_SCHEME = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey COMPONENT_SIZE = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
         IS_SHOWN,
@@ -67,6 +68,7 @@ public class DocumentPictureInPictureHeaderProperties {
         ON_SECURITY_ICON_CLICK_LISTENER,
         URL_STRING,
         URL_ELLIPSIZE_BEHAVIOR,
-        BRANDED_COLOR_SCHEME
+        BRANDED_COLOR_SCHEME,
+        COMPONENT_SIZE
     };
 }
