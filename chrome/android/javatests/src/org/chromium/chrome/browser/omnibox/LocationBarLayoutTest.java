@@ -129,6 +129,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/517514794")
     public void testDeleteButton() {
         OmniboxFacility omnibox = mPage.openOmnibox();
         omnibox.setText("testing").clickDelete();

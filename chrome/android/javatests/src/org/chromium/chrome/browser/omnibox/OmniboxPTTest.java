@@ -18,6 +18,7 @@ import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -65,6 +66,7 @@ public class OmniboxPTTest {
     @LargeTest
     @Test
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288411
+    @DisabledTest(message = "crbug.com/517515054")
     public void testOpenTypeDelete_fromWebPage() {
         var omniboxAndKeyboard = mBlankPage.openOmnibox(sFakeSuggestions);
 
@@ -76,6 +78,7 @@ public class OmniboxPTTest {
     @LargeTest
     @Test
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288411
+    @DisabledTest(message = "crbug.com/517515054")
     public void testOpenTypeDelete_fromNtp() {
         RegularNewTabPageStation ntp = mBlankPage.openNewTabFast();
         var omnibox = ntp.openOmnibox(sFakeSuggestions);
