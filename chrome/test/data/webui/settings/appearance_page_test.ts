@@ -51,6 +51,21 @@ function createAppearancePage() {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      // The following two prefs are added to keep in sync with
+      // PinnedToolbarActionsModel::IsDefault().
+      pin_split_tab_button: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      pin_contextual_task_button: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      // Added to support setPrefValue in tests where this pref is modified.
+      split_view_drag_and_drop_enabled: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
     },
     extensions: {
       theme: {
@@ -303,6 +318,54 @@ suite('AppearanceHandler', function() {
     assertFalse(!!button);
   });
 
+  test('resetVisibleWhenSplitTabPrefChanges', async function() {
+    appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
+    createAppearancePage();
+    await microtasksFinished();
+
+    // Initially hidden.
+    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+        '#resetPinnedToolbarActions'));
+
+    // Mock that actions are no longer default.
+    appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(false);
+    appearanceBrowserProxy.reset();
+
+    // Trigger observer by changing the pref.
+    appearancePage.setPrefValue('browser.pin_split_tab_button', true);
+
+    await appearanceBrowserProxy.whenCalled('pinnedToolbarActionsAreDefault');
+    await microtasksFinished();
+
+    // Now visible.
+    assertTrue(!!appearancePage.shadowRoot!.querySelector(
+        '#resetPinnedToolbarActions'));
+  });
+
+  test('resetVisibleWhenContextualTaskPrefChanges', async function() {
+    appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
+    createAppearancePage();
+    await microtasksFinished();
+
+    // Initially hidden.
+    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+        '#resetPinnedToolbarActions'));
+
+    // Mock that actions are no longer default.
+    appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(false);
+    appearanceBrowserProxy.reset();
+
+    // Trigger observer by changing the pref.
+    appearancePage.setPrefValue('browser.pin_contextual_task_button', true);
+
+    await appearanceBrowserProxy.whenCalled('pinnedToolbarActionsAreDefault');
+    await microtasksFinished();
+
+    // Now visible.
+    assertTrue(!!appearancePage.shadowRoot!.querySelector(
+        '#resetPinnedToolbarActions'));
+  });
+
   test('ColorSchemeMode', async () => {
     colorSchemeHandler.reset();
     createAppearancePage();
@@ -358,10 +421,7 @@ suite('AppearanceHandler', function() {
   test('show home button toggling', function() {
     assertFalse(
         !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
-    appearancePage.set('prefs.browser.show_home_button', {
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true,
-    });
+    appearancePage.setPrefValue('browser.show_home_button', true);
     flush();
 
     assertTrue(
@@ -394,10 +454,8 @@ suite('AppearanceHandler', function() {
       showSplitViewDragAndDropSetting: true,
     });
     createAppearancePage();
-    appearancePage.set('prefs.browser.split_view_drag_and_drop_enabled', {
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true,
-    });
+    appearancePage.setPrefValue(
+        'browser.split_view_drag_and_drop_enabled', true);
     await microtasksFinished();
 
     const toggle =

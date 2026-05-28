@@ -296,9 +296,12 @@ export class SettingsAppearancePageElement extends
       // <if expr="is_linux">
       'systemThemePrefChanged_(prefs.extensions.theme.system_theme.value)',
       // </if>
+      // Keep this list in sync with `PinnedToolbarActionsModel::IsDefault()`.
       'toolbarPinningStateChanged_(prefs.toolbar.pinned_actions.value,' +
           'prefs.browser.show_home_button.value,' +
-          'prefs.browser.show_forward_button.value)',
+          'prefs.browser.show_forward_button.value,' +
+          'prefs.browser.pin_split_tab_button.value,' +
+          'prefs.browser.pin_contextual_task_button.value)',
     ];
   }
 
