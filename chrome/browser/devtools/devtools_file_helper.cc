@@ -288,12 +288,13 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
     ConnectCallback connect_callback) {
   DCHECK(file_system_uuid.is_valid());
 
-  // Make sure that |file_system_path| is a valid absolute path.
+  // Reject unsafe network, relative, or parent-referencing paths synchronously
+  // to avoid performing any filesystem existence/presence checks.
   base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
-  if (!path.IsAbsolute()) {
+  if (!path.IsAbsolute() || path.IsNetwork() || path.ReferencesParent()) {
     LOG(ERROR) << "Rejected automatic file system " << file_system_path
-               << " with UUID " << file_system_uuid << " because it's not"
-               << " a valid absolute path.";
+               << " with UUID " << file_system_uuid
+               << " (not a safe local absolute path).";
     std::move(connect_callback).Run(false);
     FailedToAddFileSystem(kIllegalPath);
     return;

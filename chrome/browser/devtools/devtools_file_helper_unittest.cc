@@ -345,6 +345,45 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithRelativePath) {
               IsEmpty());
 }
 
+TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithNetworkPath) {
+  std::vector<std::string> network_paths = {"//attacker.com/share"};
+#if BUILDFLAG(IS_WIN)
+  network_paths.push_back("\\\\attacker.com\\share");
+#endif
+
+  for (const std::string& path_str : network_paths) {
+    base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
+    EXPECT_CALL(connect_cb, Run(false));
+    EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
+
+    file_helper()->ConnectAutomaticFileSystem(
+        path_str, base::Uuid::GenerateRandomV4(),
+        /* add_if_missing */ false, base::DoNothing(), connect_cb.Get());
+
+    EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
+                IsEmpty());
+  }
+}
+
+TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithParentReferences) {
+#if BUILDFLAG(IS_WIN)
+  std::string traversal_path = "c:\\foo\\bar\\..\\baz";
+#else
+  std::string traversal_path = "/foo/bar/../baz";
+#endif
+
+  base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
+
+  file_helper()->ConnectAutomaticFileSystem(
+      traversal_path, base::Uuid::GenerateRandomV4(),
+      /* add_if_missing */ false, base::DoNothing(), connect_cb.Get());
+
+  EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
+              IsEmpty());
+}
+
 TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithNonExistentPath) {
   base::ScopedTempDir td;
   ASSERT_TRUE(td.CreateUniqueTempDir());
