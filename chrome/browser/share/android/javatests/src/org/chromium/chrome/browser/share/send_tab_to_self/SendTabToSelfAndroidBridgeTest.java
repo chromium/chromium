@@ -29,6 +29,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,6 +39,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.SendTabToSelfTabCardLabelData;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
@@ -269,6 +272,20 @@ public class SendTabToSelfAndroidBridgeTest {
         confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
 
         Assert.assertEquals(0, ShadowToast.shownToastCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testAttachTabLabel() {
+        UserDataHost userDataHost = new UserDataHost();
+        Tab tab = mock(Tab.class);
+        when(tab.getUserDataHost()).thenReturn(userDataHost);
+
+        SendTabToSelfAndroidBridge.attachTabLabel(tab, "Example Phone");
+
+        SendTabToSelfTabCardLabelData userData =
+                userDataHost.getUserData(SendTabToSelfTabCardLabelData.class);
+        Assert.assertNotNull(userData);
     }
 
     @Test

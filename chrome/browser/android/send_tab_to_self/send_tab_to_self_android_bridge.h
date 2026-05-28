@@ -11,7 +11,13 @@ namespace content {
 class WebContents;
 }
 
+class TabAndroid;
+
 namespace send_tab_to_self {
+
+// Attaches a visual label indicating the sender device name to the TabAndroid
+// object associated with `tab`.
+void AttachTabLabel(TabAndroid* tab, std::string_view device_name);
 
 // Calls the Java SendTabToSelfAndroidBridge to display the message banner. This
 // is called upon successful auto-opening of the received tabs in the

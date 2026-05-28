@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
@@ -162,6 +163,13 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
   // hidden entry point doesn't seem worth it after all. Make that just another
   // value in the enum, sparing the complexity here.
   return jni_zero::ToJavaInteger(env, static_cast<int32_t>(*reason));
+}
+
+void AttachTabLabel(TabAndroid* tab, std::string_view device_name) {
+  CHECK(tab);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_SendTabToSelfAndroidBridge_attachTabLabel(
+      env, tab->GetJavaObject(), ConvertUTF8ToJavaString(env, device_name));
 }
 
 void ShowMessageBanner(content::WebContents* web_contents,
