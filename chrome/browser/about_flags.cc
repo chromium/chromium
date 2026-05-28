@@ -43,6 +43,7 @@
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -13011,6 +13012,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(::features::kAccessibilityCanvas,
                                     kCanvasAccessibilityChoices,
                                     "CanvasAccessibility")},
+
+    {"centralized-infobar-framework",
+     flag_descriptions::kCentralizedInfoBarFrameworkName,
+     flag_descriptions::kCentralizedInfoBarFrameworkDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(infobars::kCentralizedInfoBarFramework)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

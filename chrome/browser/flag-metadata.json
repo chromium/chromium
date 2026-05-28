@@ -1614,6 +1614,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "centralized-infobar-framework",
+    "owners": ["koretadaniel@chromium.org", "top-chrome-desktop-ui@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "change-unfocused-priority",
     "owners": [ "asriniva@google.com"],
     "expiry_milestone": 140

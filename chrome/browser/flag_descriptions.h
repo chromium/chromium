@@ -92,6 +92,11 @@ inline constexpr char kCaptureHandleForStandalonePwasAndIwasDescription[] =
     "Enables Capture Handle support for standalone PWAs and IWAs "
     "when their windows are captured.";
 
+inline constexpr char kCentralizedInfoBarFrameworkName[] =
+    "Centralized InfoBar Framework";
+inline constexpr char kCentralizedInfoBarFrameworkDescription[] =
+    "Enables the centralized desktop infobars framework.";
+
 inline constexpr char kCredentialManagementUnifiedUiName[] =
     "Credential Management Unified UI";
 inline constexpr char kCredentialManagementUnifiedUiDescription[] =

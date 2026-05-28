@@ -15878,6 +15878,7 @@ from previous Chrome versions.
   <int value="567368307" label="enable-experimental-canvas-features"/>
   <int value="567862349"
       label="CrOSLateBootCrasProcessorDedicatedThread:disabled"/>
+  <int value="568784148" label="CentralizedInfoBarFramework:disabled"/>
   <int value="569192576" label="UpstreamTrustedReportsFirmware:enabled"/>
   <int value="569523789" label="BackgroundNotPerceptibleBinding:enabled"/>
   <int value="570445904" label="WGIGamepadTriggerRumble:disabled"/>
@@ -16422,6 +16423,7 @@ from previous Chrome versions.
   <int value="737058890"
       label="AccessibilityOverscrollSettingFeature:disabled"/>
   <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>
+  <int value="737205998" label="CentralizedInfoBarFramework:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738325581" label="NtpMicrosoftAuthenticationModule:disabled"/>
   <int value="738770668" label="AndroidEntraSSO:enabled"/>
