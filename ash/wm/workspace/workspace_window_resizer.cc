@@ -712,7 +712,6 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   gfx::Rect bounds = CalculateBoundsForDrag(location_in_parent);
   AdjustBoundsForMainWindow(sticky_size, &bounds);
 
-  auto weak_this = GetWeakPtr();
   if (bounds != GetTarget()->bounds()) {
     if (!did_move_or_resize_) {
       if (!details().restore_bounds_in_parent.IsEmpty()) {
@@ -723,11 +722,19 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
             // restored (i.e. update the caption buttons and height of the
             // browser frame).
 
+            // TODO(http://crbug.com/40178336): This is most likely fixed
+            // by the fix for 513311386. Change if to CHECK.
+            base::WeakPtr<WorkspaceWindowResizer> resizer(
+                weak_ptr_factory_.GetWeakPtr());
             window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
-            CHECK(weak_this);
+            if (!resizer) {
+              return;
+            }
             CrossFadeAnimation(window_state()->window(), bounds,
                                /*maximize=*/false);
-            CHECK(weak_this);
+            if (!resizer) {
+              return;
+            }
 
             base::RecordAction(
                 base::UserMetricsAction("WindowDrag_Unmaximize"));
@@ -736,17 +743,26 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
           }
         }
       }
+      base::WeakPtr<WorkspaceWindowResizer> resizer_ptr(
+          weak_ptr_factory_.GetWeakPtr());
       RestackWindows();
-      CHECK(weak_this);
+      CHECK(resizer_ptr);
     }
     did_move_or_resize_ = true;
   }
 
   if (!attached_windows_.empty()) {
+    base::WeakPtr<WorkspaceWindowResizer> resizer_ptr(
+        weak_ptr_factory_.GetWeakPtr());
     LayoutAttachedWindows(&bounds);
-    CHECK(weak_this);
+    CHECK(resizer_ptr);
   }
   if (aura::Window* window = GetTarget(); bounds != window->bounds()) {
+    // SetBounds needs to be called to update the layout which affects where the
+    // phantom window is drawn. Keep track if the window was destroyed during
+    // the drag and quit early if so.
+    base::WeakPtr<WorkspaceWindowResizer> resizer(
+        weak_ptr_factory_.GetWeakPtr());
     // If a window is snapped, then starts drag to unsnap, at this point its
     // state type hasn't been updated yet. Suppress from force updating the snap
     // ratio which would be using the restore or normal bounds.
@@ -754,10 +770,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     window_state->set_can_update_snap_ratio(false);
     SetBoundsDuringResize(bounds);
     window_state->set_can_update_snap_ratio(true);
-    // SetBounds needs to be called to update the layout which affects where the
-    // phantom window is drawn. Keep track if the window was destroyed during
-    // the drag and quit early if so.
-    if (!weak_this) {
+    if (!resizer) {
       return;
     }
   }
