@@ -16,6 +16,7 @@
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_utils.h"
@@ -140,9 +141,8 @@ void SendKeyUntilOverviewItemIsFocused(
 
 void WaitForOcclusionStateChange(aura::Window* window,
                                  aura::Window::OcclusionState target_state) {
-  while (window->GetOcclusionState() != target_state) {
-    base::RunLoop().RunUntilIdle();
-  }
+  CHECK(base::test::RunUntil(
+      [&]() { return window->GetOcclusionState() == target_state; }));
 }
 
 bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window) {
