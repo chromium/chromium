@@ -108,6 +108,8 @@ source_set("extensions") {
     "api/identity/gaia_remote_consent_flow.h",
     "api/identity/identity_api.cc",
     "api/identity/identity_api.h",
+    "api/identity/identity_clear_all_cached_auth_tokens_function.cc",
+    "api/identity/identity_clear_all_cached_auth_tokens_function.h",
     "api/identity/identity_constants.cc",
     "api/identity/identity_constants.h",
     "api/identity/identity_get_accounts_function.cc",
@@ -660,8 +662,6 @@ source_set("extensions") {
   if (is_android) {
     sources += [
       "api/chrome_extensions_api_client_android.cc",
-      "api/identity/identity_unimplemented_functions_android.cc",
-      "api/identity/identity_unimplemented_functions_android.h",
       "api/management/chrome_management_api_delegate_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.h",
@@ -744,8 +744,6 @@ source_set("extensions") {
       "api/file_system/chrome_file_system_delegate.h",
       "api/file_system/file_entry_picker.cc",
       "api/file_system/file_entry_picker.h",
-      "api/identity/identity_clear_all_cached_auth_tokens_function.cc",
-      "api/identity/identity_clear_all_cached_auth_tokens_function.h",
       "api/image_writer_private/destroy_partitions_operation.cc",
       "api/image_writer_private/destroy_partitions_operation.h",
       "api/image_writer_private/error_constants.cc",

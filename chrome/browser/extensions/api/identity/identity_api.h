@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_accounts_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_profile_user_info_function.h"
@@ -28,12 +29,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/api/identity/identity_unimplemented_functions_android.h"
-#else
-#include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
-#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

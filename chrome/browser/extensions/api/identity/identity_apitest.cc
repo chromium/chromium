@@ -4260,6 +4260,7 @@ IN_PROC_BROWSER_TEST_F(
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
  public:
@@ -4317,7 +4318,6 @@ IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
             id_api()->token_cache()->GetToken(token_key).status());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class OnSignInChangedEventTest : public IdentityTestWithSignin {
  protected:
