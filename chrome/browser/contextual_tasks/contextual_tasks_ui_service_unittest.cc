@@ -188,7 +188,10 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               (const GURL& url,
                base::WeakPtr<content::WebContents> web_contents),
               (override));
-  MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const content::OpenURLParams& url_params),
+              (override));
 
   // Make the impl method public for this test.
   bool HandleNavigationImpl(content::OpenURLParams url_params,
@@ -829,80 +832,6 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
 }
 
-TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_MultipleNewTabsAllowed_TracksWindows) {
-  GURL navigated_url(kTestUrl);
-  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(host_web_content_url);
-
-  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
-  GURL source_url =
-      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
-                                task_id.value().AsLowercaseString());
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(source_url);
-
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-
-  // Simulate 3 window.open calls (CanCreateWindow).
-  for (int i = 0; i < 3; ++i) {
-    EXPECT_FALSE(service_for_nav_->HandleNavigation(
-        CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-        /*is_from_embedded_page=*/true,
-        /*from_can_create_window=*/true,
-        /*is_same_site_or_from_ui=*/true));
-  }
-
-  const auto& trackers = service_for_nav_->window_trackers_for_testing();
-  ASSERT_EQ(3U, trackers.size());
-  for (int i = 0; i < 3; ++i) {
-    EXPECT_EQ(nullptr, trackers[i]->GetTabWebContents());
-  }
-
-  // Simulate 3 actual navigations in the new windows.
-  std::vector<std::unique_ptr<tabs::MockTabInterface>> mock_tabs;
-  std::vector<std::unique_ptr<content::WebContents>> new_windows;
-  for (int i = 0; i < 3; ++i) {
-    auto new_win = content::WebContentsTester::CreateTestWebContents(
-        profile_.get(), content::SiteInstance::Create(profile_.get()));
-    // Simulate that the new window source has a Contextual Tasks URL to trigger
-    // interception.
-    content::WebContentsTester::For(new_win.get())
-        ->SetLastCommittedURL(GURL(chrome::kChromeUIContextualTasksURL));
-
-    auto mock_tab = std::make_unique<tabs::MockTabInterface>();
-    ON_CALL(*mock_tab, GetContents).WillByDefault(Return(new_win.get()));
-    tabs::TabLookupFromWebContents::CreateForWebContents(new_win.get(),
-                                                         mock_tab.get());
-
-    EXPECT_TRUE(service_for_nav_->HandleNavigation(
-        CreateOpenUrlParams(navigated_url, true), new_win.get(),
-        /*is_from_embedded_page=*/true,
-        /*from_can_create_window=*/false,
-        /*is_same_site_or_from_ui=*/true));
-
-    new_windows.push_back(std::move(new_win));
-    mock_tabs.push_back(std::move(mock_tab));
-  }
-
-  // Verify that all trackers now have a tracked WebContents assigned and they
-  // are distinct.
-  std::set<content::WebContents*> assigned_contents;
-  for (int i = 0; i < 3; ++i) {
-    content::WebContents* contents = trackers[i]->GetTabWebContents();
-    EXPECT_NE(nullptr, contents);
-    EXPECT_TRUE(assigned_contents.insert(contents).second)
-        << "Duplicate WebContents assigned to trackers!";
-  }
-  new_windows.clear();
-  service_for_nav_.reset();
-}
 
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_NewTabAllowed_TracksWindow_TabListDestroyed) {
@@ -1330,7 +1259,10 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
   tabs::MockTabInterface tab;
   ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
 
-  EXPECT_CALL(*service_for_nav_, OpenUrlInNewTab(navigated_url)).Times(1);
+  EXPECT_CALL(
+      *service_for_nav_,
+      OpenUrl(testing::Field(&content::OpenURLParams::url, navigated_url)))
+      .Times(1);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
@@ -1831,10 +1763,11 @@ TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
       ->SetLastCommittedURL(host_web_content_url);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(
-      *service_for_nav_,
-      OpenUrlInNewTab(GURL("https://google.com/"
-                           "search?q=https%3A%2F%2Fshare.google%2Faimode")))
+  EXPECT_CALL(*service_for_nav_,
+              OpenUrl(testing::Field(
+                  &content::OpenURLParams::url,
+                  GURL("https://google.com/"
+                       "search?q=https%3A%2F%2Fshare.google%2Faimode"))))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),

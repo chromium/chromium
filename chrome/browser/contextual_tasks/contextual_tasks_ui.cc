@@ -8,6 +8,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -820,7 +821,7 @@ bool ContextualTasksUI::IsInitComplete() {
 }
 
 void ContextualTasksUI::OnInitComplete() {
-  if (task_id_) {
+  if (task_id_ && ui_service_) {
     ui_service_->OnWebUIReady(GetBrowser(), *task_id_,
                               web_ui()->GetWebContents());
   }
@@ -1058,7 +1059,6 @@ void ContextualTasksUI::SetComposeboxHandlerForTesting(  // IN-TEST
 void ContextualTasksUI::MoveTaskUiToNewTab() {
   auto* browser = GetBrowser();
   if (!task_id_.has_value()) {
-    LOG(ERROR) << "Attempted to open in new tab with no valid task ID.";
     return;
   }
 

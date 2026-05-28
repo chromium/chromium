@@ -457,7 +457,7 @@ class ContextualTasksUiService : public KeyedService {
           session_handle);
 
   // Navigates to a share URL.
-  virtual void OpenUrlInNewTab(const GURL& url);
+  virtual void OpenUrl(const content::OpenURLParams& url_params);
 
   // Sets the initial thread URL for a given task and runs any pending
   // callbacks.

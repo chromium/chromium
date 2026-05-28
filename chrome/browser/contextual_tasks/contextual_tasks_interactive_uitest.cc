@@ -47,6 +47,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
@@ -68,6 +69,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 
@@ -210,6 +212,12 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         content::URLLoaderInterceptor>(base::BindLambdaForTesting(
         [&](content::URLLoaderInterceptor::RequestParams* params) {
           const GURL& url = params->url_request.url;
+          if (url.host() == "a.google.com") {
+            content::URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+                "<html><body>Title 1</body></html>", params->client.get());
+            return true;
+          }
           if (url.host() == kMockAimPageHost) {
             content::URLLoaderInterceptor::WriteResponse(kMockAimPagePath,
                                                          params->client.get());
@@ -674,6 +682,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
+// TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                        AddAndRemovePdfChipFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
@@ -1437,5 +1446,184 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
       // Verify the suggestion chip does not reappear because it was dismissed.
       EnsureNotPresent(kSidePanelWebContentsId, kTabChip));
 }
+
+class ContextualTasksInteractiveUiTestParameterized
+    : public ContextualTasksInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContextualTasksInteractiveUiTestParameterized() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(kAimTriggeredThreadLinks);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kAimTriggeredThreadLinks);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// CUJ covered by this test:
+// 1) Opens Contextual Tasks in a tab.
+// 2) In the Contextual Tasks <webview>, calls window.open() to a URL (not
+// about:blank) with target _blank.
+// 3) Verifies that the call returns a window
+// object.
+// 4) Verifies that the window.open call was successful by verifying the
+// new tab opened.
+// 5) Back in Contextual Tasks, calls window.open with a URL and
+// target _self.
+// 6) Verifies the Contextual Tasks tab navigates to the opened
+// URL.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
+                       WindowOpenCUJ) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+  const GURL kTargetUrl("https://a.google.com/title1.html");
+
+  auto sequence = Steps(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      // 1) Opens Contextual Tasks in a tab.
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+
+      WithElement(kInnerWebContentsId, [kTargetUrl](ui::TrackedElement* el) {
+        auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
+        content::TestNavigationObserver nav_observer(kTargetUrl);
+        nav_observer.StartWatchingNewWebContents();
+
+        // 2) In the Contextual Tasks <webview>, calls window.open() to a
+        // URL (not about:blank) with target _blank. 3) Verifies that the
+        // call returns a window object.
+        bool returns_window =
+            content::EvalJs(
+                web_contents,
+                base::StringPrintf("window.open('%s', '_blank') !== null",
+                                   kTargetUrl.spec().c_str()))
+                .ExtractBool();
+        EXPECT_TRUE(returns_window);
+
+        // 4) Verifies that the window.open call was successful by verifying
+        // the new tab opened.
+        nav_observer.Wait();
+      }));
+
+  if (GetParam()) {
+    // When flag is enabled, the source tab stays open.
+    // Instrument the new tab at index 1.
+    sequence = Steps(
+        std::move(sequence), InstrumentTab(kNewTabId, 1),
+        SelectTab(kTabStripElementId, 0), WaitForShow(kInnerWebContentsId),
+        // 5) Back in Contextual Tasks, calls window.open with a URL and target
+        // _self.
+        Do(base::BindLambdaForTesting([this, kTargetUrl]() {
+          auto* web_contents =
+              browser()->tab_strip_model()->GetActiveWebContents();
+          auto inner_contents = web_contents->GetInnerWebContents();
+          ASSERT_FALSE(inner_contents.empty());
+          auto* guest_contents = inner_contents[0];
+
+          content::ExecuteScriptAsync(
+              guest_contents, base::StringPrintf("window.open('%s', '_self')",
+                                                 kTargetUrl.spec().c_str()));
+        })),
+        // 6) Verifies the Contextual Tasks tab navigates to the opened URL.
+        WaitForWebContentsNavigation(kPrimaryTab, kTargetUrl));
+  } else {
+    // When flag is disabled, the source tab closes and the new tab becomes
+    // index 0.
+    sequence = Steps(
+        std::move(sequence), InstrumentTab(kNewTabId, 0),
+
+        // Verifies the new tab opened and is at the target URL.
+        CheckElement(kNewTabId,
+                     base::BindOnce(
+                         [](const GURL& expected_url, ui::TrackedElement* el) {
+                           return AsInstrumentedWebContents(el)
+                                      ->web_contents()
+                                      ->GetLastCommittedURL() == expected_url;
+                         },
+                         kTargetUrl)));
+  }
+
+  RunTestSequence(std::move(sequence));
+}
+
+// CUJ covered by this test:
+// 1) Opens Contextual Tasks in a tab.
+// 2) In the Contextual Tasks <webview>, calls window.open() to a URL (not
+// about:blank) with target _blank.
+// 3) Verifies that the call returns a window
+// object.
+// 4) Verifies that the window.open call was successful by verifying the
+// new tab opened.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
+                       WindowOpenBlank) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+  const GURL kTargetUrl("https://a.google.com/title1.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      // 1) Opens Contextual Tasks in a tab.
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+
+      WithElement(kInnerWebContentsId, [kTargetUrl](ui::TrackedElement* el) {
+        auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
+        content::TestNavigationObserver nav_observer(kTargetUrl);
+        nav_observer.StartWatchingNewWebContents();
+
+        // 2) In the Contextual Tasks <webview>, calls window.open() to a URL
+        // (not about:blank) with target _blank. 3) Verifies that the call
+        // returns a window object.
+        bool returns_window =
+            content::EvalJs(
+                web_contents,
+                base::StringPrintf("window.open('%s', '_blank') !== null",
+                                   kTargetUrl.spec().c_str()))
+                .ExtractBool();
+        EXPECT_TRUE(returns_window);
+
+        // 4) Verifies that the window.open call was successful by verifying the
+        // new tab opened.
+        nav_observer.Wait();
+      }));
+}
+
+// CUJ covered by this test:
+// 1) Opens Contextual Tasks in a tab.
+// 2) Back in Contextual Tasks, calls window.open with a URL and target _self.
+// 3) Verifies the Contextual Tasks tab navigates to the opened URL.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
+                       WindowOpenSelf) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+  const GURL kTargetUrl("https://a.google.com/title1.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      // 1) Opens Contextual Tasks in a tab.
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+
+      // 2) Back in Contextual Tasks, calls window.open with a URL and target
+      // _self.
+      Do(base::BindLambdaForTesting([this, kTargetUrl]() {
+        auto* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        auto inner_contents = web_contents->GetInnerWebContents();
+        ASSERT_FALSE(inner_contents.empty());
+        auto* guest_contents = inner_contents[0];
+
+        content::ExecuteScriptAsync(
+            guest_contents, base::StringPrintf("window.open('%s', '_self')",
+                                               kTargetUrl.spec().c_str()));
+      })),
+
+      // 3) Verifies the Contextual Tasks tab navigates to the opened URL.
+      WaitForWebContentsNavigation(kPrimaryTab, kTargetUrl));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksInteractiveUiTestParameterized,
+                         testing::Bool());
 
 }  // namespace contextual_tasks

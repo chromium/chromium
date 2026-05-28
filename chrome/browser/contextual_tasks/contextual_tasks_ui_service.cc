@@ -627,6 +627,9 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   content::WebContents* new_contents_ptr = new_contents.get();
   CreateSessionServiceTabHelper(new_contents_ptr);
 
+  // Match the new web contents that was created to the pending tracker.
+  tracker_manager_->MatchAndAssociatePendingTracker(url, new_contents_ptr);
+
   // Copy navigation entries from the current tab to the new tab to support back
   // button navigation. See crbug.com/467042329 for detail.
   if (tab) {
@@ -888,6 +891,7 @@ void ContextualTasksUiService::OnNonThreadNavigationInTab(
 
   content::NavigationController::LoadURLParams params(url_params);
   params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  params.frame_tree_node_id = content::FrameTreeNodeId();
   tab->GetContents()->GetController().LoadURLWithParams(params);
 }
 
@@ -965,14 +969,36 @@ void ContextualTasksUiService::StartAccessTokenFetch() {
       signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
 }
 
-void ContextualTasksUiService::OpenUrlInNewTab(const GURL& url) {
+void ContextualTasksUiService::OpenUrl(
+    const content::OpenURLParams& url_params) {
+  const GURL& url = url_params.url;
   OMNIBOX_LOG("nav_trace")
-      << "ContextualTasks navigation trace: OpenUrlInNewTab called "
+      << "ContextualTasks navigation trace: OpenUrl called "
          "for URL: "
-      << url;
-  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+      << url << ", disposition: " << static_cast<int>(url_params.disposition);
+
+  NavigateParams nav_params(profile_, url, url_params.transition);
+  nav_params.FillNavigateParamsFromOpenURLParams(url_params);
+  // Reset frame_tree_node_id to avoid targeting the source frame when opening
+  // a new tab/window.
+  nav_params.frame_tree_node_id = content::FrameTreeNodeId();
+
+  // Perform the navigation
+  Navigate(&nav_params);
+
+  // Grab the web contents that was associated with tis navigation and begin
+  // tracking it.
+  content::WebContents* new_contents_ptr =
+      nav_params.navigated_or_inserted_contents;
+
+  if (new_contents_ptr) {
+    OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
+                                "OpenUrl matching pending tracker";
+    tracker_manager_->MatchAndAssociatePendingTracker(url, new_contents_ptr);
+  } else {
+    OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
+                                "OpenUrl failed to get new WebContents";
+  }
 }
 
 bool ContextualTasksUiService::HandleNavigationImpl(
@@ -983,19 +1009,17 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     bool from_can_create_window,
     bool is_same_site_or_from_ui,
     bool is_mobile_ua) {
-  bool is_to_new_tab =
-      source_contents->GetOpener() != nullptr ||
-      url_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      url_params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-      url_params.disposition == WindowOpenDisposition::NEW_WINDOW;
-
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: HandleNavigationImpl called "
          "for URL: "
       << url_params.url << ", is_from_embedded_page=" << is_from_embedded_page
       << ", from_can_create_window=" << from_can_create_window
-      << ", is_to_new_tab=" << is_to_new_tab
-      << ", has_tab=" << (tab != nullptr);
+      << ", has_tab=" << (tab != nullptr)
+      << ", disposition=" << static_cast<int>(url_params.disposition)
+      << ", initiator_origin="
+      << (url_params.initiator_origin.has_value()
+              ? url_params.initiator_origin->Serialize()
+              : "null");
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
   if (!eligibility_manager_ ||
@@ -1156,15 +1180,6 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // that is using the URL. From here on out, the navigation can be intercepted.
   bool is_nav_to_sign_in = IsSignInDomain(url_params.url);
 
-  // When a guest page calls window.open(), it happens in two steps:
-  // 1. CanCreateWindow is called and allowed to open naturally.
-  // 2. HandleNavigation is called for the navigation in the new window.
-  // Match the second call with the tracker created in the first call.
-  if (!from_can_create_window) {
-    tracker_manager_->MatchAndAssociatePendingTracker(url_params.url,
-                                                      source_contents);
-  }
-
   BrowserWindowInterface* browser =
       tab ? tab->GetBrowserWindowInterface()
           : webui::GetBrowserWindowInterface(source_contents);
@@ -1183,6 +1198,45 @@ bool ContextualTasksUiService::HandleNavigationImpl(
        ui::PageTransitionCoreTypeIs(page_transition,
                                     ui::PAGE_TRANSITION_RELOAD));
 
+  // Retrieve the stored open url params from the pending tracker. If found, use
+  // those params for this navigation. This is required as the second call to
+  // HandleNavigationImpl after CanCreateWindow has the navigation params for
+  // the navigation in the opened window, rather than the original params that
+  // started the chain of naivgations.
+  ContextualTasksWindowTracker* pending_tracker =
+      tracker_manager_->GetPendingTracker(url_params.url, source_contents);
+  if (pending_tracker && pending_tracker->open_url_params()) {
+    // When the navigation goes through CanCreateWindow, the first navigation
+    // has the correct url params to trigger the new window, where as the second
+    // has the correct initiator and other url params. Therefore, copy the
+    // disposition and other params that dictate where the navigation goes into
+    // the url params for the second navigation to make sure the navigation
+    // opens in the correct place.
+    const auto& stored_params = *pending_tracker->open_url_params();
+    url_params.disposition = stored_params.disposition;
+    url_params.user_gesture = stored_params.user_gesture;
+    url_params.referrer = stored_params.referrer;
+    url_params.transition = stored_params.transition;
+    OMNIBOX_LOG("nav_trace")
+        << "ContextualTasks navigation trace: HandleNavigationImpl "
+           "overriding url_params with stored params from CanCreateWindow";
+  }
+  // Determine if this is a navigation to a new tab. Its considered new tab
+  // if the disposition will be a new tab/window, or if there is a tracked
+  // window for this navigation. The tracked window covers cases that go through
+  // CanCreateWindow which doesn't get intercepted, then ends up here without
+  // the disposition.
+  bool is_to_new_tab =
+      from_can_create_window || source_contents->GetOpener() != nullptr ||
+      url_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      url_params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
+      url_params.disposition == WindowOpenDisposition::NEW_WINDOW ||
+      (pending_tracker != nullptr);
+  OMNIBOX_LOG("nav_trace")
+      << "ContextualTasks navigation trace: HandleNavigationImpl "
+         "is_to_new_tab="
+      << is_to_new_tab;
+
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
   if ((is_from_embedded_page || is_forward_link_navigation) &&
@@ -1195,14 +1249,16 @@ bool ContextualTasksUiService::HandleNavigationImpl(
         IsShareUrl(url_params.url)) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
-             "posting OpenUrlInNewTab";
+             "posting OpenUrl";
       // Since the web content will no longer be hosted in the side panel, make
       // sure to remove the param that makes the page render for it.
+      content::OpenURLParams new_url_params = url_params;
+      new_url_params.url = lens::RemoveSidePanelURLParameters(url_params.url);
+      new_url_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ContextualTasksUiService::OpenUrlInNewTab,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         lens::RemoveSidePanelURLParameters(url_params.url)));
+          FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(new_url_params)));
       return true;
     }
 
@@ -1305,6 +1361,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           source_contents->GetWeakPtr(),
           base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
                          weak_ptr_factory_.GetWeakPtr()));
+      tracker->SetOpenURLParams(url_params);
       tracker_manager_->AddTracker(std::move(tracker));
       tabs::TabInterface* source_tab =
           tabs::TabInterface::MaybeGetFromContents(source_contents);
@@ -1350,16 +1407,21 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           // In-tab links from within the side panel shouldn't navigate the side
           // panel. Some lans cases can, but that is handled earlier in this
           // method. For this case open a new tab instead.
+          url_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(&ContextualTasksUiService::OpenUrlInNewTab,
-                             weak_ptr_factory_.GetWeakPtr(), url_params.url));
+              FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(url_params)));
         }
         return true;
       } else {
-        // Allow links in the embedded page to use default behavior if it's to a
-        // new tab.
-        return false;
+        // Allow the link to open to its intended destination as deemed by the
+        // url_params.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(url_params)));
+        return true;
       }
     } else {
       OMNIBOX_LOG("nav_trace")

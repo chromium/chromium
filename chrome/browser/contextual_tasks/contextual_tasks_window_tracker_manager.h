@@ -58,6 +58,17 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
   // Returns true if the web_contents is tracked.
   bool IsTrackedWindow(content::WebContents* web_contents) const;
 
+  // Return true if there is a pending tracker that is waiting for the window to
+  // open for the given url and source_contents.
+  bool IsPendingWindow(const GURL& url,
+                       content::WebContents* source_contents) const;
+
+  // Returns the pending tracker for the given URL and source_contents, or
+  // nullptr if none.
+  ContextualTasksWindowTracker* GetPendingTracker(
+      const GURL& url,
+      content::WebContents* source_contents) const;
+
   // Matches a pending tracker for the given URL and associates it with the
   // source_contents. Returns the matched tracker, or nullptr if no match.
   ContextualTasksWindowTracker* MatchAndAssociatePendingTracker(

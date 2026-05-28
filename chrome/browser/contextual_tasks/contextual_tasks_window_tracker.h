@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +18,7 @@
 
 namespace content {
 class WebContents;
-
+struct OpenURLParams;
 }
 
 namespace contextual_tasks {
@@ -39,14 +41,24 @@ class ContextualTasksWindowTracker {
   // Assigns the tab's WebContents to be tracked.
   void SetTabWebContents(content::WebContents* web_contents);
 
+  // Called when the TabInterface becomes available for the tracked WebContents.
+  void OnTabInterfaceAvailable(tabs::TabInterface* tab);
+
   // Called when the window is closed to notify the window tracker manager.
   void OnWindowClosed();
 
   // Accessors.
+  const content::OpenURLParams* open_url_params() const;
   const ContextualTaskId& task_id() const { return task_id_; }
   const GURL& expected_url() const { return expected_url_; }
   content::WebContents* GetTabWebContents() const {
-    return tab_ ? tab_->GetContents() : nullptr;
+    if (web_contents_) {
+      return web_contents_.get();
+    }
+    if (tab_) {
+      return tab_->GetContents();
+    }
+    return nullptr;
   }
   const std::optional<ContextualWindowId>& window_id() const {
     return window_id_;
@@ -59,6 +71,7 @@ class ContextualTasksWindowTracker {
   }
 
   void SetWindowId(ContextualWindowId window_id) { window_id_ = window_id; }
+  void SetOpenURLParams(const content::OpenURLParams& params);
 
  private:
   void OnTabWillDetach(tabs::TabInterface* tab,
@@ -74,6 +87,11 @@ class ContextualTasksWindowTracker {
   base::WeakPtr<content::WebContents> initiator_contents_;
   // The tab being tracked.
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
+  // The WebContents being tracked (might not be in a tab yet).
+  base::WeakPtr<content::WebContents> web_contents_;
+
+  // The params stored from CanCreateWindow call.
+  std::unique_ptr<content::OpenURLParams> open_url_params_;
 
   // Subscriptions for tab events.
   base::CallbackListSubscription tab_subscription_;
