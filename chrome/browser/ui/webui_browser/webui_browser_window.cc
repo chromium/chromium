@@ -176,11 +176,11 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   }
 
   contents_element_shown_subscription_ =
-      ui::ElementTracker::GetElementTracker()
-          ->AddElementShownInAnyContextCallback(
-              kContentsContainerViewElementId,
-              base::BindRepeating(&WebUIBrowserWindow::OnContentsElementShown,
-                                  base::Unretained(this)));
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kContentsContainerViewElementId,
+          views::ElementTrackerViews::GetContextForWidget(widget_.get()),
+          base::BindRepeating(&WebUIBrowserWindow::OnContentsElementShown,
+                              base::Unretained(this)));
 
   LoadAccelerators();
 }
@@ -728,10 +728,6 @@ void WebUIBrowserWindow::SetContentsSize(const gfx::Size& size) {
 }
 
 void WebUIBrowserWindow::OnContentsElementShown(ui::TrackedElement* element) {
-  if (element->context() !=
-      views::ElementTrackerViews::GetContextForWidget(widget_.get())) {
-    return;
-  }
   if (deferred_contents_size_.has_value()) {
     SetContentsSize(deferred_contents_size_.value());
   }
