@@ -184,6 +184,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   NSString* _lastFormActivityType;
   FormRendererId _lastFormActivityFormRendererID;
   FieldRendererId _lastFormActivityFieldRendererID;
+  BOOL _lastFormActivityHasUserGesture;
 
   // YES to support xframe submission to correctly handle form submission when
   // autofill across iframes is enabled.
@@ -330,6 +331,18 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
         }
       };
 
+  BOOL hasUserGesture = NO;
+  if ([formName isEqualToString:_lastFormActivityFormName] &&
+      [fieldIdentifier isEqualToString:_lastFormActivityFieldIdentifier] &&
+      [frameID isEqualToString:_lastFormActivityFrameID]) {
+    hasUserGesture = _lastFormActivityHasUserGesture;
+  }
+
+  autofill::FormRendererId targetFormRendererID =
+      _lastFormActivityFormRendererID;
+  autofill::FieldRendererId targetFieldRendererID =
+      _lastFormActivityFieldRendererID;
+
   _lastFormActivityFormName = formName;
   _lastFormActivityFrameID = frameID;
   _lastFormActivityFieldIdentifier = fieldIdentifier;
@@ -337,9 +350,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   // Construct query.
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
       initWithFormName:formName
-        formRendererID:_lastFormActivityFormRendererID
+        formRendererID:targetFormRendererID
        fieldIdentifier:fieldIdentifier
-       fieldRendererID:_lastFormActivityFieldRendererID
+       fieldRendererID:targetFieldRendererID
              fieldType:fieldType
                   type:_lastFormActivityType
             typedValue:_lastFormActivityTypedValue
@@ -372,7 +385,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                   [[CWVAutofillSuggestion alloc]
                       initWithFormSuggestion:formSuggestion
                                     formName:formName
+                              formRendererID:targetFormRendererID
                              fieldIdentifier:fieldIdentifier
+                             fieldRendererID:targetFieldRendererID
                                      frameID:frameID
                         isPasswordSuggestion:isPasswordSuggestion];
               [autofillSuggestions addObject:autofillSuggestion];
@@ -385,7 +400,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
     };
 
     [suggestionProvider checkIfSuggestionsAvailableForForm:formQuery
-                                            hasUserGesture:YES
+                                            hasUserGesture:hasUserGesture
                                                   webState:_webState
                                          completionHandler:availableHandler];
   }
@@ -398,9 +413,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
     [_passwordController didSelectSuggestion:suggestion.formSuggestion
                                      atIndex:index
                                         form:suggestion.formName
-                              formRendererID:_lastFormActivityFormRendererID
+                              formRendererID:suggestion.formRendererID
                              fieldIdentifier:suggestion.fieldIdentifier
-                             fieldRendererID:_lastFormActivityFieldRendererID
+                             fieldRendererID:suggestion.fieldRendererID
                                      frameID:suggestion.frameID
                            completionHandler:^{
                              if (completionHandler) {
@@ -411,9 +426,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
     [_autofillAgent didSelectSuggestion:suggestion.formSuggestion
                                 atIndex:index
                                    form:suggestion.formName
-                         formRendererID:_lastFormActivityFormRendererID
+                         formRendererID:suggestion.formRendererID
                         fieldIdentifier:suggestion.fieldIdentifier
-                        fieldRendererID:_lastFormActivityFieldRendererID
+                        fieldRendererID:suggestion.fieldRendererID
                                 frameID:suggestion.frameID
                       completionHandler:^{
                         if (completionHandler) {
@@ -923,6 +938,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   _lastFormActivityWebFrameID = frame_id;
   _lastFormActivityTypedValue = nsValue;
   _lastFormActivityType = nsType;
+  _lastFormActivityHasUserGesture = userInitiated;
+  _lastFormActivityFormName = nsFormName;
+  _lastFormActivityFieldIdentifier = nsFieldIdentifier;
+  _lastFormActivityFrameID = nsFrameID;
   if (params.type == "focus") {
     if ([_delegate respondsToSelector:@selector
                    (autofillController:

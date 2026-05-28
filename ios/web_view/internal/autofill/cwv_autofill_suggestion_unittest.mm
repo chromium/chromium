@@ -20,6 +20,8 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   NSString* formName = @"TestFormName";
   NSString* fieldIdentifier = @"TestFieldIdentifier";
   NSString* frameID = @"TestFrameID";
+  autofill::FormRendererId formRendererID(12);
+  autofill::FieldRendererId fieldRendererID(34);
   FormSuggestion* formSuggestion = [FormSuggestion
       suggestionWithValue:@"TestValue"
        displayDescription:@"TestDisplayDescription"
@@ -30,11 +32,15 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:formSuggestion
                                                    formName:formName
+                                             formRendererID:formRendererID
                                             fieldIdentifier:fieldIdentifier
+                                            fieldRendererID:fieldRendererID
                                                     frameID:frameID
                                        isPasswordSuggestion:NO];
   EXPECT_NSEQ(formName, suggestion.formName);
+  EXPECT_EQ(formRendererID, suggestion.formRendererID);
   EXPECT_NSEQ(fieldIdentifier, suggestion.fieldIdentifier);
+  EXPECT_EQ(fieldRendererID, suggestion.fieldRendererID);
   EXPECT_NSEQ(frameID, suggestion.frameID);
   EXPECT_NSEQ(formSuggestion.displayDescription, suggestion.displayDescription);
   EXPECT_NSEQ(formSuggestion.value, suggestion.value);
@@ -56,7 +62,9 @@ TEST_F(CWVAutofillSuggestionTest, GUIDPayload) {
   CWVAutofillSuggestion* suggestion = [[CWVAutofillSuggestion alloc]
       initWithFormSuggestion:formSuggestion
                     formName:@"TestFormName"
+              formRendererID:autofill::FormRendererId(12)
              fieldIdentifier:@"TestFieldIdentifier"
+             fieldRendererID:autofill::FieldRendererId(34)
                      frameID:@"TestFrameID"
         isPasswordSuggestion:NO];
   EXPECT_NSEQ(guid, suggestion.GUID);
