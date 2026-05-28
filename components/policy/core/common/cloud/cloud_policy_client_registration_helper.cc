@@ -170,8 +170,7 @@ void CloudPolicyClientRegistrationHelper::OnTokenFetched(
 
   // Cache the access token to be used after the GetUserInfo call.
   oauth_access_token_ = access_token;
-  DVLOG_POLICY(1, POLICY_AUTH)
-      << "Fetched new scoped OAuth token:" << oauth_access_token_;
+  DVLOG_POLICY(1, POLICY_AUTH) << "Fetched new scoped OAuth token";
   // Now we've gotten our access token - contact GAIA to see if this is a
   // hosted domain.
   user_info_fetcher_ =
