@@ -54,6 +54,12 @@ class FakeGpuHostForTesting : public viz::mojom::GpuHost {
   void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
   void EnsureWebNNExecutionProvidersReady(
       EnsureWebNNExecutionProvidersReadyCallback callback) override;
+  void RequestWebNNCompilerContext(
+      webnn::mojom::CreateContextOptionsPtr context_options,
+      const webnn::ContextProperties& context_properties,
+      base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
+          ep_package_info,
+      RequestWebNNCompilerContextCallback callback) override;
 #endif
   void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback callback) override;
 

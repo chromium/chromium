@@ -166,6 +166,14 @@ void FakeGpuHostForTesting::EnsureWebNNExecutionProvidersReady(
   // Initializes the execution providers used by the WebNN ORT backend.
   webnn::EnsureExecutionProvidersReady(std::move(callback));
 }
+
+void FakeGpuHostForTesting::RequestWebNNCompilerContext(
+    webnn::mojom::CreateContextOptionsPtr context_options,
+    const webnn::ContextProperties& context_properties,
+    base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr> ep_package_info,
+    RequestWebNNCompilerContextCallback callback) {
+  std::move(callback).Run(mojo::NullRemote(), mojo::NullReceiver());
+}
 #endif
 
 void FakeGpuHostForTesting::CreateWebNNWeightsFile(

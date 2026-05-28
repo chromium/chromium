@@ -53,6 +53,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Inference" summary="time to inference."/>
 </variants>
 
+<histogram name="WebNN.CompilerProcess.CrashCount" units="count"
+    expires_after="2027-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records the cumulative number of unexpected WebNN Compiler process
+    disconnections (crashes) within a single browser session. Logged each time
+    the Compiler process disconnects unexpectedly. Values range from 1 to 3,
+    after which the Compiler process is no longer relaunched.
+  </summary>
+</histogram>
+
 <histogram name="WebNN.ConstantDataSizeInKB" units="KB"
     expires_after="2027-06-27">
   <owner>reillyg@chromium.org</owner>

@@ -22,6 +22,7 @@ include_rules = [
   "+services/viz/public/mojom",
   "+services/viz/public/mojom/hit_test",
   "+services/webnn/host",
+  "+services/webnn/public/cpp",
   "+services/webnn/public/mojom",
   "+skia",
   "+third_party/skia",

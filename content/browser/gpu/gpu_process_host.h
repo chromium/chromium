@@ -28,6 +28,7 @@
 #include "gpu/config/gpu_mode.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
@@ -38,6 +39,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
+#include "services/webnn/public/mojom/ep_package_info.mojom.h"
+#include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
 #endif
 
 namespace base {
@@ -197,6 +200,16 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
 #if BUILDFLAG(IS_OZONE)
   void TerminateGpuProcess(const std::string& message) override;
 #endif
+#if BUILDFLAG(IS_WIN)
+  void RequestWebNNCompilerContext(
+      webnn::mojom::CreateContextOptionsPtr context_options,
+      const webnn::ContextProperties& context_properties,
+      base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
+          ep_package_info,
+      RequestWebNNCompilerContextCallback callback) override;
+
+  void OnWebNNCompilerDisconnected();
+#endif
 
   bool LaunchGpuProcess();
 
@@ -272,6 +285,12 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
   std::multiset<GURL> urls_with_live_offscreen_contexts_;
 
   std::unique_ptr<viz::GpuHostImpl> gpu_host_;
+
+#if BUILDFLAG(IS_WIN)
+  // Remote to the WebNN Compiler utility process. Browser keeps this to create
+  // per-context CompilerContexts on demand via RequestWebNNCompilerContext.
+  mojo::Remote<webnn::mojom::WebNNCompilerService> webnn_compiler_remote_;
+#endif
 
   base::WeakPtrFactory<GpuProcessHost> weak_ptr_factory_{this};
 };

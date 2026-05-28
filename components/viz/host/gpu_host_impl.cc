@@ -812,6 +812,24 @@ void GpuHostImpl::EnsureWebNNExecutionProvidersReady(
     EnsureWebNNExecutionProvidersReadyCallback cb) {
   webnn::EnsureExecutionProvidersReady(std::move(cb));
 }
+
+void GpuHostImpl::Delegate::RequestWebNNCompilerContext(
+    webnn::mojom::CreateContextOptionsPtr context_options,
+    const webnn::ContextProperties& context_properties,
+    base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr> ep_package_info,
+    RequestWebNNCompilerContextCallback callback) {
+  std::move(callback).Run(mojo::NullRemote(), mojo::NullReceiver());
+}
+
+void GpuHostImpl::RequestWebNNCompilerContext(
+    webnn::mojom::CreateContextOptionsPtr context_options,
+    const webnn::ContextProperties& context_properties,
+    base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr> ep_package_info,
+    RequestWebNNCompilerContextCallback callback) {
+  delegate_->RequestWebNNCompilerContext(
+      std::move(context_options), context_properties,
+      std::move(ep_package_info), std::move(callback));
+}
 #endif
 
 void GpuHostImpl::CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) {

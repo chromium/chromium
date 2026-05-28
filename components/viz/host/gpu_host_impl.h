@@ -47,6 +47,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/mojom/ep_package_info.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif
 
@@ -108,6 +111,18 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
         mojo::ScopedMessagePipeHandle interface_pipe) = 0;
 #if BUILDFLAG(IS_OZONE)
     virtual void TerminateGpuProcess(const std::string& message) = 0;
+#endif
+#if BUILDFLAG(IS_WIN)
+    // Requests the Browser to create a CompilerContext in the Compiler
+    // process, launching it first if needed.
+    using RequestWebNNCompilerContextCallback =
+        mojom::GpuHost::RequestWebNNCompilerContextCallback;
+    virtual void RequestWebNNCompilerContext(
+        webnn::mojom::CreateContextOptionsPtr context_options,
+        const webnn::ContextProperties& context_properties,
+        base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
+            ep_package_info,
+        RequestWebNNCompilerContextCallback callback);
 #endif
 
    protected:
@@ -293,6 +308,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #if BUILDFLAG(IS_WIN)
   void EnsureWebNNExecutionProvidersReady(
       EnsureWebNNExecutionProvidersReadyCallback cb) override;
+  void RequestWebNNCompilerContext(
+      webnn::mojom::CreateContextOptionsPtr context_options,
+      const webnn::ContextProperties& context_properties,
+      base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
+          ep_package_info,
+      RequestWebNNCompilerContextCallback callback) override;
 #endif
   void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) override;
 

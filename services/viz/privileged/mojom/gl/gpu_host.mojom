@@ -19,6 +19,18 @@ import "url/mojom/url.mojom";
 import "services/webnn/public/mojom/ep_package_info.mojom";
 
 [EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_model_loader.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_compiler_context.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_context_provider.mojom";
+
+[EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
 
 // Communication channel from the gpu process to the gpu host. This interface
@@ -86,6 +98,27 @@ interface GpuHost {
   [EnableIf=is_win]
   EnsureWebNNExecutionProvidersReady()
       => (map<string, webnn.mojom.EpPackageInfo> ep_package_info);
+
+  // Requests the Browser to create a CompilerContext in the Compiler process
+  // for a specific ORT context. Launches the Compiler utility process if it
+  // hasn't been launched yet. EP package info is forwarded to the Compiler
+  // process so it can initialize its ORT Environment with the correct EPs.
+  // Browser creates all pipe pairs:
+  //   - CompilerContext pipe: returned as
+  //     compiler_context_remote (for Renderer)
+  //   - ModelLoader pipe: returned as model_loader_receiver (for GPU)
+  // GPU passes compiler_context_remote through to Renderer in
+  // CreateContextSuccess, and binds model_loader_receiver to
+  // DispatchContextImplOrt.
+  [EnableIf=is_win]
+  RequestWebNNCompilerContext(
+      webnn.mojom.CreateContextOptions context_options,
+      webnn.mojom.ContextProperties context_properties,
+      map<string, webnn.mojom.EpPackageInfo> ep_package_info)
+    => (pending_remote<webnn.mojom.WebNNCompilerContext>?
+            compiler_context_remote,
+        pending_receiver<webnn.mojom.WebNNModelLoader>?
+            model_loader_receiver);
 
   // Tells the GPU host to create a temporary file that can be used to save all
   // weights in the WebNN graph. Returns the open file handle if the file was

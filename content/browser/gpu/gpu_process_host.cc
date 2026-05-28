@@ -111,9 +111,11 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
+#include "content/browser/webnn/webnn_compiler_launcher.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/window.h"
+#include "services/webnn/public/mojom/features.mojom-features.h"
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
@@ -148,6 +150,14 @@ static_assert(RESULT_CODE_HUNG == static_cast<int>(gpu::RESULT_CODE_HUNG),
               "Please use the same enum value in both header files.");
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Number of times the WebNN Compiler process has crashed.
+// Stop relaunching after too many crashes to avoid an infinite loop.
+// TODO(crbug.com/516844139): Extract WebNN compiler process management into a
+// dedicated class (WebNNCompilerProcessHost).
+int g_webnn_compiler_crash_count = 0;
+#endif
 
 // UMA histogram names.
 constexpr char kFallbackEventCause[] = "GPU.FallbackEventCause";
@@ -690,6 +700,79 @@ void GpuProcessHost::TerminateGpuProcess(const std::string& message) {
   process_->TerminateOnBadMessageReceived(message);
 }
 #endif  // BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_WIN)
+void GpuProcessHost::RequestWebNNCompilerContext(
+    webnn::mojom::CreateContextOptionsPtr context_options,
+    const webnn::ContextProperties& context_properties,
+    base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr> ep_package_info,
+    RequestWebNNCompilerContextCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Launch the Compiler process if not already running.
+  if (!webnn_compiler_remote_.is_bound()) {
+    if (!gpu_service() || g_webnn_compiler_crash_count >= 3 ||
+        !base::FeatureList::IsEnabled(
+            webnn::mojom::features::kWebNNCompilerProcess) ||
+        !base::FeatureList::IsEnabled(
+            webnn::mojom::features::kWebNNOnnxRuntime)) {
+      std::move(callback).Run(mojo::NullRemote(), mojo::NullReceiver());
+      return;
+    }
+
+    webnn_compiler_remote_ = LaunchWebNNCompilerProcess();
+    webnn_compiler_remote_.set_disconnect_handler(
+        base::BindOnce(&GpuProcessHost::OnWebNNCompilerDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (!webnn_compiler_remote_.is_bound()) {
+    // Compiler process could not be launched — return nulls.
+    std::move(callback).Run(mojo::NullRemote(), mojo::NullReceiver());
+    return;
+  }
+
+  // Create CompilerContext pipe pair: Renderer gets the remote, Compiler gets
+  // the receiver.
+  mojo::PendingRemote<webnn::mojom::WebNNCompilerContext>
+      compiler_context_remote;
+  auto compiler_context_receiver =
+      compiler_context_remote.InitWithNewPipeAndPassReceiver();
+
+  // Create ModelLoader pipe pair: Compiler gets the remote (to send compiled
+  // models), GPU gets the receiver (to load them).
+  mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote;
+  auto model_loader_receiver =
+      model_loader_remote.InitWithNewPipeAndPassReceiver();
+
+  // Tell the Compiler process to create a per-context compiler state.
+  // EP package info is forwarded via mojom so the Compiler process can
+  // initialize its ORT Environment with the correct EPs.
+  webnn_compiler_remote_->CreateCompilerContext(
+      std::move(context_options), context_properties,
+      std::move(ep_package_info), std::move(model_loader_remote),
+      std::move(compiler_context_receiver));
+
+  std::move(callback).Run(std::move(compiler_context_remote),
+                          std::move(model_loader_receiver));
+}
+
+void GpuProcessHost::OnWebNNCompilerDisconnected() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  webnn_compiler_remote_.reset();
+
+  // TODO(crbug.com/516844138): Implement idle shutdown so the compiler process
+  // exits automatically when it isn't needed, rather than lingering for the
+  // lifetime of |webnn_compiler_remote_|.
+  // Any disconnect is therefore unexpected and treated as a crash.
+  ++g_webnn_compiler_crash_count;
+  base::UmaHistogramExactLinear("WebNN.CompilerProcess.CrashCount",
+                                g_webnn_compiler_crash_count, 4);
+
+  LOG(ERROR) << "WebNN Compiler process disconnected unexpectedly (count: "
+             << g_webnn_compiler_crash_count << ").";
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 GpuProcessHost* GpuProcessHost::FromID(int host_id) {
