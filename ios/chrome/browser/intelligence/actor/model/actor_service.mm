@@ -338,6 +338,15 @@ void ActorService::StopTask(ActorTaskId task_id,
   active_tasks_.erase(task_id);
 }
 
+// TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
+// cleaned up.
+void ActorService::StopAllTasks() {
+  while (!active_tasks_.empty()) {
+    StopTask(active_tasks_.begin()->first,
+             ActorTaskStoppedReason::kStoppedByUser);
+  }
+}
+
 std::vector<optimization_guide::proto::Action::ActionCase>
 ActorService::GetSupportedCapabilities() const {
   return tool_factory_->GetSupportedCapabilities();

@@ -77,6 +77,11 @@ class ActorService : public KeyedService {
   // Stops a task.
   void StopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
 
+  // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
+  // cleaned up.
+  // Stops all active tasks.
+  void StopAllTasks();
+
   // Returns the list of supported capabilities.
   std::vector<optimization_guide::proto::Action::ActionCase>
   GetSupportedCapabilities() const;
@@ -92,6 +97,11 @@ class ActorService : public KeyedService {
 
   // Adds a WebState to the set of controlled WebStates for the given task.
   void AddControlledWebState(ActorTaskId task_id, web::WebState* web_state);
+
+  // Returns a weak pointer to this service instance.
+  base::WeakPtr<ActorService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class ActorServiceTest;

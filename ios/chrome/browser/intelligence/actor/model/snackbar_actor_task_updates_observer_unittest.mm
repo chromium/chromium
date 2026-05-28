@@ -8,7 +8,11 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -30,6 +34,8 @@ class SnackbarActorTaskUpdatesObserverTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kActorTools);
+    ActorServiceFactory::GetInstance();
     profile_ = TestProfileIOS::Builder().Build();
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
 
@@ -49,6 +55,7 @@ class SnackbarActorTaskUpdatesObserverTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [observer_ disconnect];
     observer_ = nil;
     [regular_browser_->GetCommandDispatcher()
         stopDispatchingToTarget:mock_gemini_snackbar_commands_];
@@ -71,6 +78,7 @@ class SnackbarActorTaskUpdatesObserverTest : public PlatformTest {
     run_loop.Run();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<BrowserList> browser_list_;
@@ -619,7 +627,8 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest,
   ASSERT_NSNE(nil, captured_message);
 }
 
-// Test that actorTaskDidStopWithID displays a "Finished" snackbar.
+// Test that actorTaskDidStopWithID does not display a snackbar but hides
+// overlay.
 TEST_F(SnackbarActorTaskUpdatesObserverTest, TestActorTaskDidStop) {
   actor::ActorTaskId task_id(123);
 
@@ -630,19 +639,156 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestActorTaskDidStop) {
                                currentState:actor::ActorTaskState::kActing
                                   webStates:@[]];
 
-  [[mock_gemini_snackbar_commands_ expect]
-      showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                                 SnackbarMessage* message) {
-        return [message.title isEqualToString:@"Finished"] &&
-               message.subtitle == nil && message.secondarySubtitle == nil &&
-               message.leadingAccessoryImage != nil && message.duration == 4.0;
-      }]
+  [[mock_gemini_snackbar_commands_ reject]
+      showGeminiActorSnackbarMessage:[OCMArg any]
               additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
 
   [observer_ actorTaskDidStopWithID:task_id
                          finalState:actor::ActorTaskState::kFinished];
   WaitForTasksToComplete();
   [mock_gemini_snackbar_commands_ verify];
+}
+
+// Tests that a premium blue overlay is shown on the WebState's view
+// during task updates, capturing touches, and cleanly removed when stopped.
+TEST_F(SnackbarActorTaskUpdatesObserverTest,
+       OverlayVisibilityAcrossTaskLifecycle) {
+  // Create a new local observer instance with profile.
+  SnackbarActorTaskUpdatesObserver* local_observer =
+      [[SnackbarActorTaskUpdatesObserver alloc] initWithProfile:profile_.get()];
+
+  // Create a regular browser web state and add it to the WebStateList.
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  web::FakeWebState* web_state_ptr = web_state.get();
+  regular_browser_->GetWebStateList()->InsertWebState(std::move(web_state));
+
+  UIView* dummy_view =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  web_state_ptr->SetView(dummy_view);
+
+  actor::ActorService* service =
+      actor::ActorServiceFactory::GetForProfile(profile_.get());
+  actor::ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito=*/false);
+  service->AddControlledWebState(task_id, web_state_ptr);
+  web::WebStateID web_state_id = web_state_ptr->GetUniqueIdentifier();
+
+  // Clean up any overlay added by the service's default task observer.
+  UIView* default_overlay = [dummy_view viewWithTag:kActorOverlayViewTag];
+  if (default_overlay) {
+    [default_overlay removeFromSuperview];
+  }
+
+  // 1. Initially, before setting webState, there should be no overlay.
+  EXPECT_EQ(nil, [dummy_view viewWithTag:kActorOverlayViewTag]);
+
+  // Verify that the WebState is correctly resolved by the service.
+  web::WebState* retrieved_web_state =
+      service->GetWebStateForID(web_state_id, task_id);
+  EXPECT_EQ(web_state_ptr, retrieved_web_state);
+
+  // 2. Simulate didRegisterAsObserverForTaskID event. This should trigger
+  // showing the overlay.
+  [local_observer
+      didRegisterAsObserverForTaskID:task_id
+                           taskTitle:@"Test Task"
+                          taskUpdate:@"Init"
+                        currentState:actor::ActorTaskState::kInit
+                           webStates:@[ @(web_state_id.identifier()) ]];
+
+  // Overlay should be shown, have transparent blue background, and capture user
+  // interactions.
+  UIView* overlay = [dummy_view viewWithTag:kActorOverlayViewTag];
+  EXPECT_NE(nil, overlay);
+  EXPECT_NSEQ([UIColor colorWithRed:0.0 green:0.478 blue:1.0 alpha:0.25],
+              overlay.backgroundColor);
+  EXPECT_TRUE(overlay.userInteractionEnabled);
+
+  // 3. Simulate actorTaskDidStopWithID.
+  [local_observer actorTaskDidStopWithID:task_id
+                              finalState:actor::ActorTaskState::kFinished];
+
+  // Overlay should be cleanly removed.
+  EXPECT_EQ(nil, [dummy_view viewWithTag:kActorOverlayViewTag]);
+
+  [local_observer disconnect];
+}
+
+// Tests that changing the active WebState correctly removes the overlay from
+// the old WebState and shows it on the new WebState.
+TEST_F(SnackbarActorTaskUpdatesObserverTest,
+       OverlayChangesWhenWebStateChanges) {
+  // Create a new local observer instance with profile.
+  SnackbarActorTaskUpdatesObserver* local_observer =
+      [[SnackbarActorTaskUpdatesObserver alloc] initWithProfile:profile_.get()];
+
+  // Create two regular browser web states.
+  std::unique_ptr<web::FakeWebState> web_state_1 =
+      std::make_unique<web::FakeWebState>();
+  web_state_1->SetBrowserState(profile_.get());
+  web::FakeWebState* web_state_ptr_1 = web_state_1.get();
+  regular_browser_->GetWebStateList()->InsertWebState(std::move(web_state_1));
+
+  std::unique_ptr<web::FakeWebState> web_state_2 =
+      std::make_unique<web::FakeWebState>();
+  web_state_2->SetBrowserState(profile_.get());
+  web::FakeWebState* web_state_ptr_2 = web_state_2.get();
+  regular_browser_->GetWebStateList()->InsertWebState(std::move(web_state_2));
+
+  UIView* dummy_view_1 =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  web_state_ptr_1->SetView(dummy_view_1);
+
+  UIView* dummy_view_2 =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  web_state_ptr_2->SetView(dummy_view_2);
+
+  actor::ActorService* service =
+      actor::ActorServiceFactory::GetForProfile(profile_.get());
+  actor::ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito=*/false);
+
+  service->AddControlledWebState(task_id, web_state_ptr_1);
+  service->AddControlledWebState(task_id, web_state_ptr_2);
+
+  web::WebStateID web_state_id_1 = web_state_ptr_1->GetUniqueIdentifier();
+  web::WebStateID web_state_id_2 = web_state_ptr_2->GetUniqueIdentifier();
+
+  // Clean up any overlay added by the service's default task observer.
+  UIView* default_overlay_1 = [dummy_view_1 viewWithTag:kActorOverlayViewTag];
+  if (default_overlay_1) {
+    [default_overlay_1 removeFromSuperview];
+  }
+  UIView* default_overlay_2 = [dummy_view_2 viewWithTag:kActorOverlayViewTag];
+  if (default_overlay_2) {
+    [default_overlay_2 removeFromSuperview];
+  }
+
+  // 1. Initially, both views should have no overlay.
+  EXPECT_EQ(nil, [dummy_view_1 viewWithTag:kActorOverlayViewTag]);
+  EXPECT_EQ(nil, [dummy_view_2 viewWithTag:kActorOverlayViewTag]);
+
+  // 2. Show overlay on WebState 1.
+  [local_observer
+      didRegisterAsObserverForTaskID:task_id
+                           taskTitle:@"Test Task"
+                          taskUpdate:@"Init"
+                        currentState:actor::ActorTaskState::kInit
+                           webStates:@[ @(web_state_id_1.identifier()) ]];
+
+  EXPECT_NE(nil, [dummy_view_1 viewWithTag:kActorOverlayViewTag]);
+  EXPECT_EQ(nil, [dummy_view_2 viewWithTag:kActorOverlayViewTag]);
+
+  // 3. Trigger overlay on WebState 2 (by simulating didAddWebState).
+  // This should hide overlay on WebState 1 and show it on WebState 2.
+  [local_observer actorTaskWithID:task_id didAddWebState:web_state_id_2];
+
+  EXPECT_EQ(nil, [dummy_view_1 viewWithTag:kActorOverlayViewTag]);
+  EXPECT_NE(nil, [dummy_view_2 viewWithTag:kActorOverlayViewTag]);
+
+  [local_observer disconnect];
 }
 
 }  // namespace actor

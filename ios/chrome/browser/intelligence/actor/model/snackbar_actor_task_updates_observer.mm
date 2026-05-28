@@ -8,8 +8,11 @@
 #import <vector>
 
 #import "base/functional/bind.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,8 +23,10 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/web/public/web_state.h"
 
 const CGFloat kGeminiActorSnackbarBottomOffset = 95.0;
+const NSInteger kActorOverlayViewTag = 24937;
 
 namespace {
 
@@ -150,6 +155,8 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
 @end
 
 @implementation SnackbarActorTaskUpdatesObserver {
+  // A weak pointer to the ActorService.
+  base::WeakPtr<actor::ActorService> _actorService;
   // Command dispatcher handler for showing Gemini Actor snackbars.
   __weak id<GeminiActorSnackbarCommands> _geminiSnackbarHandler;
   // The title of the actor task.
@@ -160,12 +167,16 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
   SnackbarActorUpdate* _latestScheduledSnackbarUpdate;
   // The SnackbarActorUpdate currently presented on screen.
   SnackbarActorUpdate* _activeSnackbarUpdate;
+  // The WebState currently being overlaid.
+  base::WeakPtr<web::WebState> _webState;
 }
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     if (profile) {
+      _actorService =
+          actor::ActorServiceFactory::GetForProfile(profile)->GetWeakPtr();
       BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
       if (browserList) {
         Browser* browser =
@@ -183,6 +194,16 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
     }
   }
   return self;
+}
+
+- (void)disconnect {
+  _actorService.reset();
+  _geminiSnackbarHandler = nil;
+}
+
+- (void)dealloc {
+  [self hideOverlay];
+  [self disconnect];
 }
 
 #pragma mark - Private
@@ -286,6 +307,68 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
   }
 }
 
+// Shows the blue overlay on the specified WebState. It's a 25% opacity overlay
+// over the web view which blocks user inputs.
+- (void)showOverlayForWebState:(web::WebState*)webState {
+  if (!webState) {
+    return;
+  }
+
+  UIView* webStateView = webState->GetView();
+  if (!webStateView) {
+    return;
+  }
+
+  UIView* existingOverlay = [webStateView viewWithTag:kActorOverlayViewTag];
+  if (existingOverlay) {
+    return;
+  }
+
+  UIView* overlayView = [[UIView alloc] initWithFrame:webStateView.bounds];
+  overlayView.backgroundColor = [UIColor colorWithRed:0.0
+                                                green:0.478
+                                                 blue:1.0
+                                                alpha:0.25];
+  overlayView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  overlayView.tag = kActorOverlayViewTag;
+  overlayView.userInteractionEnabled = YES;
+
+  [webStateView addSubview:overlayView];
+  _webState = webState->GetWeakPtr();
+}
+
+// Retrieves the WebState using ActorService and shows an overlay on it.
+- (void)showOverlayForWebStateID:(web::WebStateID)webStateID
+                          taskID:(actor::ActorTaskId)taskID {
+  if (!_actorService) {
+    return;
+  }
+
+  web::WebState* webState = _actorService->GetWebStateForID(webStateID, taskID);
+  if (_webState.get() != webState) {
+    [self hideOverlay];
+  }
+  [self showOverlayForWebState:webState];
+}
+
+// Hides the overlay from the WebState.
+- (void)hideOverlay {
+  if (!_webState) {
+    return;
+  }
+
+  UIView* webStateView = _webState->GetView();
+  if (webStateView) {
+    UIView* existingOverlay = [webStateView viewWithTag:kActorOverlayViewTag];
+    if (existingOverlay) {
+      [existingOverlay removeFromSuperview];
+    }
+  }
+
+  _webState.reset();
+}
+
 #pragma mark - ActorTaskUpdatesObserver
 
 - (void)didRegisterAsObserverForTaskID:(actor::ActorTaskId)taskID
@@ -299,6 +382,19 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
                                     initWithState:state
                                              tool:std::nullopt
                                        taskUpdate:taskUpdate]];
+
+  // Show overlay on the first controlled web state (since we can currently
+  // assume there is only one).
+  if (webStatesIDs.count > 0) {
+    web::WebStateID webStateID =
+        web::WebStateID::FromSerializedValue([webStatesIDs[0] intValue]);
+    [self showOverlayForWebStateID:webStateID taskID:taskID];
+  }
+}
+
+- (void)actorTaskWithID:(actor::ActorTaskId)taskID
+         didAddWebState:(web::WebStateID)webStateID {
+  [self showOverlayForWebStateID:webStateID taskID:taskID];
 }
 
 - (void)actorTaskWithID:(actor::ActorTaskId)taskID
@@ -306,6 +402,11 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
               fromState:(actor::ActorTaskState)oldState {
   [self queueSnackbarWithUpdate:[[SnackbarActorUpdate alloc]
                                     initWithState:newState]];
+
+  if (newState == actor::ActorTaskState::kInit && _webState) {
+    [self showOverlayForWebStateID:_webState->GetUniqueIdentifier()
+                            taskID:taskID];
+  }
 }
 
 - (void)actorTaskWithID:(actor::ActorTaskId)taskID
@@ -323,9 +424,7 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
 
 - (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
                     finalState:(actor::ActorTaskState)finalState {
-  [self queueSnackbarWithUpdate:
-            [[SnackbarActorUpdate alloc]
-                initWithState:actor::ActorTaskState::kFinished]];
+  [self hideOverlay];
 }
 
 @end

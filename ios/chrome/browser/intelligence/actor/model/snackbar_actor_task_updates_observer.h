@@ -15,6 +15,9 @@ class ProfileIOS;
 // floaty.
 extern const CGFloat kGeminiActorSnackbarBottomOffset;
 
+// The tag used to identify the actor overlay view.
+extern const NSInteger kActorOverlayViewTag;
+
 // TODO(crbug.com/512521102): Remove this temporary observer implementation once
 // native UI for actor tasks is implemented.
 //
@@ -28,6 +31,9 @@ extern const CGFloat kGeminiActorSnackbarBottomOffset;
 - (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Disconnects the observer and cleans up members.
+- (void)disconnect;
 
 @end
 

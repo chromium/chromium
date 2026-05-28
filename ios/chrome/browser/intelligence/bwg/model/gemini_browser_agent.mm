@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
@@ -945,6 +946,15 @@ void GeminiBrowserAgent::DismissFloaty() {
     return;
   }
 
+  // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
+  // cleaned up.
+  if (IsGeminiActorEnabled() && IsActorEnabled()) {
+    if (actor::ActorService* actor_service =
+            actor::ActorServiceFactory::GetForProfile(browser_->GetProfile())) {
+      actor_service->StopAllTasks();
+    }
+  }
+
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
@@ -1563,6 +1573,16 @@ void GeminiBrowserAgent::OnViewStateChanged(
       is_hidden_by_keyboard_ = false;
     }
     RequestPageContextGeneration();
+  } else if (view_state == ios::provider::GeminiViewState::kHidden) {
+    // TODO(crbug.com/517583120): Remove when the temporary actuation prototype
+    // is cleaned up.
+    if (IsGeminiActorEnabled() && IsActorEnabled()) {
+      if (actor::ActorService* actor_service =
+              actor::ActorServiceFactory::GetForProfile(
+                  browser_->GetProfile())) {
+        actor_service->StopAllTasks();
+      }
+    }
   }
 }
 
