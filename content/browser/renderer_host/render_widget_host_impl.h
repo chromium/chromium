@@ -282,6 +282,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   float GetDeviceScaleFactor() override;
   std::optional<cc::TouchAction> GetAllowedTouchAction() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
+
+  // blink::mojom::FrameWidgetHost:
+  void AutoscrollEnd() override;
+
+  // RenderWidgetHost:
   // |drop_data| must have been filtered. The embedder should call
   // FilterDropData before passing the drop data to RWHI.
   void DragTargetDragEnter(const DropData& drop_data,
@@ -854,6 +859,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 #endif  // BUILDFLAG(IS_WIN)
       ) override;
   bool IsAutoscrollInProgress() override;
+  void OnAutoscrollTargetResolved(bool success);
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
       bool autoscroll_selection) override;
@@ -1198,7 +1204,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       blink::mojom::IntrinsicSizingInfoPtr sizing_info) override;
   void AutoscrollStart(const gfx::PointF& position) override;
   void AutoscrollFling(const gfx::Vector2dF& velocity) override;
-  void AutoscrollEnd() override;
 
   // When the RenderWidget is destroyed and recreated, this resets states in the
   // browser to match the clean start for the renderer side.
@@ -1511,6 +1516,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // True when the cursor has entered the autoscroll mode. A GSB is not
   // necessarily sent yet.
   bool autoscroll_in_progress_ = false;
+  bool autoscroll_targeting_pending_ = false;
+  std::optional<gfx::Vector2dF> pending_autoscroll_fling_velocity_;
 
   // TODO(crbug.com/40263900): The gesture controller can cause synchronous
   // destruction of the page (sending a click to the tab close button). Since

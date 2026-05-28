@@ -1153,25 +1153,6 @@ void RenderWidgetHostInputEventRouter::ReportBubblingScrollToSameView(
 
 namespace {
 
-// Returns true if |target_view| is one of |starting_view|'s ancestors.
-// If |stay_within| is provided, we only consider ancestors within that
-// sub-tree.
-bool IsAncestorView(RenderWidgetHostViewInput* starting_view,
-                    const RenderWidgetHostViewInput* target_view,
-                    const RenderWidgetHostViewInput* stay_within = nullptr) {
-  RenderWidgetHostViewInput* cur_view = starting_view->GetParentViewInput();
-  while (cur_view) {
-    if (cur_view == target_view)
-      return true;
-
-    if (stay_within && cur_view == stay_within)
-      return false;
-
-    cur_view = cur_view->GetParentViewInput();
-  }
-  return false;
-}
-
 // Given |event| in root coordinates, return an event in |target_view|'s
 // coordinates.
 blink::WebGestureEvent GestureEventInTarget(
@@ -1273,8 +1254,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
 
     bubbling_gesture_scroll_target_ = target_view;
     bubbling_gesture_scroll_source_device_ = event.SourceDevice();
-    DCHECK(IsAncestorView(bubbling_gesture_scroll_origin_,
-                          bubbling_gesture_scroll_target_));
+    DCHECK(RenderWidgetHostViewInput::IsAncestorView(
+        bubbling_gesture_scroll_origin_, bubbling_gesture_scroll_target_));
   } else {  // !(event.GetType() ==
             // blink::WebInputEvent::Type::kGestureScrollBegin)
     if (!bubbling_gesture_scroll_target_) {
@@ -1410,7 +1391,8 @@ void RenderWidgetHostInputEventRouter::WillDetachChildView(
   // We cancel bubbling only when the child view affects the current scroll
   // bubbling sequence.
   if (detaching_view == bubbling_gesture_scroll_origin_ ||
-      IsAncestorView(bubbling_gesture_scroll_origin_, detaching_view)) {
+      RenderWidgetHostViewInput::IsAncestorView(bubbling_gesture_scroll_origin_,
+                                                detaching_view)) {
     CancelScrollBubbling();
   }
 }
@@ -1448,8 +1430,9 @@ void RenderWidgetHostInputEventRouter::CancelScrollBubblingIfConflicting(
   if (!bubbling_gesture_scroll_target_ || !bubbling_gesture_scroll_origin_)
     return;
 
-  if (IsAncestorView(bubbling_gesture_scroll_origin_, target,
-                     bubbling_gesture_scroll_target_)) {
+  if (RenderWidgetHostViewInput::IsAncestorView(
+          bubbling_gesture_scroll_origin_, target,
+          bubbling_gesture_scroll_target_)) {
     CancelScrollBubbling();
   }
 }
@@ -1910,7 +1893,7 @@ RenderWidgetHostInputEventRouter::FindViewFromFrameSinkId(
       iter == owner_map_.end() ? nullptr : iter->second.get();
 
   if (view && ancestor_to_verify && view != ancestor_to_verify &&
-      !IsAncestorView(view, ancestor_to_verify)) {
+      !RenderWidgetHostViewInput::IsAncestorView(view, ancestor_to_verify)) {
     return nullptr;
   }
 
@@ -2175,9 +2158,17 @@ void RenderWidgetHostInputEventRouter::RootViewReceivesMouseUpIfNecessary(
   root_view_receive_additional_mouse_up_ = root_view_receives_mouse_up;
 }
 
-void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(
+RenderWidgetTargeter::AutoscrollStatus
+RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(
+    RenderWidgetHostViewInput* view,
     bool is_autoscroll_in_progress) {
-  event_targeter_->SetIsAutoScrollInProgress(is_autoscroll_in_progress);
+  return event_targeter_->SetIsAutoScrollInProgress(view,
+                                                    is_autoscroll_in_progress);
+}
+
+void RenderWidgetHostInputEventRouter::CancelAutoscroll(
+    RenderWidgetHostViewInput* view) {
+  delegate_->CancelAutoscroll(view);
 }
 
 bool IsMoveEvent(ui::EventType type) {

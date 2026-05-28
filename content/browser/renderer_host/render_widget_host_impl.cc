@@ -3144,15 +3144,31 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
 }
 
 void RenderWidgetHostImpl::AutoscrollStart(const gfx::PointF& position) {
+  input::RenderWidgetTargeter::AutoscrollStatus status =
+      delegate()->GetInputEventRouter()->SetAutoScrollInProgress(GetView(),
+                                                                 true);
+  if (status == input::RenderWidgetTargeter::AutoscrollStatus::kFailed) {
+    return;
+  }
+
+  if (status == input::RenderWidgetTargeter::AutoscrollStatus::kDeferred) {
+    autoscroll_targeting_pending_ = true;
+    autoscroll_start_position_ = position;
+    return;
+  }
+
   GetView()->OnAutoscrollStart();
   sent_autoscroll_scroll_begin_ = false;
   autoscroll_in_progress_ = true;
-  delegate()->GetInputEventRouter()->SetAutoScrollInProgress(
-      autoscroll_in_progress_);
   autoscroll_start_position_ = position;
 }
 
 void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
+  if (autoscroll_targeting_pending_) {
+    pending_autoscroll_fling_velocity_ = velocity;
+    return;
+  }
+
   CHECK(autoscroll_in_progress_);
   if (!sent_autoscroll_scroll_begin_ && velocity != gfx::Vector2dF()) {
     // Send a GSB event with valid delta hints.
@@ -3184,7 +3200,7 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
   autoscroll_in_progress_ = false;
 
   delegate()->GetInputEventRouter()->SetAutoScrollInProgress(
-      autoscroll_in_progress_);
+      GetView(), autoscroll_in_progress_);
   // Don't send a GFC if no GSB is sent.
   if (!sent_autoscroll_scroll_begin_) {
     return;
@@ -3199,6 +3215,27 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
 
   GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(cancel_event,
                                                              ui::LatencyInfo());
+}
+
+void RenderWidgetHostImpl::OnAutoscrollTargetResolved(bool success) {
+  if (!autoscroll_targeting_pending_) {
+    return;
+  }
+
+  autoscroll_targeting_pending_ = false;
+
+  if (!success) {
+    pending_autoscroll_fling_velocity_.reset();
+    return;
+  }
+
+  AutoscrollStart(autoscroll_start_position_);
+
+  if (pending_autoscroll_fling_velocity_) {
+    gfx::Vector2dF velocity = *pending_autoscroll_fling_velocity_;
+    pending_autoscroll_fling_velocity_.reset();
+    AutoscrollFling(velocity);
+  }
 }
 
 bool RenderWidgetHostImpl::IsAutoscrollInProgress() {

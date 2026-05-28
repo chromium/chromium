@@ -127,8 +127,15 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
       const gfx::PointF& point,
       input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override {
+    if (target_view == this) {
+      *transformed_point = point;
+    } else {
+      *transformed_point = point - offset_;
+    }
     return true;
   }
+
+  void SetOffset(const gfx::Vector2dF& offset) { offset_ = offset; }
 
   void ProcessGestureEvent(const blink::WebGestureEvent& event,
                            const ui::LatencyInfo&) override {
@@ -164,6 +171,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
   blink::WebInputEvent::Type last_gesture_seen_ =
       blink::WebInputEvent::Type::kUndefined;
   uint32_t unique_id_for_last_touch_ack_ = 0;
+  gfx::Vector2dF offset_;
 };
 
 class MockInputTargetClient : public viz::mojom::InputTargetClient {
@@ -1256,7 +1264,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
       rwhier()->GetRenderWidgetTargeterForTests();
   rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event, ui::LatencyInfo());
   // Set middle click autoscroll in progress to true.
-  rwhier()->SetAutoScrollInProgress(true);
+  rwhier()->SetAutoScrollInProgress(child.view.get(), true);
   // Destroy the view/target, middle click autoscroll is latched to.
   rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
 
@@ -1865,6 +1873,89 @@ TEST_P(DelegatedInkPointTest, ForwardPointsToChildFrame) {
   // destruction.
   rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
   view_root_->GetCursorManager()->ViewBeingDestroyed(child.view.get());
+}
+
+// This test reproduces the bug where autoscroll coordinate transformation is
+// bypassed, leading to incorrect coordinates being sent to the target view.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       AutoscrollCoordinateTransformation) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  // Set an offset for the child view.
+  view_root_->SetOffset(gfx::Vector2dF(10, 10));
+
+  // 1. Simulate middle click mouse event on child view.
+  // This should populate middle_click_result_ in the targeter.
+  blink::WebMouseEvent middle_down_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  middle_down_event.button = blink::WebPointerProperties::Button::kMiddle;
+  middle_down_event.SetPositionInWidget(50, 50);
+
+  // Set up hit testing to return the child view.
+  view_root_->SetHittestResult(child.view.get(), false);
+
+  rwhier()->RouteMouseEvent(view_root_.get(), &middle_down_event,
+                            ui::LatencyInfo());
+
+  // 2. Set autoscroll in progress to true.
+  rwhier()->SetAutoScrollInProgress(child.view.get(), true);
+
+  // 3. Send a left click mouse event at a different coordinate in the root
+  // view.
+  blink::WebMouseEvent left_down_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  left_down_event.button = blink::WebPointerProperties::Button::kLeft;
+  // Use a coordinate that is clearly different from the middle click.
+  left_down_event.SetPositionInWidget(100, 100);
+
+  rwhier()->RouteMouseEvent(view_root_.get(), &left_down_event,
+                            ui::LatencyInfo());
+
+  // Verify that the event was routed to the child view.
+  EXPECT_EQ(child.view.get(), last_mouse_down_target());
+
+  // Verify the coordinates.
+  // With the fix, they should be transformed to (90, 90).
+  // Without the fix, they will be (100, 100).
+  EXPECT_EQ(gfx::PointF(90, 90),
+            rwhier()->mouse_down_post_transformed_coordinate_for_testing());
+
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
+}
+
+// This test verifies that autoscroll can only be started by the view that
+// received the middle click.
+TEST_F(RenderWidgetHostInputEventRouterTest, AutoscrollValidation) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  ChildViewState other_child = MakeChildView(view_root_.get());
+
+  // 1. Middle click on child.
+  blink::WebMouseEvent middle_down_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  middle_down_event.button = blink::WebPointerProperties::Button::kMiddle;
+  view_root_->SetHittestResult(child.view.get(), false);
+  rwhier()->RouteMouseEvent(view_root_.get(), &middle_down_event,
+                            ui::LatencyInfo());
+
+  // 2. Try to start autoscroll from other_child. Should be rejected.
+  rwhier()->SetAutoScrollInProgress(other_child.view.get(), true);
+  EXPECT_FALSE(rwhier()
+                   ->GetRenderWidgetTargeterForTests()
+                   ->is_auto_scroll_in_progress());
+
+  // 3. Start autoscroll from child. Should be accepted.
+  rwhier()->SetAutoScrollInProgress(child.view.get(), true);
+  EXPECT_TRUE(rwhier()
+                  ->GetRenderWidgetTargeterForTests()
+                  ->is_auto_scroll_in_progress());
+
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(other_child.view.get());
 }
 
 #endif  // defined(USE_AURA)

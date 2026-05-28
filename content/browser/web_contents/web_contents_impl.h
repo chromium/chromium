@@ -1303,6 +1303,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
+  void CancelAutoscroll(input::RenderWidgetHostViewInput* view) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;

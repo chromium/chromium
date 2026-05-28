@@ -7902,6 +7902,14 @@ input::TouchEmulator* WebContentsImpl::GetTouchEmulator(
   return touch_emulator_.get();
 }
 
+void WebContentsImpl::CancelAutoscroll(input::RenderWidgetHostViewInput* view) {
+  auto* view_base = static_cast<RenderWidgetHostViewBase*>(view);
+  auto* rwhi = RenderWidgetHostImpl::From(view_base->GetRenderWidgetHost());
+  if (rwhi) {
+    rwhi->AutoscrollEnd();
+  }
+}
+
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     NavigationHandle* navigation_handle,
     bool navigation_is_within_page) {

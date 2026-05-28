@@ -659,6 +659,10 @@ void RenderWidgetHostViewBase::OnAutoscrollStart() {
   GetMouseWheelPhaseHandler()->DispatchPendingWheelEndEvent();
 }
 
+void RenderWidgetHostViewBase::OnAutoscrollTargetResolved(bool success) {
+  host()->OnAutoscrollTargetResolved(success);
+}
+
 DevicePosturePlatformProvider*
 RenderWidgetHostViewBase::GetDevicePosturePlatformProvider() {
   if (!host() || !host()->delegate()) {
