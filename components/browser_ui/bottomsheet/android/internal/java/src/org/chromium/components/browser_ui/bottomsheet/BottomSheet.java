@@ -1002,12 +1002,20 @@ class BottomSheet extends FrameLayout
             assert mSheetContent.getPeekHeight() != HeightMode.WRAP_CONTENT
                     : "The peek mode can't wrap content.";
             int peekHeight = mSheetContent.getPeekHeight();
-            assert peekHeight > 0 && peekHeight <= mContainerHeight
-                    : "Custom peek height must be in the range of (0, mContainerHeight]."
-                            + " mContainerHeight: "
-                            + mContainerHeight
-                            + " peekHeight :"
-                            + peekHeight;
+            assert peekHeight > 0 : "Custom peek height must be positive.";
+            // If the container height is smaller than the custom peek height (e.g. when entering
+            // Picture-in-Picture mode where the window shrinks dynamically), we cap the peek height
+            // to the container height instead of throwing an AssertionError. This gracefully allows
+            // the bottom sheet to occupy the full tiny window rather than crashing the app.
+            if (peekHeight > mContainerHeight) {
+                Log.w(
+                        TAG,
+                        "Custom peek height (%d) exceeds container height (%d), capping to"
+                                + " container height.",
+                        peekHeight,
+                        mContainerHeight);
+                peekHeight = mContainerHeight;
+            }
             return peekHeight;
         }
 
