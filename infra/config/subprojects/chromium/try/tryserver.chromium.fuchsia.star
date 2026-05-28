@@ -34,7 +34,7 @@ try_.defaults.set(
     siso_output_local_strategy = "greedy",
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    siso_remote_linking = True,
+    siso_remote_linking = False,
 )
 
 consoles.list_view(
