@@ -48,7 +48,8 @@
 
 @synthesize wasDismissed = _wasDismissed;
 
-- (void)screenWillFinishPresenting {
+- (void)firstRunScreenCoordinatorWantsToBeStopped:
+    (ChromeCoordinator*)coordinator {
   _wasDismissed = YES;
 }
 

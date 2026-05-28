@@ -146,7 +146,9 @@
 
 #pragma mark - FirstRunScreenDelegate
 
-- (void)screenWillFinishPresenting {
+- (void)firstRunScreenCoordinatorWantsToBeStopped:
+    (ChromeCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _detailScreenCoordinator, base::NotFatalUntil::M155);
   // First dismiss the best feature detail view.
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES

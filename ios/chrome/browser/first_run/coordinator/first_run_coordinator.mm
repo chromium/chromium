@@ -133,7 +133,9 @@ class FirstRunCoordinatorMetricsHelper final {
 
 #pragma mark - FirstRunScreenDelegate
 
-- (void)screenWillFinishPresenting {
+- (void)firstRunScreenCoordinatorWantsToBeStopped:
+    (ChromeCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.childCoordinator, base::NotFatalUntil::M155);
   [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
 
@@ -272,7 +274,7 @@ class FirstRunCoordinatorMetricsHelper final {
 - (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
                     withResult:(HistorySyncResult)result {
   CHECK_EQ(self.childCoordinator, historySyncCoordinator);
-  [self screenWillFinishPresenting];
+  [self firstRunScreenCoordinatorWantsToBeStopped:historySyncCoordinator];
 }
 
 #pragma mark - Private

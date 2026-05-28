@@ -55,7 +55,7 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kAnimatedLensPromoCompletionWithAction);
-  [self.firstRunDelegate screenWillFinishPresenting];
+  [self.firstRunDelegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 
 @end

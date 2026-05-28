@@ -7,11 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+@class ChromeCoordinator;
+
 // The delegate for transferring between screens.
 @protocol FirstRunScreenDelegate <NSObject>
 
-// Called when one screen finished presenting.
-- (void)screenWillFinishPresenting;
+// Called by `coordinator` when it has finished presenting its view and requires
+// its delegate to stop it synchronously.
+- (void)firstRunScreenCoordinatorWantsToBeStopped:
+    (ChromeCoordinator*)coordinator;
 
 @end
 

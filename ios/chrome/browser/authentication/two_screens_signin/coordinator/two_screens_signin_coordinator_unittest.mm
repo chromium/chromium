@@ -141,7 +141,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
           if (is_signed_in) {
             // If there is a primary account, FullscreenSigninScreenCoordinator
             // is skipped.
-            [coordinator_ screenWillFinishPresenting];
+            [coordinator_ firstRunScreenCoordinatorWantsToBeStopped:
+                              fullscreen_signin_screen_coordinator_mock_];
           }
         });
     OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
@@ -170,7 +171,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
         if (is_signed_in) {
           // If there is a primary account, HistorySyncCoordinator
           // is skipped.
-          [coordinator_ screenWillFinishPresenting];
+          [coordinator_ firstRunScreenCoordinatorWantsToBeStopped:
+                            fullscreen_signin_screen_coordinator_mock_];
         }
       });
       OCMExpect([history_sync_coordinator_mock_ stop]);
@@ -219,7 +221,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 
   // Advances the coordinator to the next screen.
   void NextScreen() {
-    [coordinator_ screenWillFinishPresenting];
+    [coordinator_ firstRunScreenCoordinatorWantsToBeStopped:
+                      fullscreen_signin_screen_coordinator_mock_];
     // Spin the run loop to allow screen to change.
     base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(100));
   }
@@ -322,7 +325,8 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
                                    /*is_signed_in=*/false,
                                    /*history_sync=*/false);
 
-  [coordinator_ screenWillFinishPresenting];
+  [coordinator_ firstRunScreenCoordinatorWantsToBeStopped:
+                    fullscreen_signin_screen_coordinator_mock_];
 
   auto completion_condition = ^{
     return completion_block_done_;

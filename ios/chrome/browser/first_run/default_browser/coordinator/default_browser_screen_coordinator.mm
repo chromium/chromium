@@ -244,7 +244,7 @@
 
 - (void)finishPresenting {
   [_mediator finishPresenting];
-  [_delegate screenWillFinishPresenting];
+  [_delegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 
 // Shows the UMA dialog so the user can manage metric reporting.

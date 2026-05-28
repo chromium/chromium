@@ -97,7 +97,7 @@
 
 - (void)didTapContinueButtonWithInteraction:(BOOL)interaction {
   CHECK(self.firstRunDelegate);
-  [self.firstRunDelegate screenWillFinishPresenting];
+  [self.firstRunDelegate firstRunScreenCoordinatorWantsToBeStopped:self];
   first_run::FirstRunStage stage =
       interaction ? first_run::kInteractiveLensCompletionWithInteraction
                   : first_run::kInteractiveLensCompletionWithoutInteraction;

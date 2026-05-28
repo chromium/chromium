@@ -248,7 +248,9 @@ using base::UserMetricsAction;
 
 // This is called before finishing the presentation of a screen.
 // Stops the child coordinator and prepares the next screen to present.
-- (void)screenWillFinishPresenting {
+- (void)firstRunScreenCoordinatorWantsToBeStopped:
+    (ChromeCoordinator*)coordinator {
+  CHECK_EQ(_childCoordinator, coordinator, base::NotFatalUntil::M155);
   CHECK(_childCoordinator) << base::SysNSStringToUTF8([self description]);
   [self stopChildCoordinator];
   [self presentScreenIfNeeded:[_screenProvider nextScreenType]];
@@ -259,7 +261,7 @@ using base::UserMetricsAction;
 // Dismisses the current screen.
 - (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
                     withResult:(HistorySyncResult)result {
-  [self screenWillFinishPresenting];
+  [self firstRunScreenCoordinatorWantsToBeStopped:historySyncCoordinator];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

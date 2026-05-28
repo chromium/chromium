@@ -206,7 +206,7 @@ using search_engines::SearchEngineChoiceScreenEvents;
 // and then the delegate is called.
 - (void)dismissChoiceScreenIfNeeded {
   if (_firstRun) {
-    [_firstRunDelegate screenWillFinishPresenting];
+    [_firstRunDelegate firstRunScreenCoordinatorWantsToBeStopped:self];
   } else {
     __weak __typeof(self) weakSelf = self;
     [self dismissChoiceScreenAnimated:YES

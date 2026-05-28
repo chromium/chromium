@@ -128,7 +128,7 @@
       AuthenticationServiceFactory::GetForProfile(profile);
   if (self.authenticationService->GetPrimaryIdentity()) {
     // Don't show the sign-in screen since the user is already signed in.
-    [_delegate screenWillFinishPresenting];
+    [_delegate firstRunScreenCoordinatorWantsToBeStopped:self];
     return;
   }
 
@@ -292,7 +292,7 @@
 - (void)finishPresentingWithSignIn:(BOOL)signIn {
   _finishing = YES;
   [self.mediator finishPresentingWithSignIn:signIn];
-  [self.delegate screenWillFinishPresenting];
+  [self.delegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 
 // Shows the UMA dialog so the user can manage metric reporting.

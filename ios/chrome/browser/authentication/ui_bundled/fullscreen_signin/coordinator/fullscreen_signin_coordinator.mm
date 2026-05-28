@@ -191,7 +191,9 @@
 
 // This is called before finishing the presentation of a screen.
 // Stops the child coordinator and prepares the next screen to present.
-- (void)screenWillFinishPresenting {
+- (void)firstRunScreenCoordinatorWantsToBeStopped:
+    (ChromeCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.childCoordinator, base::NotFatalUntil::M155);
   [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
 }

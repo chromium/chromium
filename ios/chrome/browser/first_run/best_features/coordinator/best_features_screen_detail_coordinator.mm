@@ -177,7 +177,7 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kBestFeaturesExperienceCompletionThroughDetailScreen);
-  [self.delegate screenWillFinishPresenting];
+  [self.delegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 
 @end
