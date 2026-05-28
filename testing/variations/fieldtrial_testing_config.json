@@ -8881,8 +8881,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DeviceBoundSessionsForRestrictedSites",
-                        "EnableOAuthMultiloginStandardCookiesBinding",
-                        "UseUnexportableKeyServiceInBrowserProcess"
+                        "EnableOAuthMultiloginStandardCookiesBinding"
                     ]
                 }
             ]
