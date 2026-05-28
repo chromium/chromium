@@ -122,37 +122,6 @@
                 "project": "chromium"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "linux-webium-product-rel",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.linux",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "linux"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "use_clang_coverage"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Linux Builder",
-                "project": "chromium"
-              }
-            }
           }
         ]
       },
@@ -177,11 +146,6 @@
         {
           "bucket": "ci",
           "builder": "linux-oi-rel",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "linux-webium-product-rel",
           "project": "chromium"
         }
       ],
