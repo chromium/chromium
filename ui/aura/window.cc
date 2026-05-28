@@ -1130,6 +1130,7 @@ void Window::SetOcclusionInfo(OcclusionState occlusion_state,
   occlusion_state_ = occlusion_state;
   occluded_region_in_root_ = occluded_region;
 
+  ScopedDeleteBlocker blocker(this);
   if (delegate_)
     delegate_->OnWindowOcclusionChanged(old_occlusion_state, occlusion_state);
 
