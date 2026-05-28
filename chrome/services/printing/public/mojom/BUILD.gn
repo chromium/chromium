@@ -41,9 +41,6 @@ mojom("mojom") {
       "//printing/backend/mojom",
       "//printing/mojom:printing_context",
     ]
-    if (is_win) {
-      sources += [ "printer_xml_parser.mojom" ]
-    }
     if (enable_oop_basic_print_dialog) {
       enabled_features += [ "enable_oop_basic_print_dialog" ]
     }

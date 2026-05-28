@@ -41,24 +41,6 @@ namespace printing {
 
 namespace {
 
-// Wrapper class to close provider automatically.
-class ScopedProvider {
- public:
-  explicit ScopedProvider(HPTPROVIDER provider) : provider_(provider) {}
-  ScopedProvider(const ScopedProvider&) = delete;
-  ScopedProvider& operator=(const ScopedProvider&) = delete;
-
-  // Once the object is destroyed, it automatically closes the provider by
-  // calling the XPSModule API.
-  ~ScopedProvider() {
-    if (provider_)
-      XPSModule::CloseProvider(provider_);
-  }
-
- private:
-  HPTPROVIDER provider_;
-};
-
 std::string ErrorMessageCheckSpooler(const std::string& base_message,
                                      logging::SystemErrorCode err) {
   std::string message = base_message;
@@ -638,57 +620,6 @@ void PrintBackendWin::SetPrintableAreaLoadedCallbackForTesting(
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const std::string& /*locale*/) {
   return base::MakeRefCounted<PrintBackendWin>();
-}
-
-base::expected<std::string, mojom::ResultCode>
-PrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
-    const std::string& printer_name) {
-  ScopedXPSInitializer xps_initializer;
-  CHECK(xps_initializer.initialized());
-
-  if (!IsValidPrinter(printer_name)) {
-    return base::unexpected(
-        GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode()));
-  }
-
-  HPTPROVIDER provider = nullptr;
-  std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
-  HRESULT hr =
-      XPSModule::OpenProvider(wide_printer_name, /*version=*/1, &provider);
-  ScopedProvider scoped_provider(provider);
-  if (FAILED(hr) || !provider) {
-    LOG(ERROR) << "Failed to open provider";
-    return base::unexpected(mojom::ResultCode::kFailed);
-  }
-  Microsoft::WRL::ComPtr<IStream> print_capabilities_stream;
-  hr = CreateStreamOnHGlobal(/*hGlobal=*/nullptr, /*fDeleteOnRelease=*/TRUE,
-                             &print_capabilities_stream);
-  if (FAILED(hr) || !print_capabilities_stream.Get()) {
-    LOG(ERROR) << "Failed to create stream";
-    return base::unexpected(mojom::ResultCode::kFailed);
-  }
-  base::win::ScopedBstr error;
-  hr = XPSModule::GetPrintCapabilities(provider, /*print_ticket=*/nullptr,
-                                       print_capabilities_stream.Get(),
-                                       error.Receive());
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get print capabilities";
-
-    // Failures from getting print capabilities don't give a system error,
-    // so just indicate general failure.
-    return base::unexpected(mojom::ResultCode::kFailed);
-  }
-  std::string capabilities_xml;
-  hr = StreamOnHGlobalToString(print_capabilities_stream.Get(),
-                               &capabilities_xml);
-
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to convert stream to string";
-    return base::unexpected(mojom::ResultCode::kFailed);
-  }
-  DVLOG(2) << "Printer capabilities info: Name = " << printer_name
-           << ", capabilities = " << capabilities_xml;
-  return capabilities_xml;
 }
 
 }  // namespace printing

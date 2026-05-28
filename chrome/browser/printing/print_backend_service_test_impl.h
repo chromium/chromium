@@ -21,10 +21,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/scoped_refptr.h"
-#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "printing/mojom/print.mojom.h"
 #endif
 
@@ -64,7 +60,6 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
       mojo::Remote<mojom::PrintBackendService>& remote,
       scoped_refptr<TestPrintBackend> backend,
       bool sandboxed,
-      mojo::PendingRemote<mojom::PrinterXmlParser> xml_parser_remote,
       scoped_refptr<base::SingleThreadTaskRunner> service_task_runner);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -74,14 +69,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   ~PrintBackendServiceTestImpl() override;
 
   // Override which needs special handling for using `test_print_backend_`.
-  void Init(
-#if BUILDFLAG(IS_WIN)
-      const std::string& locale,
-      mojo::PendingRemote<mojom::PrinterXmlParser> remote
-#else
-      const std::string& locale
-#endif  // BUILDFLAG(IS_WIN)
-      ) override;
+  void Init(const std::string& locale) override;
 
   // Overrides to support testing service termination scenarios.
   void EnumeratePrinters(
@@ -156,8 +144,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   CreateServiceOnServiceThread(
       mojo::PendingReceiver<mojom::PrintBackendService> receiver,
       bool is_sandboxed,
-      scoped_refptr<TestPrintBackend> backend,
-      mojo::PendingRemote<mojom::PrinterXmlParser> xml_parser_remote);
+      scoped_refptr<TestPrintBackend> backend);
 #endif  // BUILDFLAG(IS_WIN)
 
   // When pretending to be sandboxed, have the possibility of getting access

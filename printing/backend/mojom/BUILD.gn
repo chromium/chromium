@@ -56,20 +56,4 @@ mojom("mojom") {
       },
     ]
   }
-  if (is_win) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "printing.mojom.PageOutputQualityAttribute"
-            cpp = "::printing::PageOutputQualityAttribute"
-          },
-          {
-            mojom = "printing.mojom.PageOutputQuality"
-            cpp = "::printing::PageOutputQuality"
-          },
-        ]
-      },
-    ]
-  }
 }

@@ -661,8 +661,6 @@ class SystemAccessProcessPrintBrowserTestBase
       }
       // TODO(crbug.com/40111626):  Support `kUseXpsForPrintingFromPdf`.
       disabled_features.push_back(features::kUseXpsForPrintingFromPdf);
-      // TODO(crbug.com/40212677):  Support `kReadPrinterCapabilitiesWithXps`.
-      disabled_features.push_back(features::kReadPrinterCapabilitiesWithXps);
 #endif  // BUILDFLAG(IS_WIN)
     } else {
       disabled_features.push_back(features::kEnableOopPrintDrivers);
@@ -670,7 +668,6 @@ class SystemAccessProcessPrintBrowserTestBase
       CHECK(!UseXps());
       disabled_features.push_back(features::kUseXpsForPrinting);
       disabled_features.push_back(features::kUseXpsForPrintingFromPdf);
-      disabled_features.push_back(features::kReadPrinterCapabilitiesWithXps);
 #endif  // BUILDFLAG(IS_WIN)
     }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)

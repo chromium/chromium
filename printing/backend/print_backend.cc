@@ -120,63 +120,6 @@ bool PaperMargins::operator==(const PaperMargins& other) const {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-
-PageOutputQualityAttribute::PageOutputQualityAttribute() = default;
-
-PageOutputQualityAttribute::PageOutputQualityAttribute(
-    const std::string& display_name,
-    const std::string& name)
-    : display_name(display_name), name(name) {}
-
-PageOutputQualityAttribute::~PageOutputQualityAttribute() = default;
-
-bool PageOutputQualityAttribute::operator==(
-    const PageOutputQualityAttribute& other) const {
-  return display_name == other.display_name && name == other.name;
-}
-
-bool PageOutputQualityAttribute::operator<(
-    const ::printing::PageOutputQualityAttribute& other) const {
-  return std::tie(name, display_name) <
-         std::tie(other.name, other.display_name);
-}
-
-PageOutputQuality::PageOutputQuality() = default;
-
-PageOutputQuality::PageOutputQuality(PageOutputQualityAttributes qualities,
-                                     std::optional<std::string> default_quality)
-    : qualities(std::move(qualities)),
-      default_quality(std::move(default_quality)) {}
-
-PageOutputQuality::PageOutputQuality(const PageOutputQuality& other) = default;
-
-PageOutputQuality::~PageOutputQuality() = default;
-
-// This function is only supposed to be used in tests. The declaration in the
-// header file is guarded by "#if defined(UNIT_TEST)" so that they can be used
-// by tests but not non-test code. However, this .cc file is compiled as part of
-// "backend" where "UNIT_TEST" is not defined. So we need to specify
-// "COMPONENT_EXPORT(PRINT_BACKEND)" here again so that they are visible to
-// tests.
-COMPONENT_EXPORT(PRINT_BACKEND)
-bool operator==(const PageOutputQuality& quality1,
-                const PageOutputQuality& quality2) {
-  return quality1.qualities == quality2.qualities &&
-         quality1.default_quality == quality2.default_quality;
-}
-
-XpsCapabilities::XpsCapabilities() = default;
-
-XpsCapabilities::XpsCapabilities(XpsCapabilities&& other) noexcept = default;
-
-XpsCapabilities& XpsCapabilities::operator=(XpsCapabilities&& other) noexcept =
-    default;
-
-XpsCapabilities::~XpsCapabilities() = default;
-
-#endif  // BUILDFLAG(IS_WIN)
-
 PrinterSemanticCapsAndDefaults::Paper::Paper() = default;
 
 PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
@@ -308,9 +251,6 @@ bool operator==(const PrinterSemanticCapsAndDefaults& caps1,
          && caps1.pin_supported == caps2.pin_supported &&
          caps1.advanced_capabilities == caps2.advanced_capabilities
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_WIN)
-         && caps1.page_output_quality == caps2.page_output_quality
-#endif  // BUILDFLAG(IS_WIN)
       ;
 }
 

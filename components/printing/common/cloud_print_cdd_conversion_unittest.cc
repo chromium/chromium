@@ -332,49 +332,6 @@ constexpr char kExpectedMarginsWiderPaper[] = R"json({
 ]})json";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-constexpr char kExpectedPageOutputQuality[] = R"json([
-  {
-    "display_name": "Page output quality",
-    "id": "page_output_quality",
-    "select_cap": {
-      "option": [ {
-        "display_name": "Normal",
-        "value": "ns000:Normal"
-      }, {
-        "display_name": "Draft",
-        "value": "ns000:Draft",
-        "is_default": true
-      }, {
-        "display_name": "Advance",
-        "value": "ns000:Advance"
-      } ]
-    },
-    "type": "SELECT"
-  }
-])json";
-
-constexpr char kExpectedPageOutputQualityNullDefault[] = R"json([
-  {
-    "display_name": "Page output quality",
-    "id": "page_output_quality",
-    "select_cap": {
-      "option": [ {
-        "display_name": "Normal",
-        "value": "ns000:Normal"
-      }, {
-        "display_name": "Draft",
-        "value": "ns000:Draft"
-      }, {
-        "display_name": "Advance",
-        "value": "ns000:Advance"
-      } ]
-    },
-    "type": "SELECT"
-  }
-])json";
-#endif  // BUILDFLAG(IS_WIN)
-
 const base::DictValue* GetPrinterDict(const base::Value& caps_value) {
   const base::DictValue* caps_dict = caps_value.GetIfDict();
   if (!caps_dict || !caps_dict->contains(kKeyVersion) ||
@@ -706,35 +663,5 @@ TEST(CloudPrintCddConversionTest, FitToPageCorrectMapping) {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-TEST(CloudPrintCddConversionTest, PageOutputQualityWithDefaultQuality) {
-  printing::PrinterSemanticCapsAndDefaults input =
-      printing::GenerateSamplePrinterSemanticCapsAndDefaults(
-          printing::SampleWithPageOutputQuality());
-  input.page_output_quality->default_quality = printing::kDefaultQuality;
-  const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::DictValue* printer_dict = GetPrinterDict(output);
-
-  ASSERT_TRUE(printer_dict);
-  ASSERT_EQ(10u, printer_dict->size());
-  EXPECT_THAT(printer_dict->Find("vendor_capability"),
-              Pointee(base::test::IsJson(kExpectedPageOutputQuality)));
-}
-
-TEST(CloudPrintCddConversionTest, PageOutputQualityNullDefaultQuality) {
-  printing::PrinterSemanticCapsAndDefaults input =
-      printing::GenerateSamplePrinterSemanticCapsAndDefaults(
-          printing::SampleWithPageOutputQuality());
-  const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::DictValue* printer_dict = GetPrinterDict(output);
-
-  ASSERT_TRUE(printer_dict);
-  ASSERT_EQ(10u, printer_dict->size());
-  EXPECT_THAT(
-      printer_dict->Find("vendor_capability"),
-      Pointee(base::test::IsJson(kExpectedPageOutputQualityNullDefault)));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace cloud_print

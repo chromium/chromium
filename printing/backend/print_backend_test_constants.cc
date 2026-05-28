@@ -32,14 +32,6 @@ OptionalSampleCapabilities SampleWithScaleAndPinAndAdvancedCapabilities() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-OptionalSampleCapabilities SampleWithPageOutputQuality() {
-  OptionalSampleCapabilities caps;
-  caps.page_output_quality = kPageOutputQuality;
-  return caps;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 PrinterSemanticCapsAndDefaults GenerateSamplePrinterSemanticCapsAndDefaults(
     OptionalSampleCapabilities sample_capabilities) {
   PrinterSemanticCapsAndDefaults caps;
@@ -67,9 +59,6 @@ PrinterSemanticCapsAndDefaults GenerateSamplePrinterSemanticCapsAndDefaults(
       sample_capabilities.print_scaling_type_default;
   caps.print_scaling_types = sample_capabilities.print_scaling_types;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_WIN)
-  caps.page_output_quality = sample_capabilities.page_output_quality;
-#endif  // BUILDFLAG(IS_WIN)
   return caps;
 }
 

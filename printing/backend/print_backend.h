@@ -20,10 +20,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/types/expected.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 // This is the interface for platform-specific code for a print backend
 namespace printing {
 
@@ -125,62 +121,6 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PaperMargins {
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-
-struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQualityAttribute {
-  PageOutputQualityAttribute();
-  PageOutputQualityAttribute(const std::string& display_name,
-                             const std::string& name);
-  ~PageOutputQualityAttribute();
-
-  bool operator==(const PageOutputQualityAttribute& other) const;
-
-  bool operator<(const PageOutputQualityAttribute& other) const;
-
-  // Localized name of the page output quality attribute.
-  std::string display_name;
-
-  // Internal ID of the page output quality attribute.
-  std::string name;
-};
-using PageOutputQualityAttributes = std::vector<PageOutputQualityAttribute>;
-
-struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQuality {
-  PageOutputQuality();
-  PageOutputQuality(PageOutputQualityAttributes qualities,
-                    std::optional<std::string> default_quality);
-  PageOutputQuality(const PageOutputQuality& other);
-  ~PageOutputQuality();
-
-  // All options of page output quality.
-  PageOutputQualityAttributes qualities;
-
-  // Default option of page output quality.
-  // TODO(crbug.com/40212677): Need populate this option in the next CLs.
-  std::optional<std::string> default_quality;
-};
-
-#if defined(UNIT_TEST)
-
-COMPONENT_EXPORT(PRINT_BACKEND)
-bool operator==(const PageOutputQuality& quality1,
-                const PageOutputQuality& quality2);
-
-#endif  // defined(UNIT_TEST)
-
-struct COMPONENT_EXPORT(PRINT_BACKEND) XpsCapabilities {
-  XpsCapabilities();
-  XpsCapabilities(const XpsCapabilities&) = delete;
-  XpsCapabilities& operator=(const XpsCapabilities&) = delete;
-  XpsCapabilities(XpsCapabilities&& other) noexcept;
-  XpsCapabilities& operator=(XpsCapabilities&& other) noexcept;
-  ~XpsCapabilities();
-
-  std::optional<PageOutputQuality> page_output_quality;
-};
-
-#endif  // BUILDFLAG(IS_WIN)
 
 struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   PrinterSemanticCapsAndDefaults();
@@ -328,10 +268,6 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   mojom::PrintScalingType print_scaling_type_default =
       mojom::PrintScalingType::kUnknownPrintScalingType;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-  std::optional<PageOutputQuality> page_output_quality;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 #if defined(UNIT_TEST)
@@ -421,16 +357,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
   // Returns true if printer_name points to a valid printer.
   virtual bool IsValidPrinter(const std::string& printer_name) = 0;
-
-#if BUILDFLAG(IS_WIN)
-
-  // This method uses the XPS API to get the printer capabilities.
-  // Returns raw XML string on success, or mojom::ResultCode on failure.
-  // This method is virtual to support testing.
-  virtual base::expected<std::string, mojom::ResultCode>
-  GetXmlPrinterCapabilitiesForXpsDriver(const std::string& printer_name);
-
-#endif  // BUILDFLAG(IS_WIN)
 
   // Allocates a print backend.
   static scoped_refptr<PrintBackend> CreateInstance(const std::string& locale);

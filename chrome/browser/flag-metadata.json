@@ -8009,11 +8009,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "read-printer-capabilities-with-xps",
-    "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "reader-mode-blur-transition-animation",
     "owners": [
       "wylieb@google.com",

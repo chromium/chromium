@@ -37,9 +37,6 @@ struct OptionalSampleCapabilities {
   mojom::PrintScalingType print_scaling_type_default =
       mojom::PrintScalingType::kUnknownPrintScalingType;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_WIN)
-  std::optional<PageOutputQuality> page_output_quality;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperA3{
@@ -111,25 +108,6 @@ inline const AdvancedCapabilities kAdvancedCapabilities{kAdvancedCapability1,
                                                         kAdvancedCapability2};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-inline const PageOutputQualityAttribute kPageOutputQualityAttribute1(
-    /*display_name=*/"Normal",
-    /*name=*/"ns000:Normal");
-inline const PageOutputQualityAttribute kPageOutputQualityAttribute2(
-    /*display_name=*/"Draft",
-    /*name=*/"ns000:Draft");
-inline const PageOutputQualityAttribute kPageOutputQualityAttribute3(
-    /*display_name=*/"Advance",
-    /*name=*/"ns000:Advance");
-inline const PageOutputQualityAttributes kPageOutputQualityAttributes{
-    kPageOutputQualityAttribute1, kPageOutputQualityAttribute2,
-    kPageOutputQualityAttribute3};
-inline const PageOutputQuality kPageOutputQuality(
-    kPageOutputQualityAttributes,
-    /*default_quality=*/std::nullopt);
-inline constexpr char kDefaultQuality[] = "ns000:Draft";
-#endif  // BUILDFLAG(IS_WIN)
-
 inline constexpr bool kCollateCapable = true;
 inline constexpr bool kCollateDefault = true;
 inline constexpr int32_t kCopiesMax = 123;
@@ -171,10 +149,6 @@ inline constexpr mojom::PrintScalingType kPrintScalingTypeDefault =
 #if BUILDFLAG(IS_CHROMEOS)
 OptionalSampleCapabilities SampleWithScaleAndPinAndAdvancedCapabilities();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-OptionalSampleCapabilities SampleWithPageOutputQuality();
-#endif  // BUILDFLAG(IS_WIN)
 
 PrinterSemanticCapsAndDefaults GenerateSamplePrinterSemanticCapsAndDefaults(
     OptionalSampleCapabilities sample_capabilities);

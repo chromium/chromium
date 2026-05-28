@@ -244,25 +244,6 @@ bool StructTraits<printing::mojom::AdvancedCapabilityDataView,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-// static
-bool StructTraits<printing::mojom::PageOutputQualityAttributeDataView,
-                  printing::PageOutputQualityAttribute>::
-    Read(printing::mojom::PageOutputQualityAttributeDataView data,
-         printing::PageOutputQualityAttribute* out) {
-  return data.ReadDisplayName(&out->display_name) && data.ReadName(&out->name);
-}
-
-// static
-bool StructTraits<printing::mojom::PageOutputQualityDataView,
-                  printing::PageOutputQuality>::
-    Read(printing::mojom::PageOutputQualityDataView data,
-         printing::PageOutputQuality* out) {
-  return data.ReadQualities(&out->qualities) &&
-         data.ReadDefaultQuality(&out->default_quality);
-}
-#endif
-
 // static
 bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
                   printing::PrinterSemanticCapsAndDefaults>::
@@ -328,35 +309,6 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-  if (!data.ReadPageOutputQuality(&out->page_output_quality)) {
-    return false;
-  }
-  if (out->page_output_quality) {
-    printing::PageOutputQualityAttributes qualities =
-        out->page_output_quality->qualities;
-    std::optional<std::string> default_quality =
-        out->page_output_quality->default_quality;
-
-    // If non-null `default_quality`, there should be a matching element in
-    // `qualities` array.
-    if (default_quality) {
-      if (!std::ranges::contains(qualities, *default_quality,
-                                 &printing::PageOutputQualityAttribute::name)) {
-        DLOG(ERROR) << "Non-null default quality, but page output qualities "
-                       "does not contain default quality";
-        return false;
-      }
-    }
-
-    // There should be no duplicates in `qualities` array.
-    if (HasDuplicateItems(qualities)) {
-      DLOG(ERROR) << "Duplicate page output qualities detected.";
-      return false;
-    }
-  }
-#endif
 
   if (!data.ReadMediaTypes(&media_types) ||
       !data.ReadDefaultMediaType(&default_media_type)) {

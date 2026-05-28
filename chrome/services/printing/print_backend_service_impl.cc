@@ -60,16 +60,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/containers/queue.h"
-#include "base/types/expected.h"
 #include "base/win/win_util.h"
-#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "printing/backend/xps_utils_win.h"
 #include "printing/emf_win.h"
 #include "printing/printed_page_win.h"
-#include "printing/printing_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
@@ -441,29 +434,11 @@ PrintBackendServiceImpl::PrintBackendServiceImpl(
 
 PrintBackendServiceImpl::~PrintBackendServiceImpl() = default;
 
-void PrintBackendServiceImpl::InitCommon(
-#if BUILDFLAG(IS_WIN)
-    const std::string& locale,
-    mojo::PendingRemote<mojom::PrinterXmlParser> remote
-#else
-    const std::string& locale
-#endif  // BUILDFLAG(IS_WIN)
-) {
+void PrintBackendServiceImpl::InitCommon(const std::string& locale) {
   locale_ = locale;
-#if BUILDFLAG(IS_WIN)
-  if (remote.is_valid())
-    xml_parser_remote_.Bind(std::move(remote));
-#endif  // BUILDFLAG(IS_WIN)
 }
 
-void PrintBackendServiceImpl::Init(
-#if BUILDFLAG(IS_WIN)
-    const std::string& locale,
-    mojo::PendingRemote<mojom::PrinterXmlParser> remote
-#else
-    const std::string& locale
-#endif  // BUILDFLAG(IS_WIN)
-) {
+void PrintBackendServiceImpl::Init(const std::string& locale) {
   // Test classes should not invoke this base initialization method, as process
   // initialization is very different for test frameworks.  Test classes
   // will also provide their own test version of a `PrintBackend`.
@@ -483,11 +458,7 @@ void PrintBackendServiceImpl::Init(
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN)
-  InitCommon(locale, std::move(remote));
-#else
   InitCommon(locale);
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 // TODO(crbug.com/40775634)  Do nothing, this is just to assist an idle timeout
@@ -562,19 +533,6 @@ void PrintBackendServiceImpl::FetchCapabilities(
     std::move(callback).Run(base::unexpected(result));
     return;
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (xml_parser_remote_.is_bound() &&
-      base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps)) {
-    ASSIGN_OR_RETURN(XpsCapabilities xps_capabilities,
-                     GetXpsCapabilities(printer_name),
-                     [&](mojom::ResultCode error) {
-                       return std::move(callback).Run(base::unexpected(error));
-                     });
-
-    MergeXpsCapabilities(std::move(xps_capabilities), caps);
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
   {
@@ -952,39 +910,5 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
   // TODO(crbug.com/40561724)  This releases a connection; try to start the
   // next job waiting to be started (if any).
 }
-
-#if BUILDFLAG(IS_WIN)
-base::expected<XpsCapabilities, mojom::ResultCode>
-PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
-  ASSIGN_OR_RETURN(
-      std::string xml,
-      print_backend_->GetXmlPrinterCapabilitiesForXpsDriver(printer_name),
-      [&](mojom::ResultCode error) {
-        DLOG(ERROR) << "Failure getting XPS capabilities of printer "
-                    << printer_name << ", error: " << error;
-        return error;
-      });
-
-  mojom::PrinterXmlParser::ParseXmlForPrinterCapabilitiesResult capabilities;
-  if (!xml_parser_remote_->ParseXmlForPrinterCapabilities(xml, &capabilities)) {
-    DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
-                << printer_name
-                << ", error: ParseXmlForPrinterCapabilities failed";
-    return base::unexpected(mojom::ResultCode::kFailed);
-  }
-  if (!capabilities.has_value()) {
-    DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
-                << printer_name << ", error: " << capabilities.error();
-    return base::unexpected(capabilities.error());
-  }
-
-  return ParseValueForXpsPrinterCapabilities(capabilities.value())
-      .transform_error([&](mojom::ResultCode code) {
-        DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
-                    << printer_name << ", error: " << code;
-        return code;
-      });
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

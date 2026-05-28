@@ -424,7 +424,6 @@ test("printing_unittests") {
     sources += [
       "backend/print_backend_win_unittest.cc",
       "backend/win_helper_unittest.cc",
-      "backend/xps_utils_win_unittest.cc",
       "emf_win_unittest.cc",
       "printed_page_win_unittest.cc",
       "printing_context_win_unittest.cc",

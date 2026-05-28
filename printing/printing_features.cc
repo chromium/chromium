@@ -35,10 +35,6 @@ BASE_FEATURE(kPrintWithPostScriptType42Fonts,
 // When using GDI printing, avoid rasterization if possible.
 BASE_FEATURE(kPrintWithReducedRasterization, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Read printer capabilities with XPS when use XPS for printing.
-BASE_FEATURE(kReadPrinterCapabilitiesWithXps,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use XPS for printing instead of GDI.
 BASE_FEATURE(kUseXpsForPrinting, base::FEATURE_DISABLED_BY_DEFAULT);
 

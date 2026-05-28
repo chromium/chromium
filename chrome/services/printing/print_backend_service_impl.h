@@ -28,13 +28,6 @@
 #include "printing/printing_context.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/types/expected.h"
-#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_LINUX)
 #include "printing/printing_context_linux.h"
 #endif
@@ -107,14 +100,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
  protected:
   // Common initialization for both production and test instances.
-  void InitCommon(
-#if BUILDFLAG(IS_WIN)
-      const std::string& locale,
-      mojo::PendingRemote<mojom::PrinterXmlParser> remote
-#else
-      const std::string& locale
-#endif  // BUILDFLAG(IS_WIN)
-  );
+  void InitCommon(const std::string& locale);
 
  private:
   friend class PrintBackendServiceTestImpl;
@@ -146,14 +132,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   };
 
   // mojom::PrintBackendService implementation:
-  void Init(
-#if BUILDFLAG(IS_WIN)
-      const std::string& locale,
-      mojo::PendingRemote<mojom::PrinterXmlParser> remote
-#else
-      const std::string& locale
-#endif  // BUILDFLAG(IS_WIN)
-      ) override;
+  void Init(const std::string& locale) override;
   void Poke() override;
   void EnumeratePrinters(
       mojom::PrintBackendService::EnumeratePrintersCallback callback) override;
@@ -252,13 +231,6 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   DocumentHelper* GetDocumentHelper(int document_cookie);
   void RemoveDocumentHelper(DocumentHelper& document_helper);
 
-#if BUILDFLAG(IS_WIN)
-  // Get XPS capabilities for printer `printer_name`, or return
-  // mojom::ResultCode on error.
-  base::expected<XpsCapabilities, mojom::ResultCode> GetXpsCapabilities(
-      const std::string& printer_name);
-#endif  // BUILDFLAG(IS_WIN)
-
   // The locale provided at initialization that should be used with all
   // PrintingContext::Delegate instances.
   std::string locale_;
@@ -291,10 +263,6 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   std::vector<std::unique_ptr<DocumentHelper>> documents_;
 
   mojo::Receiver<mojom::PrintBackendService> receiver_;
-
-#if BUILDFLAG(IS_WIN)
-  mojo::Remote<mojom::PrinterXmlParser> xml_parser_remote_;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace printing

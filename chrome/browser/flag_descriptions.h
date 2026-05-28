@@ -6643,11 +6643,6 @@ inline constexpr char kPrintWithReducedRasterizationName[] =
 inline constexpr char kPrintWithReducedRasterizationDescription[] =
     "When using GDI printing, avoid rasterization if possible.";
 
-inline constexpr char kReadPrinterCapabilitiesWithXpsName[] =
-    "Read printer capabilities with XPS";
-inline constexpr char kReadPrinterCapabilitiesWithXpsDescription[] =
-    "When enabled, utilize XPS interface to read printer capabilities.";
-
 inline constexpr char kUseXpsForPrintingName[] = "Use XPS for printing";
 inline constexpr char kUseXpsForPrintingDescription[] =
     "When enabled, use XPS printing API instead of the GDI print API.";

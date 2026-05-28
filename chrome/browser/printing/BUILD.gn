@@ -66,9 +66,6 @@ if (enable_printing) {
         "print_job_worker_oop.h",
         "printer_query_oop.h",
       ]
-      if (is_win) {
-        public += [ "printer_xml_parser_impl.h" ]
-      }
     }
 
     if (enable_oop_printing || enable_print_preview) {
@@ -203,10 +200,6 @@ if (enable_printing) {
       deps += [ "//components/crash/core/common" ]
       if (is_linux) {
         deps += [ "//ui/linux:linux_ui" ]
-      }
-      if (is_win) {
-        sources += [ "printer_xml_parser_impl.cc" ]
-        deps += [ "//printing:printing_base" ]
       }
     }
 

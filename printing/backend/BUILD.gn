@@ -67,11 +67,8 @@ component("backend") {
       "spooler_win.h",
       "win_helper.cc",
       "win_helper.h",
-      "xps_utils_win.cc",
-      "xps_utils_win.h",
     ]
     public_deps += [ "//printing/mojom" ]
-    deps += [ "//services/data_decoder/public/cpp:safe_xml_parser" ]
   }
 
   if (use_cups) {

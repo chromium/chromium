@@ -9,10 +9,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/types/expected.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace printing {
 
 // PrintBackendTest makes use of a real print backend instance, and thus will
@@ -98,28 +94,5 @@ TEST_F(PrintBackendTest, PaperSizeWithinBoundsCustomSize) {
   EXPECT_FALSE(paper.IsSizeWithinBounds({100, 199}));
   EXPECT_FALSE(paper.IsSizeWithinBounds({100, 501}));
 }
-
-#if BUILDFLAG(IS_WIN)
-
-// This test is for the XPS API that read the XML capabilities of a
-// specific printer.
-TEST_F(PrintBackendTest, MANUAL_GetXmlPrinterCapabilitiesForXpsDriver) {
-  PrinterList printer_list;
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
-            mojom::ResultCode::kSuccess);
-  for (const auto& printer : printer_list) {
-    auto caps = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-        printer.printer_name);
-    DLOG(WARNING) << "Capabilities for printer " << printer.printer_name;
-    // Do not fail with assert on lack of value, so that entire list of
-    // printers can be checked.
-    EXPECT_TRUE(caps.has_value());
-    if (caps.has_value()) {
-      DLOG(WARNING) << caps.value();
-    }
-  }
-}
-
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

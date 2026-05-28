@@ -42,16 +42,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#include "chrome/browser/printing/printer_xml_parser_impl.h"
-#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/win_helper.h"
 #include "printing/printed_page_win.h"
 #include "ui/views/win/hwnd_util.h"
-#endif
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-#include "base/notreached.h"
 #endif
 
 namespace printing {
@@ -244,13 +237,6 @@ void PrintBackendServiceManager::UnregisterClient(ClientId id) {
                                                      remote_id.value());
   if (new_timeout.has_value())
     UpdateServiceIdleTimeoutByRemoteId(remote_id.value(), new_timeout.value());
-
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps) &&
-      query_clients_.empty()) {
-    xml_parser_.reset();
-  }
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void PrintBackendServiceManager::EnumeratePrinters(
@@ -911,22 +897,8 @@ PrintBackendServiceManager::GetServiceFromBundle(
     // We may want to have the service terminated when idle.
     SetServiceIdleHandler(service, sandboxed, remote_id,
                           GetClientTypeIdleTimeout(client_type));
-#if BUILDFLAG(IS_WIN)
-    // Initialize the new service for the desired locale. Bind
-    // PrintBackendService with a Remote that allows pass-through requests to an
-    // XML parser.
-    mojo::PendingRemote<mojom::PrinterXmlParser> remote;
-    if (base::FeatureList::IsEnabled(
-            features::kReadPrinterCapabilitiesWithXps)) {
-      if (!xml_parser_)
-        xml_parser_ = std::make_unique<PrinterXmlParserImpl>();
-      remote = xml_parser_->GetRemote();
-    }
-    service->Init(g_browser_process->GetApplicationLocale(), std::move(remote));
-#else
     // Initialize the new service for the desired locale.
     service->Init(g_browser_process->GetApplicationLocale());
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   return service;

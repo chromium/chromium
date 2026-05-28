@@ -7329,11 +7329,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintWithReducedRasterizationDescription, kOsWin,
      FEATURE_VALUE_TYPE(printing::features::kPrintWithReducedRasterization)},
 
-    {"read-printer-capabilities-with-xps",
-     flag_descriptions::kReadPrinterCapabilitiesWithXpsName,
-     flag_descriptions::kReadPrinterCapabilitiesWithXpsDescription, kOsWin,
-     FEATURE_VALUE_TYPE(printing::features::kReadPrinterCapabilitiesWithXps)},
-
     {"use-xps-for-printing", flag_descriptions::kUseXpsForPrintingName,
      flag_descriptions::kUseXpsForPrintingDescription, kOsWin,
      FEATURE_VALUE_TYPE(printing::features::kUseXpsForPrinting)},

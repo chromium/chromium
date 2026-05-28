@@ -76,9 +76,6 @@ class TestPrintBackendTest : public testing::Test {
 
     test_print_backend_->AddValidPrinter(kNullDataPrinterName, /*caps=*/nullptr,
                                          /*info=*/nullptr);
-#if BUILDFLAG(IS_WIN)
-    test_print_backend_->SetXmlCapabilitiesForPrinter(kNullDataPrinterName, "");
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   void AddInvalidDataPrinter() {
@@ -295,32 +292,5 @@ TEST_F(TestPrintBackendTest, IsValidPrinter) {
                                      /*info=*/nullptr);
   EXPECT_TRUE(GetPrintBackend()->IsValidPrinter(kAlternatePrinterName));
 }
-
-#if BUILDFLAG(IS_WIN)
-TEST_F(TestPrintBackendTest, GetXmlPrinterCapabilitiesForXpsDriver) {
-  // Should fail when there are no printers in the environment.
-  EXPECT_THAT(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-                  kDefaultPrinterName),
-              base::test::ErrorIs(mojom::ResultCode::kFailed));
-
-  AddPrinters();
-
-  // The default XML string set for valid printers should be valid, so verify
-  // that we receive an XML string.
-  ASSERT_TRUE(GetPrintBackend()
-                  ->GetXmlPrinterCapabilitiesForXpsDriver(kDefaultPrinterName)
-                  .has_value());
-
-  EXPECT_THAT(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-                  kInvalidPrinterName),
-              base::test::ErrorIs(mojom::ResultCode::kFailed));
-
-  // Printers set with invalid XML should return failure. Invalid XML is
-  // considered an empty string for these tests.
-  EXPECT_THAT(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-                  kNullDataPrinterName),
-              base::test::ErrorIs(mojom::ResultCode::kFailed));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing
