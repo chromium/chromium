@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -58,6 +60,11 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private @Nullable String mTitle;
     private @Nullable String mMimeType;
     private byte @Nullable [] mData;
+
+    private static final class ImageDimensions {
+        int mWidth;
+        int mHeight;
+    }
 
     FuseboxAttachmentDetailsFetcher(
             Context context,
@@ -160,6 +167,22 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
             return false;
         }
 
+        // If the thumbnail is still null, try to generate it directly from the loaded image data.
+        if (MimeTypeUtils.getTypeFromMimeType(mimeType) == MimeTypeUtils.Type.IMAGE
+                && thumbnail == null
+                && data != null
+                && data.length > 0) {
+            ImageDimensions dims = getBitmapDimensionsFromBytes(data);
+
+            // Downsample the image to save memory. The downsampled image size should be no
+            // smaller than the standard thumbnail size to avoid upsampling later.
+            int ratio = Math.min(dims.mHeight, dims.mWidth) / THUMBNAIL_BITMAP_EDGE_SIZE;
+            int inSampleSize = Math.max(1, Integer.highestOneBit(ratio));
+
+            @Nullable Bitmap bitmap = getBitmapFromBytes(data, inSampleSize);
+            thumbnail = bitmap != null ? new BitmapDrawable(mContext.getResources(), bitmap) : null;
+        }
+
         mThumbnail = thumbnail;
         mTitle = title;
         mMimeType = mimeType;
@@ -197,5 +220,22 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
                 };
 
         mCallback.onResult(attachment);
+    }
+
+    private static ImageDimensions getBitmapDimensionsFromBytes(byte[] data) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(data, /* offset= */ 0, /* length= */ data.length, options);
+        ImageDimensions dims = new ImageDimensions();
+        dims.mWidth = options.outWidth;
+        dims.mHeight = options.outHeight;
+        return dims;
+    }
+
+    private static @Nullable Bitmap getBitmapFromBytes(byte[] data, int inSampleSize) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = inSampleSize;
+        return BitmapFactory.decodeByteArray(
+                data, /* offset= */ 0, /* length= */ data.length, options);
     }
 }

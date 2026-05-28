@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -101,7 +102,8 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
 
         when(mContentResolver.getType(attachmentUri)).thenReturn(mimeType);
         try {
-            when(mContentResolver.openInputStream(attachmentUri))
+            lenient()
+                    .when(mContentResolver.openInputStream(attachmentUri))
                     .thenReturn(new ByteArrayInputStream(data));
             if (thumbnail != null) {
                 when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
@@ -288,7 +290,8 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     public void testFetchAttachmentDetails_forImageNoThumbnail() {
         String title = "photo.png";
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
-        byte[] data = SAMPLE_DATA;
+        // We pass an empty byte array so that the fallback thumbnail generation fails.
+        byte[] data = new byte[] {};
         Bitmap thumbnail = null;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
         setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
