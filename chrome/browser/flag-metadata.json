@@ -514,6 +514,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "api-mime-handler",
+    "owners": [
+      "msisov@igalia.com",
+      "rdevlin.cronin@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "apn-revamp",
     "owners": [ "nikhilcn@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 138

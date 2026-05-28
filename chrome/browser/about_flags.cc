@@ -8891,6 +8891,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"api-mime-handler", flag_descriptions::kApiMimeHandlerName,
+     flag_descriptions::kApiMimeHandlerDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kApiMimeHandler)},
+
     {"experimental-omnibox-labs",
      flag_descriptions::kExperimentalOmniboxLabsName,
      flag_descriptions::kExperimentalOmniboxLabsDescription,
