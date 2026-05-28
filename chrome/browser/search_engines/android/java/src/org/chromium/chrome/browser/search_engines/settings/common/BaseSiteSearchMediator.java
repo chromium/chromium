@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
@@ -18,9 +19,11 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineIconUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -204,11 +207,17 @@ public abstract class BaseSiteSearchMediator
      */
     protected List<TemplateUrl> filterTemplateUrls(List<TemplateUrl> urls) {
         boolean aimEnabled = AimEligibilityServiceFactory.isAimStarterPackEnabled(mProfile);
+        boolean geminiEnabled =
+                OmniboxFeatures.sStarterPackExpansion.isEnabled()
+                        && UserPrefs.get(mProfile).getInteger(Pref.GEMINI_SETTINGS) == 0;
 
         List<TemplateUrl> filtered = new ArrayList<>();
         for (TemplateUrl url : urls) {
             int starterPackId = url.getStarterPackId();
             if (starterPackId == StarterPackId.AI_MODE && !aimEnabled) {
+                continue;
+            }
+            if (starterPackId == StarterPackId.GEMINI && !geminiEnabled) {
                 continue;
             }
             filtered.add(url);
