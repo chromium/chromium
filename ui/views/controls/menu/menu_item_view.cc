@@ -1215,18 +1215,29 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
 
     // Note that `bottom_rounded_corners_` should only be set when the
     // highlighted item is at the bottom of the menu.
+    gfx::RectF highlight_bounds(GetLocalBounds());
+    SkVector radii[4]{{0, 0}, {0, 0}, {0, 0}, {0, 0}};
+    if (menu_item_background_.has_value()) {
+      highlight_bounds.Inset(gfx::InsetsF::VH(0, GetItemHorizontalBorder()));
+      const float radius = menu_item_background_->corner_radius;
+      for (auto& i : radii) {
+        i.set(radius, radius);
+      }
+    } else {
+      radii[2].set(bottom_rounded_corners_.lower_right(),
+                   bottom_rounded_corners_.lower_right());
+      radii[3].set(bottom_rounded_corners_.lower_left(),
+                   bottom_rounded_corners_.lower_left());
+    }
+
     SkRRect rounded_rect;
-    SkVector radii[4]{{0, 0},
-                      {0, 0},
-                      {bottom_rounded_corners_.lower_right(),
-                       bottom_rounded_corners_.lower_right()},
-                      {bottom_rounded_corners_.lower_left(),
-                       bottom_rounded_corners_.lower_left()}};
-    rounded_rect.setRectRadii(gfx::RectFToSkRect(gfx::RectF(GetLocalBounds())),
-                              radii);
+    rounded_rect.setRectRadii(gfx::RectFToSkRect(highlight_bounds), radii);
     canvas->sk_canvas()->drawRRect(rounded_rect, flags);
   } else if (paint_as_selected) {
     gfx::Rect item_bounds = GetLocalBounds();
+    if (menu_item_background_.has_value()) {
+      item_bounds.Inset(gfx::Insets::VH(0, GetItemHorizontalBorder()));
+    }
     if (type_ == Type::kActionableSubMenu) {
       if (submenu_area_of_actionable_submenu_selected_) {
         item_bounds = GetSubmenuAreaOfActionableSubmenu();
@@ -1238,7 +1249,9 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     AdjustBoundsForRTLUI(&item_bounds);
 
     ui::NativeTheme::MenuItemExtraParams menu_item_extra_params;
-    menu_item_extra_params.corner_radius = config.item_corner_radius;
+    menu_item_extra_params.corner_radius =
+        menu_item_background_.has_value() ? menu_item_background_->corner_radius
+                                          : config.item_corner_radius;
     GetNativeTheme()->Paint(
         canvas->sk_canvas(), GetColorProvider(),
         ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kHovered,
