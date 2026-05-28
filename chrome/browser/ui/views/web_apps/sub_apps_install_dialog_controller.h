@@ -23,6 +23,7 @@ class SubAppsInstallDialogController : public ui::DialogModelDelegate {
     SUB_APP_LABEL,
     SUB_APP_ICON,
     MANAGE_PERMISSIONS_LINK,
+    DATA_SHARING_EXPLANATION,
   };
 
   // Sets the `auto_accept` action to accept/cancel the dialog in tests.

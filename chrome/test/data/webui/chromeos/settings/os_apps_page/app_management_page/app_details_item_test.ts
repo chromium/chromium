@@ -13,6 +13,7 @@ import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_ass
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {TestAppManagementStore} from '../../app_management/test_store.js';
 import {replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-app-details-item>', () => {
@@ -85,6 +86,45 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!infoIconTooltip);
     assertEquals(publisherId, infoIconTooltip.tooltipText.trim());
   });
+
+  test(
+      'IWA type from browser with parent app (data sharing explanation)',
+      async () => {
+        await fakeHandler.addApp('parent_id', {
+          type: AppType.kWeb,
+          title: 'Parent App',
+        });
+
+        const store =
+            AppManagementStore.getInstance() as TestAppManagementStore;
+        assertTrue(
+            !!store.data.apps['parent_id'], 'Parent app should be in store');
+
+        await addApp(
+            {
+              type: AppType.kWeb,
+              installSource: InstallSource.kBrowser,
+            },
+            'sub_id');
+
+        assertTrue(!!store.data.apps['sub_id'], 'Sub app should be in store');
+
+        store.data.subAppToParentAppId = {
+          ...store.data.subAppToParentAppId,
+          'sub_id': 'parent_id',
+        };
+        store.notifyObservers();
+        await flushTasks();
+
+        const subappDataSharingExplanation =
+            appDetailsItem.shadowRoot!.querySelector(
+                '#subappDataSharingExplanation');
+        assertTrue(
+            !!subappDataSharingExplanation, 'Explanation should be visible');
+        assertEquals(
+            'This app data is shared between "Parent App" and its installed apps',
+            subappDataSharingExplanation.textContent.trim());
+      });
 
   test('Android type', async () => {
     await addApp({

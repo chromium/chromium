@@ -42,15 +42,27 @@ export class AppManagementAppDetailsItem extends
         type: String,
         observer: 'appIdChanged_',
       },
+
+      apps_: {
+        type: Object,
+      },
+
+      subAppToParentAppId_: {
+        type: Object,
+      },
     };
   }
 
   app: App;
   private appId_: string;
+  private apps_: Record<string, App>;
+  private subAppToParentAppId_: Record<string, string>;
 
   override connectedCallback(): void {
     super.connectedCallback();
     this.watch('appId_', state => state.selectedAppId);
+    this.watch('apps_', state => state.apps);
+    this.watch('subAppToParentAppId_', state => state.subAppToParentAppId);
     this.updateFromStore();
   }
 
@@ -202,6 +214,41 @@ export class AppManagementAppDetailsItem extends
   private getTooltipA11yText_(app: App): string {
     return this.i18n(
         'appManagementAppDetailsTooltipWebA11y', this.getTooltipText_(app));
+  }
+
+  private getParentApp_(
+      app: App|undefined, apps: Record<string, App>|undefined,
+      subAppToParentAppId: Record<string, string>|undefined): App|null {
+    if (!app || !subAppToParentAppId || !apps) {
+      return null;
+    }
+    const parentId = subAppToParentAppId[app.id];
+    if (!parentId) {
+      return null;
+    }
+    return apps[parentId] || null;
+  }
+
+  private shouldShowSubappDataSharingExplanation_(
+      app: App|undefined, apps: Record<string, App>|undefined,
+      subAppToParentAppId: Record<string, string>|undefined): boolean {
+    if (!app) {
+      return false;
+    }
+    return app.type === AppType.kWeb &&
+        this.getParentApp_(app, apps, subAppToParentAppId) !== null;
+  }
+
+  private getSubappDataSharingExplanationString_(
+      app: App|undefined, apps: Record<string, App>|undefined,
+      subAppToParentAppId: Record<string, string>|undefined): string {
+    if (!app) {
+      return '';
+    }
+    const parentApp = this.getParentApp_(app, apps, subAppToParentAppId);
+    const parentAppName = parentApp ? (parentApp.title || '') : '';
+    return this.i18n(
+        'appManagementAppDetailsSubappDataSharingExplanation', parentAppName);
   }
 }
 

@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -115,6 +116,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
   EXPECT_EQ(sub_app_icons.size(), 3u);
 
+  views::View* data_sharing_explanation =
+      widget->GetContentsView()->GetViewByID(
+          std::to_underlying(DialogViewIDForTesting::DATA_SHARING_EXPLANATION));
+  ASSERT_TRUE(data_sharing_explanation);
+  EXPECT_EQ(
+      static_cast<views::StyledLabel*>(data_sharing_explanation)->GetText(),
+      u"This app data will be shared between \"Parent App\" and its installed "
+      u"apps.");
+
   widget->CloseNow();
 }
 
@@ -156,6 +166,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       static_cast<views::ImageView*>(sub_app_icons[0]);
   EXPECT_FALSE(icon_view->GetImageModel().IsEmpty());
   EXPECT_EQ(icon_view->GetVisibleBounds().size(), gfx::Size(32, 32));
+
+  views::View* data_sharing_explanation =
+      widget->GetContentsView()->GetViewByID(
+          std::to_underlying(DialogViewIDForTesting::DATA_SHARING_EXPLANATION));
+  ASSERT_TRUE(data_sharing_explanation);
+  EXPECT_EQ(
+      static_cast<views::StyledLabel*>(data_sharing_explanation)->GetText(),
+      u"This app data will be shared between \"Parent App\" and its installed "
+      u"apps.");
 }
 
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,

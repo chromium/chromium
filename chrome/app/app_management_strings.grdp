@@ -158,4 +158,7 @@
   <message name="IDS_APP_MANAGEMENT_HAS_SUB_APPS_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app. The 'Manage' link takes the user to the parent app's settings page where they can change the permissions.">
     Permissions you allow for <ph name="APP_NAME">$1<ex>Parent app</ex></ph> will also be allowed for its installed apps.
   </message>
+  <message name="IDS_SUB_APPS_INSTALL_DIALOG_PRIVACY_DESCRIPTION" desc="Explanation of data privacy in the sub-app install dialog. This appears underneath the permission explanation.">
+    This app data will be shared between "<ph name="APP_NAME">$1<ex>Office Suite</ex></ph>" and its installed apps.
+  </message>
 </grit-part>

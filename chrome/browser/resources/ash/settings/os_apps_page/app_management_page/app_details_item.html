@@ -56,6 +56,11 @@
     </div>
   </template>
 </div>
+<template is="dom-if" if="[[shouldShowSubappDataSharingExplanation_(app, apps_, subAppToParentAppId_)]]" restamp>
+  <div class="indented-app-details" id="subappDataSharingExplanation">
+    [[getSubappDataSharingExplanationString_(app, apps_, subAppToParentAppId_)]]
+  </div>
+</template>
 <template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
   <div class="indented-app-details" id="version">
     [[i18n('appManagementAppDetailsVersion', app.version)]]

@@ -249,6 +249,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_PLAY_STORE},
       {"appManagementAppDetailsInstallSourceBrowser",
        IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_BROWSER},
+      {"appManagementAppDetailsSubappDataSharingExplanation",
+       IDS_APP_MANAGEMENT_APP_DETAILS_SUBAPP_DATA_SHARING_EXPLANATION},
       {"appManagementAppDetailsTypeAndSourcePreinstalledApp",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_PREINSTALLED_APP},
       {"appManagementAppDetailsTypeAndSourceCombined",
