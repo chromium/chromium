@@ -2660,7 +2660,7 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   if (graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    graphite_shared_context()->asyncRescaleAndReadPixelsYUV420(
+    graphite_shared_context()->asyncRescaleAndReadPixelsYUV420AndSubmit(
         sk_image.get(), kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
         src_rect, dst_size, SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedLinear,
@@ -2682,10 +2682,10 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
           shared_context_state_->vk_context_provider(), &flush_info);
       gr_context()->flush(flush_info);
     }
-  }
 
-  // TODO(crbug.com/40106956): Use COMMANDS_COMPLETED query for async readback.
-  DoFinish();
+    // TODO(crbug.com/40106956): Use COMMANDS_COMPLETED query for async readback.
+    DoFinish();
+  }
 
   // The call above will sync up gpu and CPU, resulting in callback being run
   // during DoFinish(). To prevent UAF make sure it indeed happened.

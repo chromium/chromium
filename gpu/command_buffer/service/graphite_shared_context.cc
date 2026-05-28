@@ -531,6 +531,48 @@ void GraphiteSharedContext::asyncRescaleAndReadPixelsYUV420(
       rescaleMode, &ReadPixelsCallbackThreadSafe, new_callbackContext);
 }
 
+bool GraphiteSharedContext::asyncRescaleAndReadPixelsYUV420AndSubmit(
+    const SkImage* src,
+    SkYUVColorSpace yuvColorSpace,
+    sk_sp<SkColorSpace> dstColorSpace,
+    const SkIRect& srcRect,
+    const SkISize& dstSize,
+    SkImage::RescaleGamma rescaleGamma,
+    SkImage::RescaleMode rescaleMode,
+    SkImageReadPixelsCallback callback,
+    SkImage::ReadPixelsContext callbackContext) {
+  AutoLock auto_lock(this);
+  auto* new_callbackContext = CreateAsyncReadContextThreadSafe(
+      std::move(callback), callbackContext, IsThreadSafe());
+
+  graphite_context_->asyncRescaleAndReadPixelsYUV420(
+      src, yuvColorSpace, dstColorSpace, srcRect, dstSize, rescaleGamma,
+      rescaleMode, &ReadPixelsCallbackThreadSafe, new_callbackContext);
+
+  return SubmitImpl(skgpu::graphite::SyncToCpu::kYes);
+}
+
+bool GraphiteSharedContext::asyncRescaleAndReadPixelsYUV420AndSubmit(
+    const SkSurface* src,
+    SkYUVColorSpace yuvColorSpace,
+    sk_sp<SkColorSpace> dstColorSpace,
+    const SkIRect& srcRect,
+    const SkISize& dstSize,
+    SkImage::RescaleGamma rescaleGamma,
+    SkImage::RescaleMode rescaleMode,
+    SkImageReadPixelsCallback callback,
+    SkImage::ReadPixelsContext callbackContext) {
+  AutoLock auto_lock(this);
+  auto* new_callbackContext = CreateAsyncReadContextThreadSafe(
+      std::move(callback), callbackContext, IsThreadSafe());
+
+  graphite_context_->asyncRescaleAndReadPixelsYUV420(
+      src, yuvColorSpace, dstColorSpace, srcRect, dstSize, rescaleGamma,
+      rescaleMode, &ReadPixelsCallbackThreadSafe, new_callbackContext);
+
+  return SubmitImpl(skgpu::graphite::SyncToCpu::kYes);
+}
+
 void GraphiteSharedContext::asyncRescaleAndReadPixelsYUVA420(
     const SkImage* src,
     SkYUVColorSpace yuvColorSpace,
@@ -567,6 +609,48 @@ void GraphiteSharedContext::asyncRescaleAndReadPixelsYUVA420(
   return graphite_context_->asyncRescaleAndReadPixelsYUVA420(
       src, yuvColorSpace, dstColorSpace, srcRect, dstSize, rescaleGamma,
       rescaleMode, &ReadPixelsCallbackThreadSafe, new_callbackContext);
+}
+
+bool GraphiteSharedContext::asyncRescaleAndReadPixelsYUVA420AndSubmit(
+    const SkImage* src,
+    SkYUVColorSpace yuvColorSpace,
+    sk_sp<SkColorSpace> dstColorSpace,
+    const SkIRect& srcRect,
+    const SkISize& dstSize,
+    SkImage::RescaleGamma rescaleGamma,
+    SkImage::RescaleMode rescaleMode,
+    SkImageReadPixelsCallback callback,
+    SkImage::ReadPixelsContext callbackContext) {
+  AutoLock auto_lock(this);
+  auto* new_callbackContext = CreateAsyncReadContextThreadSafe(
+      std::move(callback), callbackContext, IsThreadSafe());
+
+  graphite_context_->asyncRescaleAndReadPixelsYUVA420(
+      src, yuvColorSpace, dstColorSpace, srcRect, dstSize, rescaleGamma,
+      rescaleMode, &ReadPixelsCallbackThreadSafe, new_callbackContext);
+
+  return SubmitImpl(skgpu::graphite::SyncToCpu::kYes);
+}
+
+bool GraphiteSharedContext::asyncRescaleAndReadPixelsYUVA420AndSubmit(
+    const SkSurface* src,
+    SkYUVColorSpace yuvColorSpace,
+    sk_sp<SkColorSpace> dstColorSpace,
+    const SkIRect& srcRect,
+    const SkISize& dstSize,
+    SkImage::RescaleGamma rescaleGamma,
+    SkImage::RescaleMode rescaleMode,
+    SkImageReadPixelsCallback callback,
+    SkImage::ReadPixelsContext callbackContext) {
+  AutoLock auto_lock(this);
+  auto* new_callbackContext = CreateAsyncReadContextThreadSafe(
+      std::move(callback), callbackContext, IsThreadSafe());
+
+  graphite_context_->asyncRescaleAndReadPixelsYUVA420(
+      src, yuvColorSpace, dstColorSpace, srcRect, dstSize, rescaleGamma,
+      rescaleMode, &ReadPixelsCallbackThreadSafe, new_callbackContext);
+
+  return SubmitImpl(skgpu::graphite::SyncToCpu::kYes);
 }
 
 void GraphiteSharedContext::checkAsyncWorkCompletion() {

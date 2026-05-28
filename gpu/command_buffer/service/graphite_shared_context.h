@@ -132,6 +132,27 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                        SkImageReadPixelsCallback callback,
                                        SkImage::ReadPixelsContext context);
 
+  bool asyncRescaleAndReadPixelsYUV420AndSubmit(
+      const SkImage* src,
+      SkYUVColorSpace yuvColorSpace,
+      sk_sp<SkColorSpace> dstColorSpace,
+      const SkIRect& srcRect,
+      const SkISize& dstSize,
+      SkImage::RescaleGamma rescaleGamma,
+      SkImage::RescaleMode rescaleMode,
+      SkImageReadPixelsCallback callback,
+      SkImage::ReadPixelsContext context);
+  bool asyncRescaleAndReadPixelsYUV420AndSubmit(
+      const SkSurface* src,
+      SkYUVColorSpace yuvColorSpace,
+      sk_sp<SkColorSpace> dstColorSpace,
+      const SkIRect& srcRect,
+      const SkISize& dstSize,
+      SkImage::RescaleGamma rescaleGamma,
+      SkImage::RescaleMode rescaleMode,
+      SkImageReadPixelsCallback callback,
+      SkImage::ReadPixelsContext context);
+
   void asyncRescaleAndReadPixelsYUVA420(const SkImage* src,
                                         SkYUVColorSpace yuvColorSpace,
                                         sk_sp<SkColorSpace> dstColorSpace,
@@ -150,6 +171,27 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                         SkImage::RescaleMode rescaleMode,
                                         SkImageReadPixelsCallback callback,
                                         SkImage::ReadPixelsContext context);
+
+  bool asyncRescaleAndReadPixelsYUVA420AndSubmit(
+      const SkImage* src,
+      SkYUVColorSpace yuvColorSpace,
+      sk_sp<SkColorSpace> dstColorSpace,
+      const SkIRect& srcRect,
+      const SkISize& dstSize,
+      SkImage::RescaleGamma rescaleGamma,
+      SkImage::RescaleMode rescaleMode,
+      SkImageReadPixelsCallback callback,
+      SkImage::ReadPixelsContext context);
+  bool asyncRescaleAndReadPixelsYUVA420AndSubmit(
+      const SkSurface* src,
+      SkYUVColorSpace yuvColorSpace,
+      sk_sp<SkColorSpace> dstColorSpace,
+      const SkIRect& srcRect,
+      const SkISize& dstSize,
+      SkImage::RescaleGamma rescaleGamma,
+      SkImage::RescaleMode rescaleMode,
+      SkImageReadPixelsCallback callback,
+      SkImage::ReadPixelsContext context);
 
   void checkAsyncWorkCompletion();
 
