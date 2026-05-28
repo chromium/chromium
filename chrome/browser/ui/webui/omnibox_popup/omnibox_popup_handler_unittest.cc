@@ -63,4 +63,11 @@ TEST_F(OmniboxPopupHandlerTest, ShowContextMenu) {
   EXPECT_TRUE(embedder_->context_menu_shown());
 }
 
+TEST_F(OmniboxPopupHandlerTest, SetInputText) {
+  std::string test_text = "test input";
+  EXPECT_CALL(page_, SetInputText(test_text));
+  handler_->SetInputText(test_text);
+  page_.FlushForTesting();
+}
+
 }  // namespace

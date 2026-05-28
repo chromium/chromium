@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -1236,8 +1237,16 @@ void LocationBarView::Update(WebContents* contents) {
   }
 }
 
+// TODO(b/504668582): Its possible that `omnibox_view_->ResetTabState(contents)`
+//   isn't needed even if the `WebUIOmniboxFullPopupV2` flag is disabled, and
+//   that we can call `OmniboxTabHelper::ClearOmniboxInputState(contents)` in
+//   all cases.
 void LocationBarView::ResetTabState(WebContents* contents) {
-  omnibox_view_->ResetTabState(contents);
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
+    OmniboxTabHelper::ClearOmniboxInputState(contents);
+  } else {
+    omnibox_view_->ResetTabState(contents);
+  }
 }
 
 bool LocationBarView::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
@@ -1802,7 +1811,11 @@ void LocationBarView::UpdateContentSettingsIcons() {
 }
 
 void LocationBarView::SaveStateToContents(WebContents* contents) {
-  omnibox_view_->SaveStateToTab(contents);
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
+    omnibox_popup_view_->SaveStateToTab(contents);
+  } else {
+    omnibox_view_->SaveStateToTab(contents);
+  }
 }
 
 LocationBarTesting* LocationBarView::GetLocationBarForTesting() {

@@ -292,6 +292,7 @@ class TestLocationBar : public LocationBar {
   ~TestLocationBar() override = default;
 
   void set_omnibox_view(OmniboxViewViews* view) { omnibox_view_ = view; }
+  void set_profile(Profile* profile) { profile_ = profile; }
 
   // LocationBar:
   void FocusLocation(bool select_all, bool clear_focus_if_failed) override {}
@@ -325,7 +326,7 @@ class TestLocationBar : public LocationBar {
 
   ui::TrackedElement* GetAnchorOrNull() override { return nullptr; }
   Browser* GetBrowser() override { return nullptr; }
-  Profile* GetProfile() override { return nullptr; }
+  Profile* GetProfile() override { return profile_; }
   bool IsInitialized() const override { return true; }
   bool IsVisible() const override { return true; }
   bool IsDrawn() const override { return true; }
@@ -342,6 +343,7 @@ class TestLocationBar : public LocationBar {
 
   raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 // OmniboxViewViewsTest -------------------------------------------------------
@@ -498,6 +500,7 @@ void OmniboxViewViewsTest::SetUp() {
       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                           &test_url_loader_factory_));
   profile_ = profile_builder.Build();
+  location_bar_.set_profile(profile_.get());
   auto browser_window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /*user_gesture*/ true);
   params.type = Browser::TYPE_NORMAL;
@@ -546,6 +549,7 @@ void OmniboxViewViewsTest::TearDown() {
   browser_ = nullptr;
 
   util_.reset();
+  location_bar()->set_profile(nullptr);
   profile_.reset();
 
   ChromeViewsTestBase::TearDown();

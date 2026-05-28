@@ -85,6 +85,7 @@ std::string_view OmniboxPopupFullPresenter::GetPopupMetricPrefix() const {
 }
 
 void OmniboxPopupFullPresenter::WidgetDestroyed() {
+  widget_observation_.Reset();
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync.
   if (controller()->popup_state_manager()->popup_state() ==

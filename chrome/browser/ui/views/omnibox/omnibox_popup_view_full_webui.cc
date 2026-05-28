@@ -10,15 +10,17 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "content/public/browser/web_contents.h"
 
 OmniboxPopupViewFullWebUI::OmniboxPopupViewFullWebUI(
     OmniboxView* omnibox_view,
@@ -37,3 +39,16 @@ OmniboxPopupViewFullWebUI::OmniboxPopupViewFullWebUI(
 OmniboxPopupViewFullWebUI::~OmniboxPopupViewFullWebUI() = default;
 
 void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {}
+
+void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
+  DCHECK(tab);
+  const OmniboxEditModel::State state =
+      controller()->edit_model()->GetStateForTabSwitch();
+  // TODO(b/516847801): Sync selection state, similar to how
+  //   ` OmniboxViewViews::SaveStateToTab ` does.
+  tab->SetUserData(
+      OmniboxTabHelper::kOmniboxStateKey,
+      std::make_unique<OmniboxState>(
+          state, /*selection=*/gfx::Range(),
+          /*saved_selection_for_focus_change=*/gfx::Range::InvalidRange()));
+}

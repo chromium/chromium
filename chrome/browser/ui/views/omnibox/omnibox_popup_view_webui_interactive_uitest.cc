@@ -14,14 +14,18 @@
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -31,6 +35,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -227,6 +232,46 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
   popup_view->ProvideButtonFocusHint(0);
   popup_view->presenter()->Hide();
+}
+
+class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
+ public:
+  OmniboxPopupViewWebUIFullV2Test() {
+    // interactive_ui_tests sets `ui_test_utils::BringBrowserWindowToFront()`
+    // for the setup function by default, which causes timeouts on Windows bots.
+    // Unset it here as this test does not strictly require the window to be in
+    // front to verify state isolation.
+    set_global_browser_set_up_function(nullptr);
+  }
+  void SetUp() override {
+    feature_list_full_v2_.InitWithFeatures(
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::kWebUIOmniboxFullPopupV2},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_full_v2_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
+  // 1. Create a new tab.
+  int initial_tab_index = browser()->tab_strip_model()->active_index();
+  chrome::NewTab(browser());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  int new_tab_index = browser()->tab_strip_model()->active_index();
+  ASSERT_NE(initial_tab_index, new_tab_index);
+  // 2. Type text in the omnibox of the active tab (new tab).
+  omnibox_view()->SetUserText(u"test query");
+  // 3. Switch to another tab (initial tab).
+  browser()->tab_strip_model()->ActivateTabAt(initial_tab_index);
+  // 4. Verify the text is isolated (not the typed text) in the other tab.
+  EXPECT_NE(u"test query", omnibox_view()->GetText());
+  // 5. Switch back to the original tab (new tab).
+  browser()->tab_strip_model()->ActivateTabAt(new_tab_index);
+  // 6. Verify the text is restored.
+  EXPECT_EQ(u"test query", omnibox_view()->GetText());
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

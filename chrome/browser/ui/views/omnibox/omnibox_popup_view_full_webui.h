@@ -26,6 +26,9 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
 
   // OmniboxPopupView:
   void UpdatePopupAppearance() override;
+  // Saves the current omnibox state (e.g. input) to the given tab's
+  // user data, so it can be restored when switching back to this tab.
+  void SaveStateToTab(content::WebContents* tab) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_

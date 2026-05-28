@@ -14,6 +14,7 @@ build_webui_tests("build") {
     "app_test.ts",
     "full_app_test.ts",
     "omnibox_composebox_test.ts",
+    "omnibox_popup_searchbox_test.ts",
     "test_searchbox_browser_proxy.ts",
   ]
 

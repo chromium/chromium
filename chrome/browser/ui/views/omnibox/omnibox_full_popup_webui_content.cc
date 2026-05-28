@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -52,39 +53,32 @@ void OmniboxFullPopupWebUIContent::OnActiveTabChanged(
     return;
   }
 
-  // TODO(b/504668582): This is just for demo purposes right now. To have a real
-  // state sync that avoids IPC race conditions, we need to implement a custom
-  // WebUI saving mechanism (e.g. involving `WebUIOmniboxHandler`) instead of
-  // relying on `OmniboxViewViews::SaveStateToTab`.
   auto* handler = popup_handler();
-  if (!handler) {
-    CloseUI();
-    return;
+  if (new_contents) {
+    auto* state = static_cast<OmniboxState*>(
+        new_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+    if (state) {
+      controller()->edit_model()->RestoreState(&state->model_state);
+      if (handler) {
+        handler->SetInputText(base::UTF16ToUTF8(state->model_state.user_text));
+      }
+      if (state->model_state.user_input_in_progress) {
+        controller()->popup_state_manager()->SetPopupState(
+            OmniboxPopupState::kFull);
+      } else {
+        controller()->popup_state_manager()->SetPopupState(
+            OmniboxPopupState::kNone);
+      }
+    } else {
+      if (handler) {
+        handler->SetInputText("");
+      }
+      controller()->edit_model()->Revert();
+      controller()->edit_model()->OnChanged();
+      controller()->popup_state_manager()->SetPopupState(
+          OmniboxPopupState::kNone);
+    }
   }
-
-  // TODO(b/504668582): Restore the popup state if the tab had
-  // focus before switching away, even if no user input was in progress.
-  // TODO(b/504668582): Make sure we have behavior in place similar to
-  // `OmniboxView::RevertAll()` when switching to a tab with no input in
-  // progress.
-  const auto* state = static_cast<const OmniboxState*>(
-      new_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
-  if (!state || !state->model_state.user_input_in_progress) {
-    // Clear WebUI text and revert model to prevent stale state.
-    handler->SetInputText("");
-    controller()->edit_model()->Revert();
-    CloseUI();
-    return;
-  }
-
-  // We have valid state to restore and input in progress.
-  std::u16string text_to_set =
-      state->model_state.user_text.empty()
-          ? controller()->edit_model()->GetPermanentDisplayText()
-          : state->model_state.user_text;
-  handler->SetInputText(base::UTF16ToUTF8(text_to_set));
-  // Guarantee the popup is open whenever there is saved input to restore.
-  controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kFull);
 }
 
 // Override of WebUIContentsWrapper::Host::HandleContextMenu. This mirrors

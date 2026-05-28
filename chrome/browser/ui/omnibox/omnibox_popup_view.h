@@ -29,6 +29,10 @@ namespace ui {
 struct AXNodeData;
 }
 
+namespace content {
+class WebContents;
+}
+
 class OmniboxPopupView {
  public:
   explicit OmniboxPopupView(OmniboxController* controller);
@@ -69,6 +73,9 @@ class OmniboxPopupView {
 
   // Informs the popup of user intent to open its current selection.
   virtual void OpenCurrentSelection(WindowOpenDisposition disposition) {}
+
+  // Saves state to the given tab.
+  virtual void SaveStateToTab(content::WebContents* contents) {}
 
   // Returns true if the popup controls its own selection state.
   virtual bool IsSelectionPopupControlled() const = 0;

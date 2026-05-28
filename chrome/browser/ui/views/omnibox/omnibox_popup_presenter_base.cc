@@ -351,8 +351,11 @@ void OmniboxPopupPresenterBase::OnWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
   is_deferred_ = false;
   owned_omnibox_popup_webui_container_ = GetResultsFrame()->ExtractContents();
-  widget_.reset();
+  // Call WidgetDestroyed() before resetting the widget pointer. This ensures
+  // that subclasses can safely access the widget (e.g., to reset observations)
+  // before it is destroyed, avoiding dangling pointer issues.
   WidgetDestroyed();
+  widget_.reset();
 }
 
 void OmniboxPopupPresenterBase::ReleaseWidget() {
