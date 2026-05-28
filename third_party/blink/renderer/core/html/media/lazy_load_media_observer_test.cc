@@ -425,6 +425,52 @@ TEST_F(LazyLoadMediaTest, VideoWithoutLoadingAttributeLoadsImmediately) {
       mojom::blink::WebDXFeature::kLoadingLazyMedia));
 }
 
+TEST_F(LazyLoadMediaTest, LazyLoadVideoWithSourceAndPosterDeferred) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body onload='console.log("main body onload");'>
+        <div style='height: %dpx;'></div>
+        <video poster='https://example.com/poster.jpg' loading='lazy'
+               onloadstart='console.log("video loadstart");'>
+          <source src='https://example.com/video.mp4' type='video/mp4'>
+        </video>
+        </body>)HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("video loadstart"));
+}
+
+TEST_F(LazyLoadMediaTest, LazyLoadAudioWithSourceDeferred) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body onload='console.log("main body onload");'>
+        <div style='height: %dpx;'></div>
+        <audio loading='lazy' controls
+               onloadstart='console.log("audio loadstart");'>
+          <source src='https://example.com/audio.mp3' type='audio/mpeg'>
+        </audio>
+        </body>)HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("audio loadstart"));
+}
+
 // Test that loading=lazy takes precedence over preload=auto.
 TEST_F(LazyLoadMediaTest, LazyLoadTakesPrecedenceOverPreloadAuto) {
   SimRequest main_resource("https://example.com/", "text/html");

@@ -1287,13 +1287,10 @@ void HTMLMediaElement::SelectMediaResource() {
   }
 
   // Check for lazy loading - defer resource selection if loading=lazy.
-  // We only defer when `lazy_media_load_state_` is kNone, which is the initial
-  // state before any lazy loading decision has been made. Once the element
-  // has been deferred (kDeferred) or has started full loading (kFullMedia),
-  // we should not re-enter the deferred state. This handles cases like
-  // load() being called after the element was already deferred and loaded.
+  // A video poster can put the element in kDeferred before <source> children
+  // are parsed; keep resource selection deferred in that state.
   if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
-      lazy_media_load_state_ == LazyMediaLoadState::kNone &&
+      lazy_media_load_state_ != LazyMediaLoadState::kFullMedia &&
       GetDocument().GetFrame() &&
       LazyMediaHelper::ShouldDeferMediaLoad(*GetDocument().GetFrame(), this)) {
     DVLOG(3) << "selectMediaResource(" << *this
