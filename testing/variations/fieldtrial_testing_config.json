@@ -17774,6 +17774,24 @@
             ]
         }
     ],
+    "PageStabilityMetrics": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "PageStabilityIntervalDuration": "4000ms"
+                    },
+                    "enable_features": [
+                        "PageStabilityMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaintHoldingOOPIF": [
         {
             "platforms": [
