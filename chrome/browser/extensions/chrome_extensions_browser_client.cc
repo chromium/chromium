@@ -396,6 +396,13 @@ bool ChromeExtensionsBrowserClient::IsExtensionIncognitoEnabled(
          util::IsIncognitoEnabled(extension_id, context);
 }
 
+bool ChromeExtensionsBrowserClient::IsExtensionIncognitoEnabled(
+    const Extension* extension,
+    content::BrowserContext* context) const {
+  return IsGuestSession(context) ||
+         util::IsIncognitoEnabled(extension, context);
+}
+
 bool ChromeExtensionsBrowserClient::CanExtensionCrossIncognito(
     const Extension* extension,
     content::BrowserContext* context) const {

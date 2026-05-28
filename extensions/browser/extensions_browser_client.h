@@ -260,6 +260,9 @@ class ExtensionsBrowserClient {
   virtual bool IsExtensionIncognitoEnabled(
       const ExtensionId& extension_id,
       content::BrowserContext* context) const = 0;
+  virtual bool IsExtensionIncognitoEnabled(
+      const Extension* extension,
+      content::BrowserContext* context) const = 0;
 
   // Returns true if `extension` can see events and data from another
   // sub-profile (incognito to original profile, or vice versa).

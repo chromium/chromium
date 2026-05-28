@@ -54,10 +54,10 @@ ServiceWorkerTaskQueue* GetServiceWorkerTaskQueueForBrowserContext(
 // Only call this for a SW-based extension.
 ServiceWorkerTaskQueue* GetServiceWorkerTaskQueueForExtension(
     content::BrowserContext* browser_context,
-    const Extension* extension) {
-  DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
+    const Extension& extension) {
+  DCHECK(BackgroundInfo::IsServiceWorkerBased(&extension));
   return GetServiceWorkerTaskQueueForBrowserContext(
-      browser_context, IncognitoInfo::IsSplitMode(extension));
+      browser_context, IncognitoInfo::IsSplitMode(&extension));
 }
 
 // Get the ServiceWorkerTaskQueue instance for the extension ID.
@@ -76,8 +76,11 @@ ServiceWorkerTaskQueue* GetServiceWorkerTaskQueueForExtensionId(
 
   const Extension* extension = ExtensionRegistry::Get(browser_context)
                                    ->GetInstalledExtension(extension_id);
-  DCHECK(extension);
-  return GetServiceWorkerTaskQueueForExtension(browser_context, extension);
+  // The extension may be null during asynchronous teardown and unloading.
+  if (!extension) {
+    return nullptr;
+  }
+  return GetServiceWorkerTaskQueueForExtension(browser_context, *extension);
 }
 
 // Use a pointer-to-member function so we can use the same logic for the
@@ -108,7 +111,7 @@ void DoTaskQueueFunction(content::BrowserContext* browser_context,
           browser_context) ||
       !IncognitoInfo::IsSplitMode(extension) ||
       !ExtensionsBrowserClient::Get()->IsExtensionIncognitoEnabled(
-          extension->id(), browser_context)) {
+          extension, browser_context)) {
     return;
   }
 

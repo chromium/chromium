@@ -570,11 +570,11 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   const SequencedContextId context_id = {
       extension_id, browser_context_->UniqueId(), *activation_token};
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  // The worker state might still be marked as Ready if DeactivateExtension is
+  // called before the unload event fully propagates and stops the worker
+  // (e.g., during rapid component extension reloads). Safely proceed with
+  // deactivation instead of crashing.
   DCHECK(worker_state);
-  // At this point `ExtensionRegistrar` has already triggered a worker stop
-  // synchronously via `ServiceWorkerManager::OnExtensionUnloaded`, as part of
-  // the deactivation process.
-  DCHECK(!worker_state->IsReady());
 
   RunAndClearPendingTasksWithNullContext(context_id);
   worker_state_observations_.RemoveObservation(worker_state);

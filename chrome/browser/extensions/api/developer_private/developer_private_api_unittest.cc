@@ -771,8 +771,11 @@ TEST_F(DeveloperPrivateApiUnitTest,
                            /*expected_default_value=*/false);
 
   TestExtensionPrefSetting(
-      base::BindRepeating(&HasPrefsPermission, &util::IsIncognitoEnabled,
-                          profile(), id),
+      base::BindRepeating(
+          &HasPrefsPermission,
+          static_cast<bool (*)(const ExtensionId&, content::BrowserContext*)>(
+              &util::IsIncognitoEnabled),
+          profile(), id),
       "incognitoAccess", id, /*expected_default_value=*/false);
   TestExtensionPrefSetting(
       base::BindRepeating(&HasPrefsPermission, &util::AllowFileAccess,

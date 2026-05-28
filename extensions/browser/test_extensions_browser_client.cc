@@ -255,6 +255,12 @@ bool TestExtensionsBrowserClient::IsExtensionIncognitoEnabled(
   return false;
 }
 
+bool TestExtensionsBrowserClient::IsExtensionIncognitoEnabled(
+    const Extension* extension,
+    content::BrowserContext* context) const {
+  return false;
+}
+
 bool TestExtensionsBrowserClient::CanExtensionCrossIncognito(
     const extensions::Extension* extension,
     content::BrowserContext* context) const {

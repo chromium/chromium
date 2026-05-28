@@ -5,9 +5,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
@@ -191,6 +194,120 @@ IN_PROC_BROWSER_TEST_F(ComponentExtensionWorkerChromeResourcesBrowserTest,
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
                             extension->GetResourceURL("page.html")));
   ASSERT_TRUE(worker_listener.WaitUntilSatisfied());
+}
+
+// Verifies split-mode extensions cleanly deactivate OTR queues during unload.
+IN_PROC_BROWSER_TEST_F(ComponentExtensionBrowserTest,
+                       SplitModeMessagingOnUnload) {
+  // Activate an OTR (Incognito) profile.
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile);
+
+  TestExtensionDir target_dir;
+  target_dir.WriteManifest(base::StringPrintf(R"({
+    "name": "Target",
+    "manifest_version": 3,
+    "version": "1.0",
+    "incognito": "split",
+    "background": {
+      "service_worker": "background.js"
+    },
+    "key": "%s"
+  })",
+                                              kExtensionKey));
+
+  // Append chrome.extension.inIncognitoContext to the message so C++ can
+  // distinguish between the Primary and Incognito worker check-ins.
+  target_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.runtime.onMessageExternal.addListener(
+        (message, sender, sendResponse) => {
+          sendResponse('pong');
+        });
+
+    chrome.test.sendMessage(
+        'target_ready_' + chrome.extension.inIncognitoContext);
+  )");
+
+  // Listen specifically for the Incognito target checking in.
+  ExtensionTestMessageListener target_incognito_ready("target_ready_true");
+
+  // Load target as a component. Component extensions are inherently
+  // incognito-enabled by default.
+  const Extension* target =
+      LoadExtension(target_dir.UnpackedPath(), {.load_as_component = true});
+  ASSERT_TRUE(target);
+
+  // Block until the Incognito worker explicitly proves it is alive and running.
+  ASSERT_TRUE(target_incognito_ready.WaitUntilSatisfied());
+
+  // Force the incognito worker to sleep.
+  std::vector<extensions::WorkerId> workers =
+      extensions::ProcessManager::Get(incognito_profile)
+          ->GetServiceWorkersForExtension(target->id());
+  ASSERT_FALSE(workers.empty());
+
+  // Make target dormant in the Incognito profile.
+  content::RenderProcessHost* target_process =
+      content::RenderProcessHost::FromID(workers[0].render_process_id);
+  ASSERT_TRUE(target_process);
+  content::RenderProcessHostWatcher process_watcher(
+      target_process,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  target_process->Shutdown(0);
+  process_watcher.Wait();
+
+  TestExtensionDir sender_dir;
+  sender_dir.WriteManifest(R"({
+    "name": "Sender",
+    "manifest_version": 3,
+    "version": "1.0",
+    "incognito": "split",
+    "background": {
+      "service_worker": "sender.js"
+    }
+  })");
+
+  sender_dir.WriteFile(FILE_PATH_LITERAL("sender.js"),
+                       base::StringPrintf(R"(
+    const message = 'sender_ready_' + chrome.extension.inIncognitoContext;
+    chrome.test.sendMessage(message, (reply) => {
+      if (reply === 'go') {
+        chrome.runtime.sendMessage('%s', 'ping', () => {
+          let ignoredError = chrome.runtime.lastError;
+        });
+
+        chrome.test.sendMessage(
+          'message_sent_' + chrome.extension.inIncognitoContext);
+      }
+    });
+  )",
+                                          target->id().c_str()));
+
+  // Listen specifically for the Incognito sender.
+  ExtensionTestMessageListener sender_incognito_ready(
+      "sender_ready_true", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener sender_incognito_sent("message_sent_true");
+
+  // Load the non-component sender and explicitly set it to incognito since
+  // component extensions have incognito enabled by default.
+  const Extension* sender = LoadExtension(sender_dir.UnpackedPath());
+  ASSERT_TRUE(sender);
+  extensions::util::SetIsIncognitoEnabled(sender->id(), profile(), true);
+
+  // Wait for the Incognito sender to initialize.
+  ASSERT_TRUE(sender_incognito_ready.WaitUntilSatisfied());
+
+  // Fire the message from the Incognito sender to queue a task in the
+  // Incognito ServiceWorkerTaskQueue.
+  sender_incognito_ready.Reply("go");
+  ASSERT_TRUE(sender_incognito_sent.WaitUntilSatisfied());
+
+  // Unload the extension from the Primary profile.
+  // DeactivateTaskQueueForExtension will fail to check
+  // IsExtensionIncognitoEnabled because `extension` is already null. Therefore,
+  // the primary queue is cleared, but the Incognito queue is not.
+  UnloadExtension(target->id());
 }
 
 }  // namespace extensions

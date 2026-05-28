@@ -120,6 +120,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool IsExtensionIncognitoEnabled(
       const ExtensionId& extension_id,
       content::BrowserContext* context) const override;
+  bool IsExtensionIncognitoEnabled(
+      const Extension* extension,
+      content::BrowserContext* context) const override;
   bool CanExtensionCrossIncognito(
       const Extension* extension,
       content::BrowserContext* context) const override;
