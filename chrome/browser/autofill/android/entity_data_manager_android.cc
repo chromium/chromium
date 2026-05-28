@@ -417,9 +417,7 @@ bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
 bool EntityDataManagerAndroid::IsEligibleForWalletStorage(
     EntityType entity_type) const {
   return RunMayPerformAutofillAiAction(AutofillAiAction::kImportToWallet,
-                                       entity_type) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableSaveToWalletFromSettings);
+                                       entity_type);
 }
 
 void EntityDataManagerAndroid::OnSavePrivatePassToWalletFinished(

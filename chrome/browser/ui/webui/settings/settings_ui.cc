@@ -582,11 +582,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses));
 
-  html_source->AddBoolean(
-      "enableSaveToWalletFromSettings",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveToWalletFromSettings));
-
   // AI
   bool show_glic_section = false;
   bool glic_disallowed_by_admin = false;

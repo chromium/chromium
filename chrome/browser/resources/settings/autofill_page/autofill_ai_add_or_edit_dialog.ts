@@ -154,14 +154,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         value: false,
       },
 
-      /**
-         True if the feature flag to save entities to wallet from settings is
-         enabled.
-       */
-      saveToWalletFromSettingsEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableSaveToWalletFromSettings'),
-      },
 
       /**
          Holds the error to display (or empty string if valid).
@@ -230,7 +222,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   declare private years_: string[];
   declare private userEmail_: string;
   declare private footerText_: TrustedHTML;
-  declare private saveToWalletFromSettingsEnabled_: boolean;
   declare private enableSavePrivatePassesToWallet_: boolean;
   declare private saveInProgress_: boolean;
 
@@ -271,8 +262,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private checkRequiredFields_(): boolean {
-    if (this.requiredAttributeTypes_.length === 0 ||
-        !this.saveToWalletFromSettingsEnabled_) {
+    if (this.requiredAttributeTypes_.length === 0) {
       return true;
     }
 
@@ -439,9 +429,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
    * Returns '*' if the field is required.
    */
   private getRequiredIndicator_(attributeInstance: AttributeInstance): string {
-    if (!this.saveToWalletFromSettingsEnabled_) {
-      return '';
-    }
     const isRequired = this.requiredAttributeTypes_.some(
         req => req.typeName === attributeInstance.type.typeName);
     return isRequired ? '*' : '';
@@ -586,9 +573,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       return false;
     }
 
-    if (!this.saveToWalletFromSettingsEnabled_) {
-      return false;
-    }
 
     // Check if this specific field is one of the required candidates.
     const isRequiredCandidate = this.requiredAttributeTypes_.some(
@@ -599,7 +583,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private shouldShowWalletBranding_(): boolean {
-    if (!this.saveToWalletFromSettingsEnabled_ || !this.entityInstance) {
+    if (!this.entityInstance) {
       return false;
     }
 

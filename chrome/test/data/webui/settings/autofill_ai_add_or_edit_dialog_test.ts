@@ -25,7 +25,6 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   let testAttributeTypes: chrome.autofillPrivate.AttributeType[];
 
   setup(function() {
-    loadTimeData.overrideValues({enableSaveToWalletFromSettings: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     entityDataManager = new TestEntityDataManagerProxy();

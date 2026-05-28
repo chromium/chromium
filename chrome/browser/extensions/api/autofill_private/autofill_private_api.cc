@@ -218,10 +218,7 @@ bool IsEligibleForWalletStorage(autofill::AutofillClient* client,
                                 autofill::EntityType entity_type) {
   return client &&
          autofill::MayPerformAutofillAiAction(
-             *client, autofill::AutofillAiAction::kImportToWallet,
-             entity_type) &&
-         base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnableSaveToWalletFromSettings);
+             *client, autofill::AutofillAiAction::kImportToWallet, entity_type);
 }
 
 }  // namespace

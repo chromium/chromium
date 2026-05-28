@@ -247,7 +247,6 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
             {autofill::features::kAutofillAiAvailableByDefault, {}},
             {autofill::features::kAutofillAiWalletFlightReservation, {}},
             {autofill::features::kAutofillAiWalletVehicleRegistration, {}},
-            {autofill::features::kAutofillEnableSaveToWalletFromSettings, {}},
             {autofill::features::kAutofillAiWalletPrivatePasses, {}},
             {wallet::features::kWalletablePassDetection,
              {{wallet::features::kWalletablePassDetectionCountryAllowlist.name,
