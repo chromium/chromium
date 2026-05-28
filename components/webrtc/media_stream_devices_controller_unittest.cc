@@ -291,7 +291,7 @@ class MediaStreamDevicesControllerTest : public testing::Test {
     }
 
     content::PermissionRequestDescription expected_description{
-        std::move(expected_permissions), false};
+        std::move(expected_permissions), false, origin_.GetURL()};
     expected_description.requested_audio_capture_device_ids =
         requested_audio_device_ids;
     expected_description.requested_video_capture_device_ids =

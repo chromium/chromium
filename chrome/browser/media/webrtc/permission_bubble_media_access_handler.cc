@@ -322,6 +322,40 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
   if (request_it == requests_map.end())
     return;
 
+  // If the current request failed (denied or dismissed), automatically fail any
+  // other pending requests in the queue that are from the same origin and
+  // request the same media device types (e.g. microphone/camera). This avoids
+  // duplicate permission prompts when WebUI pages (like voice search) generate
+  // concurrent media access and stream generation requests. One case is when
+  // `SpeechRecognitionManagerImpl` requests permission when speech API is used,
+  // but the usual mojo microphone is requested when the browser uses the
+  // microphone (for the speech API), causing duplicate permission prompts if
+  // not handled.
+  if (result != blink::mojom::MediaStreamRequestResult::OK) {
+    for (auto it = requests_map.begin(); it != requests_map.end();) {
+      if (it->first != request_id &&
+          it->second.request.security_origin ==
+              request_it->second.request.security_origin) {
+        bool audio_match = request_it->second.request.audio_type !=
+                               blink::mojom::MediaStreamType::NO_SERVICE &&
+                           it->second.request.audio_type !=
+                               blink::mojom::MediaStreamType::NO_SERVICE;
+        bool video_match = request_it->second.request.video_type !=
+                               blink::mojom::MediaStreamType::NO_SERVICE &&
+                           it->second.request.video_type !=
+                               blink::mojom::MediaStreamType::NO_SERVICE;
+        if (audio_match || video_match) {
+          MediaResponseCallback callback = std::move(it->second.callback);
+          it = requests_map.erase(it);
+          std::move(callback).Run(blink::mojom::StreamDevicesSet(), result,
+                                  nullptr);
+          continue;
+        }
+      }
+      ++it;
+    }
+  }
+
   blink::mojom::MediaStreamRequestResult final_result = result;
 
 #if BUILDFLAG(IS_MAC)
