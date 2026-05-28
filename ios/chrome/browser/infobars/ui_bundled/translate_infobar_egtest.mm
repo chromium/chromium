@@ -315,11 +315,6 @@ class TestResponseProvider {
     config.features_disabled.push_back(kProactiveSuggestionsFramework);
   }
 
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector
-            (testTranslateBadgeWithReaderModeBadgeSupport)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
@@ -1612,6 +1607,14 @@ class TestResponseProvider {
 // Tests that the translate badge is shown before, during and after turning off
 // Reader mode if badge support is enabled.
 - (void)testTranslateBadgeWithReaderModeBadgeSupport {
+  // TODO(crbug.com/517095176): Re-enable this test when the unified badge
+  // expansion layout under Chrome Next is fixed.
+  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Multiple badges are collapsed into the Page Action Menu "
+        @"on compact iPhones under Chrome Next.");
+  }
+
   // Set up server with a French page.
   GURL URL = self.testServer->GetURL(kFrenchPageDistillablePath);
 
