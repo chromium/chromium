@@ -10,9 +10,12 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/test/test_extensions_client.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
