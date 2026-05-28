@@ -34,6 +34,7 @@ class OmniboxPopupFileSelector;
 class OmniboxPopupUI;
 class OmniboxEditModel;
 class OmniboxController;
+class OmniboxContextMenuControllerPecBrowserTest;
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -125,6 +126,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
  private:
   friend class TabSimpleMenuModel;
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerPecBrowserTest,
+                           ModelPickerCheckmark);
 
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            IsCommandIdEnabledHelper_InitialState);

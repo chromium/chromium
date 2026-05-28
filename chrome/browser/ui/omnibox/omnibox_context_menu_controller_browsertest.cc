@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,8 +22,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "components/omnibox/browser/autocomplete_input.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
@@ -35,6 +35,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +46,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -757,4 +759,160 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             omnibox_controller->popup_state_manager()->popup_state());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       ModelPickerCheckmark) {
+  // Navigate the initial tab to the popup URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+
+  auto check_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+
+  // Set the popup state to composebox AIM so that session handle and composebox
+  // handler are active.
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Configure active and allowed AI models.
+  omnibox::InputState input_state;
+  input_state.allowed_models.push_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  input_state.allowed_models.push_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
+  input_state.active_model =
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
+
+  // Set up the context menu with the allowed AI models in input state.
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+  ASSERT_TRUE(handler->input_state_model());
+  handler->input_state_model()->set_state_for_testing(input_state);
+
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                          web_contents);
+
+  ui::SimpleMenuModel* model = controller.menu_model();
+
+  // Find command ID for Pro AI mode.
+  int pro_command_id = -1;
+  for (const auto& pair : controller.model_for_command_id_) {
+    if (pair.second == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
+      pro_command_id = pair.first;
+      break;
+    }
+  }
+  ASSERT_NE(pro_command_id, -1);
+
+  // Find command ID for Fast AI mode.
+  int fast_command_id = -1;
+  for (const auto& pair : controller.model_for_command_id_) {
+    if (pair.second == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI) {
+      fast_command_id = pair.first;
+      break;
+    }
+  }
+  ASSERT_NE(fast_command_id, -1);
+
+  // Verify AI Fast mode checkmark is on the right hand side.
+  {
+    std::optional<size_t> index = model->GetIndexOfCommandId(fast_command_id);
+    ASSERT_TRUE(index.has_value());
+    // Checkmark is not empty.
+    EXPECT_FALSE(model->GetMinorIconAt(index.value()).IsEmpty());
+    // LHS icon is still the model icon, not the checkmark.
+    EXPECT_FALSE(model->GetIconAt(index.value()).IsEmpty());
+    EXPECT_NE(model->GetIconAt(index.value()), check_icon);
+  }
+
+  // Verify AI Pro checkmark is not shown.
+  {
+    std::optional<size_t> index = model->GetIndexOfCommandId(pro_command_id);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
+    // LHS icon is still the model icon.
+    EXPECT_FALSE(model->GetIconAt(index.value()).IsEmpty());
+    EXPECT_NE(model->GetIconAt(index.value()), check_icon);
+  }
+
+  // Assert internal browser process state is set to Fast mode.
+  EXPECT_EQ(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI,
+            handler->input_state_model()->GetInputState().active_model);
+
+  // Select AI Pro model.
+  controller.ExecuteCommand(pro_command_id, 0);
+
+  // Verify the state is changed in the browser process internal state.
+  {
+    EXPECT_EQ(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+              handler->input_state_model()->GetInputState().active_model);
+
+    // Recreate controller to build menu with updated state.
+    OmniboxContextMenuController new_controller(
+        omnibox_popup_file_selector.get(), web_contents);
+    ui::SimpleMenuModel* new_model = new_controller.menu_model();
+
+    // Verify the checkmark exists for AI Pro mode.
+    std::optional<size_t> pro_index =
+        new_model->GetIndexOfCommandId(pro_command_id);
+    ASSERT_TRUE(pro_index.has_value());
+    EXPECT_FALSE(new_model->GetMinorIconAt(pro_index.value()).IsEmpty());
+    // LHS icon is still the model icon.
+    EXPECT_FALSE(new_model->GetIconAt(pro_index.value()).IsEmpty());
+    EXPECT_NE(new_model->GetIconAt(pro_index.value()), check_icon);
+
+    // Verify the checkmark does not exist for AI Fast mode.
+    std::optional<size_t> index =
+        new_model->GetIndexOfCommandId(fast_command_id);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_TRUE(new_model->GetMinorIconAt(index.value()).IsEmpty());
+    // LHS icon is still the model icon.
+    EXPECT_FALSE(new_model->GetIconAt(index.value()).IsEmpty());
+    EXPECT_NE(new_model->GetIconAt(index.value()), check_icon);
+
+    // Select AI Fast Model.
+    new_controller.ExecuteCommand(fast_command_id, 0);
+  }
+
+  // Verify the state is changed in the internal state of the browser process.
+  {
+    EXPECT_EQ(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI,
+              handler->input_state_model()->GetInputState().active_model);
+
+    // Recreate controller to update UI.
+    OmniboxContextMenuController final_controller(
+        omnibox_popup_file_selector.get(), web_contents);
+    ui::SimpleMenuModel* final_model = final_controller.menu_model();
+
+    // Verify the checkmark exists for AI Fast mode.
+    std::optional<size_t> index =
+        final_model->GetIndexOfCommandId(fast_command_id);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_FALSE(final_model->GetMinorIconAt(index.value()).IsEmpty());
+    // LHS icon is still the model icon.
+    EXPECT_FALSE(final_model->GetIconAt(index.value()).IsEmpty());
+    EXPECT_NE(final_model->GetIconAt(index.value()), check_icon);
+
+    // Verify the checkmark does not exist for AI Pro mode.
+    std::optional<size_t> pro_index =
+        final_model->GetIndexOfCommandId(pro_command_id);
+    ASSERT_TRUE(pro_index.has_value());
+    EXPECT_TRUE(final_model->GetMinorIconAt(pro_index.value()).IsEmpty());
+    // LHS icon is still the model icon.
+    EXPECT_FALSE(final_model->GetIconAt(pro_index.value()).IsEmpty());
+    EXPECT_NE(final_model->GetIconAt(pro_index.value()), check_icon);
+  }
 }

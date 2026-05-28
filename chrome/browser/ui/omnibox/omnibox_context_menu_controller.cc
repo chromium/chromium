@@ -506,10 +506,14 @@ void OmniboxContextMenuController::AddModelPickerItems() {
     auto& menu_item_info = model_info_[model];
     const auto& menu_icon =
         IsThinkingModel(model) ? thinking_model_icon : menu_item_info.menu_icon;
-    AddItemWithIcon(next_command_id_, menu_item_info.menu_label,
-                    is_aim_popup_open && input_state_.active_model == model
-                        ? check_icon
-                        : menu_icon);
+    AddItemWithIcon(next_command_id_, menu_item_info.menu_label, menu_icon);
+    // If model is selected, add checkmark icon on the right.
+    if (is_aim_popup_open && input_state_.active_model == model) {
+      size_t index = menu_model_->GetItemCount() - 1;
+      menu_model_->SetMinorIcon(index, check_icon);
+      menu_model_->SetMinorIconOnRight(
+          ui::MenuModel::MinorIconOnRightPasskey(index), true);
+    }
     model_for_command_id_[next_command_id_] = model;
     next_command_id_++;
   }
