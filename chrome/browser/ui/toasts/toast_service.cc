@@ -337,6 +337,7 @@ void ToastService::RegisterToasts(
                                       ? vector_icons::kMarkEmailReadIcon
                                       : vector_icons::kMarkEmailReadOldIcon,
                                   IDS_EMAIL_VERIFIED)
+          .AddGlobalScoped()
           .AddMenu()
           .Build());
 
