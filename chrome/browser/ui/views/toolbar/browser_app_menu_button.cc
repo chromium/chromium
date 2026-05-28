@@ -160,10 +160,13 @@ void BrowserAppMenuButton::UpdateIcon() {
                                               : kBrowserToolsTouchOldIcon
       : features::IsRoundedIconsEnabled() ? kMoreVertIcon
                                           : kBrowserToolsChromeRefreshOldIcon;
+  const int icon_size = GetIconSize();
 
   for (auto state : kButtonStates) {
     SkColor icon_color = GetForegroundColor(state);
-    SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
+    ui::ImageModel model =
+        ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size);
+    SetImageModel(state, model);
   }
 }
 
