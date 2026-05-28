@@ -29,6 +29,11 @@ inline constexpr int kMinSiteEngagementScoreForFamiliarity = 10;
 // Calculates the site familiarity based on information from the
 // SiteEngagementService, chrome://history and the
 // safe-browsing-high-confidence-allowlist.
+//
+// To optimize performance, the fetcher will return a "familiar" verdict as
+// soon as any component of the familiarity heuristic (Site Engagement,
+// History, or Safe Browsing Allowlist) determines the site is familiar,
+// returning early and cancelling any pending asynchronous lookups.
 class SiteFamiliarityFetcher {
  public:
   enum class Verdict {
@@ -60,9 +65,9 @@ class SiteFamiliarityFetcher {
   // Initiates safe-browsing-high-confidence-allowlist request.
   void StartFetchingSafeBrowsingHighConfidenceAllowlist();
 
-  // Called when the site-familiarity verdict has been computed without querying
-  // history or the safe-browsing-high-confidence-allowlist.
-  void OnComputedVerdictWithoutFetches(bool is_site_familiar);
+  // Called when the site-familiarity verdict has been computed.
+  // If `log_verdict` is true, logs the detailed verdict using CRSBLOG.
+  void OnComputedVerdict(Verdict verdict, bool log_verdict = false);
 
   // Called when the history request completes.
   void OnFetchedHistory(history::HistoryLastVisitResult last_visit_result);
