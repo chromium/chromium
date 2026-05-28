@@ -37,7 +37,7 @@ class TaskParametersExtractor : public KeyedService {
 
   // Returns a map of expected parameter keys and their corresponding CSS
   // selectors if the active task is configured for the given URL.
-  std::map<std::string, std::string> GetParameterValueSelectorsForUrl(
+  virtual std::map<std::string, std::string> GetParameterValueSelectorsForUrl(
       const GURL& url);
 
   // Stores a successfully extracted value for a parameter key.

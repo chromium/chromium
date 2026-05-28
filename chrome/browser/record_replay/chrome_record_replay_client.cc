@@ -25,6 +25,7 @@
 #include "components/record_replay/core/common/record_replay.mojom.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -135,8 +136,21 @@ void ChromeRecordReplayClient::DidFinishNavigation(
       navigation_handle->GetURL(),
       base::BindOnce(&ChromeRecordReplayClient::OnShouldOfferTask,
                      weak_ptr_factory_.GetWeakPtr()));
-
+  // TODO(crbug.com/504555471): Refine the logic of triggering the parameter
+  // extraction (e.g., we could consider triggering it less frequently, or we
+  // could trigger it in case of some other events).
   PerformParametersExtraction(navigation_handle->GetURL());
+}
+
+void ChromeRecordReplayClient::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  // TODO(crbug.com/504555471): Refine the logic of triggering the parameter
+  // extraction (e.g., we could consider triggering it less frequently, or we
+  // could trigger it in case of some other events).
+  PerformParametersExtraction(render_frame_host->GetLastCommittedURL());
 }
 
 void ChromeRecordReplayClient::PerformParametersExtraction(const GURL& url) {

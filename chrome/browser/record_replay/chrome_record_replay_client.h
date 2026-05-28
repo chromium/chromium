@@ -60,6 +60,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   void ReportToUser(std::string_view message) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
  private:
   void OnShouldOfferTask(bool offered);
