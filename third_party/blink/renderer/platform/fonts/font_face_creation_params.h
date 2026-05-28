@@ -110,7 +110,8 @@ class FontFaceCreationParams {
                      HasFilename() ? StringHasher::HashMemory(
                                          base::as_byte_span(Filename()))
                                    : 0};
-      return StringHasher::HashMemory(base::byte_span_from_ref(hash_data));
+      return static_cast<unsigned>(
+          StringHasher::HashMemory(base::byte_span_from_ref(hash_data)));
     }
     return DeprecatedCaseFoldingHash::GetHash(family_.empty() ? g_empty_atom
                                                               : family_);

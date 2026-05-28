@@ -1037,9 +1037,10 @@ TEST_P(GlyphDataRangeTest, Data) {
 
   const auto& run = TestInfo(result)->RunInfoForTesting(data.run_index);
   auto glyphs = run.FindGlyphDataRange(data.start_offset, data.end_offset);
-  unsigned start_glyph = std::distance(run.glyph_data_.begin(), glyphs.begin());
+  unsigned start_glyph =
+      CheckedDistance(run.glyph_data_.begin(), glyphs.begin());
   EXPECT_EQ(data.start_glyph, start_glyph);
-  unsigned end_glyph = std::distance(run.glyph_data_.begin(), glyphs.end());
+  unsigned end_glyph = CheckedDistance(run.glyph_data_.begin(), glyphs.end());
   EXPECT_EQ(data.end_glyph, end_glyph);
 }
 

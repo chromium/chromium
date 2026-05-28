@@ -5,6 +5,7 @@
 #include <array>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
@@ -404,7 +405,8 @@ Vector<float> RecordPositionBeforeApplyingSpacing(ShapeResult* result,
 
 Vector<OffsetWithSpacing, 16> RecordExpectedSpacing(
     const std::vector<wtf_size_t>& offsets_data) {
-  Vector<OffsetWithSpacing, 16> offsets(offsets_data.size());
+  Vector<OffsetWithSpacing, 16> offsets(
+      base::checked_cast<wtf_size_t>(offsets_data.size()));
   std::generate_n(offsets.begin(), offsets_data.size(), [&, i = -1]() mutable {
     ++i;
     return OffsetWithSpacing{.offset = offsets_data[i],

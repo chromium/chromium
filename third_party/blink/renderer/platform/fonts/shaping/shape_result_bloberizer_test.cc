@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
@@ -92,11 +93,11 @@ void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
       EXPECT_EQ(expected_run.glyph_count, run.fGlyphCount)
           << "Blob: " << blob_index << " Run: " << run_index;
 
-      int actual_size = run.fUtf8Size_forTest;
-      int expected_size = expected_run.utf8.size();
+      size_t actual_size = base::checked_cast<size_t>(run.fUtf8Size_forTest);
+      size_t expected_size = expected_run.utf8.size();
       EXPECT_EQ(actual_size, expected_size)
           << "Blob: " << blob_index << " Run: " << run_index;
-      for (int i = 0; i < actual_size && i < expected_size; ++i) {
+      for (size_t i = 0; i < actual_size && i < expected_size; ++i) {
         EXPECT_EQ(UNSAFE_TODO(run.fUtf8_forTest[i]), expected_run.utf8[i])
             << "Blob: " << blob_index << " Run: " << run_index << " i: " << i;
       }

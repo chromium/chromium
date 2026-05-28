@@ -69,7 +69,7 @@ class RunSegmenterTest : public testing::Test {
   void VerifyRuns(RunSegmenter* run_segmenter,
                   const Vector<SegmenterExpectedRun>& expect) {
     RunSegmenter::RunSegmenterRange segmenter_range;
-    size_t run_count = 0;
+    wtf_size_t run_count = 0;
     while (run_segmenter->Consume(&segmenter_range)) {
       ASSERT_LT(run_count, expect.size());
       ASSERT_EQ(expect[run_count].start, segmenter_range.start);

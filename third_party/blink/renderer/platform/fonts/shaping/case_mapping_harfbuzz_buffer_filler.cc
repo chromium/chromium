@@ -6,6 +6,7 @@
 
 #include <unicode/utf16.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
@@ -31,12 +32,14 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
   if (case_map_intend == CaseMapIntend::kKeepSameCase) {
     if (text.Is8Bit()) {
       auto span = text.Span8();
-      hb_buffer_add_latin1(harfbuzz_buffer_, span.data(), span.size(),
-                           start_index, num_characters);
+      hb_buffer_add_latin1(harfbuzz_buffer_, span.data(),
+                           base::checked_cast<int>(span.size()), start_index,
+                           num_characters);
     } else {
       auto span = text.SpanUint16();
-      hb_buffer_add_utf16(harfbuzz_buffer_, span.data(), span.size(),
-                          start_index, num_characters);
+      hb_buffer_add_utf16(harfbuzz_buffer_, span.data(),
+                          base::checked_cast<int>(span.size()), start_index,
+                          num_characters);
     }
   } else {
     CaseMap case_map(locale);
@@ -56,7 +59,8 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
     DCHECK_EQ(case_mapped_text.length(), text.length());
     DCHECK(!case_mapped_text.Is8Bit());
     auto span = case_mapped_text.SpanUint16();
-    hb_buffer_add_utf16(harfbuzz_buffer_, span.data(), span.size(), start_index,
+    hb_buffer_add_utf16(harfbuzz_buffer_, span.data(),
+                        base::checked_cast<int>(span.size()), start_index,
                         num_characters);
   }
 }
@@ -70,8 +74,8 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     unsigned start_index,
     unsigned num_characters) {
   // Record pre-context.
-  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()), buffer.size(),
-                      start_index, 0);
+  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()),
+                      base::checked_cast<int>(buffer.size()), start_index, 0);
 
   CaseMap case_map(locale);
   for (unsigned char_index = start_index;
@@ -96,7 +100,8 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
   }
 
   // Record post-context
-  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()), buffer.size(),
+  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()),
+                      base::checked_cast<int>(buffer.size()),
                       start_index + num_characters, 0);
 }
 

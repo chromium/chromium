@@ -97,8 +97,8 @@ struct ShapeCacheKey {
     AddIntToHash(hash, start_offset_);
     AddIntToHash(hash, end_offset_);
     AddIntToHash(hash, locale_ ? blink::GetHash(locale_) : 0);
-    AddIntToHash(hash,
-                 StringHasher::HashMemory(base::as_byte_span(font_features_)));
+    AddIntToHash(hash, static_cast<unsigned>(StringHasher::HashMemory(
+                           base::as_byte_span(font_features_))));
     AddIntToHash(hash, static_cast<unsigned>(direction_));
     return hash;
   }

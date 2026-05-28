@@ -49,7 +49,7 @@ class SymbolsIteratorTest : public testing::Test {
                   const Vector<FallbackExpectedRun>& expect) {
     unsigned limit;
     FontFallbackPriority font_fallback_priority;
-    size_t run_count = 0;
+    wtf_size_t run_count = 0;
     while (symbols_iterator->Consume(&limit, &font_fallback_priority)) {
       ASSERT_LT(run_count, expect.size());
       ASSERT_EQ(expect[run_count].limit, limit);
