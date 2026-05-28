@@ -73,7 +73,7 @@ class Client {
   // Establishes a secure connection without sending a request. Calling this
   // function is optional as a connection will be established automatically
   // when needed/first request is sent.
-  virtual void EstablishConnection() = 0;
+  virtual void EstablishConnection(proto::FeatureName feature_name) = 0;
 
   // Sends a request with a single text content.
   virtual void SendTextRequest(proto::FeatureName feature_name,

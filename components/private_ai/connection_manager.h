@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/status_code.h"
 
 namespace private_ai {
@@ -30,10 +31,12 @@ class ConnectionManager {
 
   // Returns the existing connection or creates a new one if it doesn't
   // exist.
-  Connection* GetConnection();
+  Connection* GetConnection(proto::FeatureName feature_name);
 
  private:
-  void OnConnectionDisconnected(int connection_id, StatusCode status_code);
+  void OnConnectionDisconnected(proto::FeatureName feature_name,
+                                int connection_id,
+                                StatusCode status_code);
 
   // Destroy a connection that is pending destruction.
   //
@@ -43,8 +46,11 @@ class ConnectionManager {
   const raw_ptr<PrivateAiLogger> logger_;
   std::unique_ptr<ConnectionFactory> connection_factory_;
 
-  int connection_id_{0};
-  std::unique_ptr<Connection> connection_;
+  struct ConnectionState {
+    int connection_id = 0;
+    std::unique_ptr<Connection> connection;
+  };
+  base::flat_map<proto::FeatureName, ConnectionState> connections_;
   // When `connection_` is disconnected, a two-step destruction process is used
   // to propagate an error code through all connection layers, resolve pending
   // callbacks, and avoid side effects on the connection state (i.e. connection

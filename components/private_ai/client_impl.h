@@ -35,7 +35,7 @@ class ClientImpl : public Client {
   ClientImpl& operator=(const ClientImpl&) = delete;
 
   // Client overrides:
-  void EstablishConnection() override;
+  void EstablishConnection(proto::FeatureName feature_name) override;
   void SendTextRequest(proto::FeatureName feature_name,
                        const std::string& text,
                        OnTextRequestCompletedCallback callback,

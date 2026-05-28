@@ -21,6 +21,9 @@ namespace private_ai {
 
 namespace {
 
+constexpr proto::FeatureName kTestFeature =
+    proto::FeatureName::FEATURE_NAME_UNSPECIFIED;
+
 class FakeConnectionFactory : public ConnectionFactory {
  public:
   FakeConnectionFactory() = default;
@@ -92,19 +95,19 @@ class ConnectionManagerTest : public ::testing::Test {
 
 TEST_F(ConnectionManagerTest, GetConnectionCreatesConnection) {
   EXPECT_EQ(factory_->last_connection(), nullptr);
-  Connection* connection = manager_->GetConnection();
+  Connection* connection = manager_->GetConnection(kTestFeature);
   EXPECT_NE(connection, nullptr);
   EXPECT_EQ(connection, factory_->last_connection());
 }
 
 TEST_F(ConnectionManagerTest, GetConnectionReturnsExistingConnection) {
-  Connection* connection1 = manager_->GetConnection();
-  Connection* connection2 = manager_->GetConnection();
+  Connection* connection1 = manager_->GetConnection(kTestFeature);
+  Connection* connection2 = manager_->GetConnection(kTestFeature);
   EXPECT_EQ(connection1, connection2);
 }
 
 TEST_F(ConnectionManagerTest, ConnectionRecreatedAfterDisconnect) {
-  Connection* connection1 = manager_->GetConnection();
+  Connection* connection1 = manager_->GetConnection(kTestFeature);
   FakeConnection* fake_connection1 = factory_->last_connection();
 
   base::test::TestFuture<void> disconnect_future;
@@ -113,7 +116,7 @@ TEST_F(ConnectionManagerTest, ConnectionRecreatedAfterDisconnect) {
   fake_connection1->SimulateDisconnect();
   EXPECT_TRUE(disconnect_future.Wait());
 
-  Connection* connection2 = manager_->GetConnection();
+  Connection* connection2 = manager_->GetConnection(kTestFeature);
   EXPECT_NE(connection1, connection2);
   EXPECT_EQ(connection2, factory_->last_connection());
 }
@@ -122,7 +125,7 @@ TEST_F(ConnectionManagerTest, ConnectionDestroyedAsynchronously) {
   base::test::TestFuture<void> destruction_future;
   factory_->set_on_destruction(destruction_future.GetCallback());
 
-  manager_->GetConnection();
+  manager_->GetConnection(kTestFeature);
   FakeConnection* fake_connection = factory_->last_connection();
 
   fake_connection->SimulateDisconnect();
@@ -139,7 +142,7 @@ TEST_F(ConnectionManagerTest,
   base::test::TestFuture<void> destruction_future;
   factory_->set_on_destruction(destruction_future.GetCallback());
 
-  manager_->GetConnection();
+  manager_->GetConnection(kTestFeature);
   FakeConnection* fake_connection = factory_->last_connection();
 
   fake_connection->SimulateDisconnect();
@@ -155,7 +158,7 @@ TEST_F(ConnectionManagerTest,
 
 TEST_F(ConnectionManagerTest,
        OnlyFirstDisconnectFromSameConnectionIsProcessed) {
-  manager_->GetConnection();
+  manager_->GetConnection(kTestFeature);
   FakeConnection* fake_connection = factory_->last_connection();
 
   base::test::TestFuture<void> disconnect_future;
@@ -172,7 +175,7 @@ TEST_F(ConnectionManagerTest,
 }
 
 TEST_F(ConnectionManagerTest, OldConnectionCannotDisconnectNewOne) {
-  manager_->GetConnection();
+  manager_->GetConnection(kTestFeature);
   FakeConnection* fake_connection1 = factory_->last_connection();
 
   base::test::TestFuture<void> disconnect_future;
@@ -183,14 +186,48 @@ TEST_F(ConnectionManagerTest, OldConnectionCannotDisconnectNewOne) {
   EXPECT_TRUE(disconnect_future.Wait());
 
   // Create a second connection.
-  Connection* connection2 = manager_->GetConnection();
+  Connection* connection2 = manager_->GetConnection(kTestFeature);
   FakeConnection* fake_connection2 = factory_->last_connection();
   EXPECT_NE(fake_connection1, fake_connection2);
 
   // Subsequent disconnect from the first connection should not disconnect the
   // second one.
   fake_connection1->SimulateDisconnect();
-  EXPECT_EQ(manager_->GetConnection(), connection2);
+  EXPECT_EQ(manager_->GetConnection(kTestFeature), connection2);
+}
+
+TEST_F(ConnectionManagerTest,
+       GetConnectionForDifferentFeaturesReturnsDifferentConnections) {
+  Connection* connection_a = manager_->GetConnection(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
+  Connection* connection_b =
+      manager_->GetConnection(proto::FeatureName::FEATURE_NAME_CHROME_FORMS_AI);
+  EXPECT_NE(connection_a, connection_b);
+}
+
+TEST_F(ConnectionManagerTest, DisconnectOneFeatureDoesNotAffectOther) {
+  Connection* connection_a = manager_->GetConnection(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
+  FakeConnection* fake_connection_a = factory_->last_connection();
+  Connection* connection_b =
+      manager_->GetConnection(proto::FeatureName::FEATURE_NAME_CHROME_FORMS_AI);
+
+  base::test::TestFuture<void> disconnect_future;
+  factory_->set_on_disconnect(disconnect_future.GetCallback());
+
+  fake_connection_a->SimulateDisconnect();
+  EXPECT_TRUE(disconnect_future.Wait());
+
+  // Connection B should still be active and the same instance.
+  EXPECT_EQ(
+      manager_->GetConnection(proto::FeatureName::FEATURE_NAME_CHROME_FORMS_AI),
+      connection_b);
+
+  // Connection A should be recreated on next get.
+  Connection* new_connection_a = manager_->GetConnection(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
+  EXPECT_NE(connection_a, new_connection_a);
+  EXPECT_NE(new_connection_a, connection_b);
 }
 
 }  // namespace private_ai

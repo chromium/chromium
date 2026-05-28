@@ -90,8 +90,8 @@ ClientImpl::~ClientImpl() {
   connection_manager_.reset();
 }
 
-void ClientImpl::EstablishConnection() {
-  connection_manager_->GetConnection();
+void ClientImpl::EstablishConnection(proto::FeatureName feature_name) {
+  connection_manager_->GetConnection(feature_name);
 }
 
 void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
@@ -152,10 +152,10 @@ void ClientImpl::SendRequest(proto::FeatureName feature_name,
 
   private_ai_request.set_feature_name(feature_name);
 
-  connection_manager_->GetConnection()->Send(
-      std::move(private_ai_request), options.timeout,
-      base::BindOnce(&ClientImpl::OnReponseReceived, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+  connection_manager_->GetConnection(feature_name)
+      ->Send(std::move(private_ai_request), options.timeout,
+             base::BindOnce(&ClientImpl::OnReponseReceived,
+                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ClientImpl::OnReponseReceived(

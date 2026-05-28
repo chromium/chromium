@@ -28,40 +28,52 @@ ConnectionManager::ConnectionManager(
 }
 
 ConnectionManager::~ConnectionManager() {
-  if (connection_) {
-    connection_->OnDestroy(StatusCode::kDestroyed);
+  for (auto& [feature_name, state] : connections_) {
+    if (state.connection) {
+      state.connection->OnDestroy(StatusCode::kDestroyed);
+    }
   }
 }
 
-Connection* ConnectionManager::GetConnection() {
-  if (!connection_) {
-    connection_id_++;
-    connection_ = connection_factory_->Create(
-        base::BindRepeating(&ConnectionManager::OnConnectionDisconnected,
-                            weak_factory_.GetWeakPtr(), connection_id_));
+Connection* ConnectionManager::GetConnection(proto::FeatureName feature_name) {
+  auto& state = connections_[feature_name];
+  if (!state.connection) {
+    state.connection_id++;
+    state.connection = connection_factory_->Create(base::BindRepeating(
+        &ConnectionManager::OnConnectionDisconnected,
+        weak_factory_.GetWeakPtr(), feature_name, state.connection_id));
   }
-  return connection_.get();
+  return state.connection.get();
 }
 
-void ConnectionManager::OnConnectionDisconnected(int connection_id,
-                                                 StatusCode status_code) {
-  if (connection_id != connection_id_ || !connection_) {
+void ConnectionManager::OnConnectionDisconnected(
+    proto::FeatureName feature_name,
+    int connection_id,
+    StatusCode status_code) {
+  auto it = connections_.find(feature_name);
+  if (it == connections_.end()) {
+    return;
+  }
+  auto& state = it->second;
+  if (connection_id != state.connection_id || !state.connection) {
     return;
   }
 
-  logger_->LogInfo(
-      FROM_HERE,
-      status_code == StatusCode::kUnusedConnection
-          ? "Closing unused connection"
-          : "Connection disconnected. Destroying connection with status: " +
-                base::ToString(status_code));
+  logger_->LogInfo(FROM_HERE,
+                   status_code == StatusCode::kUnusedConnection
+                       ? "Closing unused connection for feature: " +
+                             base::ToString(static_cast<int>(feature_name))
+                       : "Connection disconnected for feature: " +
+                             base::ToString(static_cast<int>(feature_name)) +
+                             ". Destroying connection with status: " +
+                             base::ToString(status_code));
 
   // Move the active connection to the pending destruction list and call
   // `OnDestroy()` to ensure status is propagated to all pending callbacks.
-  Connection* connection_ptr = connection_.get();
+  Connection* connection_ptr = state.connection.get();
   connection_ptr->OnDestroy(status_code);
   connections_pending_destruction_.emplace(connection_ptr,
-                                           std::move(connection_));
+                                           std::move(state.connection));
 
   // Schedule destruction of the connection.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

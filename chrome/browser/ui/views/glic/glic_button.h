@@ -88,7 +88,8 @@ inline void EstablishPrivateAiConnection(Profile* profile) {
     if (private_ai_service) {
       private_ai::Client* client = private_ai_service->GetClient();
       if (client) {
-        client->EstablishConnection();
+        client->EstablishConnection(
+            private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
       }
     }
   }

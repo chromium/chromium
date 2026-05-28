@@ -70,7 +70,8 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
                      network_context_, token_manager_, &webui_logger_);
-  webui_client_->EstablishConnection();
+  webui_client_->EstablishConnection(
+      proto::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
   std::move(callback).Run();
 }
 

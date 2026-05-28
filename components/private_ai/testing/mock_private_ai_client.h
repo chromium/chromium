@@ -12,7 +12,10 @@ namespace private_ai {
 
 class MockPrivateAiClient : public Client {
  public:
-  MOCK_METHOD(void, EstablishConnection, (), (override));
+  MOCK_METHOD(void,
+              EstablishConnection,
+              (proto::FeatureName feature_name),
+              (override));
   MOCK_METHOD(void,
               SendTextRequest,
               (proto::FeatureName feature_name,
