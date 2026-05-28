@@ -748,9 +748,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
   }
 
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
-
   return config;
 }
 
