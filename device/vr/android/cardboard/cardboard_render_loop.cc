@@ -476,6 +476,14 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     return;
   }
 
+  // For cardboard, no sync token for the camera should be received since there
+  // is no camera shared image.
+  if (!camera_sync_tokens.empty()) {
+    presentation_receiver_.ReportBadMessage(
+        "Received unexpected camera sync tokens.");
+    return;
+  }
+
   if (!IsSubmitFrameExpected(frame_index)) {
     return;
   }
