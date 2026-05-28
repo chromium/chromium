@@ -57,15 +57,6 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
 
 @implementation AddressBarPreferenceTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testSelectBottomAddressBar)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Resets the address bar position preference to be on top.
