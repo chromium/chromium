@@ -298,10 +298,10 @@ IN_PROC_BROWSER_TEST_F(
 #endif
       ;
 
-#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  // After SyncToSignin, CONTACT_INFO are enabled for Win/Mac/Linux, and
-  // disabled for other platforms.
-  // See `SyncServiceImpl::PassphraseTypeChanged`.
+#if BUILDFLAG(IS_ANDROID)
+  // After SyncToSignin, CONTACT_INFO are enabled for Win/Mac/Linux/ChromeOS,
+  // and disabled for other platforms. See
+  // `SyncServiceImpl::PassphraseTypeChanged`.
   expected_types.Remove(syncer::CONTACT_INFO);
 #endif
 
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(
   syncer::DataTypeSet expected_types_after_history_opt_in =
       AllowedTypesInStandaloneTransportMode();
 
-#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+#if BUILDFLAG(IS_ANDROID)
   // CONTACT_INFO should remain disabled since it's gated by kAutofill.
   expected_types_after_history_opt_in.Remove(syncer::CONTACT_INFO);
 #endif
