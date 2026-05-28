@@ -445,8 +445,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       ScreenshotRight(kBookmarkBarElementId, "bookmarks_trailing", 3));
 }
 
+// TODO(crbug.com/517301741): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_VerticalTabsCollapsed DISABLED_VerticalTabsCollapsed
+#else
+#define MAYBE_VerticalTabsCollapsed VerticalTabsCollapsed
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
-                       VerticalTabsCollapsed) {
+                       MAYBE_VerticalTabsCollapsed) {
   tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
