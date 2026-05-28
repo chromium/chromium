@@ -219,9 +219,10 @@ class SearchEngineChoiceEligibilityTest
     task_environment_.RunUntilIdle();
   }
 
-  SearchEngineChoiceScreenConditions GetDynamicConditions() {
+  SearchEngineChoiceScreenConditions GetDynamicConditions(
+      bool allow_unknown_current_location = false) {
     return search_engine_choice_service().GetDynamicChoiceScreenConditions(
-        template_url_service());
+        template_url_service(), {allow_unknown_current_location});
   }
 
   SearchEngineChoiceScreenConditions GetStaticConditions() {
@@ -540,12 +541,12 @@ TEST_F(SearchEngineChoiceEligibilityTest,
       regional_capabilities_service().GetClientForTesting())
       .SetVariationsLatestCountryId(CountryId());
 
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
   EXPECT_EQ(
-      GetStaticConditions(),
+      GetDynamicConditions(),
       IfSupported(
-          SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation));
-  // Do not check the dynamic conditions, as the choice screen would be
-  // suppressed before evaluating the dynamic conditions.
+          SearchEngineChoiceScreenConditions::kUnavailableCurrentLocation));
 }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -560,12 +561,29 @@ TEST_F(SearchEngineChoiceEligibilityTest,
       regional_capabilities_service().GetClientForTesting())
       .SetVariationsLatestCountryId(CountryId());
 
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
   EXPECT_EQ(
-      GetStaticConditions(),
+      GetDynamicConditions(/* allow_unknown_current_location= */ false),
       IfSupported(
-          SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation));
-  // Do not check the dynamic conditions, as the choice screen would be
-  // suppressed before evaluating the dynamic conditions.
+          SearchEngineChoiceScreenConditions::kUnavailableCurrentLocation));
+}
+
+TEST_F(SearchEngineChoiceEligibilityTest,
+       ChoiceScreenConditions_UnknownCountryAllowed_LocalWaffleEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kWaffleRestrictToAssociatedCountries};
+
+  // Note: The country is set to "BE" by command line override.
+
+  static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
+      regional_capabilities_service().GetClientForTesting())
+      .SetVariationsLatestCountryId(CountryId());
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+  EXPECT_EQ(GetDynamicConditions(/* allow_unknown_current_location= */ true),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
 }
 
 TEST_F(SearchEngineChoiceEligibilityTest,
@@ -582,7 +600,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
-  EXPECT_EQ(GetDynamicConditions(),
+  EXPECT_EQ(GetDynamicConditions(/* allow_unknown_current_location= */ false),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
 }
 
@@ -943,7 +961,13 @@ TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
 // services, and expectation checks.
 struct Spec {
   struct DeviceStateChanges {
-    CountryId country_id;
+    // Important: Applies across runs, due to being set on command line.
+    CountryId device_country_id;
+    // Important: Applies across runs (explicitly propagated) until is it
+    // overridden. Inherits from `device_country_id` by default: if never set,
+    // the `device_country_id` from the first run will be used as variations
+    // country for all the runs of the suite.
+    std::optional<CountryId> variations_country_id;
     bool set_restored;
   };
   struct ServiceStateChanges {
@@ -972,7 +996,12 @@ struct Spec {
   };
 
   std::string test_name;
+
   RestoreFeatureState restore_feature_state;
+
+  // Keep nullopt to apply the default state of the flag.
+  std::optional<bool> waffle_restrict_to_associated_countries_feature_enabled;
+
   base::RepeatingCallback<bool()> check_should_skip;
   std::vector<Run> runs;
 };
@@ -1006,7 +1035,8 @@ class SearchEngineChoiceEligibilityOnRestoreTest
   }
 
   void UpdateDeviceState(
-      std::optional<Spec::DeviceStateChanges> state_changes) {
+      std::optional<Spec::DeviceStateChanges> state_changes,
+      std::optional<CountryId>& previous_applied_variations_country_id) {
     bool restore_detected_in_current_session = false;
     if (state_changes.has_value()) {
       if (state_changes->set_restored) {
@@ -1014,20 +1044,30 @@ class SearchEngineChoiceEligibilityOnRestoreTest
         latest_restore_time_ = base::Time::Now();
       }
 
-      if (state_changes->country_id.IsValid()) {
+      if (state_changes->device_country_id.IsValid()) {
         auto* command_line = base::CommandLine::ForCurrentProcess();
         command_line->RemoveSwitch(switches::kSearchEngineChoiceCountry);
         command_line->AppendSwitchASCII(
             switches::kSearchEngineChoiceCountry,
-            state_changes->country_id.CountryCode());
+            state_changes->device_country_id.CountryCode());
+
+        if (!previous_applied_variations_country_id.has_value()) {
+          previous_applied_variations_country_id =
+              state_changes->device_country_id;
+        }
       }
     }
 
+    CountryId current_variations_country =
+        state_changes.value_or({}).variations_country_id.value_or(
+            previous_applied_variations_country_id.value_or(CountryId()));
     InitService({
+        .variation_country_id = current_variations_country,
         .force_reset = true,
         .restore_detected_in_current_session =
             restore_detected_in_current_session,
     });
+    previous_applied_variations_country_id = current_variations_country;
 
     if (latest_restore_time_.has_value()) {
       static_cast<FakeSearchEngineChoiceServiceClient&>(
@@ -1094,15 +1134,27 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
                ? "true"
                : "false"}}});
   }
+  if (param.waffle_restrict_to_associated_countries_feature_enabled
+          .has_value()) {
+    if (param.waffle_restrict_to_associated_countries_feature_enabled.value()) {
+      enabled_features.push_back(
+          {switches::kWaffleRestrictToAssociatedCountries, {}});
+    } else {
+      disabled_features.push_back(
+          switches::kWaffleRestrictToAssociatedCountries);
+    }
+  }
   scoped_feature_list.InitWithFeaturesAndParameters(enabled_features,
                                                     disabled_features);
 
   latest_restore_time_ = std::nullopt;
+  std::optional<CountryId> previous_applied_variations_country = std::nullopt;
   for (const auto& current_run : param.runs) {
     ResetServices();
 
     ASSERT_FALSE(search_engines_test_environment_);
-    UpdateDeviceState(current_run.update_device_state);
+    UpdateDeviceState(current_run.update_device_state,
+                      previous_applied_variations_country);
 
     if (current_run.expect_choice_status_before.has_value()) {
       CheckChoiceStatus(*current_run.expect_choice_status_before);
@@ -1140,7 +1192,7 @@ INSTANTIATE_TEST_SUITE_P(
                       {
                           .update_device_state =
                               Spec::DeviceStateChanges{
-                                  .country_id = CountryId("FR"),
+                                  .device_country_id = CountryId("FR"),
                               },
                           .update_service_state =
                               Spec::ServiceStateChanges{
@@ -1176,6 +1228,106 @@ INSTANTIATE_TEST_SUITE_P(
                               ChoiceStatus::kFromRestoredDevice,
                       },
                   }},
+         Spec{.test_name = "1pWaffleLocationUnknown",
+              .restore_feature_state =
+                  Spec::RestoreFeatureState::kEnableJustInTime,
+              .waffle_restrict_to_associated_countries_feature_enabled = true,
+              .runs =
+                  {
+                      // Sets up Chrome as running in France, and having
+                      // selected Google on the choice screen
+                      {
+                          .update_device_state =
+                              Spec::DeviceStateChanges{
+                                  .device_country_id = CountryId("FR"),
+                              },
+                          .update_service_state =
+                              Spec::ServiceStateChanges{
+                                  .select_dse =
+                                      TemplateURLPrepopulateData::google.id,
+                                  .choice_location =
+                                      ChoiceMadeLocation::kChoiceScreen,
+                              },
+                          .expect_choice_status_after = ChoiceStatus::kValid,
+                      },
+                      // Simulates the device being restored, and its detection
+                      // in this run. We also mark the variations country ID as
+                      // unknown, so although the client would be eligible for
+                      // restore, it does not trigger due to not knowing if we
+                      // still are in the right location.
+                      {
+                          .update_device_state =
+                              Spec::DeviceStateChanges{
+                                  .variations_country_id = CountryId(),
+                                  .set_restored = true,
+                              },
+                          .expect_choice_status_before =
+                              ChoiceStatus::kFromRestoredDevice,
+                          .expect_with_services =
+                              Spec::ExpectationsWithServices{
+                                  .static_condition =
+                                      SearchEngineChoiceScreenConditions::
+                                          kEligibleForRestore,
+                                  .dynamic_condition =
+                                      SearchEngineChoiceScreenConditions::
+                                          kUnavailableCurrentLocation,
+                                  .current_dse_prepopulate_id =
+                                      TemplateURLPrepopulateData::google.id,
+                              },
+                          .expect_choice_status_after =
+                              ChoiceStatus::kFromRestoredDevice,
+                      },
+                  }},
+         Spec{.test_name = "1pWaffleLocationIncompatible",
+              .restore_feature_state =
+                  Spec::RestoreFeatureState::kEnableJustInTime,
+              .waffle_restrict_to_associated_countries_feature_enabled = true,
+              .runs =
+                  {
+                      // Sets up Chrome as running in France, and having
+                      // selected Google on the choice screen
+                      {
+                          .update_device_state =
+                              Spec::DeviceStateChanges{
+                                  .device_country_id = CountryId("FR"),
+                              },
+                          .update_service_state =
+                              Spec::ServiceStateChanges{
+                                  .select_dse =
+                                      TemplateURLPrepopulateData::google.id,
+                                  .choice_location =
+                                      ChoiceMadeLocation::kChoiceScreen,
+                              },
+                          .expect_choice_status_after = ChoiceStatus::kValid,
+                      },
+                      // Simulates the device being restored, and its detection
+                      // in this run. We also change the variations country ID
+                      // to a non-Waffle one, so although the client would be
+                      // eligible for restore, it does not trigger due to not
+                      // being in the right location.
+                      {
+                          .update_device_state =
+                              Spec::DeviceStateChanges{
+                                  .variations_country_id = CountryId("US"),
+                                  .set_restored = true,
+                              },
+                          .expect_choice_status_before =
+                              ChoiceStatus::kFromRestoredDevice,
+                          .expect_with_services =
+                              Spec::ExpectationsWithServices{
+                                  .static_condition =
+                                      SearchEngineChoiceScreenConditions::
+                                          kIncompatibleCurrentLocation,
+                                  .dynamic_condition =
+                                      SearchEngineChoiceScreenConditions::
+                                          kIncompatibleCurrentLocation,
+                                  .current_dse_prepopulate_id =
+                                      TemplateURLPrepopulateData::google.id,
+                              },
+                          .expect_choice_status_after =
+                              ChoiceStatus::kFromRestoredDevice,
+                      },
+                  }},
 #if BUILDFLAG(IS_IOS)
          Spec{.test_name = "1pTaiyaki",
               .restore_feature_state =
@@ -1190,7 +1342,7 @@ INSTANTIATE_TEST_SUITE_P(
                       {
                           .update_device_state =
                               Spec::DeviceStateChanges{
-                                  .country_id = CountryId("JP"),
+                                  .device_country_id = CountryId("JP"),
                               },
                           .update_service_state =
                               Spec::ServiceStateChanges{
@@ -1236,7 +1388,7 @@ INSTANTIATE_TEST_SUITE_P(
                      {
                          .update_device_state =
                              Spec::DeviceStateChanges{
-                                 .country_id = CountryId("FR"),
+                                 .device_country_id = CountryId("FR"),
                              },
                          .update_service_state =
                              Spec::ServiceStateChanges{
@@ -1280,7 +1432,7 @@ INSTANTIATE_TEST_SUITE_P(
                       {
                           .update_device_state =
                               Spec::DeviceStateChanges{
-                                  .country_id = CountryId("FR"),
+                                  .device_country_id = CountryId("FR"),
                               },
                           .update_service_state =
                               Spec::ServiceStateChanges{
@@ -1359,7 +1511,7 @@ INSTANTIATE_TEST_SUITE_P(
                      {
                          .update_device_state =
                              Spec::DeviceStateChanges{
-                                 .country_id = CountryId("FR"),
+                                 .device_country_id = CountryId("FR"),
                              },
                          .update_service_state =
                              Spec::ServiceStateChanges{
@@ -1416,7 +1568,7 @@ INSTANTIATE_TEST_SUITE_P(
                      {
                          .update_device_state =
                              Spec::DeviceStateChanges{
-                                 .country_id = CountryId("FR"),
+                                 .device_country_id = CountryId("FR"),
                              },
                          .update_service_state =
                              Spec::ServiceStateChanges{
@@ -1527,7 +1679,7 @@ INSTANTIATE_TEST_SUITE_P(
                      {
                          .update_device_state =
                              Spec::DeviceStateChanges{
-                                 .country_id = CountryId("FR"),
+                                 .device_country_id = CountryId("FR"),
                              },
                          .update_service_state =
                              Spec::ServiceStateChanges{

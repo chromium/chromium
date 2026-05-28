@@ -504,6 +504,12 @@ chromium-metrics-reviews@google.com.
     offered on the choice screen set as default, while the program settings
     require to highlight the current default.
   </int>
+  <int value="24" label="UnavailableCurrentLocation">
+    The user's current location is unknown or invalid *and* the regional program
+    requires restricting to its associated countries. Note: it can be affected
+    by the client state (e.g. Desktop first run), leading to not emitting this
+    condition.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/enums.h:SearchEngineChoiceScreenConditions) -->

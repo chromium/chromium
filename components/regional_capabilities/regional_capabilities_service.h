@@ -134,10 +134,16 @@ class RegionalCapabilitiesService : public KeyedService {
   static bool IsInAnySearchEngineChoiceScreenRegion(Client& client);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  // Returns true when the choice screen eligibility check against country
-  // association is not required, or if the current location is compatible with
-  // the regional scope.
-  bool IsChoiceScreenCompatibleWithCurrentLocation();
+  enum class LocationCompatibility {
+    kCompatible,
+    kIncompatible,
+    kLocationUnknown,
+  };
+
+  // Returns `kCompatible` when the choice screen eligibility check against
+  // country association is not required, or if the current location is
+  // compatible with the regional scope.
+  LocationCompatibility IsChoiceScreenCompatibleWithCurrentLocation();
 
   // Returns whether display state metrics can be recorded.
   // `display_state_country_id` is passed by the caller as this may be used to

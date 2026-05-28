@@ -72,8 +72,13 @@ enum class SearchEngineChoiceScreenConditions {
   // offered on the choice screen set as default, while the program settings
   // require to highlight the current default.
   kHasNonHighlightablePrepopulatedSearchEngine = 23,
+  // The user's current location is unknown or invalid *and*
+  // the regional program requires restricting to its associated countries.
+  // Note: some flows (e.g. Desktop FRE or Profile Creation) might not emit this
+  // condition.
+  kUnavailableCurrentLocation = 24,
 
-  kMaxValue = kHasNonHighlightablePrepopulatedSearchEngine,
+  kMaxValue = kUnavailableCurrentLocation,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
 

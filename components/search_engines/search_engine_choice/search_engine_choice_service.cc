@@ -66,6 +66,8 @@
 
 using ::country_codes::CountryId;
 using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+using LocationCompatibility =
+    ::regional_capabilities::RegionalCapabilitiesService::LocationCompatibility;
 
 namespace search_engines {
 namespace {
@@ -279,6 +281,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
     case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
     case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
+    case SearchEngineChoiceScreenConditions::kUnavailableCurrentLocation:
     case SearchEngineChoiceScreenConditions::kAccountNotEligible:
     case SearchEngineChoiceScreenConditions::kIneligibleSurface:
     case SearchEngineChoiceScreenConditions::kManaged:
@@ -612,8 +615,12 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
-  if (!regional_capabilities_service_
-           ->IsChoiceScreenCompatibleWithCurrentLocation()) {
+  if (regional_capabilities_service_
+          ->IsChoiceScreenCompatibleWithCurrentLocation() ==
+      LocationCompatibility::kIncompatible) {
+    // Only check for `kIncompatible` here, do not flag `kLocationUnknown`. The
+    // latter will be handled as part of Dynamic checks, which may respond
+    // differently according to the calling context.
     return SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation;
   }
 
@@ -641,10 +648,25 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
 
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
-    const TemplateURLService& template_url_service) const {
+    const TemplateURLService& template_url_service,
+    DynamicConditionsCheckContext context) const {
 #if !BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
+
+  switch (regional_capabilities_service_
+              ->IsChoiceScreenCompatibleWithCurrentLocation()) {
+    case LocationCompatibility::kIncompatible:
+      return SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation;
+    case LocationCompatibility::kLocationUnknown:
+      if (!context.allow_unknown_current_location) {
+        return SearchEngineChoiceScreenConditions::kUnavailableCurrentLocation;
+      }
+      break;
+    case LocationCompatibility::kCompatible:
+      break;
+  }
+
   switch (EvaluateSearchProviderChoice(template_url_service)) {
     case ChoiceStatus::kValid:
       return SearchEngineChoiceScreenConditions::kAlreadyCompleted;

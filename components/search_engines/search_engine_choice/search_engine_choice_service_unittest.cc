@@ -1706,7 +1706,7 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
 
   search_engine_choice_service().RecordTriggeringEligibility(
       search_engine_choice_service().GetDynamicChoiceScreenConditions(
-          template_url_service()));
+          template_url_service(), {.allow_unknown_current_location = false}));
 
   EXPECT_TRUE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));

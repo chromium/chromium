@@ -99,6 +99,8 @@ std::string ToString(SearchEngineChoiceScreenConditions condition) {
       return "Managed";
     case SearchEngineChoiceScreenConditions::kEligibleForRestore:
       return "EligibleForRestore";
+    case SearchEngineChoiceScreenConditions::kUnavailableCurrentLocation:
+      return "UnavailableCurrentLocation";
   }
   NOTREACHED();
 }
@@ -126,6 +128,7 @@ bool IsEligible(SearchEngineChoiceScreenConditions condition) {
     case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
     case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
     case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
+    case SearchEngineChoiceScreenConditions::kUnavailableCurrentLocation:
     case SearchEngineChoiceScreenConditions::kAccountNotEligible:
     case SearchEngineChoiceScreenConditions::kIneligibleSurface:
     case SearchEngineChoiceScreenConditions::

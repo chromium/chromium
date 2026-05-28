@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -190,7 +191,8 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
       "ChoiceService", "pre_record_condition",
       static_cast<int>(
           search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-              *template_url_service_)));
+              *template_url_service_, {.allow_unknown_current_location =
+                                           first_run::IsChromeFirstRun()})));
 
   TemplateURL* selected_engine = nullptr;
   int selected_engine_index = -1;
@@ -358,7 +360,8 @@ SearchEngineChoiceDialogService::ComputeProfileManagementFlowConditions()
   CHECK(!browser_registry_.HasOpenDialog(), base::NotFatalUntil::M153);
 
   return search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-      *template_url_service_);
+      *template_url_service_,
+      {.allow_unknown_current_location = first_run::IsChromeFirstRun()});
 }
 
 SearchEngineChoiceScreenConditions
@@ -412,7 +415,8 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
 
   // Respect common conditions with other platforms.
   return search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-      *template_url_service_);
+      *template_url_service_,
+      {.allow_unknown_current_location = first_run::IsChromeFirstRun()});
 }
 
 bool SearchEngineChoiceDialogService::CanSuppressPrivacySandboxPromo() const {

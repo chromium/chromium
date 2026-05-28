@@ -48,7 +48,13 @@ SearchEngineChoiceTriggeringService::EvaluateTriggeringConditions(
   }
 
   conditions = search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-      template_url_service_.get());
+      template_url_service_.get(),
+      {
+          // Unlike Desktop, the current location should be available most of
+          // the time during FRE, so location-checked programs should not allow
+          // unknown. See go/rcaps-dynamic-profile-country-v2.
+          .allow_unknown_current_location = false,
+      });
   if (!regional_capabilities::IsEligible(conditions)) {
     return conditions;
   }

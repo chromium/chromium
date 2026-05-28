@@ -30,6 +30,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -371,6 +372,8 @@ class SearchEngineChoiceUIPixelTest
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "be");
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
