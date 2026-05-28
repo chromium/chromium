@@ -108,9 +108,12 @@ class ModelBrokerAndroidTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  FakeModelBrokerAndroid fake_broker_;
   OnDeviceBaseModelSpec spec_{
       "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED};
+  FakeModelBrokerAndroid fake_broker_{{
+      .metadata = MatchingMetadata(spec_),
+      .preinstall_base_model = false,
+  }};
   FakeAdaptationAsset test_asset_{{
       .config = UnsafeFeatureConfig(mojom::OnDeviceFeature::kTest),
       .metadata = MatchingMetadata(spec_),

@@ -5,6 +5,7 @@
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "services/on_device_model/android/native_j_unittests_jni_headers/OnDeviceModelBridgeNativeUnitTestHelper_jni.h"
 
@@ -112,6 +113,12 @@ int OnDeviceModelBridgeNativeUnitTestHelper::GetStatusCheckerCount() {
       env, java_helper_);
 }
 
+void OnDeviceModelBridgeNativeUnitTestHelper::UnInstallModel() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_unInstallModel(env,
+                                                              java_helper_);
+}
+
 OnDeviceModelBridgeNativeUnitTestSettings::
     OnDeviceModelBridgeNativeUnitTestSettings() = default;
 
@@ -165,6 +172,23 @@ void OnDeviceModelBridgeNativeUnitTestSettings::SetDefaultStatusCheckResult(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MockAiCoreSettings_setDefaultStatusCheckResult(
       env, java_settings_, status.has_value() ? static_cast<int>(*status) : -1);
+}
+
+void OnDeviceModelBridgeNativeUnitTestSettings::SetSizeInTokens(
+    int size_in_tokens) {
+  CHECK(java_settings_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MockAiCoreSettings_setSizeInTokens(env, java_settings_, size_in_tokens);
+}
+
+void OnDeviceModelBridgeNativeUnitTestSettings::SetExecuteResult(
+    const std::vector<std::string>& execute_result) {
+  CHECK(java_settings_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobjectArray> j_string_result =
+      base::android::ToJavaArrayOfStrings(env, execute_result);
+  Java_MockAiCoreSettings_setExecuteResult(env, java_settings_,
+                                           j_string_result);
 }
 
 }  // namespace on_device_model

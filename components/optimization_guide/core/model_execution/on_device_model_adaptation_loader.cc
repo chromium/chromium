@@ -93,6 +93,12 @@ bool ArePerformanceHintsCompatible(
   if (adaptation_metadata.supported_performance_hints().empty()) {
     return true;
   }
+  // If the base model has no specific hint, it's compatible with any
+  // adaptation.
+  if (base_spec.selected_performance_hint ==
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED) {
+    return true;
+  }
   // Check if the adaptation model supports any of the base model's hints.
   return std::ranges::contains(
       adaptation_metadata.supported_performance_hints(),

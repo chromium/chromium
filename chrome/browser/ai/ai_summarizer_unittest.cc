@@ -111,6 +111,9 @@ blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// This method is not used on Android as Android doesn't support text safety
+// yet. crbug.com/442914748
 optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
   optimization_guide::proto::FeatureTextSafetyConfiguration safety_config;
   safety_config.set_feature(
@@ -128,6 +131,7 @@ optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
   }
   return safety_config;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class AISummarizerTest : public AITestUtils::AITestBase {
  protected:
@@ -177,7 +181,7 @@ class AISummarizerTest : public AITestUtils::AITestBase {
   void RunSimpleSummarizeTest(blink::mojom::AISummarizerType type,
                               blink::mojom::AISummarizerFormat format,
                               blink::mojom::AISummarizerLength length) {
-    fake_broker_->settings().set_execute_result({"Result text"});
+    SetExecuteResult({"Result text"});
 
     const auto options = blink::mojom::AISummarizerCreateOptions::New(
         /*shared_context=*/"", type, format, length,
@@ -316,6 +320,11 @@ TEST_F(AISummarizerTest, SummarizeTelemetry) {
 }
 
 TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
+#if BUILDFLAG(IS_ANDROID)
+  UnInstallBaseModel();
+  fake_broker_->java_helper().settings().SetDefaultStatusCheckResult(
+      on_device_model::ModelDownloaderAndroid::ModelStatus::kUnavailable);
+#else
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {optimization_guide::features::kOnDeviceModelPerformanceParams},
@@ -323,6 +332,7 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
 
   fake_broker_->service_settings().performance_class =
       PerformanceClass::kVeryLow;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
@@ -335,7 +345,10 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
 }
 
 TEST_F(AISummarizerTest, CreateSummarizerWaitsForBaseModel) {
-  fake_broker_->InstallBaseModel(nullptr);
+  // Uninstall the base model preinstalled by FakeModelBroker during
+  // initialization. uninstall it to verify that CreateSummarizer correctly
+  // waits for the base model to be ready.
+  UnInstallBaseModel();
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
@@ -346,8 +359,7 @@ TEST_F(AISummarizerTest, CreateSummarizerWaitsForBaseModel) {
   task_environment()->FastForwardBy(base::Hours(1));
   EXPECT_FALSE(future.IsReady());
 
-  fake_broker_->InstallBaseModel(
-      std::make_unique<optimization_guide::FakeBaseModelAsset>());
+  InstallBaseModel();
 
   EXPECT_OK(future.Take());
 }
@@ -373,6 +385,23 @@ TEST_F(AISummarizerTest, CreateSummarizerWaitsForModelAdaptation) {
   EXPECT_OK(future.Take());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Android doesn't support text safety yet. crbug.com/442914748
+TEST_F(AISummarizerTest, CreateSummarizerWithTextSafetyCheck) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  TestCreateSummarizerClient create_summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  CreateSummarizerResult result = create_summarizer_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+#else
 TEST_F(AISummarizerTest, CreateSummarizerWaitsForTextSafetyModel) {
   optimization_guide::FakeAdaptationAsset fake_asset(
       {.config = CreateSafeConfig()});
@@ -415,6 +444,7 @@ TEST_F(AISummarizerTest, CreateSummarizerSafetyConfigNotAvailable) {
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
   // Incorrect `request_base_name` cause session to fail constructing input
@@ -440,8 +470,7 @@ TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
 }
 
 TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
-  fake_broker_->settings().set_size_in_tokens(
-      blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+  SetSizeInTokens(blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
 
   TestCreateSummarizerClient create_summarizer_client;
   auto options = GetDefaultOptions();
@@ -495,8 +524,7 @@ TEST_F(AISummarizerTest, SummarizeWithOptions) {
 TEST_F(AISummarizerTest, InputLimitExceededError) {
   auto summarizer_remote = GetAISummarizerRemote();
 
-  fake_broker_->settings().set_size_in_tokens(
-      blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+  SetSizeInTokens(blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
 
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize(kInputString, kContextString,
@@ -514,7 +542,7 @@ TEST_F(AISummarizerTest, SummarizeMultipleResponse) {
   auto summarizer_remote = GetAISummarizerRemote();
 
   std::vector<std::string> result = {"Result ", "text"};
-  fake_broker_->settings().set_execute_result(result);
+  SetExecuteResult(result);
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
               ElementsAreArray(result));
 }
@@ -523,12 +551,12 @@ TEST_F(AISummarizerTest, MultipleSummarize) {
   auto summarizer_remote = GetAISummarizerRemote();
 
   std::vector<std::string> result = {"Result ", "text"};
-  fake_broker_->settings().set_execute_result(result);
+  SetExecuteResult(result);
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
               ElementsAreArray(result));
 
   std::vector<std::string> result2 = {"Result ", "text ", "2"};
-  fake_broker_->settings().set_execute_result(result2);
+  SetExecuteResult(result2);
   EXPECT_THAT(Summarize(*summarizer_remote, "input string 2", "test context 2"),
               ElementsAreArray(result2));
 }
@@ -548,8 +576,9 @@ TEST_F(AISummarizerTest, MeasureUsage) {
             std::string(kInputString).size() + context.size());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AISummarizerTest, Priority) {
-  fake_broker_->settings().set_execute_result({"hi"});
+  SetExecuteResult({"hi"});
   auto summarizer_remote = GetAISummarizerRemote();
 
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
@@ -564,6 +593,7 @@ TEST_F(AISummarizerTest, Priority) {
               ElementsAre("hi"));
 }
 
+// Android doesn't support text safety yet. crbug.com/442914748
 TEST_F(AISummarizerTest, TextSafetyInput) {
   optimization_guide::FakeAdaptationAsset fake_asset(
       {.config = CreateSafeConfig()});
@@ -571,7 +601,7 @@ TEST_F(AISummarizerTest, TextSafetyInput) {
   optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
   fake_broker_->UpdateSafetyModel(safety_asset);
 
-  fake_broker_->settings().set_execute_result({"hi"});
+  SetExecuteResult({"hi"});
   auto summarizer_remote = GetAISummarizerRemote();
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
               ElementsAre("hi"));
@@ -591,7 +621,7 @@ TEST_F(AISummarizerTest, TextSafetyContext) {
   optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
   fake_broker_->UpdateSafetyModel(safety_asset);
 
-  fake_broker_->settings().set_execute_result({"hi"});
+  SetExecuteResult({"hi"});
   auto summarizer_remote = GetAISummarizerRemote();
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
               ElementsAre("hi"));
@@ -641,8 +671,7 @@ TEST_F(AISummarizerTest, TextSafetyOutput) {
   fake_broker_->UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
-  fake_broker_->settings().set_execute_result(
-      {"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
+  SetExecuteResult({"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize(kInputString, kContextString,
@@ -666,8 +695,7 @@ TEST_F(AISummarizerTest, TextSafetyOutputPartial) {
   fake_broker_->UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
-  fake_broker_->settings().set_execute_result(
-      {"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
+  SetExecuteResult({"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize(kInputString, kContextString,
@@ -680,7 +708,7 @@ TEST_F(AISummarizerTest, TextSafetyOutputPartial) {
 }
 
 TEST_F(AISummarizerTest, ServiceCrash) {
-  fake_broker_->settings().set_execute_result({"hi"});
+  SetExecuteResult({"hi"});
 
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::TestStreamingResponder responder;
@@ -714,6 +742,7 @@ TEST_F(AISummarizerTest, CrashRecoveryMeasureInputUsage) {
   EXPECT_EQ(measure_future.Get(),
             std::string(kInputString).size() + context.size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AISummarizerTest, CanCreatePermissionsPolicyDisabled) {
   DisablePolicy(network::mojom::PermissionsPolicyFeature::kSummarizer);
@@ -780,6 +809,8 @@ TEST_F(AISummarizerTest, CreateOnDeviceAiUserSettingDisabled) {
   SetOnDeviceAiUserSetting(true);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android doesn't support constraints yet. crbug.com/515155969
 TEST_F(AISummarizerTest, DynamicConstraints) {
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
       CreateConfig();
@@ -796,7 +827,7 @@ TEST_F(AISummarizerTest, DynamicConstraints) {
   optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
   fake_broker_->UpdateModelAdaptation(fake_asset);
 
-  fake_broker_->settings().set_execute_result({"TLDR: Result text"});
+  SetExecuteResult({"TLDR: Result text"});
 
   auto options = GetDefaultOptions();
   options->type = blink::mojom::AISummarizerType::kTLDR;
@@ -823,7 +854,7 @@ TEST_F(AISummarizerTest, NoConstraints) {
   optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
   fake_broker_->UpdateModelAdaptation(fake_asset);
 
-  fake_broker_->settings().set_execute_result({"Result text"});
+  SetExecuteResult({"Result text"});
 
   mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
       GetAISummarizerRemote(GetDefaultOptions());
@@ -839,7 +870,7 @@ TEST_F(AISummarizerTest, NoMetadata) {
   optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
   fake_broker_->UpdateModelAdaptation(fake_asset);
 
-  fake_broker_->settings().set_execute_result({"Result text"});
+  SetExecuteResult({"Result text"});
 
   mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
       GetAISummarizerRemote(GetDefaultOptions());
@@ -847,6 +878,7 @@ TEST_F(AISummarizerTest, NoMetadata) {
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
               ElementsAreArray({"Result text"}));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
  public:

@@ -8324,6 +8324,7 @@ test("unit_tests") {
       "//components/webauthn/android:test_support",
       "//content/public/android:content_java",
       "//gin:v8_snapshot_assets",
+      "//services/on_device_model/android:native_java_unittests_java",
       "//ui/accessibility",
       "//ui/android",
       "//ui/events/devices:test_support",

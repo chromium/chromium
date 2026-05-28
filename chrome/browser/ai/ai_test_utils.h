@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -29,6 +30,10 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
+#endif
 
 class AITestUtils {
  public:
@@ -113,6 +118,11 @@ class AITestUtils {
     // Navigates to disable the specified policy and recreates `ai_manager_`.
     void DisablePolicy(network::mojom::PermissionsPolicyFeature feature);
 
+    void InstallBaseModel();
+    void UnInstallBaseModel();
+    void SetSizeInTokens(uint32_t size);
+    void SetExecuteResult(const std::vector<std::string>& result);
+
     // Helpers to set enterprise policies and user settings for testing.
     void SetBuiltInAIAPIsEnterprisePolicy(bool allowed);
     void SetGenAILocalEnterprisePolicy(bool allowed);
@@ -120,7 +130,11 @@ class AITestUtils {
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
+#if BUILDFLAG(IS_ANDROID)
+    std::unique_ptr<optimization_guide::FakeModelBrokerAndroid> fake_broker_;
+#else
     std::unique_ptr<optimization_guide::FakeModelBroker> fake_broker_;
+#endif
     std::unique_ptr<optimization_guide::FakeAdaptationAsset> fake_asset_;
 
     std::unique_ptr<AIManager> ai_manager_;

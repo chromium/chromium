@@ -44,46 +44,71 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             mSettings = settings;
         }
 
+        private String placeholder(int token) {
+            switch (token) {
+                case Token.SYSTEM:
+                    return "<system>";
+                case Token.MODEL:
+                    return "<model>";
+                case Token.USER:
+                    return "<user>";
+                case Token.END:
+                    return "<end>";
+                default:
+                    throw new UnsupportedOperationException("Unsupported token: " + token);
+            }
+        }
+
+        private String inputToString(InputPiece[] inputPieces) {
+            StringBuilder sb = new StringBuilder();
+            for (InputPiece inputPiece : inputPieces) {
+                switch (inputPiece.which()) {
+                    case InputPiece.Tag.Token:
+                        sb.append(placeholder(inputPiece.getToken()));
+                        break;
+                    case InputPiece.Tag.Text:
+                        sb.append(inputPiece.getText());
+                        break;
+                    case InputPiece.Tag.Bitmap:
+                        sb.append("<image>");
+                        break;
+                    default:
+                        throw new UnsupportedOperationException(
+                                "Unsupported input piece: " + inputPiece.which());
+                }
+            }
+            return sb.toString();
+        }
+
         @Override
         public void generate(
                 GenerateOptions generateOptions,
                 InputPiece[] inputPieces,
                 SessionResponder responder) {
             mGenerateOptions = generateOptions;
-            StringBuilder sb = new StringBuilder();
-            for (InputPiece inputPiece : inputPieces) {
-                switch (inputPiece.which()) {
-                    case InputPiece.Tag.Token:
-                        switch (inputPiece.getToken()) {
-                            case Token.SYSTEM:
-                                sb.append("<system>");
-                                break;
-                            case Token.MODEL:
-                                sb.append("<model>");
-                                break;
-                            case Token.USER:
-                                sb.append("<user>");
-                                break;
-                            case Token.END:
-                                sb.append("<end>");
-                                break;
-                        }
-                        break;
-                    case InputPiece.Tag.Text:
-                        sb.append(inputPiece.getText());
-                        break;
-                }
+            Runnable sendResponses;
+            if (mSettings.mExecuteResult.length == 0) {
+                sendResponses = () -> responder.onResponse(inputToString(inputPieces));
+            } else {
+                sendResponses =
+                        () -> {
+                            for (String result : mSettings.mExecuteResult) {
+                                responder.onResponse(result);
+                            }
+                        };
             }
+
             if (mSettings.mSessionCallbackOnDifferentThread) {
                 new Thread(
                                 () -> {
-                                    responder.onResponse(sb.toString());
+                                    sendResponses.run();
                                     responder.onComplete(mSettings.mGenerateResult);
                                 })
                         .start();
                 return;
             }
-            responder.onResponse(sb.toString());
+            sendResponses.run();
+
             if (mSettings.mCompleteAsync) {
                 mResponder = responder;
             } else {
@@ -93,15 +118,10 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
         @Override
         public void getSizeInTokens(InputPiece[] inputPieces, SessionResponder responder) {
-            int tokenSize = 0;
-            for (InputPiece inputPiece : inputPieces) {
-                switch (inputPiece.which()) {
-                    case InputPiece.Tag.Text:
-                        tokenSize += inputPiece.getText().length();
-                        break;
-                }
-            }
-            final int finalTokenSize = tokenSize;
+            final int finalTokenSize =
+                    mSettings.mSizeInTokens != 0
+                            ? mSettings.mSizeInTokens
+                            : inputToString(inputPieces).length();
             if (mSettings.mSessionCallbackOnDifferentThread) {
                 new Thread(() -> responder.onSizeInTokensResult(finalTokenSize)).start();
             } else {
@@ -151,6 +171,10 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         public void startDownload(DownloaderResponder responder) {
             mIsModelDownloader = true;
             mResponder = responder;
+
+            if (mSettings.mModelInfo != null) {
+                responder.onAvailable(mSettings.mModelInfo.mName, mSettings.mModelInfo.mVersion);
+            }
         }
 
         @Override
@@ -286,6 +310,16 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
     }
 
+    public static class ModelInfo {
+        public String mName;
+        public String mVersion;
+
+        public ModelInfo(String name, String version) {
+            mName = name;
+            mVersion = version;
+        }
+    }
+
     /** Encapsulates generate result configuration. */
     public static class MockAiCoreSettings {
         public @GenerateResult int mGenerateResult = GenerateResult.SUCCESS;
@@ -301,6 +335,18 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         // If non-negative, checkStatus() in AiCoreModelDownloaderBackend auto-responds with this
         // result. -1 means unset.
         public int mDefaultStatusCheckResult = -1;
+        // If non-zero, getSizeInTokens() returns this value instead of computing from input.
+        public int mSizeInTokens;
+        // If non-empty, generate() uses these strings as responses instead of echoing input.
+        public String[] mExecuteResult = new String[0];
+        // If non-null, the downloader backend will call onAvailable with this model info when
+        // startDownload is called.
+        public ModelInfo mModelInfo;
+
+        @CalledByNative
+        public void setSizeInTokens(int sizeInTokens) {
+            mSizeInTokens = sizeInTokens;
+        }
 
         @CalledByNative
         public void setGenerateResult(int generateResult) {
@@ -326,6 +372,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         @CalledByNative
         public void setDefaultStatusCheckResult(int defaultStatusCheckResult) {
             mDefaultStatusCheckResult = defaultStatusCheckResult;
+        }
+
+        @CalledByNative
+        public void setExecuteResult(String[] executeResult) {
+            mExecuteResult = executeResult;
         }
     }
 
@@ -405,8 +456,19 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
+    public void unInstallModel() {
+        mSettings.mModelInfo = null;
+    }
+
+    @CalledByNative
     public void triggerDownloaderOnAvailable(String name, String version) {
-        mMockAiCoreFactory.getModelDownloaderBackend().onAvailable(name, version);
+        if (mMockAiCoreFactory.getModelDownloaderBackend() != null) {
+            mMockAiCoreFactory.getModelDownloaderBackend().onAvailable(name, version);
+        } else {
+            // cache the model info in settings so that when startDownload is called, the backend
+            // can respond with this info.
+            mSettings.mModelInfo = new ModelInfo(name, version);
+        }
     }
 
     @CalledByNative

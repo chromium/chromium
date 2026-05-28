@@ -25,10 +25,15 @@ ScopedModelBrokerAndroidFeatureList::ScopedModelBrokerAndroidFeatureList() {
 ScopedModelBrokerAndroidFeatureList::~ScopedModelBrokerAndroidFeatureList() =
     default;
 
-FakeModelBrokerAndroid::FakeModelBrokerAndroid() {
+FakeModelBrokerAndroid::FakeModelBrokerAndroid(const Options& options)
+    : options_(options) {
   java_helper_.SetMockAiCoreFactory();
   java_helper_.settings().SetDefaultStatusCheckResult(
       on_device_model::ModelDownloaderAndroid::ModelStatus::kAvailable);
+
+  if (options.preinstall_base_model) {
+    InstallBaseModel();
+  }
 }
 
 FakeModelBrokerAndroid::~FakeModelBrokerAndroid() = default;
@@ -38,6 +43,16 @@ FakeModelBrokerAndroid::BindAndPassRemote() {
   mojo::PendingRemote<mojom::ModelBroker> remote;
   EnsureBroker().BindModelBroker(remote.InitWithNewPipeAndPassReceiver());
   return remote;
+}
+
+void FakeModelBrokerAndroid::InstallBaseModel() {
+  java_helper_.TriggerDownloaderOnAvailable(
+      options_.metadata.base_model_name(),
+      options_.metadata.base_model_version());
+}
+
+void FakeModelBrokerAndroid::UnInstallBaseModel() {
+  java_helper_.UnInstallModel();
 }
 
 void FakeModelBrokerAndroid::UpdateModelAdaptation(

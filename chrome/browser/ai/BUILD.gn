@@ -124,15 +124,19 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ai_classifier_unittest.cc",
-    "ai_language_model_unittest.cc",
     "ai_manager_unittest.cc",
-    "ai_proofreader_unittest.cc",
-    "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
     "ai_utils_unittest.cc",
-    "ai_writer_unittest.cc",
   ]
+  if (!is_android) {
+    sources += [
+      "ai_classifier_unittest.cc",
+      "ai_language_model_unittest.cc",
+      "ai_proofreader_unittest.cc",
+      "ai_rewriter_unittest.cc",
+      "ai_writer_unittest.cc",
+    ]
+  }
   deps = [
     ":ai",
     ":test_support",

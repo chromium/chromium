@@ -6,6 +6,8 @@
 #define SERVICES_ON_DEVICE_MODEL_ANDROID_ON_DEVICE_MODEL_BRIDGE_NATIVE_UNITTEST_HELPER_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -28,6 +30,9 @@ class OnDeviceModelBridgeNativeUnitTestSettings {
       bool downloader_callback_on_different_thread);
   void SetDefaultStatusCheckResult(
       std::optional<ModelDownloaderAndroid::ModelStatus> status);
+
+  void SetSizeInTokens(int size_in_tokens);
+  void SetExecuteResult(const std::vector<std::string>& execute_result);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_settings_;
@@ -74,6 +79,7 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
       ModelDownloaderAndroid::ModelStatus model_status);
   void TriggerAllDownloadersOnStatusCheckResult(
       ModelDownloaderAndroid::ModelStatus model_status);
+  void UnInstallModel();
 
   int GetStatusCheckerCount();
 

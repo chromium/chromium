@@ -30,10 +30,21 @@ class ScopedModelBrokerAndroidFeatureList {
 
 class FakeModelBrokerAndroid {
  public:
-  FakeModelBrokerAndroid();
+  struct Options {
+    proto::OnDeviceBaseModelMetadata metadata =
+        FakeBaseModelAsset::DefaultSpec();
+    // If true, the Java ModelDownloader will report the base model as already
+    // installed.
+    bool preinstall_base_model = true;
+  };
+
+  explicit FakeModelBrokerAndroid(const Options& options);
   ~FakeModelBrokerAndroid();
 
   mojo::PendingRemote<mojom::ModelBroker> BindAndPassRemote();
+
+  void InstallBaseModel();
+  void UnInstallBaseModel();
 
   void UpdateModelAdaptation(const FakeAdaptationAsset& asset);
 
@@ -41,12 +52,14 @@ class FakeModelBrokerAndroid {
   on_device_model::OnDeviceModelBridgeNativeUnitTestHelper& java_helper() {
     return java_helper_;
   }
+  ModelProviderRegistry& model_provider() { return model_provider_; }
 
  private:
   ModelBrokerAndroid& EnsureBroker();
   void UpdateTarget(proto::OptimizationTarget target,
                     const ModelInfo& model_info);
 
+  Options options_;
   ScopedModelBrokerAndroidFeatureList feature_list_;
   ModelBrokerPrefService local_state_;
   OptimizationGuideLogger logger_;

@@ -353,8 +353,8 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTokenInput) {
   session->SizeInTokens(mojom::Input::New(std::move(pieces)),
                         future.GetCallback());
 
-  // The mock counts only text characters, so "system message" = 14 chars.
-  EXPECT_EQ(future.Get(), 14u);
+  // The output is "<system>system message<end>" total characters is 27.
+  EXPECT_EQ(future.Get(), 27u);
 }
 
 TEST_F(BackendModelImplAndroidTest, SizeInTokensCallbackOnDifferentThread) {

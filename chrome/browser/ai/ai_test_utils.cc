@@ -77,10 +77,17 @@ AITestUtils::AITestBase::~AITestBase() = default;
 void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
+#if BUILDFLAG(IS_ANDROID)
+  fake_broker_ = std::make_unique<optimization_guide::FakeModelBrokerAndroid>(
+      optimization_guide::FakeModelBrokerAndroid::Options{});
+  fake_broker_->java_helper().settings().SetDefaultStatusCheckResult(
+      on_device_model::ModelDownloaderAndroid::ModelStatus::kDownloadable);
+#else
   optimization_guide::FakeModelBroker::Options options{
       .performance_class =
           optimization_guide::OnDeviceModelPerformanceClass::kUnknown};
   fake_broker_ = std::make_unique<optimization_guide::FakeModelBroker>(options);
+#endif
   optimization_guide::FakeAdaptationAsset::Content content{.config =
                                                                CreateConfig()};
   fake_asset_ = std::make_unique<optimization_guide::FakeAdaptationAsset>(
@@ -194,6 +201,40 @@ void AITestUtils::AITestBase::DisablePolicy(
   ai_manager_ = std::make_unique<AIManager>(
       navigation->GetFinalRenderFrameHost()->GetBrowserContext(),
       navigation->GetFinalRenderFrameHost());
+}
+
+void AITestUtils::AITestBase::InstallBaseModel() {
+#if BUILDFLAG(IS_ANDROID)
+  fake_broker_->InstallBaseModel();
+#else
+  fake_broker_->InstallBaseModel(
+      std::make_unique<optimization_guide::FakeBaseModelAsset>());
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void AITestUtils::AITestBase::UnInstallBaseModel() {
+#if BUILDFLAG(IS_ANDROID)
+  fake_broker_->UnInstallBaseModel();
+#else
+  fake_broker_->InstallBaseModel(nullptr);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void AITestUtils::AITestBase::SetSizeInTokens(uint32_t size) {
+#if BUILDFLAG(IS_ANDROID)
+  fake_broker_->java_helper().settings().SetSizeInTokens(size);
+#else
+  fake_broker_->settings().set_size_in_tokens(size);
+#endif
+}
+
+void AITestUtils::AITestBase::SetExecuteResult(
+    const std::vector<std::string>& result) {
+#if BUILDFLAG(IS_ANDROID)
+  fake_broker_->java_helper().settings().SetExecuteResult(result);
+#else
+  fake_broker_->settings().set_execute_result(result);
+#endif
 }
 
 void AITestUtils::AITestBase::SetBuiltInAIAPIsEnterprisePolicy(bool allowed) {
