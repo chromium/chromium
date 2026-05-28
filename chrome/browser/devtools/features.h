@@ -133,6 +133,8 @@ extern const base::FeatureParam<bool>
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceV2);
 
+BASE_DECLARE_FEATURE(kDevToolsAiV2Architecture);
+
 BASE_DECLARE_FEATURE(kDevToolsProtocolMonitor);
 
 BASE_DECLARE_FEATURE(kDevToolsGeminiRebranding);

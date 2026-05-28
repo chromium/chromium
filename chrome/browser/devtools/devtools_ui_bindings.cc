@@ -1960,6 +1960,11 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                         "enabled", base::FeatureList::IsEnabled(
                                        ::features::kDevToolsAiAssistanceV2)));
 
+  response_dict.Set("devToolsAiV2Architecture",
+                    base::DictValue().Set(
+                        "enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsAiV2Architecture)));
+
   if (base::FeatureList::IsEnabled(::features::kDevToolsAiCodeCompletion)) {
     base::DictValue ai_code_completion_dict;
     ai_code_completion_dict.Set(

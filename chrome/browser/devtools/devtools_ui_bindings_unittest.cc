@@ -974,11 +974,16 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   ASSERT_TRUE(initial_freestyler);
   EXPECT_TRUE(initial_freestyler->FindBool("enabled").value_or(false));
 
+  const base::DictValue* initial_aiv2_arch =
+      initial_config.FindDict("devToolsAiV2Architecture");
+  ASSERT_TRUE(initial_aiv2_arch);
+  EXPECT_FALSE(initial_aiv2_arch->FindBool("enabled").value_or(true));
+
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {::features::kDevToolsGreenDevUi, ::features::kDevToolsProtocolMonitor,
-       ::features::kDevToolsFreestyler},
+       ::features::kDevToolsFreestyler, ::features::kDevToolsAiV2Architecture},
       {});
 
   // Verify state of features after enabling them.
@@ -997,6 +1002,11 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   const base::DictValue* freestyler = result.FindDict("devToolsFreestyler");
   ASSERT_TRUE(freestyler);
   EXPECT_TRUE(freestyler->FindBool("enabled").value_or(false));
+
+  const base::DictValue* aiv2_arch =
+      result.FindDict("devToolsAiV2Architecture");
+  ASSERT_TRUE(aiv2_arch);
+  EXPECT_TRUE(aiv2_arch->FindBool("enabled").value_or(false));
 }
 
 TEST_F(DevToolsUIBindingsHostConfigTest, SetChromeFlag) {
