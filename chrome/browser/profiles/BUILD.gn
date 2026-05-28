@@ -428,7 +428,6 @@ source_set("profile_manager_impl") {
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/arc/policy",
       "//chrome/browser/ash/profiles",
-      "//chrome/browser/chromeos/extensions/contact_center_insights",
       "//chrome/browser/chromeos/extensions/desk_api",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/experiences/arc/session:arc_base_enums",

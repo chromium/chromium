@@ -153,7 +153,6 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -1592,15 +1591,12 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
       extensions_enabled);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Ensure that the `ContactCenterInsightsExtensionManager` is instantiated
+  // Ensure that the `DeskApiExtensionManager` is instantiated
   // after other systems are set up and only when extensions are enabled for the
   // given profile. This is done in `ProfileManager` so we can repurpose the
   // same pre-conditional checks that are being used with other extension
   // components and we can maintain said order.
   if (extensions_enabled) {
-    ::chromeos::ContactCenterInsightsExtensionManagerFactory::GetForProfile(
-        profile);
-
     ::chromeos::DeskApiExtensionManagerFactory::GetForProfile(profile);
   }
 #endif

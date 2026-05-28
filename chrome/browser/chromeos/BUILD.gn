@@ -19,7 +19,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/arc:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/component_extension_content_settings:unit_tests",
-    "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
     "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
@@ -48,7 +47,6 @@ group("browser_tests") {
 
   deps = [
     "//chrome/browser/chromeos/app_mode:browser_tests",
-    "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
     "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
     "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login:browser_tests",

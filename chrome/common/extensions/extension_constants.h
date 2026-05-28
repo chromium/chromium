@@ -196,9 +196,7 @@ inline constexpr char kGnubbyV3ExtensionId[] =
     "lfboplenmmjcmpbkeemecobbadnmpfhi";
 // The extension id of the GCSE.
 inline constexpr char kGCSEExtensionId[] = "cfmgaohenjcikllcgjpepfadgbflcjof";
-// The extension id of the Contact Center Insights chrome component extension.
-inline constexpr char kContactCenterInsightsExtensionId[] =
-    "oebfonohdfogiaaaelfmjlkjbgdbaahf";
+
 // The extension id of the Desk API chrome component extension.
 inline constexpr char kDeskApiExtensionId[] =
     "kflgdebkpepnpjobkdfeeipcjdahoomc";

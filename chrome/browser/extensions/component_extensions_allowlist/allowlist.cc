@@ -46,7 +46,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kGuestModeTestExtensionId,
       extension_misc::kSelectToSpeakExtensionId,
       extension_misc::kSwitchAccessExtensionId,
-      extension_misc::kContactCenterInsightsExtensionId,
       extension_misc::kDeskApiExtensionId,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       extension_misc::kQuickOfficeComponentExtensionId,
@@ -105,7 +104,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDR_HELP_MANIFEST:
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case IDR_CONTACT_CENTER_INSIGHTS_MANIFEST:
     case IDR_DESK_API_MANIFEST:
     case IDR_ECHO_MANIFEST:
 #endif  // BUILDFLAG(IS_CHROMEOS)

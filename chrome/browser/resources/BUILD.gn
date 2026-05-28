@@ -231,7 +231,6 @@ if (is_chromeos && enable_js_type_check) {
   group("closure_compile") {
     deps = [
       "chromeos:closure_compile",
-      "chromeos/contact_center_insights:closure_compile",
       "gaia_auth_host:closure_compile",
     ]
   }
@@ -253,7 +252,6 @@ if (enable_extensions_core) {
     if (is_chromeos) {
       deps += [
         "chromeos/accessibility/braille_ime:build_ts",
-        "chromeos/contact_center_insights:generate_ccaas_deps",
         "chromeos/desk_api:generate_desk_api_bundle",
       ]
     }
