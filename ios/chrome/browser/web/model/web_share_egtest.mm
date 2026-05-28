@@ -96,7 +96,6 @@ void TapWebShareButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
