@@ -1638,16 +1638,25 @@ class InterestGroupAuction::BuyerHelper
                                       update_if_older_than);
     std::optional<double> new_priority;
     if (!priority_vector.empty()) {
-      new_priority = CalculateInterestGroupPriority(
-          *auction_->config_, *(state->bidder), auction_->auction_start_time_,
-          priority_vector,
-          (interest_group.priority_vector &&
-           !interest_group.priority_vector->empty())
-              ? state->calculated_priority
-              : std::optional<double>());
-      if (*new_priority < 0) {
-        auction_->auction_metrics_recorder_
-            ->RecordBidFilteredDuringReprioritization();
+      bool valid_priority_vector = true;
+      for (const auto& [unused_signal_name, value] : priority_vector) {
+        if (!std::isfinite(value)) {
+          valid_priority_vector = false;
+          break;
+        }
+      }
+      if (valid_priority_vector) {
+        new_priority = CalculateInterestGroupPriority(
+            *auction_->config_, *(state->bidder), auction_->auction_start_time_,
+            priority_vector,
+            (interest_group.priority_vector &&
+             !interest_group.priority_vector->empty())
+                ? state->calculated_priority
+                : std::optional<double>());
+        if (*new_priority < 0) {
+          auction_->auction_metrics_recorder_
+              ->RecordBidFilteredDuringReprioritization();
+        }
       }
     }
     OnBiddingSignalsReceivedInternal(state, new_priority,
