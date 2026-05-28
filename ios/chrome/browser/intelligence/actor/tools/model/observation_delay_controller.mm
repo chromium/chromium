@@ -13,7 +13,8 @@
 #import "base/notreached.h"
 #import "base/state_transitions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
+#import "components/actor/core/aggregated_journal.h"
+#import "components/actor/core/journal_details_builder.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -42,7 +43,8 @@ void ObservationDelayController::Wait(base::WeakPtr<web::WebState> web_state,
                                       base::WeakPtr<web::WebFrame> web_frame,
                                       ReadyCallback callback) {
   if (journal_) {
-    journal_->Log(GURL(), task_id_, "ObservationDelay: Wait", {});
+    journal_->Log(GURL(), task_id_, "ObservationDelay: Wait",
+                  /*details=*/{});
   }
   if (web_state) {
     web_state_ = web_state;
@@ -97,9 +99,13 @@ void ObservationDelayController::MoveToState(State state) {
   }
   CheckStateTransition(state_, state);
   if (journal_) {
+    std::vector<mojom::JournalDetailsPtr> details =
+        JournalDetailsBuilder()
+            .Add("old_state", std::string(StateToString(state_)))
+            .Add("new_state", std::string(StateToString(state)))
+            .Build();
     journal_->Log(GURL(), task_id_, "ObservationDelay: State Change",
-                  {{"old_state", std::string(StateToString(state_))},
-                   {"new_state", std::string(StateToString(state))}});
+                  std::move(details));
   }
 
   state_ = state;

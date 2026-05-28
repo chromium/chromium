@@ -320,8 +320,8 @@ source_set("page_stability") {
   deps = [
     ":java_script_features",
     "//base",
+    "//components/actor/core:journal",
     "//components/page_content_annotations/core",
-    "//ios/chrome/browser/intelligence/actor/model:aggregated_journal",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/features",

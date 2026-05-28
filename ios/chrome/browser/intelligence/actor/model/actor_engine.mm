@@ -7,8 +7,9 @@
 #import "base/functional/bind.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
+#import "components/actor/core/aggregated_journal.h"
+#import "components/actor/core/journal_details_builder.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
-#import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -91,9 +92,11 @@ void LogEngineStateTransition(AggregatedJournal* journal,
                               ActorEngine::State new_state) {
   CHECK(journal);
 
-  std::vector<JournalDetails> details = {
-      {"current_state", ActorEngineStateToString(old_state)},
-      {"new_state", ActorEngineStateToString(new_state)}};
+  std::vector<mojom::JournalDetailsPtr> details =
+      JournalDetailsBuilder()
+          .Add("current_state", ActorEngineStateToString(old_state))
+          .Add("new_state", ActorEngineStateToString(new_state))
+          .Build();
 
   journal->Log(GURL(), task_id, "ExecutionEngine::StateChange",
                std::move(details));
@@ -106,13 +109,14 @@ void LogActStart(AggregatedJournal* journal,
                  const std::vector<std::unique_ptr<ActorTool>>& actions) {
   CHECK(journal);
 
-  std::vector<JournalDetails> details;
+  JournalDetailsBuilder builder;
   for (size_t i = 0; i < actions.size(); ++i) {
-    details.push_back({base::StringPrintf("Actions[%zu]", i),
-                       base::StringPrintf("Tool %zu", i)});
+    builder.Add(base::StringPrintf("Actions[%zu]", i),
+                base::StringPrintf("Tool %zu", i));
   }
 
-  journal->Log(GURL(), task_id, "ExecutionEngine::Act", std::move(details));
+  journal->Log(GURL(), task_id, "ExecutionEngine::Act",
+               std::move(builder).Build());
 }
 
 // TODO(crbug.com/503841160): Log the proper WebState URLs.
@@ -125,7 +129,7 @@ CreateToolExecutionAsyncEntry(AggregatedJournal* journal,
 
   return journal->CreatePendingAsyncEntry(
       GURL(), task_id, 0, base::StringPrintf("Execute Tool %zu", action_index),
-      std::vector<JournalDetails>());
+      /*details=*/{});
 }
 
 // Ends a pending async entry in the journal, adding error details if any.
@@ -133,11 +137,11 @@ void EndAsyncEntry(AggregatedJournal::PendingAsyncEntry* entry,
                    const ToolExecutionResult& tool_result) {
   CHECK(entry);
 
-  std::vector<JournalDetails> details;
+  JournalDetailsBuilder builder;
   if (!tool_result.IsOk()) {
-    details.push_back({"error", GetToolExecutionResultMessage(tool_result)});
+    builder.AddError(GetToolExecutionResultMessage(tool_result));
   }
-  entry->EndEntry(std::move(details));
+  entry->EndEntry(std::move(builder).Build());
 }
 
 // Returns the WebStateID for the target WebState of `tool`, or an invalid
@@ -186,14 +190,19 @@ void ActorEngine::CancelOngoingAndPendingActions(
   action_sequence_.clear();
 
   if (current_async_entry_) {
-    current_async_entry_->EndEntry({{"status", "pending action cancelled"}});
+    current_async_entry_->EndEntry(
+        JournalDetailsBuilder()
+            .Add("status", "pending action cancelled")
+            .Build());
     current_async_entry_.reset();
   }
 
   SetState(State::kFailed);
 
-  std::vector<JournalDetails> details = {
-      {"reason", EngineResultToString(reason)}};
+  std::vector<mojom::JournalDetailsPtr> details =
+      JournalDetailsBuilder()
+          .Add("reason", EngineResultToString(reason))
+          .Build();
   journal_->Log(GURL(), task_id_, "ExecutionEngine::Cancel",
                 std::move(details));
 

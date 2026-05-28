@@ -9,6 +9,7 @@
 
 #import "base/functional/callback_forward.h"
 #import "base/types/id_type.h"
+#import "components/actor/core/task_id.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/web/public/web_state_id.h"
@@ -23,7 +24,7 @@ using CreateActorToolsResult =
                    ToolExecutionResult>;
 
 // Strongly typed, performant unique ID representing an ActorTask.
-using ActorTaskId = base::IdType32<class ActorTaskIdMarker>;
+using ActorTaskId = actor::TaskId;
 static_assert(ActorTaskId(0).is_null(), "0 must be a null ActorTaskId");
 
 // Represents the high-level orchestration state of an ActorTask.

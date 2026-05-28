@@ -11,6 +11,8 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/actor/core:journal",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -19,7 +21,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/ai_prototyping/ui",
     "//ios/chrome/browser/ai_prototyping/utils",
     "//ios/chrome/browser/intelligence/actor/model",
-    "//ios/chrome/browser/intelligence/actor/model:aggregated_journal",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",

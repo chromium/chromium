@@ -1,5 +1,7 @@
 include_rules = [
   # keep-sorted start
+  "+components/actor/core",
+  "+components/actor/public/mojom",
   "+ios/chrome/browser/ai_prototyping/model",
   "+ios/chrome/browser/intelligence/actor/model",
   "+ios/chrome/browser/intelligence/actor/tools",

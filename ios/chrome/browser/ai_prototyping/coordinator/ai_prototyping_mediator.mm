@@ -10,6 +10,7 @@
 #import "base/base64.h"
 #import "base/functional/bind.h"
 #import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
 #import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
@@ -17,6 +18,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/values.h"
+#import "components/actor/core/aggregated_journal.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
@@ -32,7 +35,6 @@
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
-#import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
@@ -47,7 +49,62 @@
 #import "ios/chrome/browser/optimization_guide/mojom/enhanced_calendar_service.mojom-forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/web/public/web_state.h"
+
+namespace {
+
+std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
+  if (!journal) {
+    return "{}";
+  }
+  base::ListValue list;
+  for (actor::AggregatedJournal::EntryBuffer::Iterator it = journal->Items();
+       it; ++it) {
+    const std::unique_ptr<actor::AggregatedJournal::Entry>* entry_ptr = *it;
+    if (!entry_ptr || !*entry_ptr || !(*entry_ptr)->data) {
+      continue;
+    }
+    const actor::AggregatedJournal::Entry& entry_wrapper = **entry_ptr;
+    const actor::mojom::JournalEntry& entry = *entry_wrapper.data;
+    base::DictValue dict;
+    switch (entry.type) {
+      case actor::mojom::JournalEntryType::kBegin:
+        dict.Set("type", "Begin");
+        break;
+      case actor::mojom::JournalEntryType::kEnd:
+        dict.Set("type", "End");
+        break;
+      case actor::mojom::JournalEntryType::kInstant:
+        dict.Set("type", "Instant");
+        break;
+    }
+    dict.Set("task_id", base::NumberToString(entry.task_id.value()));
+    dict.Set("event", entry.event);
+    dict.Set("timestamp", entry.timestamp.InSecondsFSinceUnixEpoch());
+    dict.Set("track_uuid", base::NumberToString(entry.track_uuid));
+    if (!entry_wrapper.url.empty()) {
+      dict.Set("url", entry_wrapper.url);
+    }
+
+    base::ListValue details_list;
+    for (const actor::mojom::JournalDetailsPtr& detail : entry.details) {
+      if (!detail) {
+        continue;
+      }
+      base::DictValue detail_dict;
+      detail_dict.Set("key", detail->key);
+      detail_dict.Set("value", detail->value);
+      details_list.Append(std::move(detail_dict));
+    }
+    dict.Set("details", std::move(details_list));
+    list.Append(std::move(dict));
+  }
+
+  std::string json;
+  base::JSONWriter::Write(list, &json);
+  return json;
+}
+
+}  // namespace
 
 @implementation AIPrototypingMediator {
   // Browser agent responsible for persisting and retrieving tab context data.
@@ -591,9 +648,7 @@
           "\n";
     }
   }
-
-  actor::AggregatedJournal* journal = actorService->GetJournal();
-  std::string json_str = journal->GetLogsAsJson();
+  std::string json_str = GetJournalLogsAsJson(actorService->GetJournal());
 
   result_text =
       base::SysUTF8ToNSString(summary_str + "\nJSON journal:\n" + json_str);

@@ -13,8 +13,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "components/actor/core/aggregated_journal.h"
+#import "components/actor/core/journal_details_builder.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
-#import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/web_state.h"
@@ -57,9 +58,11 @@ void LogTaskStateTransition(AggregatedJournal* journal,
                             ActorTaskState new_state) {
   CHECK(journal);
 
-  std::vector<JournalDetails> details = {
-      {"current_state", ActorTaskStateToString(old_state)},
-      {"new_state", ActorTaskStateToString(new_state)}};
+  std::vector<mojom::JournalDetailsPtr> details =
+      JournalDetailsBuilder()
+          .Add("current_state", ActorTaskStateToString(old_state))
+          .Add("new_state", ActorTaskStateToString(new_state))
+          .Build();
 
   journal->Log(GURL(), task_id, "ActorTask::SetState", std::move(details));
 }
@@ -70,8 +73,10 @@ void LogAddControlledWebState(AggregatedJournal* journal,
                               web::WebStateID web_state_id) {
   CHECK(journal);
 
-  std::vector<JournalDetails> details = {
-      {"web_state_id", base::NumberToString(web_state_id.identifier())}};
+  std::vector<mojom::JournalDetailsPtr> details =
+      JournalDetailsBuilder()
+          .Add("web_state_id", base::NumberToString(web_state_id.identifier()))
+          .Build();
 
   journal->Log(GURL::EmptyGURL(), task_id, "ActorTask::AddControlledWebState",
                std::move(details));
