@@ -1669,10 +1669,11 @@
     {
       // image(<color>) functional notation, producing a solid-color image
       // with no natural dimensions.
+      // Ship in M150, should be removed in M152.
       // https://drafts.csswg.org/css-images-4/#funcdef-image
       // https://chromestatus.com/feature/5121011285622784
       name: "CSSImageFunction",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The inherit() function works like var(), except that it grabs
