@@ -56,6 +56,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_model_names.cc:OnDeviceBaseModelName) -->
 
+<variants name="CriticalPath">
+  <variant name="CriticalPath" summary="on the critical path"/>
+  <variant name="NotCriticalPath" summary="not on the critical path"/>
+</variants>
+
 <variants name="FrameType">
   <variant name="MainFrame" summary="Outermost primary main frame"/>
   <variant name="RemoteSubFrame" summary="Remote subframes"/>
@@ -764,6 +769,20 @@ chromium-metrics-reviews@google.com.
     process across all frames for the Document displayed by the primary main
     frame.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.AIPageContent.TotalLatency.{AIPageContentMode}.{CriticalPath}"
+    units="ms" expires_after="2026-11-01">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>gklassen@chromium.org</owner>
+  <summary>
+    The total end-to-end latency for extracting AIPageContent in
+    {AIPageContentMode} when the request is {CriticalPath}.
+  </summary>
+  <token key="AIPageContentMode" variants="AIPageContentMode"/>
+  <token key="CriticalPath" variants="CriticalPath"/>
 </histogram>
 
 <histogram name="OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency"
