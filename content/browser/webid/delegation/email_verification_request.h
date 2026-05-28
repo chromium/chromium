@@ -8,14 +8,15 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "crypto/keypair.h"
@@ -57,25 +58,30 @@ class CONTENT_EXPORT EmailVerificationRequest {
       std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager,
       std::unique_ptr<IdpNetworkRequestManager> idp_network_manager,
       std::unique_ptr<DnsRequest> dns_request,
-      base::SafeRef<RenderFrameHost> render_frame_host);
+      RenderFrameHostImpl& render_frame_host);
   virtual ~EmailVerificationRequest();
 
   EmailVerificationRequest(const EmailVerificationRequest&) = delete;
   EmailVerificationRequest& operator=(const EmailVerificationRequest&) = delete;
 
-  // Starts the verification process for the given `email`.
-  virtual void Send(const std::string& email,
-                    const std::string& nonce,
-                    EmailVerifier::OnEmailVerifiedCallback callback);
+  // Checks if the given `email` is verifiable. This also checks if the user is
+  // logged in to the issuer.
+  virtual void CheckIfVerifiable(const std::string& email,
+                                 EmailVerifier::IsVerifiableCallback callback);
+
+  // Issues the verification token.
+  virtual void Verify(const EmailVerifier::Result& result,
+                      const std::string& nonce,
+                      EmailVerifier::OnEmailVerifiedCallback callback);
 
  private:
   sdjwt::Jwt CreateRequestToken(const std::string& email,
                                 const sdjwt::Jwk& public_key);
   void OnDnsRequestComplete(
       const std::string& email,
-      const std::string& nonce,
-      EmailVerifier::OnEmailVerifiedCallback callback,
+      EmailVerifier::IsVerifiableCallback callback,
       const std::optional<std::vector<std::string>>& text_records);
+
   void OnEmailVerificationWellKnownFetched(
       base::RepeatingClosure barrier,
       const url::Origin& issuer,
@@ -99,8 +105,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
                               scoped_refptr<AccountsOrError> accounts,
                               const url::Origin& issuer_origin,
                               const std::string& email,
-                              const std::string& nonce,
-                              EmailVerifier::OnEmailVerifiedCallback callback);
+                              EmailVerifier::IsVerifiableCallback callback);
   void OnTokenRequestComplete(
       const std::string& nonce,
       const url::Origin& issuer,
@@ -109,15 +114,22 @@ class CONTENT_EXPORT EmailVerificationRequest {
       FetchStatus token_status,
       EmailVerifierNetworkRequestManager::TokenResult&& result);
 
-  void CompleteRequest(EmailVerifier::OnEmailVerifiedCallback callback,
-                       std::optional<EmailVerifier::Result> response,
-                       blink::mojom::EmailVerificationRequestResult status);
+  void CompleteIsVerifiableRequest(
+      EmailVerifier::IsVerifiableCallback callback,
+      std::optional<EmailVerifier::Result> response,
+      blink::mojom::EmailVerificationRequestResult status);
+
+  void CompleteVerifyRequest(
+      EmailVerifier::OnEmailVerifiedCallback callback,
+      std::optional<std::string> response,
+      blink::mojom::EmailVerificationRequestResult status);
+
   void AddDevToolsIssue(blink::mojom::EmailVerificationRequestResult status);
 
   std::unique_ptr<DnsRequest> dns_request_;
   std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;
   std::unique_ptr<IdpNetworkRequestManager> idp_network_manager_;
-  base::SafeRef<RenderFrameHost> render_frame_host_;
+  base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 
   base::WeakPtrFactory<EmailVerificationRequest> weak_ptr_factory_{this};
 };

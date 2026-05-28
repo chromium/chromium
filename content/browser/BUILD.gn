@@ -2467,8 +2467,6 @@ source_set("browser") {
     "webid/delegation/email_verifier_impl.h",
     "webid/delegation/email_verifier_network_request_manager.cc",
     "webid/delegation/email_verifier_network_request_manager.h",
-    "webid/delegation/evp_metrics.cc",
-    "webid/delegation/evp_metrics.h",
     "webid/delegation/evt_verifier.cc",
     "webid/delegation/evt_verifier.h",
     "webid/delegation/federated_sd_jwt_handler.cc",

@@ -39,16 +39,21 @@ namespace autofill {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::content::webid::EmailVerifier;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class MockEmailVerifier : public content::webid::EmailVerifier {
+class MockEmailVerifier : public EmailVerifier {
  public:
   MOCK_METHOD(void,
+              CheckIfVerifiable,
+              (const std::string&, IsVerifiableCallback),
+              (override));
+  MOCK_METHOD(void,
               Verify,
-              (const std::string&, const std::string&, OnEmailVerifiedCallback),
+              (const Result&, const std::string&, OnEmailVerifiedCallback),
               (override));
 };
 
@@ -101,7 +106,7 @@ class EmailVerifierDelegateTestBase
     content::RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("https://a.test/"));
     driver().SetLocalFrameToken(LocalFrameToken(*main_rfh()->GetFrameToken()));
-    content::webid::EmailVerifier::SetForFrameForTest(
+    EmailVerifier::SetForFrameForTest(
         main_rfh(), std::make_unique<NiceMock<MockEmailVerifier>>());
 
     // Delete the default DocumentData created during NavigateAndCommit, and
@@ -132,7 +137,7 @@ class EmailVerifierDelegateTestBase
 
   MockEmailVerifier& email_verifier() {
     return static_cast<MockEmailVerifier&>(
-        *content::webid::EmailVerifier::GetOrCreateForFrame(main_rfh()));
+        *EmailVerifier::GetOrCreateForFrame(main_rfh()));
   }
 
   FormData ValidForm() {
@@ -185,9 +190,16 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
-  EXPECT_CALL(email_verifier(), Verify("johndoe@hades.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
+  EmailVerifier::Result verifiable_result;
+  verifiable_result.email = "johndoe@hades.com";
+  verifiable_result.issuer_site =
+      net::SchemefulSite(GURL("https://example.com"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce(RunOnceCallback<1>(verifiable_result));
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>("test_token"));
 
   base::RunLoop popup_shown_run_loop;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
@@ -223,9 +235,15 @@ TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
-  EXPECT_CALL(email_verifier(), Verify("johndoe@hades.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
+  EmailVerifier::Result verifiable_result;
+  verifiable_result.email = "johndoe@hades.com";
+  verifiable_result.issuer_site =
+      net::SchemefulSite(GURL("https://example.com"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce(RunOnceCallback<1>(verifiable_result));
+
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
 
   base::RunLoop popup_shown_run_loop;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
@@ -375,19 +393,35 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
+  EmailVerifier::Result verifiable_result;
+  verifiable_result.email = "test@example.com";
+  verifiable_result.issuer_site =
+      net::SchemefulSite(GURL("https://example.com"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(verifiable_result));
+
   base::RunLoop verify_called_run_loop;
   EXPECT_CALL(email_verifier(), Verify)
       .WillOnce(
           DoAll(base::test::RunClosure(verify_called_run_loop.QuitClosure()),
                 RunOnceCallback<2>(std::nullopt)));
 
-  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
+                    const std::u16string&,
+                    base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
 
   // When the verification fails, the event is not dispatched.
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
+  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
+                                        "en-US",
+                                        VerificationStatus::kUserVerified);
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
@@ -490,9 +524,16 @@ TEST_F(EmailVerifierDelegateTest,
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
-  EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
+  EmailVerifier::Result verifiable_result;
+  verifiable_result.email = "test@example.com";
+  verifiable_result.issuer_site =
+      net::SchemefulSite(GURL("https://example.com"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(verifiable_result));
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>("test_token"));
 
   base::RunLoop popup_shown_run_loop;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
@@ -576,9 +617,16 @@ TEST_F(EmailVerifierDelegateTest, ClearsStrikesOnAccept) {
   ASSERT_FALSE(strike_db.ShouldBlockFeature(
       EmailVerificationStrikeDatabase::GetId(email_utf8)));
 
-  EXPECT_CALL(email_verifier(), Verify("johndoe@hades.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
+  EmailVerifier::Result verifiable_result;
+  verifiable_result.email = "johndoe@hades.com";
+  verifiable_result.issuer_site =
+      net::SchemefulSite(GURL("https://example.com"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce(RunOnceCallback<1>(verifiable_result));
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>("test_token"));
 
   base::RunLoop popup_shown_run_loop;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)

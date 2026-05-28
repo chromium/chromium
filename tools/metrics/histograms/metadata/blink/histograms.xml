@@ -1450,14 +1450,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Evp.Status.Request" enum="EvpRequestStatus"
+<histogram name="Blink.Evp.Status.IsVerifiable" enum="EvpRequestStatus"
     expires_after="2026-11-01">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the status of an Email Verification Protocol (EVP) request. Recorded
-    once per email verification request when it completes (either successfully
-    or with a specific failure reason).
+    Records the status of the IsVerifiable stage of an Email Verification
+    Protocol (EVP) request. Recorded once per request when the IsVerifiable
+    check completes.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Evp.Status.Verify" enum="EvpRequestStatus"
+    expires_after="2026-11-01">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the status of the Verify stage of an Email Verification Protocol
+    (EVP) request. Recorded once per request when the Verify operation
+    completes.
   </summary>
 </histogram>
 

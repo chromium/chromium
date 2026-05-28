@@ -42,14 +42,19 @@ namespace autofill {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::content::webid::EmailVerifier;
 using ::testing::_;
 using ::testing::NiceMock;
 
 class MockEmailVerifier : public content::webid::EmailVerifier {
  public:
   MOCK_METHOD(void,
+              CheckIfVerifiable,
+              (const std::string&, IsVerifiableCallback),
+              (override));
+  MOCK_METHOD(void,
               Verify,
-              (const std::string&, const std::string&, OnEmailVerifiedCallback),
+              (const Result&, const std::string&, OnEmailVerifiedCallback),
               (override));
 };
 
@@ -201,9 +206,17 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   // 1. Setup the EmailVerifierDelegate with our mock.
   const std::string kTestToken = "renderer_side_token_abc";
   MockEmailVerifier* verifier_ptr = SetupMockEmailVerifier(main_frame);
-  EXPECT_CALL(*verifier_ptr, Verify("test@example.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          kTestToken, net::SchemefulSite(GURL("https://example.com"))}));
+  content::webid::EmailVerifier::Result result;
+  result.email = "test@example.com";
+  result.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  result.issuance_endpoint = GURL("https://example.com/issuance");
+  result.signing_alg_values_supported.push_back("RS256");
+
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(result));
+
+  EXPECT_CALL(*verifier_ptr, Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(kTestToken));
 
   BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
 
@@ -282,12 +295,18 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   const std::string kTestToken2 = "other_renderer_side_token_xyz";
   MockEmailVerifier* verifier_ptr = SetupMockEmailVerifier(main_frame);
 
-  EXPECT_CALL(*verifier_ptr, Verify("test@example.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          kTestToken1, net::SchemefulSite(GURL("https://example.com"))}));
-  EXPECT_CALL(*verifier_ptr, Verify("other@example.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
-          kTestToken2, net::SchemefulSite(GURL("https://example.com"))}));
+  EmailVerifier::Result result1;
+  result1.email = "test@example.com";
+  result1.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+
+  EmailVerifier::Result result2;
+  result2.email = "other@example.com";
+  result2.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+
+  testing::InSequence s;
+
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(result1));
 
   BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
 
@@ -305,10 +324,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   // 2. Simulate the initial form fill.
   TestEmailVerificationAutofillClient* mock_client = client();
-
-  ASSERT_EQ(&manager->client(), mock_client);
-
   base::RunLoop popup_run_loop1;
+
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
@@ -316,6 +333,14 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
         std::move(callback).Run(true);
         popup_run_loop1.Quit();
       });
+
+  EXPECT_CALL(
+      *verifier_ptr,
+      Verify(testing::Field(&EmailVerifier::Result::email, "test@example.com"),
+             "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(kTestToken1));
+
+  ASSERT_EQ(&manager->client(), mock_client);
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->ToFormData(), field_id,
@@ -325,8 +350,11 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   popup_run_loop1.Run();
 
   // 3. Simulate selecting a different value (triggers second Verify).
-
   base::RunLoop popup_run_loop2;
+
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("other@example.com", _))
+      .WillOnce(RunOnceCallback<1>(result2));
+
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
@@ -334,6 +362,13 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
         std::move(callback).Run(true);
         popup_run_loop2.Quit();
       });
+
+  EXPECT_CALL(
+      *verifier_ptr,
+      Verify(testing::Field(&EmailVerifier::Result::email, "other@example.com"),
+             "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(kTestToken2));
+
   EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
 
   FormData form_data = form_structure->ToFormData();

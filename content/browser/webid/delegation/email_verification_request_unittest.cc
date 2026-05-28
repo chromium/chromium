@@ -16,7 +16,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
-#include "content/browser/webid/delegation/evp_metrics.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
@@ -34,6 +33,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using blink::mojom::EmailVerificationRequestResult;
 using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
@@ -104,7 +104,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -219,17 +219,23 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                                     std::move(result));
           }));
 
-  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> is_verifiable;
   std::string nonce = kNonce;
   base::Time before = base::Time::Now();
-  email_verification_request_.Send(kEmail, nonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> result = future.Get();
+  email_verification_request_.CheckIfVerifiable(kEmail,
+                                                is_verifiable.GetCallback());
+  auto issuer = is_verifiable.Get();
+  ASSERT_TRUE(issuer.has_value());
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Verify(*issuer, nonce, future.GetCallback());
+  std::optional<std::string> result = future.Get();
   base::Time after = base::Time::Now();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->issuer_site,
+  EXPECT_EQ(issuer->issuer_site,
             net::SchemefulSite(GURL("https://example.com")));
 
-  auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(result->verification);
+  auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(*result);
   ASSERT_TRUE(sd_jwt_kb);
 
   auto kb_jwt_json = sdjwt::Jwt::Parse(sd_jwt_kb->kb_jwt.Serialize().value());
@@ -256,8 +262,11 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &sd_hash_expected);
   ASSERT_EQ(kb_payload->sd_hash.value(), sd_hash_expected);
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.IsVerifiable",
+                                      EmailVerificationRequestResult::kSuccess,
+                                      1);
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request", EmailVerificationRequestResult::kSuccess, 1);
+      "Blink.Evp.Status.Verify", EmailVerificationRequestResult::kSuccess, 1);
   EXPECT_EQ(0, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(std::nullopt));
 }
@@ -279,7 +288,7 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      *static_cast<RenderFrameHostImpl*>(main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kEmailUpper = "TEST@EXAMPLE.COM";
@@ -393,11 +402,16 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
           }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
   std::optional<EmailVerifier::Result> result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->issuer_site,
             net::SchemefulSite(GURL("https://example.com")));
+
+  base::test::TestFuture<std::optional<std::string>> verify_future;
+  email_verification_request_.Verify(*result, kNonce,
+                                     verify_future.GetCallback());
+  EXPECT_TRUE(verify_future.Get().has_value());
 }
 
 TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
@@ -417,7 +431,7 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -473,15 +487,14 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
   EXPECT_CALL(*mock_network_manager, SendTokenRequest).Times(0);
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> result = future.Get();
-  EXPECT_FALSE(result.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kWellKnownIssuanceEndpointCrossOrigin, 1);
   EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(
-                       blink::mojom::EmailVerificationRequestResult::
+                       EmailVerificationRequestResult::
                            kWellKnownIssuanceEndpointCrossOrigin));
 }
 
@@ -502,7 +515,7 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -556,17 +569,15 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
   EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
-  EXPECT_FALSE(token.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kUserLoggedOut, 1);
-  EXPECT_EQ(
-      1, static_cast<TestRenderFrameHost*>(main_rfh())
-             ->GetEmailVerificationRequestIssueCount(
-                 blink::mojom::EmailVerificationRequestResult::kUserLoggedOut));
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       EmailVerificationRequestResult::kUserLoggedOut));
 }
 
 TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
@@ -586,7 +597,7 @@ TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -640,17 +651,26 @@ TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
 
   EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
 
-  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> is_verifiable;
+  email_verification_request_.CheckIfVerifiable(kEmail,
+                                                is_verifiable.GetCallback());
+  auto issuer = is_verifiable.Get();
+  ASSERT_TRUE(issuer.has_value());
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Verify(*issuer, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
   EXPECT_FALSE(token.has_value());
 
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.IsVerifiable",
+                                      EmailVerificationRequestResult::kSuccess,
+                                      1);
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.Verify",
       EmailVerificationRequestResult::kWellKnownUnsupportedSigningAlgorithm, 1);
   EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(
-                       blink::mojom::EmailVerificationRequestResult::
+                       EmailVerificationRequestResult::
                            kWellKnownUnsupportedSigningAlgorithm));
 }
 
@@ -671,7 +691,7 @@ TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -709,17 +729,15 @@ TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
   EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
-  EXPECT_FALSE(token.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kWellKnownHttpNotFound, 1);
   EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(
-                       blink::mojom::EmailVerificationRequestResult::
-                           kWellKnownHttpNotFound));
+                       EmailVerificationRequestResult::kWellKnownHttpNotFound));
 }
 
 TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
@@ -738,7 +756,7 @@ TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -748,17 +766,14 @@ TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
   EXPECT_CALL(*mock_network_manager, SendTokenRequest).Times(0);
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> result = future.Get();
-  EXPECT_FALSE(result.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kRpOriginIsOpaque, 1);
-  EXPECT_EQ(
-      1,
-      static_cast<TestRenderFrameHost*>(main_rfh())
-          ->GetEmailVerificationRequestIssueCount(
-              blink::mojom::EmailVerificationRequestResult::kRpOriginIsOpaque));
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       EmailVerificationRequestResult::kRpOriginIsOpaque));
 }
 
 TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
@@ -774,7 +789,7 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -786,17 +801,14 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
       }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> result_inner = future.Get();
-  EXPECT_FALSE(result_inner.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kDnsFetchFailed, 1);
-  EXPECT_EQ(
-      1,
-      static_cast<TestRenderFrameHost*>(main_rfh())
-          ->GetEmailVerificationRequestIssueCount(
-              blink::mojom::EmailVerificationRequestResult::kDnsFetchFailed));
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       EmailVerificationRequestResult::kDnsFetchFailed));
 }
 
 TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
@@ -816,7 +828,7 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -866,16 +878,14 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
           }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> result_inner = future.Get();
-  EXPECT_FALSE(result_inner.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kWellKnownHttpNotFound, 1);
   EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(
-                       blink::mojom::EmailVerificationRequestResult::
-                           kWellKnownHttpNotFound));
+                       EmailVerificationRequestResult::kWellKnownHttpNotFound));
 }
 
 TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
@@ -895,7 +905,7 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -956,17 +966,25 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
                 EmailVerifierNetworkRequestManager::TokenResult());
           }));
 
-  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> result_inner = future.Get();
-  EXPECT_FALSE(result_inner.has_value());
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> is_verifiable;
+  email_verification_request_.CheckIfVerifiable(kEmail,
+                                                is_verifiable.GetCallback());
+  auto issuer = is_verifiable.Get();
+  ASSERT_TRUE(issuer.has_value());
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Verify(*issuer, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.IsVerifiable",
+                                      EmailVerificationRequestResult::kSuccess,
+                                      1);
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.Verify",
       EmailVerificationRequestResult::kTokenInvalidResponse, 1);
   EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(
-                       blink::mojom::EmailVerificationRequestResult::
-                           kTokenInvalidResponse));
+                       EmailVerificationRequestResult::kTokenInvalidResponse));
 }
 
 TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
@@ -993,15 +1011,14 @@ TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(fenced_frame)->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*fenced_frame));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
-  EXPECT_FALSE(token.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
@@ -1023,15 +1040,14 @@ TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(cross_origin_iframe)->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*cross_origin_iframe));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
-  EXPECT_FALSE(token.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
@@ -1059,7 +1075,7 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(same_origin_iframe)->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*same_origin_iframe));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -1090,16 +1106,15 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
           }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
-  EXPECT_FALSE(token.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kWellKnownInvalidResponse, 1);
-  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(same_origin_iframe)
-                   ->GetEmailVerificationRequestIssueCount(
-                       blink::mojom::EmailVerificationRequestResult::
-                           kWellKnownInvalidResponse));
+  EXPECT_EQ(1,
+            static_cast<TestRenderFrameHost*>(same_origin_iframe)
+                ->GetEmailVerificationRequestIssueCount(
+                    EmailVerificationRequestResult::kWellKnownInvalidResponse));
 }
 
 TEST_F(EmailVerificationRequestTest,
@@ -1132,23 +1147,20 @@ TEST_F(EmailVerificationRequestTest,
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
-      static_cast<RenderFrameHostImpl*>(iframe_a)->GetSafeRef());
+      static_cast<RenderFrameHostImpl&>(*iframe_a));
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
-  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
-  std::optional<EmailVerifier::Result> token = future.Get();
-  EXPECT_FALSE(token.has_value());
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request",
+      "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kRpOriginIsOpaque, 1);
-  EXPECT_EQ(
-      1,
-      static_cast<TestRenderFrameHost*>(iframe_a)
-          ->GetEmailVerificationRequestIssueCount(
-              blink::mojom::EmailVerificationRequestResult::kRpOriginIsOpaque));
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(iframe_a)
+                   ->GetEmailVerificationRequestIssueCount(
+                       EmailVerificationRequestResult::kRpOriginIsOpaque));
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {

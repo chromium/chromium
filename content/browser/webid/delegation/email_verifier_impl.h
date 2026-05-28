@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFIER_IMPL_H_
 #define CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFIER_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <set>
 
@@ -40,15 +41,19 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
   EmailVerifierImpl(const EmailVerifierImpl&) = delete;
   EmailVerifierImpl& operator=(const EmailVerifierImpl&) = delete;
 
-  // Starts the verification process for the given `email`.
-  void Verify(const std::string& email,
+  // Checks if the given `email` is verifiable.
+  void CheckIfVerifiable(const std::string& email,
+                         IsVerifiableCallback callback) override;
+
+  // Starts the verification process.
+  void Verify(const EmailVerifier::Result& result,
               const std::string& nonce,
               EmailVerifier::OnEmailVerifiedCallback callback) override;
 
  private:
   void OnRequestComplete(std::unique_ptr<EmailVerificationRequest> request,
                          EmailVerifier::OnEmailVerifiedCallback callback,
-                         std::optional<EmailVerifier::Result> result);
+                         std::optional<std::string> result);
 
   RequestBuilder request_builder_;
 

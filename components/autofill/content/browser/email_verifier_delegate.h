@@ -9,6 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
