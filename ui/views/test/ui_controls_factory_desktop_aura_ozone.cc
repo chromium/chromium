@@ -76,6 +76,10 @@ void EnableUIControls() {
   }
 }
 
+bool IsUIControlsEnabled() {
+  return g_ozone_ui_controls_test_helper != nullptr;
+}
+
 void ResetUIControlsIfEnabled() {
   if (g_ozone_ui_controls_test_helper) {
     g_ozone_ui_controls_test_helper->Reset();

@@ -46,14 +46,12 @@ void EnableUIControls();
 // initial state.
 void ResetUIControlsIfEnabled();
 
-#if BUILDFLAG(IS_APPLE)
-bool IsUIControlsEnabled();
-#endif
-
 // Generates keyboard accelerator state in bitmap from each key boolean.
 int GenerateAcceleratorState(bool control, bool shift, bool alt, bool command);
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+bool IsUIControlsEnabled();
 
 enum KeyEventType { kKeyPress = 1 << 0, kKeyRelease = 1 << 1 };
 

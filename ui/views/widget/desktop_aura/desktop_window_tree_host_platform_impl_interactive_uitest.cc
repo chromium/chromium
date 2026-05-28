@@ -583,7 +583,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, Deactivate) {
 // Chrome synchronously switches the window that mouse events are forwarded to
 // when capture is changed.
 TEST_F(DesktopWindowTreeHostPlatformImplTest, CaptureEventForwarding) {
-  ui_controls::EnableUIControls();
+  ASSERT_TRUE(ui_controls::IsUIControlsEnabled());
 
   std::unique_ptr<Widget> widget1(CreateWidget(gfx::Rect(100, 100, 100, 100)));
   aura::Window* window1 = widget1->GetNativeWindow();

@@ -35,6 +35,10 @@ void EnableUIControls() {
 
 void ResetUIControlsIfEnabled() {}
 
+bool IsUIControlsEnabled() {
+  return g_ui_controls_enabled;
+}
+
 // An interface to provide Aura implementation of UI control.
 
 // static
