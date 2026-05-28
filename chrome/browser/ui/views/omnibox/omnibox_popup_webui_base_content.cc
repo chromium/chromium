@@ -40,6 +40,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 OmniboxPopupWebUIBaseContent::OmniboxPopupWebUIBaseContent(
@@ -62,13 +63,17 @@ OmniboxPopupWebUIBaseContent::~OmniboxPopupWebUIBaseContent() {
 
 void OmniboxPopupWebUIBaseContent::AddedToWidget() {
   views::WebView::AddedToWidget();
+  holder()->SetCornerRadii(GetRoundedCornerRadii());
+}
+
+gfx::RoundedCornersF OmniboxPopupWebUIBaseContent::GetRoundedCornerRadii()
+    const {
   const float corner_radius =
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kOmniboxExpandedRadius);
-  gfx::RoundedCornersF rounded_corner_radii = gfx::RoundedCornersF(
-      top_rounded_corners_ ? corner_radius : 0,
-      top_rounded_corners_ ? corner_radius : 0, corner_radius, corner_radius);
-  holder()->SetCornerRadii(rounded_corner_radii);
+  return gfx::RoundedCornersF(top_rounded_corners_ ? corner_radius : 0,
+                              top_rounded_corners_ ? corner_radius : 0,
+                              corner_radius, corner_radius);
 }
 
 void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {

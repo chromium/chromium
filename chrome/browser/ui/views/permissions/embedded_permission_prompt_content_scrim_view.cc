@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr char kWidgetName[] = "EmbeddedPermissionPromptContentScrimWidget";
@@ -30,6 +35,30 @@ EmbeddedPermissionPromptContentScrimView::
         web_contents->GetContentNativeView());
     if (widget) {
       widget_observation_.Observe(widget);
+
+      // Attempt to downcast the client contents view (what view the scrim is
+      // over). `rounded_frame` will be `nullptr` if
+      // `views::AsViewClass` wrapper (which handles error-prone downcasts
+      // safely) does not return a `RoundedOmniboxResultsFrame` instance. An
+      // example where an instance does not exist is when the prompt is shown on
+      // a normal browser page instead of the WebUI Omnibox popup.
+      auto* rounded_frame = views::AsViewClass<RoundedOmniboxResultsFrame>(
+          widget->GetClientContentsView());
+      if (rounded_frame) {
+        // If it is a `RoundedOmniboxResultsFrame`, we check if it hosts WebUI
+        // omnibox popup content.
+        auto* omnibox_content =
+            rounded_frame->GetOmniboxPopupWebUIBaseContent();
+        if (omnibox_content) {
+          // Enable paint-to-layer on this view and clip it to match the popup's
+          // rounded corners, keeping transparent areas clean.
+          SetPaintToLayer();
+          layer()->SetFillsBoundsOpaquely(false);
+          layer()->SetRoundedCornerRadius(
+              omnibox_content->GetRoundedCornerRadii());
+          layer()->SetIsFastRoundedCorner(true);
+        }
+      }
     }
   }
 }
