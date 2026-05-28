@@ -32,7 +32,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -49,6 +51,7 @@
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -420,6 +423,66 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   };
 
   VerifyModel(model.GetSubmenuModelAt(5), kGroup0Data);
+}
+
+class RecentTabsSubMenuModelSplitTest : public RecentTabsSubMenuModelTest {
+ public:
+  RecentTabsSubMenuModelSplitTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kSplitViewTabRestore);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+                       RecentlyClosedSplitsFromCurrentSession) {
+  Init();
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  DisableSync();
+
+  TabRestoreServiceFactory::GetForProfile(browser()->profile());
+
+  AddTabToBrowser(GURL("http://foo/1"));
+  AddTabToBrowser(GURL("http://foo/2"));
+  AddTabToBrowser(GURL("http://foo/3"));
+
+  // Pair tabs at index 1 and 2 into a split view.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the split view.
+  browser()->tab_strip_model()->CloseSelectedTabs();
+
+  RecentTabsSubMenuModel model(nullptr, browser());
+
+  std::vector<ModelData> kData;
+
+  kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <split view submenu>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
+  };
+
+  VerifyModel(model, kData);
+
+  // Expected split view menu items:
+  constexpr ModelData kSplitData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore split view
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/1>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/2>
+  };
+
+  VerifyModel(model.GetSubmenuModelAt(4), kSplitData);
 }
 
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,

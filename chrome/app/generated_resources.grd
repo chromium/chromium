@@ -15024,6 +15024,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_RECENTLY_CLOSED_GROUP_UNNAMED" desc="In Title Case: Title of recently closed group that does not have a name, in Recent Tabs menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
+        <message name="IDS_RECENTLY_CLOSED_SPLIT" desc="In Title Case: Title of recently closed split views in Recent Tabs menu.">
+          Split View
+        </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No Tabs from Other Devices
         </message>
@@ -15046,6 +15049,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_RECENTLY_CLOSED_GROUP_UNNAMED" desc="Title of recently closed group that does not have a name, in Recent Tabs menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
+        </message>
+        <message name="IDS_RECENTLY_CLOSED_SPLIT" desc="Title of recently closed split views in Recent Tabs menu.">
+          Split view
         </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No tabs from other devices

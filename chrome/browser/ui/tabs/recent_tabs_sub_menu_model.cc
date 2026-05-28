@@ -50,6 +50,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -333,6 +334,10 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     base::RecordAction(base::UserMetricsAction("WrenchMenu_OpenRecentGroup"));
     service->RestoreEntryById(context, local_group_items_.at(command_id),
                               disposition);
+  } else if (IsCommandType(CommandType::Split, command_id)) {
+    base::RecordAction(base::UserMetricsAction("WrenchMenu_OpenRecentSplit"));
+    service->RestoreEntryById(context, local_split_items_.at(command_id),
+                              disposition);
   } else {
     CHECK(IsCommandType(CommandType::Submenu, command_id) ||
           IsCommandType(CommandType::OtherDevice, command_id));
@@ -450,8 +455,9 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
           break;
         }
         case sessions::tab_restore::Type::SPLIT: {
-          // TODO(crbug.com/509546479): Support split tabs in the Recent Tabs
-          // Menu Model.
+          auto& split =
+              static_cast<const sessions::tab_restore::Split&>(*entry);
+          BuildLocalSplitItem(split, ++last_local_model_index_);
           break;
         }
       }
@@ -643,6 +649,30 @@ void RecentTabsSubMenuModel::BuildLocalGroupItem(
   SetIcon(curr_model_index, group_icon);
 }
 
+void RecentTabsSubMenuModel::BuildLocalSplitItem(
+    const sessions::tab_restore::Split& split,
+    size_t curr_model_index) {
+  std::u16string item_label =
+      l10n_util::GetStringUTF16(IDS_RECENTLY_CLOSED_SPLIT);
+  const int command_id = GetAndIncrementNextMenuID();
+  std::unique_ptr<ui::SimpleMenuModel> split_model =
+      CreateSplitSubMenuModel(split);
+
+  InsertSubMenuAt(curr_model_index, command_id, item_label, split_model.get());
+  local_sub_menu_items_.emplace(
+      command_id, SubMenuItem(command_id, std::move(split_model)));
+
+  const gfx::VectorIcon* icon = nullptr;
+  if (split.visual_data.split_layout() ==
+      split_tabs::SplitTabLayout::kStacked) {
+    icon = &kSplitSceneHorizontalCustomIcon;
+  } else {
+    icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                               : kSplitSceneOldIcon);
+  }
+  SetIcon(curr_model_index, CreateFavicon(*icon));
+}
+
 void RecentTabsSubMenuModel::BuildOtherDevicesTabItem(
     SimpleMenuModel* containing_model,
     const std::string& session_tag,
@@ -742,6 +772,26 @@ RecentTabsSubMenuModel::CreateGroupSubMenuModel(
   }
 
   return group_model;
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+RecentTabsSubMenuModel::CreateSplitSubMenuModel(
+    const sessions::tab_restore::Split& split) {
+  std::unique_ptr<ui::SimpleMenuModel> split_model =
+      std::make_unique<ui::SimpleMenuModel>(this);
+  int command_id = GetAndIncrementNextMenuID();
+  split_model->AddItemWithStringIdAndIcon(
+      command_id, IDS_RESTORE_ALL_TABS,
+      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon));
+  local_split_items_.emplace(command_id, split.id);
+  split_model->AddSeparator(ui::NORMAL_SEPARATOR);
+
+  for (auto& tab : split.tabs) {
+    command_id = GetAndIncrementNextMenuID();
+    AddTabItemToModel(tab.get(), split_model.get(), command_id);
+  }
+
+  return split_model;
 }
 
 void RecentTabsSubMenuModel::AddGroupItemToModel(
@@ -924,6 +974,7 @@ void RecentTabsSubMenuModel::ClearLocalEntries() {
   // Remove all local items.
   local_tab_items_.clear();
   local_group_items_.clear();
+  local_split_items_.clear();
   local_window_items_.clear();
   local_sub_menu_items_.clear();
 }
@@ -993,6 +1044,8 @@ bool RecentTabsSubMenuModel::IsCommandType(CommandType command_type,
       return local_group_items_.contains(command_id);
     case Window:
       return local_window_items_.contains(command_id);
+    case Split:
+      return local_split_items_.contains(command_id);
     case Submenu:
       return local_sub_menu_items_.contains(command_id);
     case OtherDevice:
