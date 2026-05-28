@@ -67,7 +67,12 @@ executable("gcp_sfx") {
     ":version",
     "//third_party/lzma_sdk:7zS2_source",
   ]
-  configs += [ "//build/config/win:windowed" ]
+  configs += [
+    "//build/config/win:windowed",
+    "//build/config/win:delayloads",
+    "//build/config/win:delayloads_not_for_child_dll",
+  ]
+  ldflags = [ "/DEPENDENTLOADFLAG:0x800" ]
 }
 
 executable("gcp_setup") {
