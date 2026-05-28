@@ -141,6 +141,12 @@ public class ResourceManager implements ResourceLoaderCallback {
             @AndroidResourceType int resType, int resId, @Nullable Resource resource) {
         if (resource == null) return;
         Bitmap bitmap = resource.getBitmap();
+        if (bitmap == null
+                || bitmap.isRecycled()
+                || bitmap.getWidth() <= 0
+                || bitmap.getHeight() <= 0) {
+            return;
+        }
         saveMetadataForLoadedResource(resType, resId, resource);
 
         if (mNativeResourceManagerPtr == 0) return;
