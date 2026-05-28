@@ -171,6 +171,8 @@ GlicWebContentsWarmingPool::CreateContainer() {
 
 void GlicWebContentsWarmingPool::OnContainerExpired() {
   if (warmed_container_) {
+    TRACE_EVENT_INSTANT("glic",
+                        "GlicWebContentsWarmingPool::OnContainerExpired");
     metrics_->OnContainerExpired();
     Clear();
     // This only happens if there was a warmed contents at the time of expiry.

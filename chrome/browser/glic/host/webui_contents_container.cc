@@ -164,6 +164,9 @@ void WebUIContentsContainerImpl::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
+  TRACE_EVENT_INSTANT(
+      "glic", "WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone",
+      perfetto::TerminatingFlow::FromPointer(this), "status", status);
   base::UmaHistogramEnumeration("Glic.Session.WebUiCrash.TerminationStatus",
                                 status, base::TERMINATION_STATUS_MAX_ENUM);
   if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {

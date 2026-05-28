@@ -478,6 +478,9 @@ void SlimWebViewGuest::GuestSizeChangedDueToAutoSize(
 
 void SlimWebViewGuest::GuestViewMainFrameProcessGone(
     base::TerminationStatus status) {
+  TRACE_EVENT_INSTANT("content",
+                      "SlimWebViewGuest::GuestViewMainFrameProcessGone",
+                      perfetto::Flow::FromPointer(this));
   base::DictValue args;
   args.Set(slim_web_view::kReason, TerminationStatusToString(status));
   args.Set(slim_web_view::kProcessId,
