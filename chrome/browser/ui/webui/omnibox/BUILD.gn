@@ -48,3 +48,46 @@ source_set("mojom_traits") {
     "//components/omnibox/browser",
   ]
 }
+
+source_set("omnibox") {
+  sources = [
+    "omnibox_page_handler.cc",
+    "omnibox_page_handler.h",
+    "omnibox_ui.cc",
+    "omnibox_ui.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+  deps = [
+    ":mojom_traits",
+    "aim_eligibility",
+    "aim_eligibility:mojo_bindings",
+    "logging",
+    "logging:mojo_bindings",
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/history",
+    "//chrome/browser/omnibox",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/omnibox:resources",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/webui/version",
+    "//chrome/common",
+    "//components/omnibox/browser",
+    "//components/omnibox/common:features",
+    "//components/search_engines",
+    "//content/public/common",
+    "//services/network/public/mojom",
+    "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}

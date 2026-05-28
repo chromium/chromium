@@ -9,3 +9,41 @@ mojom("mojo_bindings") {
   deps = [ "//services/device/public/mojom:geolocation_internals" ]
   webui_module_path = "/"
 }
+
+source_set("location_internals") {
+  sources = [
+    "location_internals_handler.cc",
+    "location_internals_handler.h",
+    "location_internals_ui.cc",
+    "location_internals_ui.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/location_internals:resources",
+    "//chrome/common",
+    "//services/device/public/mojom:geolocation_internals",
+    "//services/network/public/mojom",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "location_internals_ui_browsertest.cc" ]
+    deps = [
+      ":location_internals",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

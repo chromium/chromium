@@ -1,0 +1,49 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/metrics/structured/buildflags/buildflags.gni")
+
+source_set("metrics_internals") {
+  sources = [
+    "field_trials_handler.cc",
+    "field_trials_handler.h",
+    "metrics_internals_features.cc",
+    "metrics_internals_features.h",
+    "metrics_internals_handler.cc",
+    "metrics_internals_handler.h",
+    "metrics_internals_ui.cc",
+    "metrics_internals_ui.h",
+  ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/common",
+    "//components/metrics",
+    "//components/metrics/debug",
+    "//components/metrics/debug:resources",
+    "//components/metrics/private_metrics",
+    "//components/metrics/structured/buildflags",
+    "//components/metrics_services_manager",
+    "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//components/variations/service",
+    "//content/public/common",
+    "//google_apis",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/federated_compute:confidential_compute",
+    "//ui/webui",
+  ]
+
+  if (structured_metrics_debug_enabled) {
+    sources += [
+      "structured_metrics_internals_handler.cc",
+      "structured_metrics_internals_handler.h",
+    ]
+    deps += [ "//components/metrics/debug/structured:debug" ]
+  }
+}

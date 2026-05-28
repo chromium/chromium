@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/captive_portal/core/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+
+source_set("interstitials") {
+  sources = [
+    "interstitial_ui.cc",
+    "interstitial_ui.h",
+  ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/lookalikes",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ssl",
+    "//chrome/common",
+    "//components/captive_portal/core:buildflags",
+    "//components/lookalikes/core",
+    "//components/resources:dev_ui_components_resources",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//components/supervised_user/core/browser",
+    "//content/public/common",
+    "//net",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/mojom",
+    "//ui/base",
+  ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//chrome/browser/safe_browsing" ]
+  }
+
+  if (is_linux || is_mac || is_win || is_chromeos) {
+    deps += [ "//chrome/browser/supervised_user" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "interstitial_ui_browsertest.cc" ]
+    deps = [
+      ":interstitials",
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/devtools",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/ui",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/safe_browsing/core/common",
+      "//components/strings",
+      "//components/webui/chrome_urls",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+  }
+}

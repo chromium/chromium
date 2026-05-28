@@ -112,6 +112,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/webui/version",
     "//components/content_settings/core/browser",
     "//components/permissions",
     "//components/permissions:permissions_common",

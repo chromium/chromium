@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("history_clusters") {
+  sources = [
+    "history_clusters_internals_ui_config.cc",
+    "history_clusters_internals_ui_config.h",
+  ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
+    "//chrome/browser/profiles:profile",
+    "//components/history_clusters/history_clusters_internals/webui",
+    "//components/history_clusters/history_clusters_internals/webui:constants",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "history_clusters_handler_browsertest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/history",
+      "//chrome/browser/history_clusters",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//components/history_clusters/core",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/menus",
+      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+    ]
+  }
+}

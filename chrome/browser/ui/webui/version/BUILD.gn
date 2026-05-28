@@ -1,0 +1,84 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+
+source_set("version") {
+  sources = [
+    "version_handler.cc",
+    "version_handler.h",
+    "version_ui.cc",
+    "version_ui.h",
+  ]
+  public_deps = [
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process_impl",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/embedder_support:user_agent",
+    "//components/resources:components_scaled_resources",
+    "//components/strings",
+    "//components/variations",
+    "//components/variations/service",
+    "//components/version_info",
+    "//components/webui/version",
+    "//components/webui/version/resources",
+    "//content/public/common",
+    "//ui/base",
+    "//v8:v8_version",
+  ]
+
+  if (is_mac) {
+    if (use_lld) {
+      defines = [ "CHROMIUM_LINKER_NAME=\"lld\"" ]
+    } else if (use_mold) {
+      defines = [ "CHROMIUM_LINKER_NAME=\"mold\"" ]
+    } else if (experimental_linker_path != "") {
+      defines = [ "CHROMIUM_LINKER_NAME=\"experimental\"" ]
+    } else {
+      defines = [ "CHROMIUM_LINKER_NAME=\"ld\"" ]
+    }
+  }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "version_handler_chromeos.cc",
+      "version_handler_chromeos.h",
+    ]
+    deps += [
+      "//ash/strings",
+      "//chromeos/version",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "version_handler_win.cc",
+      "version_handler_win.h",
+      "version_util_win.cc",
+      "version_util_win.h",
+    ]
+    deps += [ "//chrome/install_static:install_static_util" ]
+  }
+}
+
+if (is_win) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "version_handler_win_unittest.cc" ]
+    deps = [
+      ":version",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

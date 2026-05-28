@@ -123,6 +123,7 @@ source_set("impl") {
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/flags",
+    "//chrome/browser/ui/webui/policy",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/webauthn",
     "//components/blocked_content",

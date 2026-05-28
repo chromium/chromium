@@ -34,6 +34,7 @@ static_library("about") {
     "//chrome/browser/obsolete_system",
     "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/version",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/dbus/constants",

@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("media") {
+  sources = [
+    "media_engagement_ui.cc",
+    "media_engagement_ui.h",
+    "webrtc_logs_ui.cc",
+    "webrtc_logs_ui.h",
+  ]
+  public_deps = [
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/media",
+    "//chrome/browser/media:mojo_bindings",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/media:resources",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/component_updater",
+    "//components/prefs",
+    "//components/upload_list",
+    "//components/version_info",
+    "//components/webrtc_logging/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common:headers",
+    "//ui/webui",
+  ]
+}

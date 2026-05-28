@@ -14,3 +14,25 @@ mojom("mojo_bindings") {
 
   webui_module_path = "/"
 }
+
+source_set("usb_internals") {
+  sources = [
+    "usb_internals_page_handler.cc",
+    "usb_internals_page_handler.h",
+    "usb_internals_ui.cc",
+    "usb_internals_ui.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/usb_internals:resources",
+    "//chrome/common",
+    "//services/device/public/mojom:usb",
+    "//services/device/public/mojom:usb_test",
+  ]
+}

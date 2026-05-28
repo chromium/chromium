@@ -1,0 +1,80 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("policy") {
+  sources = [
+    "policy_ui.cc",
+    "policy_ui.h",
+    "policy_ui_handler.cc",
+    "policy_ui_handler.h",
+  ]
+  public_deps = [
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser/download",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/policy",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/select_file_policy",
+    "//chrome/common",
+    "//components/crx_file",
+    "//components/embedder_support:user_agent",
+    "//components/enterprise/browser/promotion",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/resources/webui:resources",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/strings",
+    "//components/version_info",
+    "//components/webui/version",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//ui/base",
+    "//ui/webui",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/off_hours",
+      "//chrome/browser/ash/profiles",
+      "//components/user_manager",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "policy_logs_ui_browsertest.cc",
+      "policy_test_ui_browsertest.cc",
+      "policy_ui_browsertest.cc",
+      "policy_ui_managed_status_browsertest.cc",
+    ]
+    deps = [
+      ":policy",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/test:test_support",
+      "//components/policy/core/common",
+      "//components/policy/test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

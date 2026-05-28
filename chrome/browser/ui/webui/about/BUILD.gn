@@ -27,6 +27,7 @@ source_set("impl") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:flags",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/chrome_urls",
     "//components/language/core/common",
     "//components/webui/about",
   ]

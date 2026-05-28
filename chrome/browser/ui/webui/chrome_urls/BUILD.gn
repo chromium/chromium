@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chrome_urls") {
+  sources = [
+    "chrome_urls_handler.cc",
+    "chrome_urls_handler.h",
+    "chrome_urls_ui.cc",
+    "chrome_urls_ui.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common",
+    "//components/webui/chrome_urls/mojom:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
+    "//components/webui/chrome_urls",
+    "//components/webui/chrome_urls/resources",
+    "//content/public/common",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_urls_handler_unittest.cc" ]
+  deps = [
+    ":chrome_urls",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/prefs:test_support",
+    "//components/webui/chrome_urls",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//ash/webui/file_manager:constants",
+    ]
+  }
+}

@@ -13,7 +13,6 @@ import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
-import("//components/metrics/structured/buildflags/buildflags.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//content/browser/devtools/features.gni")
 import("//crypto/features.gni")
@@ -105,58 +104,18 @@ static_library("ui") {
     "tab_ui_helper.h",
     "uninstall_browser_prompt.h",
     "view_ids.h",
-    "webui/chrome_urls/chrome_urls_handler.cc",
-    "webui/chrome_urls/chrome_urls_handler.h",
-    "webui/chrome_urls/chrome_urls_ui.cc",
-    "webui/chrome_urls/chrome_urls_ui.h",
     "webui/chrome_web_ui_controller_factory.cc",
     "webui/chrome_web_ui_controller_factory.h",
     "webui/commerce/commerce_internals_ui_config.cc",
     "webui/commerce/commerce_internals_ui_config.h",
     "webui/fileicon_source.cc",
     "webui/fileicon_source.h",
-    "webui/history_clusters/history_clusters_internals_ui_config.cc",
-    "webui/history_clusters/history_clusters_internals_ui_config.h",
-    "webui/interstitials/interstitial_ui.cc",
-    "webui/interstitials/interstitial_ui.h",
-    "webui/location_internals/location_internals_handler.cc",
-    "webui/location_internals/location_internals_handler.h",
-    "webui/location_internals/location_internals_ui.cc",
-    "webui/location_internals/location_internals_ui.h",
-    "webui/media/media_engagement_ui.cc",
-    "webui/media/media_engagement_ui.h",
-    "webui/media/webrtc_logs_ui.cc",
-    "webui/media/webrtc_logs_ui.h",
     "webui/metrics_handler.cc",
     "webui/metrics_handler.h",
-    "webui/metrics_internals/field_trials_handler.cc",
-    "webui/metrics_internals/field_trials_handler.h",
-    "webui/metrics_internals/metrics_internals_features.cc",
-    "webui/metrics_internals/metrics_internals_features.h",
-    "webui/metrics_internals/metrics_internals_handler.cc",
-    "webui/metrics_internals/metrics_internals_handler.h",
-    "webui/metrics_internals/metrics_internals_ui.cc",
-    "webui/metrics_internals/metrics_internals_ui.h",
-    "webui/omnibox/omnibox_page_handler.cc",
-    "webui/omnibox/omnibox_page_handler.h",
-    "webui/omnibox/omnibox_ui.cc",
-    "webui/omnibox/omnibox_ui.h",
-    "webui/policy/policy_ui.cc",
-    "webui/policy/policy_ui.h",
-    "webui/policy/policy_ui_handler.cc",
-    "webui/policy/policy_ui_handler.h",
     "webui/privacy_sandbox/privacy_sandbox_internals_handler.cc",
     "webui/privacy_sandbox/privacy_sandbox_internals_handler.h",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.cc",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.h",
-    "webui/usb_internals/usb_internals_page_handler.cc",
-    "webui/usb_internals/usb_internals_page_handler.h",
-    "webui/usb_internals/usb_internals_ui.cc",
-    "webui/usb_internals/usb_internals_ui.h",
-    "webui/version/version_handler.cc",
-    "webui/version/version_handler.h",
-    "webui/version/version_ui.cc",
-    "webui/version/version_ui.h",
   ]
 
   defines = []
@@ -198,10 +157,6 @@ static_library("ui") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/webui/chrome_finds_internals",
     "//chrome/browser/ui/webui/flags",
-    "//chrome/browser/ui/webui/omnibox/aim_eligibility",
-    "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings",
-    "//chrome/browser/ui/webui/omnibox/logging",
-    "//chrome/browser/ui/webui/omnibox/logging:mojo_bindings",
     "//chrome/browser/ui/webui/subresource_filter",
   ]
 
@@ -450,6 +405,7 @@ static_library("ui") {
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//chrome/browser/ui/webui/sync_internals",
     "//chrome/browser/ui/webui/translate_internals",
+    "//chrome/browser/ui/webui/version",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/undo",
     "//chrome/browser/updates/announcement_notification",
@@ -867,6 +823,10 @@ static_library("ui") {
     "//chrome/browser/search",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/webui/bluetooth_internals",
+
+    # TODO(crbug.com/353332589): version_ui.cc includes theme_source.h from
+    # //chrome/browser/ui.
+    "//chrome/browser/ui/webui/version",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
@@ -2164,8 +2124,6 @@ static_library("ui") {
       "webui/nearby_internals/nearby_internals_ui_trigger_handler.h",
       "webui/nearby_internals/quick_pair/quick_pair_handler.cc",
       "webui/nearby_internals/quick_pair/quick_pair_handler.h",
-      "webui/version/version_handler_chromeos.cc",
-      "webui/version/version_handler_chromeos.h",
     ]
 
     deps += [
@@ -3306,17 +3264,6 @@ static_library("ui") {
       "LocalAuthenticationEmbeddedUI.framework",
       "Quartz.framework",
     ]
-
-    # For version_ui.cc:
-    if (use_lld) {
-      defines += [ "CHROMIUM_LINKER_NAME=\"lld\"" ]
-    } else if (use_mold) {
-      defines += [ "CHROMIUM_LINKER_NAME=\"mold\"" ]
-    } else if (experimental_linker_path != "") {
-      defines += [ "CHROMIUM_LINKER_NAME=\"experimental\"" ]
-    } else {
-      defines += [ "CHROMIUM_LINKER_NAME=\"ld\"" ]
-    }
   }
 
   if (is_win) {
@@ -3362,10 +3309,6 @@ static_library("ui") {
       "views/uninstall_view.cc",
       "views/uninstall_view.h",
       "webui/settings/settings_utils_win.cc",
-      "webui/version/version_handler_win.cc",
-      "webui/version/version_handler_win.h",
-      "webui/version/version_util_win.cc",
-      "webui/version/version_util_win.h",
     ]
 
     public_deps += [ "//ui/base/mojom:ui_base_types" ]
@@ -5084,14 +5027,6 @@ static_library("ui") {
           "//dbus",
         ]
       }
-    }
-
-    if (structured_metrics_enabled) {
-      sources += [
-        "webui/metrics_internals/structured_metrics_internals_handler.cc",
-        "webui/metrics_internals/structured_metrics_internals_handler.h",
-      ]
-      deps += [ "//components/metrics/debug/structured:debug" ]
     }
 
     if (!is_chromeos) {
