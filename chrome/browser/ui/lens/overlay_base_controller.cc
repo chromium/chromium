@@ -532,20 +532,8 @@ void OverlayBaseController::TabWillEnterBackground(tabs::TabInterface* tab) {
     // kHidden. Otherwise, restore to the current state.
     backgrounded_state_ = is_in_transitional_state ? State::kHidden : state_;
 
-    // If the overlay is shared, it should always be hidden when the tab will be
-    // backgrounded; if the overlay is scoped to a tab, it should be only hidden
-    // if the tab is not part of a split view.
-    // TODO(b:8222824): Revisit this for hiding the entire split view for
-    // tab-scoped overlay.
-    bool should_hide = false;
-    if (IsOverlayViewShared()) {
-      should_hide = true;
-    } else {
-      should_hide = !tab_->IsSplit();
-    }
-
     // If the overlay UI is showing, hide it.
-    if (should_hide && overlay_web_view_ && overlay_web_view_->GetVisible()) {
+    if (overlay_web_view_ && overlay_web_view_->GetVisible()) {
       HideOverlay();
       if (!IsOverlayViewShared()) {
         // Preserve the overlay view and other visual elements for the
@@ -735,7 +723,9 @@ void OverlayBaseController::HideOverlay() {
           ->RetrieveView(kActiveContentsWebViewRetrievalId);
   CHECK(contents_web_view);
   contents_web_view->SetEnabled(true);
-  contents_web_view->RequestFocus();
+  if (tab_->IsActivated()) {
+    contents_web_view->RequestFocus();
+  }
 
   // Hide the overlay view, but keep the web view attached to the overlay view
   // so that the overlay can be re-shown without creating a new web view.
