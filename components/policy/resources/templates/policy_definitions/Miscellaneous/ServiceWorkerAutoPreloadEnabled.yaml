@@ -8,7 +8,7 @@ desc: |-
 
   If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not enable ServiceWorkerAutoPreload. The navigation request is dispatched always after starting the ServiceWorker.
 
-  This policy is a temporary measure to control the feature and will be removed in M144.
+  This policy is a temporary measure to control the feature and will be removed in M154.
 default: true
 example_value: true
 features:
