@@ -41,7 +41,7 @@ LayoutSVGFilterPrimitive::LayoutSVGFilterPrimitive(
     : LayoutObject(filter_primitive_element) {}
 
 static bool CurrentColorChanged(StyleDifference diff, const StyleColor& color) {
-  return diff.text_decoration_or_color_changed && color.IsCurrentColor();
+  return diff.text_decoration_or_color_changed && color.DependsOnCurrentColor();
 }
 
 static void CheckForColorChange(SVGFilterPrimitiveStandardAttributes& element,
@@ -49,10 +49,10 @@ static void CheckForColorChange(SVGFilterPrimitiveStandardAttributes& element,
                                 StyleDifference diff,
                                 const StyleColor& old_color,
                                 const StyleColor& new_color) {
-  // If the <color> change from/to 'currentcolor' then invalidate the filter
-  // chain so that it is rebuilt. (Makes sure the 'tainted' flag is
+  // If the <color> change from/to depending on 'currentcolor' then invalidate
+  // the filter chain so that it is rebuilt. (Makes sure the 'tainted' flag is
   // propagated.)
-  if (new_color.IsCurrentColor() != old_color.IsCurrentColor()) {
+  if (new_color.DependsOnCurrentColor() != old_color.DependsOnCurrentColor()) {
     element.Invalidate();
     return;
   }
