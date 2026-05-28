@@ -41,28 +41,6 @@ bool IsValidNavigation(content::NavigationHandle* navigation_handle) {
           IsAndroidNTP(navigation_handle->GetURL()));
 }
 
-bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
-  const int64_t last_timestamp_value =
-      pref_service->GetInt64(prefs::kFindsOptInPromoLastShownTimestamp);
-  if (last_timestamp_value == 0) {
-    return true;
-  }
-
-  const base::Time last_interacted_time =
-      base::Time::FromMillisecondsSinceUnixEpoch(last_timestamp_value);
-  return (base::Time::Now() - last_interacted_time) >=
-         base::Days(finds::features::kFindsOptInPromoCooldownInDays.Get());
-}
-
-bool IsFindsOptInPromoMaxCountExceeded(const PrefService* pref_service) {
-  return pref_service->GetInteger(prefs::kFindsOptInPromoShownCount) >=
-         finds::features::kFindsOptInPromoMaxInteractedCount.Get();
-}
-
-bool IsFindsOptInPromoAlreadyInteracted(const PrefService* pref_service) {
-  return pref_service->GetBoolean(prefs::kFindsOptInPromoUserInteracted);
-}
-
 }  // namespace
 
 // static
