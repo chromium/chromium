@@ -208,6 +208,13 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
     ExtensionResource::SymlinkPolicy symlink_policy,
     UserScriptList scripts);
 
+// Returns true if the `permissions` allow for injection into the given `frame`.
+// If false, populates `error`.
+bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
+                                    int tab_id,
+                                    content::RenderFrameHost* frame,
+                                    std::string* error);
+
 // Returns whether the `target` can be accessed with the given `permissions`.
 // If the target can be accessed, populates `script_executor_out`,
 // `frame_scope_out`, and `frame_ids_out` with the appropriate values;
