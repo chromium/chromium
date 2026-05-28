@@ -29,6 +29,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -542,19 +543,22 @@ TEST_F(WindowRestoreControllerTest, Activation) {
 TEST_F(WindowRestoreControllerTest, TestWindowRestoredWidget) {
   const int32_t kActivationIndex = 2;
   views::Widget* widget = CreateTestWindowRestoredWidget(kActivationIndex);
+  aura::Window* window = widget->GetNativeWindow();
   int32_t* activation_index =
-      widget->GetNativeWindow()->GetProperty(app_restore::kActivationIndexKey);
+      window->GetProperty(app_restore::kActivationIndexKey);
   ASSERT_TRUE(activation_index);
   EXPECT_EQ(kActivationIndex, *activation_index);
 
   // Since `widget` is the topmost window, it can be activated.
-  EXPECT_TRUE(wm::CanActivateWindow(widget->GetNativeWindow()));
+  EXPECT_TRUE(wm::CanActivateWindow(window));
   EXPECT_TRUE(widget->IsActive());
 
-  // Activation permissions are restored in a post task. Spin the run loop and
-  // verify.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(wm::CanActivateWindow(widget->GetNativeWindow()));
+  // Window restore clears the launched-from-restore property in a post task so
+  // showing the widget does not steal activation during setup.
+  ASSERT_TRUE(base::test::RunUntil([window]() {
+    return !window->GetProperty(app_restore::kLaunchedFromAppRestoreKey);
+  }));
+  EXPECT_TRUE(wm::CanActivateWindow(window));
 }
 
 // Tests that widgets are restored to their proper stacking order, even if they
