@@ -27,7 +27,6 @@
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
-#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
@@ -85,8 +84,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/shape_detection_service.h"
@@ -754,44 +751,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
   (RenderFrameHostImpl::From(host)->*Method)(std::move(receiver));
 }
 
-void BindMidiSessionProvider(
-    RenderFrameHost* host,
-    mojo::PendingReceiver<midi::mojom::MidiSessionProvider> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BrowserContext* browser_context = host->GetBrowserContext();
-  PermissionController* permission_controller =
-      browser_context->GetPermissionController();
-
-  auto midi_descriptor =
-      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
-          blink::PermissionType::MIDI);
-  if (permission_controller->GetPermissionStatusForCurrentDocument(
-          midi_descriptor, host) ==
-      blink::mojom::PermissionStatus::GRANTED) {
-    ChildProcessSecurityPolicyImpl::GetInstance()->GrantSendMidiMessage(
-        host->GetProcess()->GetID().GetUnsafeValue());
-  }
-
-  auto midi_sysex_descriptor =
-      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
-          blink::PermissionType::MIDI_SYSEX);
-  if (permission_controller->GetPermissionStatusForCurrentDocument(
-          midi_sysex_descriptor, host) ==
-      blink::mojom::PermissionStatus::GRANTED) {
-    ChildProcessSecurityPolicyImpl::GetInstance()->GrantSendMidiSysExMessage(
-        host->GetProcess()->GetID().GetUnsafeValue());
-  }
-
-  if (BrowserMainLoop::GetInstance()) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MidiHost::BindReceiver, host->GetProcess()->GetID(),
-                       BrowserMainLoop::GetInstance()->midi_service(),
-                       std::move(receiver)));
-  }
-}
-
 }  // namespace
 
 // Documents/frames
@@ -933,7 +892,10 @@ void PopulateBinderMapWithContext(
   // BrowserMainLoop::GetInstance() may be null on unit tests.
   if (BrowserMainLoop::GetInstance()) {
     map->Add<midi::mojom::MidiSessionProvider>(
-        base::BindRepeating(&BindMidiSessionProvider));
+        base::BindRepeating(&MidiHost::BindReceiver,
+                            host->GetProcess()->GetID(),
+                            BrowserMainLoop::GetInstance()->midi_service()),
+        GetIOThreadTaskRunner({}));
   }
 
   map->Add<media::mojom::MediaPlayerObserverClient>(

@@ -8528,7 +8528,6 @@ data/mhtml/imported_inline.css
 data/mhtml/style.css
 data/mhtml/styles.html
 data/midi/request_midi_access.html
-data/midi/request_midi_sysex_access.html
 data/midi/subscribe_all.html
 data/mixed-content/basic-active-in-iframe.html
 data/mixed-content/basic-active.html
