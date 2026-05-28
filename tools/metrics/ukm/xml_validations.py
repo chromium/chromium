@@ -31,6 +31,12 @@ VALID_STATISTICS = {
     "quantiles": ["std-percentiles"],
 }
 
+# Case-insensitive metric names that are forbidden because they collide with
+# reserved UKM internal keywords.
+FORBIDDEN_METRIC_NAMES = {
+    'event',
+    'metadata',
+}
 
 def _is_metric_valid_as_index_field(metric_node):
   """Checks if a given metric node can be used as a field in an index tag.
@@ -216,5 +222,20 @@ class UkmXmlValidation:
           validation_error = self._get_statistics_error(metric_node, event_node)
           if validation_error:
             errors.append(validation_error)
+
+    return (not errors, errors)
+
+  def check_metric_names(self) -> tuple[bool, list[str]]:
+    """Checks that metrics do not accidentally use reserved keywords."""
+    errors = []
+    for event_node in self.config.getElementsByTagName('event'):
+      event_name = event_node.getAttribute('name')
+      for metric_node in event_node.getElementsByTagName('metric'):
+        metric_name = metric_node.getAttribute('name')
+        if metric_name.lower() in FORBIDDEN_METRIC_NAMES:
+          errors.append(
+              "Metric name '%s' in event '%s' collides with a UKM-internal "
+              "keyword. Please pick a different name." %
+              (metric_name, event_name))
 
     return (not errors, errors)

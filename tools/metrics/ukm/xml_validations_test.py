@@ -296,6 +296,37 @@ class UkmXmlValidationTest(unittest.TestCase):
           result_success)
       self.assertListEqual(ex_error, result_error)
 
+  def test_metric_uses_forbidden_name(self):
+    """Validates that metrics using forbidden names generate errors."""
+    bad_ukm_config = self.to_ukm_config("""
+        <ukm-configuration>
+          <event name="Event1">
+            <metric name="Event" enum="SomeEnumName"/>
+            <metric name="event" enum="SomeEnumName"/>
+            <metric name="EVENT" enum="SomeEnumName"/>
+            <metric name="Metadata" enum="SomeEnumName"/>
+            <metric name="metadata" enum="SomeEnumName"/>
+            <metric name="SomeGoodName" enum="SomeEnumName"/>
+          </event>
+        </ukm-configuration>
+        """.strip())
+    expected_errors = [
+        "Metric name 'Event' in event 'Event1' collides with a "
+        "UKM-internal keyword. Please pick a different name.",
+        "Metric name 'event' in event 'Event1' collides with a "
+        "UKM-internal keyword. Please pick a different name.",
+        "Metric name 'EVENT' in event 'Event1' collides with a "
+        "UKM-internal keyword. Please pick a different name.",
+        "Metric name 'Metadata' in event 'Event1' collides with a "
+        "UKM-internal keyword. Please pick a different name.",
+        "Metric name 'metadata' in event 'Event1' collides with a "
+        "UKM-internal keyword. Please pick a different name.",
+    ]
+    validator = xml_validations.UkmXmlValidation(bad_ukm_config)
+    is_success, errors = validator.check_metric_names()
+    self.assertFalse(is_success)
+    self.assertListEqual(expected_errors, errors)
+
 
 if __name__ == '__main__':
   unittest.main()
