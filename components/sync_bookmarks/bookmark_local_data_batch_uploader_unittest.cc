@@ -35,6 +35,7 @@ using ::syncer::MatchesLocalDataItemModel;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Not;
 
 MATCHER_P2(MatchesTitleAndUrl, title, url, "") {
   if (!arg->is_url()) {
@@ -433,6 +434,131 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
                           MatchesTitleAndUrl(u"Local", "http://local1.com/")));
   EXPECT_THAT(bookmark_model()->account_mobile_node()->children(), IsEmpty());
   EXPECT_THAT(bookmark_model()->account_other_node()->children(), IsEmpty());
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       LocalDescriptionEmptyIfLocalCountExceedsLimit) {
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"Local 1", GURL("http://local1.com/"));
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/1,
+                           u"Local 2", GURL("http://local2.com/"));
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+  // Total local count is 5 (3 local permanent folders + 2 local URLs).
+  // A limit of 4 will block it.
+  uploader.SetMaxBookmarksLimitForTesting(4);
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       LocalDescriptionEmptyIfLocalAndAccountCountExceedsLimit) {
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"Local", GURL("http://local.com/"));
+  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
+                           /*index=*/0, u"Account",
+                           GURL("http://account.com/"));
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+  // Local count is 4 (3 local perm + 1 local URL) <= 5 (passes local check).
+  // Combined count is 8 (4 local + 4 account) > 5 (fails combined check).
+  uploader.SetMaxBookmarksLimitForTesting(5);
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       LocalDescriptionNotEmptyIfWithinLimits) {
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  const bookmarks::BookmarkNode* local_node = bookmark_model()->AddURL(
+      bookmark_model()->bookmark_bar_node(), /*index=*/0, u"Local",
+      GURL("http://local.com/"));
+  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
+                           /*index=*/0, u"Account",
+                           GURL("http://account.com/"));
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+  uploader.SetMaxBookmarksLimitForTesting(100);
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_THAT(
+      description.Get(),
+      MatchesLocalDataDescription(syncer::DataType::BOOKMARKS,
+                                  ElementsAre(MatchesLocalDataItemModel(
+                                      local_node->id(),
+                                      syncer::LocalDataItemModel::PageUrlIcon(
+                                          GURL("http://local.com/")),
+                                      "Local", IsEmpty())),
+                                  1u, ElementsAre("local.com"), 1u));
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest, CombinedCountExactLimitBoundary) {
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"Local", GURL("http://local.com/"));
+  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
+                           /*index=*/0, u"Account",
+                           GURL("http://account.com/"));
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+
+  // Total combined count is 9 (1 root node + 3 local perm + 1 local URL + 3
+  // account perm + 1 account URL). Limit = 9: Should be allowed (not empty).
+  uploader.SetMaxBookmarksLimitForTesting(9);
+  {
+    base::test::TestFuture<syncer::LocalDataDescription> description;
+    uploader.GetLocalDataDescription(description.GetCallback());
+    EXPECT_THAT(description.Get(), Not(IsEmptyLocalDataDescription()));
+  }
+
+  // Limit = 8: Should be blocked (empty).
+  uploader.SetMaxBookmarksLimitForTesting(8);
+  {
+    base::test::TestFuture<syncer::LocalDataDescription> description;
+    uploader.GetLocalDataDescription(description.GetCallback());
+    EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+  }
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       AggressiveCheckBlocksDuplicateThatWouldFit) {
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  // Add duplicate URLs.
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"Dup", GURL("http://dup.com/"));
+  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
+                           /*index=*/0, u"Dup", GURL("http://dup.com/"));
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+
+  // Simple sum is 8 (4 local + 4 account).
+  // Actual post-merge count would be 4 (only account nodes remain, with 1 URL).
+  // If the limit is set to 7:
+  // - The simple sum check (8 > 7) blocks it.
+  // - The deduplicated check (4 <= 7) would have allowed it.
+  // This test verifies that the check indeed blocks the upload (returns an
+  // empty description).
+  uploader.SetMaxBookmarksLimitForTesting(7);
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
+#include "components/sync_bookmarks/constants.h"
 
 class GURL;
 
@@ -45,6 +46,8 @@ class BookmarkLocalDataBatchUploader
   void TriggerLocalDataMigrationForItems(
       std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
+  void SetMaxBookmarksLimitForTesting(size_t limit);
+
  private:
   bool CanUpload() const;
 
@@ -71,6 +74,7 @@ class BookmarkLocalDataBatchUploader
 
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   const raw_ptr<PrefService> pref_service_;
+  size_t max_bookmarks_limit_ = kSyncBookmarksLimit;
 };
 
 }  // namespace sync_bookmarks

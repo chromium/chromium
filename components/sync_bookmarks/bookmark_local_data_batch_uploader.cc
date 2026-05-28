@@ -35,6 +35,11 @@ BookmarkLocalDataBatchUploader::BookmarkLocalDataBatchUploader(
 
 BookmarkLocalDataBatchUploader::~BookmarkLocalDataBatchUploader() = default;
 
+void BookmarkLocalDataBatchUploader::SetMaxBookmarksLimitForTesting(
+    size_t limit) {
+  max_bookmarks_limit_ = limit;
+}
+
 void BookmarkLocalDataBatchUploader::GetLocalDataDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> callback) {
   if (!CanUpload()) {
@@ -101,9 +106,21 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
 }
 
 bool BookmarkLocalDataBatchUploader::CanUpload() const {
-  return bookmark_model_ && bookmark_model_->loaded() &&
-         bookmark_model_->account_bookmark_bar_node() &&
-         pref_service_->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
+  if (!bookmark_model_ || !bookmark_model_->loaded() ||
+      !bookmark_model_->account_bookmark_bar_node() ||
+      !pref_service_->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled)) {
+    return false;
+  }
+
+  // Note: This is a conservative check as it includes permanent folders,
+  // root node, and managed bookmarks. It also does not account for potential
+  // deduplication during the merge.
+  if (bookmark_model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes() >
+      max_bookmarks_limit_) {
+    return false;
+  }
+
+  return true;
 }
 
 std::vector<GURL> BookmarkLocalDataBatchUploader::GetBookmarkedUrlsInSubtree(
