@@ -1137,10 +1137,10 @@ deps = {
     'condition': 'non_git_source',
     'objects': [
       {
-        'object_name': 'meet-gpu-tests/921809636.tar.gz',
-        'sha256sum': '074dbd1b9146f76d910f5b26db6cceae6e882b878f8dd64fc1dbc77a4b0a93e8',
-        'size_bytes': 277425739,
-        'generation': 1779871688963394,
+        'object_name': 'meet-gpu-tests/922527113.tar.gz',
+        'sha256sum': '21a3c4999cdf1f41112a0a00d4bf3da5d69e52b311a0162c466321a47f6b341f',
+        'size_bytes': 277424916,
+        'generation': 1779958046161881,
       },
     ],
   },
