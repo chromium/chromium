@@ -77,10 +77,10 @@ constexpr uint32_t kMaxConcatInputs = 10;
 
 // Registers a fuzz test for all three device types (CPU, GPU, NPU).
 // The variadic args carry the .WithDomains()/.WithSeeds() chain.
-#define WEBNN_FUZZ_TEST_F(func, ...)                       \
-  FUZZ_TEST_F(WebNNGraphImplFuzzer_CPU, func) __VA_ARGS__; \
-  FUZZ_TEST_F(WebNNGraphImplFuzzer_GPU, func) __VA_ARGS__; \
-  FUZZ_TEST_F(WebNNGraphImplFuzzer_NPU, func) __VA_ARGS__
+#define WEBNN_FUZZ_TEST_F(func, ...)  \
+  FUZZ_TEST_F(CPU, func) __VA_ARGS__; \
+  FUZZ_TEST_F(GPU, func) __VA_ARGS__; \
+  FUZZ_TEST_F(NPU, func) __VA_ARGS__
 
 template <typename T>
 std::vector<uint8_t> CreateBufferAs(size_t buffer_size, int64_t fill_value) {
@@ -1621,48 +1621,47 @@ template <typename BaseFixture>
 class WebNNGraphImplFuzzerImpl
     : public fuzztest::PerFuzzTestFixtureAdapter<BaseFixture> {
  public:
-  void SingleOpConcat(ConcatParams params, uint8_t seed_for_data);
-  void SingleOpConv2d(Conv2dParams params, uint8_t seed_for_data);
-  void SingleOpExpand(ExpandParams params, uint8_t seed_for_data);
-  void SingleOpGatherND(GatherNDParams params, uint8_t seed_for_data);
-  void SingleOpGemm(GemmParams params, uint8_t seed_for_data);
-  void SingleOpLstm(LstmParams params, uint8_t seed_for_data);
-  void SingleOpPad(PadParams params, uint8_t seed_for_data);
-  void SingleOpPool2d(Pool2dParams params, uint8_t seed_for_data);
-  void SingleOpReduce(ReduceParams params, uint8_t seed_for_data);
-  void SingleOpResample2d(Resample2dParams params, uint8_t seed_for_data);
-  void SingleOpScatterElements(ScatterElementsParams params,
-                               uint8_t seed_for_data);
-  void SubgraphDQConcatQ(ConcatParams concat_params,
-                         OperandDataType quantized_type,
-                         uint8_t seed_for_input,
-                         float seed_for_scale,
-                         uint8_t seed_for_zero_point);
-  void SubgraphDQConv2dQ(Conv2dParams conv2d_params,
-                         QuantizationParams quantization_params,
-                         uint8_t seed_for_data);
-  void SubgraphDQGemmQ(GemmParams gemm_params,
-                       QuantizationParams quantization_params,
-                       uint8_t seed_for_data);
-  void SubgraphDQPadQ(PadParams pad_params,
-                      OperandDataType quantized_type,
-                      uint8_t seed_for_input,
-                      float seed_for_scale,
-                      uint8_t seed_for_zero_point);
-  void SubgraphDQPool2dQ(Pool2dParams pool2d_params,
-                         QuantizationParams quantization_params,
-                         uint8_t seed_for_data);
-  void SubgraphDQReduceQ(ReduceParams reduce_params,
-                         QuantizationParams quantization_params,
-                         uint32_t channel_axis,
-                         uint8_t seed_for_input,
-                         float seed_for_scale,
-                         uint8_t seed_for_zero_point);
-  void SubgraphDQResample2dQ(Resample2dParams resample2d_params,
-                             OperandDataType quantized_type,
-                             uint8_t seed_for_input,
-                             float seed_for_scale,
-                             uint8_t seed_for_zero_point);
+  void Concat(ConcatParams params, uint8_t seed_for_data);
+  void Conv2d(Conv2dParams params, uint8_t seed_for_data);
+  void Expand(ExpandParams params, uint8_t seed_for_data);
+  void GatherND(GatherNDParams params, uint8_t seed_for_data);
+  void Gemm(GemmParams params, uint8_t seed_for_data);
+  void Lstm(LstmParams params, uint8_t seed_for_data);
+  void Pad(PadParams params, uint8_t seed_for_data);
+  void Pool2d(Pool2dParams params, uint8_t seed_for_data);
+  void Reduce(ReduceParams params, uint8_t seed_for_data);
+  void Resample2d(Resample2dParams params, uint8_t seed_for_data);
+  void ScatterElements(ScatterElementsParams params, uint8_t seed_for_data);
+  void DQConcatQ(ConcatParams concat_params,
+                 OperandDataType quantized_type,
+                 uint8_t seed_for_input,
+                 float seed_for_scale,
+                 uint8_t seed_for_zero_point);
+  void DQConv2dQ(Conv2dParams conv2d_params,
+                 QuantizationParams quantization_params,
+                 uint8_t seed_for_data);
+  void DQGemmQ(GemmParams gemm_params,
+               QuantizationParams quantization_params,
+               uint8_t seed_for_data);
+  void DQPadQ(PadParams pad_params,
+              OperandDataType quantized_type,
+              uint8_t seed_for_input,
+              float seed_for_scale,
+              uint8_t seed_for_zero_point);
+  void DQPool2dQ(Pool2dParams pool2d_params,
+                 QuantizationParams quantization_params,
+                 uint8_t seed_for_data);
+  void DQReduceQ(ReduceParams reduce_params,
+                 QuantizationParams quantization_params,
+                 uint32_t channel_axis,
+                 uint8_t seed_for_input,
+                 float seed_for_scale,
+                 uint8_t seed_for_zero_point);
+  void DQResample2dQ(Resample2dParams resample2d_params,
+                     OperandDataType quantized_type,
+                     uint8_t seed_for_input,
+                     float seed_for_scale,
+                     uint8_t seed_for_zero_point);
 };
 
 template <mojom::Device device_type>
@@ -1671,22 +1670,18 @@ class WebNNGraphImplFuzzerDevice : public WebNNGraphImplFuzzerBase {
   mojom::Device GetDeviceType() const override { return device_type; }
 };
 
-class WebNNGraphImplFuzzer_CPU
-    : public WebNNGraphImplFuzzerImpl<
-          WebNNGraphImplFuzzerDevice<mojom::Device::kCpu>> {};
+class CPU : public WebNNGraphImplFuzzerImpl<
+                WebNNGraphImplFuzzerDevice<mojom::Device::kCpu>> {};
 
-class WebNNGraphImplFuzzer_GPU
-    : public WebNNGraphImplFuzzerImpl<
-          WebNNGraphImplFuzzerDevice<mojom::Device::kGpu>> {};
+class GPU : public WebNNGraphImplFuzzerImpl<
+                WebNNGraphImplFuzzerDevice<mojom::Device::kGpu>> {};
 
-class WebNNGraphImplFuzzer_NPU
-    : public WebNNGraphImplFuzzerImpl<
-          WebNNGraphImplFuzzerDevice<mojom::Device::kNpu>> {};
+class NPU : public WebNNGraphImplFuzzerImpl<
+                WebNNGraphImplFuzzerDevice<mojom::Device::kNpu>> {};
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConcat(
-    ConcatParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Concat(ConcatParams params,
+                                                   uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto concat_descs,
       SetUpConcatDescriptors(this->context_properties(), params));
@@ -1734,9 +1729,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConcat(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
-    Conv2dParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
+                                                   uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto conv2d_descs,
       SetUpConv2dDescriptors(this->context_properties(), params));
@@ -1844,9 +1838,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpExpand(
-    ExpandParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Expand(ExpandParams params,
+                                                   uint8_t seed_for_data) {
   // Ensure output_rank >= input_rank for unidirectional broadcast.
   if (params.output_rank < params.input_rank) {
     params.output_rank = params.input_rank;
@@ -1906,9 +1899,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpExpand(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGatherND(
-    GatherNDParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::GatherND(GatherNDParams params,
+                                                     uint8_t seed_for_data) {
   std::vector<uint32_t> input_dims(
       params.input_dims.begin(), params.input_dims.begin() + params.input_rank);
 
@@ -1976,9 +1968,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGatherND(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
-    GemmParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Gemm(GemmParams params,
+                                                 uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto gemm_descs,
       SetUpGemmDescriptors(this->context_properties(), params));
@@ -2049,9 +2040,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpLstm(
-    LstmParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Lstm(LstmParams params,
+                                                 uint8_t seed_for_data) {
   if (params.hidden_size > std::numeric_limits<uint32_t>::max() / 4) {
     return;
   }
@@ -2286,8 +2276,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpLstm(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPad(PadParams params,
-                                                        uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Pad(PadParams params,
+                                                uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto pad_descs, SetUpPadDescriptors(this->context_properties(), params));
 
@@ -2327,9 +2317,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPad(PadParams params,
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPool2d(
-    Pool2dParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Pool2d(Pool2dParams params,
+                                                   uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto pool2d_descs,
       SetUpPool2dDescriptors(this->context_properties(), params));
@@ -2377,9 +2366,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPool2d(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpReduce(
-    ReduceParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Reduce(ReduceParams params,
+                                                   uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto reduce_descs,
       SetUpReduceDescriptors(this->context_properties(), params));
@@ -2420,9 +2408,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpReduce(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpResample2d(
-    Resample2dParams params,
-    uint8_t seed_for_data) {
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Resample2d(Resample2dParams params,
+                                                       uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
       auto resample2d_descs,
       SetUpResample2dDescriptors(this->context_properties(), params));
@@ -2466,7 +2453,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpResample2d(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpScatterElements(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::ScatterElements(
     ScatterElementsParams params,
     uint8_t seed_for_data) {
   std::vector<uint32_t> input_dims(params.input_dims.begin(),
@@ -2552,7 +2539,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpScatterElements(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConcatQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConcatQ(
     ConcatParams concat_params,
     OperandDataType quantized_type,
     uint8_t seed_for_input,
@@ -2708,7 +2695,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConcatQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
     Conv2dParams conv2d_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
@@ -2988,7 +2975,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
     GemmParams gemm_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
@@ -3207,7 +3194,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPadQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
     PadParams pad_params,
     OperandDataType quantized_type,
     uint8_t seed_for_input,
@@ -3329,7 +3316,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPadQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
     Pool2dParams pool2d_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
@@ -3463,7 +3450,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQReduceQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
     ReduceParams reduce_params,
     QuantizationParams quantization_params,
     uint32_t channel_axis,
@@ -3598,7 +3585,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQReduceQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQResample2dQ(
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
     Resample2dParams resample2d_params,
     OperandDataType quantized_type,
     uint8_t seed_for_input,
@@ -3728,7 +3715,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQResample2dQ(
 }
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpConcat,
+    Concat,
     .WithDomains(AnyConcatParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{ConcatParams{
                          /*data_type=*/OperandDataType::kFloat32,
@@ -3741,7 +3728,7 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*seed_for_data=*/1}}));
 
-WEBNN_FUZZ_TEST_F(SingleOpConv2d,
+WEBNN_FUZZ_TEST_F(Conv2d,
                   .WithDomains(AnyConv2dParams(),
                                fuzztest::Arbitrary<uint8_t>())
                       .WithSeeds({{Conv2dParams{
@@ -3767,7 +3754,7 @@ WEBNN_FUZZ_TEST_F(SingleOpConv2d,
                                    },
                                    /*seed_for_data=*/1}}));
 
-WEBNN_FUZZ_TEST_F(SingleOpExpand,
+WEBNN_FUZZ_TEST_F(Expand,
                   .WithDomains(AnyExpandParams(),
                                fuzztest::Arbitrary<uint8_t>())
                       .WithSeeds({{ExpandParams{
@@ -3781,7 +3768,7 @@ WEBNN_FUZZ_TEST_F(SingleOpExpand,
                                    /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpGatherND,
+    GatherND,
     .WithDomains(AnyGatherNDParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{GatherNDParams{
                          /*input_data_type=*/OperandDataType::kFloat32,
@@ -3796,7 +3783,7 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*seed_for_data=*/5}}));
 
-WEBNN_FUZZ_TEST_F(SingleOpGemm,
+WEBNN_FUZZ_TEST_F(Gemm,
                   .WithDomains(AnyGemmParams(), fuzztest::Arbitrary<uint8_t>())
                       .WithSeeds({{GemmParams{
                                        OperandDataType::kFloat32,
@@ -3816,7 +3803,7 @@ WEBNN_FUZZ_TEST_F(SingleOpGemm,
                                    /*seed_for_data=*/3}}));
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpLstm,
+    Lstm,
     .WithDomains(AnyLstmParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds(
             {{LstmParams{
@@ -3844,7 +3831,7 @@ WEBNN_FUZZ_TEST_F(
               /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpPad,
+    Pad,
     .WithDomains(AnyPadParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{PadParams{
                          /*data_type=*/OperandDataType::kFloat32,
@@ -3858,7 +3845,7 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*seed_for_data=*/1}}));
 
-WEBNN_FUZZ_TEST_F(SingleOpPool2d,
+WEBNN_FUZZ_TEST_F(Pool2d,
                   .WithDomains(AnyPool2dParams(),
                                fuzztest::Arbitrary<uint8_t>())
                       .WithSeeds({{Pool2dParams{
@@ -3878,7 +3865,7 @@ WEBNN_FUZZ_TEST_F(SingleOpPool2d,
                                    /*seed_for_data=*/2}}));
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpReduce,
+    Reduce,
     .WithDomains(AnyReduceParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{ReduceParams{
                          /*data_type=*/OperandDataType::kFloat32,
@@ -3893,7 +3880,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/2}}));
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpResample2d,
+    Resample2d,
     .WithDomains(AnyResample2dParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{Resample2dParams{
                          OperandDataType::kFloat32,
@@ -3912,7 +3899,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(
-    SingleOpScatterElements,
+    ScatterElements,
     .WithDomains(AnyScatterElementsParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{ScatterElementsParams{
                          /*input_data_type=*/OperandDataType::kFloat32,
@@ -3929,7 +3916,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/4}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQConcatQ,
+    DQConcatQ,
     .WithDomains(AnyConcatParams(),
                  AnyQuantizedDataType(),
                  /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
@@ -3951,7 +3938,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_zero_point=*/0}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQConv2dQ,
+    DQConv2dQ,
     .WithDomains(AnyConv2dParams(),
                  AnyQuantizationParams(),
                  fuzztest::Arbitrary<uint8_t>())
@@ -3982,7 +3969,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQGemmQ,
+    DQGemmQ,
     .WithDomains(AnyGemmParams(),
                  AnyQuantizationParams(),
                  fuzztest::Arbitrary<uint8_t>())
@@ -4007,7 +3994,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/3}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQPadQ,
+    DQPadQ,
     .WithDomains(AnyPadParams(),
                  AnyQuantizedDataType(),
                  /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
@@ -4030,7 +4017,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_zero_point=*/0}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQPool2dQ,
+    DQPool2dQ,
     .WithDomains(AnyPool2dParams(),
                  AnyQuantizationParams(),
                  fuzztest::Arbitrary<uint8_t>())
@@ -4056,7 +4043,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/2}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQReduceQ,
+    DQReduceQ,
     .WithDomains(AnyReduceParams(),
                  AnyQuantizationParams(),
                  /*channel_axis=*/fuzztest::InRange<uint32_t>(0, 7),
@@ -4085,7 +4072,7 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_zero_point=*/0}}));
 
 WEBNN_FUZZ_TEST_F(
-    SubgraphDQResample2dQ,
+    DQResample2dQ,
     .WithDomains(AnyResample2dParams(),
                  AnyQuantizedDataType(),
                  /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
