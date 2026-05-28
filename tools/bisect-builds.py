@@ -2555,7 +2555,6 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       choices=apk_choices,
       dest='apk',
       # default='chromium', when using android archives
-      metavar='{chromium,chrome_dev,android_webview...}',
       help=(f'Apk you want to bisect {{{",".join(apk_choices)}}}. '
             '(Default: chromium/chrome)'),
   )
