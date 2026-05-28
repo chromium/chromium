@@ -1294,3 +1294,9 @@ BASE_FEATURE(kIOSDarkModeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsIOSDarkModeDetectionEnabled() {
   return base::FeatureList::IsEnabled(kIOSDarkModeDetection);
 }
+
+BASE_FEATURE(kIdentityAwareness, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIdentityAwarenessEnabled() {
+  return base::FeatureList::IsEnabled(kIdentityAwareness);
+}

@@ -1053,4 +1053,10 @@ BASE_DECLARE_FEATURE(kIOSDarkModeDetection);
 // Returns true if the Native Dark Mode Detection feature is enabled.
 bool IsIOSDarkModeDetectionEnabled();
 
+// Enables sign-in/account menu button in the overflow menu.
+BASE_DECLARE_FEATURE(kIdentityAwareness);
+
+// Returns true if the IdentityAwareness feature is enabled.
+bool IsIdentityAwarenessEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
