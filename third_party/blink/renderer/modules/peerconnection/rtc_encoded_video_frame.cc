@@ -276,7 +276,7 @@ base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
     webrtc_metadata.SetFrameId(metadata->frameId());
   }
   if (metadata->hasDependencies()) {
-    webrtc_metadata.SetFrameDependencies(metadata->dependencies());
+    webrtc_metadata.SetDependencies(metadata->dependencies());
   }
   webrtc_metadata.SetWidth(metadata->width());
   webrtc_metadata.SetHeight(metadata->height());
