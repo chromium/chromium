@@ -159,7 +159,7 @@ void ProxyMain::BeginMainFrame(
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Compositing.BeginMainFrame.TimeUs", timer->Elapsed(),
           base::Microseconds(1), base::Seconds(10), 50);
-      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.BMFReason3",
+      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.BMFReason4",
                                 begin_main_frame_reason.to_ulong(),
                                 num_buckets);
       if (reason == CommitEarlyOutReason::kFinishedNoUpdates) {
@@ -167,7 +167,7 @@ void ProxyMain::BeginMainFrame(
             "Compositing.BeginMainFrame.TimeUs.NoUpdate", timer->Elapsed(),
             base::Microseconds(1), base::Seconds(10), 50);
         UMA_HISTOGRAM_ENUMERATION(
-            "Compositing.BeginMainFrame.BMFReason3.NoUpdate",
+            "Compositing.BeginMainFrame.BMFReason4.NoUpdate",
             begin_main_frame_reason.to_ulong(), num_buckets);
       }
     }
@@ -645,7 +645,8 @@ void ProxyMain::SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) {
   DCHECK(IsMainThread());
   needs_begin_main_frame_ = true;
   set_begin_main_frame_reason(reason);
-  if (SendCommitRequestToImplThreadIfNeeded(ANIMATE_PIPELINE_STAGE, urgent)) {
+  if (SendCommitRequestToImplThreadIfNeeded(reason, ANIMATE_PIPELINE_STAGE,
+                                            urgent)) {
     TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsAnimate", "urgent", urgent);
   }
 }
@@ -659,7 +660,8 @@ void ProxyMain::SetNeedsUpdateLayers() {
         std::max(final_pipeline_stage_, UPDATE_LAYERS_PIPELINE_STAGE);
     return;
   }
-  if (SendCommitRequestToImplThreadIfNeeded(UPDATE_LAYERS_PIPELINE_STAGE,
+  if (SendCommitRequestToImplThreadIfNeeded(BeginMainFrameReason::kOther,
+                                            UPDATE_LAYERS_PIPELINE_STAGE,
                                             /* urgent = */ false)) {
     TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsUpdateLayers");
   }
@@ -675,7 +677,8 @@ void ProxyMain::SetNeedsCommit() {
         std::max(final_pipeline_stage_, COMMIT_PIPELINE_STAGE);
     return;
   }
-  if (SendCommitRequestToImplThreadIfNeeded(COMMIT_PIPELINE_STAGE,
+  if (SendCommitRequestToImplThreadIfNeeded(BeginMainFrameReason::kOther,
+                                            COMMIT_PIPELINE_STAGE,
                                             /* urgent = */ false)) {
     TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsCommit");
   }
@@ -1043,6 +1046,7 @@ void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {
 }
 
 bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
+    BeginMainFrameReason reason,
     CommitPipelineStage required_stage,
     bool urgent) {
   DCHECK(IsMainThread());
@@ -1054,9 +1058,9 @@ bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
     return false;
   }
   ImplThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyImpl::SetNeedsCommitOnImpl,
-                                base::Unretained(proxy_impl_.get()),
-                                BeginMainFrameReason::kOther, urgent));
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::SetNeedsCommitOnImpl,
+                     base::Unretained(proxy_impl_.get()), reason, urgent));
   layer_tree_host_->OnCommitRequested();
   has_sent_urgent_commit_request_ |= urgent;
   return true;

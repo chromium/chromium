@@ -19,7 +19,8 @@ enum class BeginMainFrameReason {
   kCSSAnimation = 3,
   kStyleInvalidation = 4,
   kScroll = 5,
-  kMaxValue = kScroll,
+  kInput = 6,
+  kMaxValue = kInput,
 };
 
 inline constexpr size_t BeginMainFrameReasonSize =

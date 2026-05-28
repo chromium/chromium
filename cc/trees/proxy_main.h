@@ -145,7 +145,8 @@ class CC_EXPORT ProxyMain : public Proxy {
 
   // Returns |true| if the request was actually sent, |false| if one was
   // already outstanding.
-  bool SendCommitRequestToImplThreadIfNeeded(CommitPipelineStage required_stage,
+  bool SendCommitRequestToImplThreadIfNeeded(BeginMainFrameReason reason,
+                                             CommitPipelineStage required_stage,
                                              bool urgent);
   // Indicates whether the main thread needs a BeginMainFrame callback in order
   // to make progress.

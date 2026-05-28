@@ -334,7 +334,7 @@ class MainThreadEventQueueTest : public testing::Test,
     else
       non_raf_aligned_events_dispatched_ = true;
   }
-  void SetNeedsMainFrame(bool urgent) override {
+  void SetNeedsMainFrame(cc::BeginMainFrameReason, bool urgent) override {
     needs_main_frame_ = true;
     urgent_main_frame_ = urgent;
   }

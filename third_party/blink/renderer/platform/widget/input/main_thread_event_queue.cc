@@ -601,8 +601,9 @@ void MainThreadEventQueue::PossiblyScheduleMainFrame() {
       shared_state_.sent_main_frame_request_ = true;
     }
   }
-  if (needs_main_frame)
-    SetNeedsMainFrame(/*urgent=*/false);
+  if (needs_main_frame) {
+    SetNeedsMainFrame(cc::BeginMainFrameReason::kOther, /*urgent=*/false);
+  }
 }
 
 void MainThreadEventQueue::DispatchEvents() {
@@ -832,7 +833,7 @@ void MainThreadEventQueue::QueueEvent(
     bool urgent =
         ::features::IsEligibleForThrottleMainFrameTo60Hz() &&
         base::FeatureList::IsEnabled(blink::features::kUrgentMainFrameForInput);
-    SetNeedsMainFrame(urgent);
+    SetNeedsMainFrame(cc::BeginMainFrameReason::kInput, urgent);
   }
 
   if (unblocked_callback_info) {
@@ -928,7 +929,8 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
   return handled;
 }
 
-void MainThreadEventQueue::SetNeedsMainFrame(bool urgent) {
+void MainThreadEventQueue::SetNeedsMainFrame(cc::BeginMainFrameReason reason,
+                                             bool urgent) {
   if (main_task_runner_->BelongsToCurrentThread()) {
     if (raf_fallback_timer_) {
       raf_fallback_timer_->Start(
@@ -936,14 +938,14 @@ void MainThreadEventQueue::SetNeedsMainFrame(bool urgent) {
           base::BindOnce(&MainThreadEventQueue::RafFallbackTimerFired, this));
     }
     if (client_) {
-      client_->SetNeedsMainFrame(urgent);
+      client_->SetNeedsMainFrame(reason, urgent);
     }
     return;
   }
 
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MainThreadEventQueue::SetNeedsMainFrame, this, urgent));
+      FROM_HERE, base::BindOnce(&MainThreadEventQueue::SetNeedsMainFrame, this,
+                                reason, urgent));
 }
 
 void MainThreadEventQueue::ClearClient() {

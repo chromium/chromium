@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/input/touch_action.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -55,7 +56,8 @@ class PLATFORM_EXPORT MainThreadEventQueueClient {
   virtual void InputEventsDispatched(bool raf_aligned) = 0;
 
   // Requests a BeginMainFrame callback from the compositor.
-  virtual void SetNeedsMainFrame(bool urgent) = 0;
+  virtual void SetNeedsMainFrame(cc::BeginMainFrameReason reason,
+                                 bool urgent) = 0;
 
   // Returns true if a main frame has been requested and has not yet run.
   virtual bool RequestedMainFramePending() = 0;
@@ -159,7 +161,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   void PostTaskToMainThread();
   void DispatchEvents();
   void PossiblyScheduleMainFrame();
-  void SetNeedsMainFrame(bool urgent);
+  void SetNeedsMainFrame(cc::BeginMainFrameReason reason, bool urgent);
   // Returns false if the event can not be handled and the HandledEventCallback
   // will not be run.
   bool HandleEventOnMainThread(const WebCoalescedInputEvent& event,
