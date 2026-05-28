@@ -24,15 +24,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests logic in the AsyncViewStub class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAsyncLayoutInflater.class})
+@Config(manifest = Config.NONE)
+@NullMarked
 public class AsyncViewStubTest {
     private LinearLayout mMainView;
     private AsyncViewStub mAsyncViewStub;

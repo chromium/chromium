@@ -9,14 +9,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -29,30 +26,55 @@ import org.chromium.build.annotations.Nullable;
  * An implementation of ViewStub that inflates the view in a background thread. Callbacks are still
  * called on the UI thread.
  *
+ * <p>Note: This class automatically supports AppCompat and Material Design view rewrites (e.g.,
+ * converting {@code <Button>} to {@code <MaterialButton>} or {@code <AppCompatButton>}) by
+ * dynamically loading the theme's configured {@link AppCompatLayoutInflater}.
+ *
+ * <p>However, executing complex widget constructor logic on a background thread is still **not 100%
+ * thread-safe**. These constructors access shared static caches (like {@code
+ * AppCompatDrawableManager}) and the Activity's {@link android.content.res.Resources.Theme}, which
+ * can lead to subtle data races with the UI thread if the UI thread is concurrently active or if
+ * multiple inflations occur (though the latter is mitigated by serialization).
+ *
+ * <p>Additionally, there is a risk associated with **configuration changes** (e.g., screen
+ * rotation, locale updates, or dark mode toggles) occurring during background inflation. If a
+ * configuration change happens while the background thread is inflating the layout:
+ *
+ * <ul>
+ *   <li>The background thread may read resources using the stale configuration or contend with the
+ *       UI thread as the {@link android.content.res.Resources} object is being updated, leading to
+ *       data races.
+ *   <li>The resulting inflated view may contain stale resources (e.g., wrong layout dimensions or
+ *       incorrect localized strings) for the new configuration.
+ *   <li>If the Activity is recreated, the finished inflation task might attempt to attach the view
+ *       to a detached parent or a destroyed Activity context.
+ * </ul>
+ *
+ * <p>For maximum safety when inflating asynchronously, prefer simple framework widgets and avoid
+ * highly complex styling in the XML, or fall back to inflating on the UI thread.
+ *
  * <p>TODO(crbug.com/40937701): Deprecate AsyncViewStub or make it per activity.
  */
 @NullMarked
-public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflateFinishedListener {
+public class AsyncViewStub extends View {
+    private static final String TAG = "AsyncViewStub";
+
     private @LayoutRes int mLayoutResource;
     private @IdRes int mInflatedId;
     private @Nullable View mInflatedView;
-
-    private final AsyncLayoutInflater mAsyncLayoutInflater;
 
     private final ObserverList<Callback<View>> mListeners = new ObserverList<>();
     private boolean mOnBackground;
 
     public AsyncViewStub(Context context, AttributeSet attrs) {
         super(context, attrs);
-        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AsyncViewStub);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AsyncViewStub);
         mLayoutResource = a.getResourceId(R.styleable.AsyncViewStub_layout, 0);
         mInflatedId = a.getResourceId(R.styleable.AsyncViewStub_inflatedId, View.NO_ID);
         a.recycle();
 
         setVisibility(GONE);
         setWillNotDraw(true);
-
-        mAsyncLayoutInflater = new AsyncLayoutInflater(getContext());
     }
 
     /**
@@ -63,6 +85,18 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
      */
     public void setLayoutResource(@LayoutRes int layoutResource) {
         mLayoutResource = layoutResource;
+    }
+
+    /**
+     * Sets whether the view should be inflated on a background thread or the UI thread (the
+     * default). This method should not be called after the view has been inflated.
+     *
+     * @param shouldInflateOnBackgroundThread True if the view should be inflated on a background
+     *     thread, false otherwise.
+     */
+    public void setShouldInflateOnBackgroundThread(boolean shouldInflateOnBackgroundThread) {
+        assert mInflatedView == null;
+        mOnBackground = shouldInflateOnBackgroundThread;
     }
 
     /** Returns the id taken by the inflated view. */
@@ -80,6 +114,25 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
         mInflatedId = inflatedId;
     }
 
+    /**
+     * Starts background inflation for the stub, the AsyncViewStub must be attached to the window
+     * (ie have a parent) before you call inflate on it. Must be called on the UI thread.
+     */
+    public void inflate() {
+        try (TraceEvent te = TraceEvent.scoped("AsyncViewStub.inflate")) {
+            ThreadUtils.assertOnUiThread();
+            ViewGroup viewParent = (ViewGroup) getParent();
+            assert viewParent != null;
+            AsyncLayoutInflater asyncLayoutInflater = new AsyncLayoutInflater(getContext());
+            if (mOnBackground) {
+                asyncLayoutInflater.inflate(mLayoutResource, viewParent, this::onInflateFinished);
+            } else {
+                View inflatedView = asyncLayoutInflater.inflateSync(mLayoutResource, viewParent);
+                onInflateFinished(inflatedView);
+            }
+        }
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(0, 0);
@@ -92,41 +145,13 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     @Override
     protected void dispatchDraw(Canvas canvas) {}
 
-    @Override
-    public void onInflateFinished(View view, @LayoutRes int resId, @Nullable ViewGroup parent) {
-        assert parent != null;
+    private void onInflateFinished(View view) {
         if (mInflatedId != View.NO_ID) {
             view.setId(mInflatedId);
         }
         mInflatedView = view;
-        replaceSelfWithView(view, parent);
+        replaceSelfWithView(view);
         callListeners(view);
-    }
-
-    /**
-     * Starts background inflation for the stub, the AsyncViewStub must be attached to the window
-     * (ie have a parent) before you call inflate on it. Must be called on the UI thread.
-     */
-    public void inflate() {
-        try (TraceEvent te = TraceEvent.scoped("AsyncViewStub.inflate")) {
-            ThreadUtils.assertOnUiThread();
-            final ViewParent viewParent = getParent();
-            assert viewParent != null;
-            assert viewParent instanceof ViewGroup;
-            assert mLayoutResource != 0;
-            if (mOnBackground) {
-                // AsyncLayoutInflater uses its own thread and cannot inflate <merge> elements. It
-                // might be a good idea to write our own version to use our scheduling primitives
-                // and to handle <merge> inflations.
-                mAsyncLayoutInflater.inflate(mLayoutResource, (ViewGroup) viewParent, this);
-            } else {
-                ViewGroup inflatedView =
-                        (ViewGroup)
-                                LayoutInflater.from(getContext())
-                                        .inflate(mLayoutResource, (ViewGroup) viewParent, false);
-                onInflateFinished(inflatedView, mLayoutResource, (ViewGroup) viewParent);
-            }
-        }
     }
 
     private void callListeners(View view) {
@@ -160,32 +185,25 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     /**
      * @return the inflated view or null if inflation is not complete yet.
      */
-    @Nullable
-    View getInflatedView() {
+    @Nullable View getInflatedView() {
         return mInflatedView;
     }
 
-    private void replaceSelfWithView(View view, ViewGroup parent) {
+    private void replaceSelfWithView(View view) {
         try (TraceEvent te = TraceEvent.scoped("AsyncViewStub.replaceSelfWithView")) {
+            ViewGroup parent = (ViewGroup) getParent();
+            if (parent == null) {
+                // ViewStub was removed before inflation finished, so just no-op.
+                return;
+            }
             int index = parent.indexOfChild(this);
             parent.removeViewInLayout(this);
-            final ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
             if (layoutParams != null) {
                 parent.addView(view, index, layoutParams);
             } else {
                 parent.addView(view, index);
             }
         }
-    }
-
-    /**
-     * Sets whether the view should be inflated on a background thread or the UI thread (the
-     * default). This method should not be called after the view has been inflated.
-     * @param shouldInflateOnBackgroundThread True if the view should be inflated on a background
-     * thread, false otherwise.
-     */
-    public void setShouldInflateOnBackgroundThread(boolean shouldInflateOnBackgroundThread) {
-        assert mInflatedView == null;
-        mOnBackground = shouldInflateOnBackgroundThread;
     }
 }

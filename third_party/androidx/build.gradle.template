@@ -54,8 +54,6 @@ dependencies {
     compileLatest 'androidx.appsearch:appsearch:+'
     compileLatest 'androidx.appsearch:appsearch-builtin-types:+'
     compileLatest 'androidx.appsearch:appsearch-platform-storage:+'
-    compileLatest 'androidx.asynclayoutinflater:asynclayoutinflater:+'
-    compileLatest 'androidx.asynclayoutinflater:asynclayoutinflater-appcompat:+'
     compileLatest 'androidx.autofill:autofill:+'
     compileLatest 'androidx.biometric:biometric:+'
     compileLatest 'androidx.browser:browser:+'

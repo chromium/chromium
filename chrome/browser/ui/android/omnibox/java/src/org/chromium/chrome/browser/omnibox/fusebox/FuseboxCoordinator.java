@@ -17,7 +17,6 @@ import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.window.layout.WindowMetricsCalculator;
 
@@ -49,6 +48,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.ui.AsyncLayoutInflater;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -195,8 +195,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         this::finishDeferredInitialization);
     }
 
-    private void finishDeferredInitialization(
-            View popupView, int resid, @Nullable ViewGroup parent) {
+    private void finishDeferredInitialization(View popupView) {
         if (mDestroyed) return;
 
         Resources res = mActivity.getResources();

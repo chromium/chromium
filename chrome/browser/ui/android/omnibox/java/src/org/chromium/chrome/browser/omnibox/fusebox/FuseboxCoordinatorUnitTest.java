@@ -21,6 +21,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -50,6 +52,8 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
@@ -69,7 +73,6 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.Collections;
@@ -80,7 +83,7 @@ import java.util.function.Function;
 
 /** Unit tests for {@link FuseboxCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowAsyncLayoutInflater.class})
+@NullMarked
 public class FuseboxCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -110,7 +113,7 @@ public class FuseboxCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<InputState> mComposeInputStateSupplier =
             ObservableSuppliers.createMonotonic();
-    private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
+    private final Function<Tab, @Nullable Bitmap> mTabFaviconFunction = tab -> mBitmap;
 
     @Before
     public void setUp() {
@@ -179,8 +182,9 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     public void testBeginInput_featureEnabled_noBridge() {
-        mComposebox = null;
-        mCoordinator.beginInput(createSession());
+        var session = createSession();
+        doReturn(null).when(session).getComposeboxQueryControllerBridge();
+        mCoordinator.beginInput(session);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMediator, never()).beginInput(any());
     }
@@ -329,9 +333,10 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
-        mCoordinator.getViewHolderForTesting().addButton.setVisibility(View.VISIBLE);
+        var viewHolder = assumeNonNull(mCoordinator.getViewHolderForTesting());
+        viewHolder.addButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
-        assertTrue(mCoordinator.getViewHolderForTesting().addButton.isFocused());
+        assertTrue(viewHolder.addButton.isFocused());
     }
 
     @Test

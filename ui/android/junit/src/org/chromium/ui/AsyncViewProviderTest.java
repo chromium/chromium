@@ -23,15 +23,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests logic in the AsyncViewProvider class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAsyncLayoutInflater.class})
+@Config(manifest = Config.NONE)
+@NullMarked
 public class AsyncViewProviderTest {
     private LinearLayout mRoot;
     private AsyncViewStub mAsyncViewStub;

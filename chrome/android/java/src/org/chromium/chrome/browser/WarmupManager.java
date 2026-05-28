@@ -19,7 +19,6 @@ import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.InflateException;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -27,7 +26,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.jni_zero.JniType;
@@ -59,7 +57,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.AsyncLayoutInflater;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
@@ -413,14 +411,13 @@ public class WarmupManager {
             CctContextWrapper context, int toolbarContainerId, int toolbarId) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.inflateViewHierarchy")) {
             FrameLayout contentHolder = new FrameLayout(context);
-            var layoutInflater = LayoutInflater.from(context);
-            layoutInflater.setFactory2(new AsyncAppCompatFactory());
             ViewGroup mainView =
                     (ViewGroup)
-                            LayoutInflaterUtils.inflate(
-                                    layoutInflater,
-                                    MainLayoutSwitcher.getMainLayoutRes(),
-                                    contentHolder);
+                            new AsyncLayoutInflater(context)
+                                    .inflateSync(
+                                            MainLayoutSwitcher.getMainLayoutRes(),
+                                            contentHolder,
+                                            /* attachToRoot= */ true);
             if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
                 ViewStub stub = mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);
