@@ -27,11 +27,6 @@
 
   config.additional_args.push_back("--enable-features=" + shoppingListFlag);
 
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self
-          isRunningTest:@selector(testPriceTrackingIsNotVisibleInIncognito)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
