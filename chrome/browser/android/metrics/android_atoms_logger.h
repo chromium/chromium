@@ -14,6 +14,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/android/metrics/westworld_histogram_allowlist.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace chrome::android::westworld {
 
@@ -22,6 +23,7 @@ namespace chrome::android::westworld {
 class AndroidAtomsLogger {
  public:
   static void Initialize();
+  static bool IsDesktop();
 
   AndroidAtomsLogger(const AndroidAtomsLogger&) = delete;
   AndroidAtomsLogger& operator=(const AndroidAtomsLogger&) = delete;
@@ -48,16 +50,22 @@ class AndroidAtomsLogger {
                            FeatureEnabled_InitializesOnDesktop);
   FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest,
                            FeatureEnabled_DoesNotInitializeOnNonDesktop);
+  FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest,
+                           LogAtomGuardedByMetricsConsentOnDesktop);
 
   // Production constructor.
   AndroidAtomsLogger();
 
+  void InitializePrefRegistrar();
+  void OnMetricsConsentChanged();
   void OnHistogramSample(int atom_id,
                          MetricType type,
                          std::string_view name,
                          uint64_t name_hash,
                          base::HistogramBase::Sample32 sample);
 
+  bool metrics_reporting_enabled_ = true;
+  PrefChangeRegistrar pref_change_registrar_;
   std::vector<
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       observers_;
