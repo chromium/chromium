@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -1503,6 +1504,81 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   EXPECT_TRUE(foo_file_accumulator2.has_error());
   EXPECT_TRUE(bar_file_accumulator.has_error());
   EXPECT_TRUE(bar_dir_accumulator.has_error());
+}
+
+// Regression test for crbug.com/498745115.
+TEST_F(FileSystemAccessWatcherManagerTest, OnUsageChangeUAF) {
+  auto quota_override = FilePathWatcher::SetQuotaLimitForTesting(100);
+
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com/");
+
+  base::FilePath file_path1 = dir_.GetPath().AppendASCII("foo1");
+  auto file_url1 = manager_->CreateFileSystemURLFromPath(PathInfo(file_path1));
+  auto source1 = std::make_unique<FakeChangeSource>(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url1),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(source1.get());
+
+  base::FilePath file_path2 = dir_.GetPath().AppendASCII("foo2");
+  auto file_url2 = manager_->CreateFileSystemURLFromPath(PathInfo(file_path2));
+  auto source2 = std::make_unique<FakeChangeSource>(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url2),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(source2.get());
+
+  auto observation1_or_error = ObserveFile(storage_key, file_url1);
+  auto observation2_or_error = ObserveFile(storage_key, file_url2);
+  ASSERT_TRUE(observation1_or_error.has_value());
+  ASSERT_TRUE(observation2_or_error.has_value());
+
+  observation1_or_error.value()->SetCallback(base::BindLambdaForTesting(
+      [&](const std::optional<std::list<Change>>& changes) {
+        if (!changes.has_value()) {
+          source1.reset();
+        }
+      }));
+
+  // Trigger usage change on source1 that exceeds quota.
+  // This will call WatcherManager::OnUsageChange(0, 110, source1->scope_)
+  source1->SignalUsageChange(0, 110);
+}
+
+// Regression test for crbug.com/498745115.
+TEST_F(FileSystemAccessWatcherManagerTest, OnRawChangeUAF) {
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com/");
+
+  base::FilePath file_path1 = dir_.GetPath().AppendASCII("foo1");
+  auto file_url1 = manager_->CreateFileSystemURLFromPath(PathInfo(file_path1));
+  auto source1 = std::make_unique<FakeChangeSource>(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url1),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(source1.get());
+
+  base::FilePath file_path2 = dir_.GetPath().AppendASCII("foo2");
+  auto file_url2 = manager_->CreateFileSystemURLFromPath(PathInfo(file_path2));
+  auto source2 = std::make_unique<FakeChangeSource>(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url2),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(source2.get());
+
+  auto observation1_or_error = ObserveFile(storage_key, file_url1);
+  auto observation2_or_error = ObserveFile(storage_key, file_url2);
+  ASSERT_TRUE(observation1_or_error.has_value());
+  ASSERT_TRUE(observation2_or_error.has_value());
+
+  observation1_or_error.value()->SetCallback(base::BindLambdaForTesting(
+      [&](const std::optional<std::list<Change>>& changes) {
+        if (!changes.has_value()) {
+          source1.reset();
+        }
+      }));
+
+  // Trigger an error change on source1.
+  // This will call WatcherManager::OnRawChange(..., /*error=*/true, ...,
+  // source1->scope_)
+  source1->Signal(base::FilePath(), /*error=*/true);
 }
 
 }  // namespace content
