@@ -440,10 +440,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
                             + " A hostname should not consist of digits and/or dots only.");
         }
         // Workaround for crash, see crbug.com/634914
-        // Hostnames cannot be longer than 253 characters. References:
-        //   https://superuser.com/a/1843870
-        //   https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873
-        if (hostName.length() > 253) {
+        if (hostName.length() > 255) {
             throw new IllegalArgumentException(
                     "Hostname "
                             + hostName
