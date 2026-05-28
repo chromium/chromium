@@ -3,9 +3,17 @@
 # found in the LICENSE file.
 
 -dontwarn com.google.ar.imp.core.web.FragmentHost
-# TODO(crbug.com/481288291): Remove these once the JXR bug is fixed.
--keep class !**.R$**,androidx.xr.runtime.**,androidx.xr.arcore.**,androidx.xr.scenecore.**,com.google.imp.splitengine.extensions.** {
-  <methods>;
-  <fields>;
-}
 
+# TODO(crbug.com/481288291): Remove these once the JXR bug is fixed.
+# Keep the specific factory implementations instantiated via reflection
+-keep class androidx.xr.arcore.projected.ProjectedRuntimeFactory { <init>(...); }
+-keep class androidx.xr.arcore.playservices.ArCoreRuntimeFactory { <init>(...); }
+-keep class androidx.xr.arcore.openxr.OpenXrRuntimeFactory { <init>(...); }
+-keep class androidx.xr.scenecore.projected.ProjectedSceneRuntimeFactory { <init>(...); }
+-keep class androidx.xr.scenecore.spatial.core.SpatialSceneRuntimeFactory { <init>(...); }
+-keep class androidx.xr.scenecore.spatial.rendering.SpatialRenderingRuntimeFactory { <init>(...); }
+-keep class androidx.xr.arcore.PerceptionStateExtender { <init>(...); }
+-keep class androidx.xr.arcore.playservices.CameraStateExtender { <init>(...); }
+-keep class androidx.xr.scenecore.Scene { <init>(...); }
+-keep class androidx.xr.runtime.SpatialApiVersionProvider { *; }
+-keep class androidx.xr.scenecore.spatial.core.SpatialCoreApiVersionProvider { <init>(...); }

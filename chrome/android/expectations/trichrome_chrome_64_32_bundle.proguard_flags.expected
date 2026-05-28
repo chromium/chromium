@@ -66,11 +66,20 @@
 # found in the LICENSE file.
 
 -dontwarn com.google.ar.imp.core.web.FragmentHost
+
 # TODO(crbug.com/481288291): Remove these once the JXR bug is fixed.
--keep class !**.R$**,androidx.xr.runtime.**,androidx.xr.arcore.**,androidx.xr.scenecore.**,com.google.imp.splitengine.extensions.** {
-  <methods>;
-  <fields>;
-}
+# Keep the specific factory implementations instantiated via reflection
+-keep class androidx.xr.arcore.projected.ProjectedRuntimeFactory { <init>(...); }
+-keep class androidx.xr.arcore.playservices.ArCoreRuntimeFactory { <init>(...); }
+-keep class androidx.xr.arcore.openxr.OpenXrRuntimeFactory { <init>(...); }
+-keep class androidx.xr.scenecore.projected.ProjectedSceneRuntimeFactory { <init>(...); }
+-keep class androidx.xr.scenecore.spatial.core.SpatialSceneRuntimeFactory { <init>(...); }
+-keep class androidx.xr.scenecore.spatial.rendering.SpatialRenderingRuntimeFactory { <init>(...); }
+-keep class androidx.xr.arcore.PerceptionStateExtender { <init>(...); }
+-keep class androidx.xr.arcore.playservices.CameraStateExtender { <init>(...); }
+-keep class androidx.xr.scenecore.Scene { <init>(...); }
+-keep class androidx.xr.runtime.SpatialApiVersionProvider { *; }
+-keep class androidx.xr.scenecore.spatial.core.SpatialCoreApiVersionProvider { <init>(...); }
 
 # File: ../../third_party/jni_zero/checkdiscard_proguard.flags
 # Copyright 2023 The Chromium Authors
@@ -790,6 +799,83 @@
 -keep interface androidx.window.reflection.JFunction2 {
   public *** apply(***);
 }
+
+# File: obj/third_party/androidx/androidx_xr_arcore_arcore_openxr_java/proguard.txt
+# androidx.xr.arcore.openxr.AnchorState is referenced by native code.
+-keep class androidx.xr.arcore.openxr.AnchorState { *; }
+-keep class androidx.xr.arcore.openxr.AnchorStateKt { *; }
+# androidx.xr.arcore.openxr.AugmentedObjectState is referenced by native code.
+-keep class androidx.xr.arcore.openxr.AugmentedObjectState { *; }
+# androidx.xr.arcore.openxr.EyeData is referenced by native code.
+-keep class androidx.xr.arcore.openxr.EyeData { *; }
+-keep class androidx.xr.arcore.openxr.EyeDataKt { *; }
+# androidx.xr.arcore.openxr.EyeStatus is referenced by native code.
+-keep class androidx.xr.arcore.openxr.EyeStatus { *; }
+-keep class androidx.xr.arcore.openxr.EyeStatus$Companion { *; }
+# androidx.xr.arcore.openxr.EyeTrackingState is referenced by native code.
+-keep class androidx.xr.arcore.openxr.EyeTrackingState { *; }
+-keep class androidx.xr.arcore.openxr.EyeTrackingState$Companion { *; }
+# androidx.xr.arcore.openxr.EyesInfo is referenced by native code.
+-keep class androidx.xr.arcore.openxr.EyesInfo { *; }
+-keep class androidx.xr.arcore.openxr.EyesInfoKt { *; }
+# androidx.xr.arcore.openxr.FaceState is referenced by native code.
+-keep class androidx.xr.arcore.openxr.FaceState { *; }
+-keep class androidx.xr.arcore.openxr.FaceStateKt { *; }
+# androidx.xr.arcore.openxr.HitData is referenced by native code.
+-keep class androidx.xr.arcore.openxr.HitData { *; }
+# androidx.xr.arcore.openxr.OpenXrAnchor is referenced by native code.
+-keep class androidx.xr.arcore.openxr.OpenXrAnchorKt { *; }
+# androidx.xr.arcore.openxr.OpenXrPlane is referenced by native code.
+-keep class androidx.xr.arcore.openxr.OpenXrPlaneKt { *; }
+# androidx.xr.arcore.openxr.OpenXrRuntime is referenced by native code.
+-keep class androidx.xr.arcore.openxr.OpenXrRuntime { *; }
+# androidx.xr.arcore.openxr.PlaneState is referenced by native code.
+-keep class androidx.xr.arcore.openxr.PlaneState { *; }
+-keep class androidx.xr.arcore.openxr.PlaneStateKt { *; }
+# androidx.xr.arcore.openxr.ViewCameraState is referenced by native code.
+-keep class androidx.xr.arcore.openxr.ViewCameraState { *; }
+
+# File: obj/third_party/androidx/androidx_xr_runtime_runtime_java/proguard.txt
+# androidx.xr.runtime.DisplayBlendMode is referenced by native code.
+-keep class androidx.xr.runtime.DisplayBlendMode { *; }
+-keep class androidx.xr.runtime.DisplayBlendMode$Companion { *; }
+# androidx.xr.runtime.FieldOfView is referenced by native code.
+-keep class androidx.xr.runtime.FieldOfView { *; }
+# androidx.xr.runtime.Log is referenced by native code.
+-keep class androidx.xr.runtime.Log { *; }
+# androidx.xr.runtime.TrackingState is referenced by native code.
+-keep class androidx.xr.runtime.TrackingState { *; }
+-keep class androidx.xr.runtime.TrackingState$Companion { *; }
+# androidx.xr.runtime.math.FloatSize2d is referenced by native code.
+-keep class androidx.xr.runtime.math.FloatSize2d { *; }
+# androidx.xr.runtime.math.FloatSize3d is referenced by native code.
+-keep class androidx.xr.runtime.math.FloatSize3d { *; }
+# androidx.xr.runtime.math.GeospatialPose is referenced by native code.
+-keep class androidx.xr.runtime.math.GeospatialPose { *; }
+# androidx.xr.runtime.math.IntSize2d is referenced by native code.
+-keep class androidx.xr.runtime.math.IntSize2d { *; }
+# androidx.xr.runtime.math.Pose is referenced by native code.
+-keep class androidx.xr.runtime.math.Pose { *; }
+# androidx.xr.runtime.math.Quaternion is referenced by native code.
+-keep class androidx.xr.runtime.math.Quaternion { *; }
+# androidx.xr.runtime.math.Vector2 is referenced by native code.
+-keep class androidx.xr.runtime.math.Vector2 { *; }
+# androidx.xr.runtime.math.Vector2 is referenced by native code.
+-keep class androidx.xr.runtime.math.Vector3 { *; }
+
+# Preserve implementations of the various factory interfaces, as these are
+# instantiated via reflection and not directly.
+-keep class androidx.xr.runtime.internal.PerceptionRuntimeFactory { *; }
+-keep class * implements androidx.xr.runtime.internal.PerceptionRuntimeFactory { *; }
+-keep class androidx.xr.runtime.internal.RenderingRuntimeFactory { *; }
+-keep class * implements androidx.xr.runtime.internal.RenderingRuntimeFactory { *; }
+-keep class androidx.xr.runtime.internal.SceneRuntimeFactory { *; }
+-keep class * implements androidx.xr.runtime.internal.SceneRuntimeFactory { *; }
+
+# Preserve StateExtender and its implementations, as they're looked up via
+# a service locator.
+-keep class androidx.xr.runtime.StateExtender { *; }
+-keep class * implements androidx.xr.runtime.StateExtender { *; }
 
 # File: ../../third_party/arcore-android-sdk-client/proguard.txt
 # Keep ARCore public-facing classes

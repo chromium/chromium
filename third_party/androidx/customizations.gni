@@ -128,8 +128,6 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_compose_ui_ui_java") {
       public_deps = [ ":compose_ui_overrides_java" ]
     } else if (filter_include([ target_name ], [ "androidx_xr_*" ]) != []) {
-      # Configs are overly broad.
-      ignore_proguard_configs = true
       proguard_configs = [ "androidx_xr.flags" ]
 
       # ChromeXR uses APIs that require the native code.
@@ -142,6 +140,14 @@ template("_androidx_prebuilt") {
       # However, we add it via the dep onto android_xr_extensions_java.
       ignore_manifest = true
       deps += [ "//third_party/android_sdk:android_xr_extensions_java" ]
+
+      # The scenecore and arcore AARs contain broad wildcard keep rules (-keep class ...**)
+      # that keep thousands of unused methods and fail the size bot. We only want to allow
+      # the runtime and openxr AAR proguard files, which contain the specific JNI data models.
+      if (target_name != "androidx_xr_runtime_runtime_java" &&
+          target_name != "androidx_xr_arcore_arcore_openxr_java") {
+        ignore_proguard_configs = true
+      }
     }
   }
 
