@@ -392,6 +392,11 @@ public class PdfUtils {
         return ChromeFeatureList.sInlinePdfV2.isEnabled();
     }
 
+    /** Returns {@code true} if {@link PdfViewFragment} is reused on activity restart. */
+    public static boolean isReuseFragmentEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PDF_REUSE_FRAGMENT);
+    }
+
     public static void recordPdfLoad() {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoad", true);
     }

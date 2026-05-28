@@ -230,6 +230,7 @@ BASE_DECLARE_FEATURE(kPCCTMinimumHeight);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
 BASE_DECLARE_FEATURE(kPageContentProvider);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
+BASE_DECLARE_FEATURE(kPdfReuseFragment);
 BASE_DECLARE_FEATURE(kPersistAcrossReboots);
 BASE_DECLARE_FEATURE(kPersistAcrossRebootsDebugLogs);
 BASE_DECLARE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground);

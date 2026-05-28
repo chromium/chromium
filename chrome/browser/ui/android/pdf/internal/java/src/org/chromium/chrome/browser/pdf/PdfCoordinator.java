@@ -183,13 +183,26 @@ public class PdfCoordinator
                     @Override
                     public void onViewDetachedFromWindow(View view) {}
                 });
-        relocateMisplacedFragmentViews();
-        mFragmentContainerViewId = R.id.pdf_fragment_container;
+        boolean reuseFragment = PdfUtils.isReuseFragmentEnabled();
+        if (reuseFragment) {
+            relocateMisplacedFragmentViews();
+            mFragmentContainerViewId = R.id.pdf_fragment_container;
+        } else {
+            View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
+            mFragmentContainerViewId = View.generateViewId();
+            fragmentContainerView.setId(mFragmentContainerViewId);
+        }
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
         if (fragment != null) {
-            mChromePdfViewerFragment = (ChromePdfViewerFragment) fragment;
-        } else {
+            if (reuseFragment) {
+                mChromePdfViewerFragment = (ChromePdfViewerFragment) fragment;
+            } else {
+                mFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+            }
+        }
+
+        if (mChromePdfViewerFragment == null) {
             mChromePdfViewerFragment = new ChromePdfViewerFragment(this);
             mChromePdfViewerFragment.setViewTag(mTabId);
             // Start pdf library initialization. This prepares pdf resources ahead of time, so that
