@@ -1,0 +1,111 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+if (enable_extensions_core) {
+  # Thin target for headers that chrome/browser/extensions needs to include
+  # without creating a circular dependency on the full :extensions target.
+  source_set("headers") {
+    sources = [
+      "extension_basic_info.h",
+      "extension_icon_source.h",
+      "extensions_internals_source.h",
+    ]
+    public_deps = [
+      "//base",
+      "//components/favicon/core",
+      "//content/public/browser",
+      "//extensions/common",
+    ]
+  }
+
+  source_set("extensions") {
+    sources = [
+      "extension_basic_info.cc",
+      "extension_icon_source.cc",
+      "extensions_internals_source.cc",
+      "extensions_ui.cc",
+      "extensions_ui.h",
+      "extensions_ui_prefs.cc",
+      "extensions_ui_prefs.h",
+    ]
+
+    public_deps = [
+      ":headers",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/extensions",
+      "//chrome/browser/favicon",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/extensions:resources",
+      "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui:plural_string_handler",
+      "//chrome/browser/ui/webui/page_not_available_for_guest",
+      "//chrome/common",
+      "//chrome/common/extensions",
+      "//components/favicon/core",
+      "//components/google/core/common",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/strings",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/common",
+      "//extensions/strings",
+      "//services/network/public/mojom",
+      "//skia",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "extensions_internals_unittest.cc" ]
+    deps = [
+      ":extensions",
+      ":headers",
+      "//base",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/test:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    sources = [
+      "extension_settings_browsertest.cc",
+      "extensions_internals_browsertest.cc",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":extensions",
+      "//base",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/buildflags",
+      "//extensions/common",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

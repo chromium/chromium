@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+source_set("connectors_internals") {
+  sources = [
+    "connectors_internals_page_handler.cc",
+    "connectors_internals_page_handler.h",
+    "connectors_internals_ui.cc",
+    "connectors_internals_ui.h",
+    "device_trust_utils.cc",
+    "device_trust_utils.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//chrome/browser/policy",
+    "//chrome/browser/profiles:profile",
+    "//components/device_signals/core/browser",
+    "//components/enterprise",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/connectors:mojom",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/resources",
+    "//components/policy/proto",
+    "//crypto",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+    "//ui/webui",
+  ]
+  if (enterprise_client_certificates) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+  if (is_mac) {
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac" ]
+  }
+}

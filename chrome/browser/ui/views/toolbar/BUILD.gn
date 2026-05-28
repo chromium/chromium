@@ -217,6 +217,7 @@ source_set("impl") {
     "//chrome/browser/ui/waap:window_metrics_manager",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/flags",
     "//chrome/browser/ui/webui/webui_toolbar",
     "//chrome/browser/ui/webui/webui_toolbar:impl",
     "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",

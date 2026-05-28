@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("inspect") {
+  sources = [
+    "inspect_ui.cc",
+    "inspect_ui.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/devtools",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/inspect:resources",
+    "//chrome/common",
+    "//components/prefs",
+    "//components/ui_devtools",
+    "//components/ui_devtools/views",
+    "//content/public/browser",
+    "//net",
+    "//ui/base",
+    "//ui/views",
+  ]
+}

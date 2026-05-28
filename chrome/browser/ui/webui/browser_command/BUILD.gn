@@ -1,0 +1,77 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("browser_command") {
+  sources = [
+    "browser_command_handler.cc",
+    "browser_command_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:command_updater_impl",
+    "//chrome/browser/feedback",
+    "//chrome/browser/glic",
+    "//chrome/browser/new_tab_page",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/customize_chrome",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/user_education",
+    "//chrome/common",
+    "//components/password_manager/core/common",
+    "//components/performance_manager",
+    "//components/prefs",
+    "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
+    "//components/saved_tab_groups/public",
+    "//components/tabs:public",
+    "//components/user_education/common",
+    "//net",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_command_handler_unittest.cc" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  deps = [
+    ":browser_command",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/user_education",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/saved_tab_groups/public",
+    "//components/sync_preferences:test_support",
+    "//components/user_education/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
+  ]
+}

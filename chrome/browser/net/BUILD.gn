@@ -205,6 +205,10 @@ source_set("impl") {
     "//services/strings",
   ]
 
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/ui/webui/extensions:headers" ]
+  }
+
   if (is_chromeos) {
     sources += [ "net_error_diagnostics_dialog_chromeos.cc" ]
   } else if (is_win) {

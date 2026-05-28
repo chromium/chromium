@@ -1,0 +1,60 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("flags") {
+  sources = [
+    "flags_ui.cc",
+    "flags_ui.h",
+    "flags_ui_handler.cc",
+    "flags_ui_handler.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/profiles:profile",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/resources",
+    "//components/strings",
+    "//components/vector_icons",
+    "//components/version_info:channel",
+    "//components/webui/flags",
+    "//components/webui/flags/resources",
+    "//ui/base",
+    "//ui/webui",
+    "//ui/webui/resources",
+  ]
+  deps += [ "//chrome/browser/infobars" ]
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/login/session",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/ash/settings",
+      "//chromeos/ash/components/settings",
+      "//components/account_id",
+      "//components/user_manager",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "flags_ui_handler_unittest.cc" ]
+  deps = [
+    ":flags",
+    "//base/test:test_support",
+    "//components/webui/flags",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

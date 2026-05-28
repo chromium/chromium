@@ -54,7 +54,7 @@ source_set("country_access_reason") {
   visibility = [
     ":*",
     "//chrome/browser/search_engine_choice:impl",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/profile_internals",
     "//chrome/browser/ui/webui/regional_capabilities_internals",
     "//components/metrics/private_metrics",
     "//components/search_engines",

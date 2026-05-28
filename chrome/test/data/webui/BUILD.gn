@@ -335,6 +335,7 @@ source_set("browser_tests") {
         [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
     deps += [
       "//chrome/browser:certificate_viewer",
+      "//chrome/browser/ui/webui/certificate_viewer",
       "//components/server_certificate_database:test_support",
     ]
   }

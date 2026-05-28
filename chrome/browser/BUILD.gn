@@ -848,6 +848,7 @@ source_set("core") {
     "//chrome/browser/ui/webui/browsing_topics",
     "//chrome/browser/ui/webui/chrome_finds_internals",
     "//chrome/browser/ui/webui/chrome_finds_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/connectors_internals",
     "//chrome/browser/ui/webui/data_sharing_internals",
     "//chrome/browser/ui/webui/engagement",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
@@ -1235,6 +1236,10 @@ source_set("core") {
 
   if (enterprise_watermark) {
     deps += [ "//chrome/browser/ui/webui/watermark" ]
+  }
+
+  if (enable_compose) {
+    deps += [ "//chrome/browser/ui/webui/compose" ]
   }
 
   if (!is_android && !is_chromeos) {
@@ -2093,6 +2098,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/actor_internals",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/flags",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/webui/intro:mojo_bindings",
     "//chrome/browser/ui/zoom",

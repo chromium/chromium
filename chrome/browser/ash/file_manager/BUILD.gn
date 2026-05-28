@@ -163,6 +163,7 @@ static_library("file_manager") {
     "//chrome/browser/profiles",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
+    "//chrome/browser/ui/webui/extensions:headers",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:chrome_features",

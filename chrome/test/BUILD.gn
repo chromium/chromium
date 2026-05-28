@@ -1570,6 +1570,10 @@ source_set("platform_browser_tests") {
 
   public_deps = [ "//components/browsing_data/content" ]
 
+  if (enable_webui_certificate_viewer) {
+    public_deps += [ "//chrome/browser/ui/webui/certificate_viewer" ]
+  }
+
   data = [
     # For tab_stats_tracker_browsertest.cc.
     "//media/test/data/webaudio_oscillator.html",
@@ -1825,8 +1829,6 @@ source_set("platform_browser_tests") {
       "../browser/ui/extensions/extension_action_view_model_browsertest.cc",
       "../browser/ui/extensions/extensions_menu_view_model_browsertest.cc",
       "../browser/ui/extensions/extensions_toolbar_view_model_browsertest.cc",
-      "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
-      "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
       "../renderer/extensions/script_context_browsertest.cc",
     ]
     deps += [
@@ -1860,6 +1862,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/webui/extensions:browser_tests",
       "//chrome/browser/ui/zoom",
       "//components/bookmarks/managed",
       "//components/embedder_support",
@@ -6984,7 +6987,6 @@ test("unit_tests") {
       "../browser/site_protection/site_familiarity_utils_unittest.cc",
       "../browser/site_protection/site_protection_metrics_observer_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
-      "../browser/ui/webui/profile_internals/profile_internals_handler_unittest.cc",
     ]
   }
 
@@ -8520,7 +8522,6 @@ test("unit_tests") {
       "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_unittest.cc",
       "../browser/ui/views/webid/fedcm_modal_dialog_view_unittest.cc",
-      "../browser/ui/webui/browser_command/browser_command_handler_unittest.cc",
       "../browser/ui/webui/commerce/price_tracking_handler_unittest.cc",
       "../browser/ui/webui/commerce/shopping_list_context_menu_controller_unittest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_unittest.cc",
@@ -8537,7 +8538,6 @@ test("unit_tests") {
       "../browser/ui/webui/downloads/mock_downloads_page.h",
       "../browser/ui/webui/favicon_source_unittest.cc",
       "../browser/ui/webui/feedback/feedback_ui_unittest.cc",
-      "../browser/ui/webui/flags/flags_ui_handler_unittest.cc",
       "../browser/ui/webui/history/browsing_history_handler_unittest.cc",
       "../browser/ui/webui/history/foreign_session_handler_unittest.cc",
       "../browser/ui/webui/history/history_identity_state_watcher_unittest.cc",
@@ -8715,9 +8715,11 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/access_code_cast:unit_tests",
       "//chrome/browser/ui/webui/ai_overlay_dialog:unit_tests",
       "//chrome/browser/ui/webui/app_management:unit_tests",
+      "//chrome/browser/ui/webui/browser_command:unit_tests",
       "//chrome/browser/ui/webui/content_annotator_internals:unit_tests",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/data_sharing",
+      "//chrome/browser/ui/webui/flags:unit_tests",
       "//chrome/browser/ui/webui/image:unit_tests",
       "//chrome/browser/ui/webui/metrics_reporter:test_support",
       "//chrome/browser/ui/webui/metrics_reporter:unit_tests",
@@ -8727,6 +8729,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page/ntp_promo:unit_tests",
       "//chrome/browser/ui/webui/privacy_sandbox:unit_tests",
+      "//chrome/browser/ui/webui/profile_internals:unit_tests",
       "//chrome/browser/ui/webui/sanitized_image:unit_tests",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
@@ -9616,12 +9619,12 @@ test("unit_tests") {
     sources += [
       "../browser/metrics/extensions_metrics_provider_unittest.cc",
       "../browser/sync/glue/extensions_activity_monitor_unittest.cc",
-      "../browser/ui/webui/extensions/extensions_internals_unittest.cc",
     ]
     deps += [
       "//base",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions:unit_tests",
+      "//chrome/browser/ui/webui/extensions:unit_tests",
       "//chrome/common/extensions:unit_tests",
       "//chrome/renderer/extensions:unit_tests",
 

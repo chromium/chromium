@@ -65,11 +65,14 @@ source_set("configs") {
     "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
     "//chrome/browser/ui/webui/browsing_topics",
     "//chrome/browser/ui/webui/components",
+    "//chrome/browser/ui/webui/connectors_internals",
     "//chrome/browser/ui/webui/crashes",
     "//chrome/browser/ui/webui/data_sharing_internals",
     "//chrome/browser/ui/webui/device_log",
     "//chrome/browser/ui/webui/download_internals",
     "//chrome/browser/ui/webui/engagement",
+    "//chrome/browser/ui/webui/family_link_user_internals",
+    "//chrome/browser/ui/webui/flags",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/webui/local_state",
     "//chrome/browser/ui/webui/net_internals",
@@ -108,10 +111,12 @@ source_set("configs") {
       "//chrome/browser/ui/webui/content_annotator_internals",
       "//chrome/browser/ui/webui/data_sharing",
       "//chrome/browser/ui/webui/infobar_internals",
+      "//chrome/browser/ui/webui/inspect",
       "//chrome/browser/ui/webui/multistep_filter_internals",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
       "//chrome/browser/ui/webui/private_ai_internals",
+      "//chrome/browser/ui/webui/profile_internals",
       "//chrome/browser/ui/webui/webui_js_error",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui_browser",
@@ -211,11 +216,22 @@ source_set("configs") {
   }
 
   if (enable_extensions_core) {
-    deps += [ "//chrome/browser/ui/webui/page_not_available_for_guest" ]
+    deps += [
+      "//chrome/browser/ui/webui/extensions",
+      "//chrome/browser/ui/webui/page_not_available_for_guest",
+    ]
   }
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/ui/webui/extensions_zero_state_promo" ]
+  }
+
+  if (enable_compose) {
+    deps += [ "//chrome/browser/ui/webui/compose" ]
+  }
+
+  if (enable_webui_certificate_viewer) {
+    deps += [ "//chrome/browser/ui/webui/certificate_viewer" ]
   }
 
   if (!is_android) {
