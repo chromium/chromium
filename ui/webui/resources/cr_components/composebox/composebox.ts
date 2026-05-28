@@ -28,7 +28,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, getLoadTimeBoolean, GlifAnimationState, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
 import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -137,8 +137,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         type: Boolean,
         reflect: true,
       },
+      disableFallbackGlifAnimation: {type: Boolean},
       enableFileHint: {type: Boolean},
       // TODO(crbug.com/486707842): Move to the Contextual Tasks embedder.
+      glifAnimationState: {type: String, reflect: true},
       isSidePanel: {type: Boolean},
       inputPlaceholderOverride: {type: String},
       contextManagementInComposeboxEnabled_: {type: Boolean},
@@ -155,6 +157,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor isSidePanel: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;
+  accessor glifAnimationState: GlifAnimationState =
+      GlifAnimationState.INELIGIBLE;
+  accessor disableFallbackGlifAnimation: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor enableFileHint: boolean = false;
   accessor inputPlaceholderOverride: string = '';

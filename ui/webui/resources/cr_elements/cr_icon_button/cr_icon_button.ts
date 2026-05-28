@@ -188,6 +188,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     icons.forEach(async icon => {
       const crIcon = document.createElement('cr-icon');
       crIcon.icon = icon;
+      crIcon.setAttribute('part', 'icon');
       this.$.icon.appendChild(crIcon);
       await crIcon.updateComplete;
       crIcon.shadowRoot.querySelectorAll('svg, img')

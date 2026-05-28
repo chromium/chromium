@@ -6,6 +6,7 @@ import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 
+import {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import {LensOverlayDismissalSource} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -150,6 +151,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       usePecApi_: {type: Boolean},
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
+      glifAnimationState_: {type: String},
     };
   }
   accessor enableNativeZeroStateSuggestions: boolean = false;
@@ -214,6 +216,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   // across all surfaces (= Nextbox, Omnibox, and Realbox).
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
+  protected accessor glifAnimationState_: GlifAnimationState =
+      GlifAnimationState.INELIGIBLE;
 
   constructor() {
     super();
@@ -236,6 +240,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       // Do not play the glow animation if opening on a thread.
       if (!this.isZeroState) {
         composebox.animationState = GlowAnimationState.NONE;
+        this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
       }
       this.eventTracker_.add(
           composebox, 'can-submit-files-and-input-changed',
@@ -263,11 +268,13 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         if (this.isZeroState || this.forceSkipSubmitGlifAnimation_) {
           this.forceSkipSubmitGlifAnimation_ = false;
           composebox.animationState = GlowAnimationState.NONE;
+          this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
           this.clearInputAndFocus(/* querySubmitted= */ true);
           return;
         }
         // Force animation to replay visibly on subsequent submissions.
         composebox.animationState = GlowAnimationState.NONE;
+        this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
         requestAnimationFrame(() => {
           composebox.animationState = GlowAnimationState.SUBMITTING;
         });
@@ -357,6 +364,9 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       if (this.isZeroState) {
         // Opening zero state triggers animation.
         this.$.composebox.animationState = GlowAnimationState.SUBMITTING;
+        this.glifAnimationState_ = GlifAnimationState.STARTED;
+      } else {
+        this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
       }
       if (this.isZeroState && !this.isSidePanel) {
         // Get zero state autocomplete matches. In the side panel, we wait for

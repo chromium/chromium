@@ -70,7 +70,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           @animationend="${this.onIconAnimationend_}">
       </cr-icon-button>
     `}
-    ${!this.energyEffectAnimationEnabled && this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
+    ${!this.energyEffectAnimationEnabled && !this.disableFallbackGlifAnimation && this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
       <div class="aim-gradient-outer-blur aim-c"></div>
       <div class="aim-gradient-solid aim-c"></div>
       <div class="aim-background aim-c"

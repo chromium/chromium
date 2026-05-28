@@ -231,11 +231,12 @@ cr-button#entrypoint:focus {
 
 /* Energy Effect Icon Shimmer Animations */
 :host([glif-animation-state='started'][energy-effect-animation-enabled]) #entrypointIcon,
-:host([glif-animation-state='started'][energy-effect-animation-enabled]) cr-icon-button#entrypoint {
+:host([glif-animation-state='started'][energy-effect-animation-enabled]) cr-icon-button#entrypoint::part(icon) {
+  --iron-icon-fill-color: currentColor;
   animation:
-    icon-rotate var(--icon-animation-duration) var(--icon-rotation-curve),
-    icon-pulse var(--icon-animation-duration),
-    icon-color var(--icon-animation-duration) var(--icon-color-curve);
+    icon-rotate var(--icon-animation-duration) var(--cr-composebox-entrypoint-icon-animation-delay, 0ms) var(--icon-rotation-curve),
+    icon-pulse var(--icon-animation-duration) var(--cr-composebox-entrypoint-icon-animation-delay, 0ms),
+    icon-color var(--icon-animation-duration) var(--cr-composebox-entrypoint-icon-animation-delay, 0ms) var(--icon-color-curve);
 }
 
 @keyframes icon-rotate {
@@ -425,6 +426,7 @@ cr-icon-button {
     display: none;
   }
   :host([glif-animation-state]) #entrypointIcon,
+  :host([glif-animation-state]) cr-icon-button#entrypoint::part(icon),
   :host([glif-animation-state]) #entrypoint {
     animation: none !important;
   }

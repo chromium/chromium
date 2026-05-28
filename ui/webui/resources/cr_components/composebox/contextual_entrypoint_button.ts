@@ -60,6 +60,7 @@ export class ContextualEntrypointButtonElement extends
       restoredTabs: {type: Array},
       tabFaviconChipsToCoinsEnabled_: {type: Boolean},
       energyEffectAnimationEnabled: {type: Boolean, reflect: true},
+      disableFallbackGlifAnimation: {type: Boolean},
       smartTabSharingActive: {type: Boolean},
       isLensSearchbox_: {
         type: Boolean,
@@ -80,6 +81,7 @@ export class ContextualEntrypointButtonElement extends
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
+  accessor disableFallbackGlifAnimation: boolean = false;
   accessor smartTabSharingActive: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor isLensSearchbox_: boolean =

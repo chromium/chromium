@@ -37,6 +37,7 @@
   --composebox-submit-container-inline-end:
       var(--composebox-last-icon-inline-end);
   --composebox-last-icon-inline-end: 12px;
+  --cr-composebox-entrypoint-icon-animation-delay: 750ms;
   --cr-composebox-tool-chip-animation: none;
   --cr-composebox-tool-chip-height: var(--icon-menu-button-size);
   --cr-searchbox-height: 52px;
