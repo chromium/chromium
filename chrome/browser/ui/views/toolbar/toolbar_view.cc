@@ -577,8 +577,14 @@ void ToolbarView::Init() {
     InitGlicContainer();
 
     glic_button_ = AddChildView(CreateGlicButton());
+    // The left margin is needed to ensure proper spacing before the
+    // separator. The right margin is needed for spacing between the glic and
+    // actor icons. The space between glic and profile should also be 5 but that
+    // is handled by the profile margins.
     glic_button_->SetProperty(views::kMarginsKey,
-                              gfx::Insets::VH(0, kGlicButtonMargin));
+                              gfx::Insets()
+                                  .set_left(kGlicButtonMargin)
+                                  .set_right(kInsideBorderAroundGlicButtons));
     UpdateGlicButtonVisibility();
   }
 
