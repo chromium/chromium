@@ -14,7 +14,7 @@ chromium::import! {
 }
 
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
-use test_mojom::{HandleService, MathService, TwoInts};
+use test_mojom::{HandleService, MathService, TwoInts, TypemapService};
 
 use std::sync::{Arc, Mutex};
 
@@ -140,3 +140,17 @@ impl Drop for DropNotifyingService {
 }
 
 register_mojom_state_object_impls!(impl MathService for DropNotifyingService);
+
+pub struct TypemapServiceImpl {}
+
+impl TypemapService for TypemapServiceImpl {
+    fn Echo(
+        &mut self,
+        s: test_mojom::MyCustomStruct,
+        response_callback: impl FnOnce(test_mojom::MyCustomStruct),
+    ) {
+        response_callback(s);
+    }
+}
+
+bindings::register_mojom_state_object_impls!(impl TypemapService for TypemapServiceImpl);

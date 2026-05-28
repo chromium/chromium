@@ -475,20 +475,6 @@ fn test_cpp_to_rust_handover() {
     run_loop.run();
 }
 
-pub struct TypemapServiceImpl {}
-
-impl TypemapService for TypemapServiceImpl {
-    fn Echo(
-        &mut self,
-        s: test_mojom::MyCustomStruct,
-        response_callback: impl FnOnce(test_mojom::MyCustomStruct),
-    ) {
-        response_callback(s);
-    }
-}
-
-bindings::register_mojom_state_object_impls!(impl TypemapService for TypemapServiceImpl);
-
 #[gtest(RustBindingsAPI, TypemappingTest)]
 fn test_typemapping() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
