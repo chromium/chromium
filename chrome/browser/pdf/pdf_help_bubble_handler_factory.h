@@ -10,15 +10,10 @@
 #include "content/public/browser/document_service.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
-#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
 namespace user_education {
 class HelpBubbleHandler;
 }
-
-namespace ui {
-class TrackedElementHandler;
-}  // namespace ui
 
 namespace pdf {
 
@@ -45,18 +40,13 @@ class PdfHelpBubbleHandlerFactory
   // help_bubble::mojom::PdfHelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
-      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
-          help_bubble_handler,
-      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-          tracked_element_handler) override;
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
 
  private:
   PdfHelpBubbleHandlerFactory(content::RenderFrameHost* render_frame_host,
                               HelpFactoryPendingReceiver receiver);
 
-  // help_bubble_handler holds a reference to the tracked_element_handler, so
-  // it must be destroyed first (last in this list).
-  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
 };
 

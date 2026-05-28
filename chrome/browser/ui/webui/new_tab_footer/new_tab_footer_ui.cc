@@ -30,7 +30,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 NewTabFooterUIConfig::NewTabFooterUIConfig()
@@ -73,10 +72,6 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
       {"managementLinkDesc", IDS_OPENS_MANAGEMENT_PAGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
-
-  ui::TrackedElementHandlerDocumentSingleton::Register(
-      this, std::vector<ui::ElementIdentifier>{
-                CustomizeButtonsHandler::kCustomizeChromeButtonElementId});
 }
 
 NewTabFooterUI::~NewTabFooterUI() = default;
@@ -133,9 +128,9 @@ void NewTabFooterUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client),
-      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
-          web_ui()->GetRenderFrameHost()));
+      std::move(handler), std::move(client), this,
+      std::vector<ui::ElementIdentifier>{
+          CustomizeButtonsHandler::kCustomizeChromeButtonElementId});
 }
 
 void NewTabFooterUI::AttachedTabStateUpdated(const GURL& url) {

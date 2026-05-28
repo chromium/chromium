@@ -18,14 +18,15 @@ export interface PdfHelpBubbleProxy {
 export class PdfHelpBubbleProxyImpl implements PdfHelpBubbleProxy {
   private trackedElementHandler_ = new TrackedElementHandlerRemote();
   private callbackRouter_ = new HelpBubbleClientCallbackRouter();
-  private helpBubbleHandler_ = new HelpBubbleHandlerRemote();
+  private handler_ = new HelpBubbleHandlerRemote();
 
   constructor(connectToMojo: boolean) {
     if (connectToMojo) {
       const factory = PdfHelpBubbleHandlerFactory.getRemote();
       factory.createHelpBubbleHandler(
           this.callbackRouter_.$.bindNewPipeAndPassRemote(),
-          this.helpBubbleHandler_.$.bindNewPipeAndPassReceiver(),
+          this.handler_.$.bindNewPipeAndPassReceiver());
+      this.handler_.bindTrackedElementHandler(
           this.trackedElementHandler_.$.bindNewPipeAndPassReceiver());
     }
   }
@@ -44,7 +45,7 @@ export class PdfHelpBubbleProxyImpl implements PdfHelpBubbleProxy {
   }
 
   getHandler(): HelpBubbleHandlerRemote {
-    return this.helpBubbleHandler_;
+    return this.handler_;
   }
 
   getCallbackRouter(): HelpBubbleClientCallbackRouter {

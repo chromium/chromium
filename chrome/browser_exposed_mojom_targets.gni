@@ -353,7 +353,6 @@ browser_exposed_mojom_targets = [
   "//ui/webui/resources/js/batch_upload_promo:mojo_bindings",
   "//ui/webui/resources/js/browser_command:mojo_bindings",
   "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
-  "//ui/webui/resources/js/tracked_element:mojo_bindings",
   "//url/mojom:url_mojom_gurl",
   "//url/mojom:url_mojom_origin",
   "//url/mojom:url_mojom_scheme_host_port",

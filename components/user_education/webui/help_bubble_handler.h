@@ -32,7 +32,7 @@ class WebContents;
 
 namespace ui {
 class TrackedElementHandler;
-}  // namespace ui
+}
 
 namespace user_education {
 
@@ -58,7 +58,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   // contents) the owning browser can change during the handler's lifespan.
   // For special cases without a WebUIController, the HelpBubbleHandle creator
   // must provide a unique context of their own choosing.
-  ui::ElementContext context() const;
+  ui::ElementContext context() const { return context_; }
 
   // See `GetWebContentsCallback` above.
   content::WebContents* GetWebContents();
@@ -66,8 +66,8 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   // Returns whether a help bubble is showing for a given element.
   bool IsHelpBubbleShowingForTesting(ui::ElementIdentifier id) const;
 
-  base::WeakPtr<HelpBubbleHandlerBase> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
+  ui::TrackedElementHandler* GetTrackedElementHandlerForTesting() {
+    return tracked_element_handler_.get();
   }
 
  protected:
@@ -87,15 +87,21 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
     virtual help_bubble::mojom::HelpBubbleClient* GetClient() = 0;
   };
 
-  HelpBubbleHandlerBase(
-      std::unique_ptr<ClientProvider> client_provider,
-      base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler);
+  HelpBubbleHandlerBase(std::unique_ptr<ClientProvider> client_provider,
+                        GetWebContentsCallback get_web_contents_callback,
+                        const std::vector<ui::ElementIdentifier>& identifiers,
+                        ui::ElementContext context);
 
   help_bubble::mojom::HelpBubbleClient* GetClient();
   ClientProvider* client_provider() { return client_provider_.get(); }
 
   // Override to use mojo error handling; defaults to NOTREACHED().
   virtual void ReportBadMessage(std::string_view error);
+
+  // help_bubble::mojom::HelpBubbleHandler:
+  void BindTrackedElementHandler(
+      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+          handler) override;
 
  private:
   friend class FloatingWebUIHelpBubbleFactory;
@@ -128,8 +134,11 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
                              ui::ElementIdentifier* found_identifier = nullptr);
 
   const std::unique_ptr<ClientProvider> client_provider_;
-  base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler_;
+  const GetWebContentsCallback get_web_contents_callback_;
+  const ui::ElementContext context_;
   std::map<ui::ElementIdentifier, ElementData> element_data_;
+
+  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
   base::WeakPtrFactory<HelpBubbleHandlerBase> weak_ptr_factory_{this};
 };
@@ -165,8 +174,20 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
           pending_handler,
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
-      base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler);
+      content::WebUIController* controller,
+      const std::vector<ui::ElementIdentifier>& identifiers);
 
+  // Alternative constructor for when the factory wants to use something other
+  // than content::WebUIController. In which case, the factory specifies a
+  // custom GetWebContentsCallback and a `context` for use with
+  // ui::ElementContext.
+  HelpBubbleHandler(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
+          pending_handler,
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
+      GetWebContentsCallback get_web_contents_callback,
+      void* context,
+      const std::vector<ui::ElementIdentifier>& identifiers);
   ~HelpBubbleHandler() override;
 
  private:

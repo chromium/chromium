@@ -52,7 +52,6 @@ source_set("pdf") {
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/gfx:color_utils",
-    "//ui/webui/tracked_element",
     "//url",
   ]
 

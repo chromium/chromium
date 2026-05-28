@@ -133,8 +133,6 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-#include "ui/webui/tracked_element/tracked_element_handler.h"
-#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 
 namespace {
 constexpr int kNumMaxRecoveryTime = 2;
@@ -1415,14 +1413,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewRaceTest,
               return;
             }
             auto* rfh = weak_wc->GetPrimaryMainFrame();
-            if (rfh) {
+            auto* web_ui = rfh ? rfh->GetWebUI() : nullptr;
+            auto* ui = web_ui ? web_ui->GetController()->GetAs<WebUIToolbarUI>()
+                              : nullptr;
+            if (ui) {
               mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler>
                   remote;
-              auto handler =
-                  ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(rfh);
-              if (handler) {
-                handler->BindInterface(remote.InitWithNewPipeAndPassReceiver());
-              }
+              ui->BindInterface(remote.InitWithNewPipeAndPassReceiver());
             }
           },
           webui_contents->GetWeakPtr()));

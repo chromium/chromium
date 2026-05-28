@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
-#include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {
@@ -47,10 +46,18 @@ class MockHelpBubbleClient : public help_bubble::mojom::HelpBubbleClient {
 
 class TestHelpBubbleHandler : public user_education::HelpBubbleHandlerBase {
  public:
-  explicit TestHelpBubbleHandler(
-      base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler)
-      : HelpBubbleHandlerBase(std::make_unique<ClientProvider>(),
-                              tracked_element_handler) {}
+  TestHelpBubbleHandler(GetWebContentsCallback get_web_contents_callback,
+                        ui::ElementContext context)
+      : HelpBubbleHandlerBase(
+            std::make_unique<ClientProvider>(),
+            get_web_contents_callback,
+            std::vector<ui::ElementIdentifier>{kTestElementId},
+            context) {}
+
+  void BindTrackedElementHandlerForTesting() {
+    BindTrackedElementHandler(
+        mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>());
+  }
 
  private:
   class ClientProvider : public HelpBubbleHandlerBase::ClientProvider {
@@ -109,16 +116,15 @@ class BrowserHelpBubbleUnitTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    ui::ElementContext context =
-        ui::ElementContext::CreateFakeContextForTesting(this);
-    tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-        web_contents_.get(), context, std::vector<ui::ElementIdentifier>());
-    tracked_element_handler_->BindInterface(
-        mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>());
     handler_ = std::make_unique<TestHelpBubbleHandler>(
-        tracked_element_handler_->GetWeakPtr());
+        base::BindRepeating(
+            [](content::WebContents* contents) { return contents; },
+            web_contents_.get()),
+        ui::ElementContext::CreateFakeContextForTesting(this));
+    handler_->BindTrackedElementHandlerForTesting();
     anchor_ = std::make_unique<ui::TrackedElementWebUI>(
-        tracked_element_handler_.get(), kTestElementId, context);
+        handler_->GetTrackedElementHandlerForTesting(), kTestElementId,
+        ui::ElementContext::CreateFakeContextForTesting(this));
   }
 
   void TearDown() override {
@@ -130,7 +136,6 @@ class BrowserHelpBubbleUnitTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
   std::unique_ptr<TestHelpBubbleHandler> handler_;
   std::unique_ptr<ui::TrackedElementWebUI> anchor_;
   testing::NiceMock<MockHelpBubbleDelegate> delegate_;

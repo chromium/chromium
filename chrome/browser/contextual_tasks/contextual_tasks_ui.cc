@@ -106,7 +106,6 @@
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/zoom/zoom_controller.h"  // nogncheck
-#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -678,12 +677,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   AddZeroStateStrings(source, profile);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
-
-#if !BUILDFLAG(IS_ANDROID)
-  ui::TrackedElementHandlerDocumentSingleton::Register(
-      this,
-      std::vector<ui::ElementIdentifier>{kSmartTabSharingMenuItemElementId});
-#endif
 }
 
 ContextualTasksUI::~ContextualTasksUI() {
@@ -907,11 +900,9 @@ void ContextualTasksUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client),
-      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
-          web_ui()->GetRenderFrameHost()));
+      std::move(handler), std::move(client), this,
+      std::vector<ui::ElementIdentifier>{kSmartTabSharingMenuItemElementId});
 }
-
 #endif
 
 bool ContextualTasksUIConfig::IsWebUIEnabled(

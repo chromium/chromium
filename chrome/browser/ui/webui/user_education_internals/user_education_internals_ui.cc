@@ -21,7 +21,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
@@ -45,9 +44,6 @@ UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kUserEducationInternalsResources,
                               IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
-
-  ui::TrackedElementHandlerDocumentSingleton::Register(
-      this, std::vector<ui::ElementIdentifier>{kWebUIIPHDemoElementIdentifier});
 }
 
 UserEducationInternalsUI::~UserEducationInternalsUI() = default;
@@ -75,9 +71,8 @@ void UserEducationInternalsUI::CreateHelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
         pending_handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(pending_handler), std::move(pending_client),
-      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
-          web_ui()->GetRenderFrameHost()));
+      std::move(pending_handler), std::move(pending_client), this,
+      std::vector<ui::ElementIdentifier>{kWebUIIPHDemoElementIdentifier});
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UserEducationInternalsUI)

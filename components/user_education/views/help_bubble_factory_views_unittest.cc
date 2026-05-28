@@ -18,7 +18,6 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
-#include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
@@ -135,17 +134,6 @@ class HelpBubbleFactoryViewsTest : public views::ViewsTestBase {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
-  }
-
-  void MaybeUpdateAnchor(ui::TrackedElement* anchor,
-                         gfx::Rect local_anchor_region) {
-    if (auto* const subregion_anchor =
-            anchor->AsA<views::ViewSubregionAnchor>()) {
-      subregion_anchor->MaybeUpdateAnchor(local_anchor_region);
-    } else {
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-          anchor, views::ViewSubregionAnchor::kAnchorBoundsChangedEvent);
-    }
   }
 
   test::TestHelpBubbleDelegate test_delegate_;
@@ -296,7 +284,7 @@ TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest,
 }
 
 TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest, SyntheticAnchorBounds) {
-  MaybeUpdateAnchor(anchor_.get(), gfx::Rect(1, 1, 1, 1));
+  anchor_->MaybeUpdateAnchor(gfx::Rect(1, 1, 1, 1));
   EXPECT_TRUE(
       anchor_view_->GetBoundsInScreen().Contains(anchor_->GetScreenBounds()));
   EXPECT_TRUE(
@@ -304,7 +292,7 @@ TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest, SyntheticAnchorBounds) {
 }
 
 TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest, ShowBubbleOnSyntheticAnchor) {
-  MaybeUpdateAnchor(anchor_.get(), gfx::Rect(1, 1, 1, 1));
+  anchor_->MaybeUpdateAnchor(gfx::Rect(1, 1, 1, 1));
   auto help_bubble = CreateHelpBubble(base::DoNothing());
   ASSERT_TRUE(help_bubble);
   EXPECT_EQ(help_bubble->AsA<HelpBubbleViews>()
@@ -316,12 +304,12 @@ TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest, ShowBubbleOnSyntheticAnchor) {
 
 TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest,
        BubbleMovesWithSyntheticAnchor) {
-  MaybeUpdateAnchor(anchor_.get(), gfx::Rect(1, 1, 1, 1));
+  anchor_->MaybeUpdateAnchor(gfx::Rect(1, 1, 1, 1));
   auto help_bubble = CreateHelpBubble(base::DoNothing());
   auto* const help_bubble_view =
       help_bubble->AsA<HelpBubbleViews>()->bubble_view_for_testing();
   const gfx::Rect old_bounds = help_bubble_view->GetBoundsInScreen();
-  MaybeUpdateAnchor(anchor_.get(), gfx::Rect(20, 30, 13, 17));
+  anchor_->MaybeUpdateAnchor(gfx::Rect(20, 30, 13, 17));
   EXPECT_EQ(help_bubble_view->GetAnchorRect(), anchor_->GetScreenBounds());
   const gfx::Rect new_bounds = help_bubble_view->GetBoundsInScreen();
   EXPECT_GT(new_bounds.x(), old_bounds.x());

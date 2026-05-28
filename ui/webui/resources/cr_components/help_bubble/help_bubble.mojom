@@ -110,10 +110,8 @@ interface HelpBubbleHandlerFactory {
 interface PdfHelpBubbleHandlerFactory {
   // This method is called on bootstrap to create the browser-side handler.
   CreateHelpBubbleHandler(
-      pending_remote<help_bubble.mojom.HelpBubbleClient> client,
-      pending_receiver<help_bubble.mojom.HelpBubbleHandler> help_bubble_handler,
-      pending_receiver<tracked_element.mojom.TrackedElementHandler>
-          tracked_element_handler);
+           pending_remote<help_bubble.mojom.HelpBubbleClient> client,
+           pending_receiver<help_bubble.mojom.HelpBubbleHandler> handler);
 };
 
 // Object which handles the C++/browser side of help bubble management for a
@@ -128,6 +126,12 @@ interface PdfHelpBubbleHandlerFactory {
 // browser side, because HTML ids can be ambiguous within a document with shadow
 // DOMs.
 interface HelpBubbleHandler {
+  // Binds a TrackedElementHandler receiver used for anchoring help bubbles. The
+  // handler is responsible for element tracking functionality, such as
+  // visibility changes, bounds changes, activation changes, custom events, etc.
+  BindTrackedElementHandler(
+      pending_receiver<tracked_element.mojom.TrackedElementHandler> handler);
+
   // Notifies that a button on the help bubble anchored to `native_identifier`
   // has been pressed and the help bubble is closing as a result. The
   // `buttonIndex` parameter will be set to the (0-indexed) index of the button
