@@ -51,6 +51,13 @@ void MemoryCoordinatorPolicyState::OnConsumerGroupRemoved(
 void MemoryCoordinatorPolicyState::SetLimit(int percentage,
                                             bool release_memory) {
   if (percentage == percentage_ && release_memory == release_memory_) {
+    // If this is a repeated request to release memory, and we are actually
+    // under pressure (limit < 100%), trigger a repeated release for stateless
+    // consumers and consumers without defined traits.
+    if (release_memory &&
+        percentage < base::MemoryConsumer::kDefaultMemoryLimit) {
+      TriggerRepeatedRelease();
+    }
     return;
   }
 
@@ -66,6 +73,32 @@ void MemoryCoordinatorPolicyState::SetLimit(int percentage,
                               child_process_id);
       },
       percentage_, release_memory_);
+}
+
+void MemoryCoordinatorPolicyState::TriggerRepeatedRelease() {
+  manager_->UpdateConsumers(
+      &*policy_,
+      [this](uint32_t consumer_id,
+             std::optional<base::MemoryConsumerTraits> traits,
+             ProcessType process_type, ChildProcessId child_process_id) {
+        // Don't repeat the signal for consumers that don't match the state's
+        // predicate.
+        if (!predicate_.Run(consumer_id, traits, process_type,
+                            child_process_id)) {
+          return false;
+        }
+
+        // Don't repeat the signal for stateful consumers. They are trusted to
+        // self-regulate once they receive the limit.
+        if (traits.has_value() &&
+            traits->is_stateful ==
+                base::MemoryConsumerTraits::IsStateful::kYes) {
+          return false;
+        }
+
+        return true;
+      },
+      std::nullopt, true);
 }
 
 }  // namespace content

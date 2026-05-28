@@ -69,6 +69,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyState
   const ConsumerPredicate predicate_;
   int percentage_ = base::MemoryConsumer::kDefaultMemoryLimit;
   bool release_memory_ = false;
+
+  void TriggerRepeatedRelease();
 };
 
 }  // namespace content

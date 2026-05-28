@@ -252,4 +252,106 @@ TEST_F(MemoryCoordinatorPolicyStateTest, ObserverLifecycle) {
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
+TEST_F(MemoryCoordinatorPolicyStateTest, RepeatedReleaseForStatelessConsumers) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId;
+
+  policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
+
+  // Define traits for stateful and stateless consumers.
+  constexpr base::MemoryConsumerTraits kStatefulTraits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::
+          kSynchronous);  // Default is stateful (kYes)
+
+  constexpr base::MemoryConsumerTraits kStatelessTraits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::IsStateful::kNo);
+
+  const std::string kStatefulName = "stateful";
+  const uint32_t kStatefulId = base::PersistentHash(kStatefulName);
+  const std::string kStatelessName = "stateless";
+  const uint32_t kStatelessId = base::PersistentHash(kStatelessName);
+  const std::string kNoTraitsName = "no_traits";
+  const uint32_t kNoTraitsId = base::PersistentHash(kNoTraitsName);
+
+  policy_manager().OnConsumerGroupAdded(kStatefulId, kStatefulName,
+                                        kStatefulTraits, PROCESS_TYPE_BROWSER,
+                                        kChildId);
+  policy_manager().OnConsumerGroupAdded(kStatelessId, kStatelessName,
+                                        kStatelessTraits, PROCESS_TYPE_BROWSER,
+                                        kChildId);
+  policy_manager().OnConsumerGroupAdded(
+      kNoTraitsId, kNoTraitsName, std::nullopt, PROCESS_TYPE_BROWSER, kChildId);
+
+  TestPolicy policy(
+      policy_manager(),
+      base::BindRepeating([](uint32_t consumer_id,
+                             std::optional<base::MemoryConsumerTraits> traits,
+                             ProcessType process_type,
+                             ChildProcessId child_process_id) {
+        return child_process_id.is_null();
+      }));
+
+  // Critical pressure (limit 0, release true): all should be notified
+  // initially.
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
+                        MemoryConsumerUpdate{kStatefulId, 0, true},
+                        MemoryConsumerUpdate{kStatelessId, 0, true},
+                        MemoryConsumerUpdate{kNoTraitsId, 0, true})));
+  policy.state().SetLimit(0, true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Simulate repeated critical pressure: stateless and no_traits consumers
+  // notified. Stateful is skipped.
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(
+                  MemoryConsumerUpdate{kStatelessId, std::nullopt, true},
+                  MemoryConsumerUpdate{kNoTraitsId, std::nullopt, true})));
+  policy.state().SetLimit(0, true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Transition to Moderate pressure (limit 50, release true): all should be
+  // notified.
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
+                        MemoryConsumerUpdate{kStatefulId, 50, true},
+                        MemoryConsumerUpdate{kStatelessId, 50, true},
+                        MemoryConsumerUpdate{kNoTraitsId, 50, true})));
+  policy.state().SetLimit(50, true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Simulate repeated moderate pressure: stateless and no_traits consumers
+  // notified. Stateful is skipped.
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(
+                  MemoryConsumerUpdate{kStatelessId, std::nullopt, true},
+                  MemoryConsumerUpdate{kNoTraitsId, std::nullopt, true})));
+  policy.state().SetLimit(50, true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Stop pressure (limit 100, release true): all should be reset to 100%.
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
+                        MemoryConsumerUpdate{kStatefulId, 100, true},
+                        MemoryConsumerUpdate{kStatelessId, 100, true},
+                        MemoryConsumerUpdate{kNoTraitsId, 100, true})));
+  policy.state().SetLimit(100, true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Simulate repeated no pressure: should NOT notify because limit is 100 (not
+  // under pressure).
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy.state().SetLimit(100, true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().OnConsumerGroupRemoved(kStatefulId, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kStatelessId, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kNoTraitsId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
 }  // namespace content
