@@ -66,6 +66,7 @@ class MenuRunner;
 namespace glic {
 inline constexpr int kIconLeftMargin = 4;
 inline constexpr int kCloseButtonMargin = 6;
+inline constexpr int kLabelWithCloseButtonRightMargin = 12;
 inline constexpr int kLabelRightMargin = 8;
 inline constexpr ui::ColorId kTextDisabled = ui::kColorLabelForegroundDisabled;
 
@@ -592,7 +593,7 @@ class GlicButton : public GlicBaseShim<T>,
   virtual void SetLabelMargins() {
     int right = kLabelRightMargin;
     if ((!close_button() || !close_button()->GetVisible())) {
-      right += 4;
+      right = kLabelWithCloseButtonRightMargin;
     }
     this->label()->SetProperty(views::kMarginsKey,
                                gfx::Insets().set_right(right));
