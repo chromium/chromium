@@ -12,13 +12,14 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/grit/autofill_address_rewriter_resources_map.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -164,8 +165,9 @@ class AddressRewriter::Cache {
   friend class base::NoDestructor<Cache>;
 };
 
-AddressRewriter::AddressRewriter(const CompiledRuleVector* compiled_rules)
-    : compiled_rules_(compiled_rules) {}
+AddressRewriter::AddressRewriter(const CompiledRuleVector* compiled_rules,
+                                 Type type)
+    : compiled_rules_(compiled_rules), type_(type) {}
 
 // static
 std::u16string AddressRewriter::RewriteForCountryCode(
@@ -186,14 +188,14 @@ AddressRewriter AddressRewriter::ForCountryCode(
   const std::string region = base::ToUpperASCII(country_code.value());
   const CompiledRuleVector* rules =
       Cache::GetInstance()->GetRulesForRegion(region);
-  return AddressRewriter(rules);
+  return AddressRewriter(rules, Type::kCountrySpecific);
 }
 
 // static
 AddressRewriter AddressRewriter::ForGlobalRules() {
   const CompiledRuleVector* rules =
       Cache::GetInstance()->GetRulesForRegion("GLOBAL");
-  return AddressRewriter(rules);
+  return AddressRewriter(rules, Type::kGlobal);
 }
 
 // static
@@ -201,15 +203,15 @@ AddressRewriter AddressRewriter::ForCustomRules(
     const std::string& custom_rules) {
   const CompiledRuleVector* rules =
       Cache::GetInstance()->CreateRulesForData(custom_rules);
-  return AddressRewriter(rules);
+  return AddressRewriter(rules, Type::kCustom);
 }
 
 std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
-  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.AddressRewriter.Rewrite");
   if (compiled_rules_ == nullptr || compiled_rules_->empty()) {
     return base::CollapseWhitespace(text, true);
   }
 
+  base::ElapsedTimer timer;
   // Apply all of the string replacement rules. We don't have to worry about
   // whitespace during these passes because the patterns are all whitespace
   // tolerant regular expressions.
@@ -218,7 +220,18 @@ std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
     result = MatchAndReplace(result, *rule.first, rule.second);
   }
 
-  return base::CollapseWhitespace(result, true);
+  result = base::CollapseWhitespace(result, true);
+
+  base::TimeDelta elapsed = timer.Elapsed();
+  if (type_ == Type::kCountrySpecific) {
+    base::UmaHistogramTimes(
+        "Autofill.Timing.AddressRewriter.Rewrite.CountrySpecific", elapsed);
+  } else if (type_ == Type::kGlobal) {
+    base::UmaHistogramTimes("Autofill.Timing.AddressRewriter.Rewrite.Global",
+                            elapsed);
+  }
+
+  return result;
 }
 
 }  // namespace autofill

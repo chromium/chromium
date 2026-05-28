@@ -22,6 +22,12 @@ namespace autofill {
 // copyable, movable, and passable by value.
 class AddressRewriter {
  public:
+  enum class Type {
+    kCountrySpecific,
+    kGlobal,
+    kCustom,
+  };
+
   // Rewrites `normalized_text` using the rules for `country_code`.
   static std::u16string RewriteForCountryCode(
       const AddressCountryCode& country_code,
@@ -51,13 +57,15 @@ class AddressRewriter {
 
   class Cache;
 
-  explicit AddressRewriter(const CompiledRuleVector* compiled_rules);
+  explicit AddressRewriter(const CompiledRuleVector* compiled_rules, Type type);
 
   static void CompileRulesFromData(std::string_view data_string,
                                    CompiledRuleVector& compiled_rules);
 
   // A handle to the internal rewrite rules this instance is using.
   const raw_ptr<const CompiledRuleVector> compiled_rules_ = nullptr;
+
+  Type type_ = Type::kCustom;
 };
 
 }  // namespace autofill

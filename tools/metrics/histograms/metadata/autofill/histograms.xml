@@ -8695,8 +8695,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Timing.AddressRewriter.Rewrite" units="ms"
-    expires_after="2026-11-22">
+<histogram name="Autofill.Timing.AddressRewriter.Rewrite{RewriterType}"
+    units="ms" expires_after="2027-02-01">
   <owner>picarella@google.com</owner>
   <owner>mmaryia@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -8704,6 +8704,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Number of milliseconds passed between the start and end of
     AddressRewriter::Rewrite().
   </summary>
+  <token key="RewriterType">
+    <variant name=".CountrySpecific"/>
+    <variant name=".Global"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.Timing.ParseFormUntilInteraction2" units="ms"
