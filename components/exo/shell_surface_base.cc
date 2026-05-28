@@ -2304,9 +2304,21 @@ void ShellSurfaceBase::OnPostWidgetCommit() {
 
 void ShellSurfaceBase::ShowWidget(bool activate) {
   if (activate) {
+    // Minimized windows cannot gain focus, when being un-minimized they will
+    // call into `ShowWidget` again which will validate activation permissions.
+    auto* window_state = ash::WindowState::Get(widget_->GetNativeWindow());
+    if (!(window_state && window_state->IsMinimized()) &&
+        GetSecurityDelegate() &&
+        !GetSecurityDelegate()->CanSelfActivate(widget_->GetNativeWindow())) {
+      activate = false;
+    }
+  }
+
+  if (activate) {
     // Widget will minimize itself if the initial state is minimized.
     widget_->Show();
   } else {
+    // `ShowInactive` does not have minimize support.
     widget_->ShowInactive();
   }
 }

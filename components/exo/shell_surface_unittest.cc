@@ -1315,9 +1315,23 @@ TEST_F(ShellSurfaceTest, ActivationPermissionLegacy) {
   EXPECT_TRUE(HasPermissionToActivate(window));
 }
 
+class LegacyTestSecurityDelegate : public test::TestSecurityDelegate {
+ public:
+  bool CanSelfActivate(aura::Window* window) const override {
+    if (allow_self_activate_) {
+      return true;
+    }
+    return HasPermissionToActivate(window);
+  }
+  void SetAllowSelfActivate(bool allow) { allow_self_activate_ = allow; }
+
+ private:
+  bool allow_self_activate_ = true;
+};
+
 TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
   constexpr gfx::Size kBufferSize(64, 64);
-  auto security_delegate = std::make_unique<test::TestSecurityDelegate>();
+  auto security_delegate = std::make_unique<LegacyTestSecurityDelegate>();
 
   auto shell_surface1 = test::ShellSurfaceBuilder(kBufferSize)
                             .SetSecurityDelegate(security_delegate.get())
@@ -1339,6 +1353,8 @@ TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
   EXPECT_FALSE(widget1->IsActive());
   EXPECT_TRUE(widget2->IsActive());
 
+  security_delegate->SetAllowSelfActivate(false);
+
   // Grant permission to activate the first window.
   GrantPermissionToActivate(widget1->GetNativeWindow(), base::Days(1));
 
@@ -1355,6 +1371,8 @@ TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
 
 TEST_F(ShellSurfaceTest, WidgetActivation) {
   test::MockSecurityDelegate security_delegate;
+  ON_CALL(security_delegate, CanSelfActivate(testing::_))
+      .WillByDefault(testing::Return(true));
   constexpr gfx::Size kBufferSize(64, 64);
   std::unique_ptr<ShellSurface> shell_surface1 =
       test::ShellSurfaceBuilder(kBufferSize)
@@ -1389,6 +1407,62 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   shell_surface2->surface_for_testing()->RequestActivation();
   EXPECT_TRUE(widget1->IsActive());
   EXPECT_FALSE(widget2->IsActive());
+}
+
+// Verified that a newly created `xdg_toplevel` with No `kPermissionKey`
+// does not take focus upon self-activation, when the SecurityDelegate denies
+// this type of self-activation.
+TEST_F(ShellSurfaceTest, CanSelfActivateEnforcedOnInitialShow) {
+  constexpr gfx::Size kBufferSize(64, 64);
+
+  // 1. Victim window: a previously-active surface.
+  testing::NiceMock<test::MockSecurityDelegate> allow_delegate;
+  EXPECT_CALL(allow_delegate, CanSelfActivate(testing::_))
+      .WillRepeatedly(testing::Return(true));
+
+  std::unique_ptr<ShellSurface> victim =
+      test::ShellSurfaceBuilder(kBufferSize)
+          .SetSecurityDelegate(&allow_delegate)
+          .BuildShellSurface();
+  views::Widget* victim_widget = victim->GetWidget();
+  ASSERT_TRUE(victim_widget->IsActive());
+
+  // 2. Attacker security context: simulates production
+  //    ChromeSecurityDelegate::CanSelfActivate for a Crostini window with no
+  //    kPermissionKey grant. CanSelfActivate is hard-denied.
+  testing::NiceMock<test::MockSecurityDelegate> deny_delegate;
+
+  // We expect CanSelfActivate to be called ONCE during the initial show
+  // (commit).
+  EXPECT_CALL(deny_delegate, CanSelfActivate(testing::_))
+      .WillOnce(testing::Return(false));
+
+  // 3. Attacker creates a new xdg_toplevel and commits.
+  std::unique_ptr<ShellSurface> attacker =
+      test::ShellSurfaceBuilder(kBufferSize)
+          .SetSecurityDelegate(&deny_delegate)
+          .BuildShellSurface();
+
+  views::Widget* attacker_widget = attacker->GetWidget();
+  aura::Window* attacker_window = attacker_widget->GetNativeWindow();
+
+  // 4. Confirm the production gate WOULD have denied this: no kPermissionKey
+  //    was ever granted on the new window.
+  EXPECT_FALSE(HasPermissionToActivate(attacker_window))
+      << "kPermissionKey should be unset on a freshly-spawned toplevel";
+
+  // 5. VERIFY FIX: focus was NOT stolen.
+  EXPECT_FALSE(attacker_widget->IsActive())
+      << "Attacker toplevel should NOT have self-activated on first commit";
+  EXPECT_TRUE(victim_widget->IsActive())
+      << "Victim window should have retained keyboard focus";
+
+  // 6. Contrast: the post-ready path IS gated.
+  EXPECT_CALL(deny_delegate, CanSelfActivate(attacker_window))
+      .WillOnce(testing::Return(false));
+  attacker->RequestActivation();
+  EXPECT_TRUE(victim_widget->IsActive());
+  EXPECT_FALSE(attacker_widget->IsActive());
 }
 
 TEST_F(ShellSurfaceTest, EmulateOverrideRedirect) {

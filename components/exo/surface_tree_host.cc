@@ -267,7 +267,6 @@ void SurfaceTreeHost::OnNewOutputAdded() {
 }
 
 SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
-  DCHECK(security_delegate_);
   return security_delegate_;
 }
 

@@ -30,6 +30,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/test/test_data_device_delegate.h"
 #include "components/exo/test/test_data_source_delegate.h"
@@ -676,8 +677,13 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
 
   // Create and map a toplevel shell surface, with the size larger than 2nd
   // display to test if configure uses the adjusted size.
+  test::MockSecurityDelegate security_delegate;
+  ON_CALL(security_delegate, CanSelfActivate(testing::_))
+      .WillByDefault(testing::Return(true));
+
   auto shell_surface =
       exo::test::ShellSurfaceBuilder(kOriginalWindowBounds.size())
+          .SetSecurityDelegate(&security_delegate)
           .SetOrigin(kOriginalWindowBounds.origin())
           .SetNoCommit()
           .BuildShellSurface();

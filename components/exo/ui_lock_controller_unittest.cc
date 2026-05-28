@@ -24,7 +24,9 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,6 +50,11 @@ aura::Window* GetTopLevelWindow(
   assert(top_level_widget);
   return top_level_widget->GetNativeWindow();
 }
+
+class PermissiveSecurityDelegate : public test::TestSecurityDelegate {
+ public:
+  bool CanSelfActivate(aura::Window* window) const override { return true; }
+};
 
 ash::WindowState* GetTopLevelWindowState(
     const std::unique_ptr<ShellSurface>& shell_surface) {
@@ -161,6 +168,7 @@ class UILockControllerTest : public test::ExoTestBase {
   std::unique_ptr<ShellSurface> BuildSurface(gfx::Point origin, int w, int h) {
     test::ShellSurfaceBuilder builder({w, h});
     builder.SetOrigin(origin);
+    builder.SetSecurityDelegate(&permissive_delegate_);
     return builder.BuildShellSurface();
   }
 
@@ -195,6 +203,7 @@ class UILockControllerTest : public test::ExoTestBase {
   std::unique_ptr<Seat> seat_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
+  PermissiveSecurityDelegate permissive_delegate_;
 };
 
 TEST_F(UILockControllerTest, HoldingEscapeExitsFullscreen) {
