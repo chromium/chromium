@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -131,6 +133,12 @@ void DialogClientView::SetButtonRowInsets(const gfx::Insets& insets) {
 
 gfx::Size DialogClientView::CalculatePreferredSize(
     const SizeBounds& available_size) const {
+  // TODO(b/515592750): Remove the following block once the cause of the
+  // referenced bug has been determined and fixed.
+  std::string widget_name = GetWidget() ? GetWidget()->GetName() : "null";
+  SCOPED_CRASH_KEY_STRING32("DialogClientView", "widget_name", widget_name);
+  CHECK(GetDialogDelegate()) << "Widget: " << widget_name;
+
   const gfx::Insets& content_margins = GetDialogDelegate()->margins();
 
   gfx::Size contents_size;
