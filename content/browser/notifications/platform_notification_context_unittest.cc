@@ -895,7 +895,8 @@ TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
   WriteNotificationDataSync(context.get(), origin, data);
 
   // Let some time pass but not enough to delete the notification yet.
-  task_environment_.FastForwardBy(base::Days(5));
+  task_environment_.AdvanceClock(base::Days(5));
+  base::RunLoop().RunUntilIdle();
   context->TriggerNotifications();
   // Allow for closing notifications on the UI thread.
   base::RunLoop().RunUntilIdle();
@@ -912,7 +913,8 @@ TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
 
   // Let some more time pass so the first notification is not considered new
   // anymore and should get closed while the second one should stay.
-  task_environment_.FastForwardBy(base::Days(2));
+  task_environment_.AdvanceClock(base::Days(2));
+  base::RunLoop().RunUntilIdle();
   context->TriggerNotifications();
   // Allow for closing notifications on the UI thread.
   base::RunLoop().RunUntilIdle();
