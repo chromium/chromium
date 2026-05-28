@@ -62,20 +62,26 @@ class FakeWebLaunchService : public blink::mojom::WebLaunchService {
       std::vector<blink::mojom::FileSystemAccessEntryPtr> files) override {
     launched_url_ = launch_url;
     enqueue_called_ = true;
+    files_ = std::move(files);
   }
 
   bool enqueue_called() const { return enqueue_called_; }
   const GURL& launched_url() const { return launched_url_; }
+  const std::vector<blink::mojom::FileSystemAccessEntryPtr>& files() const {
+    return files_;
+  }
 
   void Reset() {
     enqueue_called_ = false;
     launched_url_ = GURL();
+    files_.clear();
   }
 
  private:
   mojo::AssociatedReceiver<blink::mojom::WebLaunchService> receiver_{this};
   bool enqueue_called_ = false;
   GURL launched_url_;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> files_;
 };
 
 class LaunchQueueTest : public content::RenderViewHostTestHarness {
@@ -201,6 +207,27 @@ TEST_F(LaunchQueueTest, EnqueueAndOutOfScope) {
   EXPECT_FALSE(fake_launch_service_.enqueue_called());
   EXPECT_FALSE(
       launch_queue_->GetPendingLaunchAppId());  // Queue should be reset
+}
+
+TEST_F(LaunchQueueTest, EnqueueInvalidParams) {
+  GURL launch_url("https://example.com/launch");
+  LaunchParams params = CreateLaunchParams(launch_url);
+  params.paths.push_back(
+      base::FilePath(FILE_PATH_LITERAL("sensitive_file.txt")));
+
+  EXPECT_CALL(*delegate_, IsValidLaunchParams(testing::_))
+      .WillOnce(testing::Return(false));
+
+  launch_queue_->Enqueue(std::move(params));
+  EXPECT_TRUE(launch_queue_->GetPendingLaunchAppId());
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             launch_url);
+
+  launch_queue_->FlushForTesting();
+
+  EXPECT_TRUE(fake_launch_service_.enqueue_called());
+  EXPECT_TRUE(fake_launch_service_.files().empty());
 }
 
 }  // namespace webapps

@@ -87,7 +87,10 @@ void LaunchQueue::Enqueue(LaunchParams launch_params) {
   DCHECK(delegate_->IsInScope(launch_params, launch_params.target_url))
       << launch_params.target_url.spec();
 
-  DCHECK(delegate_->IsValidLaunchParams(launch_params));
+  if (!delegate_->IsValidLaunchParams(launch_params)) {
+    launch_params.paths.clear();
+    launch_params.dir.clear();
+  }
 
   if (launch_params.started_new_navigation) {
     Reset();
