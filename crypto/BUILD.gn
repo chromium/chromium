@@ -41,6 +41,7 @@ rust_static_library("tpm_unittests") {
   deps = [
     ":tpm",
     "//testing/rust_gtest_interop",
+    "//third_party/boringssl:bssl_crypto",
   ]
 }
 

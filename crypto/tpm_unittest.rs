@@ -12,6 +12,8 @@ const OBJECT_HANDLE: u32 = 0x81000001;
 const SIGN_HANDLE: u32 = 0x81000002;
 const QUALIFYING_DATA: &[u8] = &[1, 2, 3, 4];
 const WRONG_CHALLENGE: &[u8] = &[5, 6, 7, 8];
+const DUMMY_SIGNATURE: &[u8] = &[1, 2, 3, 4, 5, 6];
+const INVALID_SPKI: &[u8] = &[0xBA, 0xAD, 0xBE, 0xEF];
 
 struct ResponseBuilder {
     tag: u16,
@@ -20,8 +22,7 @@ struct ResponseBuilder {
     type_: u16,
     qualified_signer: Vec<u8>,
     extra_data: Vec<u8>,
-    sig_alg: u16,
-    hash_alg: u16,
+    algorithms: tpm::SignatureAlgorithms,
     sig: Vec<u8>,
 }
 
@@ -35,8 +36,10 @@ impl ResponseBuilder {
             type_: tpm::TPM_ST_ATTEST_CERTIFY,
             qualified_signer: Vec::new(),
             extra_data: Vec::new(),
-            sig_alg: tpm::TPM_ALG_RSASSA,
-            hash_alg: tpm::TPM_ALG_SHA256,
+            algorithms: tpm::SignatureAlgorithms {
+                sig_alg: tpm::TPM_ALG_RSASSA,
+                hash_alg: tpm::TPM_ALG_SHA256,
+            },
             sig: Vec::new(),
         }
     }
@@ -72,12 +75,12 @@ impl ResponseBuilder {
     }
 
     fn with_sig_alg(mut self, sig_alg: u16) -> Self {
-        self.sig_alg = sig_alg;
+        self.algorithms.sig_alg = sig_alg;
         self
     }
 
     fn with_hash_alg(mut self, hash_alg: u16) -> Self {
-        self.hash_alg = hash_alg;
+        self.algorithms.hash_alg = hash_alg;
         self
     }
 
@@ -90,9 +93,9 @@ impl ResponseBuilder {
         let mut attest_payload_size: u16 = 4 // Magic
             + 2 // Type
             + 2 // Name size
-            + self.qualified_signer.len() as u16
+            + u16::try_from(self.qualified_signer.len()).unwrap()
             + 2 // Data size
-            + self.extra_data.len() as u16
+            + u16::try_from(self.extra_data.len()).unwrap()
             + 17 // clockInfo
             + 8; // firmwareVersion
 
@@ -105,17 +108,17 @@ impl ResponseBuilder {
 
         let mut signature_size: u16 = 2 // sigAlg
             + 2 // hashAlg
-            + self.sig.len() as u16;
-        if self.sig_alg == tpm::TPM_ALG_RSASSA {
+            + u16::try_from(self.sig.len()).unwrap();
+        if self.algorithms.sig_alg == tpm::TPM_ALG_RSASSA {
             signature_size += 2; // sig size field
         }
 
         let mut total_size: u32 = 10; // Header
         if self.rc == 0 {
-            total_size += attest_size as u32 + signature_size as u32;
+            total_size += u32::from(attest_size) + u32::from(signature_size);
         }
 
-        let mut writer = tpm::Writer::with_capacity(total_size as usize);
+        let mut writer = tpm::Writer::with_capacity(usize::try_from(total_size).unwrap());
         writer.write_u16(self.tag);
         writer.write_u32(total_size);
         writer.write_u32(self.rc);
@@ -125,11 +128,9 @@ impl ResponseBuilder {
             writer.write_u32(self.magic);
             writer.write_u16(self.type_);
 
-            writer.write_u16(self.qualified_signer.len() as u16);
-            writer.write_bytes(&self.qualified_signer);
+            writer.write_tpm2b(&self.qualified_signer);
 
-            writer.write_u16(self.extra_data.len() as u16);
-            writer.write_bytes(&self.extra_data);
+            writer.write_tpm2b(&self.extra_data);
 
             writer.write_bytes(&[0; 17]); // clockInfo
             writer.write_bytes(&[0; 8]); // firmwareVersion
@@ -140,12 +141,13 @@ impl ResponseBuilder {
             }
 
             // Signature
-            writer.write_u16(self.sig_alg);
-            writer.write_u16(self.hash_alg);
-            if self.sig_alg == tpm::TPM_ALG_RSASSA {
-                writer.write_u16(self.sig.len() as u16);
+            writer.write_u16(self.algorithms.sig_alg);
+            writer.write_u16(self.algorithms.hash_alg);
+            if self.algorithms.sig_alg == tpm::TPM_ALG_RSASSA {
+                writer.write_tpm2b(&self.sig);
+            } else {
+                writer.write_bytes(&self.sig);
             }
-            writer.write_bytes(&self.sig);
         }
 
         writer.into_inner()
@@ -182,7 +184,7 @@ fn test_build_certify_command_null_scheme() {
     expect_eq!(reader.read_u16().unwrap(), 0); // hmac size
 
     // Qualifying data
-    expect_eq!(reader.read_u16().unwrap(), QUALIFYING_DATA.len() as u16);
+    expect_eq!(reader.read_u16().unwrap(), u16::try_from(QUALIFYING_DATA.len()).unwrap());
     expect_eq!(reader.read_bytes(QUALIFYING_DATA.len()).unwrap(), QUALIFYING_DATA);
 
     // Scheme
@@ -194,7 +196,7 @@ fn test_empty_buffer() {
     let empty: &[u8] = &[];
     let challenge: &[u8] = &[];
     let result = tpm::parse_certify_response(empty, challenge);
-    expect_true!(matches!(result.result, tpm::ffi::ParseResult::WrongBufferSize));
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::BufferTooSmall));
 }
 
 #[gtest(TpmParserTest, BadMagic)]
@@ -273,4 +275,173 @@ fn test_happy_path() {
         0xAA, 0xBB, 0xCC, 0xDD, // signature bytes
     ];
     expect_eq!(result.signature, expected_signature_bytes);
+}
+
+#[gtest(TpmVerifySignatureTest, UnsupportedAlgorithm)]
+fn test_unsupported_algorithm() {
+    let statement = b"test payload";
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    writer.write_u16(0x000C); // Invalid, expected SHA256=0x000B
+    writer.write_tpm2b(DUMMY_SIGNATURE);
+    let signature = writer.into_inner();
+
+    let key = bssl_crypto::rsa::PrivateKey::generate(bssl_crypto::rsa::KeySize::Rsa2048);
+    let spki = key.as_public().to_der_subject_public_key_info();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki.as_ref());
+
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::UnsupportedHashAlgorithm));
+}
+
+#[gtest(TpmVerifySignatureTest, InvalidPublicKey)]
+fn test_invalid_public_key() {
+    let statement = b"test payload";
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    writer.write_u16(tpm::TPM_ALG_SHA256);
+    writer.write_tpm2b(DUMMY_SIGNATURE);
+    let signature = writer.into_inner();
+
+    let verify_response = tpm::verify_signature(statement, &signature, INVALID_SPKI);
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::InvalidPublicKey));
+}
+
+#[gtest(TpmVerifySignatureTest, ValidRsaSsaSignature)]
+fn test_valid_rsassa_signature() {
+    let key = bssl_crypto::rsa::PrivateKey::generate(bssl_crypto::rsa::KeySize::Rsa2048);
+    let spki = key.as_public().to_der_subject_public_key_info();
+
+    let statement = b"test payload";
+    let sig = key.sign_pkcs1::<bssl_crypto::digest::Sha256>(statement);
+
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    writer.write_u16(tpm::TPM_ALG_SHA256);
+    writer.write_tpm2b(&sig);
+    let signature = writer.into_inner();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki.as_ref());
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::Ok));
+}
+
+#[gtest(TpmVerifySignatureTest, ValidEcdsaSignature)]
+fn test_valid_ecdsa_signature() {
+    let key = bssl_crypto::ecdsa::PrivateKey::<bssl_crypto::ec::P256>::generate();
+    let spki = key.to_public_key().to_der_subject_public_key_info();
+
+    let statement = b"test payload";
+    let sig = key.sign_p1363(statement);
+    expect_eq!(sig.len(), 64);
+    let (r, s) = sig.split_at(32);
+
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_ECDSA);
+    writer.write_u16(tpm::TPM_ALG_SHA256);
+    writer.write_tpm2b(r);
+    writer.write_tpm2b(s);
+    let signature = writer.into_inner();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki.as_ref());
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::Ok));
+}
+
+#[gtest(TpmVerifySignatureTest, ValidRsaSsaSha1Signature)]
+fn test_valid_rsassa_sha1_signature() {
+    let key = bssl_crypto::rsa::PrivateKey::generate(bssl_crypto::rsa::KeySize::Rsa2048);
+    let spki = key.as_public().to_der_subject_public_key_info();
+
+    let statement = b"test payload";
+    let sig = key.sign_pkcs1::<bssl_crypto::digest::InsecureSha1>(statement);
+
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    writer.write_u16(tpm::TPM_ALG_SHA1);
+    writer.write_tpm2b(&sig);
+    let signature = writer.into_inner();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki.as_ref());
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::Ok));
+}
+
+#[gtest(TpmVerifySignatureTest, EcdsaSha1Unsupported)]
+fn test_ecdsa_sha1_unsupported() {
+    let key = bssl_crypto::ecdsa::PrivateKey::<bssl_crypto::ec::P256>::generate();
+    let spki = key.to_public_key().to_der_subject_public_key_info();
+
+    let statement = b"test payload";
+    let sig = key.sign_p1363(statement);
+    let (r, s) = sig.split_at(32);
+
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_ECDSA);
+    writer.write_u16(tpm::TPM_ALG_SHA1);
+    writer.write_tpm2b(r);
+    writer.write_tpm2b(s);
+    let signature = writer.into_inner();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki.as_ref());
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::UnsupportedHashAlgorithm));
+}
+
+#[gtest(TpmVerifySignatureTest, UnsupportedSignatureAlgorithm)]
+fn test_unsupported_signature_algorithm() {
+    let statement = b"test payload";
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(0x1234); // Invalid signature algorithm
+    writer.write_u16(tpm::TPM_ALG_SHA256);
+    writer.write_bytes(DUMMY_SIGNATURE);
+    let signature = writer.into_inner();
+
+    let key = bssl_crypto::rsa::PrivateKey::generate(bssl_crypto::rsa::KeySize::Rsa2048);
+    let spki = key.as_public().to_der_subject_public_key_info();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki.as_ref());
+    expect_true!(matches!(
+        verify_response,
+        tpm::ffi::VerificationResult::UnsupportedSignatureAlgorithm
+    ));
+}
+
+#[gtest(TpmVerifySignatureTest, InvalidSignature)]
+fn test_invalid_signature() {
+    let key1 = bssl_crypto::rsa::PrivateKey::generate(bssl_crypto::rsa::KeySize::Rsa2048);
+    let key2 = bssl_crypto::rsa::PrivateKey::generate(bssl_crypto::rsa::KeySize::Rsa2048);
+    let spki2 = key2.as_public().to_der_subject_public_key_info();
+
+    let statement = b"test payload";
+    let sig = key1.sign_pkcs1::<bssl_crypto::digest::Sha256>(statement);
+
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    writer.write_u16(tpm::TPM_ALG_SHA256);
+    writer.write_tpm2b(&sig);
+    let signature = writer.into_inner();
+
+    let verify_response = tpm::verify_signature(statement, &signature, spki2.as_ref());
+    expect_true!(matches!(verify_response, tpm::ffi::VerificationResult::InvalidSignature));
+}
+
+#[gtest(TpmExtractionTest, ValidExtraction)]
+fn test_valid_extraction() {
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    writer.write_u16(tpm::TPM_ALG_SHA256);
+    writer.write_tpm2b(DUMMY_SIGNATURE);
+    let signature = writer.into_inner();
+
+    let signature_algorithms_response = tpm::extract_signature_algorithms(&signature);
+    expect_true!(signature_algorithms_response.has_algorithms);
+    expect_eq!(signature_algorithms_response.sig_alg, tpm::TPM_ALG_RSASSA);
+    expect_eq!(signature_algorithms_response.hash_alg, tpm::TPM_ALG_SHA256);
+}
+
+#[gtest(TpmExtractionTest, BufferTooSmall)]
+fn test_buffer_too_small() {
+    let mut writer = tpm::Writer::new();
+    writer.write_u16(tpm::TPM_ALG_RSASSA);
+    let signature = writer.into_inner(); // Missing hash_alg
+
+    let signature_algorithms_response = tpm::extract_signature_algorithms(&signature);
+    expect_false!(signature_algorithms_response.has_algorithms);
 }
