@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.anchored_dialog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
@@ -14,6 +15,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -31,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -164,6 +168,26 @@ public class AnchoredDialogTest {
         inOrder.verify(mObserver)
                 .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.INTERACTION_COMPLETE);
         inOrder.verify(mObserver).onSheetContentChanged(null);
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseButton() {
+        assertTrue(runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent)));
+        verify(mObserver).onSheetOpened(StateChangeReason.NONE);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    View contentView = mContent.getContentView();
+                    ViewGroup contentContainer = (ViewGroup) contentView.getParent();
+                    assertEquals(R.id.anchored_dialog_content_container, contentContainer.getId());
+
+                    ViewGroup root = (ViewGroup) contentContainer.getParent();
+                    View closeButton = root.findViewById(R.id.anchored_dialog_close_button);
+                    closeButton.performClick();
+                });
+        verify(mObserver).onSheetClosed(StateChangeReason.NONE);
+        verify(mObserver).onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
     }
 
     @Test

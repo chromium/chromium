@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -79,9 +80,23 @@ class AnchoredDialogView {
 
     void setContent(@Nullable BottomSheetContent content) {
         mContent = content;
-        mPopupHolder
-                .getOrCreate()
-                .setContentView(mContent == null ? null : mContent.getContentView());
+
+        View root = mPopupHolder.getOrCreate().getContentView();
+        if (root == null) {
+            root =
+                    LayoutInflater.from(mContext)
+                            .inflate(R.layout.autofill_anchored_dialog_view, null);
+            View closeButton = root.findViewById(R.id.anchored_dialog_close_button);
+            closeButton.setOnClickListener(v -> hide());
+            mPopupHolder.getOrCreate().setContentView(root);
+        }
+        ViewGroup contentContainer = root.findViewById(R.id.anchored_dialog_content_container);
+        assertNonNull(contentContainer);
+        contentContainer.removeAllViews();
+        @Nullable View contentView = mContent == null ? null : mContent.getContentView();
+        if (contentView != null) {
+            contentContainer.addView(contentView);
+        }
     }
 
     void setContainerView(View view) {
