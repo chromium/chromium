@@ -615,6 +615,32 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnEachHang) {
                BucketsAre(Bucket(true, /*count=*/2)))));
 }
 
+// BestEffort histogram recorded (but no AnyCritical) if page is backgrounded.
+TEST_F(HangWatcherTest, BestEffortHistograms) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
+  base::HistogramTester histogram_tester;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kRendererProcess);
+
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  std::atomic<base::TimeTicks> shared_last_foreground_time = TimeTicks::Now();
+  internal::SetSharedLastForegroundTimeForMetrics(&shared_last_foreground_time);
+
+  // First monitoring catches the hang and emits the histogram.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix("HangWatcher.IsThreadHung"),
+      UnorderedElementsAre(
+          Pair("HangWatcher.IsThreadHung.RendererProcess.MainThread.BestEffort",
+               BucketsAre(Bucket(true, /*count=*/1))),
+          Pair("HangWatcher.IsThreadHung.Any",
+               BucketsAre(Bucket(true, /*count=*/1))),
+          Pair("HangWatcher.IsThreadHung.AnyCritical",
+               BucketsAre(Bucket(false, /*count=*/1)))));
+}
+
 // Checks that the browser process emits Shutdown histograms on shutdown.
 TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
   ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);

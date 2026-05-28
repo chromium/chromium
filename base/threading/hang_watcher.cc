@@ -923,7 +923,8 @@ void HangWatcher::WatchStateSnapShot::Init(
                                                LoggingLevel::kUmaOnly)) {
         LogStatusHistogram(thread_type, hang_count, now, monitoring_period);
 
-        if (hang_count > 0 && thread_type != ThreadType::kThreadPoolThread) {
+        if (hang_count > 0 && thread_type != ThreadType::kThreadPoolThread &&
+            !base::internal::OverlapsBestEffortRange(now, monitoring_period)) {
           any_critical_thread_hung = true;
         }
       }
