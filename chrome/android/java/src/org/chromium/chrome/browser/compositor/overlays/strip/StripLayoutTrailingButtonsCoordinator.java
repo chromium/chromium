@@ -453,13 +453,11 @@ public class StripLayoutTrailingButtonsCoordinator {
 
         mIsGlicUiVisible = isOpened;
         if (mGlicButton != null) {
-            mGlicButton.setHighlighted(isOpened);
             mGlicButton.setAccessibilityDescription(
                     mContext.getString(
                             isOpened
                                     ? R.string.glic_tab_strip_button_tooltip_close
                                     : R.string.glic_tab_strip_button_tooltip));
-            mRenderHost.requestRender();
         }
     }
 
@@ -603,18 +601,9 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicTaskMenuCoordinator =
                     new GlicTaskMenuCoordinator(
                             mContext, mTabModelSelectorSupplier, mGlicClickHandler::onResult);
-            mGlicTaskMenuCoordinator.setOnDismiss(
-                    () -> {
-                        if (mGlicActorButton != null) {
-                            mGlicActorButton.setHighlighted(false);
-                            mRenderHost.requestRender();
-                        }
-                    });
         }
         mGlicTaskMenuCoordinator.show(
                 anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);
-        mGlicActorButton.setHighlighted(true);
-        mRenderHost.requestRender();
     }
 
     /**
