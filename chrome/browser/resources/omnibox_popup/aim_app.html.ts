@@ -23,6 +23,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       @embedded-voice-permission-prompt-changed=
           "${this.onEmbeddedVoicePermissionPromptChanged}"
       @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+      @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}">
   </cr-omnibox-composebox>` : html`
   <cr-composebox id="composebox" searchbox-next-enabled

@@ -20,7 +20,6 @@ export function getHtml(this: OmniboxComposeboxElement) {
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
       @keydown="${this.onKeydown}">
       <div id="inputContainer" part="input-container">
-        <!-- TODO(crbug.com/486706573): Add back cancel button title and cancel click handler once added to mixin. -->
         <cr-composebox-input id="composeboxInput"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
             .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
@@ -30,8 +29,10 @@ export function getHtml(this: OmniboxComposeboxElement) {
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .submitEnabled="${this.submitEnabled}"
             .entrypointName="${this.entrypointName}"
+            .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             @input-input="${this.onInputInput}"
-            @input-focusin="${this.onInputFocusin}">
+            @input-focusin="${this.onInputFocusin}"
+            @cancel-click="${this.onCancelClick}">
         </cr-composebox-input>
         <div id="context" part="context-entrypoint">
           <div id="carouselContainer" part="carousel-container">

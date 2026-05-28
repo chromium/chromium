@@ -783,4 +783,106 @@ suite('OmniboxComposeboxTest', () => {
 
         assertEquals(0, testProxy.handler.getCallCount('submitQuery'));
       });
+
+  test('Cancel button closes composebox when there is no content', async () => {
+    omniboxComposebox.input = '';
+    omniboxComposebox.files.clear();
+    omniboxComposebox.files = new Map(omniboxComposebox.files);
+    await microtasksFinished();
+    let closeEventFired = false;
+    omniboxComposebox.addEventListener('close-composebox', () => {
+      closeEventFired = true;
+    });
+
+    const cancelIcon =
+        omniboxComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#cancelIcon')!;
+    cancelIcon.click();
+    await microtasksFinished();
+
+    assertTrue(closeEventFired);
+    assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+  });
+
+  test('Cancel button clears input text when there is text', async () => {
+    omniboxComposebox.input = 'some text';
+    await microtasksFinished();
+    let closeEventFired = false;
+    omniboxComposebox.addEventListener('close-composebox', () => {
+      closeEventFired = true;
+    });
+
+    const cancelIcon =
+        omniboxComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#cancelIcon')!;
+    cancelIcon.click();
+    await microtasksFinished();
+
+    assertEquals('', omniboxComposebox.input);
+    assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+    assertFalse(closeEventFired);
+  });
+
+  test('Cancel button clears files when there are files', async () => {
+    const mockToken = 'mock-file-token';
+    const file = new ComposeboxFile(
+        mockToken, 'test.png', 'image/png', InputType.kLensImage);
+    omniboxComposebox.files.set(mockToken, file);
+    omniboxComposebox.files = new Map(omniboxComposebox.files);
+    await microtasksFinished();
+    let closeEventFired = false;
+    omniboxComposebox.addEventListener('close-composebox', () => {
+      closeEventFired = true;
+    });
+
+    const cancelIcon =
+        omniboxComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#cancelIcon')!;
+    cancelIcon.click();
+    await microtasksFinished();
+
+    assertEquals(0, omniboxComposebox.files.size);
+    assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+    assertFalse(closeEventFired);
+  });
+
+  test('Cancel button resets active tool when in tool mode', async () => {
+    const inputState = {
+      allowedModels: [],
+      allowedTools: [ToolMode.kDeepSearch],
+      allowedInputTypes: [],
+      activeModel: 0,
+      activeTool: ToolMode.kDeepSearch,
+      disabledModels: [],
+      disabledTools: [],
+      disabledInputTypes: [],
+      inputTypeConfigs: [],
+      toolConfigs: [],
+      modelConfigs: [],
+      toolsSectionConfig: null,
+      modelSectionConfig: null,
+      hintText: '',
+      maxInputsByType: {},
+      maxTotalInputs: 0,
+      isCanvasQuerySubmitted: false,
+    };
+    testProxy.page.onInputStateChanged(inputState);
+    await testProxy.page.$.flushForTesting();
+    await omniboxComposebox.updateComplete;
+    await microtasksFinished();
+    let closeEventFired = false;
+    omniboxComposebox.addEventListener('close-composebox', () => {
+      closeEventFired = true;
+    });
+
+    const cancelIcon =
+        omniboxComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#cancelIcon')!;
+    cancelIcon.click();
+    await microtasksFinished();
+
+    const activeTool = await testProxy.handler.whenCalled('setActiveToolMode');
+    assertEquals(ToolMode.kUnspecified, activeTool);
+    assertFalse(closeEventFired);
+  });
 });

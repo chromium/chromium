@@ -11,6 +11,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
