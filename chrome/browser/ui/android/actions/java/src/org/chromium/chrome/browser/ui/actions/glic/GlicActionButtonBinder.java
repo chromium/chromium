@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.glic.GlicUiHelper;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties.GlicState;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -40,6 +41,7 @@ public class GlicActionButtonBinder {
 
     private static void updateImageForState(ImageView imageView, int state) {
         Context context = imageView.getContext();
+        boolean alwaysUseFilled = BottomBarConfigUtils.alwaysUseFilledIcon();
         if (state == GlicState.WORKING) {
             int sparkResId = R.drawable.ic_spark_filled_24dp;
             Drawable sparkIcon = AppCompatResources.getDrawable(context, sparkResId);
@@ -48,7 +50,10 @@ public class GlicActionButtonBinder {
         } else if (state == GlicState.NEEDS_REVIEW || state == GlicState.DONE) {
             imageView.setImageResource(R.drawable.glic_dirty_dot_filled_spark_24dp);
         } else {
-            imageView.setImageResource(R.drawable.ic_spark_filled_24dp);
+            imageView.setImageResource(
+                    alwaysUseFilled
+                            ? R.drawable.ic_spark_filled_24dp
+                            : R.drawable.ic_spark_outlined_24dp);
         }
     }
 }

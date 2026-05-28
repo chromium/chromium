@@ -135,4 +135,16 @@ public class BottomBarConfigUtilsUnitTest {
 
         assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":always_use_filled_glic_icon/true")
+    public void testAlwaysUseFilledIcon_TrueParam() {
+        assertTrue(BottomBarConfigUtils.alwaysUseFilledIcon());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":always_use_filled_glic_icon/false")
+    public void testAlwaysUseFilledIcon_FalseParam() {
+        assertFalse(BottomBarConfigUtils.alwaysUseFilledIcon());
+    }
 }

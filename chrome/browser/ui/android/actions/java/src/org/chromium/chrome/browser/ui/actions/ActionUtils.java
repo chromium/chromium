@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionProperties;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -76,11 +77,15 @@ public class ActionUtils {
                         .accessibility_toolbar_btn_home);
 
         // Register glic button.
+        int glicIconResId =
+                BottomBarConfigUtils.alwaysUseFilledIcon()
+                        ? R.drawable.ic_spark_filled_24dp
+                        : R.drawable.ic_spark_selector;
         registerAction(
                 registry,
                 ActionId.GLIC,
                 GlicActionProperties.ALL_KEYS,
-                R.drawable.ic_spark_selector,
+                glicIconResId,
                 R.string.glic_button_entrypoint_ask_gemini_label,
                 R.string.glic_button_entrypoint_ask_gemini_label);
 

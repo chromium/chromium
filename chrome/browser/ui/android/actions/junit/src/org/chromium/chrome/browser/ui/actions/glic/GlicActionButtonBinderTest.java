@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.actions.glic;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.widget.ImageView;
@@ -18,6 +20,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link GlicActionButtonBinder}. */
@@ -67,5 +72,26 @@ public class GlicActionButtonBinderTest {
         GlicActionButtonBinder.bind(mModel, mImageView, GlicActionProperties.GLIC_STATE);
 
         assertNotNull(mImageView.getDrawable());
+    }
+
+    @Test
+    public void testBind_DefaultState_AlwaysUseFilledIconFalse_SetsOutlinedDrawable() {
+        mModel.set(GlicActionProperties.GLIC_STATE, GlicActionProperties.GlicState.DEFAULT);
+        GlicActionButtonBinder.bind(mModel, mImageView, GlicActionProperties.GLIC_STATE);
+
+        assertEquals(
+                R.drawable.ic_spark_outlined_24dp,
+                shadowOf(mImageView.getDrawable()).getCreatedFromResId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":always_use_filled_glic_icon/true")
+    public void testBind_DefaultState_AlwaysUseFilledIconTrue_SetsFilledDrawable() {
+        mModel.set(GlicActionProperties.GLIC_STATE, GlicActionProperties.GlicState.DEFAULT);
+        GlicActionButtonBinder.bind(mModel, mImageView, GlicActionProperties.GLIC_STATE);
+
+        assertEquals(
+                R.drawable.ic_spark_filled_24dp,
+                shadowOf(mImageView.getDrawable()).getCreatedFromResId());
     }
 }

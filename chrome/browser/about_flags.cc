@@ -3986,8 +3986,14 @@ const FeatureEntry::FeatureParam
         {"keep_app_menu_in_toolbar", "true"},
         {"keep_home_button_in_toolbar", "true"},
         {"disable_on_ntp", "false"}};
+const FeatureEntry::FeatureParam
+    kAndroidBottomBar1AWithNtpAndGlicFilledParam[] = {
+        {"disable_on_ntp", "false"},
+        {"always_use_filled_glic_icon", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A with NTP", kAndroidBottomBarDisableOnNtpParam, nullptr},
+    {"- 1A with NTP and GLIC filled",
+     kAndroidBottomBar1AWithNtpAndGlicFilledParam, nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
     {"- 1B with NTP", kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam,
      nullptr},

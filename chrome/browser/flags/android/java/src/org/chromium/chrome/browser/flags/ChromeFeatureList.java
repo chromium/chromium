@@ -1550,6 +1550,8 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidBookmarkBarShowBookmarkBar =
             newBooleanCachedFeatureParam(ANDROID_BOOKMARK_BAR, "show_bookmark_bar", false);
 
+    public static final BooleanCachedFeatureParam sAndroidBottomBarAlwaysUseFilledGlicIcon =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "always_use_filled_glic_icon", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarDisableOnNtp =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "disable_on_ntp", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
@@ -1896,6 +1898,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
                     sAndroidAppRatingPromptBypassChecks,
                     sAndroidBookmarkBarShowBookmarkBar,
+                    sAndroidBottomBarAlwaysUseFilledGlicIcon,
                     sAndroidBottomBarDisableOnNtp,
                     sAndroidBottomBarKeepAppMenuInToolbar,
                     sAndroidBottomBarKeepHomeButtonInToolbar,

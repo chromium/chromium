@@ -54,4 +54,9 @@ public class BottomBarConfigUtils {
                 && "newtab".equals(tab.getNativePage().getHost())
                 && isBottomBarEnabled(context);
     }
+
+    /** Whether to always use the filled GLIC icon. */
+    public static boolean alwaysUseFilledIcon() {
+        return ChromeFeatureList.sAndroidBottomBarAlwaysUseFilledGlicIcon.getValue();
+    }
 }
