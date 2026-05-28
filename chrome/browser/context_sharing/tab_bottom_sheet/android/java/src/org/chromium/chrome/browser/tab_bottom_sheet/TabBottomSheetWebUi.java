@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.i
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -105,6 +106,16 @@ public class TabBottomSheetWebUi {
                                     .getViewTreeObserver()
                                     .removeOnWindowFocusChangeListener(mListener);
                         }
+                    });
+
+            // Use OnTouchListener instead of OnClickListener to avoid consuming the click event,
+            // which would prevent it from reaching the web content.
+            contentView.setOnTouchListener(
+                    (v, event) -> {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            contentView.requestFocus();
+                        }
+                        return false;
                     });
 
             // Most systems assume ViewAndroidDelegate is created alongside WebContents and never
