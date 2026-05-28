@@ -86,8 +86,8 @@ void SetupFakeTrustedVaultPages(
   test_server->RegisterRequestHandler(base::BindRepeating(
       &HttpServerRedirect,
       /*from_prefix=*/
-      GaiaUrls::GetInstance()
-          ->signin_chrome_sync_keys_recoverability_degraded_url(),
+      GaiaUrls::GetInstance()->SigninChromeSyncKeysRecoverabilityDegradedUrl(
+          /*account_index=*/0),
       /*to=*/recoverability_url));
 
   const GURL retrieval_url = GetFakeTrustedVaultRetrievalURL(
@@ -95,7 +95,8 @@ void SetupFakeTrustedVaultPages(
   test_server->RegisterRequestHandler(base::BindRepeating(
       &HttpServerRedirect,
       /*from_prefix=*/
-      GaiaUrls::GetInstance()->signin_chrome_sync_keys_retrieval_url(),
+      GaiaUrls::GetInstance()->SigninChromeSyncKeysRetrievalUrl(
+          /*account_index=*/0),
       /*to=*/retrieval_url));
 }
 

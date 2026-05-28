@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
@@ -18,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -65,6 +67,22 @@ void OpenTabForSyncTrustedVaultUserAction(
       encryption_keys_tab_helper->SetUserActionTrigger(*trigger);
     }
   }
+}
+
+size_t GetAccountIndexForPrimaryAccount(BrowserWindowInterface* browser) {
+  if (!browser) {
+    return 0u;
+  }
+  Profile* profile = browser->GetProfile();
+  if (!profile) {
+    return 0u;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return 0u;
+  }
+  return identity_manager->GetSessionIndexForPrimaryAccount().value_or(0u);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -336,8 +354,11 @@ void OpenTabForSyncKeyRetrieval(
   syncer::RecordKeyRetrievalTrigger(trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
+
+  size_t account_index = GetAccountIndexForPrimaryAccount(browser);
+
   GURL retrieval_url =
-      GaiaUrls::GetInstance()->signin_chrome_sync_keys_retrieval_url();
+      GaiaUrls::GetInstance()->SigninChromeSyncKeysRetrievalUrl(account_index);
   if (continue_url.is_valid()) {
     retrieval_url = net::AppendQueryParameter(retrieval_url, "continue",
                                               continue_url.spec());
@@ -351,8 +372,12 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
   syncer::RecordRecoverabilityDegradedFixTrigger(trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
-  GURL url = GaiaUrls::GetInstance()
-                 ->signin_chrome_sync_keys_recoverability_degraded_url();
+
+  size_t account_index = GetAccountIndexForPrimaryAccount(browser);
+
+  GURL url =
+      GaiaUrls::GetInstance()->SigninChromeSyncKeysRecoverabilityDegradedUrl(
+          account_index);
   if (continue_url.is_valid()) {
     url = net::AppendQueryParameter(url, "continue", continue_url.spec());
   }

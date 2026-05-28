@@ -263,8 +263,14 @@ const GURL& GaiaUrls::reauth_chrome_dice() const {
   return reauth_chrome_dice_;
 }
 
-const GURL& GaiaUrls::signin_chrome_sync_keys_retrieval_url() const {
-  return signin_chrome_sync_keys_retrieval_url_;
+GURL GaiaUrls::SigninChromeSyncKeysRetrievalUrl(size_t account_index) const {
+  if (!base::FeatureList::IsEnabled(
+          gaia::features::kSigninChromeSyncKeysUrlUsesAccountIndex)) {
+    return signin_chrome_sync_keys_retrieval_url_;
+  }
+  return net::AppendQueryParameter(signin_chrome_sync_keys_retrieval_url_,
+                                   "authuser",
+                                   base::NumberToString(account_index));
 }
 
 GURL GaiaUrls::SigninChromePasskeyUnlockUrl(size_t account_index) const {
@@ -282,9 +288,15 @@ const std::string_view GaiaUrls::signin_chrome_passkey_unlock_kdi_parameter()
   return kPasskeyUnlockUrlKdiParameter;
 }
 
-const GURL& GaiaUrls::signin_chrome_sync_keys_recoverability_degraded_url()
-    const {
-  return signin_chrome_sync_keys_recoverability_degraded_url_;
+GURL GaiaUrls::SigninChromeSyncKeysRecoverabilityDegradedUrl(
+    size_t account_index) const {
+  if (!base::FeatureList::IsEnabled(
+          gaia::features::kSigninChromeSyncKeysUrlUsesAccountIndex)) {
+    return signin_chrome_sync_keys_recoverability_degraded_url_;
+  }
+  return net::AppendQueryParameter(
+      signin_chrome_sync_keys_recoverability_degraded_url_, "authuser",
+      base::NumberToString(account_index));
 }
 
 const GURL& GaiaUrls::service_logout_url() const {

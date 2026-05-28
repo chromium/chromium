@@ -20,4 +20,8 @@ BASE_FEATURE(kGetAccountCapabilitiesUsesGetAllVisibleUrl,
 BASE_FEATURE(kSigninChromePasskeyUnlockUrlUsesAccountIndex,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Intended as a Finch killswitch.
+BASE_FEATURE(kSigninChromeSyncKeysUrlUsesAccountIndex,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace gaia::features

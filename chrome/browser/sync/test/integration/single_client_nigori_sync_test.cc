@@ -1597,7 +1597,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
           "foo.com", base::StringPrintf(
                          "/sync/encryption_keys_retrieval_with_iframe.html?%s",
                          GaiaUrls::GetInstance()
-                             ->signin_chrome_sync_keys_retrieval_url()
+                             ->SigninChromeSyncKeysRetrievalUrl(
+                                 /*account_index=*/0)
                              .spec()
                              .c_str())),
       /*index=*/0,

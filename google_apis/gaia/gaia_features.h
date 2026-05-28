@@ -18,6 +18,11 @@ BASE_DECLARE_FEATURE(kGetAccountCapabilitiesUsesGetAllVisibleUrl);
 COMPONENT_EXPORT(GOOGLE_APIS)
 BASE_DECLARE_FEATURE(kSigninChromePasskeyUnlockUrlUsesAccountIndex);
 
+// Enables appending Google account session index (/u/[index]/) to the sync keys
+// retrieval and recoverability degraded URLs.
+COMPONENT_EXPORT(GOOGLE_APIS)
+BASE_DECLARE_FEATURE(kSigninChromeSyncKeysUrlUsesAccountIndex);
+
 }  // namespace gaia::features
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_FEATURES_H_
