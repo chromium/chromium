@@ -70,16 +70,6 @@ id<GREYMatcher> BandwidthSettingsButton() {
 
 @implementation SettingsAccessibilityTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testSettingsSignedOutIncognito)] ||
-      [self isRunningTest:@selector(testSettingsSwipeDownDismiss)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
-  return config;
-}
-
 - (void)tearDownHelper {
   // It is possible for a test to fail with a menu visible, which can cause
   // future tests to fail.
