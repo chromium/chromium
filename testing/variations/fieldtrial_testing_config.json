@@ -1941,21 +1941,6 @@
             ]
         }
     ],
-    "AppStoreInAppEvents": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppStoreInAppEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppsCollectionsFeature": [
         {
             "platforms": [

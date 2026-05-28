@@ -77,12 +77,6 @@ inline constexpr char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
-inline constexpr char kAppStoreInAppEventsName[] = "App Store In-App Events";
-inline constexpr char kAppStoreInAppEventsDescription[] =
-    "Enables a user to tap the promo within the iOS App Store and invoke the "
-    "Gemini FRE after navigating to a Gemini related web page through an "
-    "external action.";
-
 inline constexpr char kAppleCalendarExperienceKitName[] =
     "Experience Kit Apple Calendar";
 inline constexpr char kAppleCalendarExperienceKitDescription[] =
