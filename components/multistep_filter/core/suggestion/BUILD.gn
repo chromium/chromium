@@ -10,6 +10,7 @@ source_set("suggestion") {
     "filter_suggestion_message_util.h",
   ]
   deps = [
+    "//base:i18n",
     "//components/multistep_filter/core:features",
     "//components/multistep_filter/core:util",
     "//components/multistep_filter/core/annotation_index",
