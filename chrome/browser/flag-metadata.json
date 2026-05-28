@@ -256,11 +256,6 @@
     "expiry_milestone": 155
   },
   {
-      "name": "android-bottom-toolbar-v2",
-      "owners": [ "pnoland@chromium.org", "ender@google.com" ],
-      "expiry_milestone": 160
-  },
-  {
     "name": "android-caret-browsing",
     "owners": [
       "lokeric@google.com",

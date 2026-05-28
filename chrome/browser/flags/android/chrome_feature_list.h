@@ -36,7 +36,6 @@ BASE_DECLARE_FEATURE(kAndroidAppRatingPrompt);
 BASE_DECLARE_FEATURE(kAndroidAtomsLogging);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBar);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
-BASE_DECLARE_FEATURE(kAndroidBottomToolbarV2);
 BASE_DECLARE_FEATURE(kAndroidContextMenuNewActions);
 BASE_DECLARE_FEATURE(kAndroidDeviceSignalsDisclaimer);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);

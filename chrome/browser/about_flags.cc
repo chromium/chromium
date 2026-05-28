@@ -753,22 +753,6 @@ const FeatureEntry::FeatureVariation
          kCCTSingleDeckerBottomBarWithButtonsOnRightParam, nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kAndroidBottomToolbarV2ForceBottomForFocusedOmniboxParam[] = {
-        {"force_bottom_for_focused_omnibox", "true"}};
-const FeatureEntry::FeatureParam kAndroidBottomToolbarV2ReverseListParam[] = {
-    {"reverse_order_suggestions_list", "true"}};
-const FeatureEntry::FeatureParam kAndroidBottomToolbarV2ReverseAndForce[] = {
-    {"force_bottom_for_focused_omnibox", "true"},
-    {"reverse_order_suggestions_list", "true"}};
-
-const FeatureEntry::FeatureVariation kAndroidBottomToolbarV2Variations[] = {
-    {"Force bottom for focused omnibox",
-     kAndroidBottomToolbarV2ForceBottomForFocusedOmniboxParam, nullptr},
-    {"Reverse List", kAndroidBottomToolbarV2ReverseListParam, nullptr},
-    {"Reverse list and force bottom for focused omnibox",
-     kAndroidBottomToolbarV2ReverseAndForce, nullptr}};
-
 const FeatureEntry::FeatureParam kTabBottomSheetSuppressToolbarParam[] = {
     {"suppress_bottom_toolbar_while_open", "true"}};
 
@@ -6335,13 +6319,6 @@ const FeatureEntry kFeatureEntries[] = {
          segmentation_platform::features::kNewTabPageCustomizationV2,
          kNewTabPageCustomizationV2Variations,
          "NewTabPageCustomizationV2")},
-
-    {"android-bottom-toolbar-v2",
-     flag_descriptions::kAndroidBottomToolbarV2Name,
-     flag_descriptions::kAndroidBottomToolbarV2Description, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidBottomToolbarV2,
-                                    kAndroidBottomToolbarV2Variations,
-                                    "BottomToolbarV2")},
 
     {"auxiliary-search-donation",
      flag_descriptions::kAuxiliarySearchDonationName,

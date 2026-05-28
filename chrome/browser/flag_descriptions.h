@@ -252,11 +252,6 @@ inline constexpr char kAndroidHistoryClusteringName[] =
 inline constexpr char kAndroidHistoryClusteringDescription[] =
     "Enables history clustering UI on Android.";
 
-inline constexpr char kAndroidBottomToolbarV2Name[] = "Bottom Toolbar V2";
-inline constexpr char kAndroidBottomToolbarV2Description[] =
-    "If enabled, allows the Omnibox to be persistently anchored to the bottom "
-    "of the screen.";
-
 inline constexpr char kAnnotatorModeName[] = "Enable annotator tool";
 inline constexpr char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";
