@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
@@ -18,6 +19,9 @@
 @protocol NewTabPageShortcutsHandler;
 @protocol NewTabPageHeaderCommands;
 @protocol NewTabPageControllerDelegate;
+@protocol NewTabPageMutator;
+@protocol HelpCommands;
+@protocol FakeboxFocuser;
 @class OmniboxContainerView;
 @class SearchEngineLogoMediator;
 enum class SearchEngineLogoState;
@@ -28,7 +32,8 @@ enum class SearchEngineLogoState;
 // primary toolbar, doodle, and fake omnibox.
 @interface NewTabPageHeaderView : UIView <UserAccountImageUpdateDelegate,
                                           SearchEngineLogoConsumer,
-                                          NewTabPageHeaderConsumer>
+                                          NewTabPageHeaderConsumer,
+                                          FakeboxButtonsSnapshotProvider>
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
@@ -102,6 +107,15 @@ enum class SearchEngineLogoState;
 // Delegate for header view actions.
 @property(nonatomic, weak) id<NewTabPageHeaderViewDelegate> delegate;
 
+// The mutator for the NTP.
+@property(nonatomic, weak) id<NewTabPageMutator> mutator;
+
+// In-product help handler.
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
+
+// Fakebox focus handler.
+@property(nonatomic, weak) id<FakeboxFocuser> fakeboxFocuserHandler;
+
 // Whether the NTP is currently showing.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;
 
@@ -111,8 +125,10 @@ enum class SearchEngineLogoState;
 // The logo state.
 @property(nonatomic, assign) SearchEngineLogoState logoState;
 
-// Initializes the view with the Lens button new badge status.
+// Initializes the view with the Lens and customization menu badge status.
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+                 useNewBadgeForCustomizationMenu:
+                     (BOOL)useNewBadgeForCustomizationMenu
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
@@ -194,6 +210,26 @@ enum class SearchEngineLogoState;
 
 // Returns the height of the header.
 - (CGFloat)headerHeight;
+
+// Notifies the view that it appeared.
+- (void)didAppear;
+
+// Sends notification to focus the accessibility of the omnibox.
+- (void)focusAccessibilityOnOmnibox;
+
+// Configure the header after the focus omnibox animation has completed.
+- (void)completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
+    (UIViewAnimatingPosition)finalPosition;
+
+// Resets fakebox state when omnibox ends editing.
+- (void)omniboxDidEndEditing;
+
+// Returns the view containing the fake omnibox.
+- (UIView*)fakeOmniboxView;
+
+// Returns the Y value to use for the scroll view's contentOffset when scrolling
+// the omnibox to the top of the screen.
+- (CGFloat)pinnedOffsetY;
 
 @end
 

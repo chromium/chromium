@@ -13,7 +13,7 @@ class ProfileIOS;
 @class FeedMetricsRecorder;
 @class FeedWrapperViewController;
 @protocol FeedWrapperViewControllerDelegate;
-@class NewTabPageHeaderViewController;
+@class NewTabPageHeaderView;
 @class NewTabPageMediator;
 @class NewTabPageViewController;
 @class UIViewController;
@@ -28,10 +28,9 @@ class ProfileIOS;
 // Metrics recorder for actions relating to the feed.
 - (FeedMetricsRecorder*)feedMetricsRecorderForBrowser:(Browser*)browser;
 
-// The header view controller containing the fake omnibox and logo for
+// The header view containing the fake omnibox and logo for
 // `profile`.
-- (NewTabPageHeaderViewController*)headerViewControllerForProfile:
-    (ProfileIOS*)profile;
+- (NewTabPageHeaderView*)headerViewForProfile:(ProfileIOS*)profile;
 
 // Mediator owned by the NewTabPageCoordinator
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser

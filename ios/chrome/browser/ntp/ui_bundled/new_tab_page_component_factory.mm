@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
@@ -62,8 +62,7 @@
   return discoverFeedService->GetFeedMetricsRecorder();
 }
 
-- (NewTabPageHeaderViewController*)headerViewControllerForProfile:
-    (ProfileIOS*)profile {
+- (NewTabPageHeaderView*)headerViewForProfile:(ProfileIOS*)profile {
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
   CHECK(tracker);
@@ -79,7 +78,7 @@
 
   // The actual notification of dismissal (tracker->Dismissed(...)) *must*
   // happen after the badge is displayed, from within the UI layer.
-  return [[NewTabPageHeaderViewController alloc]
+  return [[NewTabPageHeaderView alloc]
       initWithUseNewBadgeForLensButton:showLensBadge
        useNewBadgeForCustomizationMenu:showCustomizationBadge];
 }

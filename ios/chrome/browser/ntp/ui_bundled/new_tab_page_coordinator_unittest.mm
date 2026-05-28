@@ -33,8 +33,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator+Testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller+Testing.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -613,7 +611,7 @@ TEST_F(NewTabPageCoordinatorTest, IsNTPCleanOnStop) {
   EXPECT_NE(nil, coordinator_.NTPViewController);
   EXPECT_NE(nil, coordinator_.contentSuggestionsCoordinator.viewController);
   EXPECT_NE(nil, coordinator_.contentSuggestionsCoordinator);
-  EXPECT_NE(nil, coordinator_.headerViewController);
+  EXPECT_NE(nil, coordinator_.headerView);
   EXPECT_NE(nil, coordinator_.NTPMediator);
   EXPECT_NE(nil, coordinator_.feedWrapperViewController);
   EXPECT_NE(nil, coordinator_.feedTopSectionCoordinator);
@@ -624,7 +622,7 @@ TEST_F(NewTabPageCoordinatorTest, IsNTPCleanOnStop) {
   EXPECT_EQ(nil, coordinator_.NTPViewController);
   EXPECT_EQ(nil, coordinator_.contentSuggestionsCoordinator.viewController);
   EXPECT_EQ(nil, coordinator_.contentSuggestionsCoordinator);
-  EXPECT_EQ(nil, coordinator_.headerViewController);
+  EXPECT_EQ(nil, coordinator_.headerView);
   EXPECT_EQ(nil, coordinator_.NTPMediator);
   EXPECT_EQ(nil, coordinator_.feedWrapperViewController);
   EXPECT_EQ(nil, coordinator_.feedTopSectionCoordinator);
@@ -703,7 +701,7 @@ TEST_F(NewTabPageCoordinatorTest,
 
   // Open the customization menu by tapping on the customization button.
   UIButton* customizationMenuButton =
-      coordinator_.headerViewController.headerView.customizationMenuButton;
+      coordinator_.headerView.customizationMenuButton;
   [customizationMenuButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
 
@@ -730,7 +728,7 @@ TEST_F(NewTabPageCoordinatorTest,
 
   // Open the customization menu by tapping on the customization button.
   UIButton* customizationMenuButton =
-      coordinator_.headerViewController.headerView.customizationMenuButton;
+      coordinator_.headerView.customizationMenuButton;
   [customizationMenuButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
 

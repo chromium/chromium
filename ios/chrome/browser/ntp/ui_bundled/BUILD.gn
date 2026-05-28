@@ -234,9 +234,6 @@ source_set("ntp_internal") {
     "new_tab_page_header_consumer.h",
     "new_tab_page_header_view.h",
     "new_tab_page_header_view.mm",
-    "new_tab_page_header_view_controller+Testing.h",
-    "new_tab_page_header_view_controller.h",
-    "new_tab_page_header_view_controller.mm",
     "new_tab_page_header_view_delegate.h",
     "new_tab_page_mediator.h",
     "new_tab_page_mediator.mm",
@@ -363,7 +360,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "new_tab_page_coordinator_unittest.mm",
-    "new_tab_page_header_view_controller_unittest.mm",
     "new_tab_page_mediator_unittest.mm",
     "new_tab_page_trait_unittest.mm",
   ]

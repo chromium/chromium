@@ -14,6 +14,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bubble/public/in_product_help_type.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
@@ -37,6 +39,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
@@ -48,6 +51,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
@@ -244,6 +248,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
+
 // View used to add on-touch highlight to the fake omnibox.
 @property(nonatomic, strong) UIView* fakeLocationBarHighlightView;
 // View used to simulate the top toolbar when the header is stuck to the top of
@@ -271,6 +276,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @implementation NewTabPageHeaderView {
   CGFloat _lastAnimationPercent;
   BOOL _useNewBadgeForLensButton;
+  BOOL _useNewBadgeForCustomizationMenu;
+  BOOL _didNotifyLensBadgeDisplay;
+  BOOL _didNotifyCustomizationBadgeDisplay;
   BOOL _lensButtonWithNewBadgeTapped;
   // The current scale of the transform for the hint label. 1 if not currently
   //  scaled.
@@ -324,12 +332,14 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 #pragma mark - Public
 
-- (instancetype)initWithUseNewBadgeForLensButton:
-    (BOOL)useNewBadgeForLensButton {
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+                 useNewBadgeForCustomizationMenu:
+                     (BOOL)useNewBadgeForCustomizationMenu {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     self.clipsToBounds = YES;
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
+    _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
     _lastAnimationPercent = 0;
     _currentHintLabelScale = 1;
 
@@ -445,6 +455,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self setupFakeTapView];
   [self setupIdentityDisc];
   [self addSeparatorToSearchField:self.fakeOmniboxContainer];
+  [self addCustomizationMenu];
+  if (IsChromeNextIaEnabled()) {
+    [self addToolsMenuIfNeeded];
+  }
 }
 
 - (void)setupIdentityDisc {
@@ -1489,6 +1503,75 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 #pragma mark - Private
 
+// Creates the Home customization menu and adds it to the header view.
+- (void)addCustomizationMenu {
+  UIButton* customizationMenuButton =
+      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
+
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kPencilSymbol, ntp_home::kNTPMenuButtonIconSize);
+    [customizationMenuButton setImage:icon forState:UIControlStateNormal];
+    customizationMenuButton.backgroundColor =
+        [self defaultButtonBackgroundColor];
+
+    UIColor* tintColor = [UIColor colorNamed:kBlue600Color];
+    customizationMenuButton.tintColor = tintColor;
+
+    customizationMenuButton.layer.cornerRadius =
+        ntp_home::kNTPMenuButtonCornerRadius;
+    customizationMenuButton.clipsToBounds = YES;
+  }
+
+  customizationMenuButton.accessibilityIdentifier =
+      kNTPCustomizationMenuButtonIdentifier;
+  customizationMenuButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL);
+
+  [customizationMenuButton addTarget:self.commandHandler
+                              action:@selector(customizationMenuWasTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+
+  [self setCustomizationMenuButton:customizationMenuButton
+                      withNewBadge:_useNewBadgeForCustomizationMenu];
+}
+
+// Creates the Tools menu and adds it to the header view (iPhone only)
+- (void)addToolsMenuIfNeeded {
+  CHECK(IsChromeNextIaEnabled());
+
+  // If the App Bar is not available (iPad), the Tools menu should not be added
+  // to the header view.
+  if (CanShowTabStrip(self)) {
+    return;
+  }
+
+  UIButton* toolsMenuButton =
+      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
+
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kEllipsisSymbol, ntp_home::kNTPMenuButtonIconSize);
+    [toolsMenuButton setImage:icon forState:UIControlStateNormal];
+    toolsMenuButton.backgroundColor = [self defaultButtonBackgroundColor];
+
+    UIColor* tintColor = [UIColor colorNamed:kBlue600Color];
+    toolsMenuButton.tintColor = tintColor;
+    toolsMenuButton.layer.cornerRadius = ntp_home::kNTPMenuButtonCornerRadius;
+    toolsMenuButton.clipsToBounds = YES;
+  }
+
+  toolsMenuButton.accessibilityIdentifier = kNTPToolsMenuButtonIdentifier;
+  toolsMenuButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU);
+
+  [toolsMenuButton addTarget:self.commandHandler
+                      action:@selector(toolsMenuWasTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+
+  self.toolsMenuButton = toolsMenuButton;
+}
+
 // Handles the creation of the plus button.
 - (void)createPlusButton {
   CHECK([self shouldShowPlusButton]);
@@ -1858,6 +1941,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
           AccountParticleDiscBadgeBackgroundColor(
               self.traitCollection.userInterfaceStyle);
     }
+  }
+
+  if (IsChromeNextIaEnabled()) {
+    [self resetSplitToolbarResizing];
+    [self addToolsMenuIfNeeded];
   }
 }
 
@@ -2477,6 +2565,63 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                    : [[UIColor colorNamed:kSolidWhiteColor]
                          colorWithAlphaComponent:0.75];
       }];
+}
+
+- (UIView*)fakeOmniboxView {
+  if (IsComposeboxIOSEnabled()) {
+    return self.fakeOmniboxContainer;
+  }
+  return self.fakeLocationBar;
+}
+
+- (CGFloat)pinnedOffsetY {
+  CGFloat offsetY =
+      self.headerHeight - content_suggestions::FakeToolbarHeight();
+  if ([self.delegate shouldPinFakeOmnibox]) {
+    offsetY -= self.headerHeight;
+  }
+  return AlignValueToPixel(offsetY);
+}
+
+- (void)didAppear {
+  [self maybeShowSwitchAccountsIPH];
+
+  if (self.lensButton && _useNewBadgeForLensButton &&
+      !_didNotifyLensBadgeDisplay) {
+    [self.mutator notifyLensBadgeDisplayed];
+    _didNotifyLensBadgeDisplay = YES;
+  }
+  if (self.customizationMenuButton && _useNewBadgeForCustomizationMenu &&
+      !_didNotifyCustomizationBadgeDisplay) {
+    [self.mutator notifyCustomizationBadgeDisplayed];
+    _didNotifyCustomizationBadgeDisplay = YES;
+  }
+}
+
+- (void)focusAccessibilityOnOmnibox {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.fakeOmniboxContainer);
+}
+
+- (void)maybeShowSwitchAccountsIPH {
+  if (!self.isSignedIn) {
+    return;
+  }
+  [self.helpHandler
+      presentInProductHelpWithType:
+          InProductHelpType::kSwitchAccountsWithNTPAccountParticleDisc];
+}
+
+- (void)completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
+    (UIViewAnimatingPosition)finalPosition {
+  if (finalPosition == UIViewAnimatingPositionEnd) {
+    [self.fakeboxFocuserHandler onFakeboxAnimationComplete];
+  }
+}
+
+- (void)omniboxDidEndEditing {
+  [self.omnibox.textInput setText:@""];
+  [self updateFakeboxDisplay];
 }
 
 @end

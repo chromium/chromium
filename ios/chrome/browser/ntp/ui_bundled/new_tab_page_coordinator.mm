@@ -90,7 +90,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
@@ -258,9 +257,8 @@
 // Metrics recorder for actions relating to the feed.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
-// The header view controller containing the fake omnibox and logo.
-@property(nonatomic, strong)
-    NewTabPageHeaderViewController* headerViewController;
+// The header view containing the fake omnibox and logo.
+@property(nonatomic, strong) NewTabPageHeaderView* headerView;
 
 // Coordinator for Feed top section.
 @property(nonatomic, strong)
@@ -364,7 +362,7 @@
   [self initializeServices];
   [self initializeNTPComponents];
 
-  [self configureHeaderViewController];
+  [self configureHeaderView];
   [self configureNTPMediator];
   if ([self.NTPMediator isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
@@ -434,7 +432,7 @@
 
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
-  self.headerViewController = nil;
+  self.headerView = nil;
   // Remove before nil to ensure View Hierarchy doesn't hold last strong
   // reference.
   [self.containedViewController willMoveToParentViewController:nil];
@@ -565,7 +563,7 @@
     return;
   }
   [LayoutGuideCenterForBrowser(self.browser)
-      referenceView:[self.headerViewController customizationMenuButton]
+      referenceView:self.headerView.customizationMenuButton
           underName:kFeedIPHNamedGuide];
 }
 
@@ -648,7 +646,7 @@
 // Starts all NTP observers.
 - (void)startObservers {
   DCHECK(self.prefService);
-  DCHECK(self.headerViewController);
+  DCHECK(self.headerView);
 
   // Start observing IdentityManager.
   _identityObserverBridge =
@@ -698,8 +696,7 @@
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.NTPViewController.incognitoDisabled =
       IsIncognitoModeDisabled(self.prefService);
-  self.headerViewController =
-      [componentFactory headerViewControllerForProfile:self.profile];
+  self.headerView = [componentFactory headerViewForProfile:self.profile];
   self.NTPMediator = [componentFactory NTPMediatorForBrowser:browser
                                     identityDiscImageUpdater:nil];
   self.NTPViewController.mutator = self.NTPMediator;
@@ -742,36 +739,30 @@
   }
 }
 
-// Configures `self.headerViewController`.
-- (void)configureHeaderViewController {
-  NewTabPageHeaderViewController* headerViewController =
-      self.headerViewController;
-  DCHECK(headerViewController);
+// Configures `self.headerView`.
+- (void)configureHeaderView {
+  NewTabPageHeaderView* headerView = self.headerView;
+  DCHECK(headerView);
   DCHECK(self.NTPMediator);
   DCHECK(self.NTPMetricsRecorder);
 
-  headerViewController.isGoogleDefaultSearchEngine =
-      [self isGoogleDefaultSearchEngine];
+  headerView.isGoogleDefaultSearchEngine = [self isGoogleDefaultSearchEngine];
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  headerViewController.fakeboxFocuserHandler =
+  headerView.fakeboxFocuserHandler =
       HandlerForProtocol(dispatcher, FakeboxFocuser);
-  headerViewController.helpHandler =
-      HandlerForProtocol(dispatcher, HelpCommands);
+  headerView.helpHandler = HandlerForProtocol(dispatcher, HelpCommands);
 
-  headerViewController.NTPShortcutsHandler = self;
+  headerView.NTPShortcutsHandler = self;
 
-  headerViewController.commandHandler = self;
-  headerViewController.delegate = self.NTPViewController;
-  self.NTPViewController.headerViewController = headerViewController;
-  headerViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  headerViewController.toolbarDelegate = self.toolbarDelegate;
-  headerViewController.baseViewController = self.baseViewController;
-  headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
-  headerViewController.mutator = self.NTPMediator;
-  [((NewTabPageHeaderView*)headerViewController.view)
-      setSearchEngineLogoMediator:_searchEngineLogoMediator];
+  headerView.commandHandler = self;
+  headerView.delegate = self.NTPViewController;
+  self.NTPViewController.headerView = headerView;
+  headerView.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+  headerView.toolbarDelegate = self.toolbarDelegate;
+  headerView.mutator = self.NTPMediator;
+  [headerView setupSubviews];
+  [headerView setSearchEngineLogoMediator:_searchEngineLogoMediator];
 }
 
 // Configures `self.contentSuggestionsCoordinator`.
@@ -792,14 +783,12 @@
   NTPMediator.feedVisibilityObserver = self;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.NTPContentDelegate = self;
-  NTPMediator.headerConsumer =
-      (NewTabPageHeaderView*)self.headerViewController.view;
+  NTPMediator.headerConsumer = self.headerView;
   NTPMediator.consumer = self.NTPViewController;
   PlaceholderService* placeholderService =
       ios::PlaceholderServiceFactory::GetForProfile(self.profile);
   NTPMediator.placeholderService = placeholderService;
-  NTPMediator.imageUpdater =
-      (NewTabPageHeaderView*)self.headerViewController.view;
+  NTPMediator.imageUpdater = self.headerView;
 
   [NTPMediator setUp];
 }
@@ -851,8 +840,7 @@
   _tabGroupIndicatorCoordinator.toolbarHeightDelegate = nil;
   _tabGroupIndicatorCoordinator.displayedOnNTP = YES;
   [_tabGroupIndicatorCoordinator start];
-  [self.headerViewController
-      setTabGroupIndicatorView:_tabGroupIndicatorCoordinator.view];
+  self.headerView.tabGroupIndicatorView = _tabGroupIndicatorCoordinator.view;
 }
 
 // Configures the main ViewController managed by this Coordinator.
@@ -961,7 +949,7 @@
   }
 
   // Hide the 'new' badge for the current session after being tapped.
-  [self.headerViewController hideBadgeOnCustomizationMenu];
+  [self.headerView hideBadgeOnCustomizationMenu];
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
                                HomeCustomizationEntrypoint::kMain];
@@ -1064,7 +1052,7 @@
   [self cancelOmniboxEdit];
   [self.NTPViewController setContentOffsetToTop];
 
-  _headerViewController.isGoogleDefaultSearchEngine =
+  self.headerView.isGoogleDefaultSearchEngine =
       [self isGoogleDefaultSearchEngine];
 }
 
@@ -1242,7 +1230,7 @@
         self.browser->GetCommandDispatcher(), FakeboxFocuser);
     [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
                                             pinned:[self isFakeboxPinned]
-                    fakeboxButtonsSnapshotProvider:self.headerViewController];
+                    fakeboxButtonsSnapshotProvider:self.headerView];
   }
 }
 
@@ -1434,7 +1422,7 @@
 
 - (CGFloat)headerHeightForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  CGFloat height = [self.headerViewController toolBarView].bounds.size.height;
+  CGFloat height = [self.headerView toolBarView].bounds.size.height;
   CGFloat topInset = self.feedWrapperViewController.view.safeAreaInsets.top;
   return height + topInset;
 }
@@ -1463,7 +1451,7 @@
                fromInitStage:(ProfileInitStage)fromInitStage {
   if (nextInitStage == ProfileInitStage::kFinal) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = YES;
-    [self.headerViewController focusAccessibilityOnOmnibox];
+    [self.headerView focusAccessibilityOnOmnibox];
 
     [profileState removeObserver:self];
   }
@@ -2032,7 +2020,7 @@
   }
 
   // Hide the 'new' badge for the current session after being tapped.
-  [self.headerViewController hideBadgeOnCustomizationMenu];
+  [self.headerView hideBadgeOnCustomizationMenu];
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
                                HomeCustomizationEntrypoint::kPromo];

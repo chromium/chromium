@@ -13,7 +13,7 @@
 @class ContentSuggestionsCoordinator;
 @class FeedHeaderViewController;
 @class FeedTopSectionCoordinator;
-@class NewTabPageHeaderViewController;
+@class NewTabPageHeaderView;
 @class NewTabPageMetricsRecorder;
 @class NewTabPageMediator;
 @class NewTabPageViewController;
@@ -24,8 +24,7 @@
                                             NewTabPageHeaderCommands,
                                             NewTabPageActionsDelegate>
 
-@property(nonatomic, strong, readonly)
-    NewTabPageHeaderViewController* headerViewController;
+@property(nonatomic, strong, readonly) NewTabPageHeaderView* headerView;
 
 @property(nonatomic, strong)
     ContentSuggestionsCoordinator* contentSuggestionsCoordinator;

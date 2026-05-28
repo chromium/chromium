@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 @protocol NewTabPageCommands;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageShortcutsHandler;
-@class NewTabPageHeaderViewController;
+@class NewTabPageHeaderView;
 @protocol NewTabPageMutator;
 @class NewTabPageViewController;
 @protocol OverscrollActionsControllerDelegate;
@@ -46,7 +46,7 @@ class Tracker;
     overscrollDelegate;
 
 // The NTP header, containing the fake omnibox and the doodle.
-@property(nonatomic, weak) NewTabPageHeaderViewController* headerViewController;
+@property(nonatomic, strong) NewTabPageHeaderView* headerView;
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
