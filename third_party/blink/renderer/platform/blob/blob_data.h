@@ -89,7 +89,7 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
   auto begin() const { return data_.begin(); }
   auto end() const { return data_.end(); }
 
-  Vector<uint8_t>* MutableData() { return &data_; }
+  Vector<uint8_t>& MutableData() { return data_; }
 
  private:
   RawData();

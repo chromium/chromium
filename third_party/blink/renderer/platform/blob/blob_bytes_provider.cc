@@ -129,7 +129,7 @@ void BlobBytesProvider::AppendData(base::span<const uint8_t> data) {
       data_.back()->size() + data.size() > kMaxConsolidatedItemSizeInBytes) {
     AppendData(RawData::Create());
   }
-  data_.back()->MutableData()->append_range(data);
+  data_.back()->MutableData().append_range(data);
 }
 
 // static

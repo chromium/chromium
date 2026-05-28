@@ -155,7 +155,7 @@ void BlobData::AppendText(const String& text,
     if (utf8_text.length() >
         BlobBytesProvider::kMaxConsolidatedItemSizeInBytes) {
       auto raw_data = RawData::Create();
-      NormalizeLineEndingsToNative(utf8_text, *raw_data->MutableData());
+      NormalizeLineEndingsToNative(utf8_text, raw_data->MutableData());
       AppendDataInternal(base::span(*raw_data), raw_data);
     } else {
       Vector<uint8_t> buffer;

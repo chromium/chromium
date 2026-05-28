@@ -230,7 +230,7 @@ void IDBValueWrapper::MaybeStoreInBlob() {
     wrapper_blob_data->AppendBytes(wire_data_);
   } else {
     scoped_refptr<RawData> raw_data = RawData::Create();
-    raw_data->MutableData()->swap(wire_data_buffer_);
+    raw_data->MutableData().swap(wire_data_buffer_);
     wrapper_blob_data->AppendData(std::move(raw_data));
   }
   const size_t wire_data_size = wire_data_.size();

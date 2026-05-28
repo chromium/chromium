@@ -83,13 +83,13 @@ void ContinueGenerateMHTMLParts(
     // comment). Frames get a Content-ID header.
     MHTMLArchive::GenerateMHTMLPart(
         boundary, FrameSerializer::GetContentID(frame), encoding_policy,
-        resources.TakeFirst(), *output->MutableData());
+        resources.TakeFirst(), output->MutableData());
     while (!resources.empty()) {
       TRACE_EVENT0("page-serialization",
                    "WebFrameSerializer::generateMHTMLParts encoding");
       MHTMLArchive::GenerateMHTMLPart(boundary, String(), encoding_policy,
                                       resources.TakeFirst(),
-                                      *output->MutableData());
+                                      output->MutableData());
     }
   }
   std::move(callback).Run(WebThreadSafeData(std::move(output)));
@@ -112,7 +112,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLHeader(
   scoped_refptr<RawData> buffer = RawData::Create();
   MHTMLArchive::GenerateMHTMLHeader(
       boundary, document->Url(), document->title(),
-      document->SuggestedMIMEType(), base::Time::Now(), *buffer->MutableData());
+      document->SuggestedMIMEType(), base::Time::Now(), buffer->MutableData());
   return WebThreadSafeData(std::move(buffer));
 }
 

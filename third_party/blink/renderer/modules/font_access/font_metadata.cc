@@ -117,7 +117,7 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver<Blob>* resolver,
   DCHECK_EQ(returned_size, font_byte_size);
 
   scoped_refptr<RawData> raw_data = RawData::Create();
-  bytes.swap(*raw_data->MutableData());
+  bytes.swap(raw_data->MutableData());
   auto blob_data = std::make_unique<BlobData>();
   blob_data->AppendData(std::move(raw_data));
   blob_data->SetContentType("application/octet-stream");
