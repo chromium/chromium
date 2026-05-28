@@ -593,6 +593,7 @@ public class SiteSettingsTest {
             final SettingsActivity settingsActivity,
             final @CookieControlsMode int state,
             final ToggleButtonState toggleState) {
+        waitForCookieToggleToBeBound(settingsActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SingleCategorySettings preferences =
@@ -782,6 +783,7 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        waitForCookieToggleToBeBound(settingsActivity);
 
         verifyFpsCookieSubpageIsLaunchedWithParams(
                 settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -1663,6 +1665,7 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        waitForCookieToggleToBeBound(settingsActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1687,6 +1690,7 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        waitForCookieToggleToBeBound(settingsActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1719,6 +1723,7 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        waitForCookieToggleToBeBound(settingsActivity);
         // Select the block all 3PC option.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1765,13 +1770,7 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    CookieSettingsPreference pref = getCookieToggle(settingsActivity);
-                    return pref != null
-                            && pref.getButton(CookieControlsMode.BLOCK_THIRD_PARTY) != null;
-                },
-                "Cookie toggle button was never bound to the view.");
+        waitForCookieToggleToBeBound(settingsActivity);
         // Select the block all 3PC option.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1790,6 +1789,18 @@ public class SiteSettingsTest {
         SingleCategorySettings preferences =
                 (SingleCategorySettings) settingsActivity.getMainFragment();
         return preferences.findPreference(SingleCategorySettings.COOKIE_TOGGLE);
+    }
+
+    private CookieSettingsPreference waitForCookieToggleToBeBound(
+            SettingsActivity settingsActivity) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    CookieSettingsPreference preference = getCookieToggle(settingsActivity);
+                    return preference != null
+                            && preference.getButton(CookieControlsMode.BLOCK_THIRD_PARTY) != null;
+                },
+                "Cookie toggle button was never bound to the view.");
+        return getCookieToggle(settingsActivity);
     }
 
     private void clickButtonAndVerifyItsChecked(
