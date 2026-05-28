@@ -169,6 +169,13 @@ foreach(variant, pipeline_integration_fuzzer_variants) {
       "//testing/libfuzzer:libfuzzer_base_wrappers",
       "//ui/gfx:test_support",
     ]
+    if (is_android) {
+      # Adding base::test::ScopedFeatureList triggers feature checks in
+      # MediaCodecVideoDecoder::GetSupportedConfigs(), which calls
+      # VideoAcceleratorUtil on Android to enumerate supported codecs,
+      # requiring this dependency.
+      deps += [ "//media/base/android:media_java" ]
+    }
 
     defines = [ "PIPELINE_FUZZER_VARIANT=${variant}" ]
 

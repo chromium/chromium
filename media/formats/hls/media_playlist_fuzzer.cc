@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/playlist.h"
 #include "url/gurl.h"
@@ -25,7 +26,6 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
 
 // Attempts to determine playlist version from the given source (exercising
 // `Playlist::IdentifyPlaylist`). Since we don't necessarily want to exit early
@@ -40,6 +40,7 @@ media::hls::types::DecimalInteger GetPlaylistVersion(std::string_view source) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> env;
   FuzzedDataProvider data_provider(data, size);
 
   // Decide whether to create a multivariant playlist + media playlist or just a

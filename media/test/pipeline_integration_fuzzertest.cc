@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media.h"
@@ -233,6 +234,11 @@ struct Environment {
   Environment() {
     base::CommandLine::Init(0, nullptr);
 
+    // Initialize the feature list to defaults to avoid crashes when feature
+    // checks are performed. Fuzzers do not go through the normal browser
+    // initialization that typically sets this up.
+    feature_list.Init();
+
     // |test| instances uses TaskEnvironment, which needs TestTimeouts.
     TestTimeouts::Initialize();
 
@@ -242,15 +248,17 @@ struct Environment {
     // logging::LOGGING_VERBOSE here to assist local debugging.
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
-};
 
-Environment* env = new Environment();
-
-// Entry point for LibFuzzer.
-DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> bytes) {
   // Media pipeline starts new threads, which needs AtExitManager.
   base::AtExitManager at_exit;
 
+  base::test::ScopedFeatureList feature_list;
+};
+
+
+// Entry point for LibFuzzer.
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> bytes) {
+  static const base::NoDestructor<Environment> env;
   FuzzerVariant variant = PIPELINE_FUZZER_VARIANT;
 
   // These tests use GoogleTest assertions without using the GoogleTest
