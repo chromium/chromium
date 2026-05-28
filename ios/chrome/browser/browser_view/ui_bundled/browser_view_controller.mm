@@ -278,6 +278,8 @@ bool IsFullscreenNextIAEnabled() {
   __weak id<ToolbarCommands> _toolbarHandler;
 
   NSArray<NSLayoutConstraint*>* _NTPConstraints;
+  // The last recorded view size to avoid redundant updates on layout.
+  CGSize _lastViewSize;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -1044,6 +1046,17 @@ bool IsFullscreenNextIAEnabled() {
         self.webUsageEnabled) {
       self.ntpCoordinator.viewController.view.frame =
           [self ntpFrameForCurrentWebState];
+    }
+    if (!ios::provider::IsFullscreenSmoothScrollingSupported()) {
+      if (!CGSizeEqualToSize(_lastViewSize, self.view.bounds.size)) {
+        _lastViewSize = self.view.bounds.size;
+        // When BVC view bounds size changes, UIKit automatically resizes the
+        // WebView via autoresizing mask, shifting its y-position (e.g., from 62
+        // to 77). In order to force Fullscreen to resize the WebView, we toggle
+        // the toolbar height to zero and force a recalculation of its size.
+        _toolbarsSize.expandedTopToolbarHeight = 0;
+        [self updateToolbarState];
+      }
     }
   }
 }
