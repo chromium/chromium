@@ -198,7 +198,7 @@ composebox-favicon-group {
   inset-inline-start: 100%;
   margin-inline-start: 4px;
   box-sizing: border-box;
-  max-height: 144px;
+  max-height: 344px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 0;

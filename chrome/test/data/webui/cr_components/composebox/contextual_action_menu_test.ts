@@ -706,7 +706,9 @@ suite('ContextualActionMenu', () => {
     assertTrue(!!flyout);
     assertFalse(flyout.hidden);
 
-    actionMenu.tabSuggestions = Array(10).fill({
+    // 11 suggestions: 11 * 32px + 16px (padding) = 368px, which exceeds 344px
+    // max height.
+    actionMenu.tabSuggestions = Array(11).fill({
       tabId: 1,
       title: 'Tab',
       url: {url: 'https://example.com'},
@@ -718,7 +720,7 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     // Ensure flyout has max height even with many tab suggestions.
-    assertEquals(144, flyout.offsetHeight);
+    assertEquals(344, flyout.offsetHeight);
   });
 
   test('Share tabs flyout keyboard navigation', async () => {
