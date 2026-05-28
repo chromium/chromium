@@ -1529,9 +1529,6 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the new tab page customization theme tip bottom sheet is fully opened.">
         Customize your homepage promo bottom sheet opened at half height
       </message>
-      <message name="IDS_NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes a new tab page customization theme tip bottom sheet is closed">
-        Customize your homepage promo bottom sheet closed
-      </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SWITCH_DESCRIPTION" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
         Get suggested articles on the New Tab page
       </message>

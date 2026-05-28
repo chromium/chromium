@@ -328,7 +328,7 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
                 R.string.ntp_customization_theme_tip_bottom_sheet_opened_half,
                 mBottomSheetContent.getSheetHalfHeightAccessibilityStringId());
         Assert.assertEquals(
-                R.string.ntp_customization_theme_tip_bottom_sheet_closed,
+                R.string.ntp_customization_main_bottom_sheet_closed,
                 mBottomSheetContent.getSheetClosedAccessibilityStringId());
     }
 
