@@ -46,6 +46,8 @@ struct GlicTestEnvironmentConfig {
   bool force_signin_and_glic_capability = true;
   // The default FRE status saved to prefs after profile creation.
   std::optional<prefs::FreStatus> fre_status = prefs::FreStatus::kCompleted;
+  // If set, overrides the default result of cookie sync.
+  std::optional<bool> override_cookie_sync_result;
 };
 
 namespace internal {

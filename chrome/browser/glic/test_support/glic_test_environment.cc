@@ -365,6 +365,9 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
   if (config.fre_status) {
     SetFRECompletion(*config.fre_status);
   }
+  if (config.override_cookie_sync_result.has_value()) {
+    SetResultForFutureCookieSync(*config.override_cookie_sync_result);
+  }
   if (config.force_signin_and_glic_capability) {
 #if BUILDFLAG(IS_CHROMEOS)
     // SigninWithPrimaryAccount below internally runs RunLoop to wait for an

@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
@@ -180,7 +181,12 @@ class BoundSessionOAuthMultiloginBaseTest
       const std::vector<base::test::FeatureRef>& disabled_features) {
     std::vector<base::test::FeatureRef> all_enabled_features = enabled_features;
     all_enabled_features.push_back(switches::kEnableChromeRefreshTokenBinding);
-    feature_list_.InitWithFeatures(all_enabled_features, disabled_features);
+    std::vector<base::test::FeatureRef> all_disabled_features =
+        disabled_features;
+    // Disable automatic syncing of cookies to the glic partition, which breaks
+    // some assertions in this test suite.
+    all_disabled_features.push_back(features::kGlicCookieSyncOnTokenChange);
+    feature_list_.InitWithFeatures(all_enabled_features, all_disabled_features);
   }
 
   ~BoundSessionOAuthMultiloginBaseTest() override = default;

@@ -632,9 +632,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCookieSyncFails) {
+class GlicApiTestWithFailedCookieSync : public GlicApiTest {
+ public:
+  GlicApiTestWithFailedCookieSync()
+      : GlicApiTest(
+            base::FieldTrialParams(),
+            GlicTestEnvironmentConfig{.override_cookie_sync_result = false}) {}
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
   GlicHistogramTester histogram_tester;
-  glic_test_service().SetResultForFutureCookieSync(false);
   GlicInstanceTracker instance_tracker(browser()->profile());
 
   GetService()->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
@@ -3326,6 +3333,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestNoFloatyOrLiveMode,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithFailedCookieSync,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 }  // namespace
