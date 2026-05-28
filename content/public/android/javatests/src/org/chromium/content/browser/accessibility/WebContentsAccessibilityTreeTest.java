@@ -168,9 +168,13 @@ public class WebContentsAccessibilityTreeTest {
         performTest(inputFile, expectationFile, BASE_ARIA_FILE_PATH);
     }
 
+    private String removeHtmlSuffix(String input) {
+        // ".html" has length 5.
+        return input.substring(0, input.length() - 5);
+    }
+
     private void performApgPatternTest(String input) {
-        // Remove the '.html' from the input file, and append the standard suffix.
-        performApgPatternTest(input, input.substring(0, input.length() - 5));
+        performApgPatternTest(input, removeHtmlSuffix(input));
     }
 
     private void performApgPatternTest(String inputFile, String expectationFile) {
@@ -178,8 +182,7 @@ public class WebContentsAccessibilityTreeTest {
     }
 
     private void performCssTest(String input) {
-        // Remove the '.html' from the input file, and append the standard suffix.
-        performCssTest(input, input.substring(0, input.length() - 5));
+        performCssTest(input, removeHtmlSuffix(input));
     }
 
     private void performCssTest(String inputFile, String expectationFile) {
@@ -187,8 +190,7 @@ public class WebContentsAccessibilityTreeTest {
     }
 
     private void performHtmlTest(String input) {
-        // Remove the '.html' from the input file, and append the standard suffix.
-        performHtmlTest(input, input.substring(0, input.length() - 5));
+        performHtmlTest(input, removeHtmlSuffix(input));
     }
 
     private void performHtmlTest(String inputFile, String expectationFile) {
