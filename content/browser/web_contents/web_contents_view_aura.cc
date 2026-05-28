@@ -1046,13 +1046,6 @@ RenderWidgetHostViewBase* WebContentsViewAura::CreateViewForWidget(
           : new RenderWidgetHostViewAura(render_widget_host);
   view->InitAsChild(GetRenderWidgetHostViewParent());
 
-  RenderWidgetHostImpl* host_impl =
-      RenderWidgetHostImpl::From(render_widget_host);
-
-  if (!host_impl->IsHidden()) {
-    view->Show();
-  }
-
   // We listen to drag drop events in the newly created view's window.
   aura::client::SetDragDropDelegate(view->GetNativeView(), this);
 
