@@ -1301,6 +1301,47 @@ TEST_F(FormAutofillUtilsTest,
                             _)));
 }
 
+// Tests the fallback mechanism where FindFormAndFieldForFormControlElement()
+// constructs a form with a single field if it is unable to extract the form
+// containing a control element.
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_FallbackOnFailure) {
+  auto AddElementToForm = [this](const char* element) {
+    std::string js = base::StringPrintf(
+        "document.forms[0].appendChild(document.createElement('%s'))", element);
+    ExecuteJavaScriptForTests(js);
+  };
+
+  // Create a form with too many fields so that extraction fails.
+  LoadHTML(R"(<html><body><form id='f'><input id='i0'/></form>)");
+  for (size_t i = 0; i < kMaxExtractableFields; ++i) {
+    AddElementToForm("input");
+  }
+
+  WebDocument doc = GetDocument();
+  WebFormElement form_element = GetFormElementById(doc, "f");
+  WebFormControlElement control_element = GetFormControlElementById(doc, "i0");
+
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = form_util::FindFormAndFieldForFormControlElement(
+          control_element, field_data_manager(), kCallTimerStateDummy,
+          /*button_titles_cache=*/nullptr,
+          /*form_cache=*/{});
+
+  ASSERT_TRUE(form_and_field);
+  const FormData& fallback_form = form_and_field->first;
+
+  // The fallback form should represent the owning form, so its `FormRendererId`
+  // should match `form_element`'s renderer ID, and the form's only field's
+  // `FieldRendererId` should match `control_element`'s renderer ID.
+  EXPECT_EQ(fallback_form.renderer_id(),
+            form_util::GetFormRendererId(form_element));
+  EXPECT_NE(fallback_form.renderer_id(), FormRendererId());
+  EXPECT_EQ(fallback_form.fields().size(), 1u);
+  EXPECT_EQ(fallback_form.fields()[0].renderer_id(),
+            form_util::GetFieldRendererId(control_element));
+}
+
 // Tests the visibility detection of iframes.
 // This test checks many scenarios. It's intentionally not a parameterized test
 // for performance reasons.

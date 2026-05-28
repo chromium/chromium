@@ -2528,6 +2528,7 @@ FindFormAndFieldForFormControlElement(
     WebFormControlElementToFormField(owning_form, element, nullptr, &field,
                                      /*shadow_data=*/nullptr);
     form.emplace();
+    form->set_renderer_id(GetFormRendererId(owning_form));
     form->set_fields({std::move(field)});
   }
 
