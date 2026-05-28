@@ -540,10 +540,16 @@ void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
   gfx::Rect new_bounds_in_pixels(bounds.origin(),
                                  AdjustSizeForDisplay(bounds.size()));
 
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const gfx::Rect current_bounds = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
+
   const bool size_changed =
-      GetBoundsInPixels().size() != new_bounds_in_pixels.size();
+      current_bounds.size() != new_bounds_in_pixels.size();
   const bool origin_changed =
-      GetBoundsInPixels().origin() != new_bounds_in_pixels.origin();
+      current_bounds.origin() != new_bounds_in_pixels.origin();
 
   // Assume that the resize will go through as requested, which should be the
   // case if we're running without a window manager.  If there's a window
@@ -601,6 +607,10 @@ void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
   platform_window_delegate_->OnBoundsChanged({origin_changed});
 }
 
+// Note: geometry_cache_->GetBoundsPx() can dispatch pending X server events
+// synchronously, which can trigger window destruction and invalidate `this`.
+// Callers should retrieve a WeakPtr before calling GetBoundsInPixels() and
+// check its validity afterward if they access any member of `this`.
 gfx::Rect X11Window::GetBoundsInPixels() const {
   return bounds_wm_sync_ || !geometry_cache_ ? last_set_bounds_px_
                                              : geometry_cache_->GetBoundsPx();
@@ -612,7 +622,12 @@ void X11Window::SetBoundsInDIP(const gfx::Rect& bounds_in_dip) {
 }
 
 gfx::Rect X11Window::GetBoundsInDIP() const {
-  return platform_window_delegate_->ConvertRectToDIP(GetBoundsInPixels());
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const gfx::Rect bounds = GetBoundsInPixels();
+  if (!weak_this) {
+    return {};
+  }
+  return platform_window_delegate_->ConvertRectToDIP(bounds);
 }
 
 void X11Window::SetTitle(const std::u16string& title) {
@@ -702,7 +717,11 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
   // - works around Flash content which expects to have the size updated
   //   synchronously.
   // See https://crbug.com/361408
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   gfx::Rect new_bounds_px = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
   if (fullscreen) {
     restored_bounds_in_pixels_ = new_bounds_px;
     if (x11_extension_delegate_) {
@@ -725,7 +744,11 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 
   // Pretend the bounds changed immediately, and wait for a WM sync to use the
   // server's bounds.
-  bool origin_changed = GetBoundsInPixels().origin() != new_bounds_px.origin();
+  const gfx::Rect current_bounds = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
+  bool origin_changed = current_bounds.origin() != new_bounds_px.origin();
   SetBoundsWithWmSync(new_bounds_px);
 
   // This must be the final call in this function, as `this` may be deleted
@@ -734,26 +757,40 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 }
 
 void X11Window::Maximize() {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (IsFullscreen()) {
     // Unfullscreen the window if it is fullscreen.
     SetFullscreen(false, display::kInvalidDisplayId);
+    if (!weak_this) {
+      return;
+    }
 
     // Resize the window so that it does not have the same size as a monitor.
     // (Otherwise, some window managers immediately put the window back in
     // fullscreen mode).
     gfx::Rect bounds_in_pixels = GetBoundsInPixels();
+    if (!weak_this) {
+      return;
+    }
     gfx::Rect adjusted_bounds_in_pixels(
         bounds_in_pixels.origin(),
         AdjustSizeForDisplay(bounds_in_pixels.size()));
     if (adjusted_bounds_in_pixels != bounds_in_pixels) {
       SetBoundsInPixels(adjusted_bounds_in_pixels);
+      if (!weak_this) {
+        return;
+      }
     }
   }
 
   // When we are in the process of requesting to maximize a window, we can
   // accurately keep track of our restored bounds instead of relying on the
   // heuristics that are in the PropertyNotify and ConfigureNotify handlers.
-  restored_bounds_in_pixels_ = GetBoundsInPixels();
+  gfx::Rect bounds_in_pixels = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
+  restored_bounds_in_pixels_ = bounds_in_pixels;
 
   // Some WMs do not respect maximization hints on unmapped windows, so we
   // save this one for later too.
@@ -890,10 +927,15 @@ void X11Window::SetCursor(scoped_refptr<PlatformCursor> cursor) {
 }
 
 void X11Window::MoveCursorTo(const gfx::Point& location_px) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const gfx::Rect bounds = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
   connection_->WarpPointer(x11::WarpPointerRequest{
       .dst_window = x_root_window_,
-      .dst_x = static_cast<int16_t>(GetBoundsInPixels().x() + location_px.x()),
-      .dst_y = static_cast<int16_t>(GetBoundsInPixels().y() + location_px.y()),
+      .dst_x = static_cast<int16_t>(bounds.x() + location_px.x()),
+      .dst_y = static_cast<int16_t>(bounds.y() + location_px.y()),
   });
   // The cached cursor location is no longer valid.
   X11EventSource::GetInstance()->ClearLastCursorLocation();
@@ -906,7 +948,12 @@ void X11Window::ConfineCursorToBounds(const gfx::Rect& bounds) {
     return;
   }
 
-  gfx::Rect barrier = bounds + GetBoundsInPixels().OffsetFromOrigin();
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const gfx::Vector2d offset = GetBoundsInPixels().OffsetFromOrigin();
+  if (!weak_this) {
+    return;
+  }
+  gfx::Rect barrier = bounds + offset;
 
   auto make_barrier = [&](uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,
                           x11::XFixes::BarrierDirections directions) {
@@ -1412,9 +1459,17 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
          event->type() == ui::EventType::kTouchPressed)) {
       // Another X11Window has installed itself as capture. Translate the
       // event's location and dispatch to the other.
-      ConvertEventLocationToTargetWindowLocation(
-          located_events_grabber->GetBoundsInPixels().origin(),
-          GetBoundsInPixels().origin(), event->AsLocatedEvent());
+      const gfx::Point target_origin =
+          located_events_grabber->GetBoundsInPixels().origin();
+      if (!weak_this) {
+        return;
+      }
+      const gfx::Point current_origin = GetBoundsInPixels().origin();
+      if (!weak_this) {
+        return;
+      }
+      ConvertEventLocationToTargetWindowLocation(target_origin, current_origin,
+                                                 event->AsLocatedEvent());
     }
     return located_events_grabber->DispatchUiEvent(event, xev);
   }
@@ -1936,8 +1991,13 @@ void X11Window::Map(bool inactive) {
   x11::SizeHints size_hints = {};
   connection_->GetWmNormalHints(xwindow_, &size_hints);
   size_hints.flags |= x11::SIZE_HINT_P_POSITION;
-  size_hints.x = GetBoundsInPixels().x();
-  size_hints.y = GetBoundsInPixels().y();
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const gfx::Rect bounds = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
+  size_hints.x = bounds.x();
+  size_hints.y = bounds.y();
   // Set STATIC_GRAVITY so that the window position is not affected by the
   // frame width when running with window manager.
   size_hints.flags |= x11::SIZE_HINT_P_WIN_GRAVITY;
@@ -2014,7 +2074,11 @@ bool X11Window::IsFullscreen() const {
 }
 
 gfx::Rect X11Window::GetOuterBounds() const {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   gfx::Rect outer_bounds(GetBoundsInPixels());
+  if (!weak_this) {
+    return {};
+  }
   outer_bounds.Inset(-native_window_frame_borders_in_pixels_);
   return outer_bounds;
 }
@@ -2604,7 +2668,12 @@ void X11Window::SetBoundsWithWmSync(const gfx::Rect& bounds_px) {
 
 void X11Window::OnWmSynced() {
   bounds_wm_sync_.reset();
-  OnBoundsChanged(last_set_bounds_px_, GetBoundsInPixels());
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const gfx::Rect current_bounds = GetBoundsInPixels();
+  if (!weak_this) {
+    return;
+  }
+  OnBoundsChanged(last_set_bounds_px_, current_bounds);
 }
 
 void X11Window::OnBoundsChanged(const std::optional<gfx::Rect>& old_bounds_px,
