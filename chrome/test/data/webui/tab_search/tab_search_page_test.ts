@@ -96,6 +96,7 @@ suite('TabSearchAppTest', () => {
             lastActiveTime: {internalValue: BigInt(sampleTabCount + 1)},
             lastActiveElapsedText: '',
           }],
+          recentlyClosedSplitViews: [],
           recentlyClosedSectionExpanded: true,
         },
         {
@@ -255,6 +256,7 @@ suite('TabSearchAppTest', () => {
       lastActiveElapsedText: '',
       lastActiveTime: {internalValue: BigInt(11)},
       groupId: null,
+      splitId: null,
     };
 
     await setupTest(createProfileData({
@@ -543,6 +545,7 @@ suite('TabSearchAppTest', () => {
         url: 'https://www.sampletab.com',
         lastActiveTime: {internalValue: BigInt(3)},
         lastActiveElapsedText: '',
+        splitId: null,
       }],
     });
     await microtasksFinished();

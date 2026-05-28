@@ -21,6 +21,8 @@ export function createTab(overrides: Partial<Tab>): Tab {
         lastActiveTimeTicks: {internalValue: BigInt(0)},
         pinned: false,
         split: false,
+        splitId: null,
+        splitLayout: null,
         showIcon: false,
         tabId: 1,
         title: 'Example',
@@ -119,6 +121,7 @@ export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
     url: 'https://www.paypal.com',
     lastActiveTime: {internalValue: BigInt(11)},
     lastActiveElapsedText: '',
+    splitId: null,
   },
   {
     groupId: null,
@@ -127,6 +130,7 @@ export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
     url: 'https://www.stripe.com',
     lastActiveTime: {internalValue: BigInt(12)},
     lastActiveElapsedText: '',
+    splitId: null,
   },
 ];
 
@@ -138,6 +142,7 @@ export function createProfileData(overrides?: Partial<ProfileData>):
         tabGroups: [],
         recentlyClosedTabGroups: [],
         recentlyClosedTabs: [],
+        recentlyClosedSplitViews: [],
         recentlyClosedSectionExpanded: false,
       },
       overrides || {});
@@ -169,6 +174,7 @@ export function generateSampleRecentlyClosedTabsFromSiteNames(
     return {
       tabId: i + 1,
       groupId: null,
+      splitId: null,
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
       lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
@@ -185,6 +191,7 @@ export function generateSampleRecentlyClosedTabs(
     const tab: RecentlyClosedTab = {
       tabId,
       groupId: null,
+      splitId: null,
       title: `${titlePrefix} ${tabId}`,
       url: `https://www.sampletab.com?q=${tabId}`,
       lastActiveTime: {internalValue: BigInt(count - i)},
@@ -214,6 +221,7 @@ export function generateSampleDataFromSiteNames(siteNames: string[]):
     recentlyClosedTabs: [],
     tabGroups: [],
     recentlyClosedTabGroups: [],
+    recentlyClosedSplitViews: [],
     recentlyClosedSectionExpanded: false,
   };
 }

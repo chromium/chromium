@@ -11,12 +11,21 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 
+
+// Orientation of a split view. Needs to be kept in sync with
+// split_tabs::SplitTabLayout in components/split_tabs/split_tab_visual_data.h.
+enum SplitTabLayout {
+  kSideBySide = 0,
+  kStacked = 1,
+};
+
 // Collection of tab searching details associated with a profile.
 struct ProfileData {
   array<Window> windows;
   array<TabGroup> tab_groups;
   array<RecentlyClosedTab> recently_closed_tabs;
   array<RecentlyClosedTabGroup> recently_closed_tab_groups;
+  array<RecentlyClosedSplitView> recently_closed_split_views;
   bool recently_closed_section_expanded;
 };
 
@@ -58,6 +67,12 @@ struct Tab {
   // Whether the tab is split.
   bool split;
 
+  // The split view identifier of the tab.
+  mojo_base.mojom.Token? split_id;
+
+  // The layout orientation of the split view, if split.
+  SplitTabLayout? split_layout;
+
   // The title of the tab.
   string title;
 
@@ -93,6 +108,9 @@ struct RecentlyClosedTab {
 
   // The group identifier of the tab.
   mojo_base.mojom.Token? group_id;
+
+  // The split view identifier of the tab.
+  mojo_base.mojom.Token? split_id;
 
   // The title of the tab.
   string title;
@@ -143,6 +161,34 @@ struct RecentlyClosedTabGroup {
 
   // String representing the elapsed time since the group was closed.
   string last_active_elapsed_text;
+};
+
+// Information about a recently closed split view.
+struct RecentlyClosedSplitView {
+  // The unique identifier of the split view that is only valid for the duration
+  // of the session.
+  int32 session_id;
+
+  // The unique identifier of the split view.
+  mojo_base.mojom.Token id;
+
+  // A count of tabs that belong to the split view.
+  uint32 tab_count;
+
+  // Elapsed time since the split view was closed.
+  mojo_base.mojom.Time last_active_time;
+
+  // String representing the elapsed time since the split view was closed.
+  string last_active_elapsed_text;
+
+  // The URLs of the tabs in the split view.
+  array<url.mojom.Url> tab_urls;
+
+  // The layout orientation of the split view.
+  SplitTabLayout layout;
+
+  // The group identifier of the split view, if all of its tabs are in a group.
+  mojo_base.mojom.Token? group_id;
 };
 
 // Information about switching to a tab.

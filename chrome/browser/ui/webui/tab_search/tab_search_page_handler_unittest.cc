@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -1055,6 +1056,59 @@ TEST_F(TabSearchPageHandlerTest, RemoveSplit_OtherPage) {
 
   EXPECT_CALL(page_, TabUnsplit()).Times(0);
   tab_strip_model->RemoveSplit(split_id);
+}
+
+class TabSearchPageHandlerSplitViewTest : public TabSearchPageHandlerTest {
+ public:
+  TabSearchPageHandlerSplitViewTest() {
+    feature_list_.InitAndEnableFeature(tabs::kSplitViewTabRestore);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TabSearchPageHandlerSplitViewTest, RecentlyClosedSplitView) {
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+
+  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(0, tab_strip_model->active_index());
+
+  // Create a split view with indices 1 and the active index 0.
+  tab_strip_model->AddToNewSplit(
+      {1},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kStacked, 0.5),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
+
+  // Close the split tabs.
+  tab_strip_model->CloseSelectedTabs();
+
+  // Assert the closed split view data is correct in ProfileData.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& recently_closed_split_views =
+                profile_tabs->recently_closed_split_views;
+            ASSERT_EQ(1u, recently_closed_split_views.size());
+            tab_search::mojom::RecentlyClosedSplitView* split_view =
+                recently_closed_split_views[0].get();
+            EXPECT_EQ(2u, split_view->tab_count);
+            EXPECT_EQ(tab_search::mojom::SplitTabLayout::kStacked,
+                      split_view->layout);
+            ASSERT_EQ(2u, split_view->tab_urls.size());
+            EXPECT_EQ(kTabUrl2, split_view->tab_urls[0].spec());
+            EXPECT_EQ(kTabUrl1, split_view->tab_urls[1].spec());
+          });
+  handler()->GetProfileData(std::move(callback));
+
+  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
 }
 
 }  // namespace

@@ -58,6 +58,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -149,6 +151,13 @@ bool ShouldTrackBrowser(Profile* profile, BrowserWindowInterface* browser) {
 bool HasTabSiteDataChanged(const tabs_api::mojom::TabFieldMaskPtr& mask) {
   return mask->title || mask->url || mask->favicon || mask->alert_states ||
          mask->last_active;
+}
+
+tab_search::mojom::SplitTabLayout GetMojoSplitLayout(
+    split_tabs::SplitTabLayout layout) {
+  return layout == split_tabs::SplitTabLayout::kStacked
+             ? tab_search::mojom::SplitTabLayout::kStacked
+             : tab_search::mojom::SplitTabLayout::kSideBySide;
 }
 
 }  // namespace
@@ -424,6 +433,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
   AddRecentlyClosedEntries(profile_data->recently_closed_tabs,
                            profile_data->recently_closed_tab_groups,
+                           profile_data->recently_closed_split_views,
                            tab_group_ids, profile_data->tab_groups,
                            tab_dedup_keys);
   profile_data->recently_closed_section_expanded =
@@ -483,6 +493,8 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     std::vector<tab_search::mojom::RecentlyClosedTabGroupPtr>&
         recently_closed_tab_groups,
+    std::vector<tab_search::mojom::RecentlyClosedSplitViewPtr>&
+        recently_closed_split_views,
     std::set<tab_groups::TabGroupId>& tab_group_ids,
     std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
     std::set<DedupKey>& tab_dedup_keys) {
@@ -577,7 +589,53 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
         break;
       }
       case sessions::tab_restore::Type::SPLIT: {
-        // TODO(crbug.com/509526704): Support Split Tabs for Tab Search Menu.
+        sessions::tab_restore::Split* split =
+            static_cast<sessions::tab_restore::Split*>(entry.get());
+
+        auto recently_closed_split_view =
+            tab_search::mojom::RecentlyClosedSplitView::New();
+        recently_closed_split_view->session_id = entry->id.id();
+        if (split->split_id.has_value()) {
+          recently_closed_split_view->id = split->split_id.value().token();
+        }
+        recently_closed_split_view->tab_count = split->tabs.size();
+        const base::Time last_active_time =
+            (entry->timestamp).is_null() ? GetTabGroupTimeStamp(split->tabs)
+                                         : entry->timestamp;
+        recently_closed_split_view->last_active_time = last_active_time;
+        recently_closed_split_view->last_active_elapsed_text =
+            GetLastActiveElapsedText(last_active_time);
+        recently_closed_split_view->layout =
+            GetMojoSplitLayout(split->visual_data.split_layout());
+
+        for (auto& tab : split->tabs) {
+          // Handle Navigations.
+          if (!tab->navigations.empty()) {
+            int nav_index = tab->normalized_navigation_index();
+            if (nav_index >= 0 &&
+                nav_index < static_cast<int>(tab->navigations.size())) {
+              recently_closed_split_view->tab_urls.push_back(
+                  tab->navigations[nav_index].virtual_url());
+            }
+          }
+
+          // Handle Group ID.
+          if (!recently_closed_split_view->group_id && tab->group.has_value()) {
+            recently_closed_split_view->group_id = tab->group.value().token();
+          }
+
+          // Add the recently closed tab.
+          if (AddRecentlyClosedTab(tab.get(), last_active_time,
+                                   recently_closed_tabs, tab_dedup_keys,
+                                   tab_group_ids, tab_groups)) {
+            recently_closed_tab_count += 1;
+          }
+        }
+
+        recently_closed_split_views.push_back(
+            std::move(recently_closed_split_view));
+        // Restored recently closed split views map to a single display item.
+        recently_closed_item_count += 1;
         break;
       }
     }
@@ -631,6 +689,20 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   }
   tab_mojom_data->pinned = tab->IsPinned();
   tab_mojom_data->split = tab->IsSplit();
+  const std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit();
+  if (split_id.has_value()) {
+    tab_mojom_data->split_id = split_id.value().token();
+    BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+    TabStripModel* tab_strip_model =
+        browser ? browser->GetTabStripModel() : nullptr;
+    if (tab_strip_model) {
+      auto* split_data = tab_strip_model->GetSplitData(split_id.value());
+      if (split_data && split_data->visual_data()) {
+        tab_mojom_data->split_layout =
+            GetMojoSplitLayout(split_data->visual_data()->split_layout());
+      }
+    }
+  }
 
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);
   CHECK(tab_ui_helper);
@@ -725,6 +797,10 @@ TabSearchPageHandler::GetRecentlyClosedTab(sessions::tab_restore::Tab* tab,
 
   if (tab->group.has_value()) {
     recently_closed_tab->group_id = tab->group.value().token();
+  }
+
+  if (tab->split_id.has_value()) {
+    recently_closed_tab->split_id = tab->split_id.value().token();
   }
 
   return recently_closed_tab;

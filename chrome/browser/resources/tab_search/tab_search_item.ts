@@ -94,6 +94,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
         lastActiveTimeTicks: {internalValue: BigInt(0)},
         pinned: false,
         split: false,
+        splitId: null,
+        splitLayout: null,
         showIcon: false,
         tabId: 1,
         title: '',

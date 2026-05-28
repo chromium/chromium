@@ -121,12 +121,14 @@ class TabSearchPageHandler
                      std::set<DedupKey>& tab_dedup_keys,
                      std::set<tab_groups::TabGroupId>& tab_group_ids);
 
-  // Adds recently closed tabs and tab groups.
+  // Adds recently closed tabs, tab groups, and split views.
   void AddRecentlyClosedEntries(
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
           recently_closed_tabs,
       std::vector<tab_search::mojom::RecentlyClosedTabGroupPtr>&
           recently_closed_tab_groups,
+      std::vector<tab_search::mojom::RecentlyClosedSplitViewPtr>&
+          recently_closed_split_views,
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
       std::set<DedupKey>& tab_dedup_keys);
