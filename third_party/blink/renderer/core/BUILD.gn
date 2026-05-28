@@ -1180,16 +1180,19 @@ make_qualified_names("make_core_generated_xml_names") {
 
 # One-off scripts --------------------------------------------------------------
 
-action("make_core_generated_html_entity_table") {
+blink_python_runner("make_core_generated_html_entity_table") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ ":*" ]
   script = "../build/scripts/make_html_entity_table.py"
 
-  inputs = [ "html/parser/html_entity_names.csv" ]
+  inputs = scripts_for_json5_files + [
+             "html/parser/html_entity_names.csv",
+             "../build/scripts/templates/html_entity_table.cc.tmpl",
+           ]
   outputs = [ "$blink_core_output_dir/html_entity_table.cc" ]
 
   args = [ "-o" ] + rebase_path(outputs, root_build_dir)
-  args += rebase_path(inputs, root_build_dir)
+  args += [ rebase_path("html/parser/html_entity_names.csv", root_build_dir) ]
 
   deps = make_core_generated_deps
 }
