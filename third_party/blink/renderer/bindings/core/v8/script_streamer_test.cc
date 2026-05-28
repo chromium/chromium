@@ -732,7 +732,8 @@ TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
 
   // Expect that we got a compile hint for the function which was run. Don't
   // assert what it is (that's internal to V8).
-  std::vector<int> compile_hints = script->GetProducedCompileHints();
+  std::vector<int> compile_hints =
+      script->GetCompileHintsCollector()->GetCompileHints(scope.GetIsolate());
   EXPECT_EQ(1UL, compile_hints.size());
 }
 
