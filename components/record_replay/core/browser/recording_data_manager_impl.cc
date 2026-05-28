@@ -4,7 +4,12 @@
 
 #include "components/record_replay/core/browser/recording_data_manager_impl.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
@@ -47,11 +52,14 @@ RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
                 features::kRecordReplayTaskDefinitionSeed.Get());
 }
 
-RecordingDataManagerImpl::~RecordingDataManagerImpl() = default;
+RecordingDataManagerImpl::~RecordingDataManagerImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void RecordingDataManagerImpl::AddRecording(
     Recording recording,
     base::OnceCallback<void(int64_t)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::AddRecording)
       .WithArgs(std::move(recording))
       .Then(std::move(callback));
@@ -60,6 +68,7 @@ void RecordingDataManagerImpl::AddRecording(
 void RecordingDataManagerImpl::GetRecordingsByUrl(
     std::string url,
     base::OnceCallback<void(std::vector<Recording>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::GetRecordingsByUrl)
       .WithArgs(std::move(url))
       .Then(std::move(callback));
@@ -69,6 +78,7 @@ void RecordingDataManagerImpl::SaveTaskDefinition(
     std::optional<int64_t> task_definition_id,
     TaskDefinition task_definition,
     base::OnceCallback<void(int64_t)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::SaveTaskDefinition)
       .WithArgs(task_definition_id, std::move(task_definition))
       .Then(std::move(callback));
@@ -77,6 +87,7 @@ void RecordingDataManagerImpl::SaveTaskDefinition(
 void RecordingDataManagerImpl::GetTaskDefinition(
     int64_t task_definition_id,
     base::OnceCallback<void(std::optional<TaskDefinition>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::GetTaskDefinition)
       .WithArgs(task_definition_id)
       .Then(std::move(callback));
@@ -85,8 +96,45 @@ void RecordingDataManagerImpl::GetTaskDefinition(
 void RecordingDataManagerImpl::GetTaskDefinitionsByUrl(
     std::string url,
     base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::GetTaskDefinitionsByUrl)
       .WithArgs(std::move(url))
+      .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::DeleteTaskDefinition(
+    int64_t task_definition_id,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.AsyncCall(&TaskDatabase::DeleteTaskDefinition)
+      .WithArgs(task_definition_id)
+      .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::SaveObservation(
+    TaskObservation observation,
+    base::OnceCallback<void(int64_t)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.AsyncCall(&TaskDatabase::SaveObservation)
+      .WithArgs(std::move(observation))
+      .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::GetObservationsForDefinition(
+    int64_t task_definition_id,
+    base::OnceCallback<void(std::vector<TaskObservation>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.AsyncCall(&TaskDatabase::GetObservationsForDefinition)
+      .WithArgs(task_definition_id)
+      .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::DeleteObservation(
+    int64_t observation_id,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.AsyncCall(&TaskDatabase::DeleteObservation)
+      .WithArgs(observation_id)
       .Then(std::move(callback));
 }
 

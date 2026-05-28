@@ -5,6 +5,8 @@
 #include "components/record_replay/core/browser/recording_data_manager_impl.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -14,6 +16,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/record_replay/core/common/record_replay_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -209,7 +212,83 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskDefinition) {
   EXPECT_EQ(retrieved[0].task_steps(0).description(), "Step 1");
 }
 
+TEST_F(RecordingDataManagerImplTest, DeleteTaskDefinition) {
+  TaskDefinition definition;
+  definition.set_title("Simple Booking");
+  definition.set_url("https://example.com");
 
+  base::test::TestFuture<int64_t> save_future;
+  data_manager().SaveTaskDefinition(std::nullopt, std::move(definition),
+                                    save_future.GetCallback());
+  int64_t def_id = save_future.Get();
+  ASSERT_GT(def_id, 0);
+
+  base::test::TestFuture<bool> delete_future;
+  data_manager().DeleteTaskDefinition(def_id, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+
+  base::test::TestFuture<std::optional<TaskDefinition>> get_future;
+  data_manager().GetTaskDefinition(def_id, get_future.GetCallback());
+  EXPECT_FALSE(get_future.Get().has_value());
+}
+
+TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveObservations) {
+  TaskDefinition definition;
+  definition.set_title("Simple Booking");
+  definition.set_url("https://example.com");
+
+  TaskStep* step = definition.add_task_steps();
+  step->set_step_index(0);
+  step->set_description("Step 1");
+  step->set_url("https://example.com");
+
+  TaskParameter* param = step->add_parameters();
+  param->set_key("k1");
+  param->set_name("param1");
+  param->set_type("string");
+
+  base::test::TestFuture<int64_t> save_def_future;
+  data_manager().SaveTaskDefinition(std::nullopt, std::move(definition),
+                                    save_def_future.GetCallback());
+  int64_t def_id = save_def_future.Get();
+  ASSERT_GT(def_id, 0);
+
+  base::test::TestFuture<std::optional<TaskDefinition>> get_def_future;
+  data_manager().GetTaskDefinition(def_id, get_def_future.GetCallback());
+  std::optional<TaskDefinition> retrieved_def = get_def_future.Take();
+  ASSERT_TRUE(retrieved_def.has_value());
+
+  TaskObservation obs;
+  *obs.mutable_definition() = std::move(*retrieved_def);
+  obs.set_start_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  obs.set_end_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  obs.set_execution_source(ExecutionSource::AUTOMATIC);
+  obs.mutable_definition()
+      ->mutable_task_steps(0)
+      ->mutable_parameters(0)
+      ->set_value("Window");
+
+  const int64_t expected_start_time = obs.start_time();
+
+  base::test::TestFuture<int64_t> save_obs_future;
+  data_manager().SaveObservation(std::move(obs), save_obs_future.GetCallback());
+  int64_t obs_id = save_obs_future.Get();
+  EXPECT_GT(obs_id, 0);
+
+  base::test::TestFuture<std::vector<TaskObservation>> get_obs_future;
+  data_manager().GetObservationsForDefinition(def_id,
+                                              get_obs_future.GetCallback());
+  std::vector<TaskObservation> observations = get_obs_future.Take();
+
+  ASSERT_EQ(observations.size(), 1u);
+  EXPECT_EQ(observations[0].id(), obs_id);
+  EXPECT_EQ(observations[0].start_time(), expected_start_time);
+  EXPECT_EQ(observations[0].execution_source(), ExecutionSource::AUTOMATIC);
+  EXPECT_EQ(observations[0].definition().task_steps(0).parameters(0).value(),
+            "Window");
+}
 
 TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
   ResetDataManager();

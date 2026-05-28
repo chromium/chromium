@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
+#include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
@@ -47,9 +48,22 @@ class RecordingDataManagerImpl : public RecordingDataManager {
   void GetTaskDefinitionsByUrl(
       std::string url,
       base::OnceCallback<void(std::vector<TaskDefinition>)> callback) override;
+  void DeleteTaskDefinition(int64_t definition_id,
+                            base::OnceCallback<void(bool)> callback) override;
+
+  // Full CRUD for Observations
+  void SaveObservation(TaskObservation observation,
+                       base::OnceCallback<void(int64_t)> callback) override;
+  void GetObservationsForDefinition(
+      int64_t task_definition_id,
+      base::OnceCallback<void(std::vector<TaskObservation>)> callback) override;
+  void DeleteObservation(int64_t observation_id,
+                         base::OnceCallback<void(bool)> callback) override;
 
  private:
   base::SequenceBound<TaskDatabase> db_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace record_replay

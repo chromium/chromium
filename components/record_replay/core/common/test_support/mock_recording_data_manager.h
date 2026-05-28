@@ -50,7 +50,25 @@ class MockRecordingDataManager : public RecordingDataManager {
               (std::string url,
                base::OnceCallback<void(std::vector<TaskDefinition>)> callback),
               (override));
-
+  MOCK_METHOD(void,
+              DeleteTaskDefinition,
+              (int64_t task_definition_id,
+               base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(void,
+              SaveObservation,
+              (TaskObservation observation,
+               base::OnceCallback<void(int64_t)> callback),
+              (override));
+  MOCK_METHOD(void,
+              GetObservationsForDefinition,
+              (int64_t task_definition_id,
+               base::OnceCallback<void(std::vector<TaskObservation>)> callback),
+              (override));
+  MOCK_METHOD(void,
+              DeleteObservation,
+              (int64_t observation_id, base::OnceCallback<void(bool)> callback),
+              (override));
 };
 
 }  // namespace record_replay

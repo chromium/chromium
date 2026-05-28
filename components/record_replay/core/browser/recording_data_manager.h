@@ -54,6 +54,19 @@ class RecordingDataManager : public KeyedService {
       std::string url,
       base::OnceCallback<void(std::vector<TaskDefinition>)> callback) = 0;
 
+  virtual void DeleteTaskDefinition(int64_t task_definition_id,
+                                    base::OnceCallback<void(bool)> callback) {}
+
+  // Full CRUD for Observations (Create/Update are unified under Save)
+  virtual void SaveObservation(TaskObservation observation,
+                               base::OnceCallback<void(int64_t)> callback) {}
+
+  virtual void GetObservationsForDefinition(
+      int64_t task_definition_id,
+      base::OnceCallback<void(std::vector<TaskObservation>)> callback) {}
+
+  virtual void DeleteObservation(int64_t observation_id,
+                                 base::OnceCallback<void(bool)> callback) {}
 };
 
 }  // namespace record_replay
