@@ -202,6 +202,21 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
     [self.mutator openNewTabWithURL:GURL(kKoreanTermsFootnoteLinkURL)];
   } else if ([actionString isEqualToString:kGeminiWatchLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kWatchLinkURL)];
+  } else if ([actionString
+                 isEqualToString:kGeminiDataGovernanceManagedLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kDataGovernanceManagedLinkURL)];
+  } else if ([actionString
+                 isEqualToString:kGeminiDataGovernanceStrictLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kDataGovernanceStrictLinkURL)];
+  } else if ([actionString isEqualToString:
+                               kGeminiDataGovernanceNormalChoicesLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kDataGovernanceNormalChoicesLinkURL)];
+  } else if ([actionString isEqualToString:
+                               kGeminiDataGovernanceNormalLocationLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kDataGovernanceNormalLocationLinkURL)];
+  } else if ([actionString
+                 isEqualToString:kGeminiConnectedServicesLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kConnectedServicesLinkURL)];
   }
 }
 

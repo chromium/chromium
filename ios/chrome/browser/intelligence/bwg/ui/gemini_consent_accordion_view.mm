@@ -88,8 +88,11 @@ const NSTimeInterval kAnimationDuration = 0.3;
               accordionView:(GeminiConsentAccordionView*)accordionView {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    // Initialize collapsible row to collapsed, otherwise keep it expanded.
-    row.collapsed = collapsible;
+    // If the accordion is not collapsible, force the row to be expanded.
+    // Otherwise, preserve the row's configured initial collapsed state.
+    if (!collapsible) {
+      row.collapsed = NO;
+    }
     _row = row;
     _collapsible = collapsible;
     _accordionView = accordionView;
@@ -125,6 +128,9 @@ const NSTimeInterval kAnimationDuration = 0.3;
       [stackView addArrangedSubview:[self createContainerForView:chevronView]];
 
       _chevronView = chevronView;
+      if (!row.collapsed) {
+        chevronView.transform = CGAffineTransformMakeRotation(M_PI);
+      }
 
       // Interaction.
       UITapGestureRecognizer* tapGesture =
@@ -215,7 +221,7 @@ const NSTimeInterval kAnimationDuration = 0.3;
   bodyTextView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
   bodyTextView.attributedText = row.body;
-  bodyTextView.hidden = _collapsible;
+  bodyTextView.hidden = row.collapsed;
   bodyTextView.delegate = self;
   [innerStackView addArrangedSubview:bodyTextView];
 

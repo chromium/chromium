@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -127,7 +129,7 @@ TEST_F(GeminiConsentConfigurationTest, FootnoteForUSAndNonUS) {
       HasLinkWithAction(us_config.footnote, kGeminiSecondFootnoteLinkAction));
   EXPECT_TRUE([us_config.footnote.string
       containsString:l10n_util::GetNSString(
-                         IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION)]);
+                         IDS_IOS_GEMINI_CONSENT_FOOTNOTE_US_ONLY_ADDITION)]);
 
   // Korea Footnote
   GeminiConsentConfiguration* kr_config =
@@ -140,7 +142,7 @@ TEST_F(GeminiConsentConfigurationTest, FootnoteForUSAndNonUS) {
       HasLinkWithAction(kr_config.footnote, kGeminiSecondFootnoteLinkAction));
   EXPECT_FALSE([kr_config.footnote.string
       containsString:l10n_util::GetNSString(
-                         IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION)]);
+                         IDS_IOS_GEMINI_CONSENT_FOOTNOTE_US_ONLY_ADDITION)]);
 }
 
 // Tests footnote strict watch link.
@@ -188,4 +190,104 @@ TEST_F(GeminiConsentConfigurationTest, LiveRowPropertiesAndLinks) {
       l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY));
   EXPECT_NSEQ(parsedText3.string, row3.body.string);
   EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiLivePrivacyPolicyLinkAction));
+}
+
+// Tests properties of the updated consent normal layout.
+TEST_F(GeminiConsentConfigurationTest, UpdatedConsentNormalLayout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiUpdatedConsent);
+
+  GeminiConsentConfiguration* config =
+      BuildStandardConfiguration(NO, NO, kUSCountryCode);
+  ASSERT_NE(nil, config);
+  EXPECT_EQ(2U, config.rows.count);
+  EXPECT_FALSE(config.collapsible);
+
+  // Row 1: Share Tab
+  GeminiConsentRow* row1 = config.rows[0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE),
+              row1.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY),
+              row1.body.string);
+
+  // Row 2: Normal Governance
+  GeminiConsentRow* row2 = config.rows[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE),
+              row2.title);
+  StringWithTags parsedText2 = ParseStringWithLinks(l10n_util::GetNSString(
+      IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_BODY));
+  EXPECT_NSEQ(parsedText2.string, row2.body.string);
+  EXPECT_TRUE(HasLinkWithAction(row2.body,
+                                kGeminiDataGovernanceNormalChoicesLinkAction));
+  EXPECT_TRUE(HasLinkWithAction(row2.body,
+                                kGeminiDataGovernanceNormalLocationLinkAction));
+}
+
+// Tests properties of the updated consent managed layout.
+TEST_F(GeminiConsentConfigurationTest, UpdatedConsentManagedLayout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiUpdatedConsent);
+
+  GeminiConsentConfiguration* config =
+      BuildStandardConfiguration(YES, NO, kUSCountryCode);
+  ASSERT_NE(nil, config);
+  EXPECT_EQ(2U, config.rows.count);
+  EXPECT_FALSE(config.collapsible);
+
+  // Row 1: Share Tab
+  GeminiConsentRow* row1 = config.rows[0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE),
+              row1.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY),
+              row1.body.string);
+
+  // Row 2: Managed Governance
+  GeminiConsentRow* row2 = config.rows[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_MANAGED_TITLE),
+              row2.title);
+  StringWithTags parsedText2 = ParseStringWithLinks(l10n_util::GetNSString(
+      IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_MANAGED_BODY));
+  EXPECT_NSEQ(parsedText2.string, row2.body.string);
+  EXPECT_TRUE(
+      HasLinkWithAction(row2.body, kGeminiDataGovernanceManagedLinkAction));
+}
+
+// Tests properties of the updated consent strict layout.
+TEST_F(GeminiConsentConfigurationTest, UpdatedConsentStrictLayout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiUpdatedConsent);
+
+  GeminiConsentConfiguration* config =
+      BuildStandardConfiguration(NO, YES, kUSCountryCode);
+  ASSERT_NE(nil, config);
+  EXPECT_EQ(3U, config.rows.count);
+  EXPECT_TRUE(config.collapsible);
+
+  // Row 1: Share Tab (Strict)
+  GeminiConsentRow* row1 = config.rows[0];
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE_STRICT),
+      row1.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY),
+              row1.body.string);
+
+  // Row 2: Connected Services
+  GeminiConsentRow* row2 = config.rows[1];
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_TITLE),
+      row2.title);
+  StringWithTags parsedText2 = ParseStringWithLinks(
+      l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_BODY));
+  EXPECT_NSEQ(parsedText2.string, row2.body.string);
+  EXPECT_TRUE(HasLinkWithAction(row2.body, kGeminiConnectedServicesLinkAction));
+
+  // Row 3: Strict Governance
+  GeminiConsentRow* row3 = config.rows[2];
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE),
+              row3.title);
+  EXPECT_TRUE(
+      HasLinkWithAction(row3.body, kGeminiDataGovernanceStrictLinkAction));
 }

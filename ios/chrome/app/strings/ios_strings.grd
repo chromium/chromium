@@ -1426,18 +1426,6 @@
       <message name="IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE" desc="First box title text for the Gemini Consent page for managed accounts.">
           Get more relevant answers by sharing your tabs
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT" desc="Format string for the Gemini consent footnote.">
-          <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Terms<ph name="END_LINK">END_LINK</ph> and the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Notice<ph name="END_LINK">END_LINK</ph> apply. Gemini is AI and can make mistakes, including about people.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA" desc="Format string for the Gemini consent footnote for accounts in South Korea.">
-          Our <ph name="BEGIN_LINK">BEGIN_LINK</ph>Terms<ph name="END_LINK">END_LINK</ph>, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Korean Location Terms<ph name="END_LINK">END_LINK</ph>, and <ph name="BEGIN_LINK">BEGIN_LINK</ph>Privacy Notice<ph name="END_LINK">END_LINK</ph> apply. Gemini is AI and can make mistakes, including about people.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION" desc="US-only footer addition message.">
-          Some content may not be suitable for everyone.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LABEL" desc="Footer label for watch video.">
-          Watch: <ph name="BEGIN_LINK">BEGIN_LINK</ph>5 must-knows for generative AI<ph name="END_LINK">END_LINK</ph>
-      </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
           By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google but won’t be used to improve generative AI models. You can change this setting anytime.
       </message>
@@ -3286,6 +3274,57 @@
       </message>
       <message name="IDS_IOS_GEMINI_ACCORDION_EXPANDED" desc="Accessibility value spoken to signify that the focused accordion row is expanded. [iOS only].">
         Expanded
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_BODY" desc="Connected services body text for the Gemini Consent page.">
+        To provide tailored help, Gemini shares some of your data (like parts of your chats, location, and other relevant info) with other Google services, like Maps and Flights. These services may use that info to improve, even if you later delete your Gemini Apps activity. Learn more in the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Hub<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_TITLE" desc="Connected services title text for the Gemini Consent page.">
+        Gemini works with other services
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_MANAGED_BODY" desc="Enterprise body text for the Gemini Consent page for managed accounts.">
+          Neither your conversations with Gemini nor your <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Workspace data<ph name="END_LINK">END_LINK</ph> will be reviewed or used to improve generative AI models.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_MANAGED_TITLE" desc="Enterprise title text for the Gemini Consent page for managed accounts.">
+          Your organization's data is private and secure
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_BODY" desc="Data governance body text for the Gemini Consent page for non managed accounts.">
+          Chats are reviewed and used to improve Google AI. You can <ph name="BEGIN_LINK">BEGIN_LINK</ph>manage your activity<ph name="END_LINK">END_LINK</ph>, including info about your location. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more about your choices<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE" desc="Data governance title text for the Gemini Consent page for non managed accounts.">
+          Your activity improves Google AI
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT" desc="Format string for the Gemini consent footnote.">
+          <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Terms<ph name="END_LINK">END_LINK</ph> and the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Notice<ph name="END_LINK">END_LINK</ph> apply. Gemini is AI and can make mistakes, including about people.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA" desc="Format string for the Gemini consent footnote for accounts in South Korea.">
+          Our <ph name="BEGIN_LINK">BEGIN_LINK</ph>Terms<ph name="END_LINK">END_LINK</ph>, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Korean Location Terms<ph name="END_LINK">END_LINK</ph>, and <ph name="BEGIN_LINK">BEGIN_LINK</ph>Privacy Notice<ph name="END_LINK">END_LINK</ph> apply. Gemini is AI and can make mistakes, including about people.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_FOOTNOTE_US_ONLY_ADDITION" desc="US-only footer addition message.">
+          Some content may not be suitable for everyone.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_FOOTNOTE_WATCH_LABEL" desc="Footer label for watch video.">
+          Watch: <ph name="BEGIN_LINK">BEGIN_LINK</ph>5 must-knows for generative AI<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY" desc="Share tab body text for the Gemini Consent page.">
+        Google uses the content and URL of shared tabs. Your current tab is shared in new chats. You can change this setting anytime.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE" desc="Share tab title text for the Gemini Consent page.">
+          Tabs are shared for more relevant answers
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE_STRICT" desc="Share tab title text for the Gemini Consent page for strict mode.">
+          Get more relevant answers by sharing your tabs
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_1" desc="Body of part 1 for the strict data governance row.">
+        Google collects your chats and what you share with Gemini (like files, videos, screens, and photos). It also collects your feedback, info from websites you visit with Gemini, product usage, and location info (including your device’s general location, IP address, or Home or Work addresses in your Google Account).
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_2" desc="Body of part 2 for the strict data governance row.">
+        Your <ph name="BEGIN_LINK">BEGIN_LINK</ph>Keep Activity<ph name="END_LINK">END_LINK</ph> setting is off by default. When it’s off, Google saves your chats for 3 days. It uses them to make Gemini Apps work correctly, help keep them safe, and use your feedback to fix problems. You can turn on Keep Activity to help improve Google AI for everyone.
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_SUBTITLE_1" desc="Title of part 1 for the strict data governance row.">
+        What activity is collected
+      </message>
+      <message name="IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_SUBTITLE_2" desc="Title of part 2 for the strict data governance row.">
+        If you’re under 18
       </message>
       <message name="IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT" desc="The entry point for Gemini when the user long-presses an image. Invites the user to create an image using Gemini in Chrome.">
         Edit Image with Gemini

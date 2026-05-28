@@ -60,7 +60,8 @@
 // Whether the consent rows are collapsible.
 @property(nonatomic, assign, readonly) BOOL collapsible;
 
-// Factory method to build a configuration.
+// Factory method to build a configuration. Most notably, the number of rows
+// and their order might change depending on the parameters.
 + (instancetype)configurationForManaged:(BOOL)isManaged
                                  strict:(BOOL)useStrict
                                    type:(GeminiFREType)type

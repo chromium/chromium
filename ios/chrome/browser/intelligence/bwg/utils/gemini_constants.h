@@ -240,37 +240,60 @@ extern NSString* const kLottieAnimationFREBannerName;
 
 // Session map dictionary key for the last interaction timestamp.
 extern const char kLastInteractionTimestampDictKey[];
-
-// The accessibility ID of the Gemini consent FootNote textView.
-extern NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier;
-
 // Session map dictionary key for the visible URL during the last BWG
 // interaction.
 extern const char kURLOnLastInteractionDictKey[];
 
-// Links for attributed links.
-extern const char kFirstFootnoteLinkURL[];
-extern const char kSecondFootnoteLinkURL[];
-extern const char kKoreanTermsFootnoteLinkURL[];
+// Consent row links for the new FRE.
+extern const char kDataGovernanceManagedLinkURL[];
+extern const char kDataGovernanceStrictLinkURL[];
+extern const char kDataGovernanceNormalLocationLinkURL[];
+extern const char kDataGovernanceNormalChoicesLinkURL[];
+extern const char kConnectedServicesLinkURL[];
+
+// Consent row links for the old FRE.
+// TODO(crbug.com/393204662): Remove these links once the old FRE is removed.
 extern const char kSecondBoxLinkURLManagedAccount[];
 extern const char kSecondBoxLink1URLNonManagedAccount[];
 extern const char kSecondBoxLink2URLNonManagedAccount[];
+
+// Consent row links for Live FRE.
 extern const char kLivePrivacyNoticeLinkURL[];
 extern const char kLiveLearnMoreLinkURL[];
 extern const char kLivePrivacyPolicyLinkURL[];
+
+// Footnote links.
+extern const char kFirstFootnoteLinkURL[];
+extern const char kSecondFootnoteLinkURL[];
+extern const char kKoreanTermsFootnoteLinkURL[];
 extern const char kWatchLinkURL[];
 
-// Action identifier on a tap on links in the footnote.
-extern NSString* const kGeminiFirstFootnoteLinkAction;
-extern NSString* const kGeminiSecondFootnoteLinkAction;
-extern NSString* const kGeminiKoreanTermsLinkAction;
+// Action identifiers for links in the new FRE Gemini consent rows.
+extern NSString* const kGeminiDataGovernanceManagedLinkAction;
+extern NSString* const kGeminiDataGovernanceStrictLinkAction;
+extern NSString* const kGeminiDataGovernanceNormalLocationLinkAction;
+extern NSString* const kGeminiDataGovernanceNormalChoicesLinkAction;
+extern NSString* const kGeminiConnectedServicesLinkAction;
+
+// Action identifiers for links in the old FRE Gemini consent rows.
 extern NSString* const kGeminiSecondBoxLinkActionManagedAccount;
 extern NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount;
 extern NSString* const kGeminiSecondBoxLink2ActionNonManagedAccount;
+
+// Action identifiers for links in the Live FRE Gemini consent rows.
 extern NSString* const kGeminiLivePrivacyNoticeLinkAction;
 extern NSString* const kGeminiLiveLearnMoreLinkAction;
 extern NSString* const kGeminiLivePrivacyPolicyLinkAction;
+
+// Action identifier for links in the Gemini consent footnote.
+extern NSString* const kGeminiFirstFootnoteLinkAction;
+extern NSString* const kGeminiSecondFootnoteLinkAction;
+extern NSString* const kGeminiKoreanTermsLinkAction;
 extern NSString* const kGeminiWatchLinkAction;
+
+// Accessibility identifiers for Gemini consent view.
+// The accessibility ID of the Gemini consent FootNote textView.
+extern NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier;
 
 // The sliding window for displaying a Gemini contextual cue chip. Chips are
 // shown within this time range (in hours) relative to the last chip that was
