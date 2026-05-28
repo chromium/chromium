@@ -22,6 +22,10 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTest, IntroApp) {
   RunTest("intro/intro_app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(IntroBrowserTest, FinishOrContinue) {
+  RunTest("intro/finish_or_continue_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(IntroBrowserTest, SignInCelebration) {
   RunTest("intro/sign_in_celebration_test.js", "mocha.run()");
 }

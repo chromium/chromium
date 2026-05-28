@@ -1039,6 +1039,15 @@
     <message name="IDS_FRE_NEXT_BUTTON_TITLE" desc="A title for a button that advances a user to the next step (sign in screen) in the first run experience flow.">
       Next
     </message>
+    <message name="IDS_FRE_FINISH_OR_CONTINUE_TITLE" desc="A title for the final onboarding screen (Finish or Continue) in the first run experience flow.  It indicates that the setup process is complete.">
+      You're all set!
+    </message>
+    <message name="IDS_FRE_FINISH_OR_CONTINUE_SEE_MORE_TIPS_BUTTON_LABEL" desc="A label for a button that leads to educational content. It appears on the final onboarding screen (Finish or Continue) in the first run experience flow.">
+      See more tips
+    </message>
+    <message name="IDS_FRE_FINISH_OR_CONTINUE_START_BROWSING_BUTTON_LABEL" desc="A label for a button that enters the web. It appears on the final onboarding screen (Finish or Continue) in the first run experience flow.">
+      Start browsing
+    </message>
 
     <!-- Default Browser Promo -->
     <message name="IDS_FRE_DEFAULT_BROWSER_TITLE_NEW" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">

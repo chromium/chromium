@@ -17,6 +17,7 @@ build_webui("build") {
     "animations/signin_benefits_light_bottom.json",
     "animations/signin_benefits_light_left.json",
     "animations/signin_benefits_light_right.json",
+    "finish_or_continue/finish_or_continue.html",
     "sign_in_celebration/sign_in_celebration.html",
     "default_browser/default_browser.html",
     "default_browser/default_browser_refresh.html",
@@ -47,6 +48,8 @@ build_webui("build") {
     }
 
     ts_files += [
+      "finish_or_continue/app.html.ts",
+      "finish_or_continue/app.ts",
       "sign_in_celebration/app.html.ts",
       "sign_in_celebration/app.ts",
       "sign_in_celebration/sign_in_celebration_browser_proxy.ts",
@@ -65,6 +68,7 @@ build_webui("build") {
     css_files = [
       "default_browser/app.css",
       "default_browser/app_refresh.css",
+      "finish_or_continue/app.css",
       "intro_app.css",
       "sign_in_celebration/app.css",
       "sign_in_promo.css",

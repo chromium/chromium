@@ -503,6 +503,8 @@ inline constexpr char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
 inline constexpr char kChromeUIIntroDefaultBrowserSubPage[] = "default-browser";
 inline constexpr char kChromeUIIntroDefaultBrowserURL[] =
     "chrome://intro/default-browser";
+inline constexpr char kChromeUIIntroFinishOrContinueSubPage[] =
+    "finish-or-continue";
 inline constexpr char kChromeUIIntroSignInCelebrationSubPage[] =
     "sign-in-celebration";
 inline constexpr char kChromeUIIntroSignInCelebrationURL[] =
