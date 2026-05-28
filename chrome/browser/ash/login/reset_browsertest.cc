@@ -363,6 +363,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTest, ViewsLogic) {
   prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   InvokeResetScreen();
   InvokeResetAccelerator();
+  test::OobeJS()
+      .CreateHasClassWaiter(true, "rollback-proposal-view", {kResetScreen})
+      ->Wait();
 
   ClickToConfirmButton();
   WaitForConfirmationDialogToOpen();
@@ -421,8 +424,6 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RollbackAvailable) {
   OobeScreenWaiter(ResetView::kScreenId).Wait();
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-
   EXPECT_EQ(
       0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
@@ -439,6 +440,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RollbackAvailable) {
   prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   InvokeResetScreen();
   InvokeResetAccelerator();  // Shows rollback.
+  test::OobeJS()
+      .CreateHasClassWaiter(true, "rollback-proposal-view", {kResetScreen})
+      ->Wait();
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   ClickDismissConfirmationButton();
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
@@ -456,6 +460,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RollbackAvailable) {
   prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   InvokeResetScreen();
   InvokeResetAccelerator();  // Shows rollback.
+  test::OobeJS()
+      .CreateHasClassWaiter(true, "rollback-proposal-view", {kResetScreen})
+      ->Wait();
   ClickToConfirmButton();
   ClickResetButton();
   EXPECT_EQ(
@@ -475,6 +482,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
   test::OobeJS().ExpectHasNoClass("revert-promise-view", {kResetScreen});
 
   InvokeResetAccelerator();
+  test::OobeJS()
+      .CreateHasClassWaiter(true, "rollback-proposal-view", {kResetScreen})
+      ->Wait();
   ClickToConfirmButton();
   WaitForConfirmationDialogToOpen();
   ClickResetButton();
