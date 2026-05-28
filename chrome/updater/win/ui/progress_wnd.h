@@ -169,14 +169,14 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
 
   static const ControlState ctls_[];
 
-  // The speed by which the progress bar moves in marquee mode.
-  static constexpr int kMarqueeModeUpdatesMs = 75;
+  // Background image cache for both light and dark themes.
+  base::win::ScopedGDIObject<HBITMAP> light_bg_bmp_;
+  base::win::ScopedGDIObject<HBITMAP> dark_bg_bmp_;
 
-  // Cached brush used to fill the background of text static controls in
-  // dark mode (see `OnCtlColorStatic`). Created lazily on first use and
-  // reset whenever the system theme changes so the next paint picks up
-  // the new colors.
-  base::win::ScopedGDIObject<HBRUSH> dark_static_brush_;
+  HBITMAP GetBackgroundBitmap();
+
+  // The speed by which the progress bar moves in marquee mode.
+  static constexpr int kMarqueeModeUpdatesMs = 15;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(ProgressWnd)
 };

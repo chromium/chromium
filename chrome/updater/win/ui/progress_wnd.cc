@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "base/win/current_module.h"
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/app/app_install_util_win.h"
@@ -206,116 +207,68 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
   RECT rect = {};
   ::GetClientRect(hwnd(), &rect);
 
+  // High Contrast accessibility fallback.
   if (IsHighContrastOn()) {
     ::FillRect(hdc, &rect, ::GetSysColorBrush(COLOR_WINDOW));
     return 1;
   }
 
-  if (IsDarkModeOn()) {
-    base::win::ScopedGDIObject<HBRUSH> fill_brush(
-        ::CreateSolidBrush(RGB(0x20, 0x20, 0x20)));
-    ::FillRect(hdc, &rect, fill_brush.get());
+  HBITMAP bg_bmp = GetBackgroundBitmap();
+  if (bg_bmp) {
+    BITMAP bm = {};
+    ::GetObject(bg_bmp, sizeof(bm), &bm);
+
+    HDC hdc_mem = ::CreateCompatibleDC(hdc);
+    const HGDIOBJ old_bm = ::SelectObject(hdc_mem, bg_bmp);
+
+    // Set high-quality HALFTONE scaling mode.
+    const int old_stretch_mode = ::SetStretchBltMode(hdc, HALFTONE);
+    ::SetBrushOrgEx(hdc, 0, 0, nullptr);
+
+    // Paint and stretch the background image over the client area.
+    const int width = rect.right - rect.left;
+    const int height = rect.bottom - rect.top;
+    ::StretchBlt(hdc, 0, 0, width, height, hdc_mem, 0, 0, bm.bmWidth,
+                 bm.bmHeight, SRCCOPY);
+
+    // Restore DC state.
+    ::SetStretchBltMode(hdc, old_stretch_mode);
+    ::SelectObject(hdc_mem, old_bm);
+    ::DeleteDC(hdc_mem);
     return 1;
   }
 
-  // Fill the entire client area with solid white first to clear any previous
-  // artifacts.
-  ::FillRect(hdc, &rect, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
-
-  const int width = rect.right - rect.left;
-  const int height = rect.bottom - rect.top;
-
-  // Configuration for the rainbow geometry.
-  static constexpr size_t kNumStops = 7;
-  static constexpr size_t kNumSegments = kNumStops - 1;
-  static constexpr size_t kNumVertices = kNumStops * 2;  // Top + bottom row
-  static constexpr size_t kNumTriangles = kNumSegments * 2;
-
-  // Layout ratios.
-  static constexpr double kYEdgeRatio = 0.69;
-  static constexpr double kYCenterRatio = 0.98;
-
-  // Static data for stops and colors.
-  static constexpr std::array<double, kNumStops> kStops = {
-      0.0, 0.17, 0.32, 0.50, 0.66, 0.81, 1.0};
-
-  static constexpr std::array<COLORREF, kNumStops> kColors = {
-      RGB(255, 255, 220),  // Light Yellow
-      RGB(255, 240, 210),  // Light Orange
-      RGB(255, 225, 225),  // Light Red
-      RGB(255, 235, 245),  // Light Pink
-      RGB(250, 230, 255),  // Light Magenta
-      RGB(240, 230, 255),  // Light Violet
-      RGB(220, 255, 255)   // Light Aqua
-  };
-
-  // Define the curve parameters:
-  // y_edge: The height where the rainbow starts at the left/right edges.
-  // y_center: The height where the rainbow is thinnest at the center.
-  const int y_edge = static_cast<int>(height * kYEdgeRatio);
-  const int y_center = static_cast<int>(height * kYCenterRatio);
-
-  // Define the rainbow mesh vertices.
-  std::array<TRIVERTEX, kNumVertices> vertices;
-  auto v_span = base::span(vertices);
-
-  auto set_vertex = [](base::span<TRIVERTEX> vertices, size_t index, int x,
-                       int y, COLORREF color) {
-    TRIVERTEX& vertex = vertices[index];
-    vertex.x = x;
-    vertex.y = y;
-    vertex.Red = static_cast<COLOR16>(GetRValue(color) << 8);
-    vertex.Green = static_cast<COLOR16>(GetGValue(color) << 8);
-    vertex.Blue = static_cast<COLOR16>(GetBValue(color) << 8);
-    vertex.Alpha = 0;
-  };
-
-  for (size_t i = 0; i < kNumStops; ++i) {
-    const double stop = kStops[i];
-
-    // Use the width of the rect to ensure we hit the right edge perfectly.
-    const int x =
-        (i == kNumStops - 1) ? rect.right : static_cast<int>(width * stop);
-
-    // Calculate the concave (U-shaped) boundary using a parabola.
-    const double factor = (2.0 * stop - 1.0);
-    const int y_boundary =
-        static_cast<int>(y_center - (y_center - y_edge) * (factor * factor));
-
-    // Top row of the mesh (White boundary following the curve).
-    set_vertex(v_span, i, x, y_boundary, RGB(255, 255, 255));
-
-    // Bottom row of the mesh (Light rainbow colors). Stretch to the very
-    // bottom.
-    set_vertex(v_span, i + kNumStops, x, rect.bottom, kColors[i]);
-  }
-
-  // Create the triangles, 2 triangles per segment.
-  std::array<GRADIENT_TRIANGLE, kNumTriangles> mesh;
-  for (size_t i = 0; i < kNumSegments; ++i) {
-    // Triangle 1.
-    GRADIENT_TRIANGLE& tri1 = mesh[i * 2];
-    tri1.Vertex1 = static_cast<ULONG>(i);
-    tri1.Vertex2 = static_cast<ULONG>(i + 1);
-    tri1.Vertex3 = static_cast<ULONG>(i + kNumStops);
-
-    // Triangle 2.
-    GRADIENT_TRIANGLE& tri2 = mesh[i * 2 + 1];
-    tri2.Vertex1 = static_cast<ULONG>(i + 1);
-    tri2.Vertex2 = static_cast<ULONG>(i + kNumStops + 1);
-    tri2.Vertex3 = static_cast<ULONG>(i + kNumStops);
-  }
-
-  ::GradientFill(hdc, v_span.data(), static_cast<ULONG>(v_span.size()),
-                 mesh.data(), static_cast<ULONG>(mesh.size()),
-                 GRADIENT_FILL_TRIANGLE);
-
+  // Fallback to safe solid background color if loading fails.
+  const COLORREF fallback_color =
+      IsDarkModeOn() ? RGB(0x20, 0x20, 0x20) : RGB(255, 255, 255);
+  base::win::ScopedGDIObject<HBRUSH> fill_brush(
+      ::CreateSolidBrush(fallback_color));
+  ::FillRect(hdc, &rect, fill_brush.get());
   return 1;
+}
+
+HBITMAP ProgressWnd::GetBackgroundBitmap() {
+  if (IsDarkModeOn()) {
+    if (!dark_bg_bmp_.is_valid()) {
+      dark_bg_bmp_.reset(static_cast<HBITMAP>(
+          ::LoadImage(CURRENT_MODULE(), MAKEINTRESOURCE(IDB_BACKGROUND_DARK),
+                      IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
+    }
+    return dark_bg_bmp_.get();
+  } else {
+    if (!light_bg_bmp_.is_valid()) {
+      light_bg_bmp_.reset(static_cast<HBITMAP>(
+          ::LoadImage(CURRENT_MODULE(), MAKEINTRESOURCE(IDB_BACKGROUND_LIGHT),
+                      IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
+    }
+    return light_bg_bmp_.get();
+  }
 }
 
 LRESULT ProgressWnd::OnSysColorChange(UINT, WPARAM, LPARAM) {
   SetMsgHandled(FALSE);
-  dark_static_brush_.reset();
+  light_bg_bmp_.reset();
+  dark_bg_bmp_.reset();
   ::RedrawWindow(hwnd(), nullptr, nullptr,
                  RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
   return 0;
@@ -325,7 +278,8 @@ LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM, LPARAM lparam) {
   SetMsgHandled(FALSE);
   if (lparam && std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
                     L"ImmersiveColorSet") {
-    dark_static_brush_.reset();
+    light_bg_bmp_.reset();
+    dark_bg_bmp_.reset();
     ::RedrawWindow(
         hwnd(), nullptr, nullptr,
         RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
@@ -342,12 +296,6 @@ HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND ctl_hwnd) {
   }
   if (IsDarkModeOn()) {
     ::SetTextColor(dc, RGB(0xFF, 0xFF, 0xFF));
-    ::SetBkColor(dc, RGB(0x20, 0x20, 0x20));
-    ::SetBkMode(dc, TRANSPARENT);
-    if (!dark_static_brush_.is_valid()) {
-      dark_static_brush_.reset(::CreateSolidBrush(RGB(0x20, 0x20, 0x20)));
-    }
-    return dark_static_brush_.get();
   }
   ::SetBkMode(dc, TRANSPARENT);
   return static_cast<HBRUSH>(::GetStockObject(NULL_BRUSH));
@@ -805,7 +753,8 @@ HRESULT ProgressWnd::SetMarqueeMode(bool is_marquee) {
     style &= ~PBS_MARQUEE;
   }
   ::SetWindowLongPtrW(progress_bar, GWL_STYLE, style);
-  ::SendMessageW(progress_bar, PBM_SETMARQUEE, is_marquee, 0);
+  ::SendMessageW(progress_bar, PBM_SETMARQUEE, is_marquee,
+                 kMarqueeModeUpdatesMs);
 
   return S_OK;
 }
