@@ -1,0 +1,30 @@
+# proto-file: googleclient/chrome/security/pki_metadata/chrome_root_store/signer_set.proto
+# proto-message: chrome_root_store.SignerSet
+
+timestamp: {
+  seconds: 1778137200  # 2026-05-07T00:00:00Z
+}
+version: "1.0.0"
+compatibility_version: 1
+operators: {
+  name: "Cloudflare"
+  email: "mtc@cloudflare.test"
+}
+
+issuers: {
+  friendly_name: "cloudflare_experiment_shard3"
+  base_id: "44363.48.8"
+  key_sha256: "40328aac349197c2daccd7b8ca66b17f3e44d2d5fa66acc7d0a8c2924802fbfa"
+  base_url: "https://bootstrap-mtca-shard3.cloudflareresearch.com"
+  type: SIGNER_TYPE_ISSUER
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  max_cert_lifetime: {
+    seconds: 604800  # 7 days
+  }
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1778137200  # 2026-05-07T00:00:00Z
+    }
+  }
+}

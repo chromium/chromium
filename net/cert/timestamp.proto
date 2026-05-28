@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// third_party/protobuf/src/google/protobuf/timestamp.proto cannot be
+// directly imported because it is not in the `protobuf_lite` source.
+// This message needs to be wire compatible with it.
+
+syntax = "proto3";
+
+package chrome_root_store;
+
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must
+  // be between -62135596800 and 253402300799 inclusive (which corresponds to
+  // 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z).
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. This field is
+  // the nanosecond portion of the duration, not an alternative to seconds.
+  // Negative second values with fractions must still have non-negative nanos
+  // values that count forward in time. Must be between 0 and 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}

@@ -47,3 +47,19 @@ compiled_action("gen_root_store_test_inc") {
                     root_build_dir),
   ]
 }
+
+compiled_action("gen_signer_set_inc") {
+  tool = "//net/tools/signer_set_tool:signer_set_tool"
+
+  inputs = [
+    "signer_keys.pem",
+    "signer_set.textproto",
+  ]
+  outputs = [ "${target_gen_dir}/signer-set-inc.cc" ]
+  args = [
+    "--signer-set=" + rebase_path("signer_set.textproto", root_build_dir),
+    "--keys=" + rebase_path("signer_keys.pem", root_build_dir),
+    "--write-cpp=" +
+        rebase_path("${target_gen_dir}/signer-set-inc.cc", root_build_dir),
+  ]
+}

@@ -6,18 +6,33 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("root_store_proto_full") {
   proto_out_dir = "net/cert/root_store_proto_full/"
-  sources = [ "root_store.proto" ]
+  sources = [
+    "duration.proto",
+    "mtc_config.proto",
+    "root_store.proto",
+    "signer_set.proto",
+    "timestamp.proto",
+  ]
 
   # root_store_tool uses the full protobuf library to parse textproto. This
   # should not be linked into the browser. If a browser target needs this
   # protobuf, use the _lite target below.
   use_protobuf_full = true
-  visibility = [ "//net/tools/root_store_tool" ]
+  visibility = [
+    "//net/tools/root_store_tool",
+    "//net/tools/signer_set_tool",
+  ]
 }
 
 proto_library("root_store_proto_lite") {
   proto_out_dir = "net/cert/root_store_proto_lite/"
-  sources = [ "root_store.proto" ]
+  sources = [
+    "duration.proto",
+    "mtc_config.proto",
+    "root_store.proto",
+    "signer_set.proto",
+    "timestamp.proto",
+  ]
 
   cc_generator_options = "lite=true:"
   visibility = [

@@ -1625,6 +1625,7 @@ component("net") {
       "//base/version_info",
       "//net/cert:root_store_proto_lite",
       "//net/data/ssl/chrome_root_store:gen_root_store_inc",
+      "//net/data/ssl/chrome_root_store:gen_signer_set_inc",
     ]
     if (is_win) {
       sources += [

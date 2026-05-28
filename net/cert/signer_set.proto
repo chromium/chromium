@@ -1,0 +1,117 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package chrome_root_store;
+
+import "duration.proto";
+import "timestamp.proto";
+import "root_store.proto";
+
+enum SignerType {
+  SIGNER_TYPE_UNSET = 0;
+  // Signer is an issuer log.
+  SIGNER_TYPE_ISSUER = 1;
+  // Signer is a mirror.
+  SIGNER_TYPE_MIRROR = 2;
+}
+
+enum Realm {
+  REALM_UNSET = 0;
+  REALM_UNTRUSTED_VALIDATION_ONLY = 1;
+  REALM_PUBLICLY_TRUSTED = 2;
+}
+
+enum SignerState {
+  STATE_UNSET = 0;
+  // This signer is being monitored and under consideration for qualification.
+  // Only used for mirrors.
+  STATE_CANDIDATE = 1;
+  // This signer is considered qualified and is trusted by Chrome. However not
+  // all Chrome clients may have received the update yet. Only used for mirrors.
+  STATE_QUALIFIED = 2;
+  // This signer is trusted by Chrome. For mirrors, all clients are aware of
+  // this signer, or no longer enforce transparency requirements.
+  STATE_USABLE = 3;
+  // This signer is no longer generating new signatures, but signatures issued
+  // prior to the signer entering this state are still considered valid.
+  STATE_FROZEN = 4;
+  // This signer is no longer trusted by Chrome.
+  STATE_REMOVED = 5;
+}
+
+message OperatorChange {
+  string name = 1;
+  // Timestamp at which this operator started operating this signer.
+  Timestamp operator_start = 2;
+}
+
+message StateChange {
+  SignerState state = 1;
+  // Timestamp at which this state started.
+  Timestamp state_start = 2;
+}
+
+message SignerOperator {
+  // Name of this signer operator.
+  string name = 1;
+  // Email addresses at which the operator can be reached.
+  repeated string email = 2;
+}
+
+message Signer {
+  // Human-readable name.
+  string friendly_name = 1;
+  // Unique identifier in OID format (e.g. 1.2.3.4).
+  string base_id = 2;
+  // History of state changes for this signer, in reverse chronological order
+  // (current state is first).
+  repeated StateChange state_history = 3;
+  // Operators that have operated this signer, in reverse chronological order
+  // (current operator is first).
+  repeated OperatorChange operator_history = 4;
+  // Public key of the signer, in raw bytes.
+  bytes key = 5;
+  // Monitoring URL.
+  string base_url = 6;
+  // Whether the signer is a mirror or an issuer log.
+  SignerType type = 7;
+  // Log's authentication realm.
+  Realm realm = 8;
+  // Maximum lifetime of certificates issued by this CA. Only applicable to
+  // issuers.
+  Duration max_cert_lifetime = 9;
+  // List of constraints that the signer must satisfy. Only applicable to
+  // issuers.
+  repeated ConstraintSet constraints = 10;
+  // SHA256 hash of the signer's key. This is used to map to a key in
+  // signer_keys.pem.
+  string key_sha256 = 11;
+
+  // A stable identifier for this signer. Only valid for issuer logs, mirrors
+  // should not have this field set. IDs should not be changed, and should not
+  // be reused. The identifiers 0, 1 and 2 are reserved and should not be used.
+  // Corresponds to crs_root_id in //net/cert/root_store.proto in Chromium.s
+  int32 crs_root_id = 12;
+}
+
+message SignerSet {
+  // Timestamp at which this data is guaranteed to be fresh. This will be
+  // updated regularly, independent of whether the contents have changed.
+  Timestamp timestamp = 1;
+  // Contents version. This will be incremented if the contents have changed.
+  string version = 2;
+  // This will be incremented if the structure of the data has changed in a
+  // non-backwards-compatible way. Chrome will reject updates with data that has
+  // a compatibility version higher than what it understands.
+  int64 compatibility_version = 3;
+  // List of all known operators.
+  repeated SignerOperator operators = 4;
+  // List of all issuer logs for MTC CAs trusted by Chrome.
+  repeated Signer issuers = 5;
+  // List of all mirrors accepted (or in the process of being accepted) by
+  // Chrome.
+  repeated Signer mirrors = 6;
+}
