@@ -337,7 +337,7 @@ void ToastService::RegisterToasts(
                                       ? vector_icons::kMailFilledIcon
                                       : vector_icons::kEmailOldIcon,
                                   IDS_EMAIL_VERIFIED)
-          .AddCloseButton()
+          .AddMenu()
           .Build());
 
   toast_registry_->RegisterToast(

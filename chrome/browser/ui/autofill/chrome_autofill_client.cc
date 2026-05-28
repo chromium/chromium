@@ -196,6 +196,7 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/email_verification_popup_controller.h"
+#include "chrome/browser/ui/autofill/email_verified_toast_menu_model.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1239,7 +1240,12 @@ void ChromeAutofillClient::ShowEmailVerifiedToast() {
   // The toast is only supported on desktop for now, since Android uses
   // snackbars instead.
   if (ToastController* toast_controller = GetToastController()) {
-    toast_controller->MaybeShowToast(ToastParams(ToastId::kEmailVerified));
+    ToastParams params(ToastId::kEmailVerified);
+
+    params.menu_model = std::make_unique<EmailVerifiedToastMenuModel>(
+        GetTabInterface()->GetBrowserWindowInterface());
+
+    toast_controller->MaybeShowToast(std::move(params));
   }
 #endif
 }
