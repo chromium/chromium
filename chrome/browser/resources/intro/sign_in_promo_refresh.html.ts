@@ -21,6 +21,8 @@ export function getHtml(this: SignInPromoRefreshElement) {
     animation-url="${this.getAnimationUrl_('bottom')}">
 </cr-lottie>
 
+<!-- TODO(crbug.com/515028732): Make sure the button doesn't clash with the
+     native 'Play/Pause' button. -->
 ${this.isTopRightCornerVariation_() ? html`
   <div id="top-right-corner-container">
     <cr-button id="declineSignInButton"

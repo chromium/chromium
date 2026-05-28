@@ -138,6 +138,49 @@ class DontSignInButton : public ProfilePickerToolbarButton {
 BEGIN_METADATA(DontSignInButton)
 END_METADATA
 
+class EffectsControlButton : public ProfilePickerToolbarButton {
+  METADATA_HEADER(EffectsControlButton, ProfilePickerToolbarButton)
+
+ public:
+  explicit EffectsControlButton(PressedCallback callback)
+      : ProfilePickerToolbarButton(
+            base::BindRepeating(&EffectsControlButton::OnButtonPressed,
+                                base::Unretained(this))),
+        callback_(std::move(callback)) {
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_PAUSE_EFFECTS_BUTTON));
+    SetVectorIcon(kPauseCircleIcon);
+  }
+
+  EffectsControlButton(const EffectsControlButton&) = delete;
+  EffectsControlButton& operator=(const EffectsControlButton&) = delete;
+
+  ~EffectsControlButton() override = default;
+
+ private:
+  void OnButtonPressed(const ui::Event& event) {
+    effects_enabled_ = !effects_enabled_;
+
+    // Update the icon based on the new state.
+    SetVectorIcon(effects_enabled_ ? kPauseCircleIcon : kPlayCircleIcon);
+    // Explicitly call `UpdateIcon` as the implicit call may be omitted due to
+    // the lack of a theme provider at the beginning of the first run flow.
+    UpdateIcon();
+
+    SetTooltipText(l10n_util::GetStringUTF16(
+        effects_enabled_ ? IDS_PROFILE_PICKER_PAUSE_EFFECTS_BUTTON
+                         : IDS_PROFILE_PICKER_PLAY_EFFECTS_BUTTON));
+
+    callback_.Run(event);
+  }
+
+  bool effects_enabled_ = true;
+  PressedCallback callback_;
+};
+
+BEGIN_METADATA(EffectsControlButton)
+END_METADATA
+
 }  // namespace
 
 ProfilePickerToolbar::Builder::Builder(base::RepeatingClosure on_back_callback)
@@ -152,13 +195,26 @@ ProfilePickerToolbar::Builder::WithDontSignInButton(
   return *this;
 }
 
+ProfilePickerToolbar::Builder&
+ProfilePickerToolbar::Builder::WithEffectsControlButton(
+    base::RepeatingClosure on_effects_control_callback) {
+  on_effects_control_callback_ = std::move(on_effects_control_callback);
+  return *this;
+}
+
 std::unique_ptr<ProfilePickerToolbar> ProfilePickerToolbar::Builder::Build() {
   auto toolbar = base::WrapUnique(new ProfilePickerToolbar());
   toolbar->AddBackButton(on_back_callback_);
+  // Add a spacer to push the subsequent button(s) to the other side.
+  toolbar->AddSpacer();
   if (!on_dont_sign_in_callback_.is_null()) {
-    // Add a spacer to push the subsequent button to the other side.
-    toolbar->AddSpacer();
     toolbar->AddDontSignInButton(on_dont_sign_in_callback_);
+  }
+  if (!on_effects_control_callback_.is_null()) {
+    // TODO(crbug.com/515028732): Consider adding a separator between the
+    // effects control button and the rest of the buttons pushed to the other
+    // side (e.g. the "Don't sign in" button).
+    toolbar->AddEffectsControlButton(on_effects_control_callback_);
   }
   return toolbar;
 }
@@ -209,6 +265,13 @@ void ProfilePickerToolbar::AddDontSignInButton(
   dont_sign_in_button_ = AddChildView(
       std::make_unique<DontSignInButton>(std::move(on_dont_sign_in_callback)));
   dont_sign_in_button_->SetVisible(false);
+}
+
+void ProfilePickerToolbar::AddEffectsControlButton(
+    base::RepeatingClosure on_effects_control_callback) {
+  CHECK(effects_control_button_ == nullptr);
+  effects_control_button_ = AddChildView(std::make_unique<EffectsControlButton>(
+      std::move(on_effects_control_callback)));
 }
 
 void ProfilePickerToolbar::SetSigninButtonsVisible(bool visible) {

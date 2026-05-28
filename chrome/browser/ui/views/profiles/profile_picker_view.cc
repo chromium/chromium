@@ -181,6 +181,20 @@ bool ShouldBuildToolbarWithDontSignInButton(
                  kDontSignInOnGaiaPage;
 }
 
+bool ShouldBuildToolbarWithEffectsControlButton(
+    Profile* profile,
+    ProfilePicker::EntryPoint entry_point) {
+  if (entry_point != ProfilePicker::EntryPoint::kFirstRun) {
+    return false;
+  }
+  const bool is_in_search_engine_screen_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile))
+          .IsInSearchEngineChoiceScreenRegion();
+  return switches::IsFirstRunDesktopRevampEnabled(
+      is_in_search_engine_screen_region);
+}
+
 }  // namespace
 
 // static
@@ -663,6 +677,12 @@ void ProfilePickerView::Init(Profile* picker_profile) {
         // and `this` outlives the `toolbar_` (parent view).
         base::Unretained(flow_controller_.get())));
   }
+  if (ShouldBuildToolbarWithEffectsControlButton(picker_profile,
+                                                 params_.entry_point())) {
+    // TODO(crbug.com/515028732): Implement the effects control callback.
+    toolbar_builder.WithEffectsControlButton(base::DoNothing());
+  }
+
   toolbar_ = AddChildView(toolbar_builder.Build());
 
   // The widget is owned by the native widget.

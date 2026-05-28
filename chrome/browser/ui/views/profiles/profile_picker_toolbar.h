@@ -43,6 +43,11 @@ class ProfilePickerToolbar : public views::View {
     Builder& WithDontSignInButton(
         base::RepeatingClosure on_dont_sign_in_callback);
 
+    // Adds the effects (audio/animations) control button to the toolbar.
+    // Comparing to other buttons, this button is always visible.
+    Builder& WithEffectsControlButton(
+        base::RepeatingClosure on_effects_control_callback);
+
     // Builds a new `ProfilePickerToolbar`.
     //
     // All buttons are hidden by default, and their visibility is controlled by
@@ -52,6 +57,7 @@ class ProfilePickerToolbar : public views::View {
    private:
     base::RepeatingClosure on_back_callback_;
     base::RepeatingClosure on_dont_sign_in_callback_;
+    base::RepeatingClosure on_effects_control_callback_;
   };
 
   ~ProfilePickerToolbar() override;
@@ -79,9 +85,12 @@ class ProfilePickerToolbar : public views::View {
   void AddSpacer();
   void AddBackButton(base::RepeatingClosure on_back_callback);
   void AddDontSignInButton(base::RepeatingClosure on_dont_sign_in_callback);
+  void AddEffectsControlButton(
+      base::RepeatingClosure on_effects_control_callback);
 
   raw_ptr<views::View> sign_in_back_button_ = nullptr;
   raw_ptr<views::View> dont_sign_in_button_ = nullptr;
+  raw_ptr<views::View> effects_control_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TOOLBAR_H_

@@ -6,7 +6,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -15,12 +14,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_switches.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,19 +28,85 @@
 
 namespace {
 
+using ::testing::TestParamInfo;
+using ::testing::ValuesIn;
+
 struct ProfilePickerSignInTestParam {
   PixelTestParam pixel_test_param;
+  ProfilePicker::EntryPoint entry_point = ProfilePicker::EntryPoint::kOnStartup;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
 };
 
-std::string ParamToTestSuffix(
-    const ::testing::TestParamInfo<ProfilePickerSignInTestParam>& info) {
-  return info.param.pixel_test_param.test_suffix;
+std::vector<ProfilePickerSignInTestParam> GetTestParams() {
+  return {
+      {.pixel_test_param = {.test_suffix = "RegularAddNewProfile"},
+       .entry_point = ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
+       .disabled_features = {switches::kFirstRunDesktopRevamp}},
+      {.pixel_test_param = {.test_suffix = "DarkThemeAddNewProfile",
+                            .use_dark_theme = true},
+       .entry_point = ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
+       .disabled_features = {switches::kFirstRunDesktopRevamp}},
+      {
+          .pixel_test_param = {.test_suffix = "RegularFirstRunRevampEnabled"},
+          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
+          .enabled_features = {switches::kFirstRunDesktopRefresh,
+                               switches::kFirstRunDesktopRevamp},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "DarkThemeFirstRunRevampEnabled",
+                               .use_dark_theme = true},
+          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
+          .enabled_features = {switches::kFirstRunDesktopRefresh,
+                               switches::kFirstRunDesktopRevamp},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "RTLFirstRunRevampEnabled",
+                               .use_right_to_left_language = true},
+          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
+          .enabled_features = {switches::kFirstRunDesktopRefresh,
+                               switches::kFirstRunDesktopRevamp},
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "RegularAddNewProfileRevampEnabled"},
+          .entry_point = ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
+          .enabled_features = {switches::kFirstRunDesktopRefresh,
+                               switches::kFirstRunDesktopRevamp},
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "DarkThemeAddNewProfileRevampEnabled",
+                               .use_dark_theme = true},
+          .entry_point = ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
+          .enabled_features = {switches::kFirstRunDesktopRefresh,
+                               switches::kFirstRunDesktopRevamp},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "RTLAddNewProfileRevampEnabled",
+                               .use_right_to_left_language = true},
+          .entry_point = ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
+          .enabled_features = {switches::kFirstRunDesktopRefresh,
+                               switches::kFirstRunDesktopRevamp},
+      }};
 }
 
-const ProfilePickerSignInTestParam kTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "Regular"}},
-    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true}},
-};
+std::string_view GetClickSignInButtonJsString(bool is_first_run) {
+  if (is_first_run) {
+    return "document.querySelector('sign-in-promo-refresh')"
+           ".shadowRoot.querySelector('#acceptSignInButton').click()";
+  }
+  return "document.querySelector('profile-picker-app')"
+         ".shadowRoot.querySelector('profile-type-choice')"
+         ".shadowRoot.querySelector('#signInButton').click()";
+}
+
+GURL GetInitialUrl(bool is_first_run) {
+  if (is_first_run) {
+    return GURL("chrome://intro");
+  }
+  return GURL("chrome://profile-picker/new-profile");
+}
 
 const char kMockGaiaHtml[] = R"(
   <!DOCTYPE html><html><head>
@@ -89,7 +154,10 @@ class ProfilePickerSigninToolbarUIPixelTest
       public testing::WithParamInterface<ProfilePickerSignInTestParam> {
  public:
   ProfilePickerSigninToolbarUIPixelTest()
-      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {}
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
+    scoped_feature_list_.InitWithFeatures(GetParam().enabled_features,
+                                          GetParam().disabled_features);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -117,29 +185,28 @@ class ProfilePickerSigninToolbarUIPixelTest
     gfx::ScopedAnimationDurationScaleMode disable_animation(
         gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
-    profiles::testing::WaitForPickerUrl(
-        GURL("chrome://profile-picker/new-profile"));
+    const bool is_first_run =
+        GetParam().entry_point == ProfilePicker::EntryPoint::kFirstRun;
+    ProfilePicker::Params params =
+        is_first_run
+            ? ProfilePicker::Params::ForFirstRun(
+                  browser()->profile()->GetPath(), base::DoNothing())
+            : ProfilePicker::Params::FromEntryPoint(GetParam().entry_point);
+    ProfilePicker::Show(std::move(params));
+    profiles::testing::WaitForPickerUrl(GetInitialUrl(is_first_run));
 
     content::WebContents* web_contents =
         ProfilePicker::GetWebViewForTesting()->GetWebContents();
 
-    GURL signin_url = signin::GetChromeSyncURLForDice({
-        .continue_url = GaiaUrls::GetInstance()->blank_page_url(),
-        .request_dark_scheme =
-            static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting())
-                ->ShouldUseDarkColors(),
-        .flow = signin::Flow::PROMO,
-    });
-    content::TestNavigationObserver navigation_observer(signin_url);
+    // Wait for the new web contents to be created (i.e. the sign-in page).
+    content::TestNavigationObserver navigation_observer(
+        /*web_contents=*/nullptr);
     navigation_observer.StartWatchingNewWebContents();
 
-    ASSERT_TRUE(
-        content::ExecJs(web_contents,
-                        "document.querySelector('profile-picker-app')"
-                        ".shadowRoot.querySelector('profile-type-choice')"
-                        ".shadowRoot.querySelector('#signInButton').click()"));
+    // Execute the script async to avoid flakiness (i.e. navigation happening
+    // before the observer has started).
+    content::ExecuteScriptAsync(web_contents,
+                                GetClickSignInButtonJsString(is_first_run));
 
     navigation_observer.Wait();
   }
@@ -166,6 +233,8 @@ class ProfilePickerSigninToolbarUIPixelTest
   }
 
   FakeGaia fake_gaia_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerSigninToolbarUIPixelTest,
@@ -173,7 +242,10 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerSigninToolbarUIPixelTest,
   ShowAndVerifyUi();
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ProfilePickerSigninToolbarUIPixelTest,
-                         testing::ValuesIn(kTestParams),
-                         &ParamToTestSuffix);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProfilePickerSigninToolbarUIPixelTest,
+    ValuesIn(GetTestParams()),
+    [](const TestParamInfo<ProfilePickerSignInTestParam>& info) -> std::string {
+      return info.param.pixel_test_param.test_suffix;
+    });
