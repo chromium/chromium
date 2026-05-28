@@ -18,36 +18,48 @@ import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import {parseArgs} from 'node:util';
 
 import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
 
 export function parseCommandLineArgs() {
-  return yargs(hideBin(process.argv))
-    .option('bidi', {
-      describe: 'A list of BiDi WPT test reports to parse',
-      type: 'array',
-      demandOption: true,
-    })
-    .option('interop', {
-      describe: 'A list of interop WPT test reports to parse',
-      type: 'array',
-      demandOption: true,
-    })
-    .option('out', {
-      describe: 'Output file for the generated HTML',
-      type: 'string',
-      demandOption: true,
-    })
-    .option('out-label-2023', {
-      describe: 'Output file for the generated HTML filtered by label',
-      type: 'string',
-      demandOption: true,
-    })
-    .exitProcess(true)
-    .parseSync();
+  const {values} = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      bidi: {
+        type: 'string',
+        multiple: true,
+      },
+      interop: {
+        type: 'string',
+        multiple: true,
+      },
+      out: {
+        type: 'string',
+      },
+      'out-label-2023': {
+        type: 'string',
+      },
+    },
+  });
+
+  if (
+    !values.bidi ||
+    !values.interop ||
+    !values.out ||
+    !values['out-label-2023']
+  ) {
+    console.error('Missing required options');
+    process.exit(1);
+  }
+
+  return {
+    bidi: values.bidi,
+    interop: values.interop,
+    out: values.out,
+    outLabel2023: values['out-label-2023'],
+  };
 }
 
 function getCurrentCommit() {

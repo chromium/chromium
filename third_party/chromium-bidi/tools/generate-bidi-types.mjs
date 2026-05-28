@@ -19,38 +19,40 @@
 
 import {spawn} from 'child_process';
 import {writeFile} from 'fs/promises';
+import {join} from 'path';
 
-import {packageDirectorySync} from 'package-directory';
-import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import {parseArgs} from 'node:util';
 
-const argv = yargs(hideBin(process.argv))
-  .option('ts-file', {
-    describe: 'A .ts file to write generated types to',
-    type: 'string',
-    default: 'src/protocol/generated/webdriver-bidi.ts',
-    demandOption: true,
-  })
-  .option('zod-file', {
-    describe: 'A .ts file to write generated Zod types to',
-    type: 'string',
-    default: 'src/protocol-parser/generated/webdriver-bidi.ts',
-    demandOption: true,
-  })
-  .option('cddl-file', {
-    describe: 'A .cddl file containing the type description',
-    type: 'string',
-    demandOption: true,
-  })
-  .exitProcess(true)
-  .parseSync();
+const {values} = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    'ts-file': {
+      type: 'string',
+      default: 'src/protocol/generated/webdriver-bidi.ts',
+    },
+    'zod-file': {
+      type: 'string',
+      default: 'src/protocol-parser/generated/webdriver-bidi.ts',
+    },
+    'cddl-file': {
+      type: 'string',
+    },
+  },
+});
+
+const {'ts-file': tsFile, 'zod-file': zodFile, 'cddl-file': cddlFile} = values;
+
+if (!cddlFile) {
+  console.error('Missing required option: --cddl-file');
+  process.exit(1);
+}
 
 // Changing the current work directory to the package directory.
-const ROOT_DIR = packageDirectorySync();
+const ROOT_DIR = join(import.meta.dirname, '..');
 process.chdir(ROOT_DIR);
 
-const TYPES_FILE = argv.tsFile;
-const ZOD_FILE = argv.zodFile;
+const TYPES_FILE = tsFile;
+const ZOD_FILE = zodFile;
 const FILE_HEADER = `
 /**
  * Copyright 2024 Google LLC.
@@ -78,7 +80,7 @@ const FILE_HEADER = `
 `;
 
 async function runCommand(command, args) {
-  const cwd = packageDirectorySync();
+  const cwd = join(import.meta.dirname, '..');
   return await new Promise((resolve, reject) => {
     let output = '';
     const commandProcess = spawn(command, args, {
@@ -117,11 +119,11 @@ async function runCddlConv(file, options) {
 }
 
 async function generateTypes() {
-  await runCddlConv(TYPES_FILE, [argv.cddlFile]);
+  await runCddlConv(TYPES_FILE, [cddlFile]);
 }
 
 async function generateZod() {
-  await runCddlConv(ZOD_FILE, ['--format', 'zod', argv.cddlFile]);
+  await runCddlConv(ZOD_FILE, ['--format', 'zod', cddlFile]);
 }
 
 await Promise.all([generateTypes(), generateZod()]);

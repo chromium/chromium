@@ -20,8 +20,6 @@
 import {spawnSync} from 'child_process';
 import {join} from 'path';
 
-import {packageDirectorySync} from 'package-directory';
-
 function getNpmArgs() {
   const args = ['run', 'wpt'];
 
@@ -38,7 +36,7 @@ function getNpmArgs() {
 function runWpt(options) {
   console.log(`Running WPT with options:\n${JSON.stringify(options, null, 2)}`);
 
-  const cwd = packageDirectorySync();
+  const cwd = join(import.meta.dirname, '..');
   spawnSync('npm', getNpmArgs(), {
     stdio: 'inherit',
     shell: true,

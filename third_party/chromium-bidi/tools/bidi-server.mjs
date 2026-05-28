@@ -18,9 +18,7 @@ import child_process from 'child_process';
 import {mkdirSync} from 'fs';
 import {basename, join, resolve} from 'path';
 
-import {packageDirectorySync} from 'package-directory';
-import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import {parseArgs} from 'node:util';
 
 import {
   installAndGetChromeDriverPath,
@@ -43,7 +41,7 @@ export function getLogFileName(suffix) {
  */
 export function createLogFile(suffix) {
   // Changing the current work directory to the package directory.
-  process.chdir(packageDirectorySync());
+  process.chdir(join(import.meta.dirname, '..'));
 
   const dir = process.env.LOG_DIR || 'logs';
   const name = process.env.LOG_FILE || join(dir, `${RUN_TIME}.${suffix}.log`);
@@ -54,48 +52,44 @@ export function createLogFile(suffix) {
 }
 
 export function parseCommandLineArgs() {
-  return yargs(hideBin(process.argv))
-    .usage(
-      `$0 [fileOrFolder...]`,
-      `[CHANNEL=<local | stable | beta | canary | dev>] [DEBUG=*] [DEBUG_COLORS=<yes | no>] [LOG_DIR=logs] [NODE_OPTIONS=--unhandled-rejections=strict] [PORT=8080]`,
-      (yargs) => {
-        yargs.positional('fileOrFolder', {
-          describe: 'Provide a sub E2E file or folder to filter by',
-          type: 'string',
-        });
+  const {values, positionals} = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      k: {
+        type: 'string',
       },
-    )
-    .option('k', {
-      describe: 'Provide a test name to filter by',
-      type: 'string',
-    })
-    .option('s', {
-      describe: 'Preserve output of passing tests',
-      type: 'boolean',
-    })
-    .option('repeat-times', {
-      describe: 'If set, will repeat each test this many times',
-      type: 'number',
-      default: Number(process.env.REPEAT_TIMES || 1),
-    })
-    .option('reruns-times', {
-      describe:
-        'If set, will retry failing tests this many times. Default is 0 (no retry)',
-      type: 'number',
-      default: Number(process.env.RERUNS_TIMES || 0),
-    })
-    .option('total-chunks', {
-      describe: 'If provided, will split tests into this many shards.',
-      type: 'number',
-      default: Number(process.env.PYTEST_TOTAL_CHUNKS || 1),
-    })
-    .option('this-chunk', {
-      describe:
-        'If provided, will only run tests for this shard. Shard IDs are 0-indexed.',
-      type: 'number',
-      default: Number(process.env.PYTEST_THIS_CHUNK || 0),
-    })
-    .parseSync();
+      s: {
+        type: 'boolean',
+      },
+      'repeat-times': {
+        type: 'string',
+        default: String(process.env.REPEAT_TIMES || 1),
+      },
+      'reruns-times': {
+        type: 'string',
+        default: String(process.env.RERUNS_TIMES || 0),
+      },
+      'total-chunks': {
+        type: 'string',
+        default: String(process.env.PYTEST_TOTAL_CHUNKS || 1),
+      },
+      'this-chunk': {
+        type: 'string',
+        default: String(process.env.PYTEST_THIS_CHUNK || 0),
+      },
+    },
+    allowPositionals: true,
+  });
+
+  return {
+    fileOrFolder: positionals,
+    k: values.k,
+    s: values.s,
+    'repeat-times': Number(values['repeat-times']),
+    'reruns-times': Number(values['reruns-times']),
+    'total-chunks': Number(values['total-chunks']),
+    'this-chunk': Number(values['this-chunk']),
+  };
 }
 
 /**

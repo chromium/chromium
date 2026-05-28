@@ -15,41 +15,43 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import {parseArgs} from 'node:util';
 
 import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
 export function parseCommandLineArgs() {
-  return yargs(hideBin(process.argv))
-    .usage(`$0`, `[PORT=8080] [VERBOSE=8080]`)
-    .option('port', {
-      alias: 'p',
-      describe: 'Port that BiDi server should listen to. Default is 8080.',
-      type: 'number',
-      default: process.env['PORT'] ? Number(process.env['PORT']) : 8080,
-    })
-    .option('verbose', {
-      alias: 'v',
-      describe:
-        'If present, the Mapper debug log, including CDP commands and events will be logged into the server output.',
-      type: 'boolean',
-      default: process.env['VERBOSE'] === 'true' || false,
-    })
-    .parseSync();
+  const {values} = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      port: {
+        type: 'string',
+        short: 'p',
+        default: String(process.env['PORT'] ?? 8080),
+      },
+      verbose: {
+        type: 'boolean',
+        short: 'v',
+        default: process.env['VERBOSE'] === 'true',
+      },
+    },
+    strict: false,
+  });
+
+  return {
+    port: Number(values.port),
+    verbose: Boolean(values.verbose),
+  };
 }
 
-(() => {
-  try {
-    const argv = parseCommandLineArgs();
+try {
+  const argv = parseCommandLineArgs();
 
-    const {port, verbose} = argv;
+  const {port, verbose} = argv;
 
-    debugInfo('Launching BiDi server...');
+  debugInfo('Launching BiDi server...');
 
-    new WebSocketServer(port, verbose);
-    debugInfo('BiDi server launched');
-  } catch (e) {
-    debugInfo('Error launching BiDi server', e);
-  }
-})();
+  new WebSocketServer(port, verbose);
+  debugInfo('BiDi server launched');
+} catch (e) {
+  debugInfo('Error launching BiDi server', e);
+}

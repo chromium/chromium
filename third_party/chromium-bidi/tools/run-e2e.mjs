@@ -19,9 +19,8 @@
 
 import child_process from 'child_process';
 import {createWriteStream} from 'fs';
+import {join} from 'path';
 import {Transform, PassThrough} from 'stream';
-
-import {packageDirectorySync} from 'package-directory';
 
 import {
   createBiDiServerProcess,
@@ -32,7 +31,7 @@ import {
 } from './bidi-server.mjs';
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 // Changing the current work directory to the package directory.
-process.chdir(packageDirectorySync());
+process.chdir(join(import.meta.dirname, '..'));
 
 const argv = parseCommandLineArgs();
 const LOG_FILE = createLogFile('e2e');

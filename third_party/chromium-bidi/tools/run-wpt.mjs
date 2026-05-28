@@ -21,15 +21,13 @@ import {spawnSync, spawn} from 'child_process';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 
-import {packageDirectorySync} from 'package-directory';
-
 import {
   installAndGetChromeDriverPath,
   installAndGetChromePath,
 } from './path-getter/path-getter.mjs';
 
 // Changing the current work directory to the package directory.
-process.chdir(packageDirectorySync());
+process.chdir(join(import.meta.dirname, '..'));
 
 function log(message, ...messages) {
   console.log(`(${process.argv[1]}) ${message}`, ...messages);
