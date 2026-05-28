@@ -84,10 +84,6 @@ class Observer : public testing::NiceMock<
               UIShown,
               (ChromeAuthenticatorRequestDelegate * delegate),
               (override));
-  MOCK_METHOD(void,
-              CableV2ExtensionSeen,
-              (base::span<const uint8_t> server_link_data),
-              (override));
 };
 
 class ChromeWebAuthenticationDelegateTest

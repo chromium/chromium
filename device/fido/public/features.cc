@@ -72,11 +72,6 @@ BASE_FEATURE(kWebAuthUseNativeWinApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Permanent flag
-BASE_FEATURE(kWebAuthCableExtensionAnywhere,
-             "WebAuthenticationCableExtensionAnywhere",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This is used to enable an experiment to reject WebAuthn requests
 // when actor mode is on.
 BASE_FEATURE(kWebAuthnActorCheck, base::FEATURE_ENABLED_BY_DEFAULT);

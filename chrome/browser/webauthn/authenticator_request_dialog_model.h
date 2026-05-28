@@ -231,7 +231,6 @@ struct AuthenticatorRequestDialogModel
     // will be recorded.
     kOffTheRecordInterstitial,
     // Phone as a security key.
-    kCableActivate,
     kCableV2QRCode,
     kCableV2Connecting,
     kCableV2Connected,
@@ -378,14 +377,6 @@ struct AuthenticatorRequestDialogModel
     const base::RepeatingClosure callback;
   };
 
-  // CableUIType enumerates the different types of caBLE UI that we've ended
-  // up with.
-  enum class CableUIType {
-    CABLE_V1,
-    CABLE_V2_SERVER_LINK,
-    CABLE_V2_2ND_FACTOR,
-  };
-
   // Returns a user-friendly description for a |type|.
   static std::u16string GetMechanismDescription(
       const device::DiscoverableCredentialMetadata& cred,
@@ -494,9 +485,6 @@ struct AuthenticatorRequestDialogModel
   std::optional<int> pin_attempts;
   std::optional<int> uv_attempts;
   device::pin::PINEntryError pin_error = device::pin::PINEntryError::kNoError;
-
-  // cable_ui_type contains the type of UI to display for a caBLE transaction.
-  std::optional<CableUIType> cable_ui_type;
 
   std::optional<std::string> cable_qr_string;
 

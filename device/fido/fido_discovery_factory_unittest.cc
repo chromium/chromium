@@ -38,7 +38,7 @@ TEST(FidoDiscoveryFactoryTest, CreateWindowsHybridDiscovery) {
 
     FidoDiscoveryFactory discovery_factory;
     discovery_factory.set_cable_data(
-        FidoRequestType::kGetAssertion, /*cable_data=*/{},
+        FidoRequestType::kGetAssertion,
         /*qr_generator_key=*/std::array<uint8_t, cablev2::kQRKeySize>());
     std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries =
         discovery_factory.Create(FidoTransportProtocol::kHybrid);

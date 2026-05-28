@@ -84,22 +84,14 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       }
 #endif  // BUILDFLAG(IS_WIN)
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
-          (cable_data_.has_value() || qr_generator_key_.has_value())) {
-
+          qr_generator_key_.has_value()) {
         std::vector<std::unique_ptr<FidoDiscoveryBase>> ret;
-        const bool have_v2_discovery_data =
-            cable_data_.has_value() &&
-            std::ranges::contains(*cable_data_, CableDiscoveryData::Version::V2,
-                                  &CableDiscoveryData::version);
-        if (qr_generator_key_.has_value() || have_v2_discovery_data) {
           ret.emplace_back(std::make_unique<cablev2::Discovery>(
               request_type_.value(), network_context_factory_,
               qr_generator_key_, std::move(contact_device_stream_),
-              cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_),
               std::move(cable_invalidated_pairing_callback_),
               std::move(cable_event_callback_), cable_must_support_ctap_));
-        }
         return ret;
       }
       return {};
@@ -134,11 +126,9 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 
 void FidoDiscoveryFactory::set_cable_data(
     FidoRequestType request_type,
-    std::vector<CableDiscoveryData> cable_data,
     const std::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
         qr_generator_key) {
   request_type_ = request_type;
-  cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
 }
 

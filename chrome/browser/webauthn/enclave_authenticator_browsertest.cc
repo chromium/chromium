@@ -708,9 +708,6 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       ui_shown_run_loop_->QuitWhenIdle();
     }
 
-    void CableV2ExtensionSeen(
-        base::span<const uint8_t> server_link_data) override {}
-
     void AccountSelectorShown(
         const std::vector<device::AuthenticatorGetAssertionResponse>& responses)
         override {}

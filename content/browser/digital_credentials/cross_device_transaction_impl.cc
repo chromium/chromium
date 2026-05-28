@@ -90,7 +90,6 @@ TransactionImpl::TransactionImpl(
       device::FidoRequestType::kGetAssertion, network_context_factory,
       qr_generator_key,
       /*contact_device_stream=*/nullptr,
-      std::vector<device::CableDiscoveryData>(),
       /*pairing_callback=*/std::nullopt,
       /*invalidated_pairing_callback=*/std::nullopt,
       base::BindRepeating(&TransactionImpl::OnCableEvent,

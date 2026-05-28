@@ -458,7 +458,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     std::optional<device::ResidentKeyRequirement> resident_key_requirement,
     device::UserVerificationRequirement user_verification_requirement,
     std::optional<std::string_view> user_name,
-    base::span<const device::CableDiscoveryData> pairings_from_extension,
     bool browser_provided_passkeys_available,
     device::FidoDiscoveryFactory* discovery_factory) {
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
@@ -525,53 +524,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     }
   }
 
-  const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
-  const bool cable_extension_provided =
-      cable_extension_permitted && !pairings_from_extension.empty();
-
-  if (g_observer) {
-    for (const auto& pairing : pairings_from_extension) {
-      if (pairing.version == device::CableDiscoveryData::Version::V2) {
-        g_observer->CableV2ExtensionSeen(pairing.v2->server_link_data);
-      }
-    }
-
-    g_observer->ConfiguringCable(request_type);
-  }
-
-#if BUILDFLAG(IS_LINUX)
-  // No caBLEv1 on Linux. It tends to crash bluez.
-  if (std::ranges::contains(pairings_from_extension,
-                            device::CableDiscoveryData::Version::V1,
-                            &device::CableDiscoveryData::version)) {
-    pairings_from_extension = base::span<const device::CableDiscoveryData>();
-  }
-#endif
-
-  std::vector<device::CableDiscoveryData> pairings;
-  if (cable_extension_permitted) {
-    pairings.insert(pairings.end(), pairings_from_extension.begin(),
-                    pairings_from_extension.end());
-  }
-  const bool cable_extension_accepted = !pairings.empty();
-  const bool cablev2_extension_provided =
-      std::ranges::contains(pairings, device::CableDiscoveryData::Version::V2,
-                            &device::CableDiscoveryData::version);
-
-  const bool non_extension_cablev2_enabled =
-      (!cable_extension_permitted ||
-       (!cable_extension_provided &&
-        request_type == device::FidoRequestType::kGetAssertion) ||
-       (request_type == device::FidoRequestType::kMakeCredential &&
-        resident_key_requirement.has_value() &&
-        resident_key_requirement.value() !=
-            device::ResidentKeyRequirement::kDiscouraged) ||
-       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere));
-
   std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
   std::optional<std::string> qr_string;
-  if (non_extension_cablev2_enabled || cablev2_extension_provided) {
     // A QR key is generated for all caBLEv2 cases but whether the QR code is
     // displayed is up to the UI.
     qr_generator_key.emplace();
@@ -583,26 +538,18 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     discovery_factory->set_cable_event_callback(
         base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnCableEvent,
                             weak_ptr_factory_.GetWeakPtr()));
-  }
 
-  if (SystemNetworkContextManager::GetInstance()) {
-    // caBLE and the enclave depend on the network context factory.
-    // TODO(nsatragno): this should probably use a storage partition network
-    // context instead. See the SystemNetworkContextManager class comments.
-    discovery_factory->set_network_context_factory(base::BindRepeating([]() {
-      return SystemNetworkContextManager::GetInstance()->GetContext();
-    }));
-  }
+    dialog_controller_->set_cable_transport_info(qr_string);
+    discovery_factory->set_cable_data(request_type, qr_generator_key);
 
-  if (cable_extension_accepted || non_extension_cablev2_enabled) {
-    std::optional<bool> extension_is_v2;
-    if (cable_extension_provided) {
-      extension_is_v2 = cablev2_extension_provided;
+    if (SystemNetworkContextManager::GetInstance()) {
+      // caBLE and the enclave depend on the network context factory.
+      // TODO(nsatragno): this should probably use a storage partition network
+      // context instead. See the SystemNetworkContextManager class comments.
+      discovery_factory->set_network_context_factory(base::BindRepeating([]() {
+        return SystemNetworkContextManager::GetInstance()->GetContext();
+      }));
     }
-    dialog_controller_->set_cable_transport_info(extension_is_v2, qr_string);
-    discovery_factory->set_cable_data(request_type, std::move(pairings),
-                                      qr_generator_key);
-  }
 
 #if BUILDFLAG(IS_MAC)
   ConfigureNSWindow(discovery_factory);
@@ -961,25 +908,6 @@ bool ChromeAuthenticatorRequestDelegate::IsEnclaveActive() {
 
 bool ChromeAuthenticatorRequestDelegate::IsEnclaveReady() {
   return !enclave_controller_ || enclave_controller_->ready_for_ui();
-}
-
-bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
-    const url::Origin& origin) {
-  if (base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) {
-    return true;
-  }
-
-  // Because the future of the caBLE extension might be that we transition
-  // everything to QR-code or sync-based pairing, we don't want use of the
-  // extension to spread without consideration. Therefore it's limited to
-  // origins that are already depending on it and test sites.
-  if (origin.DomainIs("google.com")) {
-    return true;
-  }
-
-  const GURL test_site("https://webauthndemo.appspot.com");
-  DCHECK(test_site.is_valid());
-  return origin.IsSameOriginWith(test_site);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnCableEvent(

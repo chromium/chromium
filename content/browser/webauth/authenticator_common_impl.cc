@@ -84,7 +84,6 @@
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/prf_input.h"
 #include "device/fido/public/authenticator_selection_criteria.h"
-#include "device/fido/public/cable_discovery_data.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -897,8 +896,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       device::FidoRequestType::kMakeCredential,
       make_credential_options->resident_key,
       make_credential_options->user_verification,
-      ctap_make_credential_request->user.name,
-      base::span<const device::CableDiscoveryData>(), discover_enclave,
+      ctap_make_credential_request->user.name, discover_enclave,
       discovery_factory());
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
@@ -953,14 +951,10 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   req_state_->request_result.reset();
   InitDiscoveryFactory();
 
-  base::span<const device::CableDiscoveryData> cable_pairings;
   auto* ctap_get_assertion_request =
       &std::get<device::CtapGetAssertionRequest>(req_state_->ctap_request);
   auto* ctap_get_assertion_options =
       &std::get<device::CtapGetAssertionOptions>(req_state_->request_options);
-  if (ctap_get_assertion_request->cable_extension && IsFocused()) {
-    cable_pairings = *ctap_get_assertion_request->cable_extension;
-  }
   bool is_immediate_mediation =
       req_state_->mediation_.value_or(Mediation::MODAL) == Mediation::IMMEDIATE;
   base::flat_set<device::FidoTransportProtocol> transports =
@@ -978,8 +972,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       ctap_get_assertion_request->user_verification,
-      /*user_name=*/std::nullopt, cable_pairings, discover_enclave,
-      discovery_factory());
+      /*user_name=*/std::nullopt, discover_enclave, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *ctap_get_assertion_request);
@@ -1692,7 +1685,6 @@ void AuthenticatorCommonImpl::GetPasswordOnlyCredential(
       /*resident_key_requirement=*/std::nullopt,
       device::UserVerificationRequirement::kDiscouraged,
       /*user_name=*/std::nullopt,
-      /*pairings_from_extension=*/{},
       /*is_enclave_authenticator_available=*/false,
       /*fido_discovery_factory=*/nullptr);
 }

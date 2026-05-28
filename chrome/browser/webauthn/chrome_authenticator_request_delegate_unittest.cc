@@ -103,10 +103,6 @@ class Observer : public testing::NiceMock<
               UIShown,
               (ChromeAuthenticatorRequestDelegate * delegate),
               (override));
-  MOCK_METHOD(void,
-              CableV2ExtensionSeen,
-              (base::span<const uint8_t> server_link_data),
-              (override));
 };
 
 class MockPasswordCredentialUIController
@@ -128,14 +124,11 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
  public:
   void set_cable_data(
       device::FidoRequestType request_type,
-      std::vector<device::CableDiscoveryData> data,
       const std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
           qr_generator_key) override {
-    cable_data = std::move(data);
     qr_key = qr_generator_key;
   }
 
-  std::vector<device::CableDiscoveryData> cable_data;
   std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
 };
 
@@ -201,57 +194,19 @@ class TestAuthenticatorModelObserver final
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
-  const std::array<uint8_t, 16> eid = {1, 2, 3, 4};
-  const std::array<uint8_t, 32> prekey = {5, 6, 7, 8};
-  const device::CableDiscoveryData v1_extension(
-      device::CableDiscoveryData::Version::V1, eid, eid, prekey);
-
-  device::CableDiscoveryData v2_extension;
-  v2_extension.version = device::CableDiscoveryData::Version::V2;
-  v2_extension.v2.emplace(std::vector<uint8_t>(prekey.begin(), prekey.end()),
-                          std::vector<uint8_t>());
-
   enum class Result {
     kNone,
-    kV1,
-    kServerLink,
     k3rdParty,
   };
 
-#if BUILDFLAG(IS_LINUX)
-  // On Linux, some configurations aren't supported because of bluez
-  // limitations. This macro maps the expected result in that case.
-#define NONE_ON_LINUX(r) (Result::kNone)
-#else
-#define NONE_ON_LINUX(r) (r)
-#endif
-
   const struct {
     const char* origin;
-    std::vector<device::CableDiscoveryData> extensions;
     device::FidoRequestType request_type;
     std::optional<device::ResidentKeyRequirement> resident_key_requirement;
     Result expected_result;
   } kTests[] = {
       {
           "https://example.com",
-          {},
-          device::FidoRequestType::kGetAssertion,
-          std::nullopt,
-          Result::k3rdParty,
-      },
-      {
-          // Extensions should be ignored on a 3rd-party site.
-          "https://example.com",
-          {v1_extension},
-          device::FidoRequestType::kGetAssertion,
-          std::nullopt,
-          Result::k3rdParty,
-      },
-      {
-          // Extensions should be ignored on a 3rd-party site.
-          "https://example.com",
-          {v2_extension},
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::k3rdParty,
@@ -260,23 +215,20 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           // a.g.c should still be able to get 3rd-party caBLE
           // if it doesn't send an extension in an assertion request.
           "https://accounts.google.com",
-          {},
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::k3rdParty,
       },
       {
-          // ... but not for non-discoverable registration.
+          // ... for non-discoverable registration.
           "https://accounts.google.com",
-          {},
           device::FidoRequestType::kMakeCredential,
           device::ResidentKeyRequirement::kDiscouraged,
-          Result::kNone,
+          Result::k3rdParty,
       },
       {
-          // ... but yes for rk=preferred
+          // ... for rk=preferred
           "https://accounts.google.com",
-          {},
           device::FidoRequestType::kMakeCredential,
           device::ResidentKeyRequirement::kPreferred,
           Result::k3rdParty,
@@ -284,24 +236,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       {
           // ... or rk=required.
           "https://accounts.google.com",
-          {},
           device::FidoRequestType::kMakeCredential,
           device::ResidentKeyRequirement::kRequired,
           Result::k3rdParty,
-      },
-      {
-          "https://accounts.google.com",
-          {v1_extension},
-          device::FidoRequestType::kGetAssertion,
-          std::nullopt,
-          NONE_ON_LINUX(Result::kV1),
-      },
-      {
-          "https://accounts.google.com",
-          {v2_extension},
-          device::FidoRequestType::kGetAssertion,
-          std::nullopt,
-          Result::kServerLink,
       },
   };
 
@@ -319,36 +256,17 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
             kWebAuthentication,
         test.request_type, test.resident_key_requirement,
         device::UserVerificationRequirement::kRequired,
-        /*user_name=*/std::nullopt, test.extensions,
+        /*user_name=*/std::nullopt,
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
     switch (test.expected_result) {
       case Result::kNone:
         EXPECT_FALSE(discovery_factory.qr_key.has_value());
-        EXPECT_TRUE(discovery_factory.cable_data.empty());
-        break;
-
-      case Result::kV1:
-        EXPECT_FALSE(discovery_factory.qr_key.has_value());
-        EXPECT_FALSE(discovery_factory.cable_data.empty());
-        EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
-                  AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
-        break;
-
-      case Result::kServerLink:
-        EXPECT_TRUE(discovery_factory.qr_key.has_value());
-        EXPECT_FALSE(discovery_factory.cable_data.empty());
-        EXPECT_EQ(
-            delegate.dialog_model()->cable_ui_type,
-            AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK);
         break;
 
       case Result::k3rdParty:
         EXPECT_TRUE(discovery_factory.qr_key.has_value());
-        EXPECT_TRUE(discovery_factory.cable_data.empty());
-        EXPECT_EQ(
-            delegate.dialog_model()->cable_ui_type,
-            AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR);
+        EXPECT_TRUE(delegate.dialog_model()->cable_qr_string.has_value());
         break;
     }
   }
@@ -371,7 +289,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
         device::FidoRequestType::kMakeCredential,
         device::ResidentKeyRequirement::kPreferred,
         device::UserVerificationRequirement::kRequired,
-        /*user_name=*/std::nullopt, {},
+        /*user_name=*/std::nullopt,
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
     EXPECT_EQ(discovery_factory.qr_key.has_value(), !disable_ui);
@@ -730,7 +648,7 @@ TEST_P(ChromeAuthenticatorRequestDelegateTestWithPassword, DiscoverPasswords) {
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
-                                /*user_name=*/std::nullopt, {},
+                                /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
   EXPECT_EQ(password_fetcher->fetch_passwords_called(), enable_password);
@@ -773,7 +691,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
-                                /*user_name=*/std::nullopt, {},
+                                /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
   TransportAvailabilityInfo transports_info;
@@ -815,7 +733,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
-                                /*user_name=*/std::nullopt, {},
+                                /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
   TransportAvailabilityInfo transports_info;
@@ -874,7 +792,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
-                                /*user_name=*/std::nullopt, {},
+                                /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
 

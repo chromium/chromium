@@ -17785,15 +17785,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key.">
-        Check your phone
-      </message>
-      <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key.">
-        Check your device
-      </message>
-      <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
-        A notification was sent to your phone to confirm it's you.
-      </message>
       <message name="IDS_WEBAUTHN_CABLEV2_CONNECTING_TITLE" desc="The title of a dialog that is shown when the computer is connecting to a phone or tablet.">
         Connecting to your device
       </message>

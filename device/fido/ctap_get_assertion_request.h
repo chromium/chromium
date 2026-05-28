@@ -20,7 +20,6 @@
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
-#include "device/fido/public/cable_discovery_data.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/public_key_credential_descriptor.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
@@ -113,7 +112,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   std::vector<PublicKeyCredentialDescriptor> allow_list;
   std::optional<std::vector<uint8_t>> pin_auth;
   std::optional<PINUVAuthProtocol> pin_protocol;
-  std::optional<std::vector<CableDiscoveryData>> cable_extension;
   std::optional<std::string> app_id;
   std::optional<std::array<uint8_t, crypto::kSHA256Length>>
       alternative_application_parameter;

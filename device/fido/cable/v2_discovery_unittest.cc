@@ -93,7 +93,6 @@ class CableV2DiscoveryTest : public ::testing::Test {
           return mock_tunnel_server_.get();
         }),
         qr_generator_key_, /*contact_device_stream=*/nullptr,
-        /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         /*pairing_callback=*/std::nullopt,
         /*invalidated_pairing_callback=*/std::nullopt,
         /*event_callback=*/std::nullopt, /*must_support_ctap=*/true);
