@@ -13,9 +13,11 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -53,6 +55,8 @@ void PreloadActivationReportManager::ReportActivation(
     WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(web_contents);
+
+  url::Origin original_origin = url::Origin::Create(endpoint);
 
   // TODO(crbug.com/499814382): Audit if the other parameters of the request.
   auto request = std::make_unique<network::ResourceRequest>();
@@ -95,18 +99,69 @@ void PreloadActivationReportManager::ReportActivation(
   auto loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
 
-  auto* storage_partition =
-      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
-
   auto* loader_ptr = loader.get();
+
+  auto it = loaders_.insert(loaders_.end(), std::move(loader));
+
+  loader_ptr->SetOnRedirectCallback(base::BindRepeating(
+      [](base::WeakPtr<PreloadActivationReportManager> manager,
+         UrlLoaderList::iterator it, const url::Origin& original_origin,
+         const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
+         const network::mojom::URLResponseHead& response_head,
+         std::vector<std::string>* removed_headers) {
+        if (manager) {
+          manager->OnRedirect(it, original_origin, redirect_info);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), it, original_origin));
+
+  network::mojom::URLLoaderFactory* factory =
+      url_loader_factory_for_testing_
+          ? url_loader_factory_for_testing_.get()
+          : web_contents->GetPrimaryMainFrame()
+                ->GetStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess()
+                .get();
+
   loader_ptr->DownloadHeadersOnly(
-      storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      base::BindOnce(
-          [](std::unique_ptr<network::SimpleURLLoader> loader,
-             scoped_refptr<net::HttpResponseHeaders> headers) {
-            // The loader is destroyed here when it goes out of scope.
-          },
-          std::move(loader)));
+      factory, base::BindOnce(
+                   [](base::WeakPtr<PreloadActivationReportManager> manager,
+                      UrlLoaderList::iterator it,
+                      scoped_refptr<net::HttpResponseHeaders> headers) {
+                     if (manager) {
+                       manager->OnComplete(it);
+                     }
+                   },
+                   weak_ptr_factory_.GetWeakPtr(), it));
+}
+
+void PreloadActivationReportManager::OnRedirect(
+    UrlLoaderList::iterator it,
+    const url::Origin& original_origin,
+    const net::RedirectInfo& redirect_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Enforce that the HTTP method must remain HEAD.
+  if (redirect_info.new_method != net::HttpRequestHeaders::kHeadMethod) {
+    RemoveLoader(it);
+    return;
+  }
+
+  if (!url::Origin::Create(redirect_info.new_url)
+           .IsSameOriginWith(original_origin)) {
+    RemoveLoader(it);
+  }
+}
+
+void PreloadActivationReportManager::OnComplete(UrlLoaderList::iterator it) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RemoveLoader(it);
+}
+
+void PreloadActivationReportManager::RemoveLoader(UrlLoaderList::iterator it) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  loaders_.erase(it);
 }
 
 }  // namespace content
