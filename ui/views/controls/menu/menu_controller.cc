@@ -907,13 +907,17 @@ bool MenuController::OnMousePressed(SubmenuView* source,
     View* view =
         forward_to_root->GetEventHandlerForPoint(event_for_root.location());
     Button* button = Button::AsButton(view);
+    auto this_ref = AsWeakPtr();
     if (hot_button_ != button) {
       SetHotTrackedButton(button);
     }
 
+    if (!this_ref) {
+      return true;
+    }
+
     // Empty menu items are always handled by the menu controller.
     if (!IsViewClass<EmptyMenuMenuItem>(view)) {
-      base::WeakPtr<MenuController> this_ref = AsWeakPtr();
       bool processed = forward_to_root->ProcessMousePressed(event_for_root);
       // This object may be destroyed as a result of a mouse press event (some
       // item may close the menu).
