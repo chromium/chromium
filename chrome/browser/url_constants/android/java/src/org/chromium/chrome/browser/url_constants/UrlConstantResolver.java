@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.url_constants;
 
-import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,13 +62,12 @@ public class UrlConstantResolver {
 
     /** Returns the native URL for the New Tab Page, ignoring any overrides. */
     public static String getOriginalNativeNtpUrl() {
-        final boolean useWebUiNtp =
-                CommandLine.getInstance().hasSwitch("use-webui-ntp")
-                        || ChromeFeatureList.sUseWebUiNtpAndroid.isEnabled();
-        if (useWebUiNtp) {
-            return UrlConstants.NEW_TAB_PAGE_URL_LEGACY;
-        }
         return UrlConstants.NTP_URL;
+    }
+
+    /** Returns the WebUI URL for the New Tab Page, ignoring any overrides. */
+    public static String getOriginalWebUiNtpUrl() {
+        return UrlConstants.NEW_TAB_PAGE_URL_LEGACY;
     }
 
     /** Returns the native URL for the bookmarks page, ignoring any overrides. */

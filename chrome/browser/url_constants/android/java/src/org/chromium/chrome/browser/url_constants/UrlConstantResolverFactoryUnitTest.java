@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalWebUiNtpUrl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +30,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -67,6 +70,7 @@ public class UrlConstantResolverFactoryUnitTest {
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(false);
         PolicyUrlOverrideRegistry.resetRegistry();
         UrlConstantResolverFactory.resetResolvers();
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.IS_DSE_GOOGLE);
     }
 
     @Test
@@ -231,6 +235,57 @@ public class UrlConstantResolverFactoryUnitTest {
         assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
 
         PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(false);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
+    public void testOriginalResolver_WebUiNtpEnabled_DseGoogle() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalWebUiNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
+    public void testOriginalResolver_WebUiNtpEnabled_DseNotGoogle() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
+    public void testOriginalResolver_WebUiNtpDisabled() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
+    public void testOriginalResolver_NtpOverridePrecedence() {
+        ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
+    public void testIncognitoResolver_WebUiNtpIgnored() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+
         assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
     }
 }
