@@ -250,6 +250,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   BOOL _inputPlatePresented;
   /// Caches the items list if set before viewDidLoad.
   NSArray<ComposeboxInputItem*>* _cachedItems;
+
+  // Whether to trigger a glow effect on appear.
+  BOOL _glowOnAppear;
 }
 
 /// ComposeboxAnimationContext
@@ -354,6 +357,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
          selector:@selector(keyboardWillHide:)
              name:UIKeyboardWillHideNotification
            object:nil];
+
+  if (_glowOnAppear) {
+    [self triggerGlowEffect];
+    _glowOnAppear = NO;
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -598,7 +606,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   if (activeToolChanged) {
     [self updateAIMButtonAppearance];
-    [self triggerGlowEffect];
+
+    // If the view is not yet shown, delay the glow effect.
+    if (self.view.window) {
+      [self triggerGlowEffect];
+    } else {
+      _glowOnAppear = YES;
+    }
   }
 
   if (stringsChanged) {
