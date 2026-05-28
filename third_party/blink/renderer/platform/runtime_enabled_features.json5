@@ -1511,8 +1511,10 @@
       status: "test",
     },
     {
+      // https://chromestatus.com/feature/6234471210811392
+      // Ship in M150, should be removed in M152.
       name: "CSSBackgroundClipBorderArea",
-      status: "experimental",
+      status: "stable",
     },
     // https://chromestatus.com/feature/5459864205393920
     {
