@@ -1326,6 +1326,7 @@ public class StripLayoutHelper
                     PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
 
             rebuildStripTabs(/* deferAnimations= */ false);
+            registerTabsWithUnderlineManager();
             finishAnimationsAndCloseDyingTabs();
             computeAndUpdateTabWidth(/* animate= */ false, /* deferAnimations= */ false);
         }
@@ -1476,17 +1477,19 @@ public class StripLayoutHelper
         // Recreate the StripLayoutTabs from the TabModel, now that all of the real Tabs have been
         // restored. This will reuse valid tabs, discard invalid tabs, and correct tab orders.
         rebuildStripTabs(/* deferAnimations= */ false);
-        // Backfill existing tabs to StripTabUnderlineManager
-        if (mStripTabUnderlineManager != null) {
-            for (int i = 0; i < mModel.getCount(); i++) {
-                Tab tab = mModel.getTabAt(i);
-                if (tab != null) {
-                    mStripTabUnderlineManager.registerTab(tab);
-                }
-            }
-        }
+        registerTabsWithUnderlineManager();
         if (getSelectedTabId() != Tab.INVALID_TAB_ID) {
             tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
+        }
+    }
+
+    private void registerTabsWithUnderlineManager() {
+        if (mStripTabUnderlineManager == null || mModel == null) return;
+        for (int i = 0; i < mModel.getCount(); i++) {
+            Tab tab = mModel.getTabAt(i);
+            if (tab != null) {
+                mStripTabUnderlineManager.registerTab(tab);
+            }
         }
     }
 
