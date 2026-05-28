@@ -493,6 +493,15 @@ inline constexpr char kLinkPreviewEnabled[] = "ios.link_preview_enabled";
 inline constexpr char kLensOverlayConditionsAccepted[] =
     "ios.lens_overlay_conditions_accepted";
 
+// List of completed tasks in the Level Up feature.
+inline constexpr char kLevelUpCompletedTasks[] = "level_up.completed_tasks";
+
+// Highest level achieved in the Level Up feature.
+inline constexpr char kLevelUpHighestLevel[] = "level_up.highest_level";
+
+// Whether the Level Up feature UI is enabled.
+inline constexpr char kLevelUpUIEnabled[] = "level_up.ui_enabled";
+
 // Preference that holds a boolean indicating whether the suggestions on the NTP
 // are enabled.
 inline constexpr char kNTPContentSuggestionsEnabled[] =

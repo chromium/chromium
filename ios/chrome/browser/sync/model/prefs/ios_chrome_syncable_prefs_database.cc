@@ -40,7 +40,10 @@ enum {
   kVoiceSearchLocale = 200010,
   kIOSBwgConsent = 200011,
   kIOSGeminiLiveConsent = 200012,
-  kIOSGeminiLiveIntroPlayed = 200013
+  kIOSGeminiLiveIntroPlayed = 200013,
+  kLevelUpCompletedTasks = 200014,
+  kLevelUpHighestLevel = 200015,
+  kLevelUpUIEnabled = 200016
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -103,6 +106,21 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
          {syncable_prefs_ids::kIOSGeminiLiveIntroPlayed, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
+        {prefs::kLevelUpCompletedTasks,
+         {syncable_prefs_ids::kLevelUpCompletedTasks, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone,
+          sync_preferences::WriteBehavior::kWriteToAccountOnly}},
+        {prefs::kLevelUpHighestLevel,
+         {syncable_prefs_ids::kLevelUpHighestLevel, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone,
+          sync_preferences::WriteBehavior::kWriteToAccountOnly}},
+        {prefs::kLevelUpUIEnabled,
+         {syncable_prefs_ids::kLevelUpUIEnabled, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone,
+          sync_preferences::WriteBehavior::kWriteToAccountOnly}},
     });
 
 }  // namespace

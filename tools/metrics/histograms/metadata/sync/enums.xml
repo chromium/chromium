@@ -828,6 +828,9 @@ chromium-metrics-reviews@google.com.
   <int value="200011" label="IOSBwgConsent"/>
   <int value="200012" label="IOSGeminiLiveConsent"/>
   <int value="200013" label="IOSGeminiLiveIntroPlayed"/>
+  <int value="200014" label="LevelUpCompletedTasks"/>
+  <int value="200015" label="LevelUpHighestLevel"/>
+  <int value="200016" label="LevelUpUIEnabled"/>
 <!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
 
 </enum>

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_
 #define IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_
 
+#import <string>
+
 // Enum for all available tasks in the Level Up feature.
 enum class TaskType {
   kUnknown = 0,
@@ -20,5 +22,8 @@ enum class LevelUpTaskCategory {
   // Tasks related to search integrations.
   kSearch,
 };
+
+// Returns a string representation of the TaskType.
+std::string TaskTypeToString(TaskType type);
 
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_

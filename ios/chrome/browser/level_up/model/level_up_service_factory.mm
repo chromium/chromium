@@ -27,5 +27,5 @@ LevelUpServiceFactory::~LevelUpServiceFactory() {}
 
 std::unique_ptr<KeyedService> LevelUpServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return std::make_unique<LevelUpService>();
+  return std::make_unique<LevelUpService>(profile->GetPrefs());
 }
