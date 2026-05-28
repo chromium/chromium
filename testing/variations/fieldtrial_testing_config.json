@@ -891,6 +891,21 @@
             ]
         }
     ],
+    "AndroidAtomsLogging": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260520",
+                    "enable_features": [
+                        "AndroidAtomsLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBookmarkHistoryPane": [
         {
             "platforms": [
