@@ -187,8 +187,7 @@ DrawImage CreateDiscardableDrawImage(gfx::Size size) {
 DrawImage CreateBitmapDrawImage(gfx::Size size) {
   return DrawImage(CreateBitmapImage(size), false,
                    SkIRect::MakeWH(size.width(), size.height()),
-                   PaintFlags::FilterQuality::kNone, SkM44(),
-                   PaintImage::kDefaultFrameIndex);
+                   PaintFlags::FilterQuality::kNone, SkM44());
 }
 
 class ImageControllerTest : public testing::Test {

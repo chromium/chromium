@@ -5,8 +5,6 @@
 #ifndef CC_PAINT_DRAW_IMAGE_H_
 #define CC_PAINT_DRAW_IMAGE_H_
 
-#include <optional>
-
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
@@ -32,14 +30,13 @@ class CC_PAINT_EXPORT DrawImage {
             bool use_dark_mode,
             const SkIRect& src_rect,
             PaintFlags::FilterQuality filter_quality,
-            const SkM44& matrix,
-            std::optional<size_t> frame_index = std::nullopt);
+            const SkM44& matrix);
   DrawImage(PaintImage image,
             bool use_dark_mode,
             const SkIRect& src_rect,
             PaintFlags::FilterQuality filter_quality,
             const SkM44& matrix,
-            std::optional<size_t> frame_index,
+            size_t frame_index,
             const TargetColorParams& target_color_params);
   // Constructs a DrawImage from |other| by adjusting its scale and setting new
   // color params.
@@ -68,10 +65,7 @@ class CC_PAINT_EXPORT DrawImage {
   PaintImage::FrameKey frame_key() const {
     return paint_image_.GetKeyForFrame(frame_index());
   }
-  size_t frame_index() const {
-    DCHECK(frame_index_.has_value());
-    return frame_index_.value();
-  }
+  size_t frame_index() const { return frame_index_; }
 
   const TargetColorParams& target_color_params() const {
     DCHECK(target_color_params_.has_value());
@@ -91,7 +85,7 @@ class CC_PAINT_EXPORT DrawImage {
   PaintFlags::FilterQuality filter_quality_;
   SkSize scale_;
   bool matrix_is_decomposable_;
-  std::optional<size_t> frame_index_;
+  size_t frame_index_ = PaintImage::kDefaultFrameIndex;
   std::optional<TargetColorParams> target_color_params_;
 };
 

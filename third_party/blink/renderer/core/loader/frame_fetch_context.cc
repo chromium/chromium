@@ -1057,7 +1057,7 @@ bool FrameFetchContext::StartSpeculativeImageDecode(Resource* resource) {
         SkIRect::MakeWH(image_size.width(), image_size.height()),
         static_cast<cc::PaintFlags::FilterQuality>(
             image_resource->GetContent()->MaxInterpolationQuality()),
-        matrix, PaintImage::kDefaultFrameIndex);
+        matrix);
     auto paint_image_id = image->paint_image_id();
     TRACE_EVENT_INSTANT(
         TRACE_DISABLED_BY_DEFAULT("loading"), "SpeculativeImageDecodeStarted",

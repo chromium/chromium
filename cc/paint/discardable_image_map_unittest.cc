@@ -798,12 +798,12 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
       image_map->GetDiscardableImagesInRect(visible_rect);
   ASSERT_EQ(images.size(), 3u);
   EXPECT_TRUE(images[0]->paint_image().IsSameForTesting(static_image));
-  EXPECT_DCHECK_DEATH(images[0]->frame_index());
+  EXPECT_EQ(images[0]->frame_index(), PaintImage::kDefaultFrameIndex);
   EXPECT_TRUE(images[1]->paint_image().IsSameForTesting(animated_loop_none));
-  EXPECT_DCHECK_DEATH(images[1]->frame_index());
+  EXPECT_EQ(images[1]->frame_index(), PaintImage::kDefaultFrameIndex);
   EXPECT_TRUE(
       images[2]->paint_image().IsSameForTesting(animation_loop_infinite));
-  EXPECT_DCHECK_DEATH(images[2]->frame_index());
+  EXPECT_EQ(images[2]->frame_index(), PaintImage::kDefaultFrameIndex);
 }
 
 TEST_F(DiscardableImageMapTest, AnimatedImageMetadataReflectsCurrentState) {

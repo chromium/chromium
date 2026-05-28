@@ -47,13 +47,11 @@ DrawImage::DrawImage(PaintImage image,
                      bool use_dark_mode,
                      const SkIRect& src_rect,
                      PaintFlags::FilterQuality filter_quality,
-                     const SkM44& matrix,
-                     std::optional<size_t> frame_index)
+                     const SkM44& matrix)
     : paint_image_(std::move(image)),
       use_dark_mode_(use_dark_mode),
       src_rect_(src_rect),
-      filter_quality_(filter_quality),
-      frame_index_(frame_index) {
+      filter_quality_(filter_quality) {
   matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
 }
 
@@ -62,7 +60,7 @@ DrawImage::DrawImage(PaintImage image,
                      const SkIRect& src_rect,
                      PaintFlags::FilterQuality filter_quality,
                      const SkM44& matrix,
-                     std::optional<size_t> frame_index,
+                     size_t frame_index,
                      const TargetColorParams& target_color_params)
     : paint_image_(std::move(image)),
       use_dark_mode_(use_dark_mode),
