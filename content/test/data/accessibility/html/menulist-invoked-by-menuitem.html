@@ -7,7 +7,7 @@
 @MAC-ALLOW:AXDescription
 -->
 <!DOCTYPE html>
-<button id="btn" commandfor="main-menu" command="show-menu">Open Main Menu</button>
+<button id="btn" commandfor="main-menu" command="toggle-menu">Open Main Menu</button>
 <menulist id="main-menu">
   <!-- Using toggle-menu is required because blink's GetInvokedSubmenu only creates a submenu relationship for toggle-menu.
        If show-menu is used, the menuitem isn't recognized as a submenu invoker, and clicking it just closes the main menu. -->

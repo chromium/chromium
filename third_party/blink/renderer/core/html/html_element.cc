@@ -2906,9 +2906,7 @@ bool HTMLElement::IsValidBuiltinPopoverCommand(CommandEventType command) {
   return command == CommandEventType::kTogglePopover ||
          command == CommandEventType::kHidePopover ||
          command == CommandEventType::kShowPopover ||
-         command == CommandEventType::kToggleMenu ||
-         command == CommandEventType::kHideMenu ||
-         command == CommandEventType::kShowMenu;
+         command == CommandEventType::kToggleMenu;
 }
 
 bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
@@ -3237,12 +3235,6 @@ CommandEventType HTMLElement::GetCommandEventType(
   if (RuntimeEnabledFeatures::MenuElementsEnabled()) {
     if (EqualIgnoringAsciiCase(action, keywords::kToggleMenu)) {
       return CommandEventType::kToggleMenu;
-    }
-    if (EqualIgnoringAsciiCase(action, keywords::kShowMenu)) {
-      return CommandEventType::kShowMenu;
-    }
-    if (EqualIgnoringAsciiCase(action, keywords::kHideMenu)) {
-      return CommandEventType::kHideMenu;
     }
   }
 

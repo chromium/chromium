@@ -12,7 +12,7 @@
 -->
 
 <!-- Non-visible menulist should show collapsed menuitem and button -->
-<button command=show-menu commandfor=closedmenu></button>
+<button command=toggle-menu commandfor=closedmenu></button>
 <menubar>
   <menuitem command=toggle-menu commandfor=closedmenu>First item</menuitem>
   <menuitem>No command item</menuitem>
@@ -22,7 +22,7 @@
 
 <!-- Visible menulist should show expanded menuitem and button (see script
 below) -->
-<button command=show-menu commandfor=openedmenu></button>
+<button command=toggle-menu commandfor=openedmenu></button>
 <menubar>
   <menuitem command=toggle-menu commandfor=openedmenu>First item</menuitem>
 </menubar>

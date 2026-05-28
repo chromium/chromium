@@ -2644,9 +2644,7 @@ AXObject* AXObject::GetCommandForElementForDetailsRelation() const {
   if (action != CommandEventType::kTogglePopover &&
       action != CommandEventType::kShowPopover &&
       action != CommandEventType::kHidePopover &&
-      action != CommandEventType::kToggleMenu &&
-      action != CommandEventType::kShowMenu &&
-      action != CommandEventType::kHideMenu) {
+      action != CommandEventType::kToggleMenu) {
     return nullptr;
   }
 

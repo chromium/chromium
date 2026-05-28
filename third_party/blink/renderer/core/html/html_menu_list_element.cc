@@ -28,9 +28,7 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }
-  if (command != CommandEventType::kToggleMenu &&
-      command != CommandEventType::kShowMenu &&
-      command != CommandEventType::kHideMenu) {
+  if (command != CommandEventType::kToggleMenu) {
     return false;
   }
 
@@ -38,17 +36,10 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
   bool can_show =
       IsPopoverReady(PopoverTriggerAction::kShow,
                      /*exception_state=*/nullptr,
-                     /*include_event_handler_text=*/true, &document) &&
-      (command == CommandEventType::kToggleMenu ||
-       command == CommandEventType::kShowMenu);
+                     /*include_event_handler_text=*/true, &document);
   // command=toggle-menu will never actually close a menu, just move focus into
   // it. If it is demonstrated that closing a menu is ever desired, then we
   // could change this.
-  bool can_hide =
-      IsPopoverReady(PopoverTriggerAction::kHide,
-                     /*exception_state=*/nullptr,
-                     /*include_event_handler_text=*/true, &document) &&
-      command == CommandEventType::kHideMenu;
 
   // This flag is used to determine whether we should move focus into this
   // menulist from the invoker. We only move focus into the menulist when
@@ -69,13 +60,7 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
 
   // If the triggering invoker is a `<menuitem>` that is also checkable, then
   // the `return true`'s below will cause the checkable behavior not to fire.
-  if (can_hide) {
-    HidePopoverInternal(
-        &invoker, HidePopoverFocusBehavior::kFocusPreviousElement,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-        /*exception_state=*/nullptr);
-    return true;
-  } else if (can_show) {
+  if (can_show) {
     // TODO(crbug.com/1121840) HandleCommandInternal is called for both
     // `popovertarget` and `commandfor`.
     InvokePopover(invoker);
@@ -84,9 +69,7 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
     }
     return true;
   }
-  if ((command == CommandEventType::kShowMenu ||
-       command == CommandEventType::kToggleMenu) &&
-      popoverOpen()) {
+  if (popoverOpen()) {
     if (handling_keyboard_event) {
       FocusFirstItem();
     }

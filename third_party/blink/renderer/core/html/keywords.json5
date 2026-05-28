@@ -98,8 +98,6 @@
     "toggle-muted",
     // command for menu elements
     "toggle-menu",
-    "hide-menu",
-    "show-menu",
     // command for scroll
     {name: "page-up", Symbol: "kPage_Up"},
     {name: "page-down", Symbol: "kPage_Down"},

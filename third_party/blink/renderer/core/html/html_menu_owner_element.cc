@@ -25,9 +25,7 @@ HTMLMenuOwnerElement::HTMLMenuOwnerElement(HTMLQualifiedName tag_name,
 bool HTMLMenuOwnerElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                                  CommandEventType command) {
   return HTMLElement::IsValidBuiltinCommand(invoker, command) ||
-         command == CommandEventType::kToggleMenu ||
-         command == CommandEventType::kShowMenu ||
-         command == CommandEventType::kHideMenu;
+         command == CommandEventType::kToggleMenu;
 }
 
 MenuItemList HTMLMenuOwnerElement::ItemList() const {

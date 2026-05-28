@@ -8,10 +8,8 @@
 <script src="/resources/testdriver-actions.js"></script>
 
 <button id=nothing>nothing</button>
-<button commandfor=menulist command=show-menu>show-menu</button>
 <button commandfor=menulist command=toggle-menu>toggle-menu</button>
 <menubar>
-  <menuitem commandfor=menulist command=show-menu>show-menu</menuitem>
   <menuitem commandfor=menulist command=toggle-menu>toggle-menu</menuitem>
 </menubar>
 <menulist id=menulist>
@@ -50,8 +48,7 @@ for (const useInterest of [true, false]) {
   for (const keyName of ['enter', 'space']) {
     document.querySelectorAll('[commandfor]').forEach(invoker => {
       // interest invoking is only supported on <menuitem command=toggle-menu>
-      if (useInterest && (invoker.getAttribute('command') == 'show-menu' ||
-            invoker.localName == "button")) {
+      if (useInterest && invoker.localName == "button") {
         return;
       }
 
