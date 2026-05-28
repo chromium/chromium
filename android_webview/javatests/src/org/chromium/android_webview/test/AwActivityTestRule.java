@@ -13,8 +13,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -43,6 +41,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.net.test.util.TestWebServer;
@@ -66,6 +67,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Custom ActivityTestRunner for WebView instrumentation tests */
+@NullMarked
 public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivity> {
     public static final long WAIT_TIMEOUT_MS = 15000L;
 
@@ -108,12 +110,12 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      * <p>Don't use directly for inner usages, use {@link #getAwBrowserContext()} instead as it
      * makes sure that this instance is not null.
      */
-    private static AwBrowserContext sBrowserContext;
+    @Nullable private static AwBrowserContext sBrowserContext;
 
     private final List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown =
             new ArrayList<>();
 
-    private Consumer<AwSettings> mMaybeMutateAwSettings;
+    @Nullable private Consumer<AwSettings> mMaybeMutateAwSettings;
 
     public AwActivityTestRule() {
         super(AwTestRunnerActivity.class);
@@ -125,6 +127,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     @Override
+    @Initializer
     public Statement apply(final Statement base, Description description) {
         mCurrentTestDescription = description;
         return super.apply(base, description);
@@ -172,6 +175,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         return false;
     }
 
+    @Nullable
     private Intent getLaunchIntent() {
         if (needsHideActionBar()) {
             Intent intent = getActivityIntent();
@@ -182,7 +186,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     @Override
-    public AwTestRunnerActivity launchActivity(Intent intent) {
+    public AwTestRunnerActivity launchActivity(@Nullable Intent intent) {
         if (getActivity() != null) return getActivity();
         super.launchActivity(intent);
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
@@ -274,7 +278,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             final AwContents awContents,
             CallbackHelper onPageFinishedHelper,
             final String url,
-            final Map<String, String> extraHeaders)
+            @Nullable final Map<String, String> extraHeaders)
             throws Exception {
         int currentCallCount = onPageFinishedHelper.getCallCount();
         loadUrlAsync(awContents, url, extraHeaders);
@@ -303,7 +307,9 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     public void loadUrlAsync(
-            final AwContents awContents, final String url, final Map<String, String> extraHeaders) {
+            final AwContents awContents,
+            final String url,
+            final @Nullable Map<String, String> extraHeaders) {
         ThreadUtils.runOnUiThreadBlocking(() -> awContents.loadUrl(url, extraHeaders));
     }
 
@@ -480,7 +486,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public AwTestContainerView createAwTestContainerView(
             final AwContentsClient awContentsClient,
             boolean supportsLegacyQuirks,
-            final TestDependencyFactory testDependencyFactory) {
+            final @Nullable TestDependencyFactory testDependencyFactory) {
         return createAwTestContainerView(
                 awContentsClient, supportsLegacyQuirks, testDependencyFactory, null);
     }
@@ -488,8 +494,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public AwTestContainerView createAwTestContainerView(
             final AwContentsClient awContentsClient,
             boolean supportsLegacyQuirks,
-            final TestDependencyFactory testDependencyFactory,
-            AwBrowserContext browserContext) {
+            final @Nullable TestDependencyFactory testDependencyFactory,
+            @Nullable AwBrowserContext browserContext) {
         AwTestContainerView testContainerView =
                 createDetachedAwTestContainerView(
                         awContentsClient,
@@ -507,7 +513,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      *
      * @return AwBrowserContext instance for this test rule.
      */
-    @NonNull
     public AwBrowserContext getAwBrowserContext() {
         assert needsBrowserProcessStarted()
                 : "Starting browser process is a necessary step to use BrowserContext";
@@ -526,7 +531,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public AwTestContainerView createDetachedAwTestContainerView(
             final AwContentsClient awContentsClient,
             boolean supportsLegacyQuirks,
-            TestDependencyFactory testDependencyFactory) {
+            @Nullable TestDependencyFactory testDependencyFactory) {
         return createDetachedAwTestContainerView(
                 awContentsClient, supportsLegacyQuirks, testDependencyFactory, null);
     }
@@ -534,8 +539,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public AwTestContainerView createDetachedAwTestContainerView(
             final AwContentsClient awContentsClient,
             boolean supportsLegacyQuirks,
-            TestDependencyFactory testDependencyFactory,
-            AwBrowserContext browserContext) {
+            @Nullable TestDependencyFactory testDependencyFactory,
+            @Nullable AwBrowserContext browserContext) {
         if (testDependencyFactory == null) {
             testDependencyFactory = createTestDependencyFactory();
         }
@@ -581,7 +586,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public AwTestContainerView createAwTestContainerViewOnMainSync(
             final AwContentsClient client,
             final boolean supportsLegacyQuirks,
-            final TestDependencyFactory testDependencyFactory) {
+            @Nullable final TestDependencyFactory testDependencyFactory) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         createAwTestContainerView(
@@ -591,8 +596,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public AwTestContainerView createAwTestContainerViewOnMainSync(
             final AwContentsClient client,
             final boolean supportsLegacyQuirks,
-            final TestDependencyFactory testDependencyFactory,
-            final AwBrowserContext browserContext) {
+            @Nullable final TestDependencyFactory testDependencyFactory,
+            @Nullable final AwBrowserContext browserContext) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         createAwTestContainerView(
@@ -602,7 +607,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                                 browserContext));
     }
 
-    public void destroyAwContentsOnMainSync(final AwContents awContents) {
+    public void destroyAwContentsOnMainSync(@Nullable final AwContents awContents) {
         if (awContents == null) return;
         ThreadUtils.runOnUiThreadBlocking(() -> awContents.destroy());
     }
@@ -844,7 +849,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             TestAwContentsClient parentAwContentsClient,
             TestWebServer testWebServer,
             String mainHtml,
-            String popupHtml,
+            @Nullable String popupHtml,
             String popupPath,
             String triggerScript)
             throws Exception {
@@ -898,6 +903,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     /**
      * Waits for the popup window to finish loading.
+     *
      * @param parentAwContents Parent webview's AwContents.
      * @param info The PopupInfo.
      * @param onCreateWindowHandler An instance of OnCreateWindowHandler. null if there isn't.
@@ -905,7 +911,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public void loadPopupContents(
             final AwContents parentAwContents,
             PopupInfo info,
-            OnCreateWindowHandler onCreateWindowHandler)
+            @Nullable OnCreateWindowHandler onCreateWindowHandler)
             throws Exception {
         TestAwContentsClient popupContentsClient = info.popupContentsClient;
         final AwContents popupContents = info.popupContents;
@@ -927,7 +933,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 titleCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
-    private static boolean overridesShouldInterceptRequest(AwContentsClient client) {
+    private static boolean overridesShouldInterceptRequest(@Nullable AwContentsClient client) {
         if (client == null) return false;
 
         Class<?> clientClass = client.getClass();
@@ -970,7 +976,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         }
 
         public AwContents createAwContents(
-                AwBrowserContext browserContext,
+                @Nullable AwBrowserContext browserContext,
                 ViewGroup containerView,
                 Context context,
                 InternalAccessDelegate internalAccessAdapter,

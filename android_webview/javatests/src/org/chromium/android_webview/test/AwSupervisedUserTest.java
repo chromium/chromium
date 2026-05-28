@@ -20,8 +20,6 @@ import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.SmallTest;
@@ -52,6 +50,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
@@ -70,6 +70,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
+@NullMarked
 public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String SAFE_SITE_TITLE = "Safe site";
     private static final String SAFE_SITE_PATH = "/safe.html";
@@ -143,8 +144,12 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
     @After
     public void tearDown() throws Exception {
-        mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
-        mWebServer.shutdown();
+        if (mAwContents != null) {
+            mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
+        }
+        if (mWebServer != null) {
+            mWebServer.shutdown();
+        }
         AwSupervisedUserSafeModeAction.resetForTesting();
     }
 
@@ -431,7 +436,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
     private static class TestWebMessageListener implements WebMessageListener {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
-        private volatile String mResult;
+        private volatile @Nullable String mResult;
 
         @Override
         public void onPostMessage(
@@ -445,7 +450,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
             mCallbackHelper.notifyCalled();
         }
 
-        public String waitForResult() throws TimeoutException {
+        public @Nullable String waitForResult() throws TimeoutException {
             mCallbackHelper.waitForNext();
             return mResult;
         }
@@ -462,7 +467,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                 Set.of(MATURE_SITE_PATH, MATURE_SITE_IFRAME_PATH);
 
         @Override
-        public void shouldBlockUrl(GURL requestUrl, @NonNull final Callback<Boolean> callback) {
+        public void shouldBlockUrl(GURL requestUrl, final Callback<Boolean> callback) {
             String path = requestUrl.getPath();
             boolean isRestrictedContent = RESTRICTED_CONTENT_BLOCKLIST.contains(path);
             mExecutor.execute(
@@ -472,7 +477,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
 
         @Override
-        public void needsRestrictedContentBlocking(@NonNull final Callback<Boolean> callback) {
+        public void needsRestrictedContentBlocking(final Callback<Boolean> callback) {
             mExecutor.execute(
                     () -> {
                         callback.onResult(mNeedsRestrictionResponse);
