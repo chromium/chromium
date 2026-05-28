@@ -31,9 +31,9 @@ mojom::SplitTabVisualData::Layout MapSplitLayout(
     split_tabs::SplitTabLayout layout) {
   switch (layout) {
     case split_tabs::SplitTabLayout::kSideBySide:
-      return mojom::SplitTabVisualData::Layout::kVertical;
+      return mojom::SplitTabVisualData::Layout::kSideBySide;
     case split_tabs::SplitTabLayout::kStacked:
-      return mojom::SplitTabVisualData::Layout::kHorizontal;
+      return mojom::SplitTabVisualData::Layout::kStacked;
   }
   NOTREACHED();
 }

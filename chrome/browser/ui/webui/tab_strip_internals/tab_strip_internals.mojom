@@ -153,8 +153,8 @@ struct SplitCollection {
 // Additional metadata for split tabs.
 struct SplitTabVisualData {
   enum Layout {
-    kVertical,
-    kHorizontal,
+    kSideBySide,
+    kStacked,
   };
 
   Layout layout;

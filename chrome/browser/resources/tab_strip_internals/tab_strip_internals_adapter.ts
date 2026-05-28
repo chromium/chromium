@@ -409,7 +409,7 @@ export class DataModelAdapter {
           const split: Partial<TabRestoreSplit> = {
             splitId: tab.splitId,
             visualData: tab.splitVisualData || {
-              layout: 0,  // kVertical
+              layout: 0,  // kSideBySide
               splitRatio: 0.5,
             },
             tabs: [],
