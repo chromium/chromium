@@ -125,7 +125,6 @@ public class PublicTransitLeakTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/488115473
     public void omniboxTest() {
         var page = mChromeTabbedActivityTestRule.startOnBlankPage();
         var omnibox = page.openOmnibox();
