@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1">
+  <title>TOCTOU frame-swap attacker page</title>
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #decoy {
+      position: absolute;
+      left: 50px;
+      top: 50px;
+      width: 200px;
+      height: 100px;
+      background: lightgreen;
+    }
+    #victim {
+      position: absolute;
+      /* Starts on-screen but away from the decoy button, so the model's APC
+         observation does not record the victim frame at the click coordinate. */
+      left: 50px;
+      top: 200px;
+      width: 200px;
+      height: 100px;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <button id="decoy">Safe-looking button</button>
+  <iframe id="victim"></iframe>
+  <script>
+    // The attacker swaps the cross-origin victim iframe under the
+    // model-chosen coordinate between observation and action.
+    function swap_victim_under_decoy() {
+      const v = document.getElementById('victim');
+      v.style.left = '50px';
+      v.style.top = '50px';
+      v.style.zIndex = '1000';
+      return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    }
+  </script>
+</body>
+</html>

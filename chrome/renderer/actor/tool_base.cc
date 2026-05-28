@@ -286,7 +286,12 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
           task_id_, journal_name,
           JournalDetailsBuilder().AddError("No valid APC node").Build());
       UmaHistogramEnumeration(histogram_name, TimeOfUseResult::kNoValidApcNode);
-      // TODO(crbug.com/445210509): return error for no apc found.
+      if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+        return MakeResult(
+            mojom::ActionResultCode::kFrameLocationChangedSinceObservation,
+            /*requires_page_stabilization=*/false,
+            "No prior observation available for TOCTOU validation");
+      }
       return MakeOkResult();
     }
 
@@ -299,7 +304,8 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
           JournalDetailsBuilder()
               .Add("coordinate_dip",
                    base::ToString(target_->get_coordinate_dip()))
-              .Add("target_id", target_node.GetDomNodeId())
+              .Add("target_id",
+                   target_node.IsNull() ? 0 : target_node.GetDomNodeId())
               .Add("observed_target_id",
                    *observed_target_->node_attribute->dom_node_id)
               .Add("target", NodeToDebugString(target_node))
@@ -312,6 +318,26 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
             /*requires_page_stabilization=*/false,
             "The observed element at the target location is destroyed");
       }
+      return MakeOkResult();
+    }
+
+    if (target_node.IsNull()) {
+      journal_->Log(
+          task_id_, journal_name,
+          JournalDetailsBuilder()
+              .Add("coordinate_dip",
+                   base::ToString(target_->get_coordinate_dip()))
+              .Add("observed_target_id",
+                   observed_target_->node_attribute->dom_node_id.value_or(0))
+              .AddError("No target node at coordinate")
+              .Build());
+      if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+        return MakeResult(
+            mojom::ActionResultCode::kObservedTargetElementDestroyed,
+            /*requires_page_stabilization=*/false,
+            "The element at the target location is destroyed");
+      }
+      return MakeOkResult();
     }
 
     // Target node for coordinate target is obtained through blink hit test
@@ -350,6 +376,25 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     const WebHitTestResult hit_test_result =
         widget->HitTestResultAt(resolved_target.widget_point);
     const WebElement hit_element = hit_test_result.GetElement();
+    if (hit_element.IsNull()) {
+      journal_->Log(task_id_, journal_name,
+                    JournalDetailsBuilder()
+                        .Add("target_id", target_node.GetDomNodeId())
+                        .Add("target", NodeToDebugString(target_node))
+                        .AddError("Hit test returned no element")
+                        .Build());
+      UmaHistogramEnumeration(
+          histogram_name, TimeOfUseResult::kTargetNodeInteractionPointObscured);
+      if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+        return MakeResult(
+            mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
+            /*requires_page_stabilization=*/false,
+            "The element's interaction point is obscured by other elements.");
+      } else {
+        return MakeOkResult();
+      }
+    }
+
     // The action target from APC is not as granular as the live DOM hit test.
     // Include shadow host element as the hit test would land on those. Also
     // check if the hit element was pulled in via a Web Components slot.
@@ -379,7 +424,12 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
           task_id_, journal_name,
           JournalDetailsBuilder().AddError("No valid APC node").Build());
       UmaHistogramEnumeration(histogram_name, TimeOfUseResult::kNoValidApcNode);
-      // TODO(crbug.com/445210509): return error for no apc found.
+      if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+        return MakeResult(
+            mojom::ActionResultCode::kFrameLocationChangedSinceObservation,
+            /*requires_page_stabilization=*/false,
+            "No prior observation available for TOCTOU validation");
+      }
       return MakeOkResult();
     }
 

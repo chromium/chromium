@@ -398,9 +398,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<actor::ui::ActorUiTabController>(
               tab, tab, actor::ActorKeyedService::Get(profile));
     }
-    actor_tab_data_ =
-        GetUserDataFactory().CreateInstance<actor::ActorTabData>(tab, &tab);
-
     if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       skills_ui_tab_controller_ =
           GetUserDataFactory().CreateInstance<skills::SkillsUiTabController>(
@@ -416,6 +413,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               ChromeTranslateClient::FromWebContents(tab.GetContents()));
     }
   }  // IsInNormalWindow() end.
+
+  if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+    actor_tab_data_ =
+        GetUserDataFactory().CreateInstance<actor::ActorTabData>(tab, &tab);
+  }
 
   // This block instantiates the page action controllers that depends on the
   // `commerce_ui_tab_helper_` and not need to be created before.

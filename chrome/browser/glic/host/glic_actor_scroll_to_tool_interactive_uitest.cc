@@ -2,23 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
-#include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace glic::test {
 
 namespace {
 
-namespace apc = ::optimization_guide::proto;
-using apc::Actions;
+using Actions = ::optimization_guide::proto::Actions;
+using ExpectedErrorResult = GlicActorUiTest::ExpectedErrorResult;
 using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorScrollToToolUiTest : public GlicActorUiTest {
+// Base helper class containing shared action generators for ScrollTo tests.
+class GlicActorScrollToToolUiTestBase : public GlicActorUiTest {
  public:
   MultiStep ScrollToAction(std::string_view label,
                            actor::TaskId& task_id,
@@ -64,13 +66,34 @@ class GlicActorScrollToToolUiTest : public GlicActorUiTest {
           Actions action = actor::MakeScrollTo(*frame, node_id, task_id_);
           return EncodeActionProto(action);
         });
-
     return ExecuteAction(std::move(scroll_provider),
                          std::move(expected_result));
   }
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, FailsOnInvalidNodeID) {
+// Test fixture with kGlicActorToctouValidation enabled (default).
+class GlicActorScrollToToolUiTest : public GlicActorScrollToToolUiTestBase {};
+
+// Test fixture with kGlicActorToctouValidation disabled.
+// This is necessary for tests that target arbitrary DOM nodes directly
+// (using NodeId instead of APC node labels) which are not present in the APC
+// observation, as they would otherwise fail TOCTOU validation closed.
+//
+// NOTE: It's not clear if it's intentional that targeted nodes are not in APC.
+// We could update these tests to guarantee that and simplify this test suite.
+class GlicActorScrollToToolValidationDisabledUiTest
+    : public GlicActorScrollToToolUiTestBase {
+ public:
+  GlicActorScrollToToolValidationDisabledUiTest() {
+    feature_list_.InitAndDisableFeature(features::kGlicActorToctouValidation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
+                       FailsOnInvalidNodeID) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
 
@@ -84,14 +107,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, FailsOnInvalidNodeID) {
                   WaitForJsResult(kNewActorTabId, "() => window.scrollY", 0));
 }
 
-// TODO(crbug.com/460810821): Flaky on Mac and ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_ScrollsToValidNodeID DISABLED_ScrollsToValidNodeID
-#else
-#define MAYBE_ScrollsToValidNodeID ScrollsToValidNodeID
-#endif
-IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
-                       MAYBE_ScrollsToValidNodeID) {
+// Test scrolling to an element that exists in the APC observation with TOCTOU
+// enabled.
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, ScrollsToValidApcNodeID) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
 
@@ -110,7 +128,26 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
                       "    .getBoundingClientRect();"
                       "  return window.innerWidth >= rect.right && "
                       "    window.innerHeight >= rect.bottom;"
-                      "}"),
+                      "}"));
+}
+
+// Test scrolling to an arbitrary DOM node that is NOT in the APC observation.
+// This requires TOCTOU validation to be disabled.
+// TODO(crbug.com/460810821): Flaky on Mac and ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#define MAYBE_ScrollsToValidNonApcNodeID DISABLED_ScrollsToValidNonApcNodeID
+#else
+#define MAYBE_ScrollsToValidNonApcNodeID ScrollsToValidNonApcNodeID
+#endif
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
+                       MAYBE_ScrollsToValidNonApcNodeID) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextForActorTab(),
 
       // Scroll to an element outside of the viewport.
       ExecuteScrollToActionWithNodeId("#out-of-viewport"),
@@ -138,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
                   WaitForJsResult(kNewActorTabId, "() => window.scrollY", 0));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, DisplayNoneDoesNotScroll) {
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
+                       DisplayNoneDoesNotScroll) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
 

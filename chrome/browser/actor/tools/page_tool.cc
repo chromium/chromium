@@ -482,13 +482,20 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
   }
 
   // Perform validation for coordinate based target only.
-  // TODO(bokan): We can't perform a TOCTOU check If there's no last
-  // observation. Consider what to do in this case.
-  if (std::holds_alternative<gfx::Point>(request_->GetTarget()) &&
-      last_observation) {
-    if (!ValidateTargetFrameCandidate(request_->GetTarget(), frame,
-                                      *tab->GetContents(),
-                                      observed_target_node_info)) {
+  if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
+    // TODO(b/445210509): To enforce TOCTOU for coordinate actuation we must
+    // ensure every action has a prior observation.  This is not always the case
+    // for the first action.
+    if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation) &&
+        !last_observation) {
+      return MakeResult(
+          mojom::ActionResultCode::kFrameLocationChangedSinceObservation,
+          /*requires_page_stabilization=*/false,
+          "No prior observation available for TOCTOU validation");
+    } else if (last_observation &&
+               !ValidateTargetFrameCandidate(request_->GetTarget(), frame,
+                                             *tab->GetContents(),
+                                             observed_target_node_info)) {
       return MakeResult(
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
     }
