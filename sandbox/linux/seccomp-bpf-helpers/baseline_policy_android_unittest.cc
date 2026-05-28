@@ -58,7 +58,7 @@ BPF_TEST_C(BaselinePolicyAndroid,
            SchedGetAffinity_Maybe_Allowed,
            BaselinePolicyAndroid) {
   cpu_set_t set{};
-  if (base::IsEligibleForBigCoreAffinityChange()) {
+  if (base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
     BPF_ASSERT_EQ(0, sched_getaffinity(0, sizeof(set), &set));
   } else {
     errno = 0;
@@ -78,7 +78,7 @@ BPF_TEST_C(BaselinePolicyAndroid,
     // SAFETY: Index is statically smaller than CPU_SETSIZE.
     UNSAFE_BUFFERS(CPU_SET(i, &set));
   }
-  if (base::IsEligibleForBigCoreAffinityChange()) {
+  if (base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
     BPF_ASSERT_EQ(0, sched_setaffinity(0, sizeof(set), &set));
   } else {
     errno = 0;
