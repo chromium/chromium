@@ -2530,6 +2530,10 @@ config("default_stack_frames") {
   # config into the "optimize" config. We always apply the "/Oy-" config in the
   # definition for common_optimize_on_cflags definition, even though this may
   # not be correct.
+
+  if (enable_frame_pointers) {
+    rustflags = [ "-Cforce-frame-pointers=yes" ]
+  }
 }
 
 # Default "optimization on" config.
