@@ -46,6 +46,14 @@ void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
       kColorAvatarButtonHighlightDefault};
 }
 
+void ApplyChromeRefresh2026ColorOverrides(ui::ColorMixer& mixer) {
+  if (!features::IsWebuiRefresh2026Enabled()) {
+    return;
+  }
+
+  mixer[ui::kColorToolbarSearchFieldBackground] = {ui::kColorSysSurface4};
+}
+
 }  // namespace
 
 void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
@@ -481,4 +489,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorWebuiDialogBackground] = {ui::kColorSysSurface};
   mixer[kColorWebuiDialogContainerBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorWebuiPageBackground] = {ui::kColorSysSurface};
+
+  ApplyChromeRefresh2026ColorOverrides(mixer);
 }
