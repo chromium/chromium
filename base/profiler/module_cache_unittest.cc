@@ -348,13 +348,20 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
   std::vector<debug::MappedMemoryRegion> regions;
   ASSERT_TRUE(debug::ParseProcMaps(proc_maps, &regions));
 
-  // Map distinct paths to lists of regions for the path in increasing memory
-  // order.
+  // Map module base address to regions.
   using RegionVector = std::vector<const debug::MappedMemoryRegion*>;
-  using PathRegionsMap = std::map<std::string_view, RegionVector>;
-  PathRegionsMap path_regions;
+  std::map<uintptr_t, RegionVector> module_regions;
+  ModuleCache cache;
   for (const debug::MappedMemoryRegion& region : regions) {
-    path_regions[region.path].push_back(&region);
+    // Regions that aren't associated with absolute paths are unlikely to be
+    // part of modules.
+    if (region.path.empty() || region.path[0] != '/') {
+      continue;
+    }
+    if (const ModuleCache::Module* module =
+            cache.GetModuleForAddress(region.start)) {
+      module_regions[module->GetBaseAddress()].push_back(&region);
+    }
   }
 
   const auto find_last_executable_region = [](const RegionVector& regions) {
@@ -368,40 +375,33 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
 
   int module_count = 0;
 
-  // Loop through each distinct path.
-  for (const auto& path_regions_pair : path_regions) {
-    // Regions that aren't associated with absolute paths are unlikely to be
-    // part of modules.
-    if (path_regions_pair.first.empty() || path_regions_pair.first[0] != '/') {
-      continue;
-    }
-
+  for (const auto& [base_address, regions_vector] : module_regions) {
     const debug::MappedMemoryRegion* const last_executable_region =
-        find_last_executable_region(path_regions_pair.second);
+        find_last_executable_region(regions_vector);
     // The region isn't part of a module if no executable regions are associated
-    // with the same path.
+    // with it.
     if (!last_executable_region) {
       continue;
     }
 
-    // Loop through all the regions associated with the path, checking that
+    ++module_count;
+
+    const uintptr_t expected_base_address = regions_vector.front()->start;
+    EXPECT_EQ(expected_base_address, base_address);
+
+    // Loop through all the regions associated with the module, checking that
     // modules created for addresses in each region have the expected extents.
-    const uintptr_t expected_base_address =
-        path_regions_pair.second.front()->start;
-    for (const auto* region : path_regions_pair.second) {
-      ModuleCache cache;
+    for (const auto* region : regions_vector) {
+      ModuleCache cache2;
       const ModuleCache::Module* module =
-          cache.GetModuleForAddress(region->start);
+          cache2.GetModuleForAddress(region->start);
       // Not all regions matching the prior conditions are necessarily modules;
       // things like resources are also mmapped into memory from files. Ignore
       // any region isn't part of a module.
       if (!module) {
         continue;
       }
-
-      ++module_count;
-
-      EXPECT_EQ(expected_base_address, module->GetBaseAddress());
+      EXPECT_EQ(base_address, module->GetBaseAddress());
       // This needs an inequality comparison because the module size is computed
       // based on the ELF section's actual extent, while the |proc_maps| region
       // is aligned to a larger boundary.
