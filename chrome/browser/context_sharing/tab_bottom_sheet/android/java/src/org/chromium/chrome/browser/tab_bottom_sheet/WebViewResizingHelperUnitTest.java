@@ -153,19 +153,23 @@ public class WebViewResizingHelperUnitTest {
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
 
         clearInvocations(mMockWebContents);
+        clearInvocations(mMockThinWebView);
 
         // Case 1: width == 0
         container.layout(0, 0, 0, 100);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
         verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
 
         // Case 2: height == 0
         container.layout(0, 0, 100, 0);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
         verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
 
         // Case 3: width == mWebContents.getWidth() && height == mWebContents.getHeight()
         when(mMockWebContents.getWidth()).thenReturn(100);
         when(mMockWebContents.getHeight()).thenReturn(200);
         container.layout(0, 0, 100, 200);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
         verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
 
         // Case 4: mWebContents.isDestroyed() is true
@@ -183,10 +187,12 @@ public class WebViewResizingHelperUnitTest {
         when(mMockWebContents.getHeight()).thenReturn(50);
 
         clearInvocations(mMockWebContents);
+        clearInvocations(mMockThinWebView);
 
         container.layout(0, 0, 100, 200);
 
-        verify(mMockWebContents).setSize(100, 200);
+        verify(mMockThinWebView).resizeWebContents(100, 200);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
     }
 
     @Test
@@ -240,9 +246,11 @@ public class WebViewResizingHelperUnitTest {
         when(mMockWebContents.getHeight()).thenReturn(50);
 
         clearInvocations(mMockWebContents);
+        clearInvocations(mMockThinWebView);
 
         container.layout(0, 0, 100, 200);
 
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
         verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
     }
 }

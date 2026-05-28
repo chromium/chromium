@@ -241,6 +241,7 @@ public class TabBottomSheetWebUi {
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();
         constraints.supportsOpacity = true;
         constraints.backgroundColor = mBackgroundColor;
+        constraints.ignoreSizeChanges = true;
         mThinWebView =
                 ThinWebViewFactory.create(
                         mContext,

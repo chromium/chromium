@@ -251,6 +251,10 @@ public class WebViewResizingHelper {
             return;
         }
 
-        mWebContents.setSize(width, height);
+        if (mThinWebView != null) {
+            mThinWebView.resizeWebContents(width, height);
+        } else {
+            mWebContents.setSize(width, height);
+        }
     }
 }

@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Px;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -48,6 +50,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     @DoNotInline private @Nullable WebContentsDelegateAndroid mWebContentsDelegate;
     private final boolean mOwnsWindowAndroid;
     private final boolean mEnablePermissionRequests;
+    private final boolean mIgnoreSizeChanges;
     private @Nullable ModalDialogManager mModalDialogManager;
 
     /**
@@ -100,6 +103,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         }
 
         mOwnsWindowAndroid = true;
+        mIgnoreSizeChanges = constraints.ignoreSizeChanges;
         init(context, constraints);
     }
 
@@ -116,6 +120,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         mWindowAndroid = windowAndroid;
         mOwnsWindowAndroid = false;
         mEnablePermissionRequests = false;
+        mIgnoreSizeChanges = constraints.ignoreSizeChanges;
         init(context, constraints);
     }
 
@@ -201,8 +206,14 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    public void resizeWebContents(@Px int width, @Px int height) {
         if (mNativeThinWebViewImpl == 0) return;
+        ThinWebViewImplJni.get().sizeChanged(mNativeThinWebViewImpl, width, height);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        if (mNativeThinWebViewImpl == 0 || mIgnoreSizeChanges) return;
         if (w != oldw || h != oldh) {
             ThinWebViewImplJni.get().sizeChanged(mNativeThinWebViewImpl, w, h);
         }

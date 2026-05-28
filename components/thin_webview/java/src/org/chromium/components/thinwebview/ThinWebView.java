@@ -6,6 +6,8 @@ package org.chromium.components.thinwebview;
 
 import android.view.View;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
@@ -45,6 +47,16 @@ public interface ThinWebView {
      * @param runnable The runnable to be run.
      */
     void runOnNextFrame(Runnable runnable);
+
+    /**
+     * Resizes the web contents to the specified width and height. This should normally be called
+     * internally when the ThinWebView is resized, but can be used to force resizes if the normal
+     * size propagation is disabled by {@link ThinWebViewConstraints#ignoreSizeChanges}.
+     *
+     * @param width The new width in device pixels.
+     * @param height The new height in device pixels.
+     */
+    void resizeWebContents(@Px int width, @Px int height);
 
     /** Should be called for cleanup when the CompositorView instance is no longer used. */
     void destroy();
