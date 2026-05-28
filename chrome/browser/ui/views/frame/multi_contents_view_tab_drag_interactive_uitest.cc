@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
@@ -33,118 +35,25 @@
 
 namespace {
 
-// TODO(crbug.com/414590951): Tab DnD tests not working on ChromeOS and Mac.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/414590951): Tab DnD tests not working on Mac.
+// TODO(crbug.com/500937645): Re-enable the test on Windows.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-
-MultiContentsDropTargetView* GetDropTargetView(BrowserView& browser_view) {
-  return views::AsViewClass<MultiContentsDropTargetView>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
-          browser_view.GetElementContext()));
-}
-
-// TODO(crbug.com/40249472): All of the helpers below are used as a workaround
-// for limitations in Windows' drag and drop handling, where it locks into a
-// message loop when drag starts. The helpers below workaround this by polling,
-// without using any nested run loops for waiting.
-//
-// Due to the nature of dragging, each step must be executed as a callback
-// within the previous step.
-// This is a helper that allows running a set of closures, where each
-// closure is expected to execute the next one. This is not functionally
-// required, but makes the syntax a lot cleaner.
-template <size_t kIndex, typename... Steps>
-void RunDragStep(std::tuple<Steps...> steps, base::OnceClosure on_complete) {
-  if constexpr (kIndex < sizeof...(Steps)) {
-    auto step_to_run = std::move(std::get<kIndex>(steps));
-    auto next_step = base::BindOnce(&RunDragStep<kIndex + 1, Steps...>,
-                                    std::move(steps), std::move(on_complete));
-    std::move(step_to_run).Run(std::move(next_step));
-  } else {
-    std::move(on_complete).Run();
-  }
-}
-
-template <typename... Steps>
-void DragSequence(Steps... steps) {
-  RunDragStep<0, Steps...>(std::make_tuple(std::move(steps)...),
-                           base::DoNothing());
-}
-
-// Polling within a drag loop is complicated: a typical `base::RunLoop` created
-// within a drag loop will hang.
-// This function works around this limitation by posting tasks to poll an
-// arbitrary condition, then executing a callback once met.
-void Poll(base::RepeatingCallback<bool()> condition,
-          base::OnceClosure callback) {
-  if (!condition.Run()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&Poll, std::move(condition), std::move(callback)),
-        base::Milliseconds(1));
-    return;
-  }
-  std::move(callback).Run();
-}
-
-// A helper for observing the end of a tab dragging session.
-// This should be created before drag loop is started.
-class QuitTabDraggingObserver {
- public:
-  explicit QuitTabDraggingObserver(TabStripRegionView* tab_strip_view) {
-    TabDragContext* context = tab_strip_view->GetDragContext();
-    if (auto* controller = context->GetDragController()) {
-      OnDragControllerSet(controller);
-    } else {
-      context->SetDragControllerCallbackForTesting(
-          base::BindOnce(&QuitTabDraggingObserver::OnDragControllerSet,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
-
-  QuitTabDraggingObserver(const QuitTabDraggingObserver&) = delete;
-  QuitTabDraggingObserver& operator=(const QuitTabDraggingObserver&) = delete;
-  ~QuitTabDraggingObserver() = default;
-
-  void Wait() & {
-    timeout_warning_timer_.Start(
-        FROM_HERE, TestTimeouts::action_max_timeout(),
-        base::BindLambdaForTesting([]() {
-          LOG(ERROR)
-              << "QuitTabDraggingObserver::Wait() is taking a long time. "
-                 "If this test times out, please check the comment for "
-                 "QuitTabDraggingObserver to see if it should be using "
-                 "BrowserChangeWaiter instead.";
-          LOG(ERROR) << "Note: you might be using QuitTabDraggingObserver via "
-                        "DragTabAndNotify() or "
-                        "DragToDetachGroupAndNotify().";
-        }));
-    run_loop_.Run();
-    timeout_warning_timer_.Stop();
-  }
-
- private:
-  void OnDragControllerSet(TabDragController* controller) {
-    controller->SetDragLoopDoneCallbackForTesting(base::BindOnce(
-        &QuitTabDraggingObserver::Quit, weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void Quit() { run_loop_.QuitWhenIdle(); }
-
-  base::RunLoop run_loop_;
-  base::OneShotTimer timeout_warning_timer_;
-
-  base::WeakPtrFactory<QuitTabDraggingObserver> weak_ptr_factory_{this};
-};
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
+                                    kBrowserCountPoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kDragStatePoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kWaitFinishedPoller);
 
 class MultiContentsViewTabDragEntrypointsUiTest
     : public SplitViewInteractiveTestMixin<
           TabStripInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  using DragStep = base::OnceCallback<void(base::OnceClosure)>;
+  MultiContentsViewTabDragEntrypointsUiTest() = default;
+  ~MultiContentsViewTabDragEntrypointsUiTest() override = default;
 
   gfx::Point GetPointForDropSide(MultiContentsDropTargetView::DropSide side) {
     const gfx::Rect bounds = GetBrowserView().GetBoundsInScreen();
@@ -158,16 +67,6 @@ class MultiContentsViewTabDragEntrypointsUiTest
     }
   }
 
-  // Moves the mouse to the tab header for the given index, then presses the
-  // mouse button down.
-  void SelectTabAt(int index) {
-    EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(
-        ui_test_utils::GetCenterInScreenCoordinates(
-            GetBrowserView().tab_strip_view()->GetTabAnchorViewAt(index))));
-    EXPECT_TRUE(ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
-                                                   ui_controls::DOWN));
-  }
-
   BrowserView& GetBrowserView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -175,84 +74,46 @@ class MultiContentsViewTabDragEntrypointsUiTest
     return *browser_view;
   }
 
-  // Waits for two browser windows to exist, then runs a callback.
-  DragStep WaitForDetachedWindow() {
-    return base::BindOnce([](base::OnceClosure callback) {
-      Poll(base::BindRepeating([]() {
-             return GlobalBrowserCollection::GetInstance()->GetSize() == 2u;
-           }),
-           std::move(callback));
-    });
+  MultiContentsDropTargetView* GetDropTargetView(BrowserView& browser_view) {
+    return views::AsViewClass<MultiContentsDropTargetView>(
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
+            browser_view.GetElementContext()));
   }
 
-  // Returns a `DragStep` that waits for the multi contents drop target to be
-  // shown.
-  DragStep WaitForDropTargetShowing() {
-    return WaitForDropTargetVisibility(true);
+  base::RepeatingCallback<size_t()> GetBrowserCount() {
+    return base::BindRepeating(
+        []() { return GlobalBrowserCollection::GetInstance()->GetSize(); });
   }
 
-  // Returns a `DragStep` that waits for the multi contents drop target to be
-  // hidden.
-  DragStep WaitForDropTargetHidden() {
-    return WaitForDropTargetVisibility(false);
+  base::RepeatingCallback<bool()> GetDragActive() {
+    return base::BindRepeating([]() { return TabDragController::IsActive(); });
   }
 
-  // Returns a `DragStep` that moves the mouse to a point.
-  DragStep MoveMouse(gfx::Point point) {
-    return base::BindOnce(
-        [](gfx::Point point, base::OnceClosure callback) {
-          ui_controls::SendMouseMoveNotifyWhenDone(point.x(), point.y(),
-                                                   std::move(callback));
-        },
-        point);
+  auto NameTabViewAt(std::string_view name, int index) {
+    return NameView(name, base::BindLambdaForTesting([this, index]() {
+                      return GetBrowserView().tab_strip_view()->GetTabAnchorViewAt(
+                          index);
+                    }));
   }
 
-  // Returns a `DragStep` that releases the left mouse button.
-  DragStep ReleaseMouse() {
-    return base::BindOnce([](base::OnceClosure callback) {
-      ui_controls::SendMouseEventsNotifyWhenDone(
-          ui_controls::LEFT, ui_controls::UP, std::move(callback));
-    });
-  }
-
-  DragStep Wait(base::TimeDelta timeout) {
-    return base::BindOnce(
-        [](base::TimeDelta timeout, base::OnceClosure callback) {
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-              FROM_HERE, std::move(callback), timeout);
-        },
-        timeout);
-  }
-
-  // Performs a check on the `MultiContentsDropTargetView` to ensure it is
-  // showing on the correct side of the browser view.
-  DragStep CheckDropSide(MultiContentsDropTargetView::DropSide side) {
-    return base::BindOnce(
-        [](BrowserView& browser_view,
-           MultiContentsDropTargetView::DropSide side,
-           base::OnceClosure callback) {
-          EXPECT_EQ(GetDropTargetView(browser_view)->side(), side);
-          std::move(callback).Run();
-        },
-        std::ref(GetBrowserView()), side);
+  auto WaitTime(base::TimeDelta timeout) {
+    return Steps(
+        Do([this]() { last_wait_start_ = base::TimeTicks::Now(); }),
+        PollState(kWaitFinishedPoller,
+                  [this, timeout]() {
+                    return !last_wait_start_.is_null() &&
+                           (base::TimeTicks::Now() - last_wait_start_ >=
+                            timeout);
+                  }),
+        WaitForState(kWaitFinishedPoller, true),
+        Do([this]() { last_wait_start_ = base::TimeTicks(); }));
   }
 
  private:
-  DragStep WaitForDropTargetVisibility(bool visible) {
-    return base::BindOnce(
-        [](BrowserView& browser_view, bool visible,
-           base::OnceClosure callback) {
-          Poll(base::BindRepeating(
-                   [](BrowserView& browser_view, bool visible) {
-                     return GetDropTargetView(browser_view)->GetVisible() ==
-                            visible;
-                   },
-                   std::ref(browser_view), visible),
-               std::move(callback));
-        },
-        std::ref(GetBrowserView()), visible);
-  }
+  base::TimeTicks last_wait_start_;
 };
+
 
 class MultiContentsViewTabDragEntrypointsUiParamTest
     : public MultiContentsViewTabDragEntrypointsUiTest,
@@ -263,14 +124,8 @@ class MultiContentsViewTabDragEntrypointsUiParamTest
   ~MultiContentsViewTabDragEntrypointsUiParamTest() override = default;
 };
 
-// TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragAndDrop DISABLED_DragAndDrop
-#else
-#define MAYBE_DragAndDrop DragAndDrop
-#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       MAYBE_DragAndDrop) {
+                       DragAndDrop) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -279,23 +134,32 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   }
 #endif
 
-  BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
 
-  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
       AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
-      WaitForActiveTabChange(2), Do([&]() {
-        SelectTabAt(1);
-        DragSequence(
-            MoveMouse(
-                ui_test_utils::GetCenterInScreenCoordinates(&browser_view)),
-            WaitForDetachedWindow(), MoveMouse(GetPointForDropSide(drop_side)),
-            WaitForDropTargetShowing(), CheckDropSide(drop_side),
-            ReleaseMouse());
-        observer.Wait();
-      }),
+      WaitForActiveTabChange(2),
+      NameTabViewAt("Tab to drag", 1),
+      MoveMouseTo("Tab to drag"),
+      DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2u),
+      MoveMouseTo(base::BindLambdaForTesting(
+          [&]() { return GetPointForDropSide(drop_side); })),
+      InAnyContext(WaitForShow(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId)),
+      InAnyContext(CheckView(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
+          base::BindOnce(
+              [](MultiContentsDropTargetView::DropSide side,
+                 MultiContentsDropTargetView* view) {
+                return view->side() == side;
+              },
+              drop_side))),
+      ReleaseMouse(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false),
       CheckResult(
           [this]() {
             return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
@@ -303,14 +167,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
           true));
 }
 
-// TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
-#define MAYBE_ShowAndHideDropTarget DISABLED_ShowAndHideDropTarget
-#else
-#define MAYBE_ShowAndHideDropTarget ShowAndHideDropTarget
-#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       MAYBE_ShowAndHideDropTarget) {
+                       ShowAndHideDropTarget) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -319,36 +177,39 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   }
 #endif
 
-  BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
 
-  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
       AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
-      WaitForActiveTabChange(2), Do([&]() {
-        SelectTabAt(1);
-        DragSequence(
-            MoveMouse(
-                ui_test_utils::GetCenterInScreenCoordinates(&browser_view)),
-            WaitForDetachedWindow(), MoveMouse(GetPointForDropSide(drop_side)),
-            WaitForDropTargetShowing(), CheckDropSide(drop_side),
-            MoveMouse(
-                ui_test_utils::GetCenterInScreenCoordinates(&browser_view)),
-            WaitForDropTargetHidden(), ReleaseMouse());
-        observer.Wait();
-      }));
+      WaitForActiveTabChange(2),
+      NameTabViewAt("Tab to drag", 1),
+      MoveMouseTo("Tab to drag"),
+      DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2u),
+      MoveMouseTo(base::BindLambdaForTesting(
+          [&]() { return GetPointForDropSide(drop_side); })),
+      InAnyContext(WaitForShow(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId)),
+      InAnyContext(CheckView(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
+          base::BindOnce(
+              [](MultiContentsDropTargetView::DropSide side,
+                 MultiContentsDropTargetView* view) {
+                return view->side() == side;
+              },
+              drop_side))),
+      MoveMouseTo(kBrowserViewElementId),
+      InAnyContext(WaitForHide(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId)),
+      ReleaseMouse(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false));
 }
 
-// TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
-#define MAYBE_DragAndDropDisabledForChromePage \
-  DISABLED_DragAndDropDisabledForChromePage
-#else
-#define MAYBE_DragAndDropDisabledForChromePage DragAndDropDisabledForChromePage
-#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       MAYBE_DragAndDropDisabledForChromePage) {
+                       DragAndDropDisabledForChromePage) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -357,22 +218,26 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   }
 #endif
 
-  BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
 
-  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
-      WaitForActiveTabChange(2), Do([&]() {
-        SelectTabAt(1);
-        DragSequence(
-            MoveMouse(
-                ui_test_utils::GetCenterInScreenCoordinates(&browser_view)),
-            WaitForDetachedWindow(), MoveMouse(GetPointForDropSide(drop_side)),
-            Wait(base::Milliseconds(500)), ReleaseMouse());
-        observer.Wait();
+      WaitForActiveTabChange(2),
+      NameTabViewAt("Tab to drag", 1),
+      MoveMouseTo("Tab to drag"),
+      DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2u),
+      MoveMouseTo(base::BindLambdaForTesting(
+          [&]() { return GetPointForDropSide(drop_side); })),
+      WaitTime(base::Milliseconds(500)),
+      Check([this]() {
+        return !GetDropTargetView(GetBrowserView())->GetVisible();
       }),
+      ReleaseMouse(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false),
       CheckResult(
           [this]() {
             return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
@@ -380,15 +245,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
           false));
 }
 
-// TODO(crbug.com/500937645): Re-enable the test
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
-    defined(ARCH_CPU_ARM64)
-#define MAYBE_DragAndDropDisabled DISABLED_DragAndDropDisabled
-#else
-#define MAYBE_DragAndDropDisabled DragAndDropDisabled
-#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
-                       MAYBE_DragAndDropDisabled) {
+                       DragAndDropDisabled) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -404,31 +262,29 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
   }
 #endif
 
-  BrowserView& browser_view = GetBrowserView();
-
   // Disable drag and drop.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, false);
 
-  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
       AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
-      WaitForActiveTabChange(2), Do([&]() {
-        SelectTabAt(1);
-        DragSequence(MoveMouse(ui_test_utils::GetCenterInScreenCoordinates(
-                         &browser_view)),
-                     WaitForDetachedWindow(),
-                     MoveMouse(GetPointForDropSide(
-                         MultiContentsDropTargetView::DropSide::START)),
-                     ReleaseMouse());
-        observer.Wait();
+      WaitForActiveTabChange(2),
+      NameTabViewAt("Tab to drag", 1),
+      MoveMouseTo("Tab to drag"),
+      DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2u),
+      MoveMouseTo(base::BindLambdaForTesting([&]() {
+        return GetPointForDropSide(MultiContentsDropTargetView::DropSide::START);
+      })),
+      WaitTime(base::Milliseconds(500)),
+      ReleaseMouse(),
+      Check([this]() {
+        return !GetDropTargetView(GetBrowserView())->GetVisible();
       }),
-      CheckResult(
-          [this]() {
-            return GetDropTargetView(GetBrowserView())->GetVisible();
-          },
-          false));
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -436,6 +292,6 @@ INSTANTIATE_TEST_SUITE_P(
     MultiContentsViewTabDragEntrypointsUiParamTest,
     ::testing::Values(MultiContentsDropTargetView::DropSide::START,
                       MultiContentsDropTargetView::DropSide::END));
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 }  // namespace
