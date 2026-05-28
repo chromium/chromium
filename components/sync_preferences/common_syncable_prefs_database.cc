@@ -164,6 +164,7 @@ enum {
   kDriveDisclaimerAccepted = 113,
   kAutofillAiShoppingEntitiesEnabled = 114,
   kPrefTranslateRecentTargets = 115,
+  kBookmarkBarVisibilityState = 116,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -240,6 +241,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
          {syncable_prefs_ids::kShowManagedBookmarksInBookmarkBar,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {bookmarks::prefs::kBookmarkBarVisibilityState,
+         {syncable_prefs_ids::kBookmarkBarVisibilityState, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {browsing_data::prefs::kLastClearBrowsingDataTime,
          {syncable_prefs_ids::kLastClearBrowsingDataTime, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},

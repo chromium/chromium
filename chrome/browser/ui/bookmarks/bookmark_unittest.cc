@@ -4,22 +4,29 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#include "components/search/ntp_features.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -316,4 +323,32 @@ TEST_F(BookmarkTest, SuggestsUniqueTabGroupNameReachesLimit) {
   AddGroup(base_title + u" (100)", service.get());
   EXPECT_EQ(base_title + u" (100)",
             bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
+}
+
+// Ensures that when the bookmark bar is enabled
+// `bookmarks::prefs::kBookmarkBarVisibilityState` is updated accordingly.
+TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  TestingProfile* test_profile =
+      profile_manager()->CreateTestingProfile("test_profile");
+  test_profile->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar,
+                                       true);
+
+  // Verify that the pref is initially at its default value.
+  EXPECT_EQ(
+      test_profile->GetPrefs()->GetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState),
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
+
+  std::unique_ptr<Browser> test_browser =
+      CreateBrowser(test_profile, Browser::TYPE_NORMAL, false);
+
+  // Verify that the pref was updated.
+  EXPECT_EQ(
+      test_profile->GetPrefs()->GetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState),
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
 }

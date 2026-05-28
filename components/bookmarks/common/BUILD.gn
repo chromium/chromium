@@ -4,6 +4,7 @@
 
 static_library("common") {
   sources = [
+    "bookmark_bar_visibility_state.h",
     "bookmark_constants.cc",
     "bookmark_constants.h",
     "bookmark_features.cc",

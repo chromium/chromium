@@ -44,6 +44,11 @@ inline constexpr char kShowManagedBookmarksInBookmarkBar[] =
 // Boolean which specifies whether the bookmark bar is visible on all tabs.
 inline constexpr char kShowBookmarkBar[] = "bookmark_bar.show_on_all_tabs";
 
+// Integer pref which specifies the visibility state of the bookmark bar.
+// Maps to bookmarks::BookmarkBarVisibilityState.
+inline constexpr char kBookmarkBarVisibilityState[] =
+    "bookmark_bar.visibility_state";
+
 }  // namespace bookmarks::prefs
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_PREF_NAMES_H_

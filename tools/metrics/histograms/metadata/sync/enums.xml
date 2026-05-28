@@ -387,6 +387,7 @@ chromium-metrics-reviews@google.com.
   <int value="113" label="DriveDisclaimerAccepted"/>
   <int value="114" label="AutofillAiShoppingEntitiesEnabled"/>
   <int value="115" label="PrefTranslateRecentTargets"/>
+  <int value="116" label="BookmarkBarVisibilityState"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
