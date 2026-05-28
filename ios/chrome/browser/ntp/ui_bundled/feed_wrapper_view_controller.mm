@@ -86,6 +86,9 @@
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:layout];
   [emptyCollectionView setShowsVerticalScrollIndicator:NO];
+  if (IsChromeNextIaEnabled()) {
+    [emptyCollectionView setShowsHorizontalScrollIndicator:NO];
+  }
   [self.view addSubview:emptyCollectionView];
   self.contentCollectionView = emptyCollectionView;
   self.contentCollectionView.backgroundColor = [UIColor clearColor];
