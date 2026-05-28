@@ -1028,14 +1028,6 @@ inline constexpr char kAutofillEnableOmniboxAutofillDescription[] =
     "When enabled, an Autofill payments omnibox chip will appear for relevant "
     "payment checkout forms.";
 
-inline constexpr char kAutofillEnablePaymentsMandatoryReauthChromeOsName[] =
-    "Enable mandatory re-auth for payments autofill on ChromeOS";
-inline constexpr char
-    kAutofillEnablePaymentsMandatoryReauthChromeOsDescription[] =
-        "When enabled, in use-cases where we would not have triggered any "
-        "interactive authentication to autofill payment methods, we will "
-        "trigger a device authentication on ChromeOS.";
-
 inline constexpr char kAutofillEnablePayNowPayLaterTabsName[] =
     "Enable Pay Now Pay Later tabs UI for payments autofill on Chrome";
 inline constexpr char kAutofillEnablePayNowPayLaterTabsDescription[] =

@@ -285,13 +285,7 @@ void SetAutofillAiReauthBeforeFillingEnabled(PrefService* prefs, bool enabled) {
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_IOS)
-  return prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
-#elif BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauthChromeOs)) {
-    return false;
-  }
+    BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
   return prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
 #else
   return false;
@@ -305,26 +299,14 @@ void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_IOS)
-  prefs->SetBoolean(kAutofillPaymentMethodsMandatoryReauth, enabled);
-#elif BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauthChromeOs)) {
-    return;
-  }
+    BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
   prefs->SetBoolean(kAutofillPaymentMethodsMandatoryReauth, enabled);
 #endif
 }
 
 bool IsPaymentMethodsMandatoryReauthSetExplicitly(const PrefService* prefs) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  return prefs->GetUserPrefValue(kAutofillPaymentMethodsMandatoryReauth) !=
-         nullptr;
-#elif BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauthChromeOs)) {
-    return false;
-  }
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
   return prefs->GetUserPrefValue(kAutofillPaymentMethodsMandatoryReauth) !=
          nullptr;
 #else
@@ -334,15 +316,8 @@ bool IsPaymentMethodsMandatoryReauthSetExplicitly(const PrefService* prefs) {
 
 bool IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
     const PrefService* prefs) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  return prefs->GetInteger(
-             kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) <
-         kMaxValueForMandatoryReauthPromoShownCounter;
-#elif BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauthChromeOs)) {
-    return false;
-  }
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
   return prefs->GetInteger(
              kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) <
          kMaxValueForMandatoryReauthPromoShownCounter;
@@ -353,24 +328,8 @@ bool IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
 
 void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
     PrefService* prefs) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  if (prefs->GetInteger(
-          kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) >=
-      kMaxValueForMandatoryReauthPromoShownCounter) {
-    return;
-  }
-
-  prefs->SetInteger(
-      kAutofillPaymentMethodsMandatoryReauthPromoShownCounter,
-      prefs->GetInteger(
-          kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) +
-          1);
-#elif BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauthChromeOs)) {
-    return;
-  }
-
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (prefs->GetInteger(
           kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) >=
       kMaxValueForMandatoryReauthPromoShownCounter) {

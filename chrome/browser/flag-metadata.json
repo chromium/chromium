@@ -962,12 +962,7 @@
     "owners": [ "wilsonlow@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 160
   },
-  {
-    "name": "autofill-enable-payments-mandatory-reauth-chromeos",
-    "owners": [ "yiwenqian@chromium.org",
-      "payments-autofill-team@google.com" ],
-    "expiry_milestone": 152
-  },
+
   {
     "name": "autofill-enable-prefetching-risk-data-for-retrieval",
     "owners": ["hvs@google.com", "payments-autofill-team@google.com"],

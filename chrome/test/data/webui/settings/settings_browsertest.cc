@@ -69,11 +69,7 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {
-#if BUILDFLAG(IS_CHROMEOS)
-            autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs,
-#endif
-        },
+        {},
         /*disabled_features=*/
         {features::kGlicDefaultTabContextSetting});
     set_test_loader_host(chrome::kChromeUISettingsHost);

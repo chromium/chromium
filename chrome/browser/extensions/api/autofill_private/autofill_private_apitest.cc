@@ -41,14 +41,7 @@ namespace {
 
 class AutofillPrivateApiTest : public ExtensionApiTest {
  public:
-  AutofillPrivateApiTest() {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Enable the feature flag for this test.
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
+  AutofillPrivateApiTest() = default;
   AutofillPrivateApiTest(const AutofillPrivateApiTest&) = delete;
   AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
   ~AutofillPrivateApiTest() override = default;
@@ -90,9 +83,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   content::BrowserContext* browser_context() {
     return GetActiveWebContents()->GetBrowserContext();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;

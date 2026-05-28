@@ -82,13 +82,7 @@ class MandatoryReauthSettingsPageMetricsTest
     : public extensions::ExtensionApiTest,
       public WithParamInterface<std::tuple<bool, bool>> {
  public:
-  MandatoryReauthSettingsPageMetricsTest() {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Enable the feature flag for this test.
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
+  MandatoryReauthSettingsPageMetricsTest() = default;
   MandatoryReauthSettingsPageMetricsTest(
       const MandatoryReauthSettingsPageMetricsTest&) = delete;
   MandatoryReauthSettingsPageMetricsTest& operator=(
@@ -137,9 +131,6 @@ class MandatoryReauthSettingsPageMetricsTest
   content::BrowserContext* browser_context() {
     return GetActiveWebContents()->GetBrowserContext();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;

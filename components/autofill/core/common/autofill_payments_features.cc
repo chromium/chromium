@@ -223,14 +223,6 @@ BASE_FEATURE(kAutofillEnableOmniboxAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillEnablePayNowPayLaterTabs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// When enabled, in use-cases where we would not have triggered any interactive
-// authentication to autofill payment methods, we will trigger a device
-// authentication on ChromeOS.
-BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauthChromeOs,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // When enabled, risk data is prefetched during payments autofill flows to
 // reduce user-perceived latency.
 BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,

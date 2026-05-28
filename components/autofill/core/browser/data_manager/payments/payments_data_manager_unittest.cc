@@ -3434,10 +3434,6 @@ TEST_F(
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::HistogramTester histogram_tester;
   for (int i = 0; i < prefs::kMaxValueForMandatoryReauthPromoShownCounter;
@@ -3472,12 +3468,9 @@ TEST_F(PaymentsDataManagerTest,
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::HistogramTester histogram_tester;
+
   // Simulate user is already opted in.
   payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(true);
 
@@ -3499,10 +3492,6 @@ TEST_F(PaymentsDataManagerTest,
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::HistogramTester histogram_tester;
   // Simulate user is already opted out.
@@ -3515,58 +3504,6 @@ TEST_F(PaymentsDataManagerTest,
       "ReauthOfferOptInDecision2",
       autofill_metrics::MandatoryReauthOfferOptInDecision::kAlreadyOptedOut, 1);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Test that
-// `PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
-// returns false if the `kAutofillEnablePaymentsMandatoryReauthChromeOs` flag is
-// disabled, even if the user is otherwise eligible (below the show limit).
-TEST_F(PaymentsDataManagerTest,
-       ShouldShowPaymentMethodsMandatoryReauthPromo_ChromeOSFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-
-  EXPECT_FALSE(
-      payments_data_manager().ShouldShowPaymentMethodsMandatoryReauthPromo());
-}
-
-// Test that
-// `PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
-// returns false if the `kAutofillEnablePaymentsMandatoryReauthChromeOs` flag is
-// disabled, when the user is already opted in.
-TEST_F(
-    PaymentsDataManagerTest,
-    ShouldShowPaymentMethodsMandatoryReauthPromo_ChromeOSFlagDisabled_UserOptedIn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-
-  // Simulate user is already opted in.
-  payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(true);
-
-  EXPECT_FALSE(
-      payments_data_manager().ShouldShowPaymentMethodsMandatoryReauthPromo());
-}
-
-// Test that
-// `PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
-// returns false if the `kAutofillEnablePaymentsMandatoryReauthChromeOs` flag is
-// disabled, when the user has already opted out.
-TEST_F(
-    PaymentsDataManagerTest,
-    ShouldShowPaymentMethodsMandatoryReauthPromo_ChromeOSFlagDisabled_UserOptedOut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
-
-  // Simulate user is already opted out.
-  payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(false);
-
-  EXPECT_FALSE(
-      payments_data_manager().ShouldShowPaymentMethodsMandatoryReauthPromo());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
 
