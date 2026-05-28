@@ -10,7 +10,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -40,7 +40,9 @@ TEST_F(UnifiedSliderBubbleControllerTest, ShowAndHideBubble) {
     EXPECT_TRUE(controller.slider_view());
 
     controller.CloseBubble();
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return !controller.IsBubbleShown() && !controller.slider_view();
+    }));
 
     EXPECT_FALSE(controller.IsBubbleShown());
     EXPECT_FALSE(controller.slider_view());
