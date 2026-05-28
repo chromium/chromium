@@ -48,18 +48,20 @@
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)
-    authenticationFlowDidSignInInSameProfileWithCancelationReason:
-        (signin_ui::CancelationReason)cancelationReason
-                                                         identity:
-                                                             (id<SystemIdentity>)
-                                                                 identity {
+- (void)authenticationFlowDidSignInInSameProfileWithIdentity:
+            (id<SystemIdentity>)identity
+                                           cancelationReason:
+                                               (signin_ui::CancelationReason)
+                                                   cancelationReason
+                                                  completion:(ProceduralBlock)
+                                                                 completion {
   CHECK(_signinCompletion);
   CHECK(!_callbackCalled);
   _callbackCalled = YES;
   signin_ui::SigninCompletionCallback signinCompletion = _signinCompletion;
   _signinCompletion = nil;
   signinCompletion(cancelationReason);
+  completion();
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:

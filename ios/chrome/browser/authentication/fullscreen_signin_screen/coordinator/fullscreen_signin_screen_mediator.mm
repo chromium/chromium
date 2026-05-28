@@ -329,29 +329,33 @@ enum class SigninScreenState {
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)
-    authenticationFlowDidSignInInSameProfileWithCancelationReason:
-        (signin_ui::CancelationReason)cancelationReason
-                                                         identity:
-                                                             (id<SystemIdentity>)
-                                                                 identity {
+- (void)authenticationFlowDidSignInInSameProfileWithIdentity:
+            (id<SystemIdentity>)identity
+                                           cancelationReason:
+                                               (signin_ui::CancelationReason)
+                                                   cancelationReason
+
+                                                  completion:(ProceduralBlock)
+                                                                 completion {
+  CHECK(completion);
   self.signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
   switch (cancelationReason) {
     case signin_ui::CancelationReason::kAgeMismatchCanceledStaySignedOut:
       [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
-      return;
+      break;
     case signin_ui::CancelationReason::kNotCanceled:
       [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
                                    addedAccount:self.addedAccount];
       [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
-      return;
+      break;
     case signin_ui::CancelationReason::kUserCanceled:
     case signin_ui::CancelationReason::kFailed:
     case signin_ui::CancelationReason::kAgeMismatchCanceled:
     case signin_ui::CancelationReason::kSignInNotAllowed:
-      return;
+      break;
   }
+  completion();
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:

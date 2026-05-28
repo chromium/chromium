@@ -9,11 +9,13 @@
 
 @protocol FullscreenSigninScreenMediatorDelegate <NSObject>
 
-// Let the coordinator know the sing-in ended successfully.
+// Let the coordinator know the sign-in ended successfully.
+// Causes the coordinator to be stopped synchronously.
 - (void)fullscreenSigninScreenMediatorDidFinishSignin:
     (FullscreenSigninScreenMediator*)mediator;
 
 // Let the coordinator know that sign-in dialog can be dismissed.
+// Causes the coordinator to be stopped synchronously.
 - (void)fullscreenSigninScreenMediatorWantsToBeDismissed:
     (FullscreenSigninScreenMediator*)mediator;
 

@@ -90,15 +90,18 @@ using signin_metrics::PromoAction;
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)
-    authenticationFlowDidSignInInSameProfileWithCancelationReason:
-        (signin_ui::CancelationReason)cancelationReason
-                                                         identity:
-                                                             (id<SystemIdentity>)
-                                                                 identity {
+- (void)authenticationFlowDidSignInInSameProfileWithIdentity:
+            (id<SystemIdentity>)identity
+                                           cancelationReason:
+                                               (signin_ui::CancelationReason)
+                                                   cancelationReason
+                                                  completion:(ProceduralBlock)
+                                                                 completion {
+  CHECK(completion);
   _authenticationFlow = nil;
   [self.delegate instantSigninMediator:self
         didSigninWithCancelationResult:cancelationReason];
+  completion();
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:

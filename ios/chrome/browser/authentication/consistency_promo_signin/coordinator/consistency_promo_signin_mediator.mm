@@ -234,13 +234,16 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   }
 }
 
-- (void)
-    authenticationFlowDidSignInInSameProfileWithCancelationReason:
-        (signin_ui::CancelationReason)cancelationReason
-                                                         identity:
-                                                             (id<SystemIdentity>)
-                                                                 identity {
+- (void)authenticationFlowDidSignInInSameProfileWithIdentity:
+            (id<SystemIdentity>)identity
+                                           cancelationReason:
+                                               (signin_ui::CancelationReason)
+                                                   cancelationReason
+                                                  completion:(ProceduralBlock)
+                                                                 completion {
+  CHECK(completion);
   if (!_identityManager) {
+    completion();
     // The mediator was already disconnected, nothing to do.
     return;
   }
@@ -257,7 +260,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       // User wants to skip signin from the Age Mismatch prompt. Dismiss the
       // consistency promo.
       [self.delegate
-          consistencyPromoSigninMediatorDidCancelToStaySignedOut:self];
+          consistencyPromoSigninMediatorDidCancelToStaySignedOut:self
+                                                      completion:completion];
       return;
     case signin_ui::CancelationReason::kUserCanceled:
     case signin_ui::CancelationReason::kFailed:
@@ -268,11 +272,13 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
               IOS_AUTH_FLOW_CANCELLED_OR_FAILED,
           _accessPoint);
       [self.delegate consistencyPromoSigninMediatorSignInCancelled:self];
+      completion();
       return;
   }
   if (_accessPoint != signin_metrics::AccessPoint::kWebSignin) {
     [self.delegate consistencyPromoSigninMediatorSignInDone:self
-                                               withIdentity:_signingIdentity];
+                                               withIdentity:_signingIdentity
+                                                 completion:completion];
     return;
   }
   // For kWebSignin access point, wait for sign-in cookies before reporting
@@ -281,11 +287,12 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   __weak __typeof(self) weakSelf = self;
   base::RepeatingCallback<void(signin::WebSigninTracker::Result)> callback =
       base::BindRepeating(
-          [](__typeof(self) strongSelf,
+          [](__typeof(self) strongSelf, ProceduralBlock completion,
              signin::WebSigninTracker::Result result) {
-            [strongSelf webSigninFinishedWithResult:result];
+            [strongSelf webSigninFinishedWithResult:result
+                                         completion:completion];
           },
-          weakSelf);
+          weakSelf, completion);
   _webSigninTracker =
       [self.delegate trackWebSigninWithIdentityManager:_identityManager
                                      accountReconcilor:_accountReconcilor
@@ -304,12 +311,15 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 #pragma mark - Private
 
 // Called by _webSigninTracker when the result of the web sign-in flow is known.
-- (void)webSigninFinishedWithResult:(signin::WebSigninTracker::Result)result {
+- (void)webSigninFinishedWithResult:(signin::WebSigninTracker::Result)result
+                         completion:(ProceduralBlock)completion {
+  CHECK(completion);
   _webSigninTracker.reset();
   switch (result) {
     case signin::WebSigninTracker::Result::kSuccess:
       [self.delegate consistencyPromoSigninMediatorSignInDone:self
-                                                 withIdentity:_signingIdentity];
+                                                 withIdentity:_signingIdentity
+                                                   completion:completion];
       break;
     case signin::WebSigninTracker::Result::kOtherError:
       [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];
@@ -321,6 +331,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
       break;
   }
+  completion();
 }
 
 // Cancels sign-in and calls the delegate to display the error.

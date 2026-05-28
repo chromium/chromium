@@ -20,7 +20,7 @@
 
 @protocol AccountMenuMediatorDelegate <NSObject>
 
-// Requests to dismiss the account menu.
+// Requests to dismiss the account menu synchronously.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
              withCancelationReason:
                  (signin_ui::CancelationReason)cancelationReason

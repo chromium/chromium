@@ -30,6 +30,7 @@ enum class CancelationReason;
 @protocol InstantSigninMediatorDelegate <NSObject>
 
 // Called when the sign-in is over.
+// Causes the coordinator to be stopped synchronously.
 - (void)instantSigninMediator:(InstantSigninMediator*)mediator
     didSigninWithCancelationResult:
         (signin_ui::CancelationReason)cancelationResult;

@@ -617,8 +617,10 @@
 
 - (void)consistencyPromoSigninMediatorSignInDone:
             (ConsistencyPromoSigninMediator*)mediator
-                                    withIdentity:(id<SystemIdentity>)identity {
+                                    withIdentity:(id<SystemIdentity>)identity
+                                      completion:(ProceduralBlock)completion {
   DCHECK([identity isEqual:self.selectedIdentity]);
+  CHECK(completion);
   id<SystemIdentity> completionIdentity = identity;
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:YES
@@ -627,6 +629,7 @@
                                            SigninCoordinatorResultSuccess
                                                   completionIdentity:
                                                       completionIdentity];
+                             completion();
                            }];
 }
 
@@ -649,13 +652,17 @@
 }
 
 - (void)consistencyPromoSigninMediatorDidCancelToStaySignedOut:
-    (ConsistencyPromoSigninMediator*)mediator {
+            (ConsistencyPromoSigninMediator*)mediator
+                                                    completion:(ProceduralBlock)
+                                                                   completion {
+  CHECK(completion);
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:YES
                            completion:^{
                              [weakSelf runCompletionWithSigninResult:
                                            SigninCoordinatorResultCanceledByUser
                                                   completionIdentity:nil];
+                             completion();
                            }];
 }
 

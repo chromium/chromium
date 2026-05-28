@@ -393,9 +393,12 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([delegate_mock_ signinFinished]);
   // Simulate AuthenticationFlow failure.
   [authentication_flow_request_helper
-      authenticationFlowDidSignInInSameProfileWithCancelationReason:
-          signin_ui::CancelationReason::kUserCanceled
-                                                           identity:nil];
+      authenticationFlowDidSignInInSameProfileWithIdentity:nil
+                                         cancelationReason:
+                                             signin_ui::CancelationReason::
+                                                 kUserCanceled
+                                                completion:^{
+                                                }];
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
@@ -435,9 +438,12 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
   OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
-      authenticationFlowDidSignInInSameProfileWithCancelationReason:
-          signin_ui::CancelationReason::kFailed
-                                                           identity:nil];
+      authenticationFlowDidSignInInSameProfileWithIdentity:nil
+                                         cancelationReason:
+                                             signin_ui::CancelationReason::
+                                                 kFailed
+                                                completion:^{
+                                                }];
 
   // Checks the user is signed-back in.
   ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity());
@@ -478,10 +484,12 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
                  userTappedClose:NO]);
   OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
-      authenticationFlowDidSignInInSameProfileWithCancelationReason:
-          signin_ui::CancelationReason::kNotCanceled
-                                                           identity:
-                                                               kSecondaryIdentity];
+      authenticationFlowDidSignInInSameProfileWithIdentity:kSecondaryIdentity
+                                         cancelationReason:
+                                             signin_ui::CancelationReason::
+                                                 kNotCanceled
+                                                completion:^{
+                                                }];
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.

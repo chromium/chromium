@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/callback_forward.h"
+#import "base/ios/block_types.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
@@ -23,12 +24,15 @@ using ReadyForProfileSwitchingCompletion =
 @protocol AuthenticationFlowDelegate <NSObject>
 
 // Called at the end of the sign-in if the profile has not changed.
-- (void)
-    authenticationFlowDidSignInInSameProfileWithCancelationReason:
-        (signin_ui::CancelationReason)cancelationReason
-                                                         identity:
-                                                             (id<SystemIdentity>)
-                                                                 identity;
+// Call `completion` when the scene is free to display the post sign-in action.
+// `completion` must be non-nil.
+- (void)authenticationFlowDidSignInInSameProfileWithIdentity:
+            (id<SystemIdentity>)identity
+                                           cancelationReason:
+                                               (signin_ui::CancelationReason)
+                                                   cancelationReason
+                                                  completion:(ProceduralBlock)
+                                                                 completion;
 
 // Called when the profile switching is going to happen. The delegate can
 // update the UI if needed before the profile switching.

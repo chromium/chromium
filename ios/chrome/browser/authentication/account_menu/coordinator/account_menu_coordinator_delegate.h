@@ -8,6 +8,7 @@
 
 @protocol AccountMenuCoordinatorDelegate <NSObject>
 
+// Requests the delegate to synchronously stop the account menu.
 - (void)accountMenuCoordinatorWantsToBeStopped:
     (AccountMenuCoordinator*)coordinator;
 

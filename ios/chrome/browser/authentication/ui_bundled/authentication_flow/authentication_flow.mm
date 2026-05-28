@@ -744,14 +744,21 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     // deallocated by the time the `signinCompletion` is executed.
     _signInInProfileCompletion = ^(
         signin_ui::CancelationReason cancelationReason) {
-      [delegate
-          authenticationFlowDidSignInInSameProfileWithCancelationReason:
-              cancelationReason
-                                                               identity:
-                                                                   identityToSignIn];
-      if (Browser* browser = weakBrowser.get()) {
-        CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
-                                  accessPoint);
+      ProceduralBlock completion = ^() {
+        if (Browser* browser = weakBrowser.get()) {
+          CompletePostSignInActions(postSignInActions, identityToSignIn,
+                                    browser, accessPoint);
+        }
+      };
+      if (delegate) {
+        [delegate
+            authenticationFlowDidSignInInSameProfileWithIdentity:
+                identityToSignIn
+                                               cancelationReason:
+                                                   cancelationReason
+                                                      completion:completion];
+      } else {
+        completion();
       }
     };
     [self continueFlow];
@@ -847,9 +854,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (void)completeWithFailureStep {
   CHECK_NE(_cancelationReason, signin_ui::CancelationReason::kNotCanceled);
   [[self takeDelegate]
-      authenticationFlowDidSignInInSameProfileWithCancelationReason:
-          _cancelationReason
-                                                           identity:nil];
+      authenticationFlowDidSignInInSameProfileWithIdentity:nil
+                                         cancelationReason:_cancelationReason
+                                                completion:^{
+                                                }];
   [self continueFlow];
 }
 

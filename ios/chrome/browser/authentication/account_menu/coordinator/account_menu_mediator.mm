@@ -440,12 +440,15 @@
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)
-    authenticationFlowDidSignInInSameProfileWithCancelationReason:
-        (signin_ui::CancelationReason)cancelationReason
-                                                         identity:
-                                                             (id<SystemIdentity>)
-                                                                 identity {
+- (void)authenticationFlowDidSignInInSameProfileWithIdentity:
+            (id<SystemIdentity>)identity
+                                           cancelationReason:
+                                               (signin_ui::CancelationReason)
+                                                   cancelationReason
+
+                                                  completion:(ProceduralBlock)
+                                                                 completion {
+  CHECK(completion);
   BOOL success =
       cancelationReason == signin_ui::CancelationReason::kNotCanceled;
   [_delegate signinFinished];
@@ -480,6 +483,7 @@
                            signedIdentity:nil
                           userTappedClose:NO];
   }
+  completion();
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
