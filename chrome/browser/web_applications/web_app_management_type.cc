@@ -6,6 +6,8 @@
 
 #include <ostream>
 
+#include "base/containers/enum_set.h"
+
 namespace web_app {
 
 static_assert(WebAppManagement::kMinValue == 0,
@@ -22,36 +24,25 @@ static_assert(WebAppManagementTypes::kValueCount ==
 // WebAppManagement types that can't be uninstalled by the user. Counterpart to
 // kUserUninstallableSources.
 constexpr WebAppManagementTypes kNotUserUninstallableSources = {
-    WebAppManagement::kSystem,    WebAppManagement::kIwaShimlessRma,
-    WebAppManagement::kKiosk,     WebAppManagement::kPolicy,
+    WebAppManagement::kSystem,
+    WebAppManagement::kKiosk,
+    WebAppManagement::kPolicy,
     WebAppManagement::kIwaPolicy,
 };
 
-constexpr bool AllWebAppManagementTypesListed() {
-  for (int i = WebAppManagement::Type::kMinValue;
-       i < WebAppManagement::Type::kMaxValue; ++i) {
-    WebAppManagement::Type t = static_cast<WebAppManagement::Type>(i);
-
-    if (!kUserUninstallableSources.Has(t) &&
-        !kNotUserUninstallableSources.Has(t)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 // When adding a new WebAppManagement::Type, mark whether or not it is
 // uninstallable by adding it to the appropriate WebAppManagementTypes constant.
-//
-// Note: A nicer way to do this would be to compute kUserUninstallableSources
-// using a constexpr function which includes an exhaustive switch statement over
-// WebAppManagement::Types. Such a method would use base::Union to accumulate
-// sources, which is only constexpr once std::bitset::operator| is constexpr in
-// C++23.
-static_assert(AllWebAppManagementTypesListed(),
-              "All WebAppManagement::Types must be listed in either "
+static_assert(base::Union(kUserUninstallableSources,
+                          kNotUserUninstallableSources) ==
+                  WebAppManagementTypes::All(),
+              "Each WebAppManagement::Type must be listed in either "
               "web_app::kUserUninstallableSources or "
+              "web_app::kNotUserUninstallableSources");
+static_assert(base::Intersection(kUserUninstallableSources,
+                                 kNotUserUninstallableSources)
+                  .empty(),
+              "No WebAppManagement::Type may appear in both "
+              "web_app::kUserUninstallableSources and "
               "web_app::kNotUserUninstallableSources");
 
 namespace WebAppManagement {
