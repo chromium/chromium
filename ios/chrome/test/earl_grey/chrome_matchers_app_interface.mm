@@ -691,11 +691,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)toolsMenuButton {
-  NSString* toolsMenuID = IsChromeNextIaEnabled()
-                              ? kToolbarToolsMenuButtonIdentifier
-                              : kLegacyToolbarToolsMenuButtonIdentifier;
-  return grey_allOf(grey_accessibilityID(toolsMenuID),
-                    grey_sufficientlyVisible(), nil);
+  if (IsChromeNextIaEnabled()) {
+    return grey_allOf(
+        grey_anyOf(grey_accessibilityID(kToolbarToolsMenuButtonIdentifier),
+                   grey_accessibilityID(kNTPToolsMenuButtonIdentifier), nil),
+        grey_sufficientlyVisible(), nil);
+  }
+  return grey_allOf(
+      grey_accessibilityID(kLegacyToolbarToolsMenuButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)toolsMenuNTPButton {
