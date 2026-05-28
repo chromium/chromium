@@ -23,6 +23,7 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -36,6 +37,7 @@
 #include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -774,14 +776,14 @@ void ChannelLinux::SharedMemReadReady() {
       // Now dispatch the message, we KNOW it's at least one full message
       // because we checked the message size before putting it into the
       // shared buffer, this mechanism can never write a partial message.
-      off_t data_offset = 0;
+      uint32_t data_offset = 0;
       while (bytes_read - data_offset > 0) {
         size_t read_size_hint;
-        DispatchResult result = TryDispatchMessage(
-            UNSAFE_TODO(base::span(
-                reinterpret_cast<char*>(read_buf_.data() + data_offset),
-                static_cast<size_t>(bytes_read - data_offset))),
-            &read_size_hint);
+        DispatchResult result =
+            TryDispatchMessage(base::as_chars(base::span(read_buf_))
+                                   .subspan(data_offset)
+                                   .first(bytes_read - data_offset),
+                               &read_size_hint);
 
         // We cannot have a message parse failure, we KNOW that we wrote a
         // full message if we get one something has gone horribly wrong.
