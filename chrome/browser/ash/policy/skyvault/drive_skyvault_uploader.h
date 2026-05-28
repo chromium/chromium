@@ -109,6 +109,7 @@ class DriveSkyvaultUploader
   // DriveIntegrationService::Observer implementation.
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // Called when waiting for connection times out.
   void OnReconnectionTimeout();
@@ -162,9 +163,14 @@ class DriveSkyvaultUploader
 
   raw_ptr<file_manager::io_task::IOTaskController> io_task_controller_ =
       nullptr;
+
   base::ScopedObservation<file_manager::io_task::IOTaskController,
                           file_manager::io_task::IOTaskController::Observer>
       io_task_controller_observer_{this};
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   base::WeakPtrFactory<DriveSkyvaultUploader> weak_ptr_factory_{this};
 };

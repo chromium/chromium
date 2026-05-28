@@ -45,6 +45,7 @@ static_library("drive") {
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared_cpp_sources",
     "//chromeos/ash/components/login/login_state",

@@ -127,7 +127,7 @@ void DriveUploadHandler::Run() {
   io_task_controller_observer_.Observe(io_task_controller_);
 
   // Observe Drive updates.
-  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+  drive_observation_.Observe(drive_integration_service_);
   drivefs::DriveFsHost::Observer::Observe(
       drive_integration_service_->GetDriveFsHost());
 
@@ -495,6 +495,10 @@ void DriveUploadHandler::OnDriveConnectionStatusChanged(
     LOG(ERROR) << "Lost connection to Drive during upload";
     OnEndCopy(OfficeFilesUploadResult::kNoConnection);
   }
+}
+
+void DriveUploadHandler::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void DriveUploadHandler::OnGetDriveMetadata(

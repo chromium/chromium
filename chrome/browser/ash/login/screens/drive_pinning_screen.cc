@@ -164,7 +164,12 @@ void DrivePinningScreen::CalculateRequiredSpace() {
     return;
   }
 
-  Observe(service);
+  // TODO(crbug.com/487139800): Probably we should move this to
+  // StartCalculatingRequiredSpace.
+  if (service != drive_observation_.GetSource()) {
+    drive_observation_.Reset();
+    drive_observation_.Observe(service);
+  }
 
   PinningManager* const pinning_manager = GetPinningManager();
   if (!pinning_manager) {
@@ -215,6 +220,10 @@ void DrivePinningScreen::OnBulkPinInitialized() {
   } else {
     ++bulk_pinning_initializations_;
   }
+}
+
+void DrivePinningScreen::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void DrivePinningScreen::OnNext(bool drive_pinning) {

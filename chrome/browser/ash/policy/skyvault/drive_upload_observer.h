@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -76,6 +77,7 @@ class DriveUploadObserver
   // DriveIntegrationService::Observer implementation.
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // IOTaskController::Observer implementation.
   void OnIOTaskStatus(
@@ -124,6 +126,10 @@ class DriveUploadObserver
   base::ScopedObservation<::file_manager::io_task::IOTaskController,
                           ::file_manager::io_task::IOTaskController::Observer>
       io_task_controller_observer_{this};
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   base::WeakPtrFactory<DriveUploadObserver> weak_ptr_factory_{this};
 };

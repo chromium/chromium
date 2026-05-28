@@ -100,7 +100,7 @@ void DriveUploadObserver::Run(base::OnceCallback<void(bool)> upload_callback) {
   }
 
   // Observe Drive updates.
-  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+  drive_observation_.Observe(drive_integration_service_);
   drivefs::DriveFsHost::Observer::Observe(
       drive_integration_service_->GetDriveFsHost());
 
@@ -214,6 +214,10 @@ void DriveUploadObserver::OnDriveConnectionStatusChanged(
     LOG(ERROR) << "Lost connection to Drive during upload";
     OnEndUpload(/*success=*/false);
   }
+}
+
+void DriveUploadObserver::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void DriveUploadObserver::OnIOTaskStatus(

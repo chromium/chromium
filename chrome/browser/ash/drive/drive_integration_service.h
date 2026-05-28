@@ -175,7 +175,7 @@ class DriveIntegrationService : public KeyedService,
   // DriveIntegrationService. All events are notified on the UI thread.
   class Observer : public base::CheckedObserver {
    public:
-    ~Observer() override;
+    ~Observer() override = default;
 
     // Triggered when the `DriveIntegrationService` is being destroyed.
     virtual void OnDriveIntegrationServiceDestroyed() {}
@@ -206,20 +206,10 @@ class DriveIntegrationService : public KeyedService,
     // Triggered when the network connection to Drive could have changed.
     virtual void OnDriveConnectionStatusChanged(util::ConnectionStatus status) {
     }
-
-    // Starts observing the given service.
-    void Observe(DriveIntegrationService* service);
-
-    // Stops observing the service.
-    void Reset();
-
-    // Gets a pointer to the service being observed.
-    DriveIntegrationService* GetService() const { return service_; }
-
-   private:
-    // The service being observed.
-    raw_ptr<DriveIntegrationService> service_ = nullptr;
   };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -42,6 +43,11 @@ bool VolumeManagerFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 VolumeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // Ignore signin and lock screen apps profile.
+  if (!ash::IsUserBrowserContext(context)) {
+    return nullptr;
+  }
+
   Profile* const profile = Profile::FromBrowserContext(context);
   std::unique_ptr<VolumeManager> instance = std::make_unique<VolumeManager>(
       profile, drive::DriveIntegrationServiceFactory::GetForProfile(profile),

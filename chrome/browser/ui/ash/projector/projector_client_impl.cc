@@ -318,6 +318,10 @@ void ProjectorClientImpl::OnFileSystemMountFailed() {
       controller_->GetNewScreencastPrecondition());
 }
 
+void ProjectorClientImpl::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
+}
+
 void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
   if (!is_primary_user || !pref_change_registrar_.IsEmpty()) {
     return;
@@ -337,10 +341,14 @@ void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
 }
 
 void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
-  if (drive::DriveIntegrationService* const service =
-          ProjectorDriveFsProvider::GetActiveDriveIntegrationService()) {
-    Observe(service);
+  drive::DriveIntegrationService* const service =
+      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+  if (!service || service == drive_observation_.GetSource()) {
+    return;
   }
+
+  drive_observation_.Reset();
+  drive_observation_.Observe(service);
 }
 
 void ProjectorClientImpl::SpeechRecognitionEnded(bool forced) {

@@ -69,7 +69,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     } else {
       // Wait for DriveFS to be mounted, then fetch results. This happens in
       // OnFileSystemMounted.
-      Observe(drive_service_.get());
+      drive_observation_.Observe(drive_service_.get());
     }
   }
 
@@ -91,6 +91,10 @@ void ZeroStateDriveProvider::OnFileSystemMounted() {
       base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
                      update_cache_weak_factory_.GetWeakPtr()),
       kFirstUpdateDelay);
+}
+
+void ZeroStateDriveProvider::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void ZeroStateDriveProvider::OnSessionStateChanged() {

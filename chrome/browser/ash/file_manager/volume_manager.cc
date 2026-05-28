@@ -258,8 +258,11 @@ VolumeManager::VolumeManager(
               profile_,
               arc::ArcFileSystemOperationRunner::GetForBrowserContext(
                   profile_))) {
-  DCHECK(profile_);
-  DCHECK(disk_mount_manager_);
+  CHECK(profile_);
+  if (!drive_integration_service_) {
+    CHECK_IS_TEST();
+  }
+  CHECK(disk_mount_manager_);
   VLOG(1) << *this << "::Constructor with Profile: " << profile->GetDebugName();
 }
 
@@ -303,7 +306,7 @@ void VolumeManager::Initialize() {
   }
 
   // Subscribe to DriveIntegrationService.
-  Observe(drive_integration_service_);
+  drive_observation_.Observe(drive_integration_service_);
   if (drive_integration_service_->IsMounted()) {
     DoMountEvent(Volume::CreateForDrive(GetDriveMountPointPath()));
   }
@@ -386,7 +389,7 @@ void VolumeManager::Shutdown() {
     p->RemoveObserver(this);
   }
 
-  drive::DriveIntegrationService::Observer::Reset();
+  drive_observation_.Reset();
 
   if (file_system_provider_service_) {
     file_system_provider_service_->RemoveObserver(this);
@@ -640,6 +643,10 @@ void VolumeManager::OnFileSystemMounted() {
 void VolumeManager::OnFileSystemBeingUnmounted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DoUnmountEvent(*Volume::CreateForDrive(GetDriveMountPointPath()));
+}
+
+void VolumeManager::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void VolumeManager::OnAutoMountableDiskEvent(

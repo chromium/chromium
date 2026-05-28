@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -203,6 +204,7 @@ class VolumeManager
   // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // ash::disks::DiskMountManager::Observer overrides.
   void OnAutoMountableDiskEvent(ash::disks::DiskMountManager::DiskEvent event,
@@ -418,6 +420,10 @@ class VolumeManager
   bool local_user_files_allowed_ = true;
   // Whether a read only version of local folders (My Files) is needed.
   bool read_only_local_folders_ = true;
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>

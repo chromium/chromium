@@ -188,8 +188,10 @@ DriveRecentFileSuggestionProvider::DriveRecentFileSuggestionProvider(
   auto* drive_integration_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(profile);
   if (drive_integration_service) {
-    drive::DriveIntegrationService::Observer::Observe(
-        drive_integration_service);
+    if (drive_integration_service != drive_observation_.GetSource()) {
+      drive_observation_.Reset();
+      drive_observation_.Observe(drive_integration_service);
+    }
     auto* drive_fs_host = drive_integration_service->GetDriveFsHost();
     if (drive_fs_host) {
       drivefs::DriveFsHost::Observer::Observe(drive_fs_host);
@@ -275,7 +277,7 @@ std::string DriveRecentFileSuggestionProvider::GetHistogramSuffix(
 }
 
 void DriveRecentFileSuggestionProvider::OnDriveIntegrationServiceDestroyed() {
-  drive::DriveIntegrationService::Observer::Reset();
+  drive_observation_.Reset();
   drivefs::DriveFsHost::Observer::Reset();
 
   can_use_cache_ = false;
@@ -286,8 +288,7 @@ void DriveRecentFileSuggestionProvider::OnDriveIntegrationServiceDestroyed() {
 
 void DriveRecentFileSuggestionProvider::OnFileSystemMounted() {
   if (!drivefs::DriveFsHost::Observer::GetHost()) {
-    auto* drive_fs_host = drive::DriveIntegrationService::Observer::GetService()
-                              ->GetDriveFsHost();
+    auto* drive_fs_host = drive_observation_.GetSource()->GetDriveFsHost();
     if (drive_fs_host) {
       drivefs::DriveFsHost::Observer::Observe(drive_fs_host);
     }

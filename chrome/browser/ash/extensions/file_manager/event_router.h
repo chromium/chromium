@@ -15,6 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
@@ -169,6 +170,7 @@ class EventRouter
   void OnFileSystemMountFailed() override;
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // GuestOsSharePath::Observer implementation.
   void OnPersistedPathRegistered(const std::string& vm_name,
@@ -348,6 +350,10 @@ class EventRouter
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   display::ScopedDisplayObserver display_observer_{this};
 

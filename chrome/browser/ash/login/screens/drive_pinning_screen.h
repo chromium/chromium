@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
@@ -82,6 +83,7 @@ class DrivePinningScreen
   // DriveIntegrationService::Observer implementation.
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
   void OnBulkPinInitialized() override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   void OnNext(bool drive_pinning);
   void SetRequiredSpaceInfo(std::u16string required_space,
@@ -90,6 +92,10 @@ class DrivePinningScreen
   // screens_common::mojom::DrivePinningPageHandler
   void OnReturnClicked(bool enable_drive_pinning) override;
   void OnNextClicked(bool enable_drive_pinning) override;
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   drivefs::pinning::Stage drive_pinning_stage_ =
       drivefs::pinning::Stage::kStopped;

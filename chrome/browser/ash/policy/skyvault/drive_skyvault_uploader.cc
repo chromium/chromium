@@ -108,7 +108,7 @@ void DriveSkyvaultUploader::Run() {
   }
 
   // Observe Drive updates.
-  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+  drive_observation_.Observe(drive_integration_service_);
 
   if (!drive_integration_service_->is_enabled()) {
     // Drive is completely disabled for this profile.
@@ -446,7 +446,7 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
           base::Time::Now() - connection_wait_start_time_.value());
       connection_wait_start_time_.reset();
       reconnection_timer_.Stop();
-      drive::DriveIntegrationService::Observer::Reset();
+      drive_observation_.Reset();
       Run();
     }
     return;
@@ -460,6 +460,10 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     LOG(ERROR) << "Lost connection to Drive during upload";
     OnEndCopy(MigrationUploadError::kNetworkError);
   }
+}
+
+void DriveSkyvaultUploader::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void DriveSkyvaultUploader::OnReconnectionTimeout() {

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
 namespace drive {
 
@@ -77,8 +78,12 @@ DriveIntegrationServiceFactory::~DriveIntegrationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 DriveIntegrationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
+  // Ignore signin and lock screen apps profile.
+  if (!ash::IsUserBrowserContext(context)) {
+    return nullptr;
+  }
 
+  Profile* profile = Profile::FromBrowserContext(context);
   if (!factory_for_test_) {
     return std::make_unique<DriveIntegrationService>(
         g_browser_process->local_state(), profile, std::string(),

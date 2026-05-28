@@ -645,7 +645,7 @@ void EventRouter::Shutdown() {
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 
   drivefs_event_router_->Reset();
-  DriveIntegrationService::Observer::Reset();
+  drive_observation_.Reset();
 
   if (VolumeManager* const manager = VolumeManager::Get(profile_)) {
     manager->RemoveObserver(this);
@@ -710,7 +710,10 @@ void EventRouter::ObserveEvents() {
 
   if (DriveIntegrationService* const service =
           DriveIntegrationServiceFactory::FindForProfile(profile_)) {
-    DriveIntegrationService::Observer::Observe(service);
+    if (service != drive_observation_.GetSource()) {
+      drive_observation_.Reset();
+      drive_observation_.Observe(service);
+    }
     drivefs_event_router_->Observe(service);
   }
 
@@ -1048,6 +1051,10 @@ void EventRouter::OnFileSystemMountFailed() {
 void EventRouter::OnDriveConnectionStatusChanged(
     drive::util::ConnectionStatus status) {
   NotifyDriveConnectionStatusChanged();
+}
+
+void EventRouter::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 // Send crostini share, unshare event.

@@ -13,6 +13,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
@@ -126,6 +127,10 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
   // This is owned by EventRouter and only shared with this class.
   const raw_ptr<Profile> profile_;
   const raw_ptr<SystemNotificationManager> notification_manager_;
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   // Set of paths for which Drive transfer events are ignored.
   std::set<base::FilePath> ignored_file_paths_;

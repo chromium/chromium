@@ -131,6 +131,7 @@ class DriveUploadHandler
   // DriveIntegrationService::Observer implementation.
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // Checks the alternate URL from the request file's metadata.
   void OnGetDriveMetadata(bool timed_out,
@@ -149,6 +150,9 @@ class DriveUploadHandler
   const UploadType upload_type_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
   ::file_manager::io_task::IOTaskId observed_copy_task_id_;
   ::file_manager::io_task::IOTaskId observed_delete_task_id_;
   base::FilePath observed_absolute_dest_path_;

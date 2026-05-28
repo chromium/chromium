@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -378,8 +379,10 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
 
 class DriveMirrorSyncStatusObserver : public DriveIntegrationService::Observer {
  public:
-  explicit DriveMirrorSyncStatusObserver(bool expected_status)
+  explicit DriveMirrorSyncStatusObserver(DriveIntegrationService* service,
+                                         bool expected_status)
       : expected_status_(expected_status) {
+    observation_.Observe(service);
     quit_closure_ = run_loop_.QuitClosure();
   }
 
@@ -399,6 +402,9 @@ class DriveMirrorSyncStatusObserver : public DriveIntegrationService::Observer {
   base::RunLoop run_loop_;
   base::RepeatingClosure quit_closure_;
   bool expected_status_ = false;
+  base::ScopedObservation<DriveIntegrationService,
+                          DriveIntegrationService::Observer>
+      observation_{this};
 };
 
 class DriveIntegrationBrowserTestWithMirrorSyncEnabled
@@ -419,9 +425,10 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
   void SetUpOnMainThread() override { MockGetSyncingPaths(); }
 
   void ToggleMirrorSync(bool status, bool expect_fail = false) {
-    DriveMirrorSyncStatusObserver observer(expect_fail ? !status : status);
     Profile* const profile = browser()->profile();
-    observer.Observe(DriveIntegrationServiceFactory::FindForProfile(profile));
+    DriveMirrorSyncStatusObserver observer(
+        DriveIntegrationServiceFactory::FindForProfile(profile),
+        expect_fail ? !status : status);
     PrefService* const prefs = profile->GetPrefs();
     prefs->SetBoolean(prefs::kDriveFsEnableMirrorSync, status);
     observer.WaitForStatusChange();

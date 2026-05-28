@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -86,8 +87,12 @@ MATCHER_P(SyncingPaths, matcher, "") {
 class DriveMirrorSyncStatusObserver
     : public drive::DriveIntegrationService::Observer {
  public:
-  explicit DriveMirrorSyncStatusObserver(bool expected_status)
+  // `service` must not be nullptr.
+  explicit DriveMirrorSyncStatusObserver(
+      drive::DriveIntegrationService* service,
+      bool expected_status)
       : expected_status_(expected_status) {
+    observation_.Observe(service);
     quit_closure_ = run_loop_.QuitClosure();
   }
 
@@ -107,6 +112,9 @@ class DriveMirrorSyncStatusObserver
   base::RunLoop run_loop_;
   base::RepeatingClosure quit_closure_;
   bool expected_status_ = false;
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      observation_{this};
 };
 
 class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
@@ -199,11 +207,10 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
 
     // Toggle the MirrorSync preference to enable / disable the feature.
     {
-      DriveMirrorSyncStatusObserver observer(enabled);
       drive::DriveIntegrationService* const service =
           drive::DriveIntegrationServiceFactory::FindForProfile(
               browser()->profile());
-      observer.Observe(service);
+      DriveMirrorSyncStatusObserver observer(service, enabled);
       // Turning on the sync will add ~/MyFiles as the sync path, which will
       // call GetSyncingPaths internally.
       if (enabled) {

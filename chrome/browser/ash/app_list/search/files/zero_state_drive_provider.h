@@ -50,6 +50,7 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
@@ -96,6 +97,10 @@ class ZeroStateDriveProvider : public SearchProvider,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_observation_{this};

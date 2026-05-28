@@ -75,6 +75,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
   void OnFileSystemMountFailed() override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
@@ -103,6 +104,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
 

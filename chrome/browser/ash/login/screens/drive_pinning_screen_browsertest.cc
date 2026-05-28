@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/byte_size.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -208,6 +211,11 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
         &create_drive_integration_service_);
   }
 
+  void TearDownOnMainThread() override {
+    drive_observation_.Reset();
+    DrivePinningBaseScreenTest::TearDownOnMainThread();
+  }
+
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -235,7 +243,10 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
       return;
     }
 
-    observer_.Observe(drive_service);
+    if (drive_service != drive_observation_.GetSource()) {
+      drive_observation_.Reset();
+      drive_observation_.Observe(drive_service);
+    }
 
     base::RunLoop run_loop;
     EXPECT_CALL(observer_, OnBulkPinProgress(_)).Times(AnyNumber());
@@ -255,6 +266,9 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
   std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
       fake_drivefs_helpers_;
   DrivePinningMockObserver observer_;
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observation_{&observer_};
 };
 
 IN_PROC_BROWSER_TEST_F(DrivePinningIntegrationServiceTest,

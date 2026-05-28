@@ -55,7 +55,7 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
   if (DriveIntegrationService* const service = GetDriveService()) {
-    Observe(service);
+    drive_observation_.Observe(service);
   }
 }
 
@@ -97,6 +97,10 @@ void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
   }
 
   NotifyProgress(progress);
+}
+
+void GoogleDrivePageHandler::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
 }
 
 void GoogleDrivePageHandler::GetContentCacheSize(
