@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.base.WindowResizePrecheckResult;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -75,8 +74,7 @@ final class ChromeAndroidTaskImpl
         implements ChromeAndroidTask,
                 TopResumedActivityChangedWithNativeObserver,
                 TaskVisibilityListener,
-                ViewTreeObserver.OnGlobalLayoutListener,
-                ActivityStateObserver {
+                ViewTreeObserver.OnGlobalLayoutListener {
 
     private static final String TAG = "ChromeAndroidTask";
 
@@ -439,21 +437,11 @@ final class ChromeAndroidTaskImpl
 
     /**
      * Whether this Task has seen its top Activity becomes the top-resumed Activity for the first
-     * time.
-     *
-     * <p>This is set by {@link ActivityStateObserver#onActivityTopResumedChanged}, i.e., it doesn't
-     * indicate whether native initialization is completed.
-     */
-    private boolean mReceivedFirstTopResumedActivity;
-
-    /**
-     * Whether this Task has seen its top Activity becomes the top-resumed Activity for the first
      * time after native initialization is completed.
      *
-     * <p>This is set by {@link TopResumedActivityChangedWithNativeObserver}, i.e., it may or may
-     * not become true before {@link #mReceivedFirstTopResumedActivity}.
+     * <p>This is set by {@link TopResumedActivityChangedWithNativeObserver}.
      */
-    private boolean mReceivedFirstTopResumedActivityWithNative;
+    private boolean mIsTopActivityResumedWithNative;
 
     /**
      * Listener for window insets animation.
@@ -1171,28 +1159,17 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public void onActivityTopResumedChanged(boolean isTopResumedActivity) {
-        if (isTopResumedActivity && !mReceivedFirstTopResumedActivity) {
-            mReceivedFirstTopResumedActivity = true;
-        }
-
-        if (mReceivedFirstTopResumedActivity && mReceivedFirstTopResumedActivityWithNative) {
-            completePendingCreate();
-        }
-    }
-
-    @Override
     public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
         ThreadUtils.assertOnUiThread();
         if (isTopResumedActivity) {
             setLastActivatedTimeMillis();
         }
 
-        if (isTopResumedActivity && !mReceivedFirstTopResumedActivityWithNative) {
-            mReceivedFirstTopResumedActivityWithNative = true;
+        if (isTopResumedActivity && !mIsTopActivityResumedWithNative) {
+            mIsTopActivityResumedWithNative = true;
         }
 
-        if (mReceivedFirstTopResumedActivity && mReceivedFirstTopResumedActivityWithNative) {
+        if (mIsTopActivityResumedWithNative) {
             completePendingCreate();
         }
 
@@ -1435,15 +1412,11 @@ final class ChromeAndroidTaskImpl
         var lifecycleDispatcher = getActivityLifecycleDispatcher(topActivityWindowAndroid);
         lifecycleDispatcher.register(this);
         if (lifecycleDispatcher.getCurrentActivityState() == ActivityState.RESUMED_WITH_NATIVE) {
-            mReceivedFirstTopResumedActivityWithNative = true;
+            mIsTopActivityResumedWithNative = true;
         }
-        if (topActivityWindowAndroid.isTopResumedActivity()) {
-            mReceivedFirstTopResumedActivity = true;
-        }
-        if (mReceivedFirstTopResumedActivity && mReceivedFirstTopResumedActivityWithNative) {
+        if (mIsTopActivityResumedWithNative) {
             completePendingCreate();
         }
-        topActivityWindowAndroid.addActivityStateObserver(this);
 
         // Register Task VisibilityListener
         ApplicationStatus.registerTaskVisibilityListener(this);
@@ -1481,7 +1454,6 @@ final class ChromeAndroidTaskImpl
 
         // Unregister Activity LifecycleObservers.
         getActivityLifecycleDispatcher(topActivityWindowAndroid).unregister(this);
-        topActivityWindowAndroid.removeActivityStateObserver(this);
 
         // Unregister Task VisibilityListener.
         ApplicationStatus.unregisterTaskVisibilityListener(this);

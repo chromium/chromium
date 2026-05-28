@@ -460,7 +460,6 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.addActivityScopedObjects(activityScopedObjects);
-        pendingTask.onActivityTopResumedChanged(true);
         pendingTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3096,7 +3095,6 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.addActivityScopedObjects(activityScopedObjects);
-        pendingTask.onActivityTopResumedChanged(true);
         pendingTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3125,7 +3123,6 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.addActivityScopedObjects(activityScopedObjects);
-        pendingTask.onActivityTopResumedChanged(true);
         pendingTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3153,7 +3150,6 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.addActivityScopedObjects(activityScopedObjects);
-        pendingTask.onActivityTopResumedChanged(true);
         pendingTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3180,7 +3176,6 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.addActivityScopedObjects(
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
-        chromeAndroidTask.onActivityTopResumedChanged(true);
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3211,7 +3206,6 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.addActivityScopedObjects(activityScopedObjects);
-        chromeAndroidTask.onActivityTopResumedChanged(true);
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3246,7 +3240,6 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.addActivityScopedObjects(
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
-        chromeAndroidTask.onActivityTopResumedChanged(true);
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3310,7 +3303,6 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.addActivityScopedObjects(
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
-        chromeAndroidTask.onActivityTopResumedChanged(true);
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -3334,68 +3326,11 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         task.addActivityScopedObjects(activityScopedObjects);
-        task.onActivityTopResumedChanged(true);
         task.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
         verify(pendingTaskInfo.mTaskCreationCallbackForNative)
                 .onResult(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-    }
-
-    @Test
-    public void addActivityScopedObjects_fromPendingState_waitsForBothSignals() {
-        int existingTaskId = 2;
-        int pendingTaskId = 3;
-
-        // Arrange: Creating a pending task requires an existing task.
-        createChromeAndroidTaskWithMockDeps(existingTaskId);
-
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps =
-                createChromeAndroidTaskWithMockDeps(pendingTaskId, /* isPendingTask= */ true);
-        var pendingTask = (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
-
-        // Act & Assert 1: Add activity objects. Still pending.
-        pendingTask.addActivityScopedObjects(activityScopedObjects);
-        assertEquals(State.PENDING_CREATE, pendingTask.getState());
-
-        // Act & Assert 2: Only onActivityTopResumedChanged. Still pending.
-        pendingTask.onActivityTopResumedChanged(true);
-        assertEquals(State.PENDING_CREATE, pendingTask.getState());
-
-        // Act & Assert 3: onTopResumedActivityChangedWithNative. Now IDLE.
-        pendingTask.onTopResumedActivityChangedWithNative(true);
-        assertEquals(State.IDLE, pendingTask.getState());
-        assertEquals(pendingTaskId, (int) pendingTask.getId());
-    }
-
-    @Test
-    public void addActivityScopedObjects_fromPendingState_waitsForBothSignals_reverseOrder() {
-        int existingTaskId = 2;
-        int pendingTaskId = 3;
-
-        // Arrange: Creating a pending task requires an existing task.
-        createChromeAndroidTaskWithMockDeps(existingTaskId);
-
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps =
-                createChromeAndroidTaskWithMockDeps(pendingTaskId, /* isPendingTask= */ true);
-        var pendingTask = (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
-
-        // Act & Assert 1: Add activity objects. Still pending.
-        pendingTask.addActivityScopedObjects(activityScopedObjects);
-        assertEquals(State.PENDING_CREATE, pendingTask.getState());
-
-        // Act & Assert 2: Only onTopResumedActivityChangedWithNative. Still pending.
-        pendingTask.onTopResumedActivityChangedWithNative(true);
-        assertEquals(State.PENDING_CREATE, pendingTask.getState());
-
-        // Act & Assert 3: onActivityTopResumedChanged. Now IDLE.
-        pendingTask.onActivityTopResumedChanged(true);
-        assertEquals(State.IDLE, pendingTask.getState());
-        assertEquals(pendingTaskId, (int) pendingTask.getId());
     }
 
     @Test

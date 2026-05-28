@@ -388,7 +388,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 mChromeAndroidTaskTracker.obtainTask(
                         BrowserWindowType.NORMAL, newActivityScopedObjects, pendingId);
         pendingTask.onTopResumedActivityChangedWithNative(true);
-        pendingTask.onActivityTopResumedChanged(true);
 
         // Assert.
         assertNull(mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingId));
@@ -424,7 +423,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         mChromeAndroidTaskTracker.obtainTask(
                                 BrowserWindowType.NORMAL, activityScopedObjects, pendingId);
         task.onTopResumedActivityChangedWithNative(true);
-        task.onActivityTopResumedChanged(true);
 
         // Assert.
         assertEquals("The pending task should be adopted.", pendingTask, task);
@@ -891,7 +889,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                                 initialTopResumedActivityScopedObjects,
                                 /* pendingId= */ null);
         initialTopResumedTask.onTopResumedActivityChangedWithNative(true);
-        initialTopResumedTask.onActivityTopResumedChanged(true);
         var mockWindowAndroid = assumeNonNull(initialTopResumedTask.getTopActivityWindowAndroid());
         var mockActivity = assumeNonNull(mockWindowAndroid.getActivity().get());
         var mockActivityManager =
@@ -921,7 +918,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                                 newActivityScopedObjects,
                                 assumeNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId);
         newTask.onTopResumedActivityChangedWithNative(true);
-        newTask.onActivityTopResumedChanged(true);
 
         // Assert: Penultimately activated task gets activated.
         verify(mockActivityManager).moveTaskToFront(initialTopResumedTaskId, 0);
