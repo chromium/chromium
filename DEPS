@@ -2239,7 +2239,7 @@ deps = {
   },
 
   'src/third_party/cardboard/src' : {
-      'url': Var('chromium_git') + '/external/github.com/googlevr/cardboard/' + '@' + 'f9a197acf8cc51341b08862cf3bbd65efee26bd2',
+      'url': Var('chromium_git') + '/external/github.com/googlevr/cardboard/' + '@' + '4775db6e0a92fdc8bd102a818d741f2bde372876',
       'condition': 'checkout_android',
   },
 
