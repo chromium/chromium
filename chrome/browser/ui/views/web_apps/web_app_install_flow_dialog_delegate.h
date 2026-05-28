@@ -136,6 +136,11 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   void UpdateDialogTitleAndHeader(InstallDialogStep step);
   void UpdateProgressAndMaybeAdvance();
   void OnInstallResult(bool success, base::OnceClosure reparent_closure);
+  void AcceptForTesting();  // IN-TEST
+  void OnAutoAcceptInstallResultForTesting(
+      bool success,
+      base::OnceClosure reparent_closure);  // IN-TEST
+  void DeclineForTesting();                 // IN-TEST
 
   void MeasureIphOnDialogClose();
   void MeasureAcceptUserActionsForInstallDialog();

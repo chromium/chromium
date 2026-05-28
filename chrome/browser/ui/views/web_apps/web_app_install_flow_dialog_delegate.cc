@@ -9,12 +9,14 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_intro_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_testing_flags.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/model/dialog_image_info.h"
@@ -418,10 +421,16 @@ void WebAppInstallFlowDialogDelegate::OnAccept() {
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   received_user_response_ = true;
 
-  std::move(callback_).Run(
-      true, std::move(install_info_),
-      base::BindOnce(&WebAppInstallFlowDialogDelegate::OnInstallResult,
-                     AsWeakPtr()));
+  auto result_callback =
+      test::g_auto_accept_all_install_dialogs_for_testing
+          ? base::BindOnce(&WebAppInstallFlowDialogDelegate::
+                               OnAutoAcceptInstallResultForTesting,  // IN-TEST
+                           AsWeakPtr())
+          : base::BindOnce(&WebAppInstallFlowDialogDelegate::OnInstallResult,
+                           AsWeakPtr());
+
+  std::move(callback_).Run(true, std::move(install_info_),
+                           std::move(result_callback));
 }
 
 void WebAppInstallFlowDialogDelegate::OnCancel() {
@@ -631,6 +640,38 @@ void WebAppInstallFlowDialogDelegate::OnInstallResult(
   install_success_ = true;
   reparent_closure_ = std::move(reparent_closure);
   UpdateProgressAndMaybeAdvance();
+}
+
+void WebAppInstallFlowDialogDelegate::AcceptForTesting() {  // IN-TEST
+  CHECK_IS_TEST();
+  // Set a test default app title for DIY apps that fills the text field
+  if (dialog_type_ == InstallDialogType::kDiy && text_field_contents_.empty()) {
+    text_field_contents_ = install_info_->title.value();
+  }
+
+  // Directly trigger the installation.
+  OnAccept();
+}
+
+void WebAppInstallFlowDialogDelegate::
+    OnAutoAcceptInstallResultForTesting(  // IN-TEST
+        bool success,
+        base::OnceClosure reparent_closure) {  // IN-TEST
+  CHECK_IS_TEST();
+  // Decline/Cancel the dialog. Note: Since we are in mock testing and bypassing
+  // standard step transitions, closing the dialog this way results in metric
+  // close reasons of `views::Widget::ClosedReason::kCancelButtonClicked`. This
+  // is expected and does not affect functional browser tests.
+  DeclineForTesting();  // IN-TEST
+}
+
+void WebAppInstallFlowDialogDelegate::DeclineForTesting() {  // IN-TEST
+  CHECK_IS_TEST();
+  if (dialog_model() && dialog_model()->host()) {
+    auto* host =
+        static_cast<views::BubbleDialogModelHost*>(dialog_model()->host());
+    host->CancelDialog();
+  }
 }
 
 void WebAppInstallFlowDialogDelegate::OnProgress(
@@ -846,6 +887,12 @@ WebAppInstallFlowDialogDelegate::Show(
     return nullptr;
   }
   delegate_weak_ptr->OnWidgetShownStartTracking(widget);
+  if (test::g_auto_decline_install_dialogs_for_testing) {
+    delegate_weak_ptr->DeclineForTesting();  // IN-TEST
+  }
+  if (test::g_auto_accept_all_install_dialogs_for_testing) {
+    delegate_weak_ptr->AcceptForTesting();  // IN-TEST
+  }
   return delegate_weak_ptr;
 }
 
