@@ -76,6 +76,7 @@ const char* const kNonembeddedLowEntropySourceAllowlist[] = {
     "WebViewStartupNonBlockingWebViewConstructor",
     "WebViewStaticMethodsNotTriggerStartup",
     "WebViewTestNonembeddedLowEntropySource",
+    "WebViewProfileStoreNotTriggerStartup"
 };
 
 // These prefs go in the JsonPrefStore, and will persist across runs. Other

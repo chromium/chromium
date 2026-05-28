@@ -63,6 +63,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewPersistHttpServerProperties,
     &features::kWebViewPrefetchNativeLibrary,
     &features::kWebViewPrefetchOffTheMainThread,
+    &features::kWebViewProfileStoreNotTriggerStartup,
     &features::kWebViewRecordAppCacheHistograms,
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewReducedSeedExpiration,

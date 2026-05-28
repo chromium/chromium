@@ -120,6 +120,10 @@ const char kPostChromiumStartupInWebViewConstructor[] =
 const char kWebViewStaticMethodsNotTriggerStartup[] =
     "webview-static-methods-not-trigger-startup";
 
+// Certain ProfileStore methods do not trigger startup.
+const char kWebViewProfileStoreNotTriggerStartup[] =
+    "webview-profile-store-not-trigger-startup";
+
 // Opts in WebView to GMSCore's bindService optimizations
 const char kWebViewOptInToGmsBindServiceOptimization[] =
     "webview-opt-in-to-gms-bind-service-optimization";

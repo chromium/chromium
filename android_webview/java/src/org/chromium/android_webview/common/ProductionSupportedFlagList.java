@@ -724,6 +724,9 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_STATIC_METHODS_NOT_TRIGGER_STARTUP,
                 "When enabled, static methods in SharedStatics do not trigger startup."),
         Flag.baseFeature(
+                AwSwitches.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
+                "When enabled, profile store methods do not trigger startup."),
+        Flag.baseFeature(
                 ContentFeatures.ACCESSIBILITY_EXTENDED_SELECTION,
                 "Register, un-register Accessibility extended selection."),
         Flag.baseFeature(

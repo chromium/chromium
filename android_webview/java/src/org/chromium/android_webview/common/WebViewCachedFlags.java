@@ -196,6 +196,9 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_REMOVE_INSTANT_APP_SUPPORT,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
                                             DefaultState.DISABLED)));
         }
     }

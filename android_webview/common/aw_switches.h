@@ -33,6 +33,7 @@ extern const char kWebViewStartupTasksYieldToNative[];
 extern const char kStartupNonBlockingWebViewConstructor[];
 extern const char kPostChromiumStartupInWebViewConstructor[];
 extern const char kWebViewStaticMethodsNotTriggerStartup[];
+extern const char kWebViewProfileStoreNotTriggerStartup[];
 extern const char kWebViewOptInToGmsBindServiceOptimization[];
 extern const char kWebViewReduceUserAgentMinorVersion[];
 extern const char kWebViewReduceUAAndroidVersionDeviceModel[];
