@@ -1073,6 +1073,140 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreNotOrdered) {
             std::get<ActionId>(action1.overflow_id));
 }
 
+TEST_F(ToolbarControllerUnitTest, PinnedAndUnpinnedOverflowedActionsDivided) {
+  // Add 4 overflowed actions, 2 pinned and 2 unpinned.
+  ToolbarController::ResponsiveElementInfo action0(0);
+  ToolbarController::ResponsiveElementInfo action1(1);
+  ToolbarController::ResponsiveElementInfo action2(2);
+  ToolbarController::ResponsiveElementInfo action3(3);
+
+  PinnedToolbarActionsModel* model = GetPinnedToolbarActionsModel();
+  model->UpdatePinnedState(std::get<actions::ActionId>(action0.overflow_id),
+                           true);
+  model->UpdatePinnedState(std::get<actions::ActionId>(action1.overflow_id),
+                           true);
+
+  auto delegate = std::make_unique<TestDelegateFromModel>(model);
+
+  auto controller = ToolbarController(
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {action2, action0, action1, action3}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      const_cast<OverflowButton*>(overflow_button()), delegate.get(), model);
+
+  std::vector<ToolbarController::ResponsiveElementInfo> elements =
+      GetResponsiveElementsWithOrderedActions(&controller);
+
+  // Expect elements are sorted pinned then unpinned.
+  ASSERT_EQ(int(elements.size()), 4);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[0].overflow_id),
+            std::get<actions::ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<actions::ActionId>(elements[1].overflow_id),
+            std::get<actions::ActionId>(action1.overflow_id));
+  EXPECT_EQ(std::get<actions::ActionId>(elements[2].overflow_id),
+            std::get<actions::ActionId>(action2.overflow_id));
+  EXPECT_EQ(std::get<actions::ActionId>(elements[3].overflow_id),
+            std::get<actions::ActionId>(action3.overflow_id));
+
+  // Check section ends for pinned and unpinned actions.
+  EXPECT_FALSE(elements[0].is_section_end);
+  EXPECT_TRUE(elements[1].is_section_end);
+  EXPECT_FALSE(elements[2].is_section_end);
+  EXPECT_TRUE(elements[3].is_section_end);
+}
+
+TEST_F(ToolbarControllerUnitTest,
+       PinnedOverflowedActionsDividedWithNoUnpinnedActions) {
+  // Add 2 overflowed actions, both pinned.
+  ToolbarController::ResponsiveElementInfo action0(0);
+  ToolbarController::ResponsiveElementInfo action1(1);
+
+  // Add a trailing non-action element.
+  ToolbarController::ResponsiveElementInfo trailing_element(
+      ToolbarController::ElementIdInfo(
+          kDummyButton2, 0,
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon),
+          kDummyActivateView),
+      false);
+
+  PinnedToolbarActionsModel* model = GetPinnedToolbarActionsModel();
+  model->UpdatePinnedState(std::get<actions::ActionId>(action0.overflow_id),
+                           true);
+  model->UpdatePinnedState(std::get<actions::ActionId>(action1.overflow_id),
+                           true);
+
+  auto delegate = std::make_unique<TestDelegateFromModel>(model);
+
+  auto controller = ToolbarController(
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {action1, action0, trailing_element}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1, kDummyButton2}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      const_cast<OverflowButton*>(overflow_button()), delegate.get(), model);
+
+  std::vector<ToolbarController::ResponsiveElementInfo> elements =
+      GetResponsiveElementsWithOrderedActions(&controller);
+
+  ASSERT_EQ(int(elements.size()), 3);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[0].overflow_id),
+            std::get<actions::ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<actions::ActionId>(elements[1].overflow_id),
+            std::get<actions::ActionId>(action1.overflow_id));
+  EXPECT_EQ(std::get<ToolbarController::ElementIdInfo>(elements[2].overflow_id)
+                .overflow_identifier,
+            kDummyButton2);
+
+  // Check section ends for only pinned actions.
+  EXPECT_FALSE(elements[0].is_section_end);
+  EXPECT_TRUE(elements[1].is_section_end);
+  EXPECT_FALSE(elements[2].is_section_end);
+}
+
+TEST_F(ToolbarControllerUnitTest,
+       UnpinnedOverflowedActionsDividedWithNoPinnedActions) {
+  // Add 2 overflowed actions, both unpinned.
+  ToolbarController::ResponsiveElementInfo action0(0);
+  ToolbarController::ResponsiveElementInfo action1(1);
+
+  // Add a trailing non-action element.
+  ToolbarController::ResponsiveElementInfo trailing_element(
+      ToolbarController::ElementIdInfo(
+          kDummyButton2, 0,
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon),
+          kDummyActivateView),
+      false);
+
+  PinnedToolbarActionsModel* model = GetPinnedToolbarActionsModel();
+  auto delegate = std::make_unique<TestDelegateFromModel>(model);
+
+  auto controller = ToolbarController(
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {action1, action0, trailing_element}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1, kDummyButton2}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      const_cast<OverflowButton*>(overflow_button()), delegate.get(), model);
+
+  std::vector<ToolbarController::ResponsiveElementInfo> elements =
+      GetResponsiveElementsWithOrderedActions(&controller);
+
+  ASSERT_EQ(int(elements.size()), 3);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[0].overflow_id),
+            std::get<actions::ActionId>(action1.overflow_id));
+  EXPECT_EQ(std::get<actions::ActionId>(elements[1].overflow_id),
+            std::get<actions::ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<ToolbarController::ElementIdInfo>(elements[2].overflow_id)
+                .overflow_identifier,
+            kDummyButton2);
+
+  // Check section ends for only unpinned actions.
+  EXPECT_FALSE(elements[0].is_section_end);
+  EXPECT_TRUE(elements[1].is_section_end);
+  EXPECT_FALSE(elements[2].is_section_end);
+}
+
 TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
   auto test_delegate = std::make_unique<TestDelegate>();
   auto test_controller = std::make_unique<ToolbarController>(

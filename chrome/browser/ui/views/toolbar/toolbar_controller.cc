@@ -283,10 +283,8 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
           elements.emplace_back(id.value());
         }
       }
-      auto& last_element = elements.back();
-      if (std::holds_alternative<actions::ActionId>(last_element.overflow_id)) {
-        last_element.is_section_end = true;
-      }
+      // Section end for the pinned actions is handled in
+      // GetResponsiveElementsWithOrderedActions().
     }
   }
 
@@ -691,6 +689,32 @@ ToolbarController::GetResponsiveElementsWithOrderedActions() const {
         ordered_responsive_elements.begin() + element_index,
         ordered_responsive_elements.begin() + next_non_action_element_index,
         actions_sorting_function);
+
+    std::optional<size_t> last_pinned_index;
+    std::optional<size_t> last_ephemeral_index;
+
+    // Set the last pinned and last unpinned ActionItem elements as section
+    // ends.
+    for (size_t i = element_index; i < next_non_action_element_index; ++i) {
+      const auto& element = ordered_responsive_elements[i];
+      actions::ActionId action_id =
+          std::get<actions::ActionId>(element.overflow_id);
+      bool is_pinned = std::find(ordered_pinned_action_ids.begin(),
+                                 ordered_pinned_action_ids.end(),
+                                 action_id) != ordered_pinned_action_ids.end();
+      if (is_pinned) {
+        last_pinned_index = i;
+      } else {
+        last_ephemeral_index = i;
+      }
+    }
+
+    if (last_pinned_index.has_value()) {
+      ordered_responsive_elements[*last_pinned_index].is_section_end = true;
+    }
+    if (last_ephemeral_index.has_value()) {
+      ordered_responsive_elements[*last_ephemeral_index].is_section_end = true;
+    }
 
     element_index = next_non_action_element_index;
   }
