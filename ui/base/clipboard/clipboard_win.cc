@@ -1133,8 +1133,7 @@ void ClipboardWin::WriteClipboardHistory() {
   // is not available.
   DWORD value = 0;
   WriteData(ClipboardFormatType::ClipboardHistoryType(),
-            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
-                                   sizeof(value))));
+            base::byte_span_from_ref(value));
 }
 
 void ClipboardWin::WriteUploadCloudClipboard() {
@@ -1142,20 +1141,16 @@ void ClipboardWin::WriteUploadCloudClipboard() {
   // is not available.
   DWORD value = 0;
   WriteData(ClipboardFormatType::UploadCloudClipboardType(),
-            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
-                                   sizeof(value))));
+            base::byte_span_from_ref(value));
 }
 
 void ClipboardWin::WriteConfidentialDataForPassword() {
   // Write a zero value to the clipboard to indicate that the clipboard history
   // and cloud clipboard are not available.
   DWORD value = 0;
-  WriteData(ClipboardFormatType::ClipboardHistoryType(),
-            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
-                                   sizeof(value))));
-  WriteData(ClipboardFormatType::UploadCloudClipboardType(),
-            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
-                                   sizeof(value))));
+  auto value_bytes = base::byte_span_from_ref(value);
+  WriteData(ClipboardFormatType::ClipboardHistoryType(), value_bytes);
+  WriteData(ClipboardFormatType::UploadCloudClipboardType(), value_bytes);
 }
 
 template <typename Result>
