@@ -14,10 +14,10 @@
 }
 
 .fake-interest-button:hover {
-  background-color: color-mix(in lab, currentColor 10%, transparent);
+  background-color: color-mix(currentColor 10%, transparent);
 }
 
 .fake-interest-button:active {
-  background-color: color-mix(in lab, currentColor 20%, transparent);
+  background-color: color-mix(currentColor 20%, transparent);
 }
 
