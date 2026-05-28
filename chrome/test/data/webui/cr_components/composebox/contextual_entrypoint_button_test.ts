@@ -256,4 +256,102 @@ suite('ContextualEntrypointButton', () => {
         // Clean up
         document.body.style.removeProperty('--cr-animations-disabled');
       });
+
+  suite('SmartTabSharingEntrypoint', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        tabFaviconChipsToCoinsEnabled: true,
+      });
+
+      entrypointButton = createEntrypointButton();
+      await microtasksFinished();
+    });
+
+    test('STS is active (with description)', async () => {
+      entrypointButton.smartTabSharingActive = true;
+      entrypointButton.showContextMenuDescription = true;
+
+      await microtasksFinished();
+      await entrypointButton.updateComplete;
+
+      const entrypoint = $$(entrypointButton, '#entrypoint');
+      assertTrue(!!entrypoint);
+
+      // Main icon remains "+"
+      const icon = $$(entrypointButton, '#entrypointIcon');
+      assertTrue(!!icon);
+      assertEquals('cr:add', icon.getAttribute('icon'));
+
+      // STS icon is shown in coins slot
+      const coinIcon = $$(entrypointButton, '.sts-active-coin');
+      assertTrue(!!coinIcon);
+      assertEquals('composebox:shareTabs', coinIcon.getAttribute('icon'));
+
+      // Favicon group is NOT shown
+      const faviconGroup = $$(entrypointButton, 'composebox-favicon-group');
+      assertFalse(!!faviconGroup);
+    });
+
+    test('STS is active (description hidden)', async () => {
+      entrypointButton.smartTabSharingActive = true;
+      entrypointButton.showContextMenuDescription = false;
+
+      await microtasksFinished();
+      await entrypointButton.updateComplete;
+
+      const entrypoint = $$(entrypointButton, '#entrypoint');
+      assertTrue(!!entrypoint);
+      assertTrue(
+          entrypoint.classList.contains('pill-button'));  // Pill button layout
+
+      // Main icon remains "+"
+      const icon = $$(entrypointButton, '#entrypointIcon');
+
+      assertTrue(!!icon);
+      assertEquals('cr:add', icon.getAttribute('icon'));
+
+      // STS icon is shown in coins slot
+      const coinIcon = $$(entrypointButton, '.sts-active-coin');
+      assertTrue(!!coinIcon);
+      assertEquals('composebox:shareTabs', coinIcon.getAttribute('icon'));
+    });
+
+    test(
+        'STS is inactive, description hidden, has tabs (show coins)',
+        async () => {
+          entrypointButton.smartTabSharingActive = false;
+          entrypointButton.showContextMenuDescription = false;
+
+          entrypointButton.sharedTabs = [
+            {
+              tabId: 1,
+              url: 'https://example.com',
+              title: 'Tab 1',
+              showInCurrentTabChip: false,
+              showInPreviousTabChip: false,
+              lastActive: {internalValue: 0n},
+            },
+          ];
+          await microtasksFinished();
+          await entrypointButton.updateComplete;
+
+          const entrypoint = $$(entrypointButton, '#entrypoint');
+          assertTrue(!!entrypoint);
+          assertFalse(entrypoint.classList.contains('sts-active'));
+          assertTrue(entrypoint.classList.contains('pill-button'));
+
+          // Main icon remains "+"
+          const icon = $$(entrypointButton, '#entrypointIcon');
+          assertTrue(!!icon);
+          assertEquals('cr:add', icon.getAttribute('icon'));
+
+          // Favicon group is shown
+          const faviconGroup = $$(entrypointButton, 'composebox-favicon-group');
+          assertTrue(!!faviconGroup);
+
+          // STS icon is NOT shown
+          const coinIcon = $$(entrypointButton, '.sts-active-coin');
+          assertFalse(!!coinIcon);
+        });
+  });
 });

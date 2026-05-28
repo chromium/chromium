@@ -13,79 +13,88 @@ export function getHtml(this: ContextualActionMenuElement) {
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}"
       ?auto-reposition="${!this.disableAutoReposition}">
-    ${this.smartTabSharingVisible_ ? html`
-      <button class="dropdown-item toggle-item"
-          id="smartTabSharingItem"
-          role="menuitem"
-          @click="${this.onSmartTabSharingItemClick_}">
-        <span>${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
-        <cr-toggle id="smartTabSharingToggle"
-            ?checked="${this.smartTabSharingActive}"
-            @change="${this.onSmartTabSharingToggleChange_}">
-        </cr-toggle>
-      </button>
-      <hr/>
-    ` : ''}
-    ${this.tabSuggestions?.length > 0 &&
+    ${(this.tabSuggestions?.length > 0 || this.smartTabSharingActive) &&
         this.isInputTypeAllowed_(InputType.kBrowserTab) ? html`
       ${this.contextManagementInComposeboxEnabled_ ? html`
         <div class="share-tabs-container">
-          <button id="shareTabsTrigger" class="dropdown-item"
-              role="menuitem"
-              aria-haspopup="menu"
-              aria-expanded="${this.shareTabsFlyoutOpen_}"
-              @pointerenter="${this.onShareTabsRowPointerenter_}"
-              @pointerleave="${this.onShareTabsRowPointerleave_}"
-              @keydown="${this.onShareTabsRowKeydown_}">
-            <cr-icon icon="composebox:shareTabs"></cr-icon>
-            <span class="tab-title">
-              ${this.sharingTabsText_}
-            </span>
-            <composebox-favicon-group .tabs="${this.getSelectedTabs_()}" title="${this.i18n('sharingTabsWithGoogle')}">
-            </composebox-favicon-group>
-            <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
-          </button>
-          <div class="share-tabs-flyout" role="menu"
-              ?hidden="${!this.shareTabsFlyoutOpen_}"
-              data-position="${this.shareTabsFlyoutPosition_}"
-              @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
-              @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
-              @keydown="${this.onShareTabsFlyoutKeydown_}">
-            ${this.tabSuggestions.map((tab, index) => html`
-              <div class="suggestion-container">
-                <button class="dropdown-item"
+          ${this.smartTabSharingVisible_ && this.smartTabSharingActive ? html`
+            <button class="dropdown-item"
+                id="smartTabSharingItem"
+                role="menuitemcheckbox"
+                aria-checked="true"
+                @click="${this.onSmartTabSharingItemClick_}">
+              <cr-icon icon="composebox:shareTabs"></cr-icon>
+              <span class="tab-title">${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
+              <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
+            </button>
+          ` : html`
+            <button id="shareTabsTrigger" class="dropdown-item"
+                role="menuitem"
+                aria-haspopup="menu"
+                aria-expanded="${this.shareTabsFlyoutOpen_}"
+                @pointerenter="${this.onShareTabsRowPointerenter_}"
+                @pointerleave="${this.onShareTabsRowPointerleave_}"
+                @keydown="${this.onShareTabsRowKeydown_}">
+              <cr-icon icon="composebox:shareTabs"></cr-icon>
+              <span class="tab-title">
+                ${this.sharingTabsText_}
+              </span>
+              <composebox-favicon-group .tabs="${this.getSelectedTabs_()}" title="${this.i18n('sharingTabsWithGoogle')}">
+              </composebox-favicon-group>
+              <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
+            </button>
+            <div class="share-tabs-flyout" role="menu"
                 ?hidden="${!this.shareTabsFlyoutOpen_}"
-                    role="${this.enableMultiTabSelection_ ?
-                        'menuitemcheckbox' : 'menuitem'}"
-                    aria-checked="${this.enableMultiTabSelection_ &&
-                        (this.isTabSelected_(tab.tabId) ||
-                         this.restoredTabIds.includes(tab.tabId))}"
-                    title="${tab.title}" data-index="${index}"
-                    aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
-                        tab.title}"
-                    ?disabled="${this.isTabDisabled_(tab)}"
-                    @click="${this.onTabClick_}">
-                <cr-composebox-tab-favicon .url="${tab.url}">
-                </cr-composebox-tab-favicon>
-                <span class="tab-title-group">
-                  <span class="tab-title">${tab.title}</span>
-                  ${this.isRecentTab_(tab.tabId) ? html`
-                     <span class="recent-tabs-suffix"
-                        ?disabled="${this.isTabDisabled_(tab)}">${
-                        this.isSidePanel ?
-                        this.i18n('currentTabSuffix') :
-                        this.i18n('recentTabsSuffix')}</span>
-                  ` : ''}
-                </span>
-                ${(this.enableMultiTabSelection_ &&
-                    (this.isTabSelected_(tab.tabId) ||
-                     this.restoredTabIds.includes(tab.tabId))) ? html`
-                  <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
-                ` : ''}
+                data-position="${this.shareTabsFlyoutPosition_}"
+                @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
+                @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
+                @keydown="${this.onShareTabsFlyoutKeydown_}">
+              ${this.smartTabSharingVisible_ ? html`
+                <button class="dropdown-item"
+                    id="smartTabSharingItemFlyout"
+                    role="menuitemcheckbox"
+                    aria-checked="false"
+                    @click="${this.onSmartTabSharingItemClick_}">
+                  <span class="tab-title">${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
                 </button>
-              </div>
-            `)}
-          </div>
+                <hr/>
+              ` : ''}
+
+              ${this.tabSuggestions.map((tab, index) => html`
+                <div class="suggestion-container">
+                  <button class="dropdown-item"
+                      role="${this.enableMultiTabSelection_ ?
+                          'menuitemcheckbox' : 'menuitem'}"
+                      aria-checked="${this.enableMultiTabSelection_ &&
+                          (this.isTabSelected_(tab.tabId) ||
+                           this.restoredTabIds.includes(tab.tabId))}"
+                      title="${tab.title}" data-index="${index}"
+                      aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
+                          tab.title}"
+                      ?disabled="${this.isTabDisabled_(tab)}"
+                      @click="${this.onTabClick_}">
+                  <cr-composebox-tab-favicon .url="${tab.url}">
+                  </cr-composebox-tab-favicon>
+                  <span class="tab-title-group">
+                    <span class="tab-title">${tab.title}</span>
+                    ${this.isRecentTab_(tab.tabId) ? html`
+                      <span class="recent-tabs-suffix"
+                          ?disabled="${this.isTabDisabled_(tab)}">${
+                          this.isSidePanel ?
+                          this.i18n('currentTabSuffix') :
+                          this.i18n('recentTabsSuffix')}</span>
+                    ` : ''}
+                  </span>
+                  ${(this.enableMultiTabSelection_ &&
+                      (this.isTabSelected_(tab.tabId) ||
+                       this.restoredTabIds.includes(tab.tabId))) ? html`
+                    <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
+                  ` : ''}
+                  </button>
+                </div>
+              `)}
+            </div>
+          `}
         </div>
         <hr/>
       ` : html`
@@ -136,9 +145,9 @@ export function getHtml(this: ContextualActionMenuElement) {
       </button>` : ''}
     ${this.isInputTypeAllowed_(InputType.kLensFile) ? html`
       <button id="fileUpload" class="dropdown-item"
-        role="menuitem"
-        @click="${this.onFileUploadClick_}"
-        ?disabled="${this.isInputTypeDisabled_(InputType.kLensFile)}">
+          role="menuitem"
+          @click="${this.onFileUploadClick_}"
+          ?disabled="${this.isInputTypeDisabled_(InputType.kLensFile)}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.getInputTypeLabel_(InputType.kLensFile)}
     </button>`: ''}
@@ -205,8 +214,7 @@ export function getHtml(this: ContextualActionMenuElement) {
               icon="cr:check" id="model-check"></cr-icon>` : ''}
       </button>`;
     })}
-
   </cr-action-menu>
-<!--_html_template_end_-->`;
+  <!--_html_template_end_-->`;
   // clang-format on
 }

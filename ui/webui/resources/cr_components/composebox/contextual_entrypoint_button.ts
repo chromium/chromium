@@ -60,6 +60,7 @@ export class ContextualEntrypointButtonElement extends
       restoredTabs: {type: Array},
       tabFaviconChipsToCoinsEnabled_: {type: Boolean},
       energyEffectAnimationEnabled: {type: Boolean, reflect: true},
+      smartTabSharingActive: {type: Boolean},
       isLensSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -79,6 +80,7 @@ export class ContextualEntrypointButtonElement extends
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
+  accessor smartTabSharingActive: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor isLensSearchbox_: boolean =
       loadTimeData.valueExists('isLensSearchbox') &&
@@ -95,7 +97,16 @@ export class ContextualEntrypointButtonElement extends
   }
 
   protected getTabs_(): TabInfo[] {
+    if (this.smartTabSharingActive) {
+      return [];
+    }
     return this.sharedTabs.concat(this.restoredTabs || []);
+  }
+
+  protected getTooltip_(): string {
+    return this.smartTabSharingActive ?
+        this.i18n('stsMegaplusShareRelevantOpenTabs') :
+        this.i18n('addContextTitle');
   }
 
   override connectedCallback() {

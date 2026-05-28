@@ -16,6 +16,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
           .inputState="${this.inputState}"
           .sharedTabs="${this.sharedTabs}"
           .restoredTabs="${this.restoredTabs_}"
+          .smartTabSharingActive="${this.smartTabSharingActive}"
           @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
           ?upload-button-disabled="${this.uploadButtonDisabled}"
           ?show-context-menu-description="${this.showContextMenuDescription}"

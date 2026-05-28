@@ -8,7 +8,6 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
-import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -569,17 +568,35 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Toggling smart tab sharing fires event', async () => {
-    loadTimeData.overrideValues({composeboxSmartTabSharingVisible: true});
+    loadTimeData.overrideValues({
+      composeboxSmartTabSharingVisible: true,
+      contextManagementInComposeboxEnabled: true,
+    });
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.tabSuggestions = [
+      {
+        tabId: 1,
+        title: 'Tab 1',
+        url: 'https://example.com',
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      },
+    ];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    });
     document.body.appendChild(actionMenu);
 
-    actionMenu.smartTabSharingActive = false;
+    actionMenu.smartTabSharingActive = true;
     actionMenu.showAt(actionMenu);
     await actionMenu.updateComplete;
 
-    const toggle = $$(actionMenu, '#smartTabSharingToggle') as CrToggleElement;
-    assertTrue(!!toggle);
+    const item = $$(actionMenu, '#smartTabSharingItem');
+    assertTrue(!!item);
+    assertTrue(!!item.querySelector('.share-tabs-check'));
+    assertEquals('true', item.getAttribute('aria-checked'));
 
     let eventDetail: {active: boolean}|null = null;
     actionMenu.addEventListener(
@@ -587,36 +604,53 @@ suite('ContextualActionMenu', () => {
           eventDetail = (e as CustomEvent).detail;
         }, {once: true});
 
-    toggle.checked = true;
-    toggle.dispatchEvent(new CustomEvent('change'));
+    item.click();
 
     assertTrue(!!eventDetail);
-    assertTrue((eventDetail as {active: boolean}).active);
+    assertFalse((eventDetail as {active: boolean}).active);
   });
 
-  test('Clicking smart tab sharing row toggles state', async () => {
-    loadTimeData.overrideValues({composeboxSmartTabSharingVisible: true});
+  test('Clicking smart tab sharing row updates UI', async () => {
+    loadTimeData.overrideValues({
+      composeboxSmartTabSharingVisible: true,
+      contextManagementInComposeboxEnabled: true,
+    });
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.tabSuggestions = [
+      {
+        tabId: 1,
+        title: 'Tab 1',
+        url: 'https://example.com',
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      },
+    ];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    });
+
     document.body.appendChild(actionMenu);
 
-    actionMenu.smartTabSharingActive = false;
+    actionMenu.smartTabSharingActive = true;
     actionMenu.showAt(actionMenu);
     await actionMenu.updateComplete;
 
-    const item = $$(actionMenu, '#smartTabSharingItem') as HTMLElement;
+    const item = $$(actionMenu, '#smartTabSharingItem');
     assertTrue(!!item);
-    const toggle = $$(actionMenu, '#smartTabSharingToggle') as CrToggleElement;
-
-    let eventFired = false;
-    actionMenu.addEventListener('smart-tab-sharing-active-changed', () => {
-      eventFired = true;
-    }, {once: true});
 
     item.click();
 
-    assertTrue(eventFired);
-    assertTrue(toggle.checked);
+    actionMenu.smartTabSharingActive = false;
+    await actionMenu.updateComplete;
+
+    const mainMenuToggle = $$(actionMenu, '#smartTabSharingItem');
+    assertFalse(!!mainMenuToggle);
+
+    const trigger = $$(actionMenu, '#shareTabsTrigger');
+    assertTrue(!!trigger);
+    assertTrue(isVisible(trigger));
   });
 
   test('AutoRepositionEnabledByDefaultOnSharedWrapper', () => {
@@ -1371,16 +1405,16 @@ suite('ContextualActionMenu', () => {
         const tabInfo = {
           tabId: 1,
           title: 'Google Docs',
-          url: {url: 'https://docs.google.com'},
+          url: 'https://docs.google.com',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
         };
-        actionMenu.tabSuggestions = [tabInfo as any];
+        actionMenu.tabSuggestions = [tabInfo];
         actionMenu.recentTabId = tabInfo.tabId;
         actionMenu.inputState = new MockInputState({
-                                  allowedInputTypes: [InputType.kBrowserTab],
-                                }) as any;
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
 
         document.body.appendChild(actionMenu);
         await microtasksFinished();
@@ -1407,4 +1441,148 @@ suite('ContextualActionMenu', () => {
             actionMenu.i18n('recentTabsSuffix'), suffix.textContent.trim(),
             'Should fall back to "Recent tab" on the NTP');
       });
+
+  suite('SmartTabSharingTogglePositioning', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        composeboxSmartTabSharingVisible: true,
+        contextManagementInComposeboxEnabled: true,
+      });
+
+      actionMenu.remove();
+      actionMenu =
+          document.createElement('cr-composebox-contextual-action-menu');
+      actionMenu.tabSuggestions = [
+        {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        },
+      ];
+      actionMenu.inputState = new MockInputState({
+        allowedInputTypes: [InputType.kBrowserTab],
+      });
+      document.body.appendChild(actionMenu);
+      await microtasksFinished();
+    });
+
+    test('STS is OFF: Show Add tabs trigger, toggle in flyout', async () => {
+      actionMenu.smartTabSharingActive = false;
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+      await actionMenu.updateComplete;
+
+      // Trigger is visible in main menu
+      const trigger = $$(actionMenu, '#shareTabsTrigger');
+      assertTrue(!!trigger);
+      assertTrue(isVisible(trigger));
+
+      // Main menu toggle is NOT visible
+      const mainMenuToggle = $$(actionMenu, '#smartTabSharingItem');
+      assertFalse(!!mainMenuToggle);
+
+      // Open flyout
+      trigger.dispatchEvent(new PointerEvent('pointerenter'));
+      await microtasksFinished();
+      await actionMenu.updateComplete;
+
+      const flyout = $$(actionMenu, '.share-tabs-flyout');
+      assertTrue(!!flyout);
+      assertTrue(isVisible(flyout));
+
+      // Toggle is visible in flyout
+      const flyoutToggleItem = $$(actionMenu, '#smartTabSharingItemFlyout');
+      assertTrue(!!flyoutToggleItem);
+      assertTrue(isVisible(flyoutToggleItem));
+
+      assertEquals('false', flyoutToggleItem.getAttribute('aria-checked'));
+      assertFalse(!!flyoutToggleItem.querySelector('.share-tabs-check'));
+    });
+
+    test('STS is ON: Show toggle in main menu, no flyout', async () => {
+      actionMenu.smartTabSharingActive = true;
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+      await actionMenu.updateComplete;
+
+      // Main menu toggle is visible
+      const mainMenuToggle = $$(actionMenu, '#smartTabSharingItem');
+      assertTrue(!!mainMenuToggle);
+      assertTrue(isVisible(mainMenuToggle));
+
+      assertEquals('true', mainMenuToggle.getAttribute('aria-checked'));
+      assertTrue(!!mainMenuToggle.querySelector('.share-tabs-check'));
+      // Trigger is NOT visible
+      const trigger = $$(actionMenu, '#shareTabsTrigger');
+      assertFalse(!!trigger);
+    });
+
+    test('Clicking toggle in flyout closes the menu', async () => {
+      actionMenu.smartTabSharingActive = false;
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+      await actionMenu.updateComplete;
+
+      const trigger = $$(actionMenu, '#shareTabsTrigger');
+      assertTrue(!!trigger);
+
+      // Open flyout
+      trigger.dispatchEvent(new PointerEvent('pointerenter'));
+      await microtasksFinished();
+      await actionMenu.updateComplete;
+
+      const flyoutToggleItem =
+          $$(actionMenu, '#smartTabSharingItemFlyout') as HTMLElement;
+      assertTrue(!!flyoutToggleItem);
+
+      // Verify menu is open
+      assertTrue(actionMenu.$.menu.open);
+
+      flyoutToggleItem.click();
+      await microtasksFinished();
+
+      // Verify menu is now closed!
+      assertFalse(actionMenu.$.menu.open);
+    });
+
+    test('Clicking toggle in main menu does NOT close the menu', async () => {
+      actionMenu.smartTabSharingActive = true;
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+      await actionMenu.updateComplete;
+
+      const mainMenuToggle =
+          $$(actionMenu, '#smartTabSharingItem') as HTMLElement;
+      assertTrue(!!mainMenuToggle);
+
+      // Verify menu is open
+      assertTrue(actionMenu.$.menu.open);
+
+      mainMenuToggle.click();
+      await microtasksFinished();
+
+      // Verify menu stays open!
+      assertTrue(actionMenu.$.menu.open);
+    });
+
+    test(
+        'STS is ON: Show toggle even when suggestions are empty (prevent trapping)',
+        async () => {
+          actionMenu.smartTabSharingActive = true;
+          actionMenu.tabSuggestions = [];
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+          await actionMenu.updateComplete;
+
+          const mainMenuToggle = $$(actionMenu, '#smartTabSharingItem');
+          assertTrue(!!mainMenuToggle);
+          assertTrue(isVisible(mainMenuToggle));
+
+          const trigger = $$(actionMenu, '#shareTabsTrigger');
+          assertFalse(!!trigger);
+        });
+  });
 });

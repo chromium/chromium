@@ -8,12 +8,10 @@ import './composebox_favicon_group.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -428,29 +426,30 @@ export class ContextualActionMenuElement extends
     return this.recentTabId !== null && tabId === this.recentTabId;
   }
 
-  protected onSmartTabSharingToggleChange_(e: Event) {
-    const toggle = e.target as CrToggleElement;
-    this.fire('smart-tab-sharing-active-changed', {active: toggle.checked});
-  }
-
-  protected onSmartTabSharingItemClick_(e: Event) {
-    if ((e.target as HTMLElement).id === 'smartTabSharingToggle') {
-      return;
-    }
+  protected async onSmartTabSharingItemClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const isFlyout = target.id === 'smartTabSharingItemFlyout';
     this.toggleSmartTabSharing_();
+    if (isFlyout) {
+      this.$.menu.close();
+    } else {
+      await this.updateComplete;
+      const trigger =
+          this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
+      if (trigger) {
+        trigger.focus();
+      }
+    }
   }
 
   private toggleSmartTabSharing_() {
-    const toggle = this.shadowRoot.querySelector<CrToggleElement>(
-        '#smartTabSharingToggle')!;
-    this.setSmartTabSharingToggle(!toggle.checked);
+    this.fire('smart-tab-sharing-active-changed', {
+      active: !this.smartTabSharingActive,
+    });
   }
 
   setSmartTabSharingToggle(active: boolean) {
-    const toggle = this.shadowRoot.querySelector<CrToggleElement>(
-        '#smartTabSharingToggle')!;
-    toggle.checked = active;
-    this.fire('smart-tab-sharing-active-changed', {active: toggle.checked});
+    this.fire('smart-tab-sharing-active-changed', {active});
   }
 
   protected onTabClick_(e: Event) {
