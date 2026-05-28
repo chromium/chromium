@@ -313,6 +313,13 @@ void MostVisitedSitesProviderTest::CheckDesktopMatchesEquivalentTo(
 }
 
 void MostVisitedSitesProviderTest::SetUp() {
+#if BUILDFLAG(IS_ANDROID)
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    GTEST_SKIP()
+        << "Most visited sites suggestions are disabled on Android Desktop.";
+  }
+#endif
+
   top_sites_ = new FakeTopSites();
 
   client_.set_top_sites(top_sites_);

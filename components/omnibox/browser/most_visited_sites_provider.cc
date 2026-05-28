@@ -447,6 +447,14 @@ void MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryServiceAvailable(
 bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
     const AutocompleteProviderClient* client,
     const AutocompleteInput& input) {
+#if BUILDFLAG(IS_ANDROID)
+  static const bool is_desktop =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP;
+  if (is_desktop) {
+    return false;
+  }
+#endif
+
   const auto& page_url = input.current_url();
   const auto page_class = input.current_page_classification();
   const auto input_type = input.type();
