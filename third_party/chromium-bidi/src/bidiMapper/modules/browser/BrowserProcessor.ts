@@ -55,7 +55,10 @@ export class BrowserProcessor {
     // This way we send back the response before closing the tab.
     // Always catch uncaught exceptions.
     setTimeout(
-      () => this.#browserCdpClient.sendCommand('Browser.close').catch(() => {}),
+      () =>
+        this.#browserCdpClient.sendCommand('Browser.close').catch(() => {
+          // Silence any error
+        }),
       0,
     );
 

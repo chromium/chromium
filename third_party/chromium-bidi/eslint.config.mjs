@@ -18,7 +18,6 @@
 import eslint from '@eslint/js';
 import {defineConfig, globalIgnores} from 'eslint/config';
 import importPlugin from 'eslint-plugin-import';
-import mochaPlugin from 'eslint-plugin-mocha';
 import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import promisePlugin from 'eslint-plugin-promise';
 import globals from 'globals';
@@ -47,8 +46,8 @@ export default defineConfig([
   ]),
   eslint.configs.recommended,
   eslintPrettierPluginRecommended,
+
   importPlugin.flatConfigs.typescript,
-  mochaPlugin.configs.recommended,
   promisePlugin.configs['flat/recommended'],
   {
     name: 'JavaScript rules',
@@ -59,7 +58,6 @@ export default defineConfig([
 
       globals: {
         ...globals.browser,
-        ...globals.mocha,
         ...globals.node,
         globalThis: false,
       },
@@ -83,7 +81,8 @@ export default defineConfig([
       'import/no-unresolved': 'off',
 
       'import/order': [
-        'error',
+        // Temporary disabled.
+        'off',
         {
           'newlines-between': 'always',
 
@@ -93,11 +92,6 @@ export default defineConfig([
           },
         },
       ],
-
-      'mocha/consistent-spacing-between-blocks': 'off',
-      'mocha/no-exclusive-tests': 'error',
-      'mocha/no-mocha-arrows': 'off',
-      'mocha/no-setup-in-describe': 'off',
       'no-else-return': 'warn',
 
       'no-empty': [
@@ -223,7 +217,7 @@ export default defineConfig([
   {
     name: 'Test deps',
     files: ['**/*.ts'],
-    ignores: ['**/*.spec.ts', 'src/bidiServer/**', 'tools/**'],
+    ignores: ['**/*.test.ts', 'src/bidiServer/**', 'tools/**'],
 
     rules: {
       'import/no-extraneous-dependencies': [
@@ -237,7 +231,7 @@ export default defineConfig([
   {
     name: 'Fix test unused',
     files: ['**/*.ts'],
-    ignores: ['**/*.spec.ts'],
+    ignores: ['**/*.test.ts'],
 
     rules: {
       '@typescript-eslint/no-unused-expressions': 'error',

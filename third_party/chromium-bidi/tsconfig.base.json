@@ -7,7 +7,7 @@
     "incremental": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["node", "mocha"],
+    "types": ["node"],
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,

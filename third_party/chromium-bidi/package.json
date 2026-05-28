@@ -14,7 +14,7 @@
     "e2e:old-headless": "HEADLESS=old npm run e2e --",
     "e2e": "wireit",
     "flake8": "flake8 examples/ tests/",
-    "format": "npm run format:keep-sorted && npm run format:eslint && npm run format:prettier && npm run format:py",
+    "format": "npm run format:eslint && npm run format:prettier && npm run format:py && npm run format:keep-sorted",
     "format:eslint": "eslint --cache --fix .",
     "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -v '^wpt$')",
     "format:prettier": "prettier --cache --write .",
@@ -101,7 +101,7 @@
       ]
     },
     "unit": {
-      "command": "mocha",
+      "command": "node --test lib/**/*.test.js tools/**/*.test.mjs",
       "dependencies": [
         "tsc"
       ]
@@ -134,7 +134,7 @@
   },
   "files": [
     "lib",
-    "!lib/**/*.spec.*",
+    "!lib/**/*.test.*",
     "!*.tsbuildinfo",
     ".browser"
   ],
@@ -156,7 +156,6 @@
     "@types/chai": "5.2.3",
     "@types/chai-as-promised": "8.0.2",
     "@types/debug": "4.1.13",
-    "@types/mocha": "10.0.10",
     "@types/node": "20.19.35",
     "@types/sinon": "21.0.1",
     "@types/websocket": "1.0.10",
@@ -170,11 +169,9 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-mocha": "11.2.0",
     "eslint-plugin-prettier": "5.5.5",
     "eslint-plugin-promise": "7.3.0",
     "globals": "17.6.0",
-    "mocha": "11.7.5",
     "package-directory": "8.2.0",
     "prettier": "3.8.3",
     "rimraf": "6.1.3",

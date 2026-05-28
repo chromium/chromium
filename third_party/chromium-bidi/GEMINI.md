@@ -27,13 +27,13 @@ To restore the project to a known good state, run the following commands in orde
 
 ### Unit Tests
 
-- Unit test source files are located in the `src` directory and have a `.spec.ts`
+- Unit test source files are located in the `src` directory and have a `.test.ts`
   extension.
 - They are co-located with the code they are testing.
 - Run unit tests with `npm run unit`. This command first compiles the TypeScript code
   (including tests) into JavaScript in the `lib` directory and then runs the tests
-  using Mocha.
-- When adding new tests, create a new `*.spec.ts` file in the `src` directory next to
+  using the Node.js native test runner.
+- When adding new tests, create a new `*.test.ts` file in the `src` directory next to
   the file you are testing. The build process will automatically pick it up.
 - **Important**: Do not delete the test files you create. They are a part of the
   project.
