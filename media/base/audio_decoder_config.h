@@ -64,6 +64,9 @@ class MEDIA_EXPORT AudioDecoderConfig {
 
   AudioCodec codec() const { return codec_; }
   int bytes_per_channel() const { return bytes_per_channel_; }
+  ChannelLayoutConfig channel_layout_config() const {
+    return channel_layout_config_;
+  }
   ChannelLayout channel_layout() const {
     return channel_layout_config_.channel_layout();
   }

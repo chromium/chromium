@@ -22,30 +22,8 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
   if (!input.ReadSampleFormat(&sample_format))
     return false;
 
-  media::ChannelLayout channel_layout;
-  if (!input.ReadChannelLayout(&channel_layout))
-    return false;
-
-  // Series of checks to ensure that `channel_layout` and `input.channels()`
-  // are compatible.
-  if (input.channels() < 0) {
-    return false;
-  }
-
-  // TODO(crbug.com/393165249): Remove this check once all media enums are safe
-  // over mojo.
-  if (channel_layout < 0 || channel_layout > media::CHANNEL_LAYOUT_MAX) {
-    return false;
-  }
-
-  if (channel_layout != media::CHANNEL_LAYOUT_DISCRETE &&
-      channel_layout != media::CHANNEL_LAYOUT_UNSUPPORTED &&
-      media::ChannelLayoutToChannelCount(channel_layout) != input.channels()) {
-    return false;
-  }
-
-  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE &&
-      input.channels() == 0) {
+  media::ChannelLayoutConfig channel_layout_config;
+  if (!input.ReadChannelLayoutConfig(&channel_layout_config)) {
     return false;
   }
 
@@ -73,11 +51,9 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
   if (!input.ReadTargetOutputSampleFormat(&target_output_sample_format))
     return false;
 
-  output->Initialize(
-      codec, sample_format,
-      media::ChannelLayoutConfig(channel_layout, input.channels()),
-      input.samples_per_second(), std::move(extra_data), encryption_scheme,
-      seek_preroll, input.codec_delay());
+  output->Initialize(codec, sample_format, channel_layout_config,
+                     input.samples_per_second(), std::move(extra_data),
+                     encryption_scheme, seek_preroll, input.codec_delay());
   output->set_profile(profile);
   output->set_target_output_channel_layout(target_output_channel_layout);
   output->set_target_output_sample_format(target_output_sample_format);

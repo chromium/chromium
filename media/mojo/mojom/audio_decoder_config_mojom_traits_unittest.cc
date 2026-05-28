@@ -16,32 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
-namespace {
-mojom::AudioDecoderConfigPtr CreateValidAudioDecoderConfig() {
-  mojom::AudioDecoderConfigPtr input = mojom::AudioDecoderConfig::New();
-  input->codec = AudioCodec::kAAC;
-  input->sample_format = kSampleFormatU8;
-  input->channel_layout = CHANNEL_LAYOUT_STEREO;
-  input->channels = 2;
-  input->extra_data = EmptyExtraData();
-  input->samples_per_second = 48000;
-  input->encryption_scheme = EncryptionScheme::kUnencrypted;
-  input->seek_preroll = base::TimeDelta();
-  input->profile = AudioCodecProfile::kUnknown;
-  input->codec_delay = 0;
-  input->should_discard_decoder_delay = true;
-  input->target_output_channel_layout = ChannelLayoutConfig::Stereo();
-  input->target_output_sample_format = kSampleFormatU8;
-
-  return input;
-}
-
-bool CanBeCreated(mojom::AudioDecoderConfigPtr& input) {
-  AudioDecoderConfig output;
-  return mojo::test::SerializeAndDeserialize<mojom::AudioDecoderConfig>(input,
-                                                                        output);
-}
-}  // namespace
 
 const ChannelLayoutConfig kSurroundChannelLayout =
     ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_SURROUND>();
@@ -124,65 +98,6 @@ TEST(AudioDecoderConfigStructTraitsTest, TargetOutputChannelLayout) {
   EXPECT_EQ(output.target_output_sample_format(), kSampleFormatDts);
 }
 
-TEST(AudioDecoderConfigStructTraitsTest, ChannelLayout) {
-  mojom::AudioDecoderConfigPtr input = CreateValidAudioDecoderConfig();
 
-  // The default config is STEREO and 2 channels.
-  EXPECT_TRUE(CanBeCreated(input));
-
-  // STEREO should be 2 channels.
-  input->channel_layout = CHANNEL_LAYOUT_STEREO;
-  input->channels = 1;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  // DISCRETE can handle multiple channel counts, but not zero.
-  input->channel_layout = CHANNEL_LAYOUT_DISCRETE;
-  input->channels = 9;
-  EXPECT_TRUE(CanBeCreated(input));
-
-  input->channel_layout = CHANNEL_LAYOUT_DISCRETE;
-  input->channels = 0;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  // BITSTREAM means passthrough, it should always be zero channels.
-  input->channel_layout = CHANNEL_LAYOUT_BITSTREAM;
-  input->channels = 0;
-  EXPECT_TRUE(CanBeCreated(input));
-
-  input->channel_layout = CHANNEL_LAYOUT_BITSTREAM;
-  input->channels = 1;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  // Negative channel counts are invalid.
-  input->channel_layout = CHANNEL_LAYOUT_DISCRETE;
-  input->channels = -1;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  // NONE must be zero.
-  input->channel_layout = CHANNEL_LAYOUT_NONE;
-  input->channels = 0;
-  EXPECT_TRUE(CanBeCreated(input));
-
-  input->channel_layout = CHANNEL_LAYOUT_NONE;
-  input->channels = 3;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  // UNSUPPORTED is considered invalid.
-  input->channel_layout = CHANNEL_LAYOUT_UNSUPPORTED;
-  input->channels = 0;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  input->channel_layout = CHANNEL_LAYOUT_UNSUPPORTED;
-  input->channels = 1;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  input->channel_layout = CHANNEL_LAYOUT_UNSUPPORTED;
-  input->channels = 6;
-  EXPECT_FALSE(CanBeCreated(input));
-
-  input->channel_layout = CHANNEL_LAYOUT_UNSUPPORTED;
-  input->channels = 9;
-  EXPECT_FALSE(CanBeCreated(input));
-}
 
 }  // namespace media

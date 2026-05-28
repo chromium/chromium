@@ -23,13 +23,9 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.sample_format();
   }
 
-  static media::ChannelLayout channel_layout(
+  static media::ChannelLayoutConfig channel_layout_config(
       const media::AudioDecoderConfig& input) {
-    return input.channel_layout();
-  }
-
-  static int channels(const media::AudioDecoderConfig& input) {
-    return input.channels();
+    return input.channel_layout_config();
   }
 
   static int samples_per_second(const media::AudioDecoderConfig& input) {

@@ -207,8 +207,7 @@ struct VideoColorSpace {
 struct AudioDecoderConfig {
   AudioCodec codec;
   SampleFormat sample_format;
-  ChannelLayout channel_layout;
-  int32 channels;
+  ChannelLayoutConfig channel_layout_config;
   int32 samples_per_second;
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
