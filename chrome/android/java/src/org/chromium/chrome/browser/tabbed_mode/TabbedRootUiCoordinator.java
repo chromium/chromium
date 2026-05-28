@@ -673,6 +673,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> mBookmarkBarCoordinator, // Gets current mBookmarkBarCoordinator
                         compositorViewHolderSupplier,
                         modalDialogManagerSupplier,
+                        () -> mSidePanelContainerCoordinator,
                         mSideUiStateProviderSupplier,
                         () -> assumeNonNull(mLayoutManager).getStripLayoutHelperManager(),
                         mTabObscuringHandlerSupplier.get(),

@@ -1741,6 +1741,7 @@ android_library("chrome_test_java_various") {
     "//chrome/browser/ui/android/logo:utils_java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
+    "//chrome/browser/ui/side_panel_container/public:java",
     "//components/browser_ui/http_auth/android:java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",

@@ -129,6 +129,12 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public @Nullable View getContentView() {
+        ThreadUtils.assertOnUiThread();
+        return mCurrentContent != null ? mCurrentContent.mView : null;
+    }
+
+    @Override
     @Px
     public int determineContainerWidth(
             @Px int requestedWidth, @Px int availableWidth, @Px int windowWidth) {

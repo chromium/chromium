@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType.APP;
 
+import android.view.View;
+
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.ui.accessibility.KeyboardFocusRow;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -37,6 +40,7 @@ import java.util.function.Supplier;
     private final Supplier<@Nullable BookmarkBarCoordinator> mBookmarkBarCoordinatorSupplier;
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable SidePanelContainerCoordinator> mSidePanelContainerSupplier;
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final Supplier<@Nullable StripLayoutHelperManager> mStripLayoutHelperManagerSupplier;
     private final TabObscuringHandler mTabObscuringHandler;
@@ -56,6 +60,9 @@ import java.util.function.Supplier;
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager} that will be used
      *     to determine if an app modal dialog is showing (in which case the keyboard shortcuts
      *     should not do anything).
+     * @param sidePanelContainerSupplier Supplies the {@link SidePanelContainerCoordinator} (or
+     *     null, if the side panel is not visible) that will be used to get/set keyboard focus on
+     *     the side panel.
      * @param sideUiStateProviderSupplier Supplies the {@link SideUiStateProvider} that will be used
      *     to get/set keyboard focus on the side panel.
      * @param stripLayoutHelperManagerSupplier Supplies the {@link StripLayoutHelperManager} (or
@@ -70,6 +77,7 @@ import java.util.function.Supplier;
             Supplier<@Nullable BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable SidePanelContainerCoordinator> sidePanelContainerSupplier,
             OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier,
             Supplier<@Nullable StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
             TabObscuringHandler tabObscuringHandler,
@@ -77,6 +85,7 @@ import java.util.function.Supplier;
         mBookmarkBarCoordinatorSupplier = bookmarkBarCoordinatorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSidePanelContainerSupplier = sidePanelContainerSupplier;
         mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mStripLayoutHelperManagerSupplier = stripLayoutHelperManagerSupplier;
         mTabObscuringHandler = tabObscuringHandler;
@@ -119,7 +128,13 @@ import java.util.function.Supplier;
             }
 
             case KeyboardFocusRow.SIDE_PANEL -> {
-                // TODO(crbug.com/510025224): Implement logic to focus side panel.
+                var sidePanelContainer = mSidePanelContainerSupplier.get();
+                if (sidePanelContainer != null) {
+                    View contentView = sidePanelContainer.getContentView();
+                    if (contentView != null) {
+                        contentView.requestFocus();
+                    }
+                }
             }
         }
     }
@@ -138,6 +153,14 @@ import java.util.function.Supplier;
         var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
         if (bookmarkBarCoordinator != null && bookmarkBarCoordinator.hasKeyboardFocus()) {
             return KeyboardFocusRow.BOOKMARKS_BAR;
+        }
+
+        var sidePanelContainer = mSidePanelContainerSupplier.get();
+        if (sidePanelContainer != null) {
+            View contentView = sidePanelContainer.getContentView();
+            if (contentView != null && contentView.hasFocus()) {
+                return KeyboardFocusRow.SIDE_PANEL;
+            }
         }
 
         return KeyboardFocusRow.NONE;

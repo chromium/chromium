@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.side_panel_container;
 
 import android.graphics.Rect;
+import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -82,6 +83,9 @@ public interface SidePanelContainerCoordinator {
 
     /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
     boolean isShowing(SidePanelContent sidePanelContent);
+
+    /** Returns the content View currently shown in the side panel container, or null. */
+    @Nullable View getContentView();
 
     /** Destroys all objects owned by this coordinator. */
     void destroy();
