@@ -58,6 +58,10 @@ class TensorImplOrt final : public WebNNTensorImpl {
   scoped_refptr<DeviceAllocator> device_allocator_;
   const ScopedOrtValue tensor_ GUARDED_BY_CONTEXT(sequence_checker_);
   const size_t size_;
+  // Whether `tensor_`'s backing memory is CPU-accessible. When false (e.g.
+  // WebGPU EP device tensors), `AsSpan()` must not be called because
+  // `GetTensorMutableData()` returns a device handle, not a host pointer.
+  const bool can_access_on_cpu_ = true;
 };
 
 }  // namespace webnn::ort
