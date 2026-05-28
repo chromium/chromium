@@ -1362,6 +1362,10 @@
 ### pixel_interactive_ui_tests
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
+### pixel_skia_gold_metal_passthrough_graphite_test
+* [mac-gpu-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-gpu-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-gpu-rel%5C%22%22))
+* [mac-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-rel%5C%22%22))
+
 ### pixel_skia_gold_passthrough_test
 * [fuchsia-x64-cast-receiver-rel](https://ci.chromium.org/ui/p/chromium/builders/try/fuchsia-x64-cast-receiver-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22fuchsia-x64-cast-receiver-rel%5C%22%22))
 * [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-rel%5C%22%22))
@@ -1867,6 +1871,10 @@
 
 ### webgl_conformance_d3d11_passthrough_tests
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
+
+### webgl_conformance_metal_passthrough_graphite_tests
+* [mac-gpu-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-gpu-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-gpu-rel%5C%22%22))
+* [mac-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-rel%5C%22%22))
 
 ### webgl_conformance_tests
 * [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/ui/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22chromeos-amd64-generic-rel-gtest%5C%22%22))

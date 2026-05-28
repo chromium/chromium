@@ -910,10 +910,7 @@ targets.legacy_basic_suite(
                 "gpu_integration_test_common_args",
             ],
         ),
-        "pixel_skia_gold_metal_passthrough_graphite_test": targets.legacy_test_config(
-            # TODO(crbug.com/517256162): remove after pool is no longer overloaded
-            ci_only = True,
-        ),
+        "pixel_skia_gold_metal_passthrough_graphite_test": targets.legacy_test_config(),
         "screenshot_sync_metal_passthrough_graphite_tests": targets.legacy_test_config(),
     },
 )
@@ -1196,10 +1193,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
     tests = {
-        "webgl_conformance_metal_passthrough_graphite_tests": targets.legacy_test_config(
-            # TODO(crbug.com/517256162): remove after pool is no longer overloaded
-            ci_only = True,
-        ),
+        "webgl_conformance_metal_passthrough_graphite_tests": targets.legacy_test_config(),
     },
 )
 
