@@ -1272,6 +1272,12 @@ void RenderViewContextMenu::InitMenu() {
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_AUTOFILL)) {
+    // Add a separator if the previous item is not already a separator.
+    size_t count = menu_model_.GetItemCount();
+    if (features::IsMenuSimplificationEnabled() && count > 0 &&
+        menu_model_.GetTypeAt(count - 1) != ui::MenuModel::TYPE_SEPARATOR) {
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    }
     autofill_context_menu_manager_.AppendItems();
   }
 
@@ -1311,7 +1317,14 @@ void RenderViewContextMenu::InitMenu() {
     AppendSearchProvider();
   }
 
-  if (!params_.selection_text.empty() || !params_.link_url.is_empty()) {
+  bool show_glic = false;
+  if (features::IsMenuSimplificationEnabled()) {
+    show_glic = !params_.selection_text.empty();
+  } else {
+    show_glic = !params_.selection_text.empty() || !params_.link_url.is_empty();
+  }
+
+  if (show_glic) {
     MaybeAppendOpenGlicItem();
   }
 
@@ -2471,7 +2484,7 @@ void RenderViewContextMenu::AppendPageItems() {
                               /*add_separator=*/false,
                               /*ignore_simplification=*/true);
 
-    // Translate to english
+    // Translate to language
     if (CanTranslate(/*menu_logging=*/true)) {
       AppendTranslateItem();
     }
@@ -5646,8 +5659,13 @@ void RenderViewContextMenu::AppendLensGeminiSection() {
   bool can_glic = content_type_->SupportsGroup(
                       ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
                   CanAppendGlicShareImageItem();
+  bool can_image_search =
+      content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
+      params_.has_image_contents && IsSearchAllowedByPolicy() &&
+      GetImageSearchProvider() != nullptr;
 
-  if (!can_region && !can_glic) {
+  if (!can_region && !can_glic && !can_image_search) {
     return;
   }
 
@@ -5655,6 +5673,9 @@ void RenderViewContextMenu::AppendLensGeminiSection() {
 
   if (can_region) {
     AppendRegionSearchItem();
+  }
+  if (can_image_search) {
+    AppendSearchWebForImageItems();
   }
   if (can_glic) {
     AppendGlicShareImageItem();
