@@ -604,7 +604,7 @@ export class Panel implements PanelInterface {
       }
 
       const topCell = row1!.insertCell(-1);
-      topCell.innerHTML = groups[i][0];
+      topCell.textContent = groups[i][0];
       topCell.id = i + '-textCell';
       topCell.setAttribute('data-companionIDs', i + '-brailleCell');
       topCell.className = 'unhighlighted-cell';
@@ -617,7 +617,7 @@ export class Panel implements PanelInterface {
         let brailleText = groups[i][1];
         while (cellCount + brailleText.length > cols) {
           // At this point we already have a bottomCell to fill, so fill it.
-          bottomCell.innerHTML = brailleText.substring(0, cols - cellCount);
+          bottomCell.textContent = brailleText.substring(0, cols - cellCount);
           // Update to see what we still have to fill.
           brailleText = brailleText.substring(cols - cellCount);
           // Make new row.
@@ -651,10 +651,10 @@ export class Panel implements PanelInterface {
           cellCount = 0;
         }
         // Fill the rest.
-        bottomCell.innerHTML = brailleText;
+        bottomCell.textContent = brailleText;
         cellCount = brailleText.length;
       } else {
-        bottomCell.innerHTML = groups[i][1];
+        bottomCell.textContent = groups[i][1];
         cellCount += groups[i][1].length;
       }
     }
