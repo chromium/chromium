@@ -70,7 +70,7 @@ cr-icon-button {
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
-cr-searchbox {
+webui-browser-searchbox {
   --cr-searchbox-font-size: 14px;
   --cr-searchbox-height: 32px;
   --cr-searchbox-input-height: 32px;
@@ -84,7 +84,7 @@ cr-searchbox {
   flex: 1;
 }
 
-cr-searchbox[dropdown-is-visible] {
+webui-browser-searchbox[dropdown-is-visible] {
   --cr-searchbox-shadow: 0 3px 7px 0px #20212451;
 }
 

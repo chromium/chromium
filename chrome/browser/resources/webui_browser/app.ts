@@ -10,7 +10,7 @@ import './side_panel.js';
 import '/strings.m.js';
 import './tab_strip/tab_strip.js';
 import './webview.js';
-import 'chrome://resources/cr_components/searchbox/searchbox.js';
+import './webui_browser_searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
@@ -19,7 +19,6 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -30,10 +29,11 @@ import type {ContentRegionElement} from './content_region.js';
 import type {SidePanelElement} from './side_panel.js';
 import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './tab_strip/events.js';
 import {TabStripElement} from './tab_strip/tab_strip.js';
+import type {WebuiBrowserSearchboxElement} from './webui_browser_searchbox.js';
 
 export interface WebuiBrowserAppElement {
   $: {
-    address: SearchboxElement,
+    address: WebuiBrowserSearchboxElement,
     appMenuButton: HTMLElement,
     avatarButton: HTMLElement,
     backButton: HTMLElement,
