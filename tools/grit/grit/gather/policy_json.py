@@ -350,3 +350,29 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       }
     else:
       raise Exception('Unknown build')
+
+  @staticmethod
+  def ValidateForPresubmit(data, is_policy, app_name='Chromium'):
+    '''Validates that a single policy or messages dict can be parsed.
+       Used by presubmit checks in components/policy.
+    '''
+    policy_json = PolicyJson("dummy.json")
+    policy_json._config = {
+        'app_name': app_name,
+        'os_name': app_name + 'OS',
+        'frame_name': app_name + ' Frame',
+    }
+
+    class MockUberclique:
+
+      def MakeClique(self, msg):
+        return msg
+
+    policy_json.uberclique = MockUberclique()
+    policy_json.skeleton_ = []
+
+    if is_policy:
+      policy_json._AddItems([data], 'policy', None, 2)
+    else:
+      policy_json.data = {'messages': data}
+      policy_json._AddMessages()

@@ -331,6 +331,65 @@ with a newline?''',
                                  {'name': 'Plcy', 'owners': ['a@b']}, 'caption'),
         'Caption of the option named Item in policy Plcy [owner(s): a@b]')
 
+  def testValidateForPresubmit(self):
+    # Valid policy
+    policy_data = {
+        'name': 'HomepageLocation',
+        'type': 'string',
+        'owners': ['foo@bar.com'],
+        'supported_on': ['chrome.*:8-'],
+        'example_value': 'http://chromium.org',
+        'caption': 'nothing special 1',
+        'desc': 'nothing special 2',
+    }
+    policy_json.PolicyJson.ValidateForPresubmit(policy_data, is_policy=True)
+
+    # Valid message
+    message_data = {
+        'msg_identifier': {
+            'text': 'nothing special 3',
+            'desc': 'nothing special descr 3',
+        }
+    }
+    policy_json.PolicyJson.ValidateForPresubmit(message_data, is_policy=False)
+
+    # Invalid XML in policy
+    invalid_policy_data = policy_data.copy()
+    invalid_policy_data['desc'] = 'invalid < XML'
+    with self.assertRaises(Exception):
+      policy_json.PolicyJson.ValidateForPresubmit(invalid_policy_data,
+                                                  is_policy=True)
+
+    # Invalid XML in message
+    invalid_message_data = {
+        'msg_identifier': {
+            'text': 'invalid < XML',
+            'desc': 'nothing special descr 3',
+        }
+    }
+    with self.assertRaises(Exception):
+      policy_json.PolicyJson.ValidateForPresubmit(invalid_message_data,
+                                                  is_policy=False)
+
+    # Conflicting placeholders in message
+    conflicting_msg_data = {
+        'msg_identifier': {
+            'text': '<ph name="USER">John</ph> and <ph name="USER">Jane</ph>',
+            'desc': 'nothing special descr 3',
+        }
+    }
+    with self.assertRaises(Exception):
+      policy_json.PolicyJson.ValidateForPresubmit(conflicting_msg_data,
+                                                  is_policy=False)
+
+    # Conflicting placeholders in policy description
+    conflicting_policy_data = policy_data.copy()
+    conflicting_policy_data[
+        'desc'] = '<ph name="USER">John</ph> and <ph name="USER">Jane</ph>'
+    with self.assertRaises(Exception):
+      policy_json.PolicyJson.ValidateForPresubmit(conflicting_policy_data,
+                                                  is_policy=True)
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -24,6 +24,8 @@ from policy_templates import (
 sys.path.append(os.path.join('..', '..', 'third_party'))
 import pyyaml
 
+sys.path.append(os.path.join('..', '..', 'tools', 'grit'))
+from grit.gather.policy_json import PolicyJson
 
 _CACHED_FILES = {}
 _CACHED_POLICY_CHANGE_LIST = []
@@ -466,6 +468,41 @@ def CheckMissingPlaceholders(input_api, output_api):
           warning = ("Character '$' found outside of a placeholder in '%s'. "
                      "Should it be in a placeholder ?") % item[key]
           results.append(output_api.PresubmitPromptWarning(warning))
+  return results
+
+
+def CheckYamlFormat(input_api, output_api):
+  '''Verifies that all modified YAML files are valid YAML.
+  '''
+  results = []
+  root = input_api.change.RepositoryRoot()
+
+  grit_path = os.path.join(root, 'tools', 'grit')
+  if grit_path not in sys.path:
+    sys.path.append(grit_path)
+
+  templates_dir = os.path.join(root, _TEMPLATES_PATH)
+  for affected_file in input_api.change.AffectedFiles():
+    path = affected_file.AbsoluteLocalPath()
+    if not path.endswith('.yaml'):
+      continue
+    if os.path.commonpath([templates_dir, path]) != templates_dir:
+      continue
+
+    try:
+      data = pyyaml.safe_load('\n'.join(affected_file.NewContents()))
+
+      if isinstance(data, dict) and 'name' not in data:
+        data['name'] = os.path.splitext(os.path.basename(path))[0]
+
+      if 'policy_definitions' in path:
+        PolicyJson.ValidateForPresubmit(data, is_policy=True)
+      elif path.endswith('messages.yaml'):
+        PolicyJson.ValidateForPresubmit(data, is_policy=False)
+
+    except Exception as e:
+      results.append(output_api.PresubmitError(
+          f"Error in {affected_file.LocalPath()}:\n{e}"))
   return results
 
 
