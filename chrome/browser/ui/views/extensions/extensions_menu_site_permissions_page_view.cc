@@ -176,7 +176,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
       };
 
   const auto create_radio_button_builder =
-      [=](PermissionsManager::UserSiteAccess site_access) {
+      [=, this](PermissionsManager::UserSiteAccess site_access) {
         return views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             // Add dialog horizontal margins, and top margin to separate the
@@ -202,9 +202,17 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                     // between the radio button icon and label.
                     .SetImageLabelSpacing(back_button_border.right() +
                                           horizontal_spacing)
+                    // To ensure we use the right origin when the callback is
+                    // called, we pass `this` to access the current origin,
+                    // rather than binding a copy of the origin.
                     .SetCallback(base::BindRepeating(
-                        &ExtensionsMenuHandler::OnSiteAccessSelected,
-                        base::Unretained(menu_handler), extension_id,
+                        [](ExtensionsMenuSitePermissionsPageView* view,
+                           ExtensionsMenuHandler* handler,
+                           PermissionsManager::UserSiteAccess access) {
+                          handler->OnSiteAccessSelected(view->extension_id(),
+                                                        view->origin(), access);
+                        },
+                        base::Unretained(this), base::Unretained(menu_handler),
                         site_access)),
                 views::Builder<views::Label>()
                     .SetText(GetSiteAccessRadioButtonDescription(site_access))
@@ -382,6 +390,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
 void ExtensionsMenuSitePermissionsPageView::Update(
     ExtensionsMenuViewModel::ExtensionSitePermissionsState
         site_permissions_state) {
+  origin_ = site_permissions_state.origin;
   extension_icon_->SetImage(site_permissions_state.extension_icon);
   extension_name_->SetText(site_permissions_state.extension_name);
 

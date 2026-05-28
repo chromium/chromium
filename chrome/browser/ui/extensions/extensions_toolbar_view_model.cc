@@ -287,7 +287,8 @@ void ExtensionsToolbarViewModel::GrantSiteAccess(
 
   extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
       extensions_to_run, web_contents,
-      extensions::PermissionsManager::UserSiteAccess::kOnSite);
+      extensions::PermissionsManager::UserSiteAccess::kOnSite,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 // Extensions are included in the request access button only when:

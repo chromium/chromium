@@ -5,6 +5,8 @@
 #include "extensions/browser/permissions/site_permissions_helper.h"
 
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_prefs.h"
@@ -89,21 +91,46 @@ SitePermissionsHelper::GetSiteInteraction(
 void SitePermissionsHelper::UpdateSiteAccess(
     const Extension& extension,
     content::WebContents* web_contents,
-    PermissionsManager::UserSiteAccess new_access) {
+    PermissionsManager::UserSiteAccess new_access,
+    const url::Origin& expected_origin) {
   std::vector<const Extension*> extensions = {&extension};
-  UpdateSiteAccess(extensions, web_contents, new_access);
+  UpdateSiteAccess(extensions, web_contents, new_access, expected_origin);
 }
 
 void SitePermissionsHelper::UpdateSiteAccess(
     const std::vector<const Extension*>& extensions,
     content::WebContents* web_contents,
-    PermissionsManager::UserSiteAccess new_access) {
+    PermissionsManager::UserSiteAccess new_access,
+    const url::Origin& expected_origin) {
+  // Verify that the origin of the WebContents still matches the expected
+  // origin.
+  url::Origin actual_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  // Handle error pages with opaque origins by creating the origin from the
+  // last committed URL.
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  bool is_error_page =
+      entry && entry->GetPageType() == content::PAGE_TYPE_ERROR;
+  if (is_error_page && actual_origin.opaque() &&
+      !web_contents->GetLastCommittedURL().SchemeIs(url::kAboutScheme)) {
+    actual_origin = url::Origin::Create(web_contents->GetLastCommittedURL());
+  }
+
+  if (!expected_origin.IsSameOriginWith(actual_origin)) {
+    return;
+  }
+
   auto current_url = web_contents->GetLastCommittedURL();
 
   auto* permissions_manager = PermissionsManager::Get(browser_context_);
   bool reload_required = false;
 
   for (auto const* extension : extensions) {
+    if (extension->permissions_data()->IsRestrictedUrl(current_url, nullptr)) {
+      return;
+    }
     auto current_access =
         permissions_manager->GetUserSiteAccess(*extension, current_url);
     if (new_access == current_access) {

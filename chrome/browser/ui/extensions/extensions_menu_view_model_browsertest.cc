@@ -245,8 +245,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, UpdateSiteAccess) {
             PermissionsManager::UserSiteAccess::kOnAllSites);
 
   // Update site access to "on site".
-  menu_model()->UpdateSiteAccess(extension->id(),
-                                 PermissionsManager::UserSiteAccess::kOnSite);
+  menu_model()->UpdateSiteAccess(
+      extension->id(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
@@ -254,8 +256,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, UpdateSiteAccess) {
             PermissionsManager::UserSiteAccess::kOnSite);
 
   // Update site access to "on click".
-  menu_model()->UpdateSiteAccess(extension->id(),
-                                 PermissionsManager::UserSiteAccess::kOnClick);
+  menu_model()->UpdateSiteAccess(
+      extension->id(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kWithheld);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
@@ -288,7 +292,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 
   // Granting site access changes site interaction to 'granted' and site access
   // to 'on site'.
-  menu_model()->GrantSiteAccess(extension->id());
+  menu_model()->GrantSiteAccess(
+      extension->id(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
@@ -319,11 +325,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 
   // Granting site access changes site interaction to 'granted' but site access
   // remains 'on click', since it's a one-time grant.
-  menu_model()->GrantSiteAccess(extension->id());
+  menu_model()->GrantSiteAccess(
+      extension->id(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
                 *extension, web_contents->GetLastCommittedURL()),
+            PermissionsManager::UserSiteAccess::kOnClick);
+}
+
+// Tests that the extensions menu view model fails to grant site access if the
+// origin changes.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GrantSiteAccess_FailsIfOriginChanges) {
+  // Add extension that requests host permissions and withheld site access.
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "*://example.com/*");
+  extensions::ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(true);
+
+  // Navigate to a site the extension requested access to.
+  const GURL urlA =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), urlA));
+  content::WebContents* web_contents = GetActiveWebContents();
+  auto originA = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  // Verify site interaction and site access are withheld.
+  EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
+            SitePermissionsHelper::SiteInteraction::kWithheld);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Simulate navigation to another site before user clicks.
+  const GURL urlB = embedded_test_server()->GetURL("other.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), urlB));
+
+  // Try to grant site access using the OLD origin.
+  menu_model()->GrantSiteAccess(extension->id(), originA);
+
+  // Verify that site access was NOT granted because the origin changed.
+  // On the new site (other.com), interaction should be kNone since it didn't
+  // request it.
+  EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
+            SitePermissionsHelper::SiteInteraction::kNone);
+
+  // And site access for example.com should still be kOnClick (withheld).
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, urlA),
             PermissionsManager::UserSiteAccess::kOnClick);
 }
 
@@ -350,7 +400,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 
   // Revoking site access changes site interaction to 'withheld' and site access
   // to 'on click'
-  menu_model()->RevokeSiteAccess(extension->id());
+  menu_model()->RevokeSiteAccess(
+      extension->id(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kWithheld);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
@@ -385,7 +437,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 
   // Revoking site access changes site interaction to 'activeTab' and site
   // access remains 'on click'.
-  menu_model()->RevokeSiteAccess(extension->id());
+  menu_model()->RevokeSiteAccess(
+      extension->id(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kActiveTab);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
@@ -736,8 +790,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   EXPECT_FALSE(site_permissions.on_all_sites_option.is_on);
 
   // Update site access to 'on click'.
-  menu_model()->UpdateSiteAccess(extension_A->id(),
-                                 PermissionsManager::UserSiteAccess::kOnClick);
+  menu_model()->UpdateSiteAccess(
+      extension_A->id(),
+      url::Origin::Create(GetActiveWebContents()->GetLastCommittedURL()),
+      PermissionsManager::UserSiteAccess::kOnClick);
 
   // Verify the site permissions for an extension with site access withheld when
   // it's requesting access only to the current site. 'on site' is enabled

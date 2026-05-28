@@ -102,10 +102,10 @@ public class ExtensionsMenuBridge implements Destroyable {
      * @param siteAccess The selected site access option.
      */
     public void onExtensionSiteAccessSelected(
-            String extensionId, @ExtensionsMenuTypes.UserSiteAccess int siteAccess) {
+            String extensionId, String origin, @ExtensionsMenuTypes.UserSiteAccess int siteAccess) {
         ExtensionsMenuBridgeJni.get()
                 .onSiteAccessSelected(
-                        mNativeExtensionsMenuDelegateAndroid, extensionId, siteAccess);
+                        mNativeExtensionsMenuDelegateAndroid, extensionId, origin, siteAccess);
     }
 
     /**
@@ -114,9 +114,10 @@ public class ExtensionsMenuBridge implements Destroyable {
      * @param extensionId The ID of the extension.
      * @param isOn Whether the toggle is on.
      */
-    public void onExtensionToggleSelected(String extensionId, boolean isOn) {
+    public void onExtensionToggleSelected(String extensionId, String origin, boolean isOn) {
         ExtensionsMenuBridgeJni.get()
-                .onExtensionToggleSelected(mNativeExtensionsMenuDelegateAndroid, extensionId, isOn);
+                .onExtensionToggleSelected(
+                        mNativeExtensionsMenuDelegateAndroid, extensionId, origin, isOn);
     }
 
     /**
@@ -356,12 +357,14 @@ public class ExtensionsMenuBridge implements Destroyable {
         void onSiteAccessSelected(
                 long nativeExtensionsMenuDelegateAndroid,
                 @JniType("std::string") String extensionId,
+                @JniType("std::string") String origin,
                 @JniType("extensions::PermissionsManager::UserSiteAccess") int siteAccess);
 
         /** Called when the site access toggle for an extension is changed in the UI. */
         void onExtensionToggleSelected(
                 long nativeExtensionsMenuDelegateAndroid,
                 @JniType("std::string") String extensionId,
+                @JniType("std::string") String origin,
                 boolean isOn);
 
         /** Returns the list of host access requests. */

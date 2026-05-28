@@ -67,6 +67,7 @@ public class ExtensionsMenuTypes {
         public final ControlState siteAccessToggle;
         public final ControlState sitePermissionsButton;
         public final boolean isEnterprise;
+        public final String origin;
 
         @CalledByNative
         public MenuEntryState(
@@ -75,13 +76,15 @@ public class ExtensionsMenuTypes {
                 ControlState contextMenuButton,
                 ControlState siteAccessToggle,
                 ControlState sitePermissionsButton,
-                boolean isEnterprise) {
+                boolean isEnterprise,
+                @JniType("std::string") String origin) {
             this.id = id;
             this.actionButton = actionButton;
             this.contextMenuButton = contextMenuButton;
             this.siteAccessToggle = siteAccessToggle;
             this.sitePermissionsButton = sitePermissionsButton;
             this.isEnterprise = isEnterprise;
+            this.origin = origin;
         }
     }
 
@@ -147,6 +150,7 @@ public class ExtensionsMenuTypes {
         public final ControlState onSiteOption;
         public final ControlState onAllSitesOption;
         public final ControlState showRequestsToggle;
+        public final String origin;
 
         @CalledByNative
         public ExtensionSitePermissionsState(
@@ -155,13 +159,15 @@ public class ExtensionsMenuTypes {
                 ControlState onClickOption,
                 ControlState onSiteOption,
                 ControlState onAllSitesOption,
-                ControlState showRequestsToggle) {
+                ControlState showRequestsToggle,
+                @JniType("std::string") String origin) {
             this.extensionName = extensionName;
             this.extensionIcon = extensionIcon;
             this.onClickOption = onClickOption;
             this.onSiteOption = onSiteOption;
             this.onAllSitesOption = onAllSitesOption;
             this.showRequestsToggle = showRequestsToggle;
+            this.origin = origin;
         }
     }
 }

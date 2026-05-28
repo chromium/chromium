@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/buildflags/buildflags.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -55,10 +56,12 @@ class SitePermissionsHelper {
   // access to take effect.
   void UpdateSiteAccess(const Extension& extension,
                         content::WebContents* web_contents,
-                        PermissionsManager::UserSiteAccess new_access);
+                        PermissionsManager::UserSiteAccess new_access,
+                        const url::Origin& expected_origin);
   void UpdateSiteAccess(const std::vector<const Extension*>& extensions,
                         content::WebContents* web_contents,
-                        PermissionsManager::UserSiteAccess new_access);
+                        PermissionsManager::UserSiteAccess new_access,
+                        const url::Origin& expected_origin);
 
   // Returns whether the `extension` has been blocked on the given
   // `web_contents`.

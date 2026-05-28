@@ -25,6 +25,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -377,7 +378,8 @@ TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
 
   // Update extension A site access to be 'on click' for requested.com.
   permissions_helper()->UpdateSiteAccess(
-      *extensionA, site_contents, PermissionsManager::UserSiteAccess::kOnClick);
+      *extensionA, site_contents, PermissionsManager::UserSiteAccess::kOnClick,
+      site_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Extension A should have 'on click' access for both sites. Extension B
   // should still have 'on all sites' for both sites.
@@ -395,7 +397,8 @@ TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
   // Update extension A and B site access to be 'on site' for requested.com.
   permissions_helper()->UpdateSiteAccess(
       {extensionA.get(), extensionB.get()}, site_contents,
-      PermissionsManager::UserSiteAccess::kOnSite);
+      PermissionsManager::UserSiteAccess::kOnSite,
+      site_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Extension A and B should have 'on site' access for requested.com and 'on
   // click' access for other.com.
@@ -474,7 +477,9 @@ TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
     // Switch the extension from on all sites to on-click.
     PermissionsManagerWaiter waiter(permissions_manager());
     permissions_helper()->UpdateSiteAccess(
-        *extension, non_user_permitted_contents, UserSiteAccess::kOnClick);
+        *extension, non_user_permitted_contents, UserSiteAccess::kOnClick,
+        non_user_permitted_contents->GetPrimaryMainFrame()
+            ->GetLastCommittedOrigin());
     waiter.WaitForExtensionPermissionsUpdate();
   }
 

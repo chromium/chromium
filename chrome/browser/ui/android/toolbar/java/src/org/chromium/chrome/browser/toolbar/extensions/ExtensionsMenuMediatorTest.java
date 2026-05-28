@@ -677,7 +677,8 @@ public class ExtensionsMenuMediatorTest {
                         contextMenuButton,
                         placeholderState,
                         placeholderState,
-                        /* isEnterprise= */ false));
+                        /* isEnterprise= */ false,
+                        "https://example.com"));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         mBridgeCaptor.getValue().onReady();
@@ -1081,7 +1082,8 @@ public class ExtensionsMenuMediatorTest {
         // Verify that the bridge's onExtensionToggleSelected was called with the correct extension
         // ID and value.
         verify(mExtensionsMenuBridgeJniMock)
-                .onExtensionToggleSelected(EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", true);
+                .onExtensionToggleSelected(
+                        EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", "https://example.com", true);
     }
 
     /** Tests that the menu item's site permission button properties are correctly updated. */
@@ -1502,6 +1504,7 @@ public class ExtensionsMenuMediatorTest {
                 .onSiteAccessSelected(
                         EXTENSIONS_MENU_BRIDGE_POINTER,
                         "id_a",
+                        "https://example.com",
                         ExtensionsMenuTypes.UserSiteAccess.ON_SITE);
     }
 

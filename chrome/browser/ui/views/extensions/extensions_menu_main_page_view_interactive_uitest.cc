@@ -43,6 +43,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -123,6 +124,9 @@ class PermissionsUpdatesObserver
       const extensions::PermissionSet& permissions,
       PermissionsManager::UpdateReason reason) override {
     if (extension.id() == extension_id_) {
+      if (extension.permissions_data()->IsRestrictedUrl(url_, nullptr)) {
+        return;
+      }
       extensions::PermissionsManager::UserSiteAccess site_access =
           permissions_manager_->GetUserSiteAccess(extension, url_);
       OnStateObserverStateChanged(site_access);
@@ -595,10 +599,10 @@ class ExtensionsMenuMainPageViewInteractiveTest
       ui::test::StateIdentifier<PermissionsUpdatesObserver> state_identifier) {
     return Steps(
         OpenContextMenu(extension_id, menu_entry_element_id),
-        SelectMenuItem(
-            extensions::ExtensionContextMenuModel::kPageAccessMenuItem),
-        SelectMenuItem(GetSiteAccessCommandId(site_access)),
-        WaitForState(state_identifier, site_access));
+        InAnyContext(SelectMenuItem(
+            extensions::ExtensionContextMenuModel::kPageAccessMenuItem)),
+        InAnyContext(SelectMenuItem(GetSiteAccessCommandId(site_access))),
+        InAnyContext(WaitForState(state_identifier, site_access)));
   }
 
   // Verifies whether the context menu for `extension_id` opened from
@@ -704,6 +708,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
   void SetUpOnMainThread() override {
     InteractiveBrowserTestMixin<
         extensions::ExtensionBrowserTest>::SetUpOnMainThread();
+    host_resolver()->AddRule("example.com", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -1334,6 +1339,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
           extensions::PermissionsManager::UserSiteAccess::kOnSite,
           kPermissionsUpdates),
 
+      NameDescendantViewByType<HoverButton>(kExtensionsMenuEntryViewElementId,
+                                            kExtensionSitePermissionsButton,
+                                            /*index=*/2u),
+
       // Verify extension has "on site" site permissions label.
       CheckView(
           kExtensionSitePermissionsButton,
@@ -1348,6 +1357,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
           extension->id(), kExtensionsMenuEntryViewElementId,
           extensions::PermissionsManager::UserSiteAccess::kOnClick,
           kPermissionsUpdates),
+
+      NameDescendantViewByType<HoverButton>(kExtensionsMenuEntryViewElementId,
+                                            kExtensionSitePermissionsButton,
+                                            /*index=*/2u),
 
       // Verify extension has "on click" site permissions label.
       CheckView(

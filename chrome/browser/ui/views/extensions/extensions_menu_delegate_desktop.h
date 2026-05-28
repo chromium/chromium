@@ -13,6 +13,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "ui/views/view_tracker.h"
+#include "url/origin.h"
 
 namespace views {
 class View;
@@ -80,8 +81,10 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   void OnSiteSettingsToggleButtonPressed(bool is_on) override;
   void OnSiteAccessSelected(
       const extensions::ExtensionId& extension_id,
+      const url::Origin& origin,
       extensions::PermissionsManager::UserSiteAccess site_access) override;
   void OnExtensionToggleSelected(const extensions::ExtensionId& extension_id,
+                                 const url::Origin& origin,
                                  bool is_on) override;
   void OnReloadPageButtonClicked() override;
   void OnAllowExtensionClicked(

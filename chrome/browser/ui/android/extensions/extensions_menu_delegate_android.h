@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/android/extensions/extensions_toolbar_android.h"
@@ -9,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "url/origin.h"
 
 #ifndef CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_ANDROID_H_
@@ -49,6 +52,15 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   bool IsReady(JNIEnv* env);
   void OnReloadPageButtonClicked(JNIEnv* env);
   void OnSiteSettingsToggleChanged(JNIEnv* env, bool is_checked);
+  void OnExtensionToggleSelected(JNIEnv* env,
+                                 const std::string& extension_id,
+                                 const std::string& origin,
+                                 bool is_on);
+  void OnSiteAccessSelected(
+      JNIEnv* env,
+      const std::string& extension_id,
+      const std::string& origin,
+      extensions::PermissionsManager::UserSiteAccess site_access);
 
   // ExtensionsMenuViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
@@ -87,12 +99,14 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   void OnDismissExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
   void OnExtensionToggleSelected(const extensions::ExtensionId& extension_id,
+                                 const url::Origin& origin,
                                  bool is_on) override;
   void OnReloadPageButtonClicked() override;
   void OnShowRequestsTogglePressed(const extensions::ExtensionId& extension_id,
                                    bool is_on) override;
   void OnSiteAccessSelected(
       const extensions::ExtensionId& extension_id,
+      const url::Origin& origin,
       extensions::PermissionsManager::UserSiteAccess site_access) override;
   void OnSiteSettingsToggleButtonPressed(bool is_on) override;
   void OpenMainPage() override;

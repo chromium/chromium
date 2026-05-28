@@ -240,7 +240,8 @@ public class ExtensionTestUtils {
                 onClickOption,
                 onSiteOption,
                 onAllSitesOption,
-                toggleState);
+                toggleState,
+                "https://example.com");
     }
 
     /**
@@ -347,7 +348,8 @@ public class ExtensionTestUtils {
                 contextMenuButton,
                 siteAccessToggle,
                 sitePermissionsButton,
-                isEnterprise);
+                isEnterprise,
+                "https://example.com");
     }
 
     /** Helper to create a simple icon with the given color. */

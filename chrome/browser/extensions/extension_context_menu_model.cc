@@ -401,6 +401,10 @@ bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {
       command_id == PAGE_ACCESS_RUN_ON_SITE ||
       command_id == PAGE_ACCESS_RUN_ON_ALL_SITES) {
     auto* permissions = PermissionsManager::Get(profile_);
+    if (extension->permissions_data()->IsRestrictedUrl(origin_.GetURL(),
+                                                       nullptr)) {
+      return false;
+    }
     PermissionsManager::UserSiteAccess current_access =
         permissions->GetUserSiteAccess(*extension, origin_.GetURL());
     return current_access == CommandIdToSiteAccess(command_id);
@@ -634,7 +638,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 
       SitePermissionsHelper permissions(profile_);
       permissions.UpdateSiteAccess(*extension, web_contents,
-                                   CommandIdToSiteAccess(command_id));
+                                   CommandIdToSiteAccess(command_id), origin_);
       break;
     }
     case PAGE_ACCESS_PERMISSIONS_PAGE:

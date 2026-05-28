@@ -26,6 +26,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -162,8 +163,9 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
       ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // on all sites -> on site
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   // We assume that there is only ever one action that wants to run for the test
@@ -173,8 +175,9 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on site -> on-click (refresh needed due to revoking permissions)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnClick);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnClick,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnClick);
   ASSERT_TRUE(WaitForReloadToFinish());
@@ -183,8 +186,9 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
 
   // on click -> on site (refresh needed due to script wanting to load at
   // start)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   ASSERT_TRUE(WaitForReloadToFinish());
@@ -192,16 +196,18 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on site -> on all sites
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnAllSites);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnAllSites,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnAllSites);
   ASSERT_TRUE(ContentScriptInjected());
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on all sites -> on-click (refresh needed due to revoking permissions)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnClick);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnClick,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnClick);
   EXPECT_TRUE(WaitForReloadToFinish());
@@ -236,8 +242,9 @@ IN_PROC_BROWSER_TEST_F(
       ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // on all sites -> on site
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   // We assume that there is only ever one action that wants to run for the test
@@ -247,8 +254,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on site -> on-click (refresh needed due to revoking permissions)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnClick);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnClick,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnClick);
   EXPECT_TRUE(ContentScriptInjected() && !ExtensionWantsToRun());
@@ -258,8 +266,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // on click -> on site (refresh needed due to script wanting to load at
   // start)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   EXPECT_TRUE(!ContentScriptInjected() && ExtensionWantsToRun());
@@ -268,16 +277,18 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on site -> on all sites
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnAllSites);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnAllSites,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnAllSites);
   ASSERT_TRUE(ContentScriptInjected());
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on all sites -> on-click (refresh needed due to revoking permissions)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnClick);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnClick,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnClick);
   EXPECT_TRUE(ContentScriptInjected() && !ExtensionWantsToRun());
@@ -351,7 +362,10 @@ IN_PROC_BROWSER_TEST_F(
     // on all sites -> on click (revokes access)
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnClick);
+                                          UserSiteAccess::kOnClick,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     ASSERT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnClick);
@@ -366,8 +380,9 @@ IN_PROC_BROWSER_TEST_F(
 
   ExtensionTestMessageListener listener("injection succeeded");
   // on click -> on site (grants site access and active tab permission)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -382,7 +397,10 @@ IN_PROC_BROWSER_TEST_F(
     // permissions)
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnClick);
+                                          UserSiteAccess::kOnClick,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     ASSERT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnClick);
@@ -420,7 +438,10 @@ IN_PROC_BROWSER_TEST_F(
     // on all sites -> on click (revokes access)
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnClick);
+                                          UserSiteAccess::kOnClick,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     ASSERT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnClick);
@@ -442,8 +463,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // on click -> on site (grants site access and redundantly active tab
   // permission)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -457,7 +479,10 @@ IN_PROC_BROWSER_TEST_F(
     // permissions)
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnClick);
+                                          UserSiteAccess::kOnClick,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     ASSERT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnClick);
@@ -596,8 +621,9 @@ IN_PROC_BROWSER_TEST_F(
       ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // on all sites -> on click (revokes access)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnClick);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnClick,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnClick);
   ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -609,8 +635,9 @@ IN_PROC_BROWSER_TEST_F(
 
   ExtensionTestMessageListener listener("injection succeeded");
   // on click -> on site (grants site access and active tab permission)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnSite);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnSite,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnSite);
   ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -621,8 +648,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionWantsToRun());
 
   // on site -> on-click (should remove site access and active tab permissions)
-  permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                        UserSiteAccess::kOnClick);
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, GetActiveWebContents(), UserSiteAccess::kOnClick,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnClick);
   EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -696,7 +724,10 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     // on all sites -> on site.
     ExtensionTestMessageListener listener("success");
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnSite);
+                                          UserSiteAccess::kOnSite,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     EXPECT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnSite);
@@ -711,7 +742,10 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     // on site -> on-click (refresh needed due to revoking permissions).
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnClick);
+                                          UserSiteAccess::kOnClick,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     EXPECT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnClick);
@@ -725,7 +759,10 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     // on click -> on site
     ExtensionTestMessageListener listener("success");
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnSite);
+                                          UserSiteAccess::kOnSite,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     EXPECT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnSite);
@@ -738,7 +775,10 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     // on site -> on all sites
     ExtensionTestMessageListener listener("success");
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnAllSites);
+                                          UserSiteAccess::kOnAllSites,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     EXPECT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnAllSites);
@@ -752,7 +792,10 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     // on all sites -> on-click
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
-                                          UserSiteAccess::kOnClick);
+                                          UserSiteAccess::kOnClick,
+                                          GetActiveWebContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin());
     EXPECT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnClick);

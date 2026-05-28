@@ -360,8 +360,9 @@ TEST_F(HostAccessRequestsHelperUnittest,
   // Grant "always on this host" access to the extension.
   PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
   SitePermissionsHelper permissions(profile());
-  permissions.UpdateSiteAccess(*extension, web_contents,
-                               PermissionsManager::UserSiteAccess::kOnSite);
+  permissions.UpdateSiteAccess(
+      *extension, web_contents, PermissionsManager::UserSiteAccess::kOnSite,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   waiter.WaitForExtensionPermissionsUpdate();
 
   // Request should be removed since extension has granted host access.

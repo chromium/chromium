@@ -7,6 +7,7 @@
 
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
+#include "url/origin.h"
 
 // An interface that provides callbacks to the extensions menu pages.
 class ExtensionsMenuHandler {
@@ -34,12 +35,14 @@ class ExtensionsMenuHandler {
   // Updates the user site access for `extension_id` to `site_access`.
   virtual void OnSiteAccessSelected(
       const extensions::ExtensionId& extension_id,
+      const url::Origin& origin,
       extensions::PermissionsManager::UserSiteAccess site_access) = 0;
 
   // Grants or withhelds site access for `extension_id` depending on
   // `site_access_toggle`.
   virtual void OnExtensionToggleSelected(
       const extensions::ExtensionId& extension_id,
+      const url::Origin& origin,
       bool is_on) = 0;
 
   // Reload the current web contents.

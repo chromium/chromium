@@ -176,7 +176,9 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteAccess(
     PermissionsManager::UserSiteAccess site_access) {
   extensions::PermissionsManagerWaiter waiter(
       PermissionsManager::Get(browser()->profile()));
-  permissions_helper_->UpdateSiteAccess(extension, web_contents, site_access);
+  permissions_helper_->UpdateSiteAccess(
+      extension, web_contents, site_access,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   waiter.WaitForExtensionPermissionsUpdate();
 }
 

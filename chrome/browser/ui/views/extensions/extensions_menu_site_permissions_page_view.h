@@ -11,6 +11,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+#include "url/origin.h"
 
 namespace views {
 class ImageView;
@@ -45,6 +46,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
       ExtensionsMenuViewModel::ControlState toggle_state);
 
   extensions::ExtensionId extension_id() { return extension_id_; }
+  const url::Origin& origin() const { return origin_; }
 
   // Accessors used by tests:
   views::ToggleButton* GetShowRequestsToggleForTesting() {
@@ -57,6 +59,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
   extensions::ExtensionId extension_id_;
+  url::Origin origin_;
 
   raw_ptr<views::ImageView> extension_icon_;
   raw_ptr<views::Label> extension_name_;

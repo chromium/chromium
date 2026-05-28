@@ -174,6 +174,17 @@ public class ExtensionsMenuCoordinatorTest {
         mExtensionsMenuCoordinator.destroy();
     }
 
+    private ExtensionsMenuTypes.MenuEntryState wrap(ExtensionsMenuTypes.MenuEntryState entry) {
+        return new ExtensionsMenuTypes.MenuEntryState(
+                entry.id,
+                entry.actionButton,
+                entry.contextMenuButton,
+                entry.siteAccessToggle,
+                entry.sitePermissionsButton,
+                entry.isEnterprise,
+                "https://example.com");
+    }
+
     /**
      * Tests that the extensions menu is shown when the menu button is clicked and actions are
      * initialized.
@@ -308,11 +319,12 @@ public class ExtensionsMenuCoordinatorTest {
         // the Mediator will immediately call this method upon receiving the onReady signal.
         List<ExtensionsMenuTypes.MenuEntryState> mockEntries = new ArrayList<>();
         mockEntries.add(
-                ExtensionTestUtils.createSimpleMenuEntry(
-                        "id_a",
-                        "Extension A",
-                        ExtensionTestUtils.createSimpleIcon(Color.RED),
-                        /* isPinned= */ false));
+                wrap(
+                        ExtensionTestUtils.createSimpleMenuEntry(
+                                "id_a",
+                                "Extension A",
+                                ExtensionTestUtils.createSimpleIcon(Color.RED),
+                                /* isPinned= */ false)));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(mockEntries);
         mSiteSettingsState = createSiteSettingsState("label", true);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))

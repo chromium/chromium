@@ -569,13 +569,20 @@ void ExtensionsMenuViewModel::RemoveObserver(Observer* observer) {
 
 void ExtensionsMenuViewModel::UpdateSiteAccess(
     const extensions::ExtensionId& extension_id,
+    const url::Origin& target_origin,
     PermissionsManager::UserSiteAccess site_access) {
   LogSiteAccessUpdate(site_access);
 
   Profile* profile = browser_->GetProfile();
+  const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  auto url = GetActiveWebContents()->GetLastCommittedURL();
+  if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
+    return;
+  }
+
   SitePermissionsHelper permissions(profile);
-  permissions.UpdateSiteAccess(*GetExtension(*profile, extension_id),
-                               GetActiveWebContents(), site_access);
+  permissions.UpdateSiteAccess(*extension, GetActiveWebContents(), site_access,
+                               target_origin);
 }
 
 void ExtensionsMenuViewModel::AllowHostAccessRequest(
@@ -591,7 +598,8 @@ void ExtensionsMenuViewModel::AllowHostAccessRequest(
   Profile* profile = browser_->GetProfile();
   extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
       *GetExtension(*profile, extension_id), web_contents,
-      extensions::PermissionsManager::UserSiteAccess::kOnSite);
+      extensions::PermissionsManager::UserSiteAccess::kOnSite,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
@@ -620,12 +628,23 @@ void ExtensionsMenuViewModel::ShowHostAccessRequestsInToolbar(
 }
 
 void ExtensionsMenuViewModel::GrantSiteAccess(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& target_origin) {
   auto* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
   content::WebContents* web_contents = GetActiveWebContents();
+
+  // Verify that the origin displayed when the action was initiated matches the
+  // current origin of the WebContents.
+  if (!target_origin.IsSameOriginWith(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    return;
+  }
   auto* toolbar_model = ToolbarActionsModel::Get(profile);
   auto url = web_contents->GetLastCommittedURL();
+  if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
+    return;
+  }
   auto* permissions_manager = PermissionsManager::Get(profile);
 
   // Can only grant site access when user can customize the extension's site
@@ -658,7 +677,7 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
             : PermissionsManager::UserSiteAccess::kOnSite;
     SitePermissionsHelper permissions_helper(profile);
     permissions_helper.UpdateSiteAccess(*extension, web_contents,
-                                        new_site_access);
+                                        new_site_access, target_origin);
     return;
   }
 
@@ -672,10 +691,19 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
 }
 
 void ExtensionsMenuViewModel::RevokeSiteAccess(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& target_origin) {
   auto* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
   content::WebContents* web_contents = GetActiveWebContents();
+
+  // Verify that the origin displayed when the action was initiated matches the
+  // current origin of the WebContents.
+  url::Origin actual_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (!target_origin.IsSameOriginWith(actual_origin)) {
+    return;
+  }
   auto* toolbar_model = ToolbarActionsModel::Get(profile);
 
   // Can only revoke site access when user can customize the extension's site
@@ -684,6 +712,9 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
                                             *toolbar_model, *web_contents));
 
   auto url = web_contents->GetLastCommittedURL();
+  if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
+    return;
+  }
   auto* permissions_manager = PermissionsManager::Get(profile);
   auto current_site_access =
       permissions_manager->GetUserSiteAccess(*extension, url);
@@ -697,7 +728,8 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
     CHECK_NE(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
     SitePermissionsHelper permissions_helper(profile);
     permissions_helper.UpdateSiteAccess(
-        *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick);
+        *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick,
+        target_origin);
     return;
   }
 
@@ -888,6 +920,7 @@ ExtensionsMenuViewModel::GetExtensionSitePermissionsState(
   extension_site_permissions.extension_name = action_model->GetActionName();
   extension_site_permissions.extension_icon =
       action_model->GetIcon(web_contents, icon_size);
+  extension_site_permissions.origin = url::Origin::Create(url);
   extension_site_permissions.on_click_option = on_click_option;
   extension_site_permissions.on_site_option = on_site_option;
   extension_site_permissions.on_all_sites_option = on_all_sites_option;
@@ -934,6 +967,8 @@ ExtensionsMenuViewModel::GetMenuEntryState(
   entry_state.is_enterprise = extensions::ExtensionSystem::Get(profile)
                                   ->management_policy()
                                   ->HasEnterpriseForcedAccess(*extension);
+  entry_state.origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   return entry_state;
 }

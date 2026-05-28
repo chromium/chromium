@@ -56,6 +56,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "extensions/common/extension_urls.h"
@@ -208,7 +209,8 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuEntry(
       base::BindRepeating(&ExtensionsMenuHandler::OnActionButtonClicked,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
-                          base::Unretained(menu_handler_), extension_id),
+                          base::Unretained(menu_handler_), extension_id,
+                          entry_state.origin),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
                           base::Unretained(menu_handler_), extension_id));
   item->Update(entry_state);

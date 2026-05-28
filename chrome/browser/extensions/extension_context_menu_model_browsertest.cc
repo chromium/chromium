@@ -1560,8 +1560,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
   // Update kOriginalUrl to have "on site" site access. This will make all other
   // non-restricted urls to have "on click" site access.
   SitePermissionsHelper permissions(profile());
-  permissions.UpdateSiteAccess(*extension, web_contents,
-                               PermissionsManager::UserSiteAccess::kOnSite);
+  permissions.UpdateSiteAccess(
+      *extension, web_contents, PermissionsManager::UserSiteAccess::kOnSite,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kOriginalUrl),

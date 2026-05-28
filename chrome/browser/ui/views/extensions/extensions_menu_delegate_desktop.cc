@@ -41,6 +41,7 @@
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -432,8 +433,9 @@ void ExtensionsMenuDelegateDesktop::CloseBubble() {
 
 void ExtensionsMenuDelegateDesktop::OnSiteAccessSelected(
     const extensions::ExtensionId& extension_id,
+    const url::Origin& origin,
     PermissionsManager::UserSiteAccess site_access) {
-  menu_model_->UpdateSiteAccess(extension_id, site_access);
+  menu_model_->UpdateSiteAccess(extension_id, origin, site_access);
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionButtonClicked(
@@ -451,11 +453,12 @@ void ExtensionsMenuDelegateDesktop::OnSiteSettingsToggleButtonPressed(
 
 void ExtensionsMenuDelegateDesktop::OnExtensionToggleSelected(
     const extensions::ExtensionId& extension_id,
+    const url::Origin& origin,
     bool is_on) {
   if (is_on) {
-    menu_model_->GrantSiteAccess(extension_id);
+    menu_model_->GrantSiteAccess(extension_id, origin);
   } else {
-    menu_model_->RevokeSiteAccess(extension_id);
+    menu_model_->RevokeSiteAccess(extension_id, origin);
   }
 }
 
