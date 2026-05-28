@@ -66,6 +66,7 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -496,6 +497,7 @@ public class StatusMediator
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         return isNtpVisible()
                 && !mUrlHasFocus
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && FuseboxFeatureUtils.shouldShowNtpPlusButton(
                         mContext, profile, templateUrlService);
     }

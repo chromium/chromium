@@ -816,6 +816,26 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
+    public void testShowNtpPlusButton_unfocused_tablet() {
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        ComposeplateUtils.setIsEnabledForTesting(true);
+
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        // Should fallback to Google logo or search logo on tablet NTP instead of plus button.
+        if (mModel.get(StatusProperties.STATUS_ICON_RESOURCE) != null) {
+            assertNotEquals(
+                    R.drawable.ic_add_round_20dp_with_inset,
+                    mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+        }
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
     public void testShowNtpPlusButton_focused_fallsBackToGoogleLogo() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
