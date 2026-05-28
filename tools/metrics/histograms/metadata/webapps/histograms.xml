@@ -1574,6 +1574,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="WebApp.Isolated.KeyDistributionComponent.KeyRotationBundleIdentityCheck"
+    enum="KeyRotationBundleIdentityCheckResult" expires_after="2027-05-27">
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the outcome of matching public keys in the signature list of a
+    Signed Web Bundle against the key rotation information provided by the Key
+    Distribution Component.
+
+    This is recorded during validation of a Signed Web Bundle against key
+    rotation info.
+  </summary>
+</histogram>
+
+<histogram
     name="WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource"
     enum="KeyDistributionComponentSource" expires_after="2026-11-15">
   <owner>greengrape@google.com</owner>

@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/containers/map_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
@@ -21,16 +22,38 @@ namespace {
 
 using KeyRotationInfo = IwaRuntimeDataProvider::KeyRotationInfo;
 
-bool Matches(const web_package::PublicKey& public_key,
-             const KeyRotationInfo& kr_info,
-             bool allow_soft_key_rotation) {
+constexpr char kKeyRotationBundleIdentityCheckHistogram[] =
+    "WebApp.Isolated.KeyDistributionComponent.KeyRotationBundleIdentityCheck";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(KeyRotationBundleIdentityCheckResult)
+enum class KeyRotationBundleIdentityCheckResult {
+  kTrustedRotatedKey = 0,
+  kTrustedPreviousKey = 1,
+  kFailed = 2,
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:KeyRotationBundleIdentityCheckResult)
+
+bool MatchesRotatedKey(const web_package::PublicKey& public_key,
+                       const KeyRotationInfo& kr_info) {
   return std::visit(
       [&](const auto& public_key) {
-        return std::ranges::equal(public_key.bytes(), kr_info.public_key) ||
-               (allow_soft_key_rotation && kr_info.previous_key &&
-                std::ranges::equal(public_key.bytes(), *kr_info.previous_key));
+        return std::ranges::equal(public_key.bytes(), kr_info.public_key);
       },
       public_key);
+}
+
+bool MatchesPreviousKey(const web_package::PublicKey& public_key,
+                        const KeyRotationInfo& kr_info) {
+  return kr_info.previous_key &&
+         std::visit(
+             [&](const auto& public_key) {
+               return std::ranges::equal(public_key.bytes(),
+                                         *kr_info.previous_key);
+             },
+             public_key);
 }
 
 base::expected<void, std::string>
@@ -39,16 +62,32 @@ ValidateWebBundleIdentityAgainstKeyRotationInfo(
     const std::vector<web_package::PublicKey>& public_keys,
     const KeyRotationInfo& kr_info,
     bool allow_soft_key_rotation) {
-  if (std::ranges::any_of(public_keys, [&](const auto& public_key) {
-        return Matches(public_key, kr_info, allow_soft_key_rotation);
-      })) {
-    return base::ok();
+  KeyRotationBundleIdentityCheckResult result =
+      KeyRotationBundleIdentityCheckResult::kFailed;
+
+  for (const auto& public_key : public_keys) {
+    if (MatchesRotatedKey(public_key, kr_info)) {
+      result = KeyRotationBundleIdentityCheckResult::kTrustedRotatedKey;
+      break;
+    }
+    // When key is rotated, we can still accept the old key for a grace period.
+    // See go/iwa-soft-key-rotation for more details.
+    if (allow_soft_key_rotation && MatchesPreviousKey(public_key, kr_info)) {
+      result = KeyRotationBundleIdentityCheckResult::kTrustedPreviousKey;
+      // Keep looking in case another public key matches the rotated key.
+    }
   }
 
-  return base::unexpected(
-      base::StringPrintf("Rotated key for Web Bundle ID <%s> doesn't match "
-                         "any public key in the signature list.",
-                         web_bundle_id.c_str()));
+  base::UmaHistogramEnumeration(kKeyRotationBundleIdentityCheckHistogram,
+                                result);
+
+  if (result == KeyRotationBundleIdentityCheckResult::kFailed) {
+    return base::unexpected(
+        base::StringPrintf("Rotated key for Web Bundle ID <%s> doesn't match "
+                           "any public key in the signature list.",
+                           web_bundle_id.c_str()));
+  }
+  return base::ok();
 }
 
 }  // namespace

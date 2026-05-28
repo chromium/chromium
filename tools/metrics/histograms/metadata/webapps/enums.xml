@@ -343,6 +343,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h:KeyDistributionComponentSource) -->
 
+<!-- LINT.IfChange(KeyRotationBundleIdentityCheckResult) -->
+
+<enum name="KeyRotationBundleIdentityCheckResult">
+  <int value="0" label="Trusted - rotated key"/>
+  <int value="1" label="Trusted - previous key"/>
+  <int value="2" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/webapps/isolated_web_apps/identity/iwa_identity_validator.cc:KeyRotationBundleIdentityCheckResult) -->
+
 <enum name="LaunchedAppType">
   <int value="0" label="DIY app launched"/>
   <int value="1" label="Crafted app launched"/>
