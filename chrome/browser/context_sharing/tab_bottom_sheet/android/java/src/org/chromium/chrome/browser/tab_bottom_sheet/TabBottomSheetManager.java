@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import android.view.View;
-
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Manager interface for the tab bottom sheet. */
 @NullMarked
@@ -40,19 +39,11 @@ public interface TabBottomSheetManager extends Destroyable {
      */
     void setCanNotBeSuppressed(boolean canNotBeSuppressed);
 
-    /**
-     * Sets the peek view to be displayed.
-     *
-     * @param peekView The peek view to be displayed.
-     */
-    void setPeekView(View peekView);
+    /** Sets the model for the peek view. */
+    void setPeekViewModel(PropertyModel model);
 
-    /**
-     * Removes the peek view if it matches the provided view.
-     *
-     * @param peekView The peek view to be removed.
-     */
-    void removePeekView(View peekView);
+    /** Removes the model for the peek view. */
+    void removePeekViewModel();
 
     /**
      * Sets whether the bottom sheet is expanded.

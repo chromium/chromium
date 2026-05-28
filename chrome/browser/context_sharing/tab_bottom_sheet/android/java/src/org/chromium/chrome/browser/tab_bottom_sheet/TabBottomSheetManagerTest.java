@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
+import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -65,6 +66,7 @@ import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Instrumentation tests for {@link TabBottomSheetManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -425,10 +427,12 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testSetPeekView_BeforeShow() {
-        View peekView = new View(mActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mManager.setPeekView(peekView);
+                    PropertyModel model =
+                            new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                                    .build();
+                    mManager.setPeekViewModel(model);
                 });
         showBottomSheetAndBlockUntilReady();
 
@@ -440,10 +444,12 @@ public class TabBottomSheetManagerTest {
     public void testSetPeekView_AfterShow() {
         showBottomSheetAndBlockUntilReady();
 
-        View peekView = new View(mActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mManager.setPeekView(peekView);
+                    PropertyModel model =
+                            new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                                    .build();
+                    mManager.setPeekViewModel(model);
                 });
 
         CriteriaHelper.pollUiThread(() -> mCoBrowseViews.hasPeekView());
@@ -452,17 +458,19 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testRemovePeekView() {
-        View peekView = new View(mActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mManager.setPeekView(peekView);
+                    PropertyModel model =
+                            new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                                    .build();
+                    mManager.setPeekViewModel(model);
                 });
         showBottomSheetAndBlockUntilReady();
         CriteriaHelper.pollUiThread(() -> mCoBrowseViews.hasPeekView());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mManager.removePeekView(peekView);
+                    mManager.removePeekViewModel();
                 });
 
         CriteriaHelper.pollUiThread(() -> !mCoBrowseViews.hasPeekView());

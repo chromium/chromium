@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab_bottom_sheet.peek_view;
+package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabBottomSheetPeekView. */
 @NullMarked
-public class TabBottomSheetPeekViewBinder {
+class TabBottomSheetPeekViewBinder {
 
     /**
      * This method binds the given model to the given view.

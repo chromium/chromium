@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import com.google.android.material.button.MaterialButton;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,9 +42,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
-import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekView;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -167,23 +163,15 @@ public class ActorControlCoordinatorTest {
     }
 
     private void performActorControlClick() {
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-        assertNotNull("Peek view should be attached", view);
-        MaterialButton actorControlButton = view.findViewById(R.id.peek_action_button);
-        actorControlButton.performClick();
+        mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED).run();
     }
 
     private void performPeekViewClick() {
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-        assertNotNull("Peek view should be attached", view);
-        view.performClick();
+        mModel.get(TabBottomSheetPeekProperties.ON_PEEK_VIEW_CLICKED).run();
     }
 
     private void performCloseClick() {
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-        assertNotNull("Peek view should be attached", view);
-        ChromeImageButton closeButton = view.findViewById(R.id.peek_close_button);
-        closeButton.performClick();
+        mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED).run();
     }
 
     @Test
@@ -191,7 +179,7 @@ public class ActorControlCoordinatorTest {
         assertNotNull(mModel);
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED));
-        verify(mTabBottomSheetManager).setPeekView(any());
+        verify(mTabBottomSheetManager).setPeekViewModel(any());
     }
 
     @Test
@@ -201,13 +189,11 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.ACTING);
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.ACTING);
         assertEquals(
-                view.getStepDescriptionForTesting(),
-                PeekViewUiState.ACTING.getDescription(view.getContext()));
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
+                PeekViewUiState.ACTING.getDescription(mActivity));
     }
 
     @Test
@@ -217,13 +203,11 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.PAUSED);
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.PAUSED);
         assertEquals(
-                view.getStepDescriptionForTesting(),
-                PeekViewUiState.PAUSED.getDescription(view.getContext()));
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
+                PeekViewUiState.PAUSED.getDescription(mActivity));
     }
 
     @Test
@@ -233,13 +217,11 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.WAITING);
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.WAITING);
         assertEquals(
-                view.getStepDescriptionForTesting(),
-                PeekViewUiState.WAITING.getDescription(view.getContext()));
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
+                PeekViewUiState.WAITING.getDescription(mActivity));
     }
 
     @Test
@@ -249,13 +231,11 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.DEFAULT);
-        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
-
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.DEFAULT);
         assertEquals(
-                view.getStepDescriptionForTesting(),
-                PeekViewUiState.DEFAULT.getDescription(view.getContext()));
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
+                PeekViewUiState.DEFAULT.getDescription(mActivity));
     }
 
     @Test

@@ -4,7 +4,7 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekView
+<org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -88,4 +88,4 @@ found in the LICENSE file.
             android:ellipsize="end"
             android:singleLine="true" />
     </LinearLayout>
-</org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekView>
+</org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekView>

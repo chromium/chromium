@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.actor.ui;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -21,7 +19,6 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskId;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ActorUtils;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.glic.GlicInstanceHelper;
 import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,10 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
-import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekView;
-import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekViewBinder;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Set;
 
@@ -52,8 +46,6 @@ public class ActorControlCoordinator
     private final ActorControlMediator mMediator;
     private final Context mContext;
     private final PropertyModel mModel;
-    private final TabBottomSheetPeekView mView;
-    private final PropertyModelChangeProcessor mViewBinder;
     private final Callback<Profile> mProfileObserver;
     private final TabBottomSheetManager mTabBottomSheetManager;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -118,15 +110,8 @@ public class ActorControlCoordinator
         mProfileObserver = this::onProfileAdded;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
 
-        mView =
-                (TabBottomSheetPeekView)
-                        LayoutInflater.from(mContext)
-                                .inflate(R.layout.tab_bottom_sheet_peek_layout, null, false);
-        mViewBinder =
-                PropertyModelChangeProcessor.create(
-                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
         setPeekViewContent("", PeekViewUiState.DEFAULT);
-        mTabBottomSheetManager.setPeekView(mView);
+        mTabBottomSheetManager.setPeekViewModel(mModel);
 
         mTabObserver =
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
@@ -300,8 +285,7 @@ public class ActorControlCoordinator
         if (mProfileSupplier != null && mProfileObserver != null) {
             mProfileSupplier.removeObserver(mProfileObserver);
         }
-        mTabBottomSheetManager.removePeekView(mView);
-        mViewBinder.destroy();
+        mTabBottomSheetManager.removePeekViewModel();
     }
 
     /** Called when the actor control button is clicked. */
@@ -377,13 +361,6 @@ public class ActorControlCoordinator
      */
     /* package */ ActorControlMediator getMediatorForTesting() {
         return mMediator;
-    }
-
-    /**
-     * @return The {@link View} for this component.
-     */
-    /* package */ @Nullable View getPeekViewForTesting() {
-        return mView;
     }
 
     /* package */ PeekViewUiState getPeekViewUiStateForTesting() {
