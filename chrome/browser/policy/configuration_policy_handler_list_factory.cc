@@ -3656,7 +3656,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kGeminiActOnWebBlockedForURLs,
       glic::prefs::kGlicActuationOnWebBlockedForURLs));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kGeminiEnterpriseSettings, glic::prefs::kGlicGeminiEnterpriseSettings,
       chrome_schema, SCHEMA_ALLOW_UNKNOWN,

@@ -3,6 +3,7 @@
     "os": [
       "win",
       "mac",
+      "linux",
       "chromeos"
     ],
     "simple_policy_pref_mapping_test": {

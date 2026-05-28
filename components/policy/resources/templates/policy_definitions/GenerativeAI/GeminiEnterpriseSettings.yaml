@@ -22,8 +22,7 @@ example_value:
   location: "global"
 
 future_on:
-- chrome.mac
-- chrome.win
+- chrome.*
 - chrome_os
 
 features:
