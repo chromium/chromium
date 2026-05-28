@@ -239,11 +239,12 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
   EXPECT_EQ(0, new_tab_button_origin.y());
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, HasMultiselectableState) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, HasPaneRole) {
   ui::AXNodeData ax_node_data;
   tab_strip_region_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data);
-  EXPECT_TRUE(ax_node_data.HasState(ax::mojom::State::kMultiselectable));
+  EXPECT_EQ(ax::mojom::Role::kPane, ax_node_data.role);
+  EXPECT_FALSE(ax_node_data.HasState(ax::mojom::State::kMultiselectable));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,

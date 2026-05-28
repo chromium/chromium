@@ -98,6 +98,8 @@ TabContainerImpl::TabContainerImpl(
           base::BindRepeating(&TabContainerImpl::GetTabsViewModel,
                               base::Unretained(this)))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  GetViewAccessibility().SetIsMultiselectable(true);
 
   bounds_animator_.AddObserver(this);
 

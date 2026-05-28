@@ -241,9 +241,6 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
-  GetViewAccessibility().SetIsMultiselectable(true);
-
   BrowserWindowInterface* const browser = browser_view->browser();
 
   if (browser &&
