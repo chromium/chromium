@@ -4,7 +4,7 @@
 
 import type {TokenMojoType} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {Container, Node, SessionSplitTab, SessionTab, SessionTabGroup, SessionWindow, SplitTabVisualData, Tab, TabGroupVisualData, TabRestoreEntry, TabRestoreGroup, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
+import type {Container, Node, SessionSplitTab, SessionTab, SessionTabGroup, SessionWindow, SplitTabVisualData, Tab, TabGroupVisualData, TabRestoreEntry, TabRestoreGroup, TabRestoreSplit, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
 
 /**
  * Model layer: Represents a UI node used by the ViewModel to build a semantic
@@ -225,26 +225,10 @@ export class DataModelAdapter {
             label: this.formatGroupLabel(visual),
             displayName: visual.title,
           };
-          groupTabs.forEach(
-              (tab: TabRestoreTab, index: number) => groupNode.children.push({
-                path: `${groupNode.path}.tabs[${index}]`,
-                value: tab,
-                children: [],
-                label: this.formatTabLabel(tab),
-                displayName: tab.title,
-              }),
-          );
+          this.appendRestoreTabs(groupTabs, groupNode);
           windowNode.children.push(groupNode);
         }
-        ungroupedTabs.forEach(
-            (tab: TabRestoreTab, index: number) => windowNode.children.push({
-              path: `${windowNode.path}.tabs[${index}]`,
-              value: tab,
-              children: [],
-              label: this.formatTabLabel(tab),
-              displayName: tab.title,
-            }),
-        );
+        this.appendRestoreTabs(ungroupedTabs, windowNode);
         node.children.push(windowNode);
       } else if ('group' in entry) {
         const group = entry.group as TabRestoreGroup;
@@ -255,16 +239,27 @@ export class DataModelAdapter {
           label: this.formatGroupLabel(group.visualData),
           displayName: group.visualData.title,
         };
-        group.tabs.forEach((tab: TabRestoreTab, index: number) => {
-          groupNode.children.push({
-            path: `${groupNode.path}.tabs[${index}]`,
+        this.appendRestoreTabs(group.tabs, groupNode);
+        node.children.push(groupNode);
+      } else if ('split' in entry) {
+        const split = entry.split as TabRestoreSplit;
+        const splitNode: ModelNode<TabRestoreSplit> = {
+          path: `${node.path}.entries[${i}]`,
+          value: split,
+          children: [],
+          label: this.formatSplitLabel(split.visualData),
+          displayName: 'Split',
+        };
+        split.tabs.forEach((tab: TabRestoreTab, index: number) => {
+          splitNode.children.push({
+            path: `${splitNode.path}.tabs[${index}]`,
             value: tab,
             children: [],
             label: this.formatTabLabel(tab),
             displayName: tab.title,
           });
         });
-        node.children.push(groupNode);
+        node.children.push(splitNode);
       }
     });
     return node;
@@ -397,6 +392,59 @@ export class DataModelAdapter {
     });
 
     return node;
+  }
+
+  /**
+   * Appends TabRestoreTabs to a parent ModelNode's children, automatically
+   * grouping them into nested Split nodes where splitId is present.
+   */
+  private static appendRestoreTabs(tabs: TabRestoreTab[], parent: ModelNode):
+      void {
+    const splitNodes = new Map<string, ModelNode<Partial<TabRestoreSplit>>>();
+    tabs.forEach((tab: TabRestoreTab, index: number) => {
+      if (tab.splitId) {
+        const splitKey = this.tokenToString_(tab.splitId);
+        let splitNode = splitNodes.get(splitKey);
+        if (!splitNode) {
+          const split: Partial<TabRestoreSplit> = {
+            splitId: tab.splitId,
+            visualData: tab.splitVisualData || {
+              layout: 0,  // kVertical
+              splitRatio: 0.5,
+            },
+            tabs: [],
+          };
+          splitNode = {
+            path: `${parent.path}.synthetic_split_${splitKey}`,
+            value: split,
+            children: [],
+            label:
+                this.formatSplitLabel(split.visualData as SplitTabVisualData),
+            displayName: 'Split',
+          };
+          splitNodes.set(splitKey, splitNode);
+          parent.children.push(splitNode);
+        }
+        if (splitNode.value.tabs) {
+          splitNode.value.tabs.push(tab);
+        }
+        splitNode.children.push({
+          path: `${splitNode.path}.tabs[${splitNode.children.length}]`,
+          value: tab,
+          children: [],
+          label: this.formatTabLabel(tab),
+          displayName: tab.title,
+        });
+      } else {
+        parent.children.push({
+          path: `${parent.path}.tabs[${index}]`,
+          value: tab,
+          children: [],
+          label: this.formatTabLabel(tab),
+          displayName: tab.title,
+        });
+      }
+    });
   }
 
   private static formatTabLabel(tab: Partial<Tab|TabRestoreTab|SessionTab>):

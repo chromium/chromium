@@ -16,12 +16,15 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -602,6 +605,131 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
         const auto& saved_session_window = data->saved_session->entries[0];
         EXPECT_EQ(saved_session_window->tab_groups.size(), 1u)
             << "Expected exactly one saved session tab group";
+
+        loop->Quit();
+      },
+      &loop));
+
+  loop.Run();
+}
+
+class TabStripInternalsPageHandlerSplitBrowserTest
+    : public TabStripInternalsPageHandlerBrowserTest {
+ public:
+  TabStripInternalsPageHandlerSplitBrowserTest() {
+    feature_list_.InitAndEnableFeature(tabs::kSplitViewTabRestore);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// GetTabStripData: Verify snapshot includes TabRestoreSplit entry.
+IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerSplitBrowserTest,
+                       GetTabStripData_TabRestore_SplitEntryCreated) {
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  TabStripModel* model = browser()->GetTabStripModel();
+
+  // Create a split view with index 1 and 2.
+  model->ActivateTabAt(1);
+  model->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                       split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Explicitly select both tabs to guarantee they enter the tab restore buffer
+  // together.
+  ui::ListSelectionModel selection;
+  selection.AddIndexToSelection(1);
+  selection.AddIndexToSelection(2);
+  selection.set_active(1);
+  model->SetSelectionFromModel(selection);
+
+  // Close the split view.
+  model->CloseSelectedTabs();
+
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(new_browser);
+  auto handler =
+      CreateHandler(new_browser->GetTabStripModel()->GetActiveWebContents());
+
+  base::RunLoop loop;
+  handler->GetTabStripData(base::BindOnce(
+      [](base::RunLoop* loop, tab_strip_internals::mojom::ContainerPtr data) {
+        ASSERT_TRUE(data);
+        ASSERT_TRUE(data->tab_restore);
+
+        size_t split_count = 0;
+        for (const auto& entry : data->tab_restore->entries) {
+          if (entry->is_split()) {
+            split_count++;
+            // Verify that the split entry contains exactly 2 tabs.
+            EXPECT_EQ(entry->get_split()->tabs.size(), 2u);
+          }
+        }
+
+        EXPECT_EQ(split_count, 1u)
+            << "Expected exactly one TabRestoreSplit entry";
+
+        loop->Quit();
+      },
+      &loop));
+
+  loop.Run();
+}
+
+// GetTabStripData: Verify snapshot includes TabRestoreGroup entry containing a
+// Split view.
+IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerSplitBrowserTest,
+                       GetTabStripData_TabRestore_GroupedSplitEntryCreated) {
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  TabStripModel* model = browser()->GetTabStripModel();
+
+  // Create a split view with index 1 and 2.
+  model->ActivateTabAt(1);
+  model->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                       split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Group the split tabs (index 1 and 2).
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
+  ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
+
+  // Close the entire group.
+  model->CloseAllTabsInGroup(group_id);
+
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(new_browser);
+  auto handler =
+      CreateHandler(new_browser->GetTabStripModel()->GetActiveWebContents());
+
+  base::RunLoop loop;
+  handler->GetTabStripData(base::BindOnce(
+      [](base::RunLoop* loop, tab_strip_internals::mojom::ContainerPtr data) {
+        ASSERT_TRUE(data);
+        ASSERT_TRUE(data->tab_restore);
+
+        size_t group_count = 0;
+        for (const auto& entry : data->tab_restore->entries) {
+          if (entry->is_group()) {
+            group_count++;
+            // Verify that the group entry contains tabs, which have split_id
+            // populated.
+            EXPECT_GE(entry->get_group()->tabs.size(), 2u);
+            for (const auto& tab : entry->get_group()->tabs) {
+              EXPECT_TRUE(tab->split_id.has_value());
+            }
+          }
+        }
+
+        EXPECT_EQ(group_count, 1u)
+            << "Expected exactly one TabRestoreGroup entry";
 
         loop->Quit();
       },

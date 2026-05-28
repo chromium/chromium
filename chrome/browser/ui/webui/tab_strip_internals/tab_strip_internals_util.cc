@@ -27,6 +27,17 @@ namespace tab_strip_internals {
 
 namespace {
 
+mojom::SplitTabVisualData::Layout MapSplitLayout(
+    split_tabs::SplitTabLayout layout) {
+  switch (layout) {
+    case split_tabs::SplitTabLayout::kSideBySide:
+      return mojom::SplitTabVisualData::Layout::kVertical;
+    case split_tabs::SplitTabLayout::kStacked:
+      return mojom::SplitTabVisualData::Layout::kHorizontal;
+  }
+  NOTREACHED();
+}
+
 // Returns the root TabCollection for a given tab.
 const tabs::TabCollection* GetRootCollectionForTab(
     const tabs::TabInterface* tab) {
@@ -86,8 +97,7 @@ mojom::DataPtr BuildMojoCollection(const tabs::TabCollection* collection) {
         if (auto* visual_data = split_tab_data->visual_data()) {
           split_tabs->visualData = mojom::SplitTabVisualData::New();
           split_tabs->visualData->layout =
-              static_cast<mojom::SplitTabVisualData::Layout>(
-                  static_cast<int>(visual_data->split_layout()));
+              MapSplitLayout(visual_data->split_layout());
           split_tabs->visualData->split_ratio = visual_data->split_ratio();
         }
       }
@@ -166,6 +176,16 @@ mojom::TabRestoreTabPtr BuildTabRestoreTab(
         data.title(), data.color(), data.is_collapsed());
   }
 
+  if (tab.split_id.has_value()) {
+    mojo_tab->split_id = tab.split_id->token();
+  }
+
+  if (tab.split_visual_data.has_value()) {
+    const auto& data = *tab.split_visual_data;
+    mojo_tab->split_visual_data = mojom::SplitTabVisualData::New(
+        MapSplitLayout(data.split_layout()), data.split_ratio());
+  }
+
   return mojo_tab;
 }
 
@@ -188,6 +208,32 @@ mojom::TabRestoreGroupPtr BuildTabRestoreGroup(
   }
 
   return mojo_group;
+}
+
+// Build a single TabRestoreSplit entry.
+// i.e. maps input to corresponding mojo type.
+mojom::TabRestoreSplitPtr BuildTabRestoreSplit(
+    const sessions::tab_restore::Split& split) {
+  auto mojo_split = mojom::TabRestoreSplit::New();
+  mojo_split->id = MakeNodeId(base::NumberToString(split.id.id()),
+                              mojom::NodeId::Type::kTabRestoreSplit);
+  mojo_split->restore_entry = BuildTabRestoreEntryBase(split);
+  SessionID::id_type browser_id = 0;
+  if (!split.tabs.empty() && split.tabs[0]) {
+    browser_id = split.tabs[0]->browser_id;
+  }
+  mojo_split->browser_id = mojom::SessionID::New(browser_id);
+  mojo_split->split_id =
+      split.split_id.value_or(split_tabs::SplitTabId::CreateEmpty()).token();
+  mojo_split->visual_data = mojom::SplitTabVisualData::New(
+      MapSplitLayout(split.visual_data.split_layout()),
+      split.visual_data.split_ratio());
+
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : split.tabs) {
+    mojo_split->tabs.push_back(BuildTabRestoreTab(*tab));
+  }
+
+  return mojo_split;
 }
 
 // Build a single TabRestoreWindow entry.
@@ -259,8 +305,7 @@ mojom::SessionSplitTabPtr BuildSessionSplitTab(
   auto mojo_split = mojom::SessionSplitTab::New();
   mojo_split->split_id = split.id_.token();
   mojo_split->split_visual_data = mojom::SplitTabVisualData::New(
-      static_cast<mojom::SplitTabVisualData::Layout>(
-          static_cast<int>(split.split_visual_data_.split_layout())),
+      MapSplitLayout(split.split_visual_data_.split_layout()),
       split.split_visual_data_.split_ratio());
   return mojo_split;
 }
@@ -411,7 +456,10 @@ mojom::TabRestoreDataPtr BuildTabRestoreData(
         break;
       }
       case sessions::tab_restore::Type::SPLIT: {
-        // TODO(crbug.com/509526732): Support Split Tabs in TabStripInternals.
+        const auto* split =
+            static_cast<const sessions::tab_restore::Split*>(entry.get());
+        mojo_entry =
+            mojom::TabRestoreEntry::NewSplit(BuildTabRestoreSplit(*split));
         break;
       }
     }

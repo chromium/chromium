@@ -54,6 +54,8 @@ struct NodeId {
     kTabRestoreGroup,
     // A tab restore Window entry.
     kTabRestoreWindow,
+    // A tab restore Split entry.
+    kTabRestoreSplit,
     // A session restore Tab entry.
     kSessionRestoreTab,
     // A session restore Group entry.
@@ -178,12 +180,14 @@ struct TabRestoreData {
   array<TabRestoreEntry> entries;
 };
 
-// Represents a tab restore entry which can either be a tab, window, or a group.
-// Using a union enforces that an entry must be exactly one of the types below.
+// Represents a tab restore entry which can either be a tab, window,
+// group, or a split. Using a union enforces that an entry must be
+// exactly one of the types below.
 union TabRestoreEntry {
   TabRestoreTab tab;
   TabRestoreWindow window;
   TabRestoreGroup group;
+  TabRestoreSplit split;
 };
 
 // Represents a `components/sessions/core/session_id.h`.
@@ -214,6 +218,9 @@ struct TabRestoreTab {
   // Could be Null if the tab is not part of a group.
   mojo_base.mojom.Token? group_id;
   TabGroupVisualData? group_visual_data;
+  // Could be Null if the tab is not part of a split.
+  mojo_base.mojom.Token? split_id;
+  SplitTabVisualData? split_visual_data;
   // Below fields represent properties of the selected navigation entry.
   mojo_base.mojom.String16 title;
   url.mojom.Url url;
@@ -230,6 +237,18 @@ struct TabRestoreGroup {
   SessionID browser_id;
   mojo_base.mojom.Token group_id;
   TabGroupVisualData visual_data;
+  array<TabRestoreTab> tabs;
+};
+
+// Tab restore data for a Split View.
+struct TabRestoreSplit {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  // The ID of the browser to which this tab belonged.
+  // May be 0 (an invalid SessionID) when restoring an entire session.
+  SessionID browser_id;
+  mojo_base.mojom.Token split_id;
+  SplitTabVisualData visual_data;
   array<TabRestoreTab> tabs;
 };
 
