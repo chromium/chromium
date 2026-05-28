@@ -7,6 +7,8 @@ import unittest
 
 import dex
 
+# pylint: disable=protected-access
+
 
 class DexTest(unittest.TestCase):
   def testStdErrFilter(self):
@@ -44,6 +46,17 @@ Warning: PublicStopClientEvent is hungry.
     expected = ''
     self.assertEqual(filter_func(output), expected)
 
+  def testClassFileNestPrefix(self):
+    cases = {
+        'pkg/Top.class': 'pkg/Top',
+        'pkg/Outer$Inner.class': 'pkg/Outer',
+        'pkg/Outer$Inner$Deep.class': 'pkg/Outer',
+        'Outer$1.class': 'Outer',
+        # '$' inside the package path must be ignored.
+        'weird$pkg/Top.class': 'weird$pkg/Top',
+    }
+    for path, expected in cases.items():
+      self.assertEqual(dex._ClassFileNestPrefix(path), expected, msg=path)
 
 if __name__ == '__main__':
   unittest.main()

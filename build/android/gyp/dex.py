@@ -381,13 +381,41 @@ def _IsClassFile(path):
   return path.endswith('.class')
 
 
+def _ClassFileNestPrefix(class_path):
+  """Returns the javac nest-host prefix for a .class subpath.
+
+  Nest members follow the binary-name convention "Outer$Member.class"; the
+  nest host's binary name never contains '$'.
+
+  E.g. 'pkg/Outer$Inner.class' -> 'pkg/Outer'
+       'pkg/Outer.class'       -> 'pkg/Outer'
+  """
+  base = class_path[:-len('.class')]
+  slash = base.rfind('/')
+  dollar = base.find('$', slash + 1)
+  if dollar != -1:
+    base = base[:dollar]
+  return base
+
+
 def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
   classes_list = []
   for jar in class_inputs:
     if changes:
-      changed_class_list = (set(changes.IterChangedSubpaths(jar))
-                            | required_classes_set)
-      predicate = lambda x: x in changed_class_list and _IsClassFile(x)  # pylint: disable=cell-var-from-loop
+      changed_class_set = (set(changes.IterChangedSubpaths(jar))
+                           | required_classes_set)
+
+      # D8 nest-based access desugaring requires the entire nest group to be
+      # present, else it aborts with "Class X requires its nest host Y to be
+      # on program or class path." Pull in sibling nestmates by host prefix.
+      nest_prefixes = {
+          _ClassFileNestPrefix(path)
+          for path in changed_class_set if _IsClassFile(path)
+      }
+
+      def predicate(path, nest_prefixes=nest_prefixes):
+        return (_IsClassFile(path)
+                and _ClassFileNestPrefix(path) in nest_prefixes)
     else:
       predicate = _IsClassFile
 
