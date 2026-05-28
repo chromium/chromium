@@ -5,6 +5,9 @@
     },
     {
       "path": "agents/shared/skills/git-cl-helper"
+    },
+    {
+      "path": "agents/shared/skills/gerrit-cli"
     }
   ]
 }
