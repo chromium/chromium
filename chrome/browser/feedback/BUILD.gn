@@ -4,8 +4,6 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
-import("//build/config/chromeos/ui_mode.gni")
-
 source_set("feedback_enum") {
   sources = [ "public/feedback_source.h" ]
 }

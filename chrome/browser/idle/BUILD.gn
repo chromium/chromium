@@ -1,5 +1,3 @@
-import("//build/config/chromeos/ui_mode.gni")
-
 source_set("idle") {
   visibility = [
     "//chrome/browser/*",
