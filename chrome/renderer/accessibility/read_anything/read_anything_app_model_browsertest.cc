@@ -2682,6 +2682,36 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_UniquenessConstraints) {
   EXPECT_TRUE(model().GetAXMapping(3).empty());   // Duplicate in blocks
 }
 
+TEST_F(ReadAnythingAppModelTest,
+       MapRenderedTextToTree_ReadabilityTitle_AvoidsFalseMatch) {
+  // Setup AXTree: Body appears before title string to simulate same text as
+  // title being in the body.
+  std::u16string title = u"Synthesized Title";
+  std::u16string body = u"This is the actual body content.";
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  update.nodes = {test::GenericContainerNode(1), test::TextNode(2, body),
+                  test::TextNode(3, title)};
+  update.nodes[0].child_ids = {2, 3};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  // Add title first to simulate title text coming from metadata and not AXtree.
+  std::vector<std::u16string> blocks = {title, body};
+
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree(blocks);
+
+  // Body (block 1) should map correctly to node 2.
+  EXPECT_FALSE(model().GetAXMapping(1).empty());
+  EXPECT_EQ(model().GetAXMapping(1)[0].id, 2);
+
+  // Title (block 0) should NOT map to node 3.
+  EXPECT_TRUE(model().GetAXMapping(0).empty());
+}
+
 TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_PartialNodeMapping) {
   // Setup AXTree: "Hello", " ", "World!" (Nodes 2, 3, 4)
   ui::AXTreeUpdate update;
