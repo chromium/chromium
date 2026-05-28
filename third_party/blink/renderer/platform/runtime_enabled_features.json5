@@ -1779,8 +1779,10 @@
       // Support `polygon(round <length>, ...)` per CSS Shapes Level 1.
       // Spec: https://www.w3.org/TR/css-shapes-1/#typedef-basic-shape
       // Issue: https://crbug.com/329302249
+      // https://chromestatus.com/feature/6636392944893952
+      // Ship in M150, should be removed in M152.
       name: "CSSPolygonRounding",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPositionStickyStaticScrollPosition",
