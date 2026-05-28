@@ -25,6 +25,9 @@ _EXCLUDED_PATHS = (
      r'/webapk/lib/runtime_library/IWebApkApi.java'),
     # File needs to write to stdout to emulate a tool it's replacing.
     r'chrome/updater/mac/keystone/ksadmin.mm',
+    # Generated file.
+    (r'^components/variations/proto/devtools/'
+     r'client_variations.js'),
     # These are video files, not typescript.
     r'^media/test/data/.*.ts',
     r'^net/tools/spdyshark/.*',

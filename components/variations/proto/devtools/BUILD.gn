@@ -2,34 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This target generates the ClientVariations proto parser for Dev Tools.
-action("client_variations_js") {
-  script = "update_client_variations.py"
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/closure_compiler/closure_args.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 
-  # The generated TS proto file
-  proto_ts_file =
-      "$root_gen_dir/tsproto/components/variations/proto/client_variations.ts"
+# Some of the Windows builders do not support Java, which is a required
+# dependency for this build target. The fuzzable_proto_library doesn't support
+# building JS protos when we're using a fuzzing engine that supports
+# libprotobuf-mutator, such as libfuzzer. This target is only built
+# manually, so it's fine to limit it to Linux non-fuzzer builds.
+if (is_linux && !use_fuzzing_engine_with_lpm) {
+  # Build this target to generate a small, self-contained utility for parsing a
+  # serialized ClientVariations proto from the X-Client-Data header.
+  #
+  # Run components/variations/proto/devtools/update_client_variations_parser.py
+  # to rebuild the library that is synced into the Dev Tools repository.
+  group("devtools") {
+    deps = [ ":client_variations_uncompiled" ]
+  }
 
-  inputs = [
-    "client_variations_uncompiled.ts",
-    "rollup_plugin.mjs",
-    proto_ts_file,
-  ]
-
-  outputs = [ "$target_gen_dir/client_variations.js" ]
-
-  deps = [ "..:client_variations_proto_gen" ]
-
-  args = [
-    "--parser-ts",
-    rebase_path("client_variations_uncompiled.ts", root_build_dir),
-    "--proto-ts",
-    rebase_path(proto_ts_file, root_build_dir),
-    "--out-js",
-    rebase_path(outputs[0], root_build_dir),
-  ]
-}
-
-group("devtools") {
-  public_deps = [ ":client_variations_js" ]
+  # Note that the name passed to the `js_binary` rule implicitly defines a
+  # dependency on the file that matches the build rule's name.
+  js_binary("client_variations_uncompiled") {
+    outputs = [ "$target_gen_dir/client_variations_gen.js" ]
+    deps = [ "..:client_variations_proto_js" ]
+    closure_flags = strict_error_checking_closure_args + [
+                      "compilation_level=ADVANCED_OPTIMIZATIONS",
+                      "browser_featureset_year=2020",
+                      "generate_exports",
+                      "export_local_property_definitions",
+                      "isolation_mode=IIFE",
+                      "jscomp_warning=checkTypes",
+                      "jscomp_warning=deprecatedAnnotations",
+                      "jscomp_warning=deprecated",
+                    ]
+  }
 }
