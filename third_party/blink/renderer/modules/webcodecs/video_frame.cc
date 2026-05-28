@@ -1358,8 +1358,9 @@ VideoFrame::CopyToPromise VideoFrame::CopyToAsync(
           resolver->Reject();
         }
       };
-  auto done_cb = BindOnce(readback_done_handler, std::move(contents),
-                          WrapPersistent(resolver), dest_layout);
+  auto done_cb =
+      BindOnce(readback_done_handler, std::move(contents),
+               MakeUnwrappingCrossThreadHandle(resolver), dest_layout);
 
   auto buffer = AsSpan<uint8_t>(destination);
   background_readback->ReadbackTextureBackedFrameToBuffer(
