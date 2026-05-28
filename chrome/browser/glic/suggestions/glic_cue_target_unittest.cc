@@ -301,91 +301,17 @@ TEST_F(GlicCueTargetTest, CueActionDataFromResponse) {
                        /*optimization_guide_keyed_service=*/nullptr,
                        *mock_browser_window_interface_);
 
-  optimization_guide::proto::ContextualCueingResponse response;
-  auto* surface = response.mutable_gemini_in_chrome_surface();
+  optimization_guide::proto::ContextualCue cue;
+  auto* surface = cue.mutable_gemini_in_chrome_surface();
   surface->set_prompt("response prompt");
 
-  SessionID session_id_a = CreateTab();
-  surface->add_tabs_to_share()->set_tab_id(session_id_a.id());
-  SessionID session_id_b = CreateTab();
-  surface->add_tabs_to_share()->set_tab_id(session_id_b.id());
-
-  contextual_cueing::CueTabMetrics tab_metrics;
   contextual_cueing::CueActionData data =
-      target.CueActionDataFromResponse(response, tab_metrics);
+      target.CueActionDataFromResponse(cue, {});
   ASSERT_TRUE(
       std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
   EXPECT_EQ("response prompt", glic_data.prompt);
-  EXPECT_EQ(2ul, glic_data.tabs_to_share.size());
-  EXPECT_EQ(GetTabHandle(session_id_a), glic_data.tabs_to_share[0]);
-  EXPECT_EQ(GetTabHandle(session_id_b), glic_data.tabs_to_share[1]);
-  EXPECT_EQ(2, tab_metrics.matched_count);
-  EXPECT_EQ(0, tab_metrics.missing_count);
-  EXPECT_EQ(0, tab_metrics.navigated_away_count);
-#endif
-}
 
-TEST_F(GlicCueTargetTest, CueActionDataFromResponse_InvalidTabs) {
-  GlicCueTarget target(*mock_glic_keyed_service_,
-                       /*optimization_guide_keyed_service=*/nullptr,
-                       *mock_browser_window_interface_);
-
-  optimization_guide::proto::ContextualCueingResponse response;
-  auto* surface = response.mutable_gemini_in_chrome_surface();
-  surface->set_prompt("response prompt");
-
-  // Strange session IDs that don't match any existing tabs.
-  surface->add_tabs_to_share()->set_tab_id(-1);
-  surface->add_tabs_to_share()->set_tab_id(12345);
-
-  contextual_cueing::CueTabMetrics tab_metrics;
-  contextual_cueing::CueActionData data =
-      target.CueActionDataFromResponse(response, tab_metrics);
-  ASSERT_TRUE(
-      std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
-  auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
-  EXPECT_EQ("response prompt", glic_data.prompt);
-  // No valid tabs to share.
-  EXPECT_TRUE(glic_data.tabs_to_share.empty());
-  EXPECT_EQ(0, tab_metrics.matched_count);
-  EXPECT_EQ(2, tab_metrics.missing_count);
-  EXPECT_EQ(0, tab_metrics.navigated_away_count);
-}
-
-TEST_F(GlicCueTargetTest, CueActionDataFromResponse_DefaultTabContextDisabled) {
-#if BUILDFLAG(IS_CHROMEOS)
-  GTEST_SKIP() << "crbug.com/41100311: Disabled on ChromeOS until profile "
-                  "loading is fixed for this test.";
-#else
-  GlicCueTarget target(*mock_glic_keyed_service_,
-                       /*optimization_guide_keyed_service=*/nullptr,
-                       *mock_browser_window_interface_);
-
-  optimization_guide::proto::ContextualCueingResponse response;
-  auto* surface = response.mutable_gemini_in_chrome_surface();
-  surface->set_prompt("response prompt");
-
-  SessionID session_id_a = CreateTab();
-  surface->add_tabs_to_share()->set_tab_id(session_id_a.id());
-  SessionID session_id_b = CreateTab();
-  surface->add_tabs_to_share()->set_tab_id(session_id_b.id());
-
-  // User turns off default tab context sharing.
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, false);
-
-  contextual_cueing::CueTabMetrics tab_metrics;
-  contextual_cueing::CueActionData data =
-      target.CueActionDataFromResponse(response, tab_metrics);
-  ASSERT_TRUE(
-      std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
-  auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
-  EXPECT_EQ("response prompt", glic_data.prompt);
-  // No tabs shared.
-  EXPECT_EQ(0ul, glic_data.tabs_to_share.size());
-  EXPECT_EQ(0, tab_metrics.matched_count);
-  EXPECT_EQ(0, tab_metrics.missing_count);
-  EXPECT_EQ(0, tab_metrics.navigated_away_count);
 #endif
 }
 

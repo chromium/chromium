@@ -217,14 +217,15 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
 
 optimization_guide::proto::ContextualCueingResponse MakeCompleteResponse() {
   optimization_guide::proto::ContextualCueingResponse response;
+  auto* cue = response.add_contextual_cues();
 
   // Required UI text
-  response.mutable_anchored_message_cue()->set_action_text("Action text");
-  response.mutable_anchored_message_cue()->set_anchored_message_text(
+  cue->mutable_anchored_message_cue()->set_action_text("Action text");
+  cue->mutable_anchored_message_cue()->set_anchored_message_text(
       "Anchored message text");
 
   // Fulfillment surface
-  response.mutable_gemini_in_chrome_surface()->set_prompt("Prompt");
+  cue->mutable_gemini_in_chrome_surface()->set_prompt("Prompt");
 
   return response;
 }
@@ -374,7 +375,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   base::HistogramTester histogram_tester;
 
   auto response = MakeCompleteResponse();
-  response.set_suggested_cuj("TestCUJ");
+  auto* cue = response.mutable_contextual_cues(0);
+  cue->set_suggested_cuj("TestCUJ");
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -383,13 +385,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Add a valid tab to the response.
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_web_contents);
-  auto* valid_tab =
-      response.mutable_gemini_in_chrome_surface()->add_tabs_to_share();
+  auto* valid_tab = cue->mutable_anchored_message_cue()->add_tabs_to_show();
   valid_tab->set_tab_id(active_tab_id.id());
 
   // Add an invalid tab to the response.
-  auto* invalid_tab =
-      response.mutable_gemini_in_chrome_surface()->add_tabs_to_share();
+  auto* invalid_tab = cue->mutable_anchored_message_cue()->add_tabs_to_show();
   invalid_tab->set_tab_id(9999);
 
   SeedExecutionResult(response);
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   auto response = MakeCompleteResponse();
-  response.clear_anchored_message_cue();
+  response.mutable_contextual_cues(0)->clear_anchored_message_cue();
   SeedExecutionResult(std::move(response));
 
   SimulateFilterPassed();
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   auto response = MakeCompleteResponse();
-  response.clear_gemini_in_chrome_surface();
+  response.mutable_contextual_cues(0)->clear_gemini_in_chrome_surface();
   SeedExecutionResult(std::move(response));
 
   SimulateFilterPassed();
@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // 2. Mock the server response and inject a fake CUJ string
   auto response = MakeCompleteResponse();
-  response.set_suggested_cuj("test_cuj_string");
+  response.mutable_contextual_cues(0)->set_suggested_cuj("test_cuj_string");
   SeedExecutionResult(std::move(response));
 
   // 3. Trigger the cue execution flow
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // 2. Mock the server response and inject a fake CUJ string
   auto response = MakeCompleteResponse();
-  response.set_suggested_cuj("test_cuj_string");
+  response.mutable_contextual_cues(0)->set_suggested_cuj("test_cuj_string");
   SeedExecutionResult(std::move(response));
 
   // 3. Trigger the cue execution flow

@@ -47,6 +47,7 @@ class SyncService;
 namespace contextual_cueing {
 
 class ContextualCueingService;
+struct CueTabMetrics;
 
 class ContextualCueingController
     : public page_content_annotations::PageContentAnnotationsService::
@@ -87,7 +88,7 @@ class ContextualCueingController
   void OnCueInteraction(ContextualCueingInteraction interaction_type,
                         CueTargetType cue_type,
                         const std::string& cuj,
-                        CueActionData data);
+                        CueActionData action);
 
  private:
   // Initiates a model execution request to MES for the current window state.
@@ -117,12 +118,15 @@ class ContextualCueingController
   // is no active tab.
   ukm::SourceId GetActiveTabSourceId() const;
 
+  std::pair<std::vector<tabs::TabHandle>, CueTabMetrics> GetTabsToShow(
+      const optimization_guide::proto::ContextualCue& cue);
+
   void ShowCue(CueTargetType cue_type,
                const CueTarget& target,
-               optimization_guide::proto::ContextualCueingResponse response);
+               const optimization_guide::proto::ContextualCue& cue);
   void OnCueClicked(CueTargetType cue_type,
                     std::string cuj,
-                    CueActionData data,
+                    CueActionData action,
                     actions::ActionItem*,
                     actions::ActionInvocationContext);
   void OnCueHidden();

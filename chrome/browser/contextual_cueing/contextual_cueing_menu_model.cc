@@ -57,7 +57,7 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
       controller_(controller),
       cue_type_(cue_type),
       cuj_(cuj),
-      data_(data) {
+      data_(std::move(data)) {
   contextual_cueing_service_ =
       ContextualCueingServiceFactory::GetForProfile(profile_);
 

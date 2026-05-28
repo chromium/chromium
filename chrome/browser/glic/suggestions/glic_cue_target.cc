@@ -72,7 +72,11 @@ bool GlicCueTarget::IsEligible() const {
          browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
              prefs::kGlicPinnedToTabstrip) &&
          !glic_keyed_service_->IsPanelShowingForBrowser(
-             *browser_window_interface_);
+             *browser_window_interface_) &&
+         // TODO(crbug.com/507551989): Default tab context sharing check won't
+         // be needed once tab sharing UI is implemented.
+         browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+             glic::prefs::kGlicDefaultTabContextEnabled);
 }
 
 void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
@@ -136,50 +140,15 @@ ui::ImageModel GlicCueTarget::GetOmniboxChipIcon() const {
 }
 
 contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
-    const optimization_guide::proto::ContextualCueingResponse& response,
-    contextual_cueing::CueTabMetrics& tab_metrics) const {
+    const optimization_guide::proto::ContextualCue& cue,
+    std::vector<tabs::TabHandle> tabs_to_show) const {
   contextual_cueing::GlicCueActionData data;
-  if (!response.has_gemini_in_chrome_surface()) {
+  if (!cue.has_gemini_in_chrome_surface()) {
     CUEING_LOG("Missing Gemini surface data.");
     return data;
   }
-  data.prompt = response.gemini_in_chrome_surface().prompt();
-
-  // TODO(crbug.com/507551989): Remove the kGlicDefaultTabContext check once UI
-  // exists to show which tabs would be shared.
-  if (browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kGlicDefaultTabContextEnabled)) {
-    auto& tab_handle_factory =
-        tabs::SessionMappedTabHandleFactory::GetInstance();
-    for (auto& tab : response.gemini_in_chrome_surface().tabs_to_share()) {
-      SessionID session_id = SessionID::FromSerializedValue(
-          static_cast<SessionID::id_type>(tab.tab_id()));
-      if (!session_id.is_valid()) {
-        ++tab_metrics.missing_count;
-        continue;
-      }
-
-      tabs::TabHandle handle(
-          tab_handle_factory.GetHandleForSessionId(session_id.id()));
-      // Ensure tab is valid and belongs to the current browser window.
-      if (handle.Get() && handle.Get()->GetBrowserWindowInterface() ==
-                              &browser_window_interface_.get()) {
-        data.tabs_to_share.push_back(handle);
-        ++tab_metrics.matched_count;
-      } else {
-        ++tab_metrics.missing_count;
-      }
-      // TODO(crbug.com/515073198): Check whether tabs' current URLs match those
-      // from the response, and skip adding them if they do not match.
-    }
-
-    CUEING_LOG(
-        base::StringPrintf("%d tabs in response.", data.tabs_to_share.size()));
-
-  } else {
-    CUEING_LOG("Sharing no tabs because default tab context sharing is off.");
-  }
-
+  data.prompt = cue.gemini_in_chrome_surface().prompt();
+  data.tabs_to_share = std::move(tabs_to_show);
   return data;
 }
 

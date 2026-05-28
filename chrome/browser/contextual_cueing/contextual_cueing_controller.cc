@@ -57,6 +57,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -79,10 +80,9 @@ const char kHomepagePathRegex[] =
     "?;]+)?)?)?";
 
 std::optional<CueTargetType> GetTargetType(
-    optimization_guide::proto::ContextualCueingResponse::FulfillmentSurfaceCase
+    optimization_guide::proto::ContextualCue::FulfillmentSurfaceCase
         fulfillment_surface_case) {
-  using enum optimization_guide::proto::ContextualCueingResponse::
-      FulfillmentSurfaceCase;
+  using enum optimization_guide::proto::ContextualCue::FulfillmentSurfaceCase;
   switch (fulfillment_surface_case) {
     case kGeminiInChromeSurface:
       return CueTargetType::kGlic;
@@ -429,9 +429,20 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     return;
   }
 
-  if (!response->has_anchored_message_cue() ||
-      response->anchored_message_cue().anchored_message_text().empty() ||
-      response->anchored_message_cue().action_text().empty()) {
+  if (response->contextual_cues_size() == 0) {
+    CUEING_LOG("Model execution to generate cue failed: no cues returned.");
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kNoCues);
+    return;
+  }
+
+  // TODO(crbug.com/515865902): Handle multiple cues. For now only use the first
+  // one.
+  const auto& cue = response->contextual_cues(0);
+
+  if (!cue.has_anchored_message_cue() ||
+      cue.anchored_message_cue().anchored_message_text().empty() ||
+      cue.anchored_message_cue().action_text().empty()) {
     CUEING_LOG(
         "Model execution to generate cue failed: missing anchored message "
         "text.");
@@ -441,7 +452,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   }
 
   std::optional<CueTargetType> target_type =
-      GetTargetType(response->fulfillment_surface_case());
+      GetTargetType(cue.fulfillment_surface_case());
   if (!target_type) {
     CUEING_LOG("Unknown fulfillment surface");
     RecordContextualCueingDecision(
@@ -473,7 +484,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   }
 
   if (IsAllowedToShowCue() == ContextualCueingDecision::kUnspecified) {
-    ShowCue(*target_type, *target, std::move(*response));
+    ShowCue(*target_type, *target, cue);
   }
 }
 
@@ -603,13 +614,43 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
   return ContextualCueingDecision::kUnspecified;
 }
 
+std::pair<std::vector<tabs::TabHandle>, CueTabMetrics>
+ContextualCueingController::GetTabsToShow(
+    const optimization_guide::proto::ContextualCue& cue) {
+  std::vector<tabs::TabHandle> tabs_to_show;
+  CueTabMetrics tab_metrics;
+  auto& tab_handle_factory = tabs::SessionMappedTabHandleFactory::GetInstance();
+  for (auto& tab : cue.anchored_message_cue().tabs_to_show()) {
+    SessionID session_id = SessionID::FromSerializedValue(
+        static_cast<SessionID::id_type>(tab.tab_id()));
+    if (!session_id.is_valid()) {
+      ++tab_metrics.missing_count;
+      continue;
+    }
+
+    tabs::TabHandle handle(
+        tab_handle_factory.GetHandleForSessionId(session_id.id()));
+    // Ensure tab is valid and belongs to the current browser window.
+    if (handle.Get() && handle.Get()->GetBrowserWindowInterface() ==
+                            browser_window_interface_) {
+      tabs_to_show.push_back(handle);
+      ++tab_metrics.matched_count;
+    } else {
+      ++tab_metrics.missing_count;
+    }
+  }
+
+  CUEING_LOG(base::StringPrintf("%d tabs in response.", tabs_to_show.size()));
+  return {tabs_to_show, tab_metrics};
+}
+
 void ContextualCueingController::ShowCue(
     CueTargetType cue_type,
     const CueTarget& target,
-    optimization_guide::proto::ContextualCueingResponse response) {
-  CueTabMetrics tab_metrics;
+    const optimization_guide::proto::ContextualCue& cue) {
+  auto [tabs_to_show, tab_metrics] = GetTabsToShow(cue);
   CueActionData action_data =
-      target.CueActionDataFromResponse(response, tab_metrics);
+      target.CueActionDataFromResponse(cue, tabs_to_show);
 
   tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
   CHECK(tab);
@@ -623,7 +664,7 @@ void ContextualCueingController::ShowCue(
     show_latency = base::Time::Now() - page_load_time;
   }
 
-  RecordCueShownMetrics(GetActiveTabSourceId(), response.suggested_cuj(),
+  RecordCueShownMetrics(GetActiveTabSourceId(), cue.suggested_cuj(),
                         tab_metrics, show_latency);
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
@@ -635,12 +676,12 @@ void ContextualCueingController::ShowCue(
                                         ->root_action_item());
   CHECK(action);
 
-  const auto& strings = response.anchored_message_cue();
+  const auto& strings = cue.anchored_message_cue();
   action->SetText(base::UTF8ToUTF16(strings.action_text()));
   action->SetImage(target.GetOmniboxChipIcon());
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
-      cue_type, response.suggested_cuj(), action_data));
+      cue_type, cue.suggested_cuj(), action_data));
 
   page_actions::PageActionController* page_action_controller =
       tab->GetTabFeatures()->page_action_controller();
@@ -663,7 +704,7 @@ void ContextualCueingController::ShowCue(
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
-      cue_type, response.suggested_cuj(), action_data);
+      cue_type, cue.suggested_cuj(), std::move(action_data));
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
@@ -673,7 +714,7 @@ void ContextualCueingController::ShowCue(
       {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
 
   CUEING_LOG(base::StringPrintf(
-      "Showing cue for CUJ %s: %s [%s]", response.suggested_cuj(),
+      "Showing cue for CUJ %s: %s [%s]", cue.suggested_cuj(),
       strings.anchored_message_text(), strings.action_text()));
 
   page_action_observer_->RegisterAsPageActionObserver(*page_action_controller);
@@ -683,7 +724,7 @@ void ContextualCueingController::ShowCue(
 #endif
 
   base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
-                           base::HashMetricName(response.suggested_cuj()));
+                           base::HashMetricName(cue.suggested_cuj()));
 
   RecordContextualCueingDecision(GetActiveTabSourceId(),
                                  ContextualCueingDecision::kSuccess);
@@ -718,7 +759,7 @@ void ContextualCueingController::OnSidePanelShown() {
 void ContextualCueingController::OnCueClicked(
     CueTargetType cue_type,
     std::string cuj,
-    CueActionData data,
+    CueActionData action,
     actions::ActionItem*,
     actions::ActionInvocationContext) {
   CUEING_LOG(
@@ -746,16 +787,15 @@ void ContextualCueingController::OnCueClicked(
 #endif
 
   OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type, cuj,
-                   std::move(data));
+                   std::move(action));
 }
 
 void ContextualCueingController::OnCueInteraction(
     ContextualCueingInteraction interaction_type,
     CueTargetType cue_type,
     const std::string& cuj,
-    CueActionData data) {
+    CueActionData action) {
   base::TimeDelta shown_duration = ExtractCueShownDuration();
-
   ukm::SourceId source_id = GetActiveTabSourceId();
 
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
@@ -767,7 +807,7 @@ void ContextualCueingController::OnCueInteraction(
       break;
     case ContextualCueingInteraction::kCueEditPrompt:
       if (CueTarget* target = GetTarget(cue_type)) {
-        target->OnEditPrompt(std::move(data));
+        target->OnEditPrompt(std::move(action));
       }
       break;
     case ContextualCueingInteraction::kCueSuggestionsSettings:
@@ -776,7 +816,7 @@ void ContextualCueingController::OnCueInteraction(
       break;
     case ContextualCueingInteraction::kCueClicked:
       if (CueTarget* target = GetTarget(cue_type)) {
-        target->OnClick(std::move(data));
+        target->OnClick(std::move(action));
       }
       contextual_cueing_service_->OnCueClicked(cue_type);
       break;

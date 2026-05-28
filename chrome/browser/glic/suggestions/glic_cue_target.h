@@ -33,8 +33,8 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;
   contextual_cueing::CueActionData CueActionDataFromResponse(
-      const optimization_guide::proto::ContextualCueingResponse& response,
-      contextual_cueing::CueTabMetrics& tab_metrics) const override;
+      const optimization_guide::proto::ContextualCue& cue,
+      std::vector<tabs::TabHandle> tabs_to_show) const override;
   optimization_guide::proto::ContextualCueingSurface GetSurface()
       const override;
 

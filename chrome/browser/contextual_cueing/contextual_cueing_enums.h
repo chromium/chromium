@@ -70,7 +70,10 @@ enum class ContextualCueingDecision {
   kDisabledByEnterprisePolicy = 26,
   // The cue couldn't be shown because the user is subject to age restrictions.
   kAgeRestrictionEnforced = 27,
-  kMaxValue = kAgeRestrictionEnforced,
+  // No cue could be shown because the model execution response contained no cue
+  // data.
+  kNoCues = 28,
+  kMaxValue = kNoCues,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

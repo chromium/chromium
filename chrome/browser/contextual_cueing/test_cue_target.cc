@@ -38,20 +38,13 @@ ui::ImageModel TestCueTarget::GetOmniboxChipIcon() const {
 }
 
 CueActionData TestCueTarget::CueActionDataFromResponse(
-    const optimization_guide::proto::ContextualCueingResponse& response,
-    CueTabMetrics& tab_metrics) const {
+    const optimization_guide::proto::ContextualCue& cue,
+    std::vector<tabs::TabHandle> tabs_to_show) const {
   GlicCueActionData data;
-  data.prompt = response.gemini_in_chrome_surface().prompt();
-
-  for (const auto& tab : response.gemini_in_chrome_surface().tabs_to_share()) {
-    // Tests may set tab_id to 9999 to simulate an invalid or missing tab.
-    if (tab.tab_id() == 9999) {
-      tab_metrics.missing_count++;
-    } else {
-      tab_metrics.matched_count++;
-    }
+  if (cue.has_gemini_in_chrome_surface()) {
+    data.prompt = cue.gemini_in_chrome_surface().prompt();
   }
-
+  data.tabs_to_share = std::move(tabs_to_show);
   return data;
 }
 

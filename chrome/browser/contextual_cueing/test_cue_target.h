@@ -27,8 +27,8 @@ class TestCueTarget : public CueTarget {
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;
   CueActionData CueActionDataFromResponse(
-      const optimization_guide::proto::ContextualCueingResponse& response,
-      CueTabMetrics& tab_metrics) const override;
+      const optimization_guide::proto::ContextualCue& cue,
+      std::vector<tabs::TabHandle> tabs_to_show) const override;
   optimization_guide::proto::ContextualCueingSurface GetSurface()
       const override;
 };

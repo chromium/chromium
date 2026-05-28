@@ -16,14 +16,13 @@
 
 namespace contextual_cueing {
 
-struct CueTabMetrics;
-
 // Identifier for features that show cues. Each feature that implements
 // CueTarget should have a value in this enum.
 enum class CueTargetType { kGlic = 0, kMaxValue = kGlic };
 const char* GetName(CueTargetType type);
 
-// Glic-specific click data.
+// Glic-specific click data. Conceptually this struct should carry everything
+// needed for invoking Glic from a contextual cue.
 struct GlicCueActionData {
   // Optional prompt to be filled in to glic upon opening.
   std::string prompt;
@@ -38,6 +37,11 @@ struct GlicCueActionData {
 };
 
 using CueActionData = std::variant<std::monostate, GlicCueActionData>;
+
+struct CueAction {
+  CueActionData data;
+  std::vector<tabs::TabHandle> tabs_to_show;
+};
 
 // Interface representing a feature for which cues can be shown.
 class CueTarget {
@@ -59,10 +63,10 @@ class CueTarget {
   // Icon to be shown in the omnibox chip.
   virtual ui::ImageModel GetOmniboxChipIcon() const = 0;
 
-  // Extract this feature's click data from a contextual cueing response.
+  // Extract this feature's click data from a contextual cue.
   virtual CueActionData CueActionDataFromResponse(
-      const optimization_guide::proto::ContextualCueingResponse& response,
-      CueTabMetrics& tab_metrics) const = 0;
+      const optimization_guide::proto::ContextualCue& cue,
+      std::vector<tabs::TabHandle> tabs_to_show) const = 0;
 
   virtual optimization_guide::proto::ContextualCueingSurface GetSurface()
       const = 0;
