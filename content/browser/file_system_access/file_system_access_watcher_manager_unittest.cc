@@ -323,7 +323,8 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     file_system_context_.reset();
     chrome_blob_context_.reset();
     task_environment_.RunUntilIdle();
-    EXPECT_TRUE(dir_.Delete());
+    // On Windows, a synchronous delete of the directory can fail.
+    GetDeleteFileCallback(dir_.GetPath()).Run();
   }
 
   bool CreateDirectory(const base::FilePath& full_path) {
