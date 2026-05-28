@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -233,10 +234,12 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
   if (start > text_.length() || end > text_.length()) {
+    const bool is_start = start > text_.length();
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
-                                   start > text_.length() ? "start" : "end")));
+        ExceptionMessages::IndexExceedsMaximumBound(is_start ? "start" : "end",
+                                                    is_start ? start : end,
+                                                    text_.length()));
     return selection_rects;
   }
 
@@ -349,10 +352,12 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
   if (start >= text_.length() || end > text_.length()) {
+    const bool is_start = start >= text_.length();
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
-                                   start >= text_.length() ? "start" : "end")));
+        ExceptionMessages::IndexExceedsMaximumBound(is_start ? "start" : "end",
+                                                    is_start ? start : end,
+                                                    text_.length()));
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
 
@@ -467,11 +472,13 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
   if (start >= text_.length() || end > text_.length()) {
+    const bool is_start = start >= text_.length();
     CHECK(exception_state != nullptr);
     exception_state->ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
-                                   start >= text_.length() ? "start" : "end")));
+        ExceptionMessages::IndexExceedsMaximumBound(is_start ? "start" : "end",
+                                                    is_start ? start : end,
+                                                    text_.length()));
     return clusters_for_range;
   }
 
