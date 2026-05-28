@@ -569,6 +569,14 @@ void UsbDeviceHandleImpl::SetConfiguration(int configuration_value,
   for (Transfer* transfer : transfers_) {
     transfer->Cancel();
   }
+
+  // Release all claimed interfaces on the blocking thread. This ensures
+  // that the final reference is released on the right thread and avoids
+  // concurrent calls to libusb_release_interface and libusb_set_configuration
+  // on the same device.
+  for (auto& map_entry : claimed_interfaces_) {
+    blocking_task_runner_->ReleaseSoon(FROM_HERE, std::move(map_entry.second));
+  }
   claimed_interfaces_.clear();
 
   blocking_task_runner_->PostTask(
