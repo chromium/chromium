@@ -156,6 +156,10 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 }
 
 - (PageActionMenuContentEntryPoint*)geminiEntryPoint {
+  if (_webState && _webState->GetBrowserState()->IsOffTheRecord()) {
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+  }
+
   if (!_geminiService || !_geminiTabHelper) {
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
   }

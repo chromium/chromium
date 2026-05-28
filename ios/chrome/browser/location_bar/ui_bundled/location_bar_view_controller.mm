@@ -398,7 +398,8 @@ const CGFloat kPlusButtonMinimumWidth = 44.0;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
   self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
       alphaValue;
-  if (IsProactiveSuggestionsFrameworkEnabled() && !self.incognito) {
+  if (IsProactiveSuggestionsFrameworkEnabled() &&
+      (!self.incognito || IsChromeNextIaEnabled())) {
     self.locationBarSteadyView.badgesContainerView.alpha = alphaValue;
   }
   BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;

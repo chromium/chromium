@@ -119,7 +119,9 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
   // This ensures eligibility data is available or loading by the time
   // the user interacts with Ask Gemini. The spinner handles the case
   // where the check is still in flight.
-  geminiService->CheckGeminiEnterpriseEligibilityIfNeeded();
+  if (geminiService) {
+    geminiService->CheckGeminiEnterpriseEligibilityIfNeeded();
+  }
 
   if (readerModeTabHelper) {
     DistillerService* distillerService =

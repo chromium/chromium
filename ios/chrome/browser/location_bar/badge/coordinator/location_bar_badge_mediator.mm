@@ -688,9 +688,9 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
     return NO;
   }
   GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(_activeWebState);
-  BOOL isPageEligible = tabHelper &&
-                        tabHelper->IsGeminiAvailableForWebState() &&
-                        _geminiService->IsProfileEligibleForGemini();
+  BOOL isPageEligible =
+      tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
+      _geminiService && _geminiService->IsProfileEligibleForGemini();
   // TODO(crbug.com/465766925): Remove when feature is enabled by default.
   BOOL isConsentEligible = IsAskGeminiChipAllowNonconsentedUsersEnabled() ||
                            _prefService->GetBoolean(prefs::kIOSBwgConsent);

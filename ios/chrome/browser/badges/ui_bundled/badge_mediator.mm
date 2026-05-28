@@ -65,7 +65,8 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
     case InfobarType::kInfobarTypePermissions:
       return true;
     case InfobarType::kInfobarTypeReaderMode:
-      return IsProactiveSuggestionsFrameworkEnabled() && !is_incognito;
+      return IsProactiveSuggestionsFrameworkEnabled() &&
+             (!is_incognito || IsChromeNextIaEnabled());
     case InfobarType::kInfobarTypeConfirm:
     case InfobarType::kInfobarTypePasswordSave:
     case InfobarType::kInfobarTypePasswordUpdate:
@@ -298,7 +299,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
         InfobarType::kInfobarTypePermissions) {
       // TODO(crbug.com/458307626): Migrate to LocationBarBadge.
       if (IsProactiveSuggestionsFrameworkEnabled() && self.webState &&
-          !self.webState->GetBrowserState()->IsOffTheRecord()) {
+          (!self.webState->GetBrowserState()->IsOffTheRecord() ||
+           IsChromeNextIaEnabled())) {
         // Check camera permission.
         if (self.webState->GetStateForPermission(web::PermissionCamera) ==
             web::PermissionStateAllowed) {
@@ -545,7 +547,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   NSArray<id<BadgeItem>>* badges = self.badges;
 
   if (IsProactiveSuggestionsFrameworkEnabled() && self.webState &&
-      !self.webState->GetBrowserState()->IsOffTheRecord()) {
+      (!self.webState->GetBrowserState()->IsOffTheRecord() ||
+       IsChromeNextIaEnabled())) {
     [self handleMultiBadgeDisplay:badges];
   } else {
     [self handleSingleBadgeDisplay:badges];
