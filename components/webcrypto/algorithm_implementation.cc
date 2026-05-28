@@ -108,6 +108,13 @@ Status AlgorithmImplementation::Decapsulate(
   return Status::ErrorUnsupported();
 }
 
+Status AlgorithmImplementation::GetPublicKey(
+    const blink::WebCryptoKey& key,
+    blink::WebCryptoKeyUsageMask usages,
+    blink::WebCryptoKey* public_key) const {
+  return Status::ErrorUnsupported();
+}
+
 bool AlgorithmImplementation::Supports(
     blink::WebCryptoOperation op,
     const blink::WebCryptoAlgorithm& algorithm,

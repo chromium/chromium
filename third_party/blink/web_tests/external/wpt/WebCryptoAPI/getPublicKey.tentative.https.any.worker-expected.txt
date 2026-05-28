@@ -13,6 +13,18 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works for X25519
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for ML-DSA-44
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works for ML-DSA-65
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works for ML-DSA-87
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works for ML-KEM-512
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works for ML-KEM-768
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works for ML-KEM-1024
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] Derived public key is functionally equivalent to original public key
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works with empty usages for ECDH
@@ -29,6 +41,18 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works with empty usages for X25519
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for ML-DSA-44
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works with empty usages for ML-DSA-65
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works with empty usages for ML-DSA-87
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works with empty usages for ML-KEM-512
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works with empty usages for ML-KEM-768
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] getPublicKey works with empty usages for ML-KEM-1024
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey rejects with InvalidAccessError when given a public key
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey rejects with NotSupportedError for AES-GCM symmetric keys

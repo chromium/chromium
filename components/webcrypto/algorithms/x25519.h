@@ -29,6 +29,10 @@ class X25519Implementation : public AlgorithmImplementation {
                    const blink::WebCryptoKey& key,
                    std::vector<uint8_t>* buffer) const override;
 
+  Status GetPublicKey(const blink::WebCryptoKey& key,
+                      blink::WebCryptoKeyUsageMask usages,
+                      blink::WebCryptoKey* public_key) const override;
+
   Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                     const blink::WebCryptoKey& base_key,
                     std::optional<unsigned int> length_bits,

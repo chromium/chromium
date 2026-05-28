@@ -790,6 +790,29 @@ void WebCryptoImpl::DecapsulateBits(
   }
 }
 
+void WebCryptoImpl::GetPublicKey(
+    const blink::WebCryptoKey& key,
+    blink::WebCryptoKeyUsageMask usages,
+    blink::WebCryptoResult result,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (result.Cancelled()) {
+    return;
+  }
+
+  webcrypto::Status status;
+  blink::WebCryptoKey public_key;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoGetPublicKey");
+    status = webcrypto::GetPublicKey(key, usages, &public_key);
+  }
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoGetPublicKeyReply");
+    CompleteWithKeyOrError(status, public_key, &result);
+  }
+}
+
 bool WebCryptoImpl::Supports(blink::WebCryptoOperation op,
                              const blink::WebCryptoAlgorithm& algorithm,
                              std::optional<unsigned int> length_bits) {

@@ -30,6 +30,10 @@ class MlDsaImplementation : public AlgorithmImplementation {
                    const blink::WebCryptoKey& key,
                    std::vector<uint8_t>* buffer) const override;
 
+  Status GetPublicKey(const blink::WebCryptoKey& key,
+                      blink::WebCryptoKeyUsageMask usages,
+                      blink::WebCryptoKey* public_key) const override;
+
   Status Sign(const blink::WebCryptoAlgorithm& algorithm,
               const blink::WebCryptoKey& key,
               base::span<const uint8_t> message,

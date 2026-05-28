@@ -158,6 +158,10 @@ class SubtleCrypto final : public ScriptWrappable {
       CryptoKey* decapsulation_key,
       const V8BufferSource* ciphertext,
       ExceptionState&);
+  ScriptPromise<CryptoKey> getPublicKey(ScriptState*,
+                                        CryptoKey*,
+                                        const Vector<String>& key_usages,
+                                        ExceptionState&);
 
   // Length is in bits
   static bool supports(ScriptState*,

@@ -37,6 +37,7 @@
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
+#include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/public/web/web_crypto_histograms.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -159,6 +160,9 @@ std::optional<WebCryptoOperation> StringToWebCryptoOperation(const String& op) {
   if (op == "decapsulateKey" || op == "decapsulateBits") {
     return kWebCryptoOperationDecapsulate;
   }
+  if (op == "getPublicKey") {
+    return kWebCryptoOperationGetPublicKey;
+  }
   return std::nullopt;
 }
 
@@ -214,6 +218,7 @@ bool supportsInternal(ScriptState* script_state,
     case kWebCryptoOperationEncapsulate:
     case kWebCryptoOperationDecapsulate:
     case kWebCryptoOperationGenerateKey:
+    case kWebCryptoOperationGetPublicKey:
       if (normalized_algorithm.ParamsType() ==
           kWebCryptoAlgorithmParamsTypeNone) {
         return true;
@@ -1188,6 +1193,50 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::decapsulateBits(
   return promise;
 }
 
+ScriptPromise<CryptoKey> SubtleCrypto::getPublicKey(
+    ScriptState* script_state,
+    CryptoKey* key,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state) {
+  // Method described by:
+  // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-getPublicKey
+
+  if (!WebCryptoAlgorithm::IsAsymmetric(key->Key().Algorithm().Id())) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "getPublicKey can only be called with "
+                                      "keys from an asymmetric algorithm");
+    return EmptyPromise();
+  }
+
+  if (key->Key().GetType() != kWebCryptoKeyTypePrivate) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "getPublicKey can only be called with a private key");
+    return EmptyPromise();
+  }
+
+  WebCryptoKeyUsageMask key_usages;
+  if (!CryptoKey::ParseUsageMask(raw_key_usages, key_usages, exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<CryptoKey>>(script_state);
+  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
+  auto promise = resolver->Promise();
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  HistogramKey(execution_context, key->Key());
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto);
+
+  Platform::Current()->Crypto()->GetPublicKey(
+      key->Key(), key_usages, result->Result(), std::move(task_runner));
+
+  return promise;
+}
+
 // Defined by
 // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-supports,
 // 3.2.6 and for the supports(operation, algorithm, length) section.
@@ -1195,7 +1244,6 @@ bool SubtleCrypto::supports(ScriptState* script_state,
                             const String& operation,
                             const V8AlgorithmIdentifier* algorithm,
                             std::optional<unsigned> length) {
-  // No support for "getPublicKey"; we return false if that's the operation.
   std::optional<WebCryptoOperation> op = StringToWebCryptoOperation(operation);
   if (!op) {
     return false;
@@ -1212,7 +1260,6 @@ bool SubtleCrypto::supports(ScriptState* script_state,
                             const String& operation,
                             const V8AlgorithmIdentifier* algorithm,
                             const V8AlgorithmIdentifier* additional_algorithm) {
-  // No support for "getPublicKey"; we return false if that's the operation.
   std::optional<WebCryptoOperation> op = StringToWebCryptoOperation(operation);
   if (!op) {
     return false;

@@ -121,7 +121,9 @@ class BLINK_PLATFORM_EXPORT WebCryptoResult {
 class WebCrypto {
  public:
   // WebCrypto is the interface for starting one-shot cryptographic
-  // operations.
+  // operations. This interface serves as an abstraction layer between
+  // third_party/blink/renderer/modules/crypto/subtle_crypto.h and the WebCrypto
+  // implementation in components/webcrypto/.
   //
   // -----------------------
   // Completing the request
@@ -251,6 +253,15 @@ class WebCrypto {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
   }
+
+  virtual void GetPublicKey(
+      const WebCryptoKey& key,
+      WebCryptoKeyUsageMask usages,
+      WebCryptoResult result,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
+  }
+
   virtual void WrapKey(
       WebCryptoKeyFormat,
       const WebCryptoKey& key,
@@ -291,14 +302,6 @@ class WebCrypto {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
   }
-
-  // -------------------------------------
-  // Key Encapsulation Mechanism (KEM)
-  // -------------------------------------
-  //
-  // Methods support KEM encapulate/decapsulate functions.
-  //
-  // See https://wicg.github.io/webcrypto-modern-algos/ for more information.
 
   virtual void EncapsulateKey(
       const WebCryptoAlgorithm& encapsulation_algorithm,

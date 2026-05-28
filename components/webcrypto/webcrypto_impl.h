@@ -143,6 +143,12 @@ class WebCryptoImpl : public blink::WebCrypto {
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
+  void GetPublicKey(
+      const blink::WebCryptoKey& key,
+      blink::WebCryptoKeyUsageMask usages,
+      blink::WebCryptoResult result,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+
   bool Supports(blink::WebCryptoOperation op,
                 const blink::WebCryptoAlgorithm& algorithm,
                 std::optional<unsigned int> length_bits) override;

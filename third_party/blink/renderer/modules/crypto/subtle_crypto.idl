@@ -139,6 +139,9 @@ typedef (object or DOMString) AlgorithmIdentifier;
         AlgorithmIdentifier decapsulationAlgorithm,
         CryptoKey decapsulationKey,
         BufferSource ciphertext);
+    [CallWith=ScriptState, MeasureAs=SubtleCryptoGetPublicKey,
+     RaisesException, RuntimeEnabled=WebCryptoPQC]
+    Promise<CryptoKey> getPublicKey(CryptoKey key, sequence<KeyUsage> keyUsages);
 
     [CallWith=ScriptState, RuntimeEnabled=WebCryptoPQC]
     static boolean supports(

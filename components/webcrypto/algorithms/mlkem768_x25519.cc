@@ -108,6 +108,24 @@ Status MlKem768X25519Implementation::ExportKey(
   }
 }
 
+Status MlKem768X25519Implementation::GetPublicKey(
+    const blink::WebCryptoKey& key,
+    blink::WebCryptoKeyUsageMask usages,
+    blink::WebCryptoKey* public_key) const {
+  Status status = CheckKeyCreationUsages(all_public_key_usages_, usages);
+  if (status.IsError()) {
+    return status;
+  }
+
+  bssl::UniquePtr<EVP_PKEY> pub_pkey(EVP_PKEY_copy_public(GetEVP_PKEY(key)));
+  if (!pub_pkey) {
+    return Status::OperationError();
+  }
+
+  return CreateWebCryptoPublicKey(std::move(pub_pkey), key.Algorithm(), true,
+                                  usages, public_key);
+}
+
 Status MlKem768X25519Implementation::Encapsulate(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& encapsulation_key,

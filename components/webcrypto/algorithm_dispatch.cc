@@ -473,6 +473,18 @@ Status DecapsulateBits(const blink::WebCryptoAlgorithm& algorithm,
                            shared_bits);
 }
 
+Status GetPublicKey(const blink::WebCryptoKey& key,
+                    blink::WebCryptoKeyUsageMask usages,
+                    blink::WebCryptoKey* public_key) {
+  const AlgorithmImplementation* impl = nullptr;
+  Status status = GetAlgorithmImplementation(key.Algorithm().Id(), &impl);
+  if (status.IsError()) {
+    return status;
+  }
+
+  return impl->GetPublicKey(key, usages, public_key);
+}
+
 bool SerializeKeyForClone(const blink::WebCryptoKey& key,
                           std::vector<uint8_t>* key_data) {
   const AlgorithmImplementation* impl = nullptr;

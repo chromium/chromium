@@ -144,6 +144,10 @@ class AlgorithmImplementation {
                              base::span<const uint8_t> ciphertext,
                              std::vector<uint8_t>* out_shared_secret) const;
 
+  virtual Status GetPublicKey(const blink::WebCryptoKey& key,
+                              blink::WebCryptoKeyUsageMask usages,
+                              blink::WebCryptoKey* public_key) const;
+
   // Returns true if the operation and algorithm are supported.
   //
   // This function need only check for the specific operations where parameters

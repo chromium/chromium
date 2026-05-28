@@ -379,6 +379,23 @@ Status RsaHashedAlgorithm::ExportKey(blink::WebCryptoKeyFormat format,
   }
 }
 
+Status RsaHashedAlgorithm::GetPublicKey(const blink::WebCryptoKey& key,
+                                        blink::WebCryptoKeyUsageMask usages,
+                                        blink::WebCryptoKey* public_key) const {
+  Status status = CheckKeyCreationUsages(all_public_key_usages_, usages);
+  if (status.IsError()) {
+    return status;
+  }
+
+  bssl::UniquePtr<EVP_PKEY> pub_pkey(EVP_PKEY_copy_public(GetEVP_PKEY(key)));
+  if (!pub_pkey) {
+    return Status::OperationError();
+  }
+
+  return CreateWebCryptoPublicKey(std::move(pub_pkey), key.Algorithm(), true,
+                                  usages, public_key);
+}
+
 Status RsaHashedAlgorithm::ImportKeyPkcs8(
     base::span<const uint8_t> key_data,
     const blink::WebCryptoAlgorithm& algorithm,

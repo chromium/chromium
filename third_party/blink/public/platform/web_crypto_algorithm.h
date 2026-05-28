@@ -56,7 +56,8 @@ enum WebCryptoOperation {
   kWebCryptoOperationUnwrapKey,
   kWebCryptoOperationEncapsulate,
   kWebCryptoOperationDecapsulate,
-  kWebCryptoOperationLast = kWebCryptoOperationDecapsulate,
+  kWebCryptoOperationGetPublicKey,
+  kWebCryptoOperationLast = kWebCryptoOperationGetPublicKey,
 };
 
 enum WebCryptoAlgorithmId {
@@ -220,6 +221,8 @@ class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
   static bool IsMlDsa(WebCryptoAlgorithmId);
   // Returns true if the provided algorithm ID is for a ML-KEM algorithm
   static bool IsMlKem(WebCryptoAlgorithmId);
+
+  static bool IsAsymmetric(WebCryptoAlgorithmId);
 
  private:
   void Assign(const WebCryptoAlgorithm& other);
