@@ -11,10 +11,6 @@ implemented on top of the &lt;webview&gt; tag and is available in isolated
 contexts. See https://github.com/WICG/controlled-frame for more information.
 * MimeHandlerView, which allows certain MIME types to be loaded by an extension. There is a hard coded list of Mime Handler extensions: Chromium's PDF viewer and [QuickOffice](https://chrome.google.com/webstore/detail/gbkeegbaiigmenfmjfclcdgdpimamgkj).
 
-Guest Views are currently implemented using [inner WebContents](https://docs.google.com/document/d/1q1wY2pISRjricWvJrIGSoKKXeVqytkkKpkjgUwe9dS8/edit?usp=sharing). By end of 2024, we plan to [migrate](https://crbug.com/1261928) Guest Views to use [MPArch](https://docs.google.com/document/d/1NginQ8k0w3znuwTiJ5qjYmBKgZDekvEPC22q0I4swxQ/edit?usp=sharing) like other features which nest FrameTrees.
+Guest Views are currently implemented using [inner WebContents](https://docs.google.com/document/d/1q1wY2pISRjricWvJrIGSoKKXeVqytkkKpkjgUwe9dS8/edit?usp=sharing). There is an effort to [migrate](https://crbug.com/40202416) Guest Views to use [MPArch](https://docs.google.com/document/d/1NginQ8k0w3znuwTiJ5qjYmBKgZDekvEPC22q0I4swxQ/edit?usp=sharing) like other features which nest FrameTrees. See the linked bug for the status.
 
-For debugging &lt;webview&gt;, the [Browser Sample](https://chromewebstore.google.com/detail/edggnmnajhcbhlnpjnogkjpghaikidaa) [[source](https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/_archive/apps/samples/webview-samples/browser)] app serves as a basic demo. To test Chrome Apps on platforms other than ChromeOS:
-
-1. Run `chrome` with `--disable-features=ChromeAppsDeprecation`.
-1. On `chrome://extensions/`, enable developer mode and load the app's source as an unpacked extension.
-1. Open the app via `chrome://apps/`.
+For debugging &lt;webview&gt;, the [Browser Sample](https://chromewebstore.google.com/detail/edggnmnajhcbhlnpjnogkjpghaikidaa) [[source](https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/_archive/apps/samples/webview-samples/browser)] app serves as a basic demo. To test Chrome Apps on linux, see [Chrome OS Build Instructions](/docs/chromeos_build_instructions.md).
