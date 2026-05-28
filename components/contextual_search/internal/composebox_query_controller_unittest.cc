@@ -1985,6 +1985,7 @@ TEST_F(ComposeboxQueryControllerTest,
           request_id, client_context, client_logs, future.GetCallback(),
           /*page_url=*/std::nullopt, /*page_title=*/std::nullopt,
           /*file_name=*/std::nullopt,
+          ComposeboxQueryController::UploadImageType::kViewport,
           lens::ImageData());  // Empty image data!
   auto [request, error_type] = future.Take();
   EXPECT_TRUE(request.objects_request().request_context().request_id().uuid() ==

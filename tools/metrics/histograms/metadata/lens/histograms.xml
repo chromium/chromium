@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(ComposeboxImageUploadType) -->
+
+<variants name="ComposeboxImageUploadType">
+  <variant name="File" summary="manual image file upload"/>
+  <variant name="Viewport" summary="tab viewport screenshot upload"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/contextual_search/internal/composebox_query_controller.h:ComposeboxImageUploadType) -->
+
 <variants name="FirstInteractionType">
   <variant name="LensMenu"/>
   <variant name="Permission"/>
@@ -90,6 +99,63 @@ chromium-metrics-reviews@google.com.
     Recorded once when the Lens side panel is dismissed. Records whether the AIM
     handshake with the remote UI was compoleted at least once in the session.
   </summary>
+</histogram>
+
+<histogram
+    name="Lens.Composebox.ImageUpload.{UploadType}.DownscaleAndEncodeFailed"
+    enum="Boolean" expires_after="2026-11-28">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a {UploadType} request is created. Logs whether the background
+    downscaling and encoding process returned empty bytes.
+  </summary>
+  <token key="UploadType" variants="ComposeboxImageUploadType"/>
+</histogram>
+
+<histogram name="Lens.Composebox.ImageUpload.{UploadType}.InputImageInvalid"
+    enum="Boolean" expires_after="2026-11-28">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a {UploadType} is processed. Logs whether the input bitmap was
+    null or empty.
+  </summary>
+  <token key="UploadType" variants="ComposeboxImageUploadType"/>
+</histogram>
+
+<histogram name="Lens.Composebox.ImageUpload.{UploadType}.InputMaxDimension"
+    units="pixels" expires_after="2026-11-28">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a {UploadType} is processed. Logs the maximum dimension (width
+    or height) of the input image before downscaling.
+  </summary>
+  <token key="UploadType" variants="ComposeboxImageUploadType"/>
+</histogram>
+
+<histogram name="Lens.Composebox.ImageUpload.{UploadType}.LimitMaxDimension"
+    units="pixels" expires_after="2026-11-28">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a {UploadType} is processed. Logs the maximum allowed
+    downscale dimension limit to verify active experiment values.
+  </summary>
+  <token key="UploadType" variants="ComposeboxImageUploadType"/>
+</histogram>
+
+<histogram
+    name="Lens.Composebox.ImageUpload.{UploadType}.ProcessedMaxDimension"
+    units="pixels" expires_after="2026-11-28">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a {UploadType} request is created. Logs the maximum dimension
+    (width or height) of the successfully downscaled image.
+  </summary>
+  <token key="UploadType" variants="ComposeboxImageUploadType"/>
 </histogram>
 
 <histogram name="Lens.Composebox.ShownInSession" enum="Boolean"

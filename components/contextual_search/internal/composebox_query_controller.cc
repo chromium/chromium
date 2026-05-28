@@ -15,7 +15,9 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -367,6 +369,16 @@ bool ModalityChipHasVsrid(const lens::ModalityChipProps& modality_chip_props) {
   return modality_chip_props.has_added_input() &&
          modality_chip_props.added_input().has_lens_file() &&
          modality_chip_props.added_input().lens_file().has_vsrid();
+}
+
+std::string ImageTypeToString(
+    ComposeboxQueryController::UploadImageType image_type) {
+  switch (image_type) {
+    case ComposeboxQueryController::UploadImageType::kViewport:
+      return "Viewport";
+    case ComposeboxQueryController::UploadImageType::kFile:
+      return "File";
+  }
 }
 
 }  // namespace
@@ -1209,14 +1221,28 @@ void ComposeboxQueryController::
         std::optional<GURL> page_url,
         std::optional<std::string> page_title,
         std::optional<std::string> file_name,
+        UploadImageType image_type,
         lens::ImageData image_data) {
+  bool is_empty_bytes = image_data.payload().image_bytes().empty();
+  base::UmaHistogramBoolean(base::StrCat({"Lens.Composebox.ImageUpload.",
+                                          ImageTypeToString(image_type),
+                                          ".DownscaleAndEncodeFailed"}),
+                            is_empty_bytes);
+
   // Validate that client-side image compression/encoding succeeded.
-  if (image_data.payload().image_bytes().empty()) {
+  if (is_empty_bytes) {
     std::move(callback).Run(
         lens::LensOverlayServerRequest(),
         contextual_search::ContextUploadErrorType::kImageProcessingError);
     return;
   }
+
+  int max_processed_dimension = std::max(image_data.image_metadata().width(),
+                                         image_data.image_metadata().height());
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"Lens.Composebox.ImageUpload.",
+                    ImageTypeToString(image_type), ".ProcessedMaxDimension"}),
+      max_processed_dimension, 1, 10000, 50);
   lens::LensOverlayServerRequest request;
   auto* objects_request = request.mutable_objects_request();
   objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
@@ -1776,16 +1802,37 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::optional<std::string> file_name,
+    UploadImageType image_type,
     const SkBitmap& bitmap) {
 #if !BUILDFLAG(IS_IOS)
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
-  if (bitmap.isNull() || bitmap.empty()) {
+
+  bool is_empty_bitmap = bitmap.isNull() || bitmap.empty();
+  base::UmaHistogramBoolean(
+      base::StrCat({"Lens.Composebox.ImageUpload.",
+                    ImageTypeToString(image_type), ".InputImageInvalid"}),
+      is_empty_bitmap);
+
+  if (is_empty_bitmap) {
     std::move(callback).Run(
         lens::LensOverlayServerRequest(),
         contextual_search::ContextUploadErrorType::kImageProcessingError);
     return;
   }
+
+  int limit_max_dimension =
+      std::max(image_options.max_width, image_options.max_height);
+  int max_dimension = std::max(bitmap.width(), bitmap.height());
+
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"Lens.Composebox.ImageUpload.",
+                    ImageTypeToString(image_type), ".LimitMaxDimension"}),
+      limit_max_dimension, 1, 10000, 50);
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"Lens.Composebox.ImageUpload.",
+                    ImageTypeToString(image_type), ".InputMaxDimension"}),
+      max_dimension, 1, 10000, 50);
 
   // If the bitmap is a viewport bitmap, it will be destroyed after the
   // owning ContextualInputData is destroyed (i.e. at the end of
@@ -1802,7 +1849,8 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
       base::BindOnce(&ComposeboxQueryController::
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
-                     std::move(callback), page_url, page_title, file_name));
+                     std::move(callback), page_url, page_title, file_name,
+                     image_type));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -1813,6 +1861,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::optional<std::string> file_name,
+    UploadImageType image_type,
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   CHECK(image_options.has_value());
@@ -1824,7 +1873,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
       base::BindOnce(&ComposeboxQueryController::ProcessDecodedImageAndContinue,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      image_options.value(), std::move(callback), page_url,
-                     page_title, file_name));
+                     page_title, file_name, image_type));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -1852,6 +1901,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
         std::move(contextual_input_data->viewport_screenshot_bytes.value()),
         std::move(image_options), contextual_input_data->page_url,
         contextual_input_data->page_title, /*file_name=*/std::nullopt,
+        UploadImageType::kViewport,
         base::BindOnce(
             &ComposeboxQueryController::AddPageIndexToUploadRequestAndContinue,
             weak_ptr_factory_.GetWeakPtr(),
@@ -1883,7 +1933,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                     weak_ptr_factory_.GetWeakPtr(), file_token,
                     request_index))),
         contextual_input_data->page_url, contextual_input_data->page_title,
-        /*file_name=*/std::nullopt,
+        /*file_name=*/std::nullopt, UploadImageType::kViewport,
         // Pass ownership of the viewport screenshot to the
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
@@ -1974,6 +2024,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
             std::move(contextual_input_data->context_input->front().bytes_),
             std::move(image_options), contextual_input_data->page_url,
             contextual_input_data->page_title, contextual_input_data->file_name,
+            UploadImageType::kFile,
             base::BindOnce(
                 &ComposeboxQueryController::
                     AddLensUsageIntentToUploadRequestAndContinue,

@@ -23,6 +23,7 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::optional<std::string> file_name,
+    UploadImageType image_type,
     RequestBodyProtoCreatedCallback callback) {
   CHECK(image_options.has_value());
   // On iOS, we use UIImage for decoding and resizing.
@@ -48,5 +49,6 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
       base::BindOnce(&ComposeboxQueryController::
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
-                     std::move(callback), page_url, page_title, file_name));
+                     std::move(callback), page_url, page_title, file_name,
+                     image_type));
 }
