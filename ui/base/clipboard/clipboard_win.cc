@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Many of these functions are based on those found in
 // webkit/port/platform/PasteboardWin.cpp
 
@@ -189,8 +184,8 @@ HGLOBAL CreateGlobalData(const std::basic_string<charT>& str) {
     ::GlobalAlloc(GMEM_MOVEABLE, ((str.size() + 1) * sizeof(charT)));
   if (data) {
     charT* raw_data = static_cast<charT*>(::GlobalLock(data));
-    memcpy(raw_data, str.data(), str.size() * sizeof(charT));
-    raw_data[str.size()] = '\0';
+    UNSAFE_TODO(memcpy(raw_data, str.data(), str.size() * sizeof(charT)));
+    UNSAFE_TODO(raw_data[str.size()] = '\0');
     ::GlobalUnlock(data);
   }
   return data;
@@ -758,8 +753,8 @@ void ClipboardWin::ReadHTMLInternal(
 
   std::vector<size_t> offsets = {start_index - html_start,
                                  end_index - html_start};
-  markup->assign(base::UTF8ToUTF16AndAdjustOffsets(cf_html.data() + html_start,
-                                                   &offsets));
+  markup->assign(base::UTF8ToUTF16AndAdjustOffsets(
+      UNSAFE_TODO(cf_html.data() + html_start), &offsets));
   // Ensure the Fragment points within the string; see https://crbug.com/607181.
   size_t end = std::min(offsets[1], markup->length());
   *fragment_start = base::checked_cast<uint32_t>(std::min(offsets[0], end));
@@ -781,7 +776,7 @@ std::u16string ClipboardWin::ReadSvgInternal(
   if (base::FeatureList::IsEnabled(features::kUseUtf8EncodingForSvgImage)) {
     result = base::UTF8ToUTF16(data);
   } else {
-    result.assign(reinterpret_cast<const char16_t*>(data.data()),
+    result.assign(UNSAFE_TODO(reinterpret_cast<const char16_t*>(data.data())),
                   data.size() / sizeof(char16_t));
   }
   TrimAfterNull(&result);
@@ -1128,7 +1123,7 @@ void ClipboardWin::WriteData(const ClipboardFormatType& format,
     return;
 
   char* hdata_ptr = static_cast<char*>(::GlobalLock(hdata));
-  memcpy(hdata_ptr, data.data(), data.size());
+  UNSAFE_TODO(memcpy(hdata_ptr, data.data(), data.size()));
   ::GlobalUnlock(hdata);
   WriteToClipboard(format, hdata);
 }
@@ -1137,30 +1132,30 @@ void ClipboardWin::WriteClipboardHistory() {
   // Write a zero value to the clipboard to indicate that the clipboard history
   // is not available.
   DWORD value = 0;
-  WriteData(
-      ClipboardFormatType::ClipboardHistoryType(),
-      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+  WriteData(ClipboardFormatType::ClipboardHistoryType(),
+            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
+                                   sizeof(value))));
 }
 
 void ClipboardWin::WriteUploadCloudClipboard() {
   // Write a zero value to the clipboard to indicate that the cloud clipboard
   // is not available.
   DWORD value = 0;
-  WriteData(
-      ClipboardFormatType::UploadCloudClipboardType(),
-      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+  WriteData(ClipboardFormatType::UploadCloudClipboardType(),
+            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
+                                   sizeof(value))));
 }
 
 void ClipboardWin::WriteConfidentialDataForPassword() {
   // Write a zero value to the clipboard to indicate that the clipboard history
   // and cloud clipboard are not available.
   DWORD value = 0;
-  WriteData(
-      ClipboardFormatType::ClipboardHistoryType(),
-      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
-  WriteData(
-      ClipboardFormatType::UploadCloudClipboardType(),
-      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+  WriteData(ClipboardFormatType::ClipboardHistoryType(),
+            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
+                                   sizeof(value))));
+  WriteData(ClipboardFormatType::UploadCloudClipboardType(),
+            UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&value),
+                                   sizeof(value))));
 }
 
 template <typename Result>
@@ -1299,9 +1294,9 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
       // Return an empty image for unsupported bit depths.
       return SkBitmap();
   }
-  const void* bitmap_bits = reinterpret_cast<const char*>(bitmap) +
-                            bitmap->bmiHeader.biSize +
-                            color_table_length * sizeof(RGBQUAD);
+  const void* bitmap_bits = UNSAFE_TODO(reinterpret_cast<const char*>(bitmap) +
+                                        bitmap->bmiHeader.biSize +
+                                        color_table_length * sizeof(RGBQUAD));
 
   void* dst_bits;
   // dst_hbitmap is freed by the release_proc in skia_bitmap (below)
