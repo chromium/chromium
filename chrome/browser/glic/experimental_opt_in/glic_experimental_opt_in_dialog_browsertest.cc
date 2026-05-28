@@ -55,7 +55,9 @@ class GlicExperimentalOptInTest
  public:
   using BaseClass = GlicBrowserTestMixin<MixinBasedInProcessBrowserTest>;
   using MixinBasedInProcessBrowserTest::browser;
-  GlicExperimentalOptInTest() = default;
+  GlicExperimentalOptInTest() : GlicExperimentalOptInTest("") {}
+  explicit GlicExperimentalOptInTest(std::string opt_in_url)
+      : opt_in_url_(std::move(opt_in_url)) {}
   ~GlicExperimentalOptInTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -73,8 +75,12 @@ class GlicExperimentalOptInTest
     opt_in_test_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/webui/glic/");
     ASSERT_TRUE(opt_in_test_server_.InitializeAndListen());
-    GURL test_url =
-        opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
+    GURL test_url;
+    if (!opt_in_url_.empty()) {
+      test_url = GURL(opt_in_url_);
+    } else {
+      test_url = opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
+    }
 
     base::FieldTrialParams params;
     params["glic-experimental-triggering-opt-in-url"] = test_url.spec();
@@ -175,6 +181,7 @@ class GlicExperimentalOptInTest
     extensions::TabHelper::CreateForWebContents(web_contents);
   }
 
+  std::string opt_in_url_;
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription creation_subscription_;
   net::EmbeddedTestServer opt_in_test_server_;
@@ -703,5 +710,62 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpenGoogleLinkInNewTab) {
 
   service()->opt_in_controller().CloseDialog(false);
 }
+class GlicExperimentalOptInOfflineTest : public GlicExperimentalOptInTest {
+ public:
+  GlicExperimentalOptInOfflineTest()
+      : GlicExperimentalOptInTest("https://invalid.test/") {}
+};
 
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInOfflineTest,
+                       OfflinePageLoadFailureAndDismissal) {
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
+  ASSERT_TRUE(widget);
+
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  content::WebContents* dialog_contents = web_view->GetWebContents();
+  ASSERT_TRUE(dialog_contents);
+
+  // Wait for the WebUI host page to load and trigger the offline state.
+  // The offline panel should be visible, and the webview guest should
+  // be hidden.
+  bool offline_panel_visible = base::test::RunUntil([dialog_contents]() {
+    return content::EvalJs(dialog_contents,
+                           "const panel = "
+                           "document.getElementById('offlinePanel');"
+                           "panel && !panel.hidden && "
+                           "window.getComputedStyle(panel).display !== 'none';")
+        .ExtractBool();
+  });
+  ASSERT_TRUE(offline_panel_visible);
+
+  // Verify that the close button is visible and has positive dimensions.
+  bool close_button_visible =
+      content::EvalJs(
+          dialog_contents,
+          "(() => {"
+          "  const btn = document.getElementById('closeButtonOffline');"
+          "  if (!btn) return false;"
+          "  const rect = btn.getBoundingClientRect();"
+          "  return rect.width > 0 && rect.height > 0 && "
+          "      window.getComputedStyle(btn).display !== 'none';"
+          "})()")
+          .ExtractBool();
+  EXPECT_TRUE(close_button_visible);
+
+  // Click the close button inside the WebUI.
+  ASSERT_TRUE(content::ExecJs(
+      dialog_contents,
+      "setTimeout(() => "
+      "document.getElementById('closeButtonOffline').click(), 0);"));
+
+  // The dialog should close and the result should be false (rejected).
+  views::test::WidgetDestroyedWaiter(widget).Wait();
+  EXPECT_FALSE(opt_in_result.Get());
+}
 }  // namespace glic
