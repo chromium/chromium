@@ -271,6 +271,8 @@ if (current_toolchain == default_toolchain) {
       "magic_button_old.icon",
       "mail.icon",
       "mail_filled.icon",
+      "mark_email_read.icon",
+      "mark_email_read_old.icon",
       "media_next_track_old.icon",
       "media_previous_track_old.icon",
       "media_router_active_chrome_refresh_old.icon",

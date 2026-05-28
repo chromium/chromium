@@ -334,8 +334,8 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kEmailVerified,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? vector_icons::kMailFilledIcon
-                                      : vector_icons::kEmailOldIcon,
+                                      ? vector_icons::kMarkEmailReadIcon
+                                      : vector_icons::kMarkEmailReadOldIcon,
                                   IDS_EMAIL_VERIFIED)
           .AddMenu()
           .Build());
