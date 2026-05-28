@@ -91,7 +91,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
     std::string name;
   };
 
-  struct UniformInfo {
+  struct GPU_GLES2_EXPORT UniformInfo {
     UniformInfo();
     UniformInfo(const UniformInfo& other);
     UniformInfo(const std::string& client_name,
@@ -106,6 +106,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
         case GL_SAMPLER_2D_RECT_ANGLE:
         case GL_SAMPLER_CUBE:
         case GL_SAMPLER_EXTERNAL_OES:
+        case GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT:
         case GL_SAMPLER_3D:
         case GL_SAMPLER_2D_SHADOW:
         case GL_SAMPLER_2D_ARRAY:

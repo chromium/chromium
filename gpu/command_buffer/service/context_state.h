@@ -84,6 +84,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
       case GL_UNSIGNED_INT_SAMPLER_CUBE:
         return bound_texture_cube_map.get();
       case GL_SAMPLER_EXTERNAL_OES:
+      case GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT:
         return bound_texture_external_oes.get();
       case GL_SAMPLER_2D_RECT_ANGLE:
         return bound_texture_rectangle_arb.get();
