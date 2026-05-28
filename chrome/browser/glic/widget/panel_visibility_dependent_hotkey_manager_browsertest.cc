@@ -43,8 +43,8 @@ class PanelVisibilityDependentHotkeyManagerTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    manager_.emplace(mock_panel_.GetWeakPtr());
-    registration_delegate_.emplace();
+    manager_.emplace(GetProfile(), mock_panel_.GetWeakPtr());
+    registration_delegate_.emplace(GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerTest,
   auto panel = std::make_unique<MockLocalHotkeyPanel>();
   auto manager_with_null_controller =
       std::make_unique<PanelVisibilityDependentHotkeyManager>(
-          panel->GetWeakPtr());
+          GetProfile(), panel->GetWeakPtr());
   panel.reset();  // Invalidate the WeakPtr
 
   EXPECT_FALSE(manager_with_null_controller->AcceleratorPressed(
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerTest,
   EXPECT_TRUE(focus_manager->IsAcceleratorRegistered(test_accel));
 
   // Test adding a new browser after registration.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(GetProfile());
   BrowserView* browser_view2 = GetBrowserViewForBrowser(browser2);
   ASSERT_TRUE(browser_view2);
   views::FocusManager* focus_manager2 = nullptr;

@@ -49,7 +49,7 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 
   panel_visibility_dependent_hotkey_manager_ =
       std::make_unique<PanelVisibilityDependentHotkeyManager>(
-          weak_ptr_factory_.GetWeakPtr());
+          profile_, weak_ptr_factory_.GetWeakPtr());
   panel_focus_dependent_hotkey_manager_ =
       std::make_unique<PanelFocusDependentHotkeyManager>(
           weak_ptr_factory_.GetWeakPtr());

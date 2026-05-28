@@ -4,21 +4,12 @@
 
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 
-#include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_map.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/base_window.h"
@@ -46,45 +37,32 @@ class ApplicationScopedHotkeyRegistration
  public:
   ApplicationScopedHotkeyRegistration(
       ui::Accelerator accelerator,
-      base::WeakPtr<ui::AcceleratorTarget> target)
-      : accelerator_(accelerator), target_(target) {
+      base::WeakPtr<ui::AcceleratorTarget> target,
+      ProfileBrowserCollection* collection)
+      : accelerator_(accelerator), target_(target), collection_(collection) {
     CHECK(!accelerator_.IsEmpty());
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+    CHECK(collection_);
+    CHECK(target_);
+    collection_->ForEach(
         [this](BrowserWindowInterface* browser_window_interface) {
           RegisterAccelerator(browser_window_interface);
           return true;
-        });
-    browser_collection_observation_.Observe(
-        GlobalBrowserCollection::GetInstance());
+        },
+        BrowserCollection::Order::kActivation);
+    browser_collection_observation_.Observe(collection_);
   }
 
   ~ApplicationScopedHotkeyRegistration() override {
     CHECK(target_);
-#if !BUILDFLAG(IS_ANDROID)
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+    collection_->ForEach(
         [this](BrowserWindowInterface* browser_window_interface) {
-          if (auto* const browser_view = BrowserView::GetBrowserViewForBrowser(
-                  browser_window_interface)) {
-            browser_view->GetFocusManager()->UnregisterAccelerator(
-                accelerator_, target_.get());
-          }
+          UnregisterAccelerator(browser_window_interface);
           return true;
-        });
-#else
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [this](BrowserWindowInterface* browser_window_interface) {
-          if (auto* window = browser_window_interface->GetWindow()) {
-            ui::AcceleratorManagerAndroid::FromWindow(
-                *window->GetNativeWindow())
-                ->UnregisterAccelerator(accelerator_, target_.get());
-          }
-          return true;
-        });
-#endif
+        },
+        BrowserCollection::Order::kActivation);
   }
 
  private:
-  // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override {
     RegisterAccelerator(browser);
   }
@@ -110,15 +88,32 @@ class ApplicationScopedHotkeyRegistration
 #endif
   }
 
+  void UnregisterAccelerator(BrowserWindowInterface* browser_window_interface) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
+      browser_view->GetFocusManager()->UnregisterAccelerator(accelerator_,
+                                                             target_.get());
+    }
+#else
+    if (auto* window = browser_window_interface->GetWindow()) {
+      ui::AcceleratorManagerAndroid::FromWindow(*window->GetNativeWindow())
+          ->UnregisterAccelerator(accelerator_, target_.get());
+    }
+#endif
+  }
+
   ui::Accelerator accelerator_;
   base::WeakPtr<ui::AcceleratorTarget> target_;
+  raw_ptr<ProfileBrowserCollection> collection_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };
 }  // namespace
 
-ApplicationScopedRegistrationDelegate::ApplicationScopedRegistrationDelegate() =
-    default;
+ApplicationScopedRegistrationDelegate::ApplicationScopedRegistrationDelegate(
+    Profile* profile)
+    : profile_(profile) {}
 ApplicationScopedRegistrationDelegate::
     ~ApplicationScopedRegistrationDelegate() = default;
 
@@ -126,7 +121,7 @@ std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
 ApplicationScopedRegistrationDelegate::CreateScopedHotkeyRegistration(
     ui::Accelerator accelerator,
     base::WeakPtr<ui::AcceleratorTarget> target) {
-  return std::make_unique<ApplicationScopedHotkeyRegistration>(accelerator,
-                                                               target);
+  return std::make_unique<ApplicationScopedHotkeyRegistration>(
+      accelerator, target, ProfileBrowserCollection::GetForProfile(profile_));
 }
 }  // namespace glic

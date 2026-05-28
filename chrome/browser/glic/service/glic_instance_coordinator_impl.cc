@@ -321,6 +321,7 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
     instance->Shutdown();
   }
   web_contents_warming_pool_->Clear();
+  hotkey_manager_.reset();
 }
 
 void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {

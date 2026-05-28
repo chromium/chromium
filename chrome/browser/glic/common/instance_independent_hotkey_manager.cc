@@ -27,10 +27,8 @@ InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
     : coordinator_(coordinator), profile_(profile) {
   static constexpr std::array<LocalHotkeyManager::Command, 1>
       kSupportedCommands = {LocalHotkeyManager::Command::kCaptureRegion};
-  // TODO(b/515124988): Pass in profile to ApplicationScopedRegistrationDelegate
-  // so we only register handlers for windows that belong to the right profile.
   hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
-      std::make_unique<ApplicationScopedRegistrationDelegate>(), this,
+      std::make_unique<ApplicationScopedRegistrationDelegate>(profile), this,
       kSupportedCommands);
   hotkey_manager_->InitializeAccelerators();
 }
@@ -65,13 +63,6 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
 }
 
 bool InstanceIndependentHotkeyManager::CanHandleAccelerators() const {
-  // TODO(b/515124988): This can be removed after the profile is checked during
-  // registration.
-  BrowserWindowInterface* const bwi =
-      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
-  if (!bwi || bwi->GetProfile() != profile_) {
-    return false;
-  }
   return glic::GlicEnabling::IsEnabledAndConsentForProfile(profile_);
 }
 

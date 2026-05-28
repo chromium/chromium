@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_GLIC_COMMON_APPLICATION_HOTKEY_DELEGATE_H_
 #define CHROME_BROWSER_GLIC_COMMON_APPLICATION_HOTKEY_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "ui/base/accelerators/accelerator.h"
+
+class Profile;
 
 namespace glic {
 
@@ -19,13 +22,16 @@ namespace glic {
 class ApplicationScopedRegistrationDelegate
     : public LocalHotkeyManager::RegistrationDelegate {
  public:
-  ApplicationScopedRegistrationDelegate();
+  explicit ApplicationScopedRegistrationDelegate(Profile* profile);
   ~ApplicationScopedRegistrationDelegate() override;
 
   std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
   CreateScopedHotkeyRegistration(
       ui::Accelerator accelerator,
       base::WeakPtr<ui::AcceleratorTarget> target) override;
+
+ private:
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace glic

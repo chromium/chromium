@@ -7,6 +7,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace glic {
 
@@ -16,10 +17,11 @@ constexpr std::array<LocalHotkeyManager::Command, 1> kSupportedCommands = {
 }  // namespace
 
 PanelVisibilityDependentHotkeyManager::PanelVisibilityDependentHotkeyManager(
+    Profile* profile,
     base::WeakPtr<LocalHotkeyManager::Panel> panel)
     : panel_(panel) {
   hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
-      std::make_unique<ApplicationScopedRegistrationDelegate>(), this,
+      std::make_unique<ApplicationScopedRegistrationDelegate>(profile), this,
       kSupportedCommands);
 }
 
