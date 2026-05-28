@@ -72,6 +72,8 @@ using content::WebContents;
 
 namespace {
 
+constexpr int kRoundedCaptionButtonSize = 16;
+
 class CaptionButtonBackgroundImageSource : public gfx::CanvasImageSource {
  public:
   CaptionButtonBackgroundImageSource(const gfx::ImageSkia& bg_image,
@@ -730,7 +732,10 @@ views::Button* OpaqueBrowserFrameView::CreateFrameCaptionButton(
   views::FrameCaptionButton* button = new views::FrameCaptionButton(
       views::Button::PressedCallback(), icon_type, ht_component);
   button->SetImage(button->GetIcon(), views::FrameCaptionButton::Animate::kNo,
-                   icon_image);
+                   icon_image,
+                   features::IsRoundedIconsEnabled()
+                       ? std::make_optional<int>(kRoundedCaptionButtonSize)
+                       : std::nullopt);
   return button;
 }
 

@@ -54,10 +54,12 @@ class VIEWS_EXPORT FrameCaptionButton : public Button {
   // Sets the image to use to paint the button. If |animate| is Animate::kYes,
   // the button crossfades to the new visuals. If the image matches the one
   // currently used by the button and |animate| is Animate::kNo, the crossfade
-  // animation is progressed to the end.
+  // animation is progressed to the end. If |icon_size| is not provided, will
+  // default to the size used in the icon file.
   void SetImage(CaptionButtonIcon icon,
                 Animate animate,
-                const gfx::VectorIcon& icon_image);
+                const gfx::VectorIcon& icon_image,
+                std::optional<int> icon_size = std::nullopt);
 
   // Returns true if the button is crossfading to new visuals set in
   // SetImage().
@@ -156,6 +158,8 @@ class VIEWS_EXPORT FrameCaptionButton : public Button {
   // Crossfade animation started when the button's images are changed by
   // SetImage().
   std::unique_ptr<gfx::SlideAnimation> swap_images_animation_;
+
+  std::optional<int> icon_size_ = std::nullopt;
 };
 
 }  // namespace views

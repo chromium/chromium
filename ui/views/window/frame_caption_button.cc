@@ -133,7 +133,8 @@ float FrameCaptionButton::GetInactiveButtonColorAlphaRatio() {
 
 void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
                                   Animate animate,
-                                  const gfx::VectorIcon& icon_definition) {
+                                  const gfx::VectorIcon& icon_definition,
+                                  std::optional<int> icon_size) {
   // If the button is not yet in a widget, OnThemeChanged() will call back
   // here once it is, updating the color as needed.
   SkColor icon_color = gfx::kPlaceholderColor;
@@ -144,7 +145,10 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
   }
 
   gfx::ImageSkia new_icon_image =
-      gfx::CreateVectorIcon(icon_definition, icon_color);
+      icon_size.has_value()
+          ? gfx::CreateVectorIcon(icon_definition, icon_size.value(),
+                                  icon_color)
+          : gfx::CreateVectorIcon(icon_definition, icon_color);
 
   // The early return is dependent on |animate| because callers use SetImage()
   // with Animate::kNo to progress the crossfade animation to the end.
@@ -161,6 +165,7 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
   icon_ = icon;
   icon_definition_ = &icon_definition;
   icon_image_ = new_icon_image;
+  icon_size_ = icon_size;
 
   if (animate == Animate::kYes) {
     swap_images_animation_->Reset(0);
@@ -299,7 +304,7 @@ void FrameCaptionButton::MaybeRefreshIconAndInkdropBaseColor() {
   }
 
   if (icon_definition_) {
-    SetImage(icon_, Animate::kNo, *icon_definition_);
+    SetImage(icon_, Animate::kNo, *icon_definition_, icon_size_);
   }
   UpdateInkDropBaseColor();
 }
