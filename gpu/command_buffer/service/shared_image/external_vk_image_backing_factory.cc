@@ -42,10 +42,14 @@ VkImageUsageFlags GetMaximalImageUsageFlags(
   // support is required when SAMPLED_IMAGE is supported. In Vulkan 1.0 all
   // formats support these features implicitly. See discussion in
   // https://github.com/KhronosGroup/Vulkan-Docs/issues/1223
-  if (feature_flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+  // FILTER_LINEAR is additionally required to match ANGLE as the
+  // image may be exported to it.
+  if ((feature_flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) &&
+      (feature_flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
     usage_flags |= VK_IMAGE_USAGE_SAMPLED_BIT |
                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                    VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+  }
 
   // VUID-VkImageViewCreateInfo-usage-02652: support for INPUT_ATTACHMENT is
   // implied by both of COLOR_ATTACHNENT and DEPTH_STENCIL_ATTACHMENT
