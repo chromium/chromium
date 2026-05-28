@@ -31,6 +31,17 @@ ONNXTensorElementDataType WebnnToOnnxDataType(OperandDataType data_type) {
   }
 }
 
+OrtHardwareDeviceType WebnnToOrtDeviceType(mojom::Device device_type) {
+  switch (device_type) {
+    case mojom::Device::kCpu:
+      return OrtHardwareDeviceType_CPU;
+    case mojom::Device::kGpu:
+      return OrtHardwareDeviceType_GPU;
+    case mojom::Device::kNpu:
+      return OrtHardwareDeviceType_NPU;
+  }
+}
+
 std::vector<int64_t> WebnnToOnnxShape(base::span<const uint32_t> shape) {
   return std::vector<int64_t>(shape.begin(), shape.end());
 }

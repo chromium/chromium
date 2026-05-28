@@ -27,7 +27,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -142,12 +141,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   scoped_refptr<WebNNTensorImpl> GetWebNNTensorImpl(
       const blink::WebNNTensorToken& handle);
 
-  // Report the currently dispatching Message as bad and remove the GraphBuilder
-  // receiver which received it.
-  void ReportBadGraphBuilderMessage(
-      const std::string& message,
-      base::PassKey<WebNNGraphBuilderImpl> pass_key) override;
-
   // This method will be called by `WebNNGraphBuilderImpl::CreateGraph()` after
   // `graph_info` is validated. A backend subclass should implement this method
   // to build and compile a platform specific graph asynchronously.
@@ -163,11 +156,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
           constant_tensor_operands,
       CreateGraphImplCallback callback) = 0;
-
-  // Called by a graph builder to destroy itself.
-  void RemoveGraphBuilder(
-      mojo::ReceiverId graph_builder_id,
-      base::PassKey<WebNNGraphBuilderImpl> pass_key) override;
 
   // Get context properties with op support limits that are intersection
   // between WebNN generic limits and backend specific limits.
@@ -374,9 +362,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void RunOrScheduleTaskWithThisContext(
       RunOrScheduleTaskCallback task,
       const gpu::SyncToken& fence = gpu::SyncToken());
-
-  // Graph builders owned by this context.
-  mojo::UniqueReceiverSet<mojom::WebNNGraphBuilder> graph_builder_impls_;
 
   // GraphImpls owned by the context. Graphs use a WeakPtr to safely access the
   // context during build operations.

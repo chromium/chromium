@@ -12,11 +12,13 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -30,10 +32,10 @@ class WebNNTensorImpl;
 // (Compiler process).
 class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderContext {
  public:
-  // Result of a successful graph creation, returned via
-  // BuildGraphCallback.
+  // Result of a successful graph creation, returned via BuildGraphCallback.
   struct GraphCreationResult {
-    GraphCreationResult();
+    GraphCreationResult(blink::WebNNGraphToken token,
+                        std::vector<mojom::Device> devices);
     GraphCreationResult(GraphCreationResult&&);
     GraphCreationResult& operator=(GraphCreationResult&&);
     ~GraphCreationResult();
@@ -45,7 +47,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderContext {
   using BuildGraphCallback = base::OnceCallback<void(
       base::expected<GraphCreationResult, mojom::ErrorPtr>)>;
 
-  virtual ~GraphBuilderContext() = default;
+  GraphBuilderContext();
+  virtual ~GraphBuilderContext();
 
   virtual const ContextProperties& properties() const = 0;
   virtual const mojom::CreateContextOptions& options() const = 0;
@@ -64,21 +67,29 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderContext {
       BuildGraphCallback callback) = 0;
 
   // Called by a graph builder to destroy itself.
-  virtual void RemoveGraphBuilder(
-      mojo::ReceiverId graph_builder_id,
-      base::PassKey<WebNNGraphBuilderImpl> pass_key) = 0;
+  void RemoveGraphBuilder(mojo::ReceiverId graph_builder_id,
+                          base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
-  // Report the currently dispatching Message as bad and remove the
+  // Reports the currently dispatching Message as bad and remove the
   // GraphBuilder receiver which received it.
-  virtual void ReportBadGraphBuilderMessage(
+  void ReportBadGraphBuilderMessage(
       const std::string& message,
-      base::PassKey<WebNNGraphBuilderImpl> pass_key) = 0;
+      base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
  protected:
-  // Returns a pass key for setting graph builder IDs.
-  static base::PassKey<GraphBuilderContext> GetPassKey() {
-    return base::PassKey<GraphBuilderContext>();
-  }
+  // Creates a WebNNGraphBuilderImpl and adds it to `graph_builder_impls_`.
+  void CreateGraphBuilderImpl(
+      mojo::PendingReceiver<mojom::WebNNGraphBuilder> receiver);
+
+  // Clears all graph builders owned by this context.
+  void ClearGraphBuilders();
+
+  // Returns true if there are any graph builders owned by this context.
+  bool has_graph_builders() const;
+
+ private:
+  // Graph builders owned by this context.
+  mojo::UniqueReceiverSet<mojom::WebNNGraphBuilder> graph_builder_impls_;
 };
 
 }  // namespace webnn

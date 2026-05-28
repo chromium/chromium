@@ -207,6 +207,8 @@ component("webnn_service") {
 
   if (is_win) {
     sources += [
+      "ort/compiler_context_impl_ort.cc",
+      "ort/compiler_context_impl_ort.h",
       "ort/context_impl_ort.cc",
       "ort/context_impl_ort.h",
       "ort/context_provider_ort.cc",
@@ -236,6 +238,8 @@ component("webnn_service") {
       "ort/scoped_ort_types.h",
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
+      "webnn_compiler_service_impl.cc",
+      "webnn_compiler_service_impl.h",
     ]
     deps += [
       "//services/webnn/public/cpp:win",

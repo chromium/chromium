@@ -5,6 +5,8 @@
 #ifndef SERVICES_WEBNN_ORT_ORT_SESSION_OPTIONS_H_
 #define SERVICES_WEBNN_ORT_ORT_SESSION_OPTIONS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -45,6 +47,10 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
     return first_selected_device_;
   }
 
+  std::optional<uint32_t> batched_matmul_k_dimension_limit() const {
+    return batched_matmul_k_dimension_limit_;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<SessionOptions>;
 
@@ -55,6 +61,8 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
   scoped_refptr<Environment> env_;
   // It's safe to keep `first_selected_device_` as `env_` owns all EP devices.
   raw_ptr<const OrtEpDevice> first_selected_device_;
+
+  std::optional<uint32_t> batched_matmul_k_dimension_limit_;
 };
 
 }  // namespace webnn::ort

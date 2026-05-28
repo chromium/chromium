@@ -29,29 +29,6 @@
 
 namespace webnn::ort {
 
-namespace {
-
-std::optional<uint32_t> GetBatchedMatMulKDimensionLimit(
-    const OrtEpDevice* first_selected_device) {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
-  const auto iter = kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
-  if (iter == kKnownEPs.end()) {
-    return std::nullopt;
-  }
-
-  OrtHardwareDeviceType hardware_device_type = ort_api->HardwareDevice_Type(
-      ort_api->EpDevice_Device(first_selected_device));
-  if (hardware_device_type != OrtHardwareDeviceType_NPU) {
-    return std::nullopt;
-  }
-
-  return iter->second.workarounds.npu_batched_matmul_k_dimension_limit;
-}
-
-}  // namespace
-
 // Represents the collection of resources associated with a particular graph.
 // These resources may outlive their associated `GraphImplOrt` instance while
 // executing the graph.
@@ -168,13 +145,11 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.Compilation");
 
   scoped_trace.AddStep("Create model info");
-  std::optional<uint32_t> batched_matmul_k_dimension_limit =
-      GetBatchedMatMulKDimensionLimit(session_options->first_selected_device());
   ASSIGN_OR_RETURN(std::unique_ptr<ModelEditor::ModelInfo> model_info,
                    GraphBuilderOrt::CreateAndBuild(
                        *graph_info, std::move(context_properties),
                        std::move(constant_operands),
-                       std::move(batched_matmul_k_dimension_limit)));
+                       session_options->batched_matmul_k_dimension_limit()));
 
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;

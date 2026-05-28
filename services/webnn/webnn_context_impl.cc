@@ -35,7 +35,6 @@
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_context_provider_impl.h"
-#include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/tflite/buildflags.h"
@@ -175,7 +174,7 @@ void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
 base::RepeatingClosure* g_destruction_callback_for_testing = nullptr;
 
 WebNNContextImpl::~WebNNContextImpl() {
-  CHECK(graph_builder_impls_.empty())
+  CHECK(!has_graph_builders())
       << "Graph builders must be cleared in OnDisconnect().";
 
   for (auto impl : tensor_impls_) {
@@ -240,7 +239,7 @@ void WebNNContextImpl::OnDisconnect() {
   // all endpoint clients on the router, so the subsequent Clear() won't trigger
   // MaybePostToProcessTasks() and leak a router ref.
   ResetMojoReceiver();
-  graph_builder_impls_.Clear();
+  ClearGraphBuilders();
 
   base::OnceClosure remove_task;
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
@@ -306,12 +305,6 @@ void WebNNContextImpl::CreateWeightsFile(
   }
 }
 
-void WebNNContextImpl::ReportBadGraphBuilderMessage(
-    const std::string& message,
-    base::PassKey<WebNNGraphBuilderImpl> pass_key) {
-  graph_builder_impls_.ReportBadMessage(message);
-}
-
 void WebNNContextImpl::BuildGraph(
     mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
@@ -337,30 +330,16 @@ void WebNNContextImpl::OnGraphBuilt(
     return;
   }
 
-  GraphCreationResult creation_result;
-  creation_result.graph_token = result.value()->handle();
-  creation_result.devices = result.value()->devices();
-
+  GraphCreationResult creation_result(result.value()->handle(),
+                                      result.value()->devices());
   graph_impls_.emplace(std::move(result.value()));
 
   std::move(callback).Run(std::move(creation_result));
 }
 
-void WebNNContextImpl::RemoveGraphBuilder(
-    mojo::ReceiverId graph_builder_id,
-    base::PassKey<WebNNGraphBuilderImpl> /*pass_key*/) {
-  graph_builder_impls_.Remove(graph_builder_id);
-}
-
 void WebNNContextImpl::CreateGraphBuilder(
     mojo::PendingReceiver<mojom::WebNNGraphBuilder> receiver) {
-  auto graph_builder = std::make_unique<WebNNGraphBuilderImpl>(*this);
-  WebNNGraphBuilderImpl* graph_builder_ptr = graph_builder.get();
-
-  mojo::ReceiverId id =
-      graph_builder_impls_.Add(std::move(graph_builder), std::move(receiver));
-
-  graph_builder_ptr->SetId(id, GraphBuilderContext::GetPassKey());
+  CreateGraphBuilderImpl(std::move(receiver));
 }
 
 void WebNNContextImpl::CreateTensor(

@@ -110,18 +110,6 @@ void RecordFirstSelectedDevice(OrtHardwareDeviceType device_type) {
 // tensors for EPs, e.g. OpenVINO EP.
 BASE_FEATURE(kUseDeviceTensor, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Maps WebNN device type to ORT hardware device type.
-OrtHardwareDeviceType ToOrtDeviceType(mojom::Device device_type) {
-  switch (device_type) {
-    case mojom::Device::kCpu:
-      return OrtHardwareDeviceType_CPU;
-    case mojom::Device::kGpu:
-      return OrtHardwareDeviceType_GPU;
-    case mojom::Device::kNpu:
-      return OrtHardwareDeviceType_NPU;
-  }
-}
-
 }  // namespace
 
 // static
@@ -145,7 +133,7 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
   // determine ORT device type.
   // TODO(crbug.com/469455162): Use power preference and accelerated
   // attributes from WebNN context options to determine ORT device type.
-  OrtHardwareDeviceType device_type = ToOrtDeviceType(options->device);
+  OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
   const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
   scoped_refptr<SessionOptions> session_options =
       SessionOptions::Create(device_type, env);

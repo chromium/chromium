@@ -101,6 +101,25 @@ std::optional<GraphOptimizationLevel> StringToOrtGraphOptimizationLevel(
   return std::nullopt;
 }
 
+std::optional<uint32_t> GetBatchedMatMulKDimensionLimit(
+    const OrtEpDevice* first_selected_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
+  const auto iter = kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+  if (iter == kKnownEPs.end()) {
+    return std::nullopt;
+  }
+
+  OrtHardwareDeviceType hardware_device_type = ort_api->HardwareDevice_Type(
+      ort_api->EpDevice_Device(first_selected_device));
+  if (hardware_device_type != OrtHardwareDeviceType_NPU) {
+    return std::nullopt;
+  }
+
+  return iter->second.workarounds.npu_batched_matmul_k_dimension_limit;
+}
+
 }  // namespace
 
 // static
@@ -203,6 +222,9 @@ SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
 
   first_selected_device_ = selected_ep_devices.front();
   CHECK(first_selected_device_);
+
+  batched_matmul_k_dimension_limit_ =
+      GetBatchedMatMulKDimensionLimit(first_selected_device_);
 
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   // SAFETY: Passing `&device_type_` is safe because the delegate is only called

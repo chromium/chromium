@@ -121,18 +121,26 @@ bool PlatformFunctions::InitializeFromPath(
     return false;
   }
 
+  const OrtCompileApi* ort_compile_api = ort_api->GetCompileApi();
+  if (!ort_compile_api) {
+    LOG(ERROR) << "[WebNN] Failed to get OrtCompileApi.";
+    return false;
+  }
+
   g_instance_ = new PlatformFunctions(std::move(ort_library), ort_api,
-                                      ort_model_editor_api);
+                                      ort_model_editor_api, ort_compile_api);
   return true;
 }
 
 PlatformFunctions::PlatformFunctions(
     base::ScopedNativeLibrary ort_library,
     const OrtApi* ort_api,
-    const OrtModelEditorApi* ort_model_editor_api)
+    const OrtModelEditorApi* ort_model_editor_api,
+    const OrtCompileApi* ort_compile_api)
     : ort_library_(std::move(ort_library)),
       ort_api_(ort_api),
-      ort_model_editor_api_(ort_model_editor_api) {}
+      ort_model_editor_api_(ort_model_editor_api),
+      ort_compile_api_(ort_compile_api) {}
 
 PlatformFunctions::~PlatformFunctions() = default;
 
