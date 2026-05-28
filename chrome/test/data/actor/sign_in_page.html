@@ -32,7 +32,13 @@
 
   <script>
     document.getElementById('provider-button').addEventListener('click', () => {
-      window.location.href = 'simple.html';
+      // Artificially delay the navigation to simple.html. This simulates the
+      // asynchronous nature of real FedCM login flows and prevents the click
+      // tool from completing successfully before the mock federated result
+      // resume callback executes on the UI thread.
+      setTimeout(() => {
+        window.location.href = 'simple.html';
+      }, 1000);
     });
 
     document.getElementById('provider-popup-button').addEventListener('click', () => {
