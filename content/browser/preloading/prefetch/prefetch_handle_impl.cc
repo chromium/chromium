@@ -133,7 +133,8 @@ PrefetchHandleImpl::~PrefetchHandleImpl() {
   if (prefetch_service_) {
     // TODO(crbug.com/390329781): Consider setting appropriate
     // PrefetchStatus/PreloadingAttempt.
-    if (prefetch_status_on_release_started_prefetch_ && prefetch_container_) {
+    std::optional<PrefetchStatus> prefetch_status_on_destruction;
+    if (prefetch_container_) {
       switch (prefetch_container_->GetLoadState()) {
         case PrefetchContainer::LoadState::kNotStarted:
         case PrefetchContainer::LoadState::kEligible:
@@ -145,12 +146,13 @@ PrefetchHandleImpl::~PrefetchHandleImpl() {
         case PrefetchContainer::LoadState::kFailedDeterminedHead:
         case PrefetchContainer::LoadState::kCompleted:
         case PrefetchContainer::LoadState::kFailed:
-          prefetch_container_->SetPrefetchStatus(
-              *prefetch_status_on_release_started_prefetch_);
+          prefetch_status_on_destruction =
+              prefetch_status_on_release_started_prefetch_;
           break;
       }
     }
-    prefetch_service_->MayReleasePrefetch(prefetch_container_);
+    prefetch_service_->MayReleasePrefetch(
+        prefetch_container_, std::move(prefetch_status_on_destruction));
   }
 }
 

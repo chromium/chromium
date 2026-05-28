@@ -430,6 +430,7 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
       return nullptr;
     case Action::kReplaceOldWithNew:
       ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr(),
+                             /*prefetch_status_on_destruction=*/std::nullopt,
                              /*should_progress=*/false);
       return CreatePrefetchContainer(std::move(prefetch_request),
                                      std::move(pre_prefetch_container));
@@ -1322,12 +1323,13 @@ void PrefetchService::OnGotEligibilityForRedirect(
 
 void PrefetchService::OnPrefetchTimeout(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchIsStale);
-  ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container));
+  ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container),
+                                         PrefetchStatus::kPrefetchIsStale);
 }
 
 void PrefetchService::MayReleasePrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    std::optional<PrefetchStatus> prefetch_status_on_destruction) {
   if (!prefetch_container) {
     return;
   }
@@ -1336,11 +1338,13 @@ void PrefetchService::MayReleasePrefetch(
     return;
   }
 
-  ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container));
+  ResetPrefetchContainerAndProgressAsync(
+      std::move(prefetch_container), std::move(prefetch_status_on_destruction));
 }
 
 void PrefetchService::ResetPrefetchContainer(
     base::WeakPtr<PrefetchContainer> prefetch_container,
+    std::optional<PrefetchStatus> prefetch_status_on_destruction,
     bool should_progress) {
   CHECK(prefetch_container);
 
@@ -1351,6 +1355,9 @@ void PrefetchService::ResetPrefetchContainer(
   auto it = owned_prefetches().find(prefetch_container->key());
   CHECK(it != owned_prefetches().end());
   CHECK_EQ(it->second.get(), prefetch_container.get());
+  if (prefetch_status_on_destruction) {
+    prefetch_container->SetPrefetchStatus(*prefetch_status_on_destruction);
+  }
   owned_prefetches_.erase(it);
 }
 
@@ -1371,16 +1378,20 @@ void PrefetchService::ScheduleAndProgressAsync(
 }
 
 void PrefetchService::ResetPrefetchContainerAndProgressAsync(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  ResetPrefetchContainer(std::move(prefetch_container));
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    std::optional<PrefetchStatus> prefetch_status_on_destruction) {
+  ResetPrefetchContainer(std::move(prefetch_container),
+                         std::move(prefetch_status_on_destruction));
 
   // `PrefetchScheduler::Progress()` will be called asynchronously.
 }
 
 void PrefetchService::ResetPrefetchContainersAndProgressAsync(
-    std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers) {
+    std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers,
+    std::optional<PrefetchStatus> prefetch_status_on_destruction) {
   for (auto& prefetch_container : prefetch_containers) {
-    ResetPrefetchContainer(std::move(prefetch_container));
+    ResetPrefetchContainer(std::move(prefetch_container),
+                           prefetch_status_on_destruction);
   }
 
   // `PrefetchScheduler::Progress()` will be called asynchronously.
@@ -1432,9 +1443,8 @@ void PrefetchService::PrepareProgress(base::PassKey<PrefetchScheduler>) {
 
 void PrefetchService::EvictPrefetch(base::PassKey<PrefetchScheduler>,
                                     PrefetchContainer& prefetch_container) {
-  prefetch_container.SetPrefetchStatus(
-      PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
-  ResetPrefetchContainer(prefetch_container.GetWeakPtr());
+  ResetPrefetchContainer(prefetch_container.GetWeakPtr(),
+                         PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
 }
 
 bool PrefetchService::StartSinglePrefetch(
@@ -1950,7 +1960,7 @@ base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {
 
 void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(
     const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
-    PrefetchStatus status) {
+    PrefetchStatus prefetch_status_on_destruction) {
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_reset;
   for (const auto& prefetch_iter : owned_prefetches()) {
     base::WeakPtr<PrefetchContainer> prefetch_container =
@@ -1965,12 +1975,12 @@ void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(
             url::Origin::Create(prefetch_container->GetURL()));
     if (storage_key_filter.Run(
             blink::StorageKey::CreateFirstParty(target_origin))) {
-      prefetch_container->SetPrefetchStatus(status);
       prefetches_to_reset.push_back(prefetch_container);
     }
   }
 
-  ResetPrefetchContainersAndProgressAsync(std::move(prefetches_to_reset));
+  ResetPrefetchContainersAndProgressAsync(std::move(prefetches_to_reset),
+                                          prefetch_status_on_destruction);
 }
 
 }  // namespace content

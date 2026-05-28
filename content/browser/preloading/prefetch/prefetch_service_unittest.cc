@@ -7460,7 +7460,9 @@ TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
         break;
       case Event::kResetPrefetchContainer:
         ASSERT_TRUE(prefetch_container);
-        prefetch_service().MayReleasePrefetch(prefetch_container);
+        prefetch_service().MayReleasePrefetch(
+            prefetch_container,
+            /*prefetch_status_on_destruction=*/std::nullopt);
         break;
       case Event::kObserverOnWillBeDestroyed:
       case Event::kObserverOnGotInitialEligibility:
