@@ -571,22 +571,27 @@ TEST_F(TranslateAgentBrowserTest, UnsupportedTranslateSchemes) {
       UpdateGURLScheme(url, content::kChromeUIScheme).c_str());
 
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
+  EXPECT_TRUE(fake_translate_driver_.details_->adopted_language.empty());
+  fake_translate_driver_.ResetNewPageValues();
 
   LoadHTMLWithUrlOverride(
       "<html><body>A random page with random content.</body></html>",
       url::kAboutBlankURL);
 
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
+  EXPECT_TRUE(fake_translate_driver_.details_->adopted_language.empty());
+  fake_translate_driver_.ResetNewPageValues();
 
   LoadHTMLWithUrlOverride(
       "<html><body>A random page with random content.</body></html>",
       UpdateGURLScheme(url, content::kChromeDevToolsScheme).c_str());
 
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
+  EXPECT_TRUE(fake_translate_driver_.details_->adopted_language.empty());
 }

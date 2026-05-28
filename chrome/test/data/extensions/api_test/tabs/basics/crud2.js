@@ -233,6 +233,15 @@ const tests = [
                                }));
   },
 
+  async function detectLanguageAboutBlank() {
+    const tab = await chrome.tabs.create({url: 'about:blank'});
+    await chrome.test.assertPromiseRejects(
+        chrome.tabs.detectLanguage(tab.id),
+        'Error: Language detection is not supported for this page.');
+    await chrome.tabs.remove(tab.id);
+    chrome.test.succeed();
+  },
+
   // TODO(crbug.com/40698663): This test must either be run in a window context
   // where the current window is guaranteed, or be moved to the interactive
   // test so there's consistent focus to guarantee which window is the default.
@@ -256,6 +265,7 @@ const skipForAndroid = [
   'testOpenEmptyPopup',
   'testCreatePopupAndMoveTab',
   'detectLanguage',
+  'detectLanguageAboutBlank',
   'getCurrentWindow',
 ];
 

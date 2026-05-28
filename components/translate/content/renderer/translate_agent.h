@@ -132,6 +132,10 @@ class TranslateAgent : public content::RenderFrameObserver,
 
   const mojo::Remote<mojom::ContentTranslateDriver>& GetTranslateHandler();
 
+  // Helper to send the page registration Mojo call to the browser.
+  void RegisterPageInternal(LanguageDetectionDetails details,
+                            bool page_level_translation_criteria_met);
+
   // Cleanups all states and pending callbacks associated with the current
   // running page translation.
   void ResetPage();

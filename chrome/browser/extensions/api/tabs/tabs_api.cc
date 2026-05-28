@@ -30,6 +30,7 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -107,6 +108,8 @@ namespace windows = api::windows;
 
 constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
     "Cannot determine language: tab not loaded";
+constexpr char kLanguageDetectionNotSupported[] =
+    "Language detection is not supported for this page.";
 constexpr char kFrameNotFoundError[] = "No frame with id * in tab *.";
 constexpr char kCannotUpdateMuteCaptured[] =
     "Cannot update mute state for tab *, tab has audio or video currently "
@@ -3464,6 +3467,10 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   if (contents->GetController().NeedsReload()) {
     // If the tab hasn't been loaded, don't wait for the tab to load.
     return RespondNow(Error(kCannotDetermineLanguageOfUnloadedTab));
+  }
+
+  if (!TranslateService::IsTranslatableURL(contents->GetLastCommittedURL())) {
+    return RespondNow(Error(kLanguageDetectionNotSupported));
   }
 
   // Language detection is asynchronous.
