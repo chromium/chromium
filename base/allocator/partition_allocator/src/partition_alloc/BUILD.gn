@@ -226,8 +226,12 @@ component("raw_ptr") {
     "pointers/raw_ptr_exclusion.h",
     "pointers/raw_ptr_noop_impl.h",
     "pointers/raw_ref.h",
+    "pointers/realloc_protected_iterator.h",
   ]
-  sources = [ "pointers/instance_tracer.cc" ]
+  sources = [
+    "pointers/instance_tracer.cc",
+    "pointers/realloc_protected_iterator.cc",
+  ]
   public_configs = [ ":public_includes" ]
   configs += [ ":wexit_time_destructors" ]
   deps = []
@@ -1084,6 +1088,7 @@ if (build_with_chromium) {
         "partition_alloc_base/strings/stringprintf_pa_unittest.cc",
         "partition_alloc_base/thread_annotations_pa_unittest.cc",
         "partition_lock_unittest.cc",
+        "pointers/realloc_protected_iterator_unittest.cc",
         "reverse_bytes_unittest.cc",
         "scheduler_loop_quarantine_unittest.cc",
         "thread_cache_unittest.cc",
