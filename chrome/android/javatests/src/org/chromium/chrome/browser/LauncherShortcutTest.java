@@ -130,6 +130,7 @@ public class LauncherShortcutTest {
                 () -> {
                     regularActivity.finishAndRemoveTask();
                 });
+        ApplicationTestUtils.waitForActivityState(regularActivity, Stage.DESTROYED);
 
         TabModelSelector incognitoSelector = incognitoActivity.getTabModelSelector();
         int initialTabCount =
