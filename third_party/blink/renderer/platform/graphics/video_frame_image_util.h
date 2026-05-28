@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/video_transformation.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"

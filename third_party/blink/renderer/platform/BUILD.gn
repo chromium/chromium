@@ -901,7 +901,7 @@ component("platform") {
     "graphics/canvas_resource_dispatcher.h",
     "graphics/canvas_resource_provider.cc",
     "graphics/canvas_resource_provider.h",
-    "graphics/canvas_snapshot_provider.h",
+    "graphics/canvas_snapshot_info.h",
     "graphics/color.cc",
     "graphics/color.h",
     "graphics/color_behavior.h",

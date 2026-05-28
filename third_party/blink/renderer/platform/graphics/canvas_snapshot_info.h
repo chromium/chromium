@@ -1,8 +1,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_INFO_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_INFO_H_
 
 #include "base/functional/function_ref.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -34,29 +34,6 @@ struct PLATFORM_EXPORT CanvasSnapshotInfo {
   }
 };
 
-// This is an interface abstracting a class that can draw to a snapshot.
-class PLATFORM_EXPORT CanvasSnapshotProvider {
- public:
-  virtual ~CanvasSnapshotProvider() = default;
-
-  virtual gfx::Size Size() const = 0;
-  virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
-  virtual gfx::ColorSpace GetColorSpace() const = 0;
-  virtual SkAlphaType GetAlphaType() const = 0;
-  virtual bool IsValid() const = 0;
-  virtual bool IsGpuContextLost() const = 0;
-  virtual bool IsExternalBitmapProvider() const { return false; }
-
-  CanvasSnapshotInfo GetInfo() const {
-    return {
-        .alpha_type = GetAlphaType(),
-        .color_space = GetColorSpace(),
-        .format = GetSharedImageFormat(),
-        .size = Size(),
-    };
-  }
-};
-
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_INFO_H_

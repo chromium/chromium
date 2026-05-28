@@ -20,7 +20,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -97,7 +97,6 @@ enum class RasterMode {
 class PLATFORM_EXPORT CanvasResourceProvider
     : public base::CheckedObserver,
       public CanvasMemoryDumpClient,
-      public CanvasSnapshotProvider,
       public MemoryManagedPaintRecorder::Client,
       public ScopedRasterTimer::Host {
  public:
@@ -146,13 +145,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual ScopedRasterTimer CreateScopedRasterTimerForCanvas2D();
 
   virtual bool IsAccelerated() const = 0;
+  virtual bool IsValid() const = 0;
+  virtual bool IsGpuContextLost() const = 0;
   SkSurfaceProps GetSkSurfaceProps() const;
-  viz::SharedImageFormat GetSharedImageFormat() const override {
-    return format_;
-  }
-  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
-  SkAlphaType GetAlphaType() const override { return alpha_type_; }
-  gfx::Size Size() const override { return size_; }
+  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
+  gfx::ColorSpace GetColorSpace() const { return color_space_; }
+  SkAlphaType GetAlphaType() const { return alpha_type_; }
+  gfx::Size Size() const { return size_; }
   virtual base::ByteSize EstimatedSizeInBytes() const {
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
@@ -526,7 +525,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 // * by non-Canvas2D clients.
 class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
     : public CanvasMemoryDumpClient,
-      public CanvasSnapshotProvider,
       public MemoryManagedPaintRecorder::Client,
       public CanvasResourceSharedImage::Client,
       public FlushForImageObserver,
@@ -597,7 +595,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   bool IsAccelerated() const { return is_accelerated_; }
   bool IsSoftware() const { return is_software_; }
-  bool IsGpuContextLost() const override;
+  bool IsGpuContextLost() const;
 
   CanvasResourceProvider::ResourceProviderType GetType() const {
     return CanvasResourceProvider::kSharedImage;
@@ -605,13 +603,18 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   SkSurface* GetSkSurface() const;
 
-  // CanvasSnapshotProvider implementation:
-  gfx::Size Size() const override { return size_; }
-  viz::SharedImageFormat GetSharedImageFormat() const override {
-    return format_;
+  gfx::Size Size() const { return size_; }
+  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
+  gfx::ColorSpace GetColorSpace() const { return color_space_; }
+  SkAlphaType GetAlphaType() const { return alpha_type_; }
+  CanvasSnapshotInfo GetInfo() const {
+    return {
+        .alpha_type = GetAlphaType(),
+        .color_space = GetColorSpace(),
+        .format = GetSharedImageFormat(),
+        .size = Size(),
+    };
   }
-  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
-  SkAlphaType GetAlphaType() const override { return alpha_type_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -639,7 +642,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // FlushForImageObserver implementation:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
-  bool IsValid() const override;
+  bool IsValid() const;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
 
