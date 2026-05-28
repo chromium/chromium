@@ -300,6 +300,10 @@ void PersonalContextEnablementServiceImpl::OnPrimaryAccountChanged(
     if (pref_service_) {
       pref_service_->ClearPref(
           prefs::kPersonalContextInAutofillNoticeShouldBeShown);
+      pref_service_->ClearPref(
+          prefs::kPersonalContextInAutofillNoticeHasBeenShown);
+      pref_service_->ClearPref(
+          prefs::kPersonalContextInAutofillSettingsToggleStatus);
     }
   }
   UpdateEnablementState();

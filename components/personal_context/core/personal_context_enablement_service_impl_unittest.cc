@@ -210,9 +210,19 @@ TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
   pref_service_.SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
       false);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
+      true);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_TRUE(pref_service_.GetBoolean(
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown));
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown));
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
