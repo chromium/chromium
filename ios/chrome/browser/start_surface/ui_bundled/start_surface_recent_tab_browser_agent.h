@@ -31,6 +31,10 @@ class StartSurfaceRecentTabBrowserAgent
   // Notifies the Browser Agent to save the most recent WebState.
   void SaveMostRecentTab();
 
+  // Activates the most recent tab, closing the current active tab if it is an
+  // NTP.
+  void ActivateMostRecentTab();
+
   // Returns the most recent WebState.
   web::WebState* most_recent_tab() { return most_recent_tab_; }
 

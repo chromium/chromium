@@ -122,6 +122,16 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   if (level != SceneActivationLevelForegroundActive &&
       self.previousActivationLevel == SceneActivationLevelForegroundActive) {
     SetStartSurfaceSessionObjectForSceneState(sceneState);
+    Browser* browser =
+        sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    if (browser) {
+      web::WebState* activeWebState =
+          browser->GetWebStateList()->GetActiveWebState();
+      if (activeWebState && !IsUrlNtp(activeWebState->GetVisibleURL())) {
+        StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)
+            ->SaveMostRecentTab();
+      }
+    }
   }
   if (level == SceneActivationLevelBackground &&
       self.previousActivationLevel > SceneActivationLevelBackground) {

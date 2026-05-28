@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -52,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/AddReadingListItemToChromeIntent.h"
@@ -396,6 +398,39 @@ void OpenRecentTabsWithBrowser(Browser* browser) {
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [handler showRecentTabs];
+}
+
+// Navigates to the latest tab.
+void OpenLatestTabWithBrowser(Browser* browser) {
+  StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)
+      ->ActivateMostRecentTab();
+}
+
+// Opens the latest tab for the given scene and mode.
+void OpenLatestTab(SceneState* sceneState,
+                   ApplicationModeForTabOpening targetMode) {
+  Browser* browser = GetBrowserForTargetMode(sceneState, targetMode);
+  if (!browser) {
+    return;
+  }
+  ProceduralBlock completion = base::CallbackToBlock(base::BindOnce(
+      [](base::OnceCallback<void(Browser*)> callback,
+         base::WeakPtr<Browser> weak_browser) {
+        if (Browser* browser = weak_browser.get()) {
+          std::move(callback).Run(browser);
+        }
+      },
+      base::BindOnce(&OpenLatestTabWithBrowser), browser->AsWeakPtr()));
+
+  UrlLoadParams params;
+  // Use SWITCH_TO_TAB as a signal to avoid opening a new NTP if tabs exist.
+  params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+
+  id<TabOpening> tabOpener = sceneState.controller;
+  [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                      withUrlLoadParams:params
+                                         dismissOmnibox:YES
+                                             completion:completion];
 }
 
 // Navigates to the password search UI.
@@ -849,7 +884,7 @@ void OpenSpotlightURL(NSURL* webpage_url,
                                     self.userActivity.interaction.intent)];
       break;
     case UserActivityType::kOpenLatestTab:
-      // TODO(crbug.com/492115056): Add implementation.
+      OpenLatestTab(sceneState, self.targetMode);
       break;
     case UserActivityType::kOpenReadingList:
       [self openURLs:{GURL(kChromeUINewTabURL)}

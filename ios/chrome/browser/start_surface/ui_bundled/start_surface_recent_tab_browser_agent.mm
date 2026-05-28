@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 
@@ -36,6 +37,16 @@ void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
   }
 
   SetMostRecentTab(active_web_state);
+}
+
+void StartSurfaceRecentTabBrowserAgent::ActivateMostRecentTab() {
+  if (!most_recent_tab_) {
+    return;
+  }
+
+  WebStateList* webStateList = browser_->GetWebStateList();
+  int index = webStateList->GetIndexOfWebState(most_recent_tab_);
+  webStateList->ActivateWebStateAt(index);
 }
 
 void StartSurfaceRecentTabBrowserAgent::AddObserver(

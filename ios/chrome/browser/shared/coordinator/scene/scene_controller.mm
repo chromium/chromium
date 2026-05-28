@@ -1798,15 +1798,8 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 }
 
 - (void)openLatestTab {
-  WebStateList* webStateList = self.currentInterface.browser->GetWebStateList();
-  web::WebState* webState = StartSurfaceRecentTabBrowserAgent::FromBrowser(
-                                self.currentInterface.browser)
-                                ->most_recent_tab();
-  if (!webState) {
-    return;
-  }
-  int index = webStateList->GetIndexOfWebState(webState);
-  webStateList->ActivateWebStateAt(index);
+  StartSurfaceRecentTabBrowserAgent::FromBrowser(self.currentInterface.browser)
+      ->ActivateMostRecentTab();
 }
 
 - (void)addBookmarks:(NSArray<NSURL*>*)URLs {
@@ -2425,15 +2418,28 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
           [self.startupParameters postOpeningAction];
       [self setStartupParameters:nil];
 
-      UrlLoadParams paramsToLoad = urlLoadParams;
-      // If the url to load is empty (such as with Lens) open a new tab page.
-      if (urlLoadParams.web_params.url.is_empty()) {
-        paramsToLoad = UrlLoadParams(urlLoadParams);
-        paramsToLoad.web_params.url = GURL(kChromeUINewTabURL);
-      }
+      BOOL isURLEmpty = urlLoadParams.web_params.url.is_empty();
+      BOOL isBrowserEmpty = targetInterface.browser->GetWebStateList()->empty();
+      BOOL shouldAvoidNewTab =
+          (urlLoadParams.disposition == WindowOpenDisposition::SWITCH_TO_TAB) ||
+          (self.NTPActionAfterTabSwitcherDismissal == OPEN_LATEST_TAB);
 
-      [self addANewTabAndPresentBrowser:targetInterface.browser
-                      withURLLoadParams:paramsToLoad];
+      if (isURLEmpty && shouldAvoidNewTab && !isBrowserEmpty) {
+        // Specific case for Open Latest Tab: Just dismiss Tab Grid and show
+        // active tab.
+        [self beginActivatingBrowser:targetInterface.browser focusOmnibox:NO];
+      } else if (isURLEmpty) {
+        // Default behavior for other empty URL actions (like Lens): Open a new
+        // NTP.
+        UrlLoadParams paramsToLoad = UrlLoadParams(urlLoadParams);
+        paramsToLoad.web_params.url = GURL(kChromeUINewTabURL);
+        [self addANewTabAndPresentBrowser:targetInterface.browser
+                        withURLLoadParams:paramsToLoad];
+      } else {
+        // A specific URL was provided -> Open it in a new tab.
+        [self addANewTabAndPresentBrowser:targetInterface.browser
+                        withURLLoadParams:urlLoadParams];
+      }
 
       // In this particular usage, there should be no postOpeningAction,
       // as triggering voice search while there are multiple windows opened is
