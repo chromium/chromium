@@ -409,7 +409,11 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     LocalDOMWindow& opener,
     DocumentPictureInPictureOptions* options,
     ScriptPromiseResolver<DOMWindow>* resolver) {
-  if (!LocalFrame::ConsumeTransientUserActivation(opener.GetFrame())) {
+  // Note that PiP should _consume_ activation, not just check for it. The
+  // consumption is done in RenderFrameImpl::CreateNewWindow prior to creating
+  // the actual PiP window. This makes it easier for PiP to be gated by generic
+  // popup blocking protections.
+  if (!LocalFrame::HasTransientUserActivation(opener.GetFrame())) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
                                      "Document PiP requires user activation");
     return;

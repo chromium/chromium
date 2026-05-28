@@ -104,13 +104,12 @@ bool ConsiderForPopupBlocking(WindowOpenDisposition disposition) {
     case WindowOpenDisposition::SAVE_TO_DISK:
     case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::SWITCH_TO_TAB:
-    // TODO(crbug.com/513188254): Support blocking PIP windows.
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
       return false;
     case WindowOpenDisposition::NEW_POPUP:
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
     case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
     case WindowOpenDisposition::NEW_SPLIT_VIEW:
       return true;
   }
