@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/scoped_native_library.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -129,6 +130,8 @@ class TouchInjectorWin {
   base::TimeTicks last_injected_time_;
 
   base::RepeatingTimer keep_alive_timer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

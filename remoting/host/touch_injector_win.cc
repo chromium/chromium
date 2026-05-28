@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -163,6 +164,7 @@ TouchInjectorWin::~TouchInjectorWin() = default;
 // so that a mock delegate can be injected in tests and set expectations on the
 // mock and return value of this method.
 bool TouchInjectorWin::Init() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!delegate_) {
     delegate_ = TouchInjectorWinDelegate::Create();
   }
@@ -186,6 +188,7 @@ bool TouchInjectorWin::Init() {
 }
 
 void TouchInjectorWin::Deinitialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   touches_in_contact_.clear();
   // Same reason as TouchInjectorWin::Init(). For injecting mock delegates for
   // tests, a new delegate is created here.
@@ -195,6 +198,7 @@ void TouchInjectorWin::Deinitialize() {
 }
 
 void TouchInjectorWin::InjectTouchEvent(const TouchEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!delegate_) {
     VLOG(3) << "Touch injection functions are not initialized.";
     return;
@@ -224,6 +228,7 @@ void TouchInjectorWin::SetInjectorDelegateForTest(
 }
 
 void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.event_type(), TouchEvent::TOUCH_POINT_START);
 
   std::vector<POINTER_TOUCH_INFO> touches;
@@ -249,6 +254,7 @@ void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
 }
 
 void TouchInjectorWin::MoveTouchPoints(const TouchEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.event_type(), TouchEvent::TOUCH_POINT_MOVE);
 
   for (const TouchEventPoint& touch_point : event.touch_points()) {
@@ -269,6 +275,7 @@ void TouchInjectorWin::MoveTouchPoints(const TouchEvent& event) {
 }
 
 void TouchInjectorWin::EndTouchPoints(const TouchEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.event_type(), TouchEvent::TOUCH_POINT_END);
 
   std::vector<POINTER_TOUCH_INFO> touches;
@@ -288,6 +295,7 @@ void TouchInjectorWin::EndTouchPoints(const TouchEvent& event) {
 }
 
 void TouchInjectorWin::CancelTouchPoints(const TouchEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.event_type(), TouchEvent::TOUCH_POINT_CANCEL);
 
   std::vector<POINTER_TOUCH_INFO> touches;
@@ -309,6 +317,7 @@ void TouchInjectorWin::CancelTouchPoints(const TouchEvent& event) {
 
 bool TouchInjectorWin::InjectTouchInput(
     const std::vector<POINTER_TOUCH_INFO>& touches) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
     return false;
   }
@@ -318,6 +327,7 @@ bool TouchInjectorWin::InjectTouchInput(
 }
 
 void TouchInjectorWin::UpdateKeepAliveTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (touches_in_contact_.empty()) {
     keep_alive_timer_.Stop();
     return;
@@ -329,6 +339,7 @@ void TouchInjectorWin::UpdateKeepAliveTimer() {
 }
 
 void TouchInjectorWin::OnKeepAlive() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if ((base::TimeTicks::Now() - last_injected_time_) < kKeepAliveInterval) {
     return;
   }
