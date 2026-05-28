@@ -148,10 +148,7 @@ namespace utils = api_test_utils;
 
 using api::oauth2::OAuth2Info;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kAccessToken[] = "auth_token";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 const char kExtensionId[] = "ext_id";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -3343,6 +3340,7 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_pair("\"enableGranularPermissions\": false",
                                    false),
                     std::make_pair("", false)));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
  protected:
@@ -3387,6 +3385,7 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
   }
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
  public:
   // Executes a new function and checks that the selected_user_id is the
@@ -3561,6 +3560,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
       1);
 }
 #endif
+#endif  //  BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, NotFound) {
   EXPECT_TRUE(InvalidateDefaultToken());
@@ -3599,6 +3599,7 @@ IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, MatchingToken) {
             GetCachedToken().status());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class LaunchWebAuthFlowFunctionTest : public AsyncExtensionBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
