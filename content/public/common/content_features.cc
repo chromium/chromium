@@ -1427,6 +1427,12 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground, base::FEATURE_DISABLED_BY_DEFAULT);
 // it won't work.
 // Enabled by Finch depending on form factor.
 BASE_FEATURE(kUserMediaScreenCapturing, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable timeout for TextClassifier calls. The timeout is configurable with a
+// default of 200ms.
+BASE_FEATURE(kTextClassifierTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kTextClassifierTimeoutMs{&kTextClassifierTimeout,
+                                                       "timeout_ms", 200};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

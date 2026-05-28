@@ -73,6 +73,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebContentsDiscard,
     &features::kWebIdentityDigitalCredentials,
+    &features::kTextClassifierTimeout,
     &features::kJavalessRendererExperimentOn,
     &features::kBtmTtl,
     &features::kSpareRendererProcessPriority,

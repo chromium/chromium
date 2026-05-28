@@ -1298,6 +1298,10 @@ public final class ProductionSupportedFlagList {
                 "When this flag is enabled, the menu which is shown when selecting text will not be"
                         + " cached. Instead, it is recomputed each time it is shown."),
         Flag.baseFeature(
+                ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT,
+                "Enable timeout for TextClassifier calls. The timeout is configurable with a"
+                        + " default of 200ms."),
+        Flag.baseFeature(
                 BlinkFeatures.XML_RUST_FOR_NON_XSLT,
                 "Enables the Rust based XML parser in situations where the XML document is"
                         + " guaranteed to not trigger XSLT processing."),

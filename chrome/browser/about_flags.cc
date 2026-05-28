@@ -3166,6 +3166,24 @@ const FeatureEntry::FeatureVariation kWebRtcApmDownmixMethodVariations[] = {
      nullptr},
     {"- Use first channel", kWebRtcApmDownmixMethodFirstChannel, nullptr}};
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTextClassifierTimeout100ms[] = {
+    {"timeout_ms", "100"}};
+const FeatureEntry::FeatureParam kTextClassifierTimeout200ms[] = {
+    {"timeout_ms", "200"}};
+const FeatureEntry::FeatureParam kTextClassifierTimeout500ms[] = {
+    {"timeout_ms", "500"}};
+const FeatureEntry::FeatureParam kTextClassifierTimeout1000ms[] = {
+    {"timeout_ms", "1000"}};
+
+const FeatureEntry::FeatureVariation kTextClassifierTimeoutVariations[] = {
+    {"100ms", kTextClassifierTimeout100ms, nullptr},
+    {"200ms", kTextClassifierTimeout200ms, nullptr},
+    {"500ms", kTextClassifierTimeout500ms, nullptr},
+    {"1000ms", kTextClassifierTimeout1000ms, nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam
     kSafetyCheckUnusedSitePermissionsNoDelayParam[] = {
         {"unused-site-permissions-no-delay-for-testing", "true"}};
@@ -12966,6 +12984,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpdatePaddingForDisplayCalculationName,
      flag_descriptions::kUpdatePaddingForDisplayCalculationDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(ui::kUpdatePaddingForDisplayCalculation)},
+    {"text-classifier-timeout", flag_descriptions::kTextClassifierTimeoutName,
+     flag_descriptions::kTextClassifierTimeoutDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(::features::kTextClassifierTimeout,
+                                    kTextClassifierTimeoutVariations,
+                                    "TextClassifierTimeout")},
 #endif
 
     {"autofill-enable-gradient-google-logos",

@@ -6114,6 +6114,11 @@ inline constexpr char kUseWebUiNtpAndroidName[] = "Use WebUI NTP on Android";
 inline constexpr char kUseWebUiNtpAndroidDescription[] =
     "When enabled, use the WebUI NTP instead of the native NTP on Android.";
 
+inline constexpr char kTextClassifierTimeoutName[] = "TextClassifier Timeout";
+inline constexpr char kTextClassifierTimeoutDescription[] =
+    "Enable timeout for TextClassifier calls. The timeout is configurable with "
+    "a default of 200ms.";
+
 inline constexpr char kXplatSyncedSetupName[] = "Cross-platform synced setup";
 inline constexpr char kXplatSyncedSetupDescription[] =
     "Enables the Cross-platform synced setup feature.";

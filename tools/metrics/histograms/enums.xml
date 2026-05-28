@@ -18302,6 +18302,7 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
+  <int value="1357722794" label="TextClassifierTimeout:enabled"/>
   <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1357785514" label="AndroidNativePagesInNewTab:disabled"/>
   <int value="1357967596" label="SettingsMultiColumn:disabled"/>
@@ -19575,6 +19576,7 @@ from previous Chrome versions.
   <int value="1768793496" label="autofill-ai-with-data-schema:disabled"/>
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1770848838" label="AndroidSystemContactsPicker:disabled"/>
+  <int value="1770871311" label="TextClassifierTimeout:disabled"/>
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
   <int value="1772248386" label="SeedAccountsRevamp:enabled"/>
   <int value="1772277480" label="DefaultBrowserPromptRefresh:enabled"/>

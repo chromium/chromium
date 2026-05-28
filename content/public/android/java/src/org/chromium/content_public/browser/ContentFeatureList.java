@@ -101,6 +101,8 @@ public class ContentFeatureList {
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION =
             "WebIdentityDigitalCredentialsCreation";
 
+    public static final String TEXT_CLASSIFIER_TIMEOUT = "TextClassifierTimeout";
+
     public static final String DIPS_TTL = "DIPSTtl";
 
     private static final MutableFlagWithSafeDefault sAccessibilityCheckJavaNodeCacheFreshness =
@@ -172,6 +174,15 @@ public class ContentFeatureList {
     // Skip the timeout when removing the VISIBLE and STRONG binding for the spare renderer.
     public static final MutableBooleanParamWithSafeDefault sSpareRendererRemoveBindingNoTimeout =
             sSpareRendererProcessPriority.newBooleanParam("remove-binding-no-timeout", false);
+
+    public static final MutableFlagWithSafeDefault sTextClassifierTimeout =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    ContentFeatures.TEXT_CLASSIFIER_TIMEOUT,
+                    false);
+
+    public static final MutableIntParamWithSafeDefault sTextClassifierTimeoutMs =
+            sTextClassifierTimeout.newIntParam("timeout_ms", 200);
 
     public static final MutableFlagWithSafeDefault sAndroidDesktopZoomScaling =
             new MutableFlagWithSafeDefault(
