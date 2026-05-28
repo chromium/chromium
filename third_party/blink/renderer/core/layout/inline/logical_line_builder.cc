@@ -230,25 +230,20 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       DCHECK(item_result.shape_result);
 
       float scale = 1.0f;
-      float block_scale = 1.0f;
+      const Font* scaled_font = nullptr;
       if (const auto* text_fit_scale = item_result.text_fit_scale.Get()) {
         scale = text_fit_scale->scale;
-        block_scale = scale;
+        scaled_font = text_fit_scale->font.Get();
       }
       if (quirks_mode_) [[unlikely]] {
-        TextFitBlockScale text_fit_block_scale = {block_scale, nullptr};
-        if (const auto* text_fit_scale = item_result.text_fit_scale.Get()) {
-          if (const Font* scaled_font = text_fit_scale->font.Get()) {
-            text_fit_block_scale.scaled_font = scaled_font;
-          }
-        }
+        TextFitBlockScale text_fit_block_scale = {scale, scaled_font};
         box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_,
                                &text_fit_block_scale);
       }
 
       // Take all used fonts into account if 'line-height: normal'.
       if (box->include_used_fonts) {
-        box->AccumulateUsedFonts(item_result.shape_result.Get(), block_scale);
+        box->AccumulateUsedFonts(item_result.shape_result.Get(), scale);
       }
 
       DCHECK(item.TextType() == TextItemType::kNormal ||
