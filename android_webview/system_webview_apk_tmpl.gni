@@ -162,9 +162,6 @@ template("system_webview_apk_or_module_tmpl") {
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
     ]
-    if (!_is_trichrome) {
-      deps += [ "//android_webview:pinlist_assets" ]
-    }
 
     # Only the .build_config.json is used from this target, and it's fine if
     # it contains more assets than we need (always use the 64_32 variant).
@@ -210,8 +207,7 @@ template("system_webview_apk_or_module_tmpl") {
             data_deps = []
           }
 
-          # This needs to be a swarming runtime dep for the orderfile bot to
-          # work.
+          # This needs to be a swarming runtime dep for the orderfile bot to work.
           data_deps += [ "//android_webview:copy_webview_lib_unstripped" ]
         } else {
           shared_libraries = [ "//android_webview:libwebviewchromium" ]
@@ -309,8 +305,7 @@ template("system_webview_apk_or_module_tmpl") {
       # Removes metadata needed for Resources.getIdentifier("resource_name").
       strip_resource_names = !is_java_debug
 
-      # Shortens resource file names in apk eg: res/drawable/button.xml ->
-      # res/a.xml
+      # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
       short_resource_paths = !is_java_debug
 
       # Removes unused resources from the apk. Only enabled on official builds
