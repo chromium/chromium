@@ -92,12 +92,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   // TODO(crbug.com/467331873): Re-enable this when the test is updated for
   // PSF.
   config.features_disabled.push_back(kProactiveSuggestionsFramework);
-
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector
-            (testContextualPanelEntrypointLargeChipDismissable)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
@@ -305,6 +299,13 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Test that the Contextual Panel entrypoint's large chip can be dismissed via
 // swipe.
 - (void)testContextualPanelEntrypointLargeChipDismissable {
+  // TODO(crbug.com/517095176): Re-enable this test when the unified badge
+  // expansion layout under Chrome Next is fixed.
+  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Large chip entrypoint is not present on compact "
+                           @"iPhones under Chrome Next.");
+  }
+
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   // Wait for large chip entrypoint to appear.
