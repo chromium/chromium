@@ -10,7 +10,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/profiles/profile_io_data.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
