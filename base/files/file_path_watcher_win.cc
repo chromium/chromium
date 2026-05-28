@@ -116,6 +116,8 @@ class CompletionIOPortThread final : public PlatformThread::Delegate {
   void RemoveWatcher(WatcherEntryId watcher_id);
 
   Lock& GetLockForTest();  // IN-TEST
+  const void* GetOverlappedPointerForTest(  // IN-TEST
+      WatcherEntryId watcher_id);
 
  private:
   friend NoDestructor<CompletionIOPortThread>;
@@ -161,10 +163,10 @@ class CompletionIOPortThread final : public PlatformThread::Delegate {
     base::win::ScopedHandle watched_handle;
     base::FilePath watched_path;
 
+    OVERLAPPED overlapped = {};
+
     alignas(DWORD) uint8_t buffer[kWatchBufferSizeBytes];
   };
-
-  OVERLAPPED overlapped = {};
 
   CompletionIOPortThread();
 
@@ -219,6 +221,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   void Cancel() override;
 
   Lock& GetWatchThreadLockForTest() override;  // IN-TEST
+  const void* GetOverlappedPointerForTest() override;  // IN-TEST
 
  private:
   friend CompletionIOPortThread;
@@ -264,7 +267,7 @@ DWORD CompletionIOPortThread::SetupWatch(WatcherEntry& watcher_entry) {
       FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
           FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME |
           FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY,
-      nullptr, &overlapped, nullptr);
+      nullptr, &watcher_entry.overlapped, nullptr);
   if (!success) {
     return ::GetLastError();
   }
@@ -328,6 +331,15 @@ Lock& CompletionIOPortThread::GetLockForTest() {
   return watchers_lock_;
 }
 
+const void* CompletionIOPortThread::GetOverlappedPointerForTest(  // IN-TEST
+    WatcherEntryId watcher_id) {
+  AutoLock auto_lock(watchers_lock_);
+
+  auto it = watcher_entries_.find(watcher_id);
+  CHECK(it != watcher_entries_.end());
+  return &it->second.overlapped;
+}
+
 void CompletionIOPortThread::ThreadMain() {
   while (true) {
     DWORD bytes_transferred;
@@ -337,7 +349,6 @@ void CompletionIOPortThread::ThreadMain() {
     BOOL io_port_result = ::GetQueuedCompletionStatus(
         io_completion_port_.get(), &bytes_transferred, &key, &overlapped_out,
         INFINITE);
-    CHECK(&overlapped == overlapped_out);
 
     DWORD io_port_error = ERROR_SUCCESS;
     if (io_port_result == FALSE) {
@@ -357,7 +368,8 @@ void CompletionIOPortThread::ThreadMain() {
 
     auto& watcher_entry = watcher_entry_it->second;
     auto& [watcher_weak_ptr, task_runner, watched_handle, watched_path,
-           buffer] = watcher_entry;
+           overlapped, buffer] = watcher_entry;
+    CHECK(&overlapped == overlapped_out);
 
     if (!watched_handle.is_valid()) {
       // After the handle has been closed, a final notification will be sent
@@ -483,6 +495,12 @@ void FilePathWatcherImpl::Cancel() {
 
 Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
   return CompletionIOPortThread::Get()->GetLockForTest();  // IN-TEST
+}
+
+const void* FilePathWatcherImpl::GetOverlappedPointerForTest() {
+  CHECK(watcher_id_.has_value());
+  return CompletionIOPortThread::Get()->GetOverlappedPointerForTest(  // IN-TEST
+      watcher_id_.value());
 }
 
 void FilePathWatcherImpl::BufferOverflowed() {

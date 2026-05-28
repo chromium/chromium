@@ -663,6 +663,18 @@ TEST_F(FilePathWatcherTest, WindowsBufferOverflow) {
   event_expecter.AddExpectedEventForPath(test_file());
   delegate.RunUntilEventsMatch(event_expecter);
 }
+
+TEST_F(FilePathWatcherTest, WindowsUsesSeparateOverlappedPerWatcher) {
+  FilePathWatcher watcher1, watcher2;
+  TestDelegate delegate1, delegate2;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher1, &delegate1,
+                         FilePathWatcher::Type::kNonRecursive));
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher2, &delegate2,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  EXPECT_NE(watcher1.GetOverlappedPointerForTest(),
+            watcher2.GetOverlappedPointerForTest());
+}
 #endif
 
 namespace {

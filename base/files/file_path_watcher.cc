@@ -87,6 +87,10 @@ FilePathWatcher::FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate) {
 Lock& FilePathWatcher::GetWatchThreadLockForTest() {
   return impl_->GetWatchThreadLockForTest();  // IN-TEST
 }
+
+const void* FilePathWatcher::GetOverlappedPointerForTest() {
+  return impl_->GetOverlappedPointerForTest();  // IN-TEST
+}
 #endif
 
 }  // namespace base

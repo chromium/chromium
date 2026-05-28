@@ -161,6 +161,10 @@ class BASE_EXPORT FilePathWatcher {
     // Watch thread. Tests can use this to block that thread and cause a buffer
     // overflow.
     virtual Lock& GetWatchThreadLockForTest() = 0;
+
+    // Gets the OVERLAPPED structure associated with the watch. Tests can use
+    // this to ensure each watch has a separate asynchronous I/O request state.
+    virtual const void* GetOverlappedPointerForTest() = 0;
 #endif
 
    protected:
@@ -224,6 +228,9 @@ class BASE_EXPORT FilePathWatcher {
   // Watch thread. Tests can use this to block that thread and cause a buffer
   // overflow.
   Lock& GetWatchThreadLockForTest();
+
+  // Gets the OVERLAPPED structure associated with the watch.
+  const void* GetOverlappedPointerForTest();
 #endif
 
  private:
