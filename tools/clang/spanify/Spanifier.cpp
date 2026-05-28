@@ -2064,33 +2064,33 @@ std::string GenerateClassName(std::string var_name) {
   return var_name;
 }
 
+struct ArrayElementDefinition {
+  std::string new_class_name_string;
+  const clang::RecordDecl* record_decl = nullptr;
+};
+
 // Checks if the given array definition involves an unnamed struct type
 // or is declared inline within a struct/class definition.
 //
-// These cases currently pose challenges for the C array to std::array
-// conversion and are therefore skipped by the tool.
+// These cases are handled by splitting the rewrite into two parts:
+// 1. A rewrite for the struct definition (adding a name if unnamed).
+// 2. A rewrite for the variable declaration (using the struct name).
 //
-// Examples of problematic definitions:
+// Examples of handled definitions:
 //   - Unnamed struct:
 //     `struct { int x, y; } point_array[10];`
 //   - Inline definition:
 //     `struct Point { int x, y; } inline_points[5];`
 //
-// Returns the pair of a suggested type name (if unnamed struct, empty string
-// otherwise) and the inline definition with a semi-colon ';' added to split it
-// away from the declaration (empty string otherwise).
-// I.E.:
-//   - {"", ""} -> If this is not one of the problematic definitions above.
-//   - {"", "struct Point { int x, y; };"} -> for the inline definition case.
-//   - {"PointArray", "struct PointArray { ... };"} -> for the unnamed struct
-//     case.
-std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
+// Returns the suggested type name (if unnamed struct, empty string
+// otherwise) and the record declaration if it is an inline definition.
+ArrayElementDefinition maybeGetUnnamedAndDefinition(
     const clang::QualType element_type,
     const clang::DeclaratorDecl* array_decl,
     const std::string& array_variable_as_string,
     const clang::ASTContext& ast_context) {
   std::string new_class_name_string;
-  std::string class_definition;
+  const clang::RecordDecl* record_decl_with_definition = nullptr;
   // Structs/classes can be defined alongside an option list of variable
   // declarations.
   //
@@ -2106,61 +2106,15 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
         record_decl->getBraceRange());
     bool is_unnamed = record_decl->getDeclName().isEmpty();
 
-    // If the struct/class has an empty name (=unnamed) and has its
-    // definition, we will temporariliy assign a new name to the `RecordDecl`
-    // and invoke `getAsString()` to obtain the definition with the new name.
-    clang::DeclarationName original_name = record_decl->getDeclName();
-    clang::DeclarationName temporal_class_name;
     if (is_unnamed) {
       new_class_name_string = GenerateClassName(array_variable_as_string);
-      clang::StringRef new_class_name(new_class_name_string);
-      clang::IdentifierInfo& new_class_name_identifier =
-          ast_context.Idents.get(new_class_name);
-      temporal_class_name = ast_context.DeclarationNames.getIdentifier(
-          &new_class_name_identifier);
-      record_decl->setDeclName(temporal_class_name);
     }
 
     if (has_definition) {
-      // Use `SourceManager` to capture the `{ ... }` part of the struct
-      // definition.
-      const clang::SourceManager& source_manager =
-          ast_context.getSourceManager();
-      llvm::StringRef struct_body_with_braces = clang::Lexer::getSourceText(
-          clang::CharSourceRange::getTokenRange(record_decl->getBraceRange()),
-          source_manager, ast_context.getLangOpts());
-
-      // Create new class definition.
-      if (is_unnamed) {
-        std::string type_keyword;
-        if (record_decl->isClass()) {
-          type_keyword = "class";
-        } else if (record_decl->isUnion()) {
-          type_keyword = "union";
-        } else if (record_decl->isEnum()) {
-          type_keyword = "enum";
-        } else {
-          assert(record_decl->isStruct());
-          type_keyword = "struct";
-        }
-
-        class_definition = type_keyword + " " + new_class_name_string + " " +
-                           struct_body_with_braces.str() + ";\n";
-      } else {
-        // Because of class/struct definition, drop any qualifiers from
-        // `element_type`. E.g. `const struct { int val; }` must be
-        // `struct { int val; }`.
-        clang::QualType unqualified_type = element_type.getUnqualifiedType();
-        std::string unqualified_type_str = unqualified_type.getAsString();
-        class_definition =
-            unqualified_type_str + " " + struct_body_with_braces.str() + ";\n";
-      }
-    }
-    if (is_unnamed) {
-      record_decl->setDeclName(original_name);
+      record_decl_with_definition = record_decl;
     }
   }
-  return std::make_pair(new_class_name_string, class_definition);
+  return {new_class_name_string, record_decl_with_definition};
 }
 
 // Gets the array size as written in the source code if it's explicitly
@@ -2557,8 +2511,9 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   //   - Multi-dimensional array of unnamed struct/class
   //   - Multi-dimensional array with redundant struct/class keyword
   std::string element_type_as_string;
-  const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
-      new_element_type, array_decl, array_variable_as_string, ast_context);
+  const auto& [unnamed_class, record_decl_with_definition] =
+      maybeGetUnnamedAndDefinition(new_element_type, array_decl,
+                                   array_variable_as_string, ast_context);
   if (!unnamed_class.empty()) {
     element_type_as_string = unnamed_class;
   } else if (original_element_type->isElaboratedTypeSpecifier()) {
@@ -2658,12 +2613,43 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
         llvm::formatv("std::array<{0}, {1}> {2}", element_type_as_string,
                       array_size_as_string, array_variable_as_string);
   }
-  replacement_text =
-      class_definition + qualifier_string.str() + replacement_text;
+  if (record_decl_with_definition) {
+    // We have a class definition: `struct { ... } var[]`.
+    // We need to split the replacement to avoid overlapping with members
+    // rewrites.
+    //
+    // struct <OptionalName> { ... } var[N];
+    // ^~~~~~~~~~~~~~~~~~~~^         ^~~~~~~^
+    //        Part 1                  Part 2
+    // Tests are in: tests/skia/struct-overlap-original.cc
 
-  EmitReplacement(key,
-                  GetReplacementDirective(replacement_range, replacement_text,
-                                          source_manager));
+    // Part 1: before the braces.
+    // This effectively removes qualifiers from the beginning and inserts the
+    // name if it was unnamed.
+    clang::SourceRange part1_range(
+        array_decl->getBeginLoc(),
+        record_decl_with_definition->getBraceRange().getBegin());
+    std::string type_keyword = record_decl_with_definition->getKindName().str();
+    EmitReplacement(
+        key, GetReplacementDirective(
+                 part1_range, type_keyword + " " + element_type_as_string + " ",
+                 source_manager));
+
+    // Part 2: after the braces.
+    clang::SourceLocation after_braces =
+        record_decl_with_definition->getBraceRange().getEnd().getLocWithOffset(
+            1);
+    clang::SourceRange part2_range(after_braces, replacement_range.getEnd());
+    EmitReplacement(
+        key, GetReplacementDirective(
+                 part2_range, "; " + qualifier_string.str() + replacement_text,
+                 source_manager));
+  } else {
+    replacement_text = qualifier_string.str() + replacement_text;
+    EmitReplacement(key,
+                    GetReplacementDirective(replacement_range, replacement_text,
+                                            source_manager));
+  }
   EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager,
                                            include_path));
 
