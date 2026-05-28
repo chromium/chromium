@@ -3844,7 +3844,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_release_telemetry_tests",
+            "gpu_fyi_win_optional_isolated_scripts",
         ],
         mixins = [
             "very_limited_capacity_bot",
