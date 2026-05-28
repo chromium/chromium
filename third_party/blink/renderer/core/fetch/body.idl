@@ -14,6 +14,7 @@
     [CallWith=ScriptState, NewObject, RaisesException] Promise<FormData> formData();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<any> json();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<USVString> text();
+    [RuntimeEnabled=TextStreamMethod, CallWith=ScriptState, RaisesException] ReadableStream textStream();
 
     // body attribute is defined in sub-interfaces, because the IDL processor
     // cannot deal with attribute inheritance with runtime enabled flag.

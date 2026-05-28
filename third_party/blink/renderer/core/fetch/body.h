@@ -44,6 +44,7 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   ScriptPromise<IDLAny> json(ScriptState*, ExceptionState&);
   ScriptPromise<IDLUSVString> text(ScriptState*, ExceptionState&);
   ReadableStream* body();
+  ReadableStream* textStream(ScriptState*, ExceptionState&);
   virtual BodyStreamBuffer* BodyBuffer() = 0;
   virtual const BodyStreamBuffer* BodyBuffer() const = 0;
 

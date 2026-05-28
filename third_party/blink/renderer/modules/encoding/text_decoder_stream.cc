@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decoder_options.h"
+#include "third_party/blink/renderer/core/streams/text_decoder_transformer.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
@@ -27,116 +28,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
-
-class TextDecoderStream::Transformer final : public TransformStreamTransformer {
- public:
-  explicit Transformer(ScriptState* script_state,
-                       TextEncoding encoding,
-                       bool fatal,
-                       bool ignore_bom)
-      : decoder_(NewTextCodec(encoding)),
-        script_state_(script_state),
-        fatal_(fatal),
-        ignore_bom_(ignore_bom),
-        encoding_has_bom_removal_(EncodingHasBomRemoval(encoding)) {
-    CHECK(decoder_) << encoding.GetName();
-  }
-
-  Transformer(const Transformer&) = delete;
-  Transformer& operator=(const Transformer&) = delete;
-
-  // Implements the type conversion part of the "decode and enqueue a chunk"
-  // algorithm.
-  ScriptPromise<IDLUndefined> Transform(
-      v8::Local<v8::Value> chunk,
-      TransformStreamDefaultController* controller,
-      ExceptionState& exception_state) override {
-    auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
-                                                 chunk, exception_state);
-    if (exception_state.HadException())
-      return EmptyPromise();
-
-    // This implements the "get a copy of the bytes held by the buffer source"
-    // algorithm (https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy).
-    DOMArrayPiece array_piece(buffer_source);
-    if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-      exception_state.ThrowRangeError(
-          "Buffer size exceeds maximum heap object size.");
-      return EmptyPromise();
-    }
-    DecodeAndEnqueue(array_piece.ByteSpan(), FlushBehavior::kDoNotFlush,
-                     controller, exception_state);
-    return ToResolvedUndefinedPromise(script_state_.Get());
-  }
-
-  // Implements the "encode and flush" algorithm.
-  ScriptPromise<IDLUndefined> Flush(
-      TransformStreamDefaultController* controller,
-      ExceptionState& exception_state) override {
-    DecodeAndEnqueue({}, FlushBehavior::kDataEof, controller, exception_state);
-
-    return ToResolvedUndefinedPromise(script_state_.Get());
-  }
-
-  ScriptState* GetScriptState() override { return script_state_.Get(); }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(script_state_);
-    TransformStreamTransformer::Trace(visitor);
-  }
-
- private:
-  // Implements the second part of "decode and enqueue a chunk" as well as the
-  // "flush and enqueue" algorithm.
-  void DecodeAndEnqueue(base::span<const uint8_t> data,
-                        FlushBehavior flush,
-                        TransformStreamDefaultController* controller,
-                        ExceptionState& exception_state) {
-    const UChar kBOM = 0xFEFF;
-
-    bool saw_error = false;
-    String output_chunk = decoder_->Decode(data, flush, fatal_, saw_error);
-
-    if (fatal_ && saw_error) {
-      exception_state.ThrowTypeError("The encoded data was not valid.");
-      return;
-    }
-
-    if (output_chunk.empty()) {
-      return;
-    }
-
-    if (!ignore_bom_ && !bom_seen_) {
-      bom_seen_ = true;
-      if (encoding_has_bom_removal_ && output_chunk[0] == kBOM) {
-        output_chunk.erase(0, 1);
-        if (output_chunk.empty()) {
-          return;
-        }
-      }
-    }
-
-    controller->enqueue(
-        script_state_,
-        ScriptValue(script_state_->GetIsolate(),
-                    V8String(script_state_->GetIsolate(), output_chunk)),
-        exception_state);
-  }
-
-  static bool EncodingHasBomRemoval(const TextEncoding& encoding) {
-    const AtomicString& name = encoding.GetName();
-    return name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE";
-  }
-
-  std::unique_ptr<TextCodec> decoder_;
-  // There is no danger of ScriptState leaking across worlds because a
-  // TextDecoderStream can only be accessed from the world that created it.
-  Member<ScriptState> script_state_;
-  const bool fatal_;
-  const bool ignore_bom_;
-  const bool encoding_has_bom_removal_;
-  bool bom_seen_;
-};
 
 TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,
                                              const String& label,
@@ -181,10 +72,10 @@ TextDecoderStream::TextDecoderStream(ScriptState* script_state,
                                      ExceptionState& exception_state)
     : transform_(TransformStream::Create(
           script_state,
-          MakeGarbageCollected<Transformer>(script_state,
-                                            encoding,
-                                            options->fatal(),
-                                            options->ignoreBOM()),
+          MakeGarbageCollected<TextDecoderTransformer>(script_state,
+                                                       encoding,
+                                                       options->fatal(),
+                                                       options->ignoreBOM()),
           exception_state)),
       encoding_(encoding),
       fatal_(options->fatal()),

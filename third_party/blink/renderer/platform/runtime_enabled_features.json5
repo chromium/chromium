@@ -6044,6 +6044,11 @@
     },
 
     {
+      // crbug.com/514448226
+      name: "TextStreamMethod",
+      status: "experimental",
+    },
+    {
       name: "ThrottledHistoryAPIThrowsSecurityError",
       status: "test",
     },

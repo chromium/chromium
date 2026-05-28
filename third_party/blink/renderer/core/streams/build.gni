@@ -42,6 +42,8 @@ blink_core_sources_streams = [
   "stream_algorithms.h",
   "tee_engine.cc",
   "tee_engine.h",
+  "text_decoder_transformer.cc",
+  "text_decoder_transformer.h",
   "transferable_streams.cc",
   "transferable_streams.h",
   "transform_stream.cc",
