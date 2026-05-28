@@ -21,6 +21,7 @@ source_set("new_tab_footer") {
     "//chrome/browser/ui/webui/top_chrome",
     "//components/policy/core/browser",
     "//components/prefs",
+    "//components/themes",
     "//components/user_education/webui",
     "//extensions/browser",
     "//ui/menus",
@@ -96,6 +97,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//components/themes",
   ]
 }
 

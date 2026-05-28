@@ -956,8 +956,8 @@ static_library("ui") {
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/new_tab_page/action_chips",
-      "//components/themes",
     ]
+    public_deps += [ "//components/themes" ]
   }
 
   if (enterprise_data_controls) {

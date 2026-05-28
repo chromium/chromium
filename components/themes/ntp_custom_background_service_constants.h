@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_CONSTANTS_H_
-#define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_CONSTANTS_H_
+#ifndef COMPONENTS_THEMES_NTP_CUSTOM_BACKGROUND_SERVICE_CONSTANTS_H_
+#define COMPONENTS_THEMES_NTP_CUSTOM_BACKGROUND_SERVICE_CONSTANTS_H_
 
 inline constexpr char kNtpCustomBackgroundURL[] = "background_url";
 inline constexpr char kNtpCustomBackgroundAttributionLine1[] =
@@ -18,4 +18,4 @@ inline constexpr char kNtpCustomBackgroundRefreshTimestamp[] =
     "refresh_timestamp";
 inline constexpr char kNtpCustomBackgroundMainColor[] = "background_main_color";
 
-#endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_CONSTANTS_H_
+#endif  // COMPONENTS_THEMES_NTP_CUSTOM_BACKGROUND_SERVICE_CONSTANTS_H_

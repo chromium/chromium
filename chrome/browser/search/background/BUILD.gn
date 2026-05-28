@@ -11,7 +11,6 @@ source_set("background") {
     "ntp_background_service_factory.h",
     "ntp_custom_background_service.h",
     "ntp_custom_background_service_factory.h",
-    "ntp_custom_background_service_observer.h",
     "theme_delegate.h",
   ]
   sources = [
@@ -36,7 +35,6 @@ source_set("background") {
     "//url",
   ]
   deps = [
-    ":constants",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/image_fetcher",
@@ -67,9 +65,4 @@ source_set("background") {
     ]
     deps += [ "//components/optimization_guide/core:features" ]
   }
-}
-
-source_set("constants") {
-  sources = [ "ntp_custom_background_service_constants.h" ]
-  deps = []
 }

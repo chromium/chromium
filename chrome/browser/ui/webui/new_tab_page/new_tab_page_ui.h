@@ -30,7 +30,6 @@
 #endif
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
@@ -39,6 +38,7 @@
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/themes/ntp_custom_background_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"

@@ -8932,7 +8932,6 @@ test("unit_tests") {
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
       "//chrome/browser/screen_ai:unit_tests",
       "//chrome/browser/search/background",
-      "//chrome/browser/search/background:constants",
       "//chrome/browser/search_engine_choice:unit_tests",
       "//chrome/browser/support_tool",
       "//chrome/browser/support_tool:support_tool_proto",

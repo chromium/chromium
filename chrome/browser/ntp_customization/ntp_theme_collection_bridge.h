@@ -11,8 +11,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "components/themes/ntp_background_service_observer.h"
+#include "components/themes/ntp_custom_background_service_observer.h"
 
 class NtpBackgroundService;
 class NtpCustomBackgroundService;

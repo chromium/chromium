@@ -10,6 +10,8 @@ source_set("themes") {
     "ntp_background_data.h",
     "ntp_background_service.h",
     "ntp_background_service_observer.h",
+    "ntp_custom_background_service_constants.h",
+    "ntp_custom_background_service_observer.h",
   ]
   sources = [
     "ntp_background_data.cc",
