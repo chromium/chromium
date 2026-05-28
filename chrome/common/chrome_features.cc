@@ -187,8 +187,6 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-
-
 // Controls whether the actor component of Glic is enabled.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kGlicActor, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -460,11 +458,11 @@ BASE_FEATURE(kGlicSupportLinks, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kGlicLocationMismatchHelpUrl{
     &kGlicSupportLinks, "location_mismatch_help_url",
-    "https://support.google.com/gemini/answer/16283624#gic_access"};
+    "https://support.google.com/gemini/answer/17117411#gic_access"};
 
 const base::FeatureParam<std::string> kGlicIneligibleAccountHelpUrl{
     &kGlicSupportLinks, "ineligible_account_help_url",
-    "https://support.google.com/gemini/answer/16283624#gic_access"};
+    "https://support.google.com/gemini/answer/17117411#gic_access"};
 
 const base::FeatureParam<int> kGlicMinRequiredRamMb{
     &kGlic, "glic-min-required-ram-mb", 0};
