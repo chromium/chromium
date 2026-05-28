@@ -1316,6 +1316,47 @@ suite('ContextualActionMenu', () => {
       });
 
   test(
+    'Menu closes when a selected tab is clicked (deselected) in NTP/Omnibox mode',
+    async () => {
+      const tabInfo: TabInfo = {
+        tabId: 1,
+        title: 'Tab 1',
+        url: 'https://google.com',
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: { internalValue: 0n },
+      };
+      loadTimeData.overrideValues({
+        contextManagementInComposeboxEnabled: true,
+        composeboxContextMenuEnableMultiTabSelection: true,
+      });
+      actionMenu.remove();
+      actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+      Object.assign(actionMenu, {
+        metricsSource_: 'NewTabPage',
+        disabledTabIds: new Map([[1, 'some-token']]),
+      });
+
+      actionMenu.tabSuggestions = [tabInfo];
+      actionMenu.inputState = new MockInputState({
+        allowedInputTypes: [InputType.kBrowserTab],
+      });
+      document.body.appendChild(actionMenu);
+      await microtasksFinished();
+
+      actionMenu.showAt(actionMenu);
+      Object.assign(actionMenu, { shareTabsFlyoutOpen_: true });
+      await microtasksFinished();
+      assertTrue(actionMenu.$.menu.open);
+
+      const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+        '.share-tabs-flyout button.dropdown-item')!;
+      tabButton.click();
+      await microtasksFinished();
+
+      assertFalse(actionMenu.$.menu.open);
+    });
+  test(
       'Recent tab suffix follows the correct tab after reordering',
       async () => {
         const tab1: TabInfo = {

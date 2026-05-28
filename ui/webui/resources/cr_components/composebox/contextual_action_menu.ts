@@ -471,6 +471,11 @@ export class ContextualActionMenuElement extends
 
   protected deleteTabContext_(uuid: UnguessableToken) {
     this.fire('delete-tab-context', {uuid: uuid, fromUserAction: true});
+    if (!this.enableMultiTabSelection_ ||
+        this.metricsSource_ === 'NewTabPage' ||
+        this.metricsSource_ === 'Omnibox') {
+      this.$.menu.close();
+    }
   }
 
   protected addTabContext_(tabInfo: TabInfo) {
