@@ -44,13 +44,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/missive/fake_missive_client.h"
-#include "chromeos/dbus/missive/missive_client.h"
-#include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/util/status.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -95,13 +88,11 @@ std::unique_ptr<KeyedService> CreateProfileIDService(
   return std::make_unique<enterprise::ProfileIdService>(kFakeProfileID);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 constexpr char kNoError[] = "";
 
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
@@ -1008,221 +999,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
       info.password_protection_warning_trigger);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-
-// Test for API enterprise.reportingPrivate.enqueueRecord
-class EnterpriseReportingPrivateEnqueueRecordFunctionTest
-    : public ExtensionApiUnittest {
- protected:
-  static constexpr char kTestDMTokenValue[] = "test_dm_token_value";
-
-  EnterpriseReportingPrivateEnqueueRecordFunctionTest() = default;
-
-  void SetUp() override {
-    ExtensionApiUnittest::SetUp();
-    ::chromeos::MissiveClient::InitializeFake();
-    function_ =
-        base::MakeRefCounted<EnterpriseReportingPrivateEnqueueRecordFunction>();
-    const auto record = GetTestRecord();
-    serialized_record_data_.resize(record.ByteSizeLong());
-    ASSERT_TRUE(record.SerializeToArray(serialized_record_data_.data(),
-                                        serialized_record_data_.size()));
-  }
-
-  void TearDown() override {
-    function_.reset();
-    ::chromeos::MissiveClient::Shutdown();
-    ExtensionApiUnittest::TearDown();
-  }
-
-  ::reporting::Record GetTestRecord() const {
-    base::DictValue data;
-    data.Set("TEST_KEY", base::Value("TEST_VALUE"));
-
-    ::reporting::Record record;
-    record.set_data(base::WriteJson(data).value());
-    record.set_destination(::reporting::Destination::TELEMETRY_METRIC);
-    record.set_timestamp_us(base::Time::Now().InMillisecondsSinceUnixEpoch() *
-                            base::Time::kMicrosecondsPerMillisecond);
-
-    return record;
-  }
-
-  void VerifyNoRecordsEnqueued(::reporting::Priority priority =
-                                   ::reporting::Priority::BACKGROUND_BATCH) {
-    ::chromeos::MissiveClient::TestInterface* const missive_test_interface =
-        ::chromeos::MissiveClient::Get()->GetTestInterface();
-    ASSERT_TRUE(missive_test_interface);
-
-    const std::vector<::reporting::Record>& records =
-        missive_test_interface->GetEnqueuedRecords(priority);
-
-    ASSERT_THAT(records, IsEmpty());
-  }
-
-  std::vector<uint8_t> serialized_record_data_;
-  scoped_refptr<extensions::EnterpriseReportingPrivateEnqueueRecordFunction>
-      function_;
-};
-
-TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
-       ValidRecordSuccessfullyEnqueued) {
-  function_->SetProfileIsAffiliatedForTesting(/*is_affiliated=*/true);
-
-  api::enterprise_reporting_private::EnqueueRecordRequest
-      enqueue_record_request;
-  enqueue_record_request.record_data = serialized_record_data_;
-  enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
-  enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::kUser;
-
-  base::ListValue params;
-  params.Append(enqueue_record_request.ToValue());
-
-  // Set up DM token
-  const auto dm_token = policy::DMToken::CreateValidToken(kTestDMTokenValue);
-  policy::SetDMTokenForTesting(dm_token);
-
-  api_test_utils::RunFunction(function_.get(), std::move(params), profile(),
-                              extensions::api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(function_->GetError(), kNoError);
-
-  ::chromeos::MissiveClient::TestInterface* const missive_test_interface =
-      ::chromeos::MissiveClient::Get()->GetTestInterface();
-  ASSERT_TRUE(missive_test_interface);
-
-  const std::vector<::reporting::Record>& background_batch_records =
-      missive_test_interface->GetEnqueuedRecords(
-          ::reporting::Priority::BACKGROUND_BATCH);
-
-  ASSERT_THAT(background_batch_records, SizeIs(1));
-  EXPECT_THAT(background_batch_records[0].destination(),
-              Eq(::reporting::Destination::TELEMETRY_METRIC));
-  EXPECT_THAT(background_batch_records[0].dm_token(), StrEq(dm_token.value()));
-  EXPECT_THAT(background_batch_records[0].data(),
-              StrEq(GetTestRecord().data()));
-}
-
-TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
-       InvalidPriorityReturnsError) {
-  function_->SetProfileIsAffiliatedForTesting(true);
-
-  api::enterprise_reporting_private::EnqueueRecordRequest
-      enqueue_record_request;
-  enqueue_record_request.record_data = serialized_record_data_;
-
-  // Set priority to invalid enum value
-  enqueue_record_request.priority = -1;
-
-  enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::kUser;
-
-  base::ListValue params;
-  params.Append(enqueue_record_request.ToValue());
-
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidToken(kTestDMTokenValue));
-
-  api_test_utils::RunFunction(function_.get(), std::move(params), profile(),
-                              extensions::api_test_utils::FunctionMode::kNone);
-
-  EXPECT_EQ(function_->GetError(),
-            EnterpriseReportingPrivateEnqueueRecordFunction::
-                kErrorInvalidEnqueueRecordRequest);
-
-  VerifyNoRecordsEnqueued();
-}
-
-TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
-       NonAffiliatedUserReturnsError) {
-  function_->SetProfileIsAffiliatedForTesting(false);
-
-  api::enterprise_reporting_private::EnqueueRecordRequest
-      enqueue_record_request;
-  enqueue_record_request.record_data = serialized_record_data_;
-
-  enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
-
-  enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::kUser;
-
-  base::ListValue params;
-  params.Append(enqueue_record_request.ToValue());
-
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidToken(kTestDMTokenValue));
-
-  api_test_utils::RunFunction(function_.get(), std::move(params), profile(),
-                              extensions::api_test_utils::FunctionMode::kNone);
-
-  EXPECT_EQ(function_->GetError(),
-            EnterpriseReportingPrivateEnqueueRecordFunction::
-                kErrorProfileNotAffiliated);
-
-  VerifyNoRecordsEnqueued();
-}
-
-TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
-       InvalidDMTokenReturnsError) {
-  function_->SetProfileIsAffiliatedForTesting(true);
-  api::enterprise_reporting_private::EnqueueRecordRequest
-      enqueue_record_request;
-  enqueue_record_request.record_data = serialized_record_data_;
-  enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
-  enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::kUser;
-
-  base::ListValue params;
-  params.Append(enqueue_record_request.ToValue());
-
-  // Set up invalid DM token
-  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidToken());
-
-  api_test_utils::RunFunction(function_.get(), std::move(params), profile(),
-                              extensions::api_test_utils::FunctionMode::kNone);
-
-  EXPECT_EQ(function_->GetError(),
-            EnterpriseReportingPrivateEnqueueRecordFunction::
-                kErrorCannotAssociateRecordWithUser);
-
-  VerifyNoRecordsEnqueued();
-}
-
-TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
-       InvalidRecordWithMissingTimestampReturnsError) {
-  function_->SetProfileIsAffiliatedForTesting(true);
-  api::enterprise_reporting_private::EnqueueRecordRequest
-      enqueue_record_request;
-  // Clear timestamp from test record and set up serialized record
-  auto record = GetTestRecord();
-  record.clear_timestamp_us();
-  serialized_record_data_.clear();
-  serialized_record_data_.resize(record.ByteSizeLong());
-  ASSERT_TRUE(record.SerializeToArray(serialized_record_data_.data(),
-                                      serialized_record_data_.size()));
-  enqueue_record_request.record_data = serialized_record_data_;
-  enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
-  enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::kUser;
-
-  base::ListValue params;
-  params.Append(enqueue_record_request.ToValue());
-
-  // Set up invalid DM token
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidToken(kTestDMTokenValue));
-
-  api_test_utils::RunFunction(function_.get(), std::move(params), profile(),
-                              extensions::api_test_utils::FunctionMode::kNone);
-
-  EXPECT_EQ(function_->GetError(),
-            EnterpriseReportingPrivateEnqueueRecordFunction::
-                kErrorInvalidEnqueueRecordRequest);
-
-  VerifyNoRecordsEnqueued();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
