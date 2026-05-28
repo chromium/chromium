@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -159,7 +158,6 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288398
     public void testNewTabPageIncognitoAppMenuItems() throws IOException {
         IncognitoNewTabPageStation incognitoNewTabPage =
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
@@ -206,7 +204,6 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288398
     public void testWebPageIncognitoAppMenuItems() throws IOException {
         String appMenuGoldenId =
                 IncognitoUtils.shouldOpenIncognitoAsWindow()
@@ -223,7 +220,6 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288398
     public void testWebPageIncognitoAppMenuItems_withHomeButtonRemovalKeepOnNtp()
             throws IOException {
         String appMenuGoldenId =
