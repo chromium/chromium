@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 
+#include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -62,6 +63,12 @@ SidePanelAndroidBrowserTestBase::SidePanelAndroidBrowserTestBase() {
 SidePanelAndroidBrowserTestBase::~SidePanelAndroidBrowserTestBase() = default;
 
 void SidePanelAndroidBrowserTestBase::SetUp() {
+  if (!base::android::device_info::is_desktop() &&
+      !base::android::device_info::is_tablet()) {
+    GTEST_SKIP() << "Side panel is for large form factors; skipping the test "
+                    "on others.";
+  }
+
   // Despite the flag setup in the constructor, not all bots can see the
   // flag's "default value in tests". For example, bots with
   // "is_chrome_branded=true" don't read the "default value in tests". For

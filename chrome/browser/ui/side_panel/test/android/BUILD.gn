@@ -56,6 +56,7 @@ source_set("browser_test_support") {
     "side_panel_android_browser_test_base.h",
   ]
   deps = [
+    "//base",
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
