@@ -682,9 +682,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBoxKeyboard) {
   RunTestsInJsModule("ink2_text_box_keyboard_test.js", "test.pdf");
 }
 
-// TODO(crbug.com/440552067): Deflake and re-enable.
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest,
-                       DISABLED_Ink2TextBoxViewport) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBoxViewport) {
   RunTestsInJsModule("ink2_text_box_viewport_test.js", "test.pdf");
 }
 

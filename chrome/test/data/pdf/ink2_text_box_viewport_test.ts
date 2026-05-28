@@ -256,7 +256,9 @@ chrome.test.runTests([
     // This won't actually scroll the viewport in the test, since the plugin
     // won't send a corresponding scroll message back.
     mockPlugin.clearMessages();
+    // Manually fire the focus event. Browser focus is not guaranteed in tests.
     textbox.focus();
+    textbox.dispatchEvent(new FocusEvent('focus'));
     const syncScrollMessage =
         mockPlugin.findMessage<{type: string, x: number, y: number}>(
             'syncScrollToRemote');
