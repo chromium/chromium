@@ -7668,6 +7668,8 @@ data/frame_tree/scrollable_page_with_two_frames.html
 data/frame_tree/top.html
 data/frame_with_load_event.html
 data/fullscreen_frame.html
+data/gamepad-permissions-policy-none.html
+data/gamepad-permissions-policy-none.html.mock-http-headers
 data/generic_sensor/ambient_light_sensor_cross_origin_iframe_test.html
 data/generic_sensor/ambient_light_sensor_test.html
 data/generic_sensor/ambient_light_sensor_unavailable_test.html

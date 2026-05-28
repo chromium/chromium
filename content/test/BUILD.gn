@@ -2002,6 +2002,7 @@ test("content_browsertests") {
     "//device/bluetooth:mocks",
     "//device/fido",
     "//device/fido:test_support",
+    "//device/gamepad/public/mojom",
     "//gin",
     "//gpu/ipc/host",
     "//ipc",

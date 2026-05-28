@@ -377,6 +377,8 @@ enum BadMessageReason {
   RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH = 349,
   RFHI_WEBMCP_INVALID_TOOL_OWNER = 350,
   NR_BAD_ORIGIN_HEADER = 351,
+  BIBI_BIND_GAMEPAD_MONITOR_BLOCKED_BY_PERMISSIONS_POLICY = 352,
+  BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY = 353,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
