@@ -59,7 +59,7 @@ def CheckPreferDisablingTestCasesOverSuites(input_api, output_api):
     for line_num, line in enumerate(f.NewContents(), start=1):
       if disabled_test_re.search(line) and line not in old_contents:
         results.append(
-            output_api.PresubmitWarning(
+            output_api.PresubmitPromptWarning(
                 f'New "DISABLED_" test found in {f.LocalPath()}:{line_num}. '
                 "Prefer disabling individual test cases in the Mocha test file "
                 "using test.skip() or <if expr> instead of disabling the entire "
