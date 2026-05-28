@@ -385,4 +385,105 @@ TEST_F(X11WindowOzoneTest, SetFullscreen) {
   window->SetFullscreen(true, display::kInvalidDisplayId);
 }
 
+// Verifies that X11Window::OnWindowMapped() does not cause a use-after-free
+// if the window is synchronously deleted during Maximize().
+//
+// The MapNotify dispatch path (Connection::DispatchEvent ->
+// EventObserver::OnEvent -> HandleEvent -> OnWindowMapped) is not covered by
+// the weak_this guard in DispatchUiEvent because MapNotify is not a
+// translatable event.
+//
+// This test sets `should_maximize_after_map_` to true, and configures the
+// delegate to synchronously delete the window upon receiving the bounds change
+// from Maximize(). It then dispatches a synthetic MapNotify event and ensures
+// the deletion is handled safely without a use-after-free.
+TEST_F(X11WindowOzoneTest, OnWindowMappedUseAfterFreeAfterMaximize) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  constexpr gfx::Rect bounds(30, 80, 800, 600);
+  std::unique_ptr<PlatformWindow> window =
+      CreatePlatformWindow(&delegate, bounds, &widget, nullptr);
+
+  auto* connection = x11::Connection::Get();
+  auto xwindow = static_cast<x11::Window>(widget);
+
+  // Prime the X11Window's `GeometryCache` so the first `Maximize()` below does
+  // not itself fire a synchronous `OnBoundsChanged()`.
+  window->GetBoundsInPixels();
+
+  // Step 1: Maximize() while `!window_mapped_in_client_` -> sets
+  // `should_maximize_after_map_` = true. (The window has never been shown.)
+  window->Maximize();
+
+  // Step 2: Create a real parent window at a non-zero offset so that after
+  // a synthetic reparent, only the absolute origin of `xwindow` changes.
+  // `override_redirect` avoids any WM interference.
+  x11::Window new_parent = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = new_parent,
+      .parent = connection->default_root(),
+      .x = 200,
+      .y = 200,
+      .width = 1000,
+      .height = 1000,
+      .c_class = x11::WindowClass::InputOnly,
+      .override_redirect = x11::Bool32(true),
+  });
+
+  // Step 3: Synthesize a `ReparentNotify` so the leaf `GeometryCache` becomes
+  // un-ready. The next `GetBoundsInPixels()` (inside the `Maximize()` called
+  // from `OnWindowMapped()`) will block on the new parent's geometry, observe
+  // an origin change, and fire `OnBoundsChanged()` synchronously.
+  x11::ReparentNotifyEvent reparent{};
+  reparent.event = xwindow;
+  reparent.window = xwindow;
+  reparent.parent = new_parent;
+  reparent.x = 0;
+  reparent.y = 0;
+  x11::Event reparent_event(/*send_event=*/false, std::move(reparent));
+  connection->DispatchEvent(reparent_event);
+
+  // Step 4: Arm the delegate so the next synchronous `OnBoundsChanged()` frees
+  // the `X11Window` — modelling `views::Widget::CloseNow()` ->
+  // `SetPlatformWindow(nullptr)`, which is the deletion sink explicitly
+  // acknowledged by the `weak_this` guards already present in
+  // `X11Window::Maximize()`, `SetFullscreen()`, and
+  // `WindowTreeHostPlatform::OnBoundsChanged()`.
+  bool armed = true;
+  bool freed = false;
+  EXPECT_CALL(delegate, OnBoundsChanged(_))
+      .WillRepeatedly([&](const PlatformWindowDelegate::BoundsChange&) {
+        if (armed) {
+          armed = false;
+          freed = true;
+          window.reset();
+        }
+      });
+
+  // Step 5: Dispatch a synthetic `MapNotify` for this window. There is no
+  // send_event filtering on the `OnEvent` path; `IsTargetedBy()` only checks
+  // `map->window == xwindow_`.
+  //
+  // `OnEvent` -> `HandleEvent` -> `OnWindowMapped()`:
+  //   `should_maximize_after_map_` is true -> `Maximize()`
+  //     -> `GetBoundsInPixels()` -> `GeometryCache` resolves new parent
+  //     -> origin changed -> `NotifyBoundsChanged()` -> delegate frees
+  //        X11Window`
+  //     -> `Maximize()` `weak_this` guard returns early.
+  //   `OnWindowMapped()` then writes `should_maximize_after_map_ = false` and
+  //   reads `should_grab_pointer_after_map_` on the freed `this`.
+  x11::MapNotifyEvent map_notify{};
+  map_notify.event = xwindow;
+  map_notify.window = xwindow;
+  x11::Event map_event(/*send_event=*/false, std::move(map_notify));
+  connection->DispatchEvent(map_event);
+
+  // The synchronous-free path must have been exercised; otherwise the test
+  // didn't reach the vulnerable frame.
+  EXPECT_TRUE(freed) << "delegate->OnBoundsChanged() was not invoked "
+                        "synchronously from OnWindowMapped/Maximize";
+
+  connection->DestroyWindow({new_parent});
+}
+
 }  // namespace ui
