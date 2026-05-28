@@ -171,6 +171,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   AppBarIPHBackgroundView* _IPHBackgroundView;
   // Whether the App Bar content is rotated.
   BOOL _isRotated;
+  // The current rotation angle.
+  CGFloat _angle;
   // Constraints to make buttons square in landscape so that long press
   // animation does not leak beyond bounds of app bar.
   NSArray<NSLayoutConstraint*>* _buttonWidthConstraints;
@@ -224,6 +226,11 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)updateForAngle:(CGFloat)angle {
   [self loadViewIfNeeded];
 
+  if (_angle == angle) {
+    return;
+  }
+  _angle = angle;
+
   _isRotated = (angle != 0);
 
   CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
@@ -242,6 +249,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     _leadingSpacer.hidden = YES;
     _trailingSpacer.hidden = YES;
   }
+  [_stackView setNeedsLayout];
+  [_stackView layoutIfNeeded];
 }
 
 - (void)toggleSpotlightView:(BOOL)shouldShow {
@@ -288,6 +297,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  _angle = CGFLOAT_MAX;
   _backgroundView = [[AppBarBackgroundView alloc] init];
   _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view insertSubview:_backgroundView atIndex:0];
