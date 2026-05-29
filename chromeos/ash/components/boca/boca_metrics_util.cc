@@ -256,4 +256,8 @@ void RecordTeacherGetGeminiStatusEnabled(bool enabled) {
   base::UmaHistogramBoolean(kBocaTeacherGetGeminiStatusEnabled, enabled);
 }
 
+void RecordStudentGeminiStatusEnabled(bool enabled) {
+  base::UmaHistogramBoolean(kBocaStudentGeminiStatusEnabled, enabled);
+}
+
 }  // namespace ash::boca

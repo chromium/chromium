@@ -1306,6 +1306,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Boca.StudentGeminiStatus.Enabled" enum="BooleanEnabled"
+    expires_after="2027-05-27">
+  <owner>anasr@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records whether Gemini status is enabled or disabled for the student.
+    Recorded once per session when the student joins.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.TeacherGetGeminiStatus.Enabled" enum="BooleanEnabled"
     expires_after="2027-05-27">
   <owner>anasr@google.com</owner>

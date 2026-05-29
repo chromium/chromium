@@ -24,6 +24,27 @@ int CalculateNumOfActiveStudents(const ::boca::Session* session) {
   return num_of_active_students;
 }
 
+void RecordStudentGeminiStatus() {
+  auto* session_manager = BocaAppClient::Get()->GetSessionManager();
+  auto* session =
+      session_manager ? session_manager->GetCurrentSession() : nullptr;
+  if (session && !session->student_statuses().empty()) {
+    auto state =
+        session->student_statuses().begin()->second.gemini_enablement_state();
+    switch (state) {
+      case ::boca::GeminiEnablementState::GEMINI_ENABLEMENT_STATE_ENABLED:
+        RecordStudentGeminiStatusEnabled(true);
+        break;
+      case ::boca::GeminiEnablementState::GEMINI_ENABLEMENT_STATE_DISABLED:
+        RecordStudentGeminiStatusEnabled(false);
+        break;
+      default:
+        LOG(ERROR) << "[Boca] Unexpected Gemini state " << state;
+        break;
+    }
+  }
+}
+
 }  // namespace
 
 BocaMetricsManager::BocaMetricsManager(bool is_producer)
@@ -35,6 +56,7 @@ void BocaMetricsManager::OnSessionStarted(
     const ::boca::UserIdentity& producer) {
   if (!is_producer_) {
     RecordStudentJoinedSession();
+    RecordStudentGeminiStatus();
   }
   // Set the times for when session started along with the initial set time
   // for the content locked state.

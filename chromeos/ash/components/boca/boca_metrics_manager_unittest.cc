@@ -50,6 +50,7 @@ class MockSessionManager : public BocaSessionManager {
                            /*is_producer=*/true) {}
   ~MockSessionManager() override = default;
   MOCK_METHOD(::boca::Session*, GetPreviousSession, (), (override));
+  MOCK_METHOD(::boca::Session*, GetCurrentSession, (), (override));
 };
 
 class BocaMetricsManagerTest : public testing::Test {
@@ -304,4 +305,52 @@ TEST_F(BocaMetricsManagerConsumerTest,
   EXPECT_EQ(actions.GetActionCount(kBocaActionOfStudentJoinedSession),
             expected_number_of_students);
 }
+
+struct StudentGeminiStatusTestParam {
+  std::string test_name;
+  ::boca::GeminiEnablementState state;
+  int expected_uma_value;
+};
+
+class BocaMetricsManagerConsumerGeminiStatusTest
+    : public BocaMetricsManagerConsumerTest,
+      public testing::WithParamInterface<StudentGeminiStatusTestParam> {};
+
+TEST_P(BocaMetricsManagerConsumerGeminiStatusTest,
+       RecordStudentGeminiStatusWhenSessionStarted) {
+  const StudentGeminiStatusTestParam& param = GetParam();
+  base::HistogramTester histograms;
+
+  ::boca::Session session;
+  session.set_session_id("test_session_id");
+  session.set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status;
+  status.set_gemini_enablement_state(param.state);
+  session.mutable_student_statuses()->emplace("test_gaia_id",
+                                              std::move(status));
+  EXPECT_CALL(session_manager_, GetCurrentSession()).WillOnce(Return(&session));
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+
+  histograms.ExpectTotalCount("Ash.Boca.StudentGeminiStatus.Enabled", 1);
+  histograms.ExpectBucketCount("Ash.Boca.StudentGeminiStatus.Enabled",
+                               param.expected_uma_value, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    BocaMetricsManagerConsumerGeminiStatusTests,
+    BocaMetricsManagerConsumerGeminiStatusTest,
+    testing::Values(
+        StudentGeminiStatusTestParam{
+            "GeminiEnabled",
+            ::boca::GeminiEnablementState::GEMINI_ENABLEMENT_STATE_ENABLED, 1},
+        StudentGeminiStatusTestParam{
+            "GeminiDisabled",
+            ::boca::GeminiEnablementState::GEMINI_ENABLEMENT_STATE_DISABLED,
+            0}),
+    [](const testing::TestParamInfo<
+        BocaMetricsManagerConsumerGeminiStatusTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
 }  // namespace ash::boca
