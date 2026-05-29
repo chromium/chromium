@@ -209,6 +209,26 @@ IN_PROC_BROWSER_TEST_F(CrosAppsApiAccessControlWithNoFeatureFlagsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrosAppsApiAccessControlWithNoFeatureFlagsBrowsertest,
+                       ChildWindowHasApi) {
+  SetUpTestApi(
+      /*allowlisted_origins=*/{test_server().GetOrigin(kFooHost)},
+      /*required_features=*/{});
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            test_server().GetURL(kFooHost, "/empty.html")));
+  EXPECT_TRUE(IsTestApiExposed(web_contents));
+
+  content::WebContentsAddedObserver child_observer;
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.open('/empty.html')"));
+  content::WebContents* child_contents = child_observer.GetWebContents();
+  content::WaitForLoadStop(child_contents);
+  ASSERT_TRUE(child_contents);
+
+  EXPECT_TRUE(IsTestApiExposed(child_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(CrosAppsApiAccessControlWithNoFeatureFlagsBrowsertest,
                        AllowlistedOriginIsGatedByBaseFeature) {
   SetUpTestApi(
       /*allowlisted_origin*/ {test_server().GetOrigin(kFooHost)},

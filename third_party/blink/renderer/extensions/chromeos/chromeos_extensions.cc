@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_interface_chromeos_names.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_target_chromeos_names.h"
@@ -15,6 +17,8 @@
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
@@ -39,10 +43,50 @@ bool IsSupportedExecutionContext(ExecutionContext* execution_context) {
          execution_context->IsServiceWorkerGlobalScope();
 }
 
+LocalDOMWindow* GetLocalOpenerWindow(LocalDOMWindow* window) {
+  if (!window || !window->GetFrame()) {
+    return nullptr;
+  }
+
+  if (auto* opener_frame =
+          DynamicTo<LocalFrame>(window->GetFrame()->Opener())) {
+    return opener_frame->DomWindow();
+  }
+
+  return nullptr;
+}
+
+void InheritChromeOSExtensionFromOpenerIfAllowed(
+    ExecutionContext* execution_context) {
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  LocalDOMWindow* opener_window = GetLocalOpenerWindow(window);
+
+  if (!window || !opener_window) {
+    return;
+  }
+
+  if (!window->GetSecurityOrigin()->CanAccess(
+          opener_window->GetSecurityOrigin())) {
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled(opener_window)) {
+    if (auto* target_context =
+            window->GetRuntimeFeatureStateOverrideContext()) {
+      target_context->SetBlinkExtensionChromeOSForceEnabled();
+    }
+  }
+}
+
 void InstallChromeOSExtensions(ScriptState* script_state) {
   auto* execution_context = ExecutionContext::From(script_state);
-  if (!IsSupportedExecutionContext(execution_context) ||
-      !RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled(
+  if (!IsSupportedExecutionContext(execution_context)) {
+    return;
+  }
+
+  InheritChromeOSExtensionFromOpenerIfAllowed(execution_context);
+
+  if (!RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled(
           execution_context)) {
     return;
   }

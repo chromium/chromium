@@ -70,6 +70,27 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
+                       IsolatedWebAppChildWindowCanAccessExtensions) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      InstallIsolatedWebAppAndReturnUrlInfo(profile());
+
+  content::RenderFrameHost* frame = OpenApp(url_info.app_id());
+
+  content::WebContentsAddedObserver child_observer;
+  ASSERT_TRUE(content::ExecJs(frame, "window.open('/')"));
+  content::WebContents* child_contents = child_observer.GetWebContents();
+  content::WaitForLoadStop(child_contents);
+  ASSERT_TRUE(child_contents);
+
+  ASSERT_EQ(true, content::EvalJs(child_contents, "'chromeos' in window"));
+  ASSERT_EQ(true, content::EvalJs(child_contents,
+                                  "'isolatedWebApp' in window.chromeos"));
+  ASSERT_EQ(true,
+            content::EvalJs(child_contents,
+                            "'setShape' in window.chromeos.isolatedWebApp"));
+}
+
+IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
                        IsolatedWebAppCanCallSetShape) {
   web_app::IsolatedWebAppUrlInfo url_info =
       InstallIsolatedWebAppAndReturnUrlInfo(profile());
