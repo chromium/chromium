@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ההודעה עם הטיפים נסגרה</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1045899828449635435">למחוק נתונים גם מהאתרים האלה?</translation>
+<translation id="1049461303780085993">‏כדאי לנסות את Gemini ב-Chrome כדי לקבל תשובות, מסקנות ועוד.</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1052842760770519282">חלק מהסיסמאות שלך לא זמינות</translation>
 <translation id="1057623954802068161">גלילה לראש הדף</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">יש ללחוץ כדי להתקשר</translation>
 <translation id="232137538351753795">כדי לחזור למסך הקודם, מחליקים מהקצה השמאלי</translation>
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
+<translation id="2327445548174191329">מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">פותחים את הדף "כרטיסייה חדשה"</translation>
 <translation id="4595276580892809760">צירוף תמונות מהגלריה</translation>
 <translation id="4595805675102978678">‏שגיאה בחשבון Google</translation>
+<translation id="4599585406846903742">תצוגת עמוד יחיד</translation>
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606559747793337066">‏כשאתר או אפליקציה מבקשים לטעון מראש קישורים בדף שלהם באופן פרטי, דפדפן Chrome מצפין וטוען מראש את הדפים באמצעות השרתים של Google ללא קובצי Cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">דרך כפתור האפשרויות הנוספות אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="5696597120588531049">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="5698878456427040674">עליך לבדוק אם יש תמיכה בחשבון שנבחר.</translation>
+<translation id="5700415746238689851">‏פתיחת Gemini</translation>
 <translation id="5709213329446699338">האתר <ph name="SITE" /> מבקש להתחבר אל יציאה טורית</translation>
 <translation id="5715150588940290235">למחוק את קודי האבטחה שנשמרו?</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">דיווח על ספאם</translation>
 <translation id="8277710303010772444">התחלת חיפוש</translation>
 <translation id="8279945625179116733">מאובטח על ידי <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">הקישורים התקבלו</translation>
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8282297628636750033">החלת עיצוב כהה על אתרים, כשאפשר</translation>
 <translation id="8282950411412455249">אל הגדרות האבטחה</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">הרשאות ניתנו מחדש לאתר <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8872506776304248286">פתח ביישום</translation>
+<translation id="8880275451109933094">תצוגת 2 עמודים</translation>
 <translation id="8890668505403261809">חיפוש בכרטיסיות הפרטיות</translation>
 <translation id="8892234476517513962">נכנסת כבר לחשבון</translation>
 <translation id="8894890673032951011">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה והתוכן בה מוקלט</translation>

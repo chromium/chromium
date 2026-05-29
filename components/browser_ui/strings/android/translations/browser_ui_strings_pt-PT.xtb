@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1000614056227025171">Secção inferior da promoção Personalize a sua página inicial aberta à altura total</translation>
 <translation id="1006017844123154345">Abrir online</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1046742265332833834">Tema azul</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Os sites podem reproduzir som</translation>
 <translation id="3065787901655140044">A Proteção avançada está ativada</translation>
 <translation id="3069226013421428034">Permita o início de sessão de terceiros num site específico.</translation>
+<translation id="3084983642903364837">Edite a sua página inicial mais tarde através do menu de três pontos.</translation>
 <translation id="310297983047869047">Slide anterior</translation>
 <translation id="3108122610701115301">Predefinir</translation>
 <translation id="310979712355504754">Eliminar todos</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Ligado a uma porta de série</translation>
 <translation id="4223404254440398437">Acesso ao microfone não permitido</translation>
 <translation id="4226663524361240545">As notificações podem fazer com que o dispositivo vibre</translation>
+<translation id="4227965147357783918">Secção inferior da promoção Personalize a sua página inicial aberta a meia altura</translation>
 <translation id="4259722352634471385">A navegação está bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Depois de sair de um site, este pode continuar a sincronizar para concluir tarefas, como carregar fotos ou enviar uma mensagem de chat</translation>
 <translation id="4278390842282768270">Permitido</translation>

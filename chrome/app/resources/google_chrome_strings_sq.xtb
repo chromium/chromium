@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Për t'i fshirë të dhënat e shfletimit vetëm nga kjo pajisje, ndërkohë që i mban ato në "Llogarinë tënde të Google", <ph name="BEGIN_LINK" />dil nga llogaria në Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Kliko për të mbyllur dialogun e identifikimit në Chrome</translation>
 <translation id="1051793555070215510">Na ndihmo të përmirësojmë modalitetin "I fshehtë" duke plotësuar këtë anketë 1-minutëshe.</translation>
+<translation id="1055295352198814912">Shfaq Gemini në Chrome në shiritin e menysë së Mac dhe aktivizo shkurtoren e tastierës</translation>
 <translation id="1059838145689930908">Për ta përdorur këtë shtesë si <ph name="USER_EMAIL_ADDRESS" />, identifikohu në Chrome.</translation>
 <translation id="1065672644894730302">Preferencat e tua nuk mund të lexohen.
 
@@ -281,6 +282,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3941890832296813527">Gabim gjatë instalimit: Emri i skedarit të instaluesit është i pavlefshëm ose nuk mbështetet.</translation>
 <translation id="395904275706073188">Faqet e mbrojtura nuk mund të lexohen. Provo një faqe tjetër.</translation>
+<translation id="3965532487635448963">Shfaq Gemini në Chrome në tabakanë e sistemit dhe aktivizo shkurtoren e tastierës</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3968962723676998462">Fut frazën e kalimit për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome dëshiron të fshijë të dhënat e tua të "Menaxherit të fjalëkalimeve të Google". Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
@@ -323,6 +325,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4367027658822022112">Mund të gozhdosh "Lenten e Google" për qasje të lehtë; kliko butonin "Gozhdo" në krye të panelit anësor</translation>
 <translation id="4372389195695053189">Chrome është tani shfletuesi yt i parazgjedhur</translation>
 <translation id="4389991535395284064">Kur shfleton në "Modalitetin 'e fshehtë'", Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
+<translation id="4400772909124543403">Nuk ofrohet asnjë përditësim</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
@@ -361,6 +364,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4891791193823137474">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="4895437082222824641">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
 <translation id="4896867431081882115">Përfito qasje të lehtë te veçoritë që njeh, që të pëlqejnë dhe që u beson duke caktuar Chrome si shfletuesin tënd të parazgjedhur. Chrome do të gozhdohet te shiriti i detyrave për qasje të shpejtë.</translation>
+<translation id="4904953848704395458">Hap Gemini në Chrome me një shkurtore të tastierës.</translation>
 <translation id="4918086044614829423">Prano</translation>
 <translation id="4918844574251943176">Imazhi u kopjua</translation>
 <translation id="4926882258455737990">Për të përdorur një "Llogari tjetër të Google" me Gemini në Chrome, <ph name="BEGIN_LINK" />krijo një profil të ri<ph name="END_LINK" /> dhe identifikohu me llogarinë që dëshiron</translation>
@@ -523,6 +527,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6434035853014503219">Faleminderit që zgjodhe Chrome si shfletuesin tënd të parazgjedhur!</translation>
 <translation id="6438015621983209660">Zgjero "Shfletimin e sigurt të përmirësuar" me Chrome në telefonin tënd</translation>
 <translation id="6442774133615368941">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde në aplikacionin e Chrome për iOS</translation>
+<translation id="6448835208126432197">Për të zgjedhur një pjesë të ekranit në Gemini në Chrome, përdor shkurtoren e tastierës.</translation>
 <translation id="6473905796280459355">Shko te faqja "Rreth Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
@@ -535,6 +540,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6520670145826811516">Për të përdorur vendndodhjen tënde, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historiku i Chrome</translation>
 <translation id="6532945796722480006">Hap Gemini në Chrome Canary</translation>
+<translation id="6539493053177300926">Qasu me lehtësi për të përdorur Gemini në Chrome në pajisjen tënde, edhe nëse Chrome është i minimizuar.</translation>
 <translation id="6585124893636629274">Mbyll Gemini në Chrome</translation>
 <translation id="659498884637196217">Në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje</translation>
 <translation id="6631524303639368205">Vazhdo aty ku e ke lënë: Chrome i restauroi skedat e tua nga sesioni yt i fundit. Mund ta çaktivizosh këtë te</translation>
@@ -594,6 +600,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7161904924553537242">Mirë se vjen në Google Chrome</translation>
 <translation id="7193885263065350793">Organizata jote e mbyll Chrome kur ai nuk përdoret për <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontroll mbi profilin tënd të Google Chrome. Të dhënat e tua të Chrome, siç janë aplikacionet, faqeshënuesit, fjalëkalimet dhe cilësime të tjera do të lidhen në mënyrë të përhershme me <ph name="USER_NAME" />. Ti do të jesh në gjendje t'i fshish këto të dhëna përmes Panelit të llogarive të Google, por nuk do të jesh në gjendje t'i shoqërosh këto të dhëna me një llogari tjetër. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Për t'u larguar ose për t'u kthyer te Gemini në Chrome, përdor shkurtoren e tastierës.</translation>
 <translation id="7274402351400635015">Mund të përdorësh Chrome sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera. Ai do të gozhdohet gjithashtu te shiriti i detyrave.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> menaxhon Chrome</translation>
 <translation id="7285990705317078173">Shkarko Chrome në telefon për të monitoruar çmimet dhe për të marrë sinjalizime kur ka rënie çmimi në ndonjë sajt</translation>
@@ -701,6 +708,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8221491193165283816">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko këtu.</translation>
 <translation id="8253851811470049684">Hap lidhjet në Chrome nga çdo aplikacion dhe mbaje shfletuesin të qasshëm në shiritin e detyrave</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
+<translation id="8260086374035800939">Nëse Gemini në Chrome është i hapur, paneli anësor qëndron i hapur kur krijohen skeda të reja</translation>
 <translation id="8267953129876836456">Chrome gjeti disa rekomandime për sigurinë për t'u rishikuar nga ti</translation>
 <translation id="8286862437124483331">Google Chrome po përpiqet të shfaqë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="829923460755755423">Shto një shkurtore për te "Menaxheri i fjalëkalimeve i Google"</translation>
@@ -712,6 +720,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8362914115861174987">Përkthe në</translation>
 <translation id="8366770919198174997">Zvogëlon performancën, por e bën Chrome më rezistent ndaj sulmeve</translation>
 <translation id="8367705492654390392">Pyet për çdo gjë</translation>
+<translation id="8367950957770994118">Hap me shpejtësi Gemini në Chrome sa herë që të nevojitet</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8377158135256176353">Aktivizo/çaktivizo Gemini në Chrome Canary</translation>
 <translation id="8387459386171870978">Vazhdo të përdorësh Chrome</translation>
@@ -729,6 +738,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
 <translation id="852529348814672339">Shfaqe Chrome në këtë gjuhë</translation>
+<translation id="8525579356836940628">Instalimi ndaloi</translation>
 <translation id="8533056045953418157">Cakto Google Chrome si shikuesin e parazgjedhur të skedarëve PDF</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1000614056227025171">होमपेज को पसंद के मुताबिक बनाने के प्रमोशन वाली बॉटम शीट पूरी स्क्रीन पर खुली है</translation>
 <translation id="1006017844123154345">ऑनलाइन खोलें</translation>
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1046742265332833834">नीले रंग वाली थीम</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">साइटें आवाज़ चालू कर सकती हैं</translation>
 <translation id="3065787901655140044">ऐडवांस सुरक्षा की सेटिंग चालू है</translation>
 <translation id="3069226013421428034">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन करने की अनुमति दें.</translation>
+<translation id="3084983642903364837">तीन बिंदुओं वाले मेन्यू में जाकर, होमपेज में बाद में बदलाव करें.</translation>
 <translation id="310297983047869047">पिछली स्लाइड</translation>
 <translation id="3108122610701115301">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="310979712355504754">सभी मिटाएं</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">सीरियल पोर्ट से कनेक्ट है</translation>
 <translation id="4223404254440398437">माइक्रोफ़ोन ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="4226663524361240545">नोटिफ़िकेशन से डिवाइस में कंपन हो सकता है</translation>
+<translation id="4227965147357783918">होमपेज को पसंद के मुताबिक बनाने के प्रमोशन वाली बॉटम शीट आधी स्क्रीन पर खुली है</translation>
 <translation id="4259722352634471385">मार्गदर्शक अवरोधित है: <ph name="URL" /></translation>
 <translation id="4274673989874969668">जब आप कोई साइट छोड़ते हैं, तो वह कुछ कामों को पूरा करने के लिए, सिंक करने की सुविधा का इस्तेमाल जारी रख सकती है, जैसे कि फ़ोटो अपलोड करना या चैट मैसेज भेजना</translation>
 <translation id="4278390842282768270">अनुमति है</translation>

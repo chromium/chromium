@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">დათვალიერების მონაცემების მხოლოდ ამ მოწყობილობიდან წასაშლელად და Google ანგარიშში მათ შესანარჩუნებლად <ph name="BEGIN_LINK" />გამოდით Chrome-იდან<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">დააწკაპუნეთ Chrome-ის შესვლის დიალოგის დასახურად</translation>
 <translation id="1051793555070215510">დაგვეხმარეთ ინკოგნიტო რეჟიმის გაუმჯობესებაში ამ 1-წუთიანი გამოკითხვით.</translation>
+<translation id="1055295352198814912">Gemini-ს ჩვენება Chrome-ში Mac-ის მენიუს ზოლში და კლავიატურის მალსახმობის ჩართვა</translation>
 <translation id="1059838145689930908">ეს გაფართოება რომ გამოიყენოთ <ph name="USER_EMAIL_ADDRESS" /> ანგარიშით, შედით Chrome-ში.</translation>
 <translation id="1065672644894730302">თქვენი პარამეტრების წაკითხვა შეუძლებელია.
 
@@ -282,6 +283,7 @@
 <translation id="3892148308691398805">ტექსტის კოპირება</translation>
 <translation id="3941890832296813527">შეცდომა ინსტალაციისას: ინსტალატორის ფაილის სახელი არასწორი ან მხარდაუჭერელია.</translation>
 <translation id="395904275706073188">დაცული გვერდების წაკითხვა შეუძლებელია. ცადეთ სხვა გვერდი.</translation>
+<translation id="3965532487635448963">Gemini-ს Chrome-ში სისტემურ არეში ჩვენება და კლავიატურის მალსახმობის ჩართვა</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
 <translation id="3968962723676998462">შეიყვანეთ თქვენი საიდუმლო ფრაზა, რომ გამოიყენოთ და შეინახოთ Chrome-ის მონაცემები თქვენს ანგარიშში, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome-ს სურს თქვენი Google პაროლების მმართველის მონაცემების წაშლა. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
@@ -324,6 +326,7 @@
 <translation id="4367027658822022112">შეგიძლიათ, ჩაამაგროთ Google Lens მასზე მარტივად წვდომისთვის; დააწკაპუნეთ ჩამაგრების ღილაკს გვერდითი ზოლის ზედა ნაწილში</translation>
 <translation id="4372389195695053189">Chrome ახლა თქვენი ნაგულისხმევი ბრაუზერია</translation>
 <translation id="4389991535395284064">ვების ინკოგნიტო რეჟიმში დათვალიერებისას Chrome გაგაფრთხილებთ საიტის დაუცველი კავშირის გამოყენებით ჩატვირთვამდე</translation>
+<translation id="4400772909124543403">განახლებები ხელმისაწვდომი არ არის.</translation>
 <translation id="4427306783828095590">გაძლიერებული დაცვა გთავაზობთ ფიშინგისა და მავნე პროგრამებისგან დაცვის მეტ საშუალებას</translation>
 <translation id="4434353761996769206">ინსტალატორის შეცდომა: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome — ქსელში შესვლა — <ph name="PAGE_TITLE" /></translation>
@@ -362,6 +365,7 @@
 <translation id="4891791193823137474">Google Chrome გაიშვას ფონურ რეჟიმში</translation>
 <translation id="4895437082222824641">ბმულის გახსნა Chrome-ის ახალ ჩა&amp;ნართში</translation>
 <translation id="4896867431081882115">დააყენეთ Chrome ნაგულისხმევ ბრაუზერად და მიიღეთ მარტივი წვდომა იმ ფუნქციებზე, რომლებსაც იცნობთ, გიყვართ და ენდობით. Chrome ჩამაგრდება თქვენს ამოცანათა ზოლში სწრაფი წვდომისთვის.</translation>
+<translation id="4904953848704395458">გახსენით Gemini Chrome-ში კლავიატურის მალსახმობით.</translation>
 <translation id="4918086044614829423">მიღება</translation>
 <translation id="4918844574251943176">სურათი დაკოპირდა</translation>
 <translation id="4926882258455737990">Gemini Chrome-ში სხვა Google ანგარიშის გამოსაყენებლად <ph name="BEGIN_LINK" />შექმენით ახალი პროფილი<ph name="END_LINK" /> და შედით სასურველი ანგარიშით</translation>
@@ -524,6 +528,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6434035853014503219">გმადლობთ, რომ Chrome აირჩიეთ ნაგულისხმევ ბრაუზერად!</translation>
 <translation id="6438015621983209660">გაახანგრძლივეთ გაძლიერებული Safe Browsing Chrome-ით თქვენს ტელეფონში</translation>
 <translation id="6442774133615368941">შეიძინეთ, თარგმნეთ და ამოიცანით, რასაც ხედავთ თქვენი კამერის მეშვეობით Chrome iOS აპში</translation>
+<translation id="6448835208126432197">Chrome-ში Gemini-ში ეკრანის ნაწილის ასარჩევად გამოიყენეთ კლავიატურის მალსახმობი.</translation>
 <translation id="6473905796280459355">Chrome-ის შესახებ ინფორმაციის გვერდზე გადასვლა</translation>
 <translation id="6481963882741794338">მიაბით ერთმანეთს Chrome და სხვა Google სერვისები პერსონალიზებისა და სხვა მიზნით</translation>
 <translation id="648319183876919572">გაძლიერებული Safe Browsing მეტად გიცავთ სახიფათო ვებსაიტებისა და ჩამოტვირთვებისგან</translation>
@@ -536,6 +541,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6520670145826811516">თქვენი მდებარეობა რომ გამოიყენოთ, გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" /> და მიანიჭეთ Chrome-ს წვდომა</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary-ში გახსნა</translation>
+<translation id="6539493053177300926">მარტივი წვდომა Gemini-ზე Chrome-ში თქვენს მოწყობილობაში მაშინაც კი, როდესაც Chrome მინიმიზებულია.</translation>
 <translation id="6585124893636629274">Gemini Chrome-ში დახურვა</translation>
 <translation id="659498884637196217">Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
 <translation id="6631524303639368205">გააგრძელეთ იქიდან, სადაც გაჩერდით: Chrome-მა აღადგინა ჩანართები თქვენი ბოლო სესიიდან. ამის გამორთვა შეგიძლიათ აქ:</translation>
@@ -595,6 +601,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7161904924553537242">მოგესალმებათ Google Chrome!</translation>
 <translation id="7193885263065350793">თქვენი ორგანიზაცია ხურავს Chrome-ს, როცა ის <ph name="TIMEOUT_DURATION" /> არ გამოიყენება.</translation>
 <translation id="7242029209006116544">თქვენ სისტემაში შედიხართ მართული ანგარიშით და მის ადმინისტრატორს თქვენი Google Chrome-ის პროფილის კონტროლის შესაძლებლობას აძლევთ. თქვენი Chrome-ის მონაცემები, როგორიცაა თქვენი პროგრამები, სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები მუდმივად მიებმება <ph name="USER_NAME" />-ს. თქვენ შეძლებთ ამ მონაცემების წაშლას Google Accounts Dashboard-ის მეშვეობით, მაგრამ თქვენ ვერ შეძლებთ ამ მონაცემების დაკავშირებას სხვა ანგარიშთან. სურვილისამებრ, შეგიძლიათ ახალი პროფილის შექმნა თქვენი Chrome-ის მონაცემების ცალე შესანახად. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Chrome-ში Gemini-დან გასასვლელად ან მასში დასაბრუნებლად გამოიყენეთ კლავიატურის მალსახმობი.</translation>
 <translation id="7274402351400635015">შეგიძლიათ გამოიყენოთ Chrome, როცა შეტყობინებებში, დოკუმენტებსა და სხვა აპებში არსებულ ბმულებზე აწკაპუნებთ. ის ასევე ჩამაგრდება თქვენს ამოცანათა ზოლში.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> მართავს Chrome-ს</translation>
 <translation id="7285990705317078173">ჩამოტვირთეთ Chrome თქვენს ტელეფონში, რომ თვალი ადევნოთ ფასებს და მიიღოთ გაფრთხილებები, როცა რომელიმე საიტზე ფასი დაიკლებს</translation>
@@ -704,6 +711,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8221491193165283816">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. ამ საიტისგან შეტყობინებების მისაღებად დააწკაპუნეთ აქ.</translation>
 <translation id="8253851811470049684">გახსენით ბმულები Chrome-ში ნებისმიერი აპიდან და გახადეთ ის ხელმისაწვდომი ამოცანათა ზოლიდან</translation>
 <translation id="8255190535488645436">Google Chrome იყენებს თქვენს კამერასა და მიკროფონს.</translation>
+<translation id="8260086374035800939">თუ Gemini Chrome-ში გახსნილია, გვერდითი პანელი ღია დარჩება ახალი ჩანართების შექმნისას</translation>
 <translation id="8267953129876836456">Chrome-მა თქვენთვის იპოვა უსაფრთხოებასთან დაკავშირებული რეკომენდაციები</translation>
 <translation id="8286862437124483331">Google Chrome ცდილობს პაროლების ჩვენებას. აკრიფეთ თქვენი Windows-ის პაროლი, რათა დაუშვათ ეს.</translation>
 <translation id="829923460755755423">დაამატეთ Google პაროლების მმართველის მალსახმობი</translation>
@@ -715,6 +723,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8362914115861174987">თარგმნა შემდეგ ენაზე:</translation>
 <translation id="8366770919198174997">ამცირებს წარმადობას, თუმცა Chrome შეტევების წინაშე უფრო მდგრადი იქნება</translation>
 <translation id="8367705492654390392">იკითხეთ, რაც გსურთ</translation>
+<translation id="8367950957770994118">სწრაფად გახსენით Gemini Chrome-ში, როცა ის დაგჭირდებათ</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="8377158135256176353">Gemini Chrome Canary-შის ჩართვა/გამორთვა</translation>
 <translation id="8387459386171870978">Chrome-ის გამოყენების გაგრძელება</translation>
@@ -732,6 +741,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8498858610309223613">Google Chrome-ს ეს-ესაა მიესადაგა უსაფრთხოების საგანგებო განახლება. გადატვირთეთ ის ახლავე და თქვენი ჩანართებიც აღდგება.</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="852529348814672339">Chrome-ის ჩვენება ამ ენაზე</translation>
+<translation id="8525579356836940628">ინსტალაცია გაჩერდა</translation>
 <translation id="8533056045953418157">დააყენეთ Google Chrome PDF ფაილების ნაგულისხმევ მნახველად</translation>
 <translation id="8555465886620020932">სერვისის შეცდომა: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">ენების სიაში ძიება</translation>

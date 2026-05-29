@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Maslahat bildirishomalari reklamasi yopildi</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1045899828449635435">Bu saytlardagi maʼlumotlar ham tozalansinmi?</translation>
+<translation id="1049461303780085993">Javoblar, asosiy xulosalar va boshqalarni olish uchun Chrome ichida Gemini ishlating</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Ayrim parollar ochilmaydi</translation>
 <translation id="1057623954802068161">Sahifaning boshiga varaqlash</translation>
@@ -297,6 +298,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2318045970523081853">Chaqirish uchun bosing</translation>
 <translation id="232137538351753795">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="2323763861024343754">Sayt xotirasi</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> orqali</translation>
 <translation id="2328474416100889417">“<ph name="GROUP_NAME" />” varaqlar guruhi hammada ishlamay qoladi va barcha taklif havolalar oʻchiriladi</translation>
 <translation id="2330186936255788117">Yana bukmarklar</translation>
 <translation id="2332515770639153015">Saytlarni kuchaytirilgan rejimda xavfsiz kezish rejimi yoniq</translation>
@@ -834,6 +836,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4595237294768457124">Yangi varaq sahifasini oching</translation>
 <translation id="4595276580892809760">Galereyadan rasm biriktirish</translation>
 <translation id="4595805675102978678">Google hisobi xatosi</translation>
+<translation id="4599585406846903742">Bitta sahifani chiqarish</translation>
 <translation id="4601095002996233687">Shubhali yuklanmalarni chuqur tekshirish</translation>
 <translation id="4606559747793337066">Birorta sayt yoki ilova havolalarni maxfiy tarzda sahifalarida oldindan yuklashni soʻrasa, Chrome sahifalarni Google serverlari orqali cookie fayllarisiz shifrlaydi va oldindan yuklaydi. Bunda, oldindan yuklangan saytda shaxsingiz berkitiladi.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> veb-ilovasini ochish</translation>
@@ -1088,6 +1091,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="569536719314091526">“Yana” tugmasidan bu sahifani boshqa tilga tarjima qilishingiz mumkin</translation>
 <translation id="5696597120588531049">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="5698878456427040674">Tanlangan hisob ishlashini tekshiring.</translation>
+<translation id="5700415746238689851">Geminini ochish</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> seriyali portga ulanmoqchi</translation>
 <translation id="5715150588940290235">Saqlangan xavfsizlik kodlari oʻchirilsinmi?</translation>
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
@@ -1769,6 +1773,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8271267069224406035">Spam haqida xabar berish</translation>
 <translation id="8277710303010772444">Qidiruvni boshlash</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> himoyasida</translation>
+<translation id="8280797717392145626">Havolalar qabul qilindi</translation>
 <translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8282297628636750033">Saytlarga tungi mavzuni tatbiq etish</translation>
 <translation id="8282950411412455249">Xavfsizlik sozlamalarini ochish</translation>
@@ -1904,6 +1909,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> uchun yana ruxsat berildi</translation>
 <translation id="8865415417596392024">Hisobingizdagi Chrome maʼlumotlari</translation>
 <translation id="8872506776304248286">Qaysi ilovada ochilsin</translation>
+<translation id="8880275451109933094">Ikkita sahifani chiqarish</translation>
 <translation id="8890668505403261809">Inkognito varaqlardan qidirish</translation>
 <translation id="8892234476517513962">Hisobingizga allaqachon kirgansiz</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, kontenti yozib olinayotgan inkognito varaq mahkamlandi</translation>

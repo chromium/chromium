@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Als je browsegegevens alleen van dit apparaat wilt verwijderen, maar ze in je Google-account wilt houden, <ph name="BEGIN_LINK" />log je uit van Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Klik om het inlogdialoogvenster van Chrome te sluiten</translation>
 <translation id="1051793555070215510">Help ons Incognito te verbeteren door deze enquête van 1 minuut in te vullen.</translation>
+<translation id="1055295352198814912">Gemini in Chrome tonen in de Mac-menubalk en sneltoets aanzetten</translation>
 <translation id="1059838145689930908">Als je deze extensie wilt gebruiken als <ph name="USER_EMAIL_ADDRESS" />, log je in bij Chrome.</translation>
 <translation id="1065672644894730302">Je voorkeuren kunnen niet worden gelezen.
 
@@ -281,6 +282,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3941890832296813527">Installatiefout: De bestandsnaam van het installatieprogramma is ongeldig of wordt niet ondersteund.</translation>
 <translation id="395904275706073188">Beschermde pagina's kunnen niet worden gelezen. Probeer een andere pagina.</translation>
+<translation id="3965532487635448963">Gemini in Chrome tonen in systeemvak en sneltoets aanzetten</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968962723676998462">Voer je wachtwoordzin in om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="3973161977468201858">Google Chrome wil je Google Wachtwoordmanager-gegevens verwijderen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
@@ -323,6 +325,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4367027658822022112">Je kunt Google Lens vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>
 <translation id="4372389195695053189">Chrome is nu je standaardbrowser</translation>
 <translation id="4389991535395284064">Als je browst in de incognitomodus, waarschuwt Chrome je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
+<translation id="4400772909124543403">Er is geen update beschikbaar</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
 <translation id="4434353761996769206">Fout met installatieprogramma: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Inloggen op netwerk - <ph name="PAGE_TITLE" /></translation>
@@ -361,6 +364,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4891791193823137474">Google Chrome op de achtergrond laten uitvoeren</translation>
 <translation id="4895437082222824641">Link openen op een nieuw Chrome-&amp;tabblad</translation>
 <translation id="4896867431081882115">Krijg makkelijk toegang tot je de functies die je kent, gebruikt en vertrouwt door Chrome in te stellen als je standaardbrowser. Chrome wordt vastgezet op je taakbalk voor snelle toegang.</translation>
+<translation id="4904953848704395458">Open Gemini in Chrome met een sneltoets.</translation>
 <translation id="4918086044614829423">Accepteren</translation>
 <translation id="4918844574251943176">Afbeelding gekopieerd</translation>
 <translation id="4926882258455737990">Als je een ander Google-account wilt gebruiken met Gemini in Chrome, <ph name="BEGIN_LINK" />maak je een nieuw profiel<ph name="END_LINK" /> en log je in met het account dat je wilt gebruiken</translation>
@@ -521,6 +525,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6434035853014503219">Bedankt dat je Chrome hebt gekozen als je standaardbrowser.</translation>
 <translation id="6438015621983209660">Gebruik de uitgebreide versie van Safe Browsing met Chrome op je telefoon</translation>
 <translation id="6442774133615368941">Winkel, vertaal en herken wat je ziet met je camera in de Chrome iOS-app</translation>
+<translation id="6448835208126432197">Gebruik de sneltoets om een deel van het scherm te selecteren in Gemini in Chrome.</translation>
 <translation id="6473905796280459355">Naar de pagina Over Chrome</translation>
 <translation id="6481963882741794338">Koppel Chrome en andere Google-services voor personalisatie en andere doeleinden</translation>
 <translation id="648319183876919572">De uitgebreide versie van Safe Browsing doet meer om je te beschermen tegen gevaarlijke websites en downloads</translation>
@@ -533,6 +538,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6520670145826811516">Geef Chrome toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je locatie te gebruiken</translation>
 <translation id="652948702951888897">Chrome-geschiedenis</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary openen</translation>
+<translation id="6539493053177300926">Makkelijke toegang om Gemini in Chrome te gebruiken op je apparaat, zelfs als Chrome is geminimaliseerd.</translation>
 <translation id="6585124893636629274">Gemini in Chrome sluiten</translation>
 <translation id="659498884637196217">In Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="6631524303639368205">Ga verder waar je gebleven was: Chrome heeft je tabbladen uit je vorige sessie hersteld. Je kunt dit uitzetten in</translation>
@@ -592,6 +598,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="7161904924553537242">Welkom bij Google Chrome</translation>
 <translation id="7193885263065350793">Je organisatie sluit Chrome als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt.</translation>
 <translation id="7242029209006116544">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt ook een nieuw profiel maken om je bestaande Chrome-gegevens gescheiden te houden. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Gebruik de sneltoets om Gemini in Chrome te verlaten of terug te keren.</translation>
 <translation id="7274402351400635015">Je kunt Chrome gebruiken als je op links in berichten, documenten en andere apps klikt. Het wordt ook vastgezet op je taakbalk.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> beheert Chrome</translation>
 <translation id="7285990705317078173">Download Chrome op je telefoon om prijzen te volgen en meldingen te krijgen als de prijs daalt op een site</translation>
@@ -701,6 +708,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8221491193165283816">Meestal blokkeer je meldingen. Klik hier om toe te staan dat deze site meldingen stuurt.</translation>
 <translation id="8253851811470049684">Open links in Chrome vanuit elke app en houd de browser toegankelijk op je taakbalk</translation>
 <translation id="8255190535488645436">Google Chrome gebruikt je camera en microfoon.</translation>
+<translation id="8260086374035800939">Als Gemini in Chrome open is, blijft het zijvenster open als je nieuwe tabbladen maakt</translation>
 <translation id="8267953129876836456">Chrome heeft een aantal veiligheidsaanbevelingen gevonden</translation>
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="829923460755755423">Voeg een snelkoppeling toe naar Google Wachtwoordmanager</translation>
@@ -712,6 +720,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8362914115861174987">Vertalen naar het</translation>
 <translation id="8366770919198174997">Vermindert de prestaties maar maakt Chrome beter bestand tegen aanvallen</translation>
 <translation id="8367705492654390392">Vraag iets</translation>
+<translation id="8367950957770994118">Open Gemini snel in Chrome wanneer je het nodig hebt</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary aan-/uitzetten</translation>
 <translation id="8387459386171870978">Chrome blijven gebruiken</translation>
@@ -729,6 +738,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="8498858610309223613">Er is zojuist een speciale beveiligingsupdate voor Google Chrome toegepast. Start nu opnieuw op. Je tabbladen worden hersteld.</translation>
 <translation id="8521348052903287641">Inkomende regel zodat Google Chrome Dev mDNS-verkeer toestaat.</translation>
 <translation id="852529348814672339">Chrome in deze taal weergeven</translation>
+<translation id="8525579356836940628">Installatie gestopt</translation>
 <translation id="8533056045953418157">Google Chrome instellen als standaard pdf-viewer</translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Zoeken in lijst met talen</translation>

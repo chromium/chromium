@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">‏כדי למחוק את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון שלך ב-Google, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">‏אפשר ללחוץ כדי לסגור את תיבת הדו-שיח של הכניסה ל-Chrome</translation>
 <translation id="1051793555070215510">מילוי הסקר הזה ייקח רק דקה ויעזור לנו לשפר את המצב הפרטי.</translation>
+<translation id="1055295352198814912">‏הצגת Gemini ב-Chrome בסרגל התפריטים של Mac והפעלת מקשי הקיצור</translation>
 <translation id="1059838145689930908">‏כדי להשתמש בתוסף הזה בתור <ph name="USER_EMAIL_ADDRESS" />, עליך להיכנס ל-Chrome.</translation>
 <translation id="1065672644894730302">לא הייתה אפשרות לקרוא את ההעדפות שלך. ייתכן שחלק מהתכונות לא יהיו זמינות ושינויים בהעדפות לא יישמרו.</translation>
 <translation id="1070377999570795893">‏תוכנה אחרת במחשב הוסיפה תוסף שעשוי לשנות את אופן הפעולה של Chrome.
@@ -278,6 +279,7 @@
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
 <translation id="395904275706073188">לא ניתן לקרוא דפים מוגנים. כדאי לנסות דף אחר.</translation>
+<translation id="3965532487635448963">‏הצגת Gemini ב-Chromium במגש המערכת והפעלת מקשי הקיצור</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="3973161977468201858">‏‫Google Chrome רוצה למחוק את הנתונים שלך במנהל הסיסמאות של Google. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
@@ -320,6 +322,7 @@
 <translation id="4367027658822022112">‏אפשר להצמיד את Google Lens כדי לאפשר גישה נוחה: פשוט לוחצים על הכפתור 'הצמדה' בחלק העליון של החלונית הצדדית</translation>
 <translation id="4372389195695053189">‏‫Chrome מוגדר עכשיו כדפדפן ברירת המחדל</translation>
 <translation id="4389991535395284064">‏בגלישה במצב פרטי, Chrome יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
+<translation id="4400772909124543403">אין עדכונים כרגע.</translation>
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4434353761996769206">שגיאת מנהל התקנה: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">‏Chrome – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
@@ -358,6 +361,7 @@
 <translation id="4891791193823137474">‏לאפשר ל-Google Chrome לפעול ברקע</translation>
 <translation id="4895437082222824641">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
 <translation id="4896867431081882115">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך להגדיר את Chrome בתור דפדפן ברירת המחדל. לגישה מהירה, Chrome יוצמד לסרגל האפליקציות.</translation>
+<translation id="4904953848704395458">‏פתיחת Gemini ב-Chrome בעזרת מקש קיצור.</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4918844574251943176">התמונה הועתקה</translation>
 <translation id="4926882258455737990">‏כדי להשתמש בחשבון Google אחר עם Gemini ב-Chrome, צריך <ph name="BEGIN_LINK" />ליצור פרופיל חדש<ph name="END_LINK" /> ולהיכנס באמצעות החשבון הרצוי</translation>
@@ -516,6 +520,7 @@
 <translation id="6434035853014503219">‏תודה שבחרת ב-Chrome כדפדפן ברירת המחדל שלך!</translation>
 <translation id="6438015621983209660">‏רוצה להרחיב את הגרסה המשופרת של גלישה בטוחה ב-Chrome בטלפון?</translation>
 <translation id="6442774133615368941">‏אפשר לקנות, לתרגם ולזהות דברים שרואים במצלמה באפליקציית Chrome ל-iOS</translation>
+<translation id="6448835208126432197">‏שימוש במקש קיצור כדי לבחור חלק מהמסך ב-Gemini ב-Chrome.</translation>
 <translation id="6473905796280459355">‏מעבר לדף 'מידע על Chrome'</translation>
 <translation id="6481963882741794338">‏אפשר לקשר את Chrome לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
 <translation id="648319183876919572">הגרסה המשופרת של הגלישה הבטוחה מגנה עליך טוב יותר מפני הורדות ואתרים מסוכנים</translation>
@@ -528,6 +533,7 @@
 <translation id="6520670145826811516">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chrome גישה</translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6532945796722480006">‏פתיחת Gemini ב-Chrome Canary</translation>
+<translation id="6539493053177300926">‏גישה נוחה ל-Gemini ב-Chrome מכל מקום במכשיר, גם כש-Chrome ממוזער.</translation>
 <translation id="6585124893636629274">‏סגירת Gemini ב-Chrome</translation>
 <translation id="659498884637196217">‏שמורה במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="6631524303639368205">‏אפשר להמשיך מהמקום שבו הפסקת: Chrome שחזר את הכרטיסיות מהסשן האחרון שלך. כדי להשבית את האפשרות הזאת, צריך לעבור אל</translation>
@@ -587,6 +593,7 @@
 <translation id="7161904924553537242">‏ברוך הבא ל-Google Chrome</translation>
 <translation id="7193885263065350793">‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">‏בחרת להיכנס לחשבון מנוהל, ויינתן למנהל המערכת שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">‏שימוש במקש קיצור כדי לצאת מ-Gemini ב-Chrome או לחזור אליו.</translation>
 <translation id="7274402351400635015">‏אפשר להשתמש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות. הדפדפן גם יוצמד לסרגל האפליקציות.</translation>
 <translation id="7285616922384953075">‏הארגון '<ph name="MANAGER" />' מנהל את Chrome</translation>
 <translation id="7285990705317078173">‏כדי לעקוב אחרי מחירים ולקבל התראות על ירידות במחיר באתר מסוים, כדאי להוריד את Chrome לטלפון שלך</translation>
@@ -696,6 +703,7 @@
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
 <translation id="8253851811470049684">‏הגדרת Chrome כברירת מחדל מאפשרת לפתוח קישורים מכל אפליקציה ולהשאיר את הדפדפן נגיש בסרגל האפליקציות</translation>
 <translation id="8255190535488645436">‏Google Chrome משתמש במצלמה ובמיקרופון שלך.</translation>
+<translation id="8260086374035800939">‏אם Gemini פתוח ב-Chrome, החלונית הצדדית תישאר פתוחה גם כשיוצרים כרטיסיות חדשות</translation>
 <translation id="8267953129876836456">‏יש ל-Chrome כמה המלצות לגבי בטיחות שכדאי לבדוק</translation>
 <translation id="8286862437124483331">‏Google Chrome מנסה להציג סיסמאות. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="829923460755755423">‏ניתן להוסיף קיצור דרך למנהל הסיסמאות של Google</translation>
@@ -707,6 +715,7 @@
 <translation id="8362914115861174987">תרגום ל</translation>
 <translation id="8366770919198174997">‏ירידה ברמת הביצועים בתמורה להגברת העמידות של Chrome בפני מתקפות</translation>
 <translation id="8367705492654390392">אפשר לשאול הכל</translation>
+<translation id="8367950957770994118">‏פתיחה מהירה של Gemini ב-Chrome</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="8377158135256176353">‏הפעלה או השבתה של Gemini ב-Chrome Canary</translation>
 <translation id="8387459386171870978">‏המשך השימוש ב-Chrome</translation>
@@ -724,6 +733,7 @@
 <translation id="8498858610309223613">‏בוצע עדכון אבטחה מיוחד של Google Chrome. עכשיו עליך להפעיל מחדש את Chrome ואנחנו נשחזר את הכרטיסיות.</translation>
 <translation id="8521348052903287641">‏כלל נכנס לגרסת הפיתוח של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="852529348814672339">‏הצגת Chrome בשפה הזו</translation>
+<translation id="8525579356836940628">ההתקנה נעצרה</translation>
 <translation id="8533056045953418157">‏הגדרת Google Chrome ככלי ברירת המחדל לצפייה בקובצי PDF</translation>
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promoção de notificações de dicas fechada</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1045899828449635435">Limpar também dados destes sites?</translation>
+<translation id="1049461303780085993">Experimente o Gemini no Chrome para receber respostas, principais pontos a reter e muito mais</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1052842760770519282">Algumas das suas palavras-passe não estão acessíveis</translation>
 <translation id="1057623954802068161">Deslocar a página até à parte superior</translation>
@@ -297,6 +298,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2318045970523081853">Toque para efetuar uma chamada</translation>
 <translation id="232137538351753795">Deslize a partir da extremidade esquerda para retroceder</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
+<translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e todos os links de convite vão ser desativados</translation>
 <translation id="2330186936255788117">Mais marcadores</translation>
 <translation id="2332515770639153015">A Navegação segura melhorada está ativada</translation>
@@ -675,6 +677,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, separador no modo ecrã no ecrã fixo</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="395377504920307820">Usar sem uma conta</translation>
+<translation id="3955353672249727801">Páginas adicionadas à Lista de leitura</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{O Chrome irá carregar a página quando estiver pronta.}other{O Chrome irá carregar as páginas quando estiverem prontas.}}</translation>
 <translation id="3969142555815019568">O Chrome não consegue verificar as suas palavras-passe.</translation>
 <translation id="3969863827134279083">Mover para cima</translation>
@@ -834,6 +837,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4595237294768457124">Abra uma página Novo separador</translation>
 <translation id="4595276580892809760">Anexar imagens da galeria</translation>
 <translation id="4595805675102978678">Erro da Conta Google</translation>
+<translation id="4599585406846903742">Vista de página única</translation>
 <translation id="4601095002996233687">Análises detalhadas de transferências suspeitas.</translation>
 <translation id="4606559747793337066">Quando um site ou uma app pede para pré-carregar links de forma privada na respetiva página, o Chrome encripta e pré-carrega as páginas através dos servidores da Google sem cookies. Isto oculta a sua identidade no site pré-carregado.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1092,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="569536719314091526">Traduzir esta página para qualquer idioma a partir do botão Mais opções</translation>
 <translation id="5696597120588531049">O Chrome pode ajudar a proteger contra violações de dados, Websites não seguros e muito mais.</translation>
 <translation id="5698878456427040674">Verifique se a conta selecionada é suportada.</translation>
+<translation id="5700415746238689851">Abrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> quer estabelecer ligação a uma porta de série</translation>
 <translation id="5715150588940290235">Eliminar os códigos de segurança guardados?</translation>
 <translation id="572328651809341494">Separadores recentes</translation>
@@ -1769,6 +1774,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8271267069224406035">Denunciar spam</translation>
 <translation id="8277710303010772444">Inicie a pesquisa</translation>
 <translation id="8279945625179116733">Protegido pela app <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Links recebidos</translation>
 <translation id="8281886186245836920">Ignorar</translation>
 <translation id="8282297628636750033">Aplique o tema escuro aos sites</translation>
 <translation id="8282950411412455249">Aceder às definições de segurança</translation>
@@ -1904,6 +1910,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8863714995118816041">Autorizações permitidas novamente para <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8872506776304248286">Abrir na app</translation>
+<translation id="8880275451109933094">Vista de duas páginas</translation>
 <translation id="8890668505403261809">Pesquise nos seus separadores de navegação anónima</translation>
 <translation id="8892234476517513962">Já tem sessão iniciada</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, separador de navegação anónima a gravar selecionado</translation>

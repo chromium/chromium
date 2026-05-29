@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">AI rejimini faolsizlantirish</translation>
 <translation id="1554477036522844996">Yangi oyna</translation>
 <translation id="1558391695376153246">Inkognito varaqlarni yopish</translation>
+<translation id="1560153516220021659">Yigʻilgan qoʻshimcha asboblar paneli tugmasi</translation>
 <translation id="1565371473877914088">Yangi inkognito sahifa</translation>
 <translation id="1567960978791353852">Oʻqish rejimini chiqarish</translation>
 <translation id="1571780780926010134">Inkognito varaqlar</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Xat yuborildi.</translation>
 <translation id="1582732959743469162">Joriy yuklanma uchun barcha jarayonlar to‘xtatiladi.</translation>
 <translation id="1594034544529347967">Boshlanishi</translation>
+<translation id="1598485494295307681">Gapiring</translation>
 <translation id="1598751033135758830">Ilovada ochish…</translation>
 <translation id="1600571977391127696">Ayrim kontentlar hamma uchun mos kelmasligi mumkin.</translation>
 <translation id="1601560923496285236">Tatbiq etish</translation>
@@ -539,6 +541,7 @@
 <translation id="2829172210806130158">Ekrandan qidiring</translation>
 <translation id="2831109159746537587">Qidirish uchun rasmni chizib belgilang yoki bosing</translation>
 <translation id="2834399722155632105">3. Parol sozlamalarini bosing</translation>
+<translation id="2834418947367581526">Salom, ismim Gemini. Biz jonli efirga chiqyapmiz, u yerda shunchaki gaplashish orqali ochilgan sahifa haqida savollar berish mumkin. Ammo boshlashdan avval bu muhim axborotga tezkor nazar tashlang.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Vaqt</translation>
 <translation id="284581348330507117">Unikal parollar yarating</translation>
@@ -691,6 +694,7 @@
 <translation id="3447332786336558089">Bu qurilmada hisobdan chiqilsa, varaqlar yopiladi va saqlanmagan hisob maʼlumotlari oʻchirib tashlanadi. Bunga parollar, tarix va boshqa maʼlumotlar kiradi.</translation>
 <translation id="3449029510150690417">Nom va rang tanlab, yangi varaqlar guruhini yarating</translation>
 <translation id="345348365500626747">Manzil aniqlandi</translation>
+<translation id="3459644598174926977">Sahifa haqida savol berish, gʻoyalarni muhokama qilib, ularni tezroq yaxshilash uchun Gemini bilan Live muloqot qiling.</translation>
 <translation id="3464194322481586217">Narxni kuzatish imkonsiz.</translation>
 <translation id="3469117812148449995">Parolni saqlash parametrlari</translation>
 <translation id="3472469028191701821">Yangi varaqda ochiladi</translation>
@@ -1129,6 +1133,7 @@
 <translation id="4941089862236492464">Yozuvni joylab bo‘lmadi.</translation>
 <translation id="4944543191714094452">Sahifa ichidan qidirish…</translation>
 <translation id="4945756290001680296">Parol sozlamalariga kirish</translation>
+<translation id="4946307855175300628">Javob berilmoqda</translation>
 <translation id="4949302115427722371">Sozlamalarni boshqarish…</translation>
 <translation id="4958444002117714549">Ro‘yxatni yoyish</translation>
 <translation id="496392417432935267">Boshqa oynada ochilgan</translation>
@@ -1550,6 +1555,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6355820183143562453">“Narx kuzatuvi” bildirgisi chiqmasin</translation>
 <translation id="6355820205320395730">Kuchsiz parollar oson topiladi. Kuchli parol yarating. <ph name="BEGIN_LINK" />Xavfsizlikka oid boshqa maslahatlar bilan tanishing.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Parollar, bukmarklar va boshqa maʼlumotlardan foydalanish uchun hisobingizga kiring.</translation>
+<translation id="6364268785720100355">Barcha qurilmalaringizda parollarni olish uchun hisobingizga kiring.</translation>
 <translation id="6368038301482806847">Qidiruv tizimini tanlang.</translation>
 <translation id="6368102751067608420">Barcha parollar menejeri maʼlumotlarini oʻchirish uchun</translation>
 <translation id="6372558618707314581">Istalgan sahifani oching</translation>
@@ -1679,6 +1685,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6736243959894955139">Manzil</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ta tarix qaydi import qilindi}other{{count} ta tarix qaydi import qilindi}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} ta hisob maʼlumotlari varianti klaviatura ustida chiqadi.}other{{count} ta hisob maʼlumotlari varianti klaviatura ustida chiqadi.}}</translation>
 <translation id="6755200887046212842">Hisoblarni boshqarish</translation>
 <translation id="6757899787818440812">Oʻrtacha balandlik</translation>
 <translation id="6759709389246683070">Sahifaga tashrif haqida eslatma yaratish uchun bu varaqni biroz bosib turing</translation>

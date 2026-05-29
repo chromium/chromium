@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">خاموش کردن «حالت هوشواره‌ای»</translation>
 <translation id="1554477036522844996">پنجره جدید</translation>
 <translation id="1558391695376153246">بستن «برگه‌های ناشناس»</translation>
+<translation id="1560153516220021659">دکمه نوارابزار فرعی جمع‌شده</translation>
 <translation id="1565371473877914088">زبانه ناشناس جدید</translation>
 <translation id="1567960978791353852">نشان دادن «حالت خواندن»</translation>
 <translation id="1571780780926010134">برگه‌های ناشناس</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">نامه ارسال شد.</translation>
 <translation id="1582732959743469162">با این کار کل پیشرفت بارگیری کنونی‌تان متوقف خواهد شد.</translation>
 <translation id="1594034544529347967">تاریخ شروع</translation>
+<translation id="1598485494295307681">درحال شنیدن</translation>
 <translation id="1598751033135758830">باز کردن در برنامه…</translation>
 <translation id="1600571977391127696">برخی‌از محتوا ممکن است برای همه مناسب نباشد.</translation>
 <translation id="1601560923496285236">اعمال</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">متأسفیم! مشكلی در اشتراک‌گذاری مورد شما وجود داشت.</translation>
 <translation id="4944543191714094452">یافتن در صفحه…</translation>
 <translation id="4945756290001680296">دسترسی به تنظیمات گذرواژه</translation>
+<translation id="4946307855175300628">درحال پاسخ دادن</translation>
 <translation id="4949302115427722371">مدیریت کردن تنظیمات…</translation>
 <translation id="4958444002117714549">بزرگ کردن فهرست</translation>
 <translation id="496392417432935267">در جای دیگری باز شده است</translation>
@@ -1552,6 +1555,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6355820183143562453">پنهان کردن کارت «ردگیری قیمت»</translation>
 <translation id="6355820205320395730">گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. مطمئن شوید گذرواژه‌های قوی ایجاد می‌کنید. <ph name="BEGIN_LINK" />نکته‌های امنیتی بیشتری ببینید<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">به سیستم وارد شوید تا همه محتوایتان مثل گذرواژه‌ها، نشانک‌ها، و موارد دیگر را دریافت کنید.</translation>
+<translation id="6364268785720100355">برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم وارد شوید.</translation>
 <translation id="6368038301482806847">موتور جستجویی از فهرست انتخاب کنید.</translation>
 <translation id="6368102751067608420">برای حذف کردن همه داده‌های مدیر گذرواژه</translation>
 <translation id="6372558618707314581">به صفحه موردنظرتان بروید</translation>
@@ -1681,6 +1685,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6736243959894955139">نشانی</translation>
 <translation id="6746338529702829275">مرور کردن داده‌های حساب</translation>
 <translation id="6750456911389438250">{count,plural, =1{‫{count} مورد از سابقه وارد شد}one{‫{count} مورد از سابقه وارد شد}other{‫{count} مورد از سابقه وارد شد}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{‫{count} گزینه برای اعتبارنامه در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای اعتبارنامه در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای اعتبارنامه در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="6755200887046212842">مدیریت حساب‌ها</translation>
 <translation id="6757899787818440812">ارتفاع متوسط</translation>
 <translation id="6759709389246683070">می‌توانید این زبانه را لمس کنید و نگه دارید تا برای بازدید مجدد در فرصتی دیگر یادآوری تنظیم کنید</translation>
@@ -2268,7 +2273,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8739546376441802490">سایت سنجاق‌شده ازقبل وجود دارد</translation>
 <translation id="8741627442233023406">{count,plural, =1{مرور کردن زبانه…}one{مرور کردن زبانه…}other{مرور کردن همه زبانه‌ها…}}</translation>
 <translation id="8741995161408053644">‏ممکن است حساب Google شما اشکال سابقه مرور دیگری در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> داشته باشد.</translation>
-<translation id="874599634440689554">ایجاد کردن پیوند</translation>
+<translation id="874599634440689554">ایجاد پیوند</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748678031495824833">باز کردن ابزارهای هوش مصنوعی در صفحه</translation>
 <translation id="8750037785291841318">زبانه‌ها را اینجا خواهید دید</translation>

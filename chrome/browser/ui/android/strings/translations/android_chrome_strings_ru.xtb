@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Уведомление для продвижения функции закрыто</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1045899828449635435">Удалить эти данные?</translation>
+<translation id="1049461303780085993">Попробуйте Gemini в Chrome, чтобы получать ответы, тезисы и другую информацию</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1052842760770519282">Некоторые пароли недоступны</translation>
 <translation id="1057623954802068161">Прокрутить вверх до начала страницы</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
 <translation id="232137538351753795">Чтобы вернуться, проведите слева направо</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
+<translation id="2327445548174191329">С устройства <ph name="DEVICE_NAME" />.</translation>
 <translation id="2328474416100889417">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
 <translation id="2330186936255788117">Ещё закладки</translation>
 <translation id="2332515770639153015">Включен улучшенный Безопасный просмотр</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">Откройте новую вкладку.</translation>
 <translation id="4595276580892809760">Прикрепить изображения из галереи</translation>
 <translation id="4595805675102978678">Ошибка в аккаунте Google</translation>
+<translation id="4599585406846903742">Одностраничный режим</translation>
 <translation id="4601095002996233687">Выполняет тщательную проверку подозрительных файлов, которые вы скачали.</translation>
 <translation id="4606559747793337066">Когда сайт или приложение запрашивает анонимную предзагрузку страниц по ссылкам, Chrome шифрует и предварительно загружает страницы через серверы Google, не используя файлы cookie. Благодаря этому предзагруженный сайт не получает сведений о вашей личности.</translation>
 <translation id="4616150815774728855">Открыть <ph name="WEBAPK_NAME" /></translation>
@@ -861,7 +864,7 @@
 <translation id="469286762610133730">Сделайте рекомендации интереснее</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
-<translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
+<translation id="4699172675775169585">Кешированные файлы и изображения</translation>
 <translation id="4710167854527459075">Сначала новые</translation>
 <translation id="4719927025381752090">Предлагать перевод</translation>
 <translation id="4720556299488643018">Отписаться</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">Чтобы перевести эту страницу на какой-либо язык, нажмите кнопку "Ещё"</translation>
 <translation id="5696597120588531049">Chrome может защищать вас от подозрительных сайтов, утечки данных и других проблем с безопасностью.</translation>
 <translation id="5698878456427040674">Проверьте, поддерживается ли выбранный аккаунт.</translation>
+<translation id="5700415746238689851">Открыть Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> запрашивает разрешение на подключение к последовательному порту.</translation>
 <translation id="5715150588940290235">Удалить сохраненные защитные коды?</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">Сообщить о спаме</translation>
 <translation id="8277710303010772444">Начать поиск</translation>
 <translation id="8279945625179116733">Защиту обеспечивает <ph name="APP_NAME" />.</translation>
+<translation id="8280797717392145626">Получены ссылки</translation>
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8282297628636750033">Использовать тёмную тему для сайтов, если возможно</translation>
 <translation id="8282950411412455249">Открыть настройки безопасности</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">Разрешения снова предоставлены для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="8865415417596392024">Данные Chrome в вашем аккаунте</translation>
 <translation id="8872506776304248286">Открыть в приложении</translation>
+<translation id="8880275451109933094">Двухстраничный режим</translation>
 <translation id="8890668505403261809">Поиск по вкладкам инкогнито</translation>
 <translation id="8892234476517513962">Вы уже вошли в аккаунт</translation>
 <translation id="8894890673032951011">Выбранная вкладка инкогнито "<ph name="TAB_TITLE" />", на которой ведется запись</translation>

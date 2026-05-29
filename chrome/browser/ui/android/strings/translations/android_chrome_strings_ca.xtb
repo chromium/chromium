@@ -493,6 +493,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3067505415088964188">El preu és baix</translation>
 <translation id="3070005020161560471">Tradueix automàticament</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />. També s'aplica la <ph name="BEGIN_LINK3" />política de privadesa<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Cerca a la pestanya amb Google Lens</translation>
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
@@ -549,7 +550,9 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3359667936385849800">Utilitza el teu proveïdor de serveis actual</translation>
 <translation id="3373701465337594448">Quan aquesta opció està activada, aquí es mostra una llista dels llocs web que visites i que determinen els teus interessos</translation>
 <translation id="3384347053049321195">Comparteix la imatge</translation>
+<translation id="3385749568468586663">Gemini no està disponible en el mode d'incògnit</translation>
 <translation id="3387650086002190359">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors amb el sistema de fitxers.</translation>
+<translation id="3391311825344469964">Pots gestionar les finestres al gestor de finestres de Chrome</translation>
 <translation id="3417835166382867856">Cerca pestanyes</translation>
 <translation id="3430670036890315772">En desactivar el bloqueig de perfil, se suprimirà la informació desada</translation>
 <translation id="3435575784518354875">Per mantenir l'accés a les contrasenyes, exporta-les ara, actualitza Serveis de Google Play i, a continuació, importa-les al gestor de contrasenyes de Google. <ph name="BEGIN_LINK" />Mostra les instruccions completes<ph name="END_LINK" />.</translation>

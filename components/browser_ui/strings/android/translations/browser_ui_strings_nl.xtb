@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1000614056227025171">Blad onderaan voor de homepagepromotie aanpassen is op volledige hoogte geopend</translation>
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1046742265332833834">Blauw thema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Sites kunnen geluiden afspelen</translation>
 <translation id="3065787901655140044">Geavanceerde beveiliging staat aan</translation>
 <translation id="3069226013421428034">Externe login toestaan voor een specifieke site.</translation>
+<translation id="3084983642903364837">Je kunt je homepage later bewerken via het menu met 3 stippen.</translation>
 <translation id="310297983047869047">Vorige dia</translation>
 <translation id="3108122610701115301">Als standaard instellen</translation>
 <translation id="310979712355504754">Alles verwijderen</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Verbonden met een seriële poort</translation>
 <translation id="4223404254440398437">Microfoon niet toegestaan</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
+<translation id="4227965147357783918">Blad onderaan voor de promotie voor je homepage aanpassen is op halve hoogte geopend</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nadat je een site verlaat, blijft de synchronisatie meestal doorgaan om taken af te ronden, zoals foto's uploaden of chatberichten sturen</translation>
 <translation id="4278390842282768270">Toegestaan</translation>

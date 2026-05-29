@@ -39,6 +39,7 @@
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
 <translation id="1111021433905331574">Podes cambiar a cor da retroiluminación do teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Activar/Desactivar datos móbiles. <ph name="STATE" />.</translation>
+<translation id="1118738876271697201">Produciuse un erro no sistema e non se puido determinar o modelo do dispositivo ou o número de serie.</translation>
 <translation id="1122849163460178706">Aquí tes algunhas ideas</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
 <translation id="1129383337808748948">Actualizar <ph name="CONTENT_TITLE" /></translation>
@@ -94,6 +95,7 @@
 <translation id="1247519845643687288">Aplicacións recentes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1256734167083229794">Premiches o atallo de teclado da lupa de pantalla completa. Usa <ph name="ZOOM_IN_ACCELERATOR" /> para achegar a vista e <ph name="ZOOM_OUT_ACCELERATOR" /> para afastala. Preme Control + Alt + teclas de frecha para desprazarte pola vista achegada.</translation>
+<translation id="126156426083987769">Produciuse un problema coas licenzas do dispositivo do modo de demostración.</translation>
 <translation id="1269405891096105529">O periférico non está dispoñible no modo de convidado</translation>
 <translation id="1270290102613614947">Teclado en pantalla desactivado</translation>
 <translation id="1272079795634619415">Deter</translation>
@@ -158,6 +160,7 @@
 <translation id="1420408895951708260">Activar/desactivar Luz nocturna: <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">Grupo suxerido</translation>
 <translation id="1426410128494586442">Si</translation>
+<translation id="142655739075382478">A aplicación <ph name="APP_NAME" /> está bloqueada</translation>
 <translation id="1435537621343861112">Non se puido iniciar o ditado. O micrófono está desactivado.</translation>
 <translation id="1445031758921122223">Descargáronse os ficheiros de control facial</translation>
 <translation id="1447907279406111651">Agora ⋅ Remata á/s <ph name="END_TIME" /></translation>
@@ -239,6 +242,7 @@
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">A función <ph name="FEATURE_NAME" /> non está conectada.</translation>
 <translation id="1677582821739292812">Alguén está mirando a túa pantalla</translation>
+<translation id="167983332380191032">O servizo de xestión enviou un erro de HTTP.</translation>
 <translation id="1679841710523778799">Aumentar brillo</translation>
 <translation id="1680659827022803830">Controis de videochamada</translation>
 <translation id="169515659049020177">Maiús</translation>
@@ -297,6 +301,7 @@
 <translation id="1838011306813517425">Configuración do modo Sen distraccións</translation>
 <translation id="1838895407229022812">A función Luz nocturna está desactivada.</translation>
 <translation id="1840920496749066704">°C</translation>
+<translation id="1841616161104323629">Falta o rexistro do dispositivo.</translation>
 <translation id="1854180393107901205">Deter emisión</translation>
 <translation id="1862077610023398675">Ocultar os controis</translation>
 <translation id="1862380676329487333">Actualizar e pechar sesión</translation>
@@ -400,6 +405,7 @@
 <translation id="2248634276911611268">Abre a ligazón nunha pestana nova e pasa a esa pestana</translation>
 <translation id="2251809247798634662">Nova ventá do modo de incógnito</translation>
 <translation id="2253808149208613283">Instala a aplicación para personalizar este dispositivo</translation>
+<translation id="2255077166240162850">Este dispositivo estaba bloqueado para un dominio ou modo diferente.</translation>
 <translation id="225614027745146050">Dámosche a benvida</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2257486738914982088">Produciuse un erro ao descargar o ficheiro <ph name="FILENAME" /></translation>
@@ -482,6 +488,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2455994958736234930">Engadir www. e .com á barra de enderezos e abrir sitio web</translation>
 <translation id="2456008742792828469">Calendario, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2458591546854598341">O token de xestión de dispositivo non é válido.</translation>
 <translation id="246052086404491029">Análise detallada</translation>
 <translation id="2465145153332031561">Estado da batería <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirmar resolución</translation>
@@ -557,6 +564,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2672142220933875349">Ficheiro crx incorrecto, fallo na descompresión.</translation>
 <translation id="2673968385134502798">Xogos</translation>
 <translation id="2678852583403169292">Menú da función Escoitar selección</translation>
+<translation id="2682498795777673382">Cambio feito polo teu pai ou nai</translation>
 <translation id="2683887737780133806">O <ph name="DAY_OF_WEEK" /> da semana pasada</translation>
 <translation id="2687510499067466116">O atallo de teclado cambiou</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
@@ -604,6 +612,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2805760958323556153">O valor da política ExtensionInstallForcelist non é válido. Ponte en contacto co teu administrador.</translation>
+<translation id="281390819046738856">Non se puido asinar a solicitude.</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2815594810045873507">Proba un cargador con máis watts (W) ou usa un orixinal.</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
@@ -637,6 +646,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2880541185262491188">Tentaches introducir o PIN demasiadas veces. Agarda <ph name="TIME_LEFT" /> e téntao de novo</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> reiniciarase e restablecerase momentaneamente</translation>
 <translation id="2883271196820422439">Retomar as teclas do rato</translation>
+<translation id="2885729872133513017">Produciuse un problema ao descodificar a resposta do servidor.</translation>
 <translation id="2885950158625301909">Máis información</translation>
 <translation id="2891209721153296020">"Anula a selección"</translation>
 <translation id="2893701697603065178">Contorno de desenvolvemento xestionado</translation>
@@ -685,6 +695,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3026897869154397692">Engadiuse ao calendario</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
+<translation id="3039491566278747710">Non se puido instalar a política sen conexión no dispositivo.</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
 <translation id="304097922505898963">Abrir aplicación Atallos de teclado</translation>
 <translation id="3040982432432547149">Axúdanos a mellorar Steam para Chromebook</translation>
@@ -756,11 +767,13 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3233611303007751344">Desactivouse a función Aforro de batería</translation>
 <translation id="3238409143297336341">Configura os controis parentais para aplicacións</translation>
+<translation id="3239373508713281971">Quitouse o límite de tempo de <ph name="APP_NAME" /></translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo de traballo de clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
 <translation id="3256274561709196882">Cambiar o PIN</translation>
+<translation id="3259723213051400722">Téntao de novo.</translation>
 <translation id="3260969790895726815">A voz procésase localmente e o ditado funciona sen conexión, pero algúns comandos de voz non funcionarán.</translation>
 <translation id="3264031581203585083">Ocultar todas as suxestións de Google Drive</translation>
 <translation id="3265032511221679826">Queres activar o acceso á localización precisa?</translation>
@@ -814,6 +827,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3428447136709161042">Desconectarse de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Pasa o dedo desde a dereita para volver</translation>
 <translation id="3431517721463707585">Escritorio 14</translation>
+<translation id="3433507769937235446">Bloquear ao apartarse</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435967511775410570">Recoñeceuse a impresión dixital</translation>
 <translation id="3437677362970530951">Xogos de Play Store e doutras plataformas de videoxogos</translation>
@@ -862,6 +876,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />(fixouse)</translation>
 <translation id="3554928024630051016">Para engadir máis dispositivos USB, proba a quitar un e, a continuación, enchufar outro</translation>
 <translation id="3558768885091059911">Queres activar o acceso á cámara e ao micrófono?</translation>
+<translation id="3559262020195162408">Non se puido instalar a política no dispositivo.</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3562423906127931518">Este proceso pode tardar uns minutos. Estase configurando o contedor de Linux.</translation>
 <translation id="3563432852173030730">Non se puido descargar a aplicación de quiosco.</translation>
@@ -935,6 +950,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3712143870407382523">Escolle unha ventá para este lado</translation>
 <translation id="371370241367527062">Micrófono frontal</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
+<translation id="3714195043138862580">O servidor deu de baixa este dispositivo de demostración.</translation>
 <translation id="3716065403310915079">Instalador de <ph name="VM_NAME" /></translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacións máis non están neste dispositivo.</translation>
 <translation id="3727231512028252576">Non se puideron cargar os elementos. Téntao de novo cando esteas en liña.</translation>
@@ -951,6 +967,7 @@ Conecta o dispositivo á corrente.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Podes desactivar este servizo en Configuración.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">Agora o teu dispositivo <ph name="PHONE_NAME" /> tamén pode desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Emitindo pantalla</translation>
+<translation id="3765246971671567135">Non se puido ler a política do modo de demostración sen conexión.</translation>
 <translation id="3765841382945324995">O atallo para <ph name="SIX_PACK_KEY_NAME" /> actualizouse de <ph name="OLD_SHORTCUT" /> a <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editouse hoxe</translation>
 <translation id="3772109172035555611">Personaliza TrackPoint</translation>
@@ -969,6 +986,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3804737937830804242">Contraer a cámara</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Non hai máis resultados.}other{# emojis. Non hai máis resultados.}}</translation>
 <translation id="381202950560906753">Engadir outra</translation>
+<translation id="3819261658055281761">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="3822403841174077928">Non se puido copiar o texto co formato</translation>
 <translation id="3824621460022590830">O token de inscrición do dispositivo non é válido. Ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Desta forma, <ph name="APP_NAME" /> e todas as aplicacións e sitios web que teñan permiso de cámara poderán acceder a ela. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
@@ -988,6 +1006,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3861638017150647085">O nome de usuario "<ph name="USERNAME" />" non está dispoñible</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
 <translation id="3870197372373144624">Proba a apagar o dispositivo.</translation>
+<translation id="3873915545594852654">Produciuse un problema con ARC++.</translation>
 <translation id="3879748587602334249">Xestor de descargas</translation>
 <translation id="3884007280698606545">Alcanzouse o límite máximo permitido de dispositivos USB</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
@@ -1041,6 +1060,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4026843240379844265">Mover ventá activa entre as pantallas</translation>
 <translation id="4028481283645788203">É necesario escribir o contrasinal para obter seguranza adicional</translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + frecha esquerda</translation>
+<translation id="4036778507053569103">A política descargada do servidor non é válida.</translation>
 <translation id="4039699481424758547">Preme Introducir para facer unha captura de pantalla da ventá <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Estás compartindo a pantalla</translation>
 <translation id="404437169852192935">Non haberá máis actualizacións</translation>
@@ -1056,6 +1076,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4072805772816336153">Téntao de novo máis tarde</translation>
 <translation id="4077623680826964850">Esgotouse o tempo de espera ao arrancar a máquina virtual ou volver establecer conexión con ela.</translation>
 <translation id="4086921558679520050">Activa o interruptor físico do micrófono no dispositivo</translation>
+<translation id="4099874310852108874">Produciuse un erro de rede.</translation>
 <translation id="4101772068965291327">Abrir páxina de inicio</translation>
 <translation id="4102906002417106771">Reiniciar para usar a función Powerwash</translation>
 <translation id="4112140312785995938">Retroceder</translation>
@@ -1063,6 +1084,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4115378294792113321">Maxenta</translation>
 <translation id="4116704186509653070">Abrir de novo</translation>
+<translation id="4118579674665737931">Reinicia o dispositivo e téntao de novo.</translation>
 <translation id="411881149140864134">Activar escritorio da esquerda</translation>
 <translation id="4119928251231465047">Tentaches introducir o PIN demasiadas veces</translation>
 <translation id="412298498316631026">ventá</translation>
@@ -1073,6 +1095,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4136724716305260864">Función activada ata o amencer</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + frecha dereita</translation>
 <translation id="4146671046252289537">Móvese ao final da seguinte palabra</translation>
+<translation id="4147911968024186208">Téntao de novo. Se se produce este erro outra vez, ponte en contacto co representante do servizo de asistencia.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4151054805501931758">Retoque facial</translation>
 <translation id="4151449637210235443">Cóntanos que tal foi a túa partida máis recente</translation>
@@ -1195,6 +1218,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="445765352722456792">Personalizar suxestións</translation>
 <translation id="4458688154122353284">Deter gravación da pantalla</translation>
 <translation id="445923051607553918">Unirse á rede wifi</translation>
+<translation id="4465236939126352372">Aplicouse un límite de tempo de <ph name="TIME" /> a <ph name="APP_NAME" /></translation>
 <translation id="4471354919263203780">Descargando ficheiros de recoñecemento de voz… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Actualiza o dispositivo agora}=1{Actualiza o dispositivo en 1 segundo}other{Actualiza o dispositivo en # segundos}}</translation>
 <translation id="4472575034687746823">Comezar</translation>
@@ -1214,6 +1238,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4518096944902121253">Non hai máis accións para este idioma</translation>
 <translation id="4518404433291145981">Para desbloquear o Chromebook, primeiro desbloquea o teléfono</translation>
+<translation id="4524832533047962394">O modo de inscrición indicado non é compatible con esta versión do sistema operativo. Asegúrate de dispoñer da versión máis recente.</translation>
 <translation id="4525887279712865285">Mostrar a configuración de Quick Share</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere obter permiso para sincronizarse.</translation>
 <translation id="4531536770443562276">Só está dispoñible en pantalla completa</translation>
@@ -1254,6 +1279,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4613144866899789710">Cancelando instalación de Linux…</translation>
 <translation id="462160925400706389">Dispositivo conectado: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Verificar conta</translation>
+<translation id="4623189117674524348">O sistema non puido autorizar o acceso á API para este dispositivo.</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4628762811416793313">A configuración do contedor de Linux non se completou. Téntao de novo.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración en estrelas: <ph name="RATING_SCORE" /></translation>
@@ -1261,14 +1287,17 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4633757335284074492">Facer copia de seguranza en Drive. Restaura os datos facilmente ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Restaura a versión anterior no dispositivo agora}=1{Restaura a versión anterior no dispositivo no prazo de 1 segundo}other{Restaura a versión anterior no dispositivo no prazo de # segundos}}</translation>
 <translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
+<translation id="4643833688073835173">O teu Chromebook utiliza un sensor integrado para detectar as persoas que se atopan diante do dispositivo. Todos os datos se procesan no teu dispositivo de inmediato e, logo, elimínanse. Os datos do sensor nunca se lle envían a Google.</translation>
 <translation id="4644727592819780893">A rexión é demasiado pequena para mostrar a vista previa da cámara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendación de aplicación</translation>
 <translation id="4649019912155580914">Editáchelo</translation>
+<translation id="4651484272688821107">Non se puido cargar o compoñente en liña cos recursos do modo de demostración.</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" />, <ph name="EMAIL" />, caixa de verificación marcada.</translation>
 <translation id="465686131535918331">Podes personalizar a configuración de <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="4657775630156561295">A seguinte suxestión quitarase permanentemente do historial de suxestións da túa conta:
 
 <ph name="QUERY" /></translation>
+<translation id="4658285806588491142">Mantén a privacidade da túa pantalla</translation>
 <translation id="4659419629803378708">Activouse ChromeVox</translation>
 <translation id="4666911709726371538">Máis aplicacións</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
@@ -1291,6 +1320,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo esquerdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735803855089279419">O sistema non puido determinar os identificadores deste dispositivo.</translation>
 <translation id="4735944890391795473">Escritorio 12</translation>
 <translation id="4736732123074402682">Comproba a túa conexión e téntao de novo.</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -1310,6 +1340,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4778095205580009397">O Asistente de Google non está dispoñible cando se utiliza unha sesión de demostración.</translation>
 <translation id="4781633367688946589">Continuar na nova sesión</translation>
 <translation id="4785412405516449976">Só os contactos que teñan unha Conta de Google</translation>
+<translation id="4788092183367008521">Comproba a conexión de rede e téntao de novo.</translation>
 <translation id="4789348252524569426">Non se puideron instalar os ficheiros de voz. Cómpre actualizar o teu dispositivo. Reinicia o dispositivo e téntao de novo.</translation>
 <translation id="478959186716341421">Emitindo</translation>
 <translation id="4798403412327076414">A próxima vez que inicies sesión verás as ventás e as aplicacións abertas anteriormente</translation>
@@ -1434,6 +1465,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5137349216872139332">Produciuse un erro durante a conexión á zona wifi instantánea</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, busca con <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Queres cambiar a entrada de audio?</translation>
+<translation id="5145464978649806571">Se te apartas do dispositivo, a pantalla bloquearase de maneira automática. Mentres esteas diante do dispositivo, a pantalla manterase activa máis tempo. Se o bloqueo de pantalla está desactivado, o dispositivo poñerase en suspensión en lugar de bloquearse.</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5150070631291639005">Configuración de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de lectura</translation>
@@ -1453,6 +1485,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5198039720391525849">GIF destacados</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
+<translation id="5204673965307125349">Leva a cabo un Powerwash do dispositivo e téntao de novo.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
@@ -1505,6 +1538,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5322611492012084517">Non puidemos atopar o teu teléfono</translation>
 <translation id="5323994101633366939">Ocultar nome do escritorio</translation>
 <translation id="5327248766486351172">Nome</translation>
+<translation id="5327570636534774768">Este dispositivo está marcado para ser xestionado por un dominio diferente. Dáo de baixa dese dominio antes de configurar o modo de demostración.</translation>
 <translation id="532943162177641444">Toca a notificación no teléfono <ph name="PHONE_NAME" /> para configurar a zona wifi móbil que pode utilizar este dispositivo.</translation>
 <translation id="5329548388331921293">Conectando…</translation>
 <translation id="5331975486040154427">Dispositivo USB‑C (porto esquerdo posterior)</translation>
@@ -1580,6 +1614,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5570122939431135380">Abrir nova pestana nunha ventá nova do modo de incógnito</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="5572632238877308040">Esenciais</translation>
+<translation id="5575528586625653441">Produciuse un problema coa solicitude de rexistro de demostración.</translation>
 <translation id="557563299383177668">Seguinte parágrafo</translation>
 <translation id="5577082622442191756">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Para utilizar O meu teléfono, asegúrate de ter activado o Bluetooth no dispositivo</translation>
@@ -1630,6 +1665,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5693255400847650006">Estase utilizando o micrófono</translation>
 <translation id="5699366815052349604">Asignar ventá activa a todos os escritorios</translation>
 <translation id="570043786759263127">Aplicacións e servizos de Google Play</translation>
+<translation id="5701080607174488915">Produciuse un erro ao obter a política do servidor.</translation>
 <translation id="570390244361237317">Todas as aplicacións. Desprázate coas teclas de frecha para acceder a todas as aplicacións</translation>
 <translation id="5705197514573687092">Mostrar a configuración do modo Sen distraccións. Temporizador programado de <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">O teu dispositivo admite unha velocidade de datos maior que o cable. O rendemento do dispositivo podería verse limitado.</translation>
@@ -1689,6 +1725,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5864691701242730005">Mostrar a configuración de Quick Share. Visibilidade seleccionada: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Batería: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="5865508026715185451">A aplicación <ph name="APP_NAME" /> porase en pausa en breve</translation>
 <translation id="5867217927013474703">Recompilando información da rede</translation>
 <translation id="5867606971598166637">A persoa que administra o sistema está supervisando as túas pantallas</translation>
 <translation id="5876666360658629066">Escribe o código parental</translation>
@@ -1716,6 +1753,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
 <translation id="5955304353782037793">aplicación</translation>
+<translation id="5955809630138889698">É posible que este dispositivo só sexa adecuado para o modo de demostración en liña. Ponte en contacto co representante do servizo de asistencia para obter máis información.</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
 <translation id="5959471481388474538">Rede non dispoñible</translation>
 <translation id="596035801491797438">Desactivar control facial</translation>
@@ -1768,6 +1806,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Xa rematei de utilizar o ficheiro</translation>
 <translation id="6068258534237496331">Controis de videochamada</translation>
+<translation id="6071576563962215370">O sistema non puido establecer o bloqueo de atributos do tempo de instalación do dispositivo.</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="6074087755403037157">Canle Beta</translation>
 <translation id="6075098173600599596">Cambiar uso de maiúsculas</translation>
@@ -1809,6 +1848,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6185696379715117369">Retroceder páxina</translation>
 <translation id="619335566042889110">Cargar por completo agora</translation>
 <translation id="6193431488227440296">Desenvolvemento</translation>
+<translation id="6195693561221576702">Este dispositivo non se pode configurar no modo de demostración sen conexión.</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6199775032047436064">Recargar páxina actual</translation>
 <translation id="6200515304866777730">Función non admitida pola aplicación</translation>
@@ -1980,6 +2020,7 @@ Nova instalación</translation>
 <translation id="666343722268997814">Abre o menú do botón dereito do elemento destacado</translation>
 <translation id="6665545700722362599">Conceder permiso aos sitios web, as aplicacións e as extensións para utilizar funcións como os servizos de localización, o micrófono do dispositivo ou a cámara.</translation>
 <translation id="6667908387435388584">Conéctate á zona wifi do teléfono, silencia e localiza o teu dispositivo, e accede ás pestanas de Chrome que se abriron recentemente no teu teléfono</translation>
+<translation id="6670142487971298264"><ph name="APP_NAME" /> xa está dispoñible</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6671661918848783005">Non se puido desbloquear o Chromebook</translation>
@@ -2170,6 +2211,7 @@ Nova instalación</translation>
 <translation id="7285232777292757180">Usa a ferramenta de captura de pantalla que está na configuración rápida para facer capturas de pantalla</translation>
 <translation id="7301826272005790482">Pechar as suxestións de ventás</translation>
 <translation id="7302889331339392448">A función Subtítulos instantáneos está desactivada.</translation>
+<translation id="7303281435234579599">Produciuse un erro ao configurar o modo de demostración.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
@@ -2181,6 +2223,7 @@ Nova instalación</translation>
 <translation id="7331646370422660166">alt + frecha abaixo</translation>
 <translation id="7336943714413713812">Busca ficheiros no historial de navegación</translation>
 <translation id="7337660433630200387">+10 min</translation>
+<translation id="7338630283264858612">O número de serie do dispositivo non é válido.</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>
 <translation id="7346909386216857016">Entendido</translation>
@@ -2274,6 +2317,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7569886975397378678">Pechar a configuración de visualización das notificacións e das aplicacións do teu teléfono</translation>
 <translation id="7571361473021531288">Batería: <ph name="BATTERY_PERCENTAGE" /> % | Tempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Ventá activa fixada á dereita.</translation>
+<translation id="7576976045740938453">Produciuse un problema coa conta do modo de demostración.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7588317312481506627">Copiouse a imaxe no portapapeis.</translation>
 <translation id="7593891976182323525">Busca ou Maiús</translation>
@@ -2291,6 +2335,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="761530003705945209">Facer copia de seguranza en Drive. Restaura os teus datos facilmente ou cambia de dispositivo en calquera momento. A túa copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da túa Conta de Google.</translation>
 <translation id="761736749114493194">Activar/desactivar zoom automático. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Configuración de Quick Share</translation>
+<translation id="7621382409404463535">Produciuse un erro no sistema e non se puido gardar a configuración do dispositivo.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Fai unha pregunta</translation>
 <translation id="7629858978065675960">Resultado descoñecido.</translation>
@@ -2311,6 +2356,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">Pecháronse o escritorio e as ventás</translation>
 <translation id="7660160718439869192">O dispositivo (<ph name="NAME" />) aparecerá entre os vinculados a <ph name="EMAIL" /></translation>
+<translation id="7661451191293163002">Non se puido obter un certificado de rexistro.</translation>
 <translation id="7661694115779363471">Controlador da parte inferior esquerda seleccionado; usa as teclas de frecha para movelo</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
 <translation id="7670953955701272011">Abrir esta data en Google Calendar</translation>
@@ -2332,6 +2378,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
 <translation id="7723703419796509666">Mostrar ou ocultar consola de ferramentas para programadores</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7724711098786238351">O modo de demostración está pensado para usuarios maiores de 18 anos e está suxeito á Política de privacidade e ás Condicións de servizo de Google. Os datos que se engadan a este dispositivo poderán ser vistos por outras persoas entre borrados periódicos.</translation>
 <translation id="7725108879223146004">Mostrar os detalles da zona wifi. A zona wifi está desactivada.</translation>
 <translation id="7726391492136714301">Accede ás notificacións e ás aplicacións do teu teléfono</translation>
 <translation id="7727952505535211425">Abre o sitio web na barra de enderezos nunha pestana nova</translation>
@@ -2348,6 +2395,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7769299611924763557">O teu GIF estará listo decontado</translation>
 <translation id="7773536009433685931">Activar wifi</translation>
 <translation id="77747521138552256">Tentaches poñer o PIN demasiadas veces. Espera <ph name="TIME_LEFT" /> e téntao de novo. Tamén podes meter o contrasinal para iniciar sesión inmediatamente.</translation>
+<translation id="7774792847912242537">Hai demasiadas solicitudes.</translation>
 <translation id="7780094051999721182">atallos</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7781335840981796660">Eliminaranse todas as contas de usuario e os datos locais.</translation>
@@ -2363,6 +2411,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7824864914877854148">Non se puido completar a copia de seguranza debido a un erro</translation>
 <translation id="7825412704590278437">Dun evento próximo do calendario</translation>
 <translation id="7826249772873145665">Desactivouse a depuración de ADB</translation>
+<translation id="7826254698725248775">Identificador de dispositivos en conflito.</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Podes personalizar as accións dos botóns ou a velocidade do cursor, entre outras opcións, para <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
@@ -2558,6 +2607,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8382715499079447151">Protección fronte a miróns</translation>
 <translation id="8383614331548401927">Recapitulación de benvida</translation>
 <translation id="838540623579162843">Obter Music Premium</translation>
+<translation id="8386091599636877289">Non se atopou a política.</translation>
 <translation id="8388750414311082622">O último escritorio non se pode quitar.</translation>
 <translation id="8390392581097975659">Instalando software do escáner</translation>
 <translation id="8394567579869570560">O teu pai ou nai bloqueou este dispositivo</translation>
@@ -2652,6 +2702,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premer Introducir para facer captura de pantalla parcial</translation>
 <translation id="8665180165765946056">A copia de seguranza rematou</translation>
+<translation id="867085395664725367">Produciuse un erro temporal no servidor.</translation>
 <translation id="8673530374848624865">Quen administra a conta actualizou os requisitos de seguranza do teu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8679158879996532670">Mostrar a configuración do modo Sen distraccións. Modo Sen distraccións activado. Tempo restante: <ph name="REMAINING_TIME" />.</translation>
@@ -2667,6 +2718,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8714138378966541668">Bloqueada polo provedor</translation>
 <translation id="8716931980467311658">Queres eliminar todas as aplicacións e datos de Linux do cartafol de ficheiros de Linux deste dispositivo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717459106217102612">Selecciona a letra ou a palabra anterior</translation>
+<translation id="8720816553731218127">Esgotouse o tempo de inicio dos atributos de tempo de instalación.</translation>
 <translation id="8721053961083920564">Activar ou desactivar o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8724405322205516354">Cando vexas esta icona, utiliza a impresión dixital para efectuar a identificación ou autorizar as compras.</translation>
@@ -2683,6 +2735,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8742395827132970586">Produciuse un erro na instalación. Estase borrando</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749865622265861882">Este é un dispositivo de demostración</translation>
 <translation id="8751299148074971734">Sigue así!</translation>
 <translation id="8753368202781196133">Nestes momentos, este idioma non está dispoñible.</translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>

@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">‏برای حذف کردن داده‌های مرور فقط از این دستگاه و نگهداری آن در «حساب Google»، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">‏برای بستن کادر گفتگوی ورود به سیستم Chrome، کلیک کنید</translation>
 <translation id="1051793555070215510">با تکمیل این نظرسنجی ۱ دقیقه‌ای به ما کمک کنید «حالت ناشناس» را بهبود ببخشیم.</translation>
+<translation id="1055295352198814912">‏نشان دادن «Gemini در Chrome» در نوار منو Mac و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="1059838145689930908">‏برای استفاده از این افزونه با حساب <ph name="USER_EMAIL_ADDRESS" />، به سیستم Chrome وارد شوید.</translation>
 <translation id="1065672644894730302">اولویت‌های شما را نمی‌توان خواند. بعضی ویژگی‌ها ممکن است در دسترس نباشند و تغییرات تنظیمات برگزیده ذخیره نخواهد شد.</translation>
 <translation id="1070377999570795893">‏برنامه دیگری در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
@@ -278,6 +279,7 @@
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="395904275706073188">صفحه‌های محافظت‌شده خوانده نمی‌شوند. صفحه دیگری را امتحان کنید.</translation>
+<translation id="3965532487635448963">‏نشان دادن «Gemini در Chrome» در سینی سیستم و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3968962723676998462">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="3973161977468201858">‏‫Google Chrome می‌خواهد داده‌های «مدیر گذرواژه» شما را حذف کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
@@ -320,6 +322,7 @@
 <translation id="4367027658822022112">‏می‌توانید «لنز Google» را برای دسترسی آسان سنجاق کنید؛ روی دکمه «سنجاق کردن» در بالای پانل کناری کلیک کنید</translation>
 <translation id="4372389195695053189">‏‫Chrome اکنون مرورگر پیش‌فرض شما است</translation>
 <translation id="4389991535395284064">‏هنگام مرور «درحالت ناشناس»، Chrome قبل‌از اینکه سایت را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
+<translation id="4400772909124543403">به‌روزرسانی دردسترس نیست</translation>
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
 <translation id="4434353761996769206">خطای نصب‌کننده: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">‏Chrome - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
@@ -358,6 +361,7 @@
 <translation id="4891791193823137474">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
 <translation id="4895437082222824641">‏باز کردن پیوند در &amp;برگه جدید Chrome</translation>
 <translation id="4896867431081882115">‏با تنظیم کردن Chrome به‌عنوان مرورگر پیش‌فرض، به‌راحتی به ویژگی‌هایی که می‌شناسید، دوست دارید، و به آن‌ها اعتماد دارید دسترسی پیدا کنید. ‫Chrome برای دسترسی سریع به نوار وظیفه سنجاق خواهد شد.</translation>
+<translation id="4904953848704395458">‏‫«Gemini در Chrome» را با میان‌بر صفحه‌کلید باز کنید.</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
 <translation id="4918844574251943176">تصویر کپی شد</translation>
 <translation id="4926882258455737990">‏برای استفاده از «حساب Google» دیگری با «Gemini در Chrome»، <ph name="BEGIN_LINK" />نمایه جدیدی ایجاد کنید<ph name="END_LINK" /> و با حساب موردنظرتان به سیستم وارد شوید</translation>
@@ -516,6 +520,7 @@
 <translation id="6434035853014503219">‏از اینکه Chrome را به‌عنوان مرورگر پیش‌فرض خود انتخاب کردید سپاس‌گزاریم!</translation>
 <translation id="6438015621983209660">‏«مرور ایمن پیشرفته» را با Chrome در تلفنتان گسترش دهید</translation>
 <translation id="6442774133615368941">‏در برنامه Chrome ویژه iOS، با دوربینتان آنچه را می‌بینید بخرید، ترجمه کنید، و شناسایی کنید</translation>
+<translation id="6448835208126432197">‏برای انتخاب بخشی از صفحه در «Gemini در Chrome»، از میان‌بر صفحه‌کلید استفاده کنید.</translation>
 <translation id="6473905796280459355">‏رفتن به صفحه «درباره Chrome»</translation>
 <translation id="6481963882741794338">‏برای شخصی‌سازی و اهداف بیشتر، Chrome و دیگر سرویس‌های Google را به‌هم پیوند دهید</translation>
 <translation id="648319183876919572">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما درمقابل وب‌سایت‌ها و بارگیری‌های خطرناک انجام می‌دهد</translation>
@@ -528,6 +533,7 @@
 <translation id="6520670145826811516">‏برای استفاده از مکان، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chrome دسترسی دهید</translation>
 <translation id="652948702951888897">‏سابقه Chrome</translation>
 <translation id="6532945796722480006">‏باز کردن «Gemini در Chrome Canary»</translation>
+<translation id="6539493053177300926">‏دسترسی آسان به «Gemini در Chrome» در سراسر دستگاه، حتی اگر Chrome کوچک شده باشد.</translation>
 <translation id="6585124893636629274">‏بستن «Gemini در Chrome»</translation>
 <translation id="659498884637196217">‏در «مدیر گذرواژه Google» در این دستگاه</translation>
 <translation id="6631524303639368205">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chrome زبانه‌های جلسه قبلی‌تان را بازگرداند. می‌توانید این ویژگی را در اینجا خاموش کنید:</translation>
@@ -587,6 +593,7 @@
 <translation id="7161904924553537242">‏به Google Chrome خوش آمدید</translation>
 <translation id="7193885263065350793">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان آن را می‌بندد.</translation>
 <translation id="7242029209006116544">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Google Chrome خود را می‌دهید. داده‌های Chrome شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. در صورت تمایل برای ذخیره داده‌های Chrome موجود به صورت جداگانه می‌توانید نمایه جدیدی ایجاد کنید. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">‏برای ترک کردن یا برگشتن به «Gemini در Chrome»، از میان‌بر صفحه‌کلید استفاده کنید.</translation>
 <translation id="7274402351400635015">‏می‌توانید پیوندهای موجود در پیام‌ها، سندها، و برنامه‌های دیگر را همیشه بااستفاده از Chrome باز کنید. این برنامه به نوار وظیفه هم سنجاق خواهد شد.</translation>
 <translation id="7285616922384953075">‏‫<ph name="MANAGER" /> ‏Chrome را مدیریت می‌کند</translation>
 <translation id="7285990705317078173">‏برای پیگیری قیمت‌ها و دریافت هشدار درصورت کاهش قیمت در هر سایتی، Chrome را در تلفنتان بارگیری کنید</translation>
@@ -695,6 +702,7 @@
 <translation id="8221491193165283816">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان بفرستد، اینجا را کلیک کنید.</translation>
 <translation id="8253851811470049684">‏پیوندها را از هر برنامه‌ای در Chrome باز کنید و مرورگر را در نوار وظیفه دردسترس نگه دارید</translation>
 <translation id="8255190535488645436">‏Google Chrome درحال استفاده از دوربین و میکروفون شما است.</translation>
+<translation id="8260086374035800939">‏اگر «Gemini در Chrome» باز باشد، پانل کناری هنگام ایجاد زبانه‌های جدید باز می‌ماند</translation>
 <translation id="8267953129876836456">‏Chrome چند توصیه ایمنی برای بررسی پیدا کرد</translation>
 <translation id="8286862437124483331">‏Google Chrome در حال تلاش برای نشان دادن گذرواژه‌هاست. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="829923460755755423">‏میان‌بری به «مدیر گذرواژه Google» اضافه کنید</translation>
@@ -706,6 +714,7 @@
 <translation id="8362914115861174987">ترجمه به</translation>
 <translation id="8366770919198174997">‏عملکرد را کاهش می‌دهد اما Chrome را دربرابر حملات مقاوم‌تر می‌کند</translation>
 <translation id="8367705492654390392">هرچه می‌خواهید بپرسید</translation>
+<translation id="8367950957770994118">‏هر زمان که نیاز داشتید، «Gemini در Chrome» به‌سرعت باز می‌شود</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="8377158135256176353">‏روشن/خاموش کردن Gemini در Chrome Canary</translation>
 <translation id="8387459386171870978">‏ادامه استفاده از Chrome</translation>
@@ -723,6 +732,7 @@
 <translation id="8498858610309223613">‏لحظاتی پیش به‌روزرسانی امنیتی ویژه‌ای برای Google Chrome اعمال شد. هم‌اکنون بازراه‌اندازی کنید و ما برگه‌هایتان را بازیابی خواهیم کرد.</translation>
 <translation id="8521348052903287641">‏قانون ترافیک ورودی Google Chrome نسخه Dev برای امکان دادن به ترافیک mDNS.</translation>
 <translation id="852529348814672339">‏نمایش دادن Chrome به این زبان</translation>
+<translation id="8525579356836940628">نصب متوقف شد</translation>
 <translation id="8533056045953418157">‏تنظیم Google Chrome به‌عنوان نمایشگر PDF پیش‌فرض</translation>
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>

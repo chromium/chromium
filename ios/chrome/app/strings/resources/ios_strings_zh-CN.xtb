@@ -539,6 +539,7 @@
 <translation id="2829172210806130158">在屏幕中搜索</translation>
 <translation id="2831109159746537587">圈一圈，点一点，即刻探索</translation>
 <translation id="2834399722155632105">3. 点按“密码选项”</translation>
+<translation id="2834418947367581526">嗨，我是 Gemini。即将开启 Live 对话模式，只需开口说话，就能针对当前网页内容随心提问。不过，在开始之前，请先快速浏览以下重要信息。</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2841013758207633010">时间</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
@@ -691,6 +692,7 @@
 <translation id="3447332786336558089">您退出账号后，标签页将被关闭，未保存的账号数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
 <translation id="3449029510150690417">为新标签页分组命名并选择颜色，即可创建该标签页分组</translation>
 <translation id="345348365500626747">找到地址</translation>
+<translation id="3459644598174926977">开启 Gemini Live，就网页内容提问、随心畅谈灵感，展开实时互动对话。</translation>
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
@@ -706,7 +708,7 @@
 <translation id="35083190962747987">打开 ${url}</translation>
 <translation id="3511519535430890904">添加浏览保护功能</translation>
 <translation id="3512572904898385012">现在，您可以使用摄像头拍照购物和进行翻译了。点按即可试用。</translation>
-<translation id="3517216995152707259">删除浏览数据不会让您退出 Google 账号。若要退出账号，请<ph name="BEGIN_LINK" />从 Chrome 中退出<ph name="END_LINK" />。</translation>
+<translation id="3517216995152707259">删除浏览数据不会导致您退出 Google 账号。若要退出账号，请<ph name="BEGIN_LINK" />从 Chrome 中退出<ph name="END_LINK" />。</translation>
 <translation id="3519792890877853853">此卡片会显示您打开的标签页中商品的评价</translation>
 <translation id="3519905498307021260">{count,plural, =1{打开标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="3523513363815970085">隐藏“您最常访问的网站”</translation>

@@ -3039,6 +3039,7 @@ I livelli di complessità si basano sulle metriche di qualità delle password di
 
 Consulta l'articolo del Centro assistenza per spiegazioni dettagliate su cosa comporta ogni livello di complessità per PIN e password.</translation>
 <translation id="2926813071464307947">Disabilita la sandbox del container dell'app del renderer</translation>
+<translation id="2930792103747180259">Disattivata: il recupero in background da parte dei service worker è consentito senza limitazioni.</translation>
 <translation id="2931888116345994552">Se questa policy non viene configurata o se viene impostata su Attivata, consente gli aggiornamenti di tutti i componenti di <ph name="PRODUCT_NAME" />.
 
       Se viene impostata su Disattivata, gli aggiornamenti dei componenti vengono disattivati. Tuttavia, alcuni componenti sono esclusi da questa policy: gli aggiornamenti dei componenti che non contengono codice eseguibile e che sono critici per la sicurezza del browser non verranno disattivati.
@@ -3154,6 +3155,7 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 <translation id="2976033779241323433">Attiva la tastiera virtuale touch in base all'euristica di sistema predefinita</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
+<translation id="2984696342503554732">Attivata: il recupero in background da parte dei service worker è limitato.</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -9157,6 +9159,7 @@ In questo modo la policy <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME
 Se la policy viene attivata o se non viene configurata, all'utente è consentito salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> dal menu contestuale. Se la policy viene disattivata, gli utenti non vedono l'opzione nel menu contestuale.
 Questa policy non impedisce agli utenti di salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> utilizzando altri metodi diversi dal menu contestuale.</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione della policy su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
+<translation id="6828918560681256273">Limita l'API Background Fetch quando viene chiamata da un service worker</translation>
 <translation id="6829632070341067746">Questa policy consente di controllare il recente refactoring delle API Graphics3D nel plug-in PPAPI.
 
 La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questa policy può essere utilizzata nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
@@ -12224,6 +12227,16 @@ Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUC
 <translation id="8757552286070680084">Configurazione di DTC wilco</translation>
 <translation id="8758831693895931466">Attiva la registrazione alla gestione del cloud obbligatoria</translation>
 <translation id="8759829385824155666">Tipi di crittografia Kerberos consentiti</translation>
+<translation id="8762128467207353085">Un elenco di origini di app client Remote Desktop che potrebbero eseguire richieste
+API WebAuthn provenienti da una sessione di navigazione su un host remoto.
+
+Qualsiasi origine configurata in questa policy può inviare richieste WebAuthn per ID
+di terze parti attendibili (ID RP) che normalmente non sarebbe autorizzata a richiedere.
+
+Sono consentite solo origini HTTPS valide. I caratteri jolly non sono supportati.
+Le voci non valide vengono ignorate.
+
+Questa policy viene applicata solo agli utenti affiliati.</translation>
 <translation id="8765401957266318536">Attiva l'integrazione di Lens nell'app Galleria su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Se la policy viene impostata su Attivata, gli utenti possono usare <ph name="ASSISTANT_PRODUCT_NAME" /> sul web, ad esempio per velocizzare i pagamenti e modificare le password. L'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> richiede il consenso aggiuntivo dell'utente e <ph name="ASSISTANT_PRODUCT_NAME" /> verrà eseguito solo se gli utenti scelgono di fornire questo consenso, anche se la policy è impostata su Attivata.
 

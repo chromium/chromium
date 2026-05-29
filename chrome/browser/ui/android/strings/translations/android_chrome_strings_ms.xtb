@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Pemberitahuan petua promosi ditutup</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
+<translation id="1049461303780085993">Cuba Gemini dalam Chrome untuk mendapatkan jawapan, kesimpulan utama dan pelbagai lagi</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
 <translation id="1057623954802068161">Tatal kepada bahagian atas halaman</translation>
@@ -297,6 +298,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2318045970523081853">Ketik untuk membuat panggilan</translation>
 <translation id="232137538351753795">Leret dari tepi sebelah kiri untuk kembali</translation>
 <translation id="2323763861024343754">Storan tapak</translation>
+<translation id="2327445548174191329">Daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
 <translation id="2330186936255788117">Lebih banyak penanda halaman</translation>
 <translation id="2332515770639153015">Penyemakan Imbas Selamat Dipertingkat dihidupkan</translation>
@@ -834,6 +836,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4595237294768457124">Buka halaman Tab baharu</translation>
 <translation id="4595276580892809760">Lampirkan imej daripada galeri</translation>
 <translation id="4595805675102978678">Ralat Google Account</translation>
+<translation id="4599585406846903742">Paparan halaman tunggal</translation>
 <translation id="4601095002996233687">Imbasan secara mendalam untuk muat turun yang mencurigakan.</translation>
 <translation id="4606559747793337066">Apabila laman atau apl meminta pramuat pautan secara peribadi pada halaman mereka, Chrome menyulitkan dan mempramuatkan halaman melalui pelayan Google tanpa kuki. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuatkan.</translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="569536719314091526">Terjemahkan halaman ini ke dalam sebarang bahasa lain daripada butang Lagi pilihan</translation>
 <translation id="5696597120588531049">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi</translation>
 <translation id="5698878456427040674">Semak sama ada akaun yang dipilih disokong atau tidak.</translation>
+<translation id="5700415746238689851">Buka Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> mahu menyambung kepada port siri</translation>
 <translation id="5715150588940290235">Padamkan kod keselamatan yang disimpan?</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
@@ -1769,6 +1773,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8271267069224406035">Laporkan spam</translation>
 <translation id="8277710303010772444">Mulakan carian</translation>
 <translation id="8279945625179116733">Dilindungi oleh <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Pautan diterima</translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8282297628636750033">Gunakan tema gelap pada laman</translation>
 <translation id="8282950411412455249">Akses tetapan keselamatan</translation>
@@ -1904,6 +1909,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8863714995118816041">Kebenaran dibenarkan sekali lagi untuk <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Data Chrome dalam akaun anda</translation>
 <translation id="8872506776304248286">Buka dalam apl</translation>
+<translation id="8880275451109933094">Paparan dua halaman</translation>
 <translation id="8890668505403261809">Cari tab Inkognito anda</translation>
 <translation id="8892234476517513962">Anda sudah log masuk</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Tab Inkognito Rakaman Yang Dipilih</translation>

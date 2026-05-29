@@ -539,6 +539,7 @@
 <translation id="2829172210806130158">Bilatu pantailan</translation>
 <translation id="2831109159746537587">Inguratu edo sakatu irudia bilatzeko</translation>
 <translation id="2834399722155632105">3. Sakatu Password Options (pasahitzen aukerak).</translation>
+<translation id="2834418947367581526">Kaixo, Gemini naiz. Live bidez hitz egitera goaz, orri honi buruzko galderak egin ahal izan ditzazun hitz egite hutsarekin. Dena den, hasi aurretik, irakurri bizkor informazio garrantzitsu hau.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Ordua</translation>
 <translation id="284581348330507117">Sortu pasahitz esklusiboak</translation>
@@ -691,6 +692,7 @@
 <translation id="3447332786336558089">Saioa amaitu eta gero, fitxak itxi, eta kontuko gorde gabeko datuak ezabatu egingo dira gailutik. Baliteke pasahitzak eta historia ezabatzea, besteak beste.</translation>
 <translation id="3449029510150690417">Sortu fitxa talde bat izena eta kolorea ezarrita.</translation>
 <translation id="345348365500626747">Helbidea aurkitu da</translation>
+<translation id="3459644598174926977">Hasi Gemini Live erabiltzen orri bati buruzko galderak egiteko, ideia-jasak ozen egiteko eta elkarrizketak izateko.</translation>
 <translation id="3464194322481586217">Ezin izan da egin prezioaren jarraipena.</translation>
 <translation id="3469117812148449995">Pasahitza gordetzeko aukerak</translation>
 <translation id="3472469028191701821">Beste fitxa batean irekiko da</translation>
@@ -1489,7 +1491,7 @@
 <translation id="6173499589275053515">Gorde da pasahitza zure Google-ko kontuan (<ph name="EMAIL" />)</translation>
 <translation id="6181969657494915430">Bilaketa egiteko pantaila</translation>
 <translation id="6182851675249594487">Kolore-gai pertsonalizatua</translation>
-<translation id="6187302354554850004">Azken sinkronizazioa: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6187302354554850004">Azken sinkronizatze-data: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Sortze-data: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Irakurri gabe</translation>
 <translation id="6192388920090306326">Tokiorako bidaia</translation>

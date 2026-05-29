@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Apabila anda membuka Carian Imej, tajuk halaman, URL dan kandungan, termasuk PDF, akan dihantar kepada pelayan secara automatik. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chromium. Untuk menukar tetapan ini, akses “Akaun anda dalam Chromium”.</translation>
+<translation id="1257483544893909270">Untuk memilih sebahagian daripada skrin dalam Gemini dalam Chromium, gunakan pintasan papan kekunci.</translation>
 <translation id="1262876892872089030">Semasa tab ini tidak aktif, memori dikosongkan untuk mengekalkan kepantasan Chromium. Anda boleh memilih untuk sentiasa mengecualikan laman ini daripada menjadi tidak aktif.</translation>
 <translation id="1265577313130862557">Chromium menyekat muat turun ini kerana fail ini berbahaya</translation>
 <translation id="126567311906253476">Apabila anda log masuk ke perkhidmatan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, anda boleh log masuk ke Chromium secara automatik dengan akaun yang sama</translation>
@@ -154,9 +155,11 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organisasi anda dapat melihat dan mengurus data penyemakan imbas, seperti penanda halaman, sejarah dan kata laluan anda. Organisasi anda tidak dapat melihat data semakan imbas dalam profil Chromium peribadi</translation>
 <translation id="2635452620547538388">Sahkan identiti anda untuk menggunakan dan menyimpan data Chromium dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Untuk meninggalkan atau kembali kepada Gemini dalam Chromium, gunakan pintasan papan kekunci.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan memerlukan anda melancarkan semula Chromium untuk menggunakan kemaskinian}=1{Perlindungan Lanjutan memerlukan anda melancarkan semula Chromium untuk menggunakan kemaskinian. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Perlindungan Lanjutan memerlukan anda melancarkan semula Chromium untuk menggunakan kemaskinian. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="2648074677641340862">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Chromium semula.</translation>
 <translation id="2661879430930417727">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chromium sebagaimana yang mereka ingini</translation>
+<translation id="2676569452213089702">Akses mudah untuk menggunakan Gemini dalam Chromium merentas peranti anda walaupun Chromium diminimumkan.</translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
 <translation id="2718390899429598676">Untuk keselamatan tambahan, Chromium akan menyulitkan data anda.</translation>
 <translation id="2721354645805494590">Untuk mengalih keluar Google Account anda daripada Chromium, log keluar</translation>
@@ -310,6 +313,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4384331407722351213">Lancarkan Chromium apabila Windows dimulakan</translation>
 <translation id="4384993550046411228">Dapatkan akses mudah kepada ciri yang anda ketahui, sukai dan percayai dengan menetapkan Chromium sebagai penyemak imbas lalai anda. Chromium akan disematkan pada bar tugas anda untuk akses pantas.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Chromium OS.</translation>
+<translation id="4400772909124543403">Tiada kemaskinian tersedia</translation>
 <translation id="4407044323746248786">Keluar daripada Chromium juga?</translation>
 <translation id="4413205837991854510">Pintasan Sentiasa Paparkan Carian Imej</translation>
 <translation id="4415566066719264597">Benarkan Chromium Dijalankan dalam Latar Belakang</translation>
@@ -348,6 +352,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4746050847053251315">Keluar daripada Chromium juga?</translation>
 <translation id="4748217263233248895">Kemas kini keselamatan khas untuk Chromium baru sahaja dilakukan. Mulakan semula sekarang dan kami akan memulihkan tab anda.</translation>
 <translation id="4771701986670315895">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="COUNT" /> lagi.</translation>
+<translation id="4786083865378785874">Jika Gemini dalam Chromium dibuka, panel sisi akan kekal terbuka apabila anda membuat tab baharu</translation>
 <translation id="479167709087336770">Ini menggunakan penyemak ejaan yang sama seperti yang digunakan dalam carian Google. Teks yang anda taip dalam penyemak imbas akan dihantar kepada Google. Anda boleh menukar gelagat ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="4814736265800133385">Gunakan Chromium tanpa akaun</translation>
 <translation id="4888717733111232871">Peraturan masuk bagi Chromium untuk membolehkan trafik mDNS.</translation>
@@ -399,6 +404,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="555970465369471303">Untuk keselamatan, Chromium mematikan pengoptimuman JavaScript apabila anda melawati laman untuk kali pertama.
 
 Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengoptimuman.</translation>
+<translation id="5575874067957905201">Tunjukkan Gemini dalam Chromium dalam bar menu Mac dan hidupkan pintasan papan kekunci</translation>
 <translation id="5579324208890605088">Ralat permulaan: sila jalankan pemasang sebagai pengguna biasa, bukan sebagai pentadbir.</translation>
 <translation id="5580770360767802657">Gunakan Chromium secara lalai dan sematkan Chromium</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
@@ -622,6 +628,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7867198900892795913">Chromium tidak dapat mengemas kini kepada versi terkini, maka anda terlepas ciri baharu dan penyelesaian keselamatan.</translation>
 <translation id="7872446069773932638">Memuat turun... <ph name="SECONDS" /> saat lagi</translation>
 <translation id="7873537467422636035">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Buka Gemini dalam Chromium dengan pantas pada bila-bila masa anda memerlukan Gemini</translation>
 <translation id="7877212753140190672">Tanya tentang imej ini</translation>
 <translation id="7888981273428720788">Tetapkan Chromium sebagai lalai anda</translation>
 <translation id="7934340546140346950">Chromium meningkatkan sambungan tidak selamat kepada HTTPS secara automatik jika boleh</translation>
@@ -643,6 +650,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8118331347066725040">Hantar maklum balas untuk cari dengan Lens</translation>
 <translation id="8133124826068723441">Chromium OS tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="813913629614996137">Memulakan...</translation>
+<translation id="8161503455832158203">Buka Gemini dalam Chromium dengan pintasan papan kekunci.</translation>
 <translation id="8164014945047474187">Syarat Perkhidmatan Tambahan Chromium</translation>
 <translation id="81770708095080097">Fail ini berbahaya, maka Chromium telah menyekatnya.</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan kandungan dalam halaman</translation>
@@ -652,6 +660,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8232193495299001329">Chromium tidak dapat mengesahkan tempat asal sambungan ini, maka tindakan ini mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi.</translation>
 <translation id="8248265253516264921">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="8254601181414348851">Log masuk ke Chromium dalam profil baharu?</translation>
+<translation id="8277334259226003205">Tunjukkan Gemini dalam Chromium dalam dulang sistem dan hidupkan pintasan papan kekunci</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium memberi anda amaran<ph name="END_LINK" /> tentang laman dan muat turun tidak selamat</translation>
 <translation id="8295827201165805317">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Beli-belah, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda pada apl Chromium iOS</translation>
@@ -680,6 +689,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8493179195440786826">Chromium sudah usang</translation>
 <translation id="850264194101621529">Terima kasih kerana memilih Chromium sebagai penyemak imbas lalai anda!</translation>
 <translation id="8522801943730206384">Chromium boleh menyemak kata laluan anda yang disimpan</translation>
+<translation id="8525579356836940628">Pemasangan Dihentikan</translation>
 <translation id="8548787790260785208">Dapatkan amaran jika Chromium menemukan satu daripada kata laluan anda dalam pelanggaran data umum</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sesetengah ciri dan sambungan Chromium disertakan dengan pintasan. Anda boleh memilih untuk menghidupkan semula tetapan tersebut.</translation>

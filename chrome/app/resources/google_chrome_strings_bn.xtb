@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">শুধুমাত্র এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছে দিতে, তা নিজের Google অ্যাকাউন্টে রেখে দেওয়ার সময়, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="1042270987544905725">Chrome-এ সাইন-ইন করার জন্য ডায়ালগ বন্ধ করতে, ক্লিক করুন</translation>
 <translation id="1051793555070215510">এই ১-মিনিটের সমীক্ষায় অংশ নিয়ে ছদ্মবেশী মোড উন্নত করতে আমাদের সাহায্য করুন।</translation>
+<translation id="1055295352198814912">Mac মেনু বারে Chrome-এ Gemini দেখানো এবং কীবোর্ড শর্টকাট চালু করা</translation>
 <translation id="1059838145689930908"><ph name="USER_EMAIL_ADDRESS" /> হিসেবে এই এক্সটেনশন ব্যবহার করতে, Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="1065672644894730302">আপনার অভিরুচিগুলি পড়া যাবে না৷ কিছু বৈশিষ্ট্য অনুপলব্ধ থাকতে পারে ও অভিরুচিগুলিতে করা পরিবর্তনগুলি সংরক্ষিত হবে না৷</translation>
 <translation id="1070377999570795893">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি এক্সটেনশন যোগ করেছে যা Chrome-এর কাজ করার ধরন পাল্টে দিতে পারে।
@@ -280,6 +281,7 @@
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3941890832296813527">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার ফাইলের নাম ভুল বা সেটি কাজ করে না।</translation>
 <translation id="395904275706073188">সুরক্ষিত পৃষ্ঠা পড়া যাবে না। অন্য কোনও পৃষ্ঠা পড়ার চেষ্টা করুন।</translation>
+<translation id="3965532487635448963">সিস্টেম ট্রেতে Chrome-এ Gemini দেখানো এবং কীবোর্ড শর্টকাট চালু করা</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968962723676998462">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
 <translation id="3973161977468201858">Google Chrome আপনার Google Password Manager সম্পর্কিত ডেটা মুছতে চায়। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
@@ -322,6 +324,7 @@
 <translation id="4367027658822022112">সহজে অ্যাক্সেস করার জন্য আপনি Google Lens পিন করে রাখতে পারেন; সাইড প্যানেলের একেবারে উপরে পিন করুন বোতামে ক্লিক করুন</translation>
 <translation id="4372389195695053189">Chrome এখন আপনার ডিফল্ট ব্রাউজার</translation>
 <translation id="4389991535395284064">ছদ্মবেশী মোডে ব্রাউজ করার সময়, Chrome অসুরক্ষিত কানেকশন ব্যবহার করে কোনও সাইট লোড করার আগে আপনাকে সতর্ক করবে</translation>
+<translation id="4400772909124543403">কোনও আপডেট উপলভ্য নেই</translation>
 <translation id="4427306783828095590">ফিশিং ও ম্যালওয়্যার ব্লক করার ব্যাপারে উন্নত সুরক্ষা আরও সাহায্য করে</translation>
 <translation id="4434353761996769206">ইনস্টলার সংক্রান্ত সমস্যা: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - নেটওয়ার্ক সাইন-ইন - <ph name="PAGE_TITLE" /></translation>
@@ -360,6 +363,7 @@
 <translation id="4891791193823137474">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="4895437082222824641">নতুন Chrome ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="4896867431081882115">Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে, আপনার পরিচিত, পছন্দের এবং বিশ্বস্ত ফিচারগুলিতে সহজে অ্যাক্সেস পান। দ্রুত অ্যাক্সেসের জন্য Chrome আপনার টাস্কবারে পিন করা হবে।</translation>
+<translation id="4904953848704395458">কীবোর্ড শর্টকাটের সাহায্যে Chrome-এ Gemini খোলে।</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4918844574251943176">ছবি কপি করা হয়েছে</translation>
 <translation id="4926882258455737990">Chrome-এ Gemini-র সাথে অন্য কোনও Google অ্যাকাউন্ট ব্যবহার করতে, <ph name="BEGIN_LINK" />নতুন প্রোফাইল তৈরি করুন<ph name="END_LINK" /> এবং আপনার পছন্দের অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
@@ -520,6 +524,7 @@
 <translation id="6434035853014503219">আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome বেছে নেওয়ার জন্য ধন্যবাদ!</translation>
 <translation id="6438015621983209660">আপনার ফোনে Chrome-এর মাধ্যমে উন্নত Safe Browsing সুবিধা বাড়িয়ে নিন</translation>
 <translation id="6442774133615368941">Chrome iOS অ্যাপে আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>
+<translation id="6448835208126432197">Chrome-এ Gemini-তে স্ক্রিনের অংশ বেছে নিতে, কীবোর্ড শর্টকাট ব্যবহার করে।</translation>
 <translation id="6473905796280459355">'Chrome সম্পর্কে' পৃষ্ঠায় যান</translation>
 <translation id="6481963882741794338">পছন্দমতো অভিজ্ঞতা এবং অন্যান্য সুবিধা পেতে Google-এর সব পরিষেবাগুলি সাথে Chrome লিঙ্ক করুন</translation>
 <translation id="648319183876919572">উন্নত Safe Browsing আপনাকে বিপজ্জনক ওয়েবসাইট, ডাউনলোড থেকে আরও সুরক্ষা দেয়</translation>
@@ -532,6 +537,7 @@
 <translation id="6520670145826811516">আপনার লোকেশন ব্যবহার করতে, Chrome-কে <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> অ্যাক্সেস করতে দিন</translation>
 <translation id="652948702951888897">Chrome ইতিহাস</translation>
 <translation id="6532945796722480006">Chrome Canary-তে Gemini খুলুন</translation>
+<translation id="6539493053177300926">Chrome মিনিমাইজ করা থাকলেও, আপনার ডিভাইস জুড়ে, Chrome-এ Gemini সহজে ব্যবহার করুন।</translation>
 <translation id="6585124893636629274">Chrome-এ Gemini বন্ধ করুন</translation>
 <translation id="659498884637196217">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
 <translation id="6631524303639368205">আপনি যেখান থেকে শেষ করেছিলেন সেখান থেকেই চালিয়ে যান: আপনার শেষ সেশন থেকে Chrome আপনার ট্যাব ফিরিয়ে এনেছে। আপনি এখানে এটি বন্ধ করতে পারবেন</translation>
@@ -591,6 +597,7 @@
 <translation id="7161904924553537242">Google Chrome-এ আপনাকে স্বাগতম</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chrome বন্ধ করে দেয়।</translation>
 <translation id="7242029209006116544">আপনি একটি পরিচালিত অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Google Chrome প্রোফাইলের উপরে নিয়ন্ত্রণ দিচ্ছেন৷ আপনার Chrome ডেটা, যেমন অ্যাপ, বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস <ph name="USER_NAME" /> এতে স্থায়ীভাবে সম্পৃক্ত হবে৷ আপনি Google অ্যাকাউন্টের ড্যাশবোর্ডের মাধ্যমে এই ডেটাগুলি মুছতে পারবেন, কিন্তু অন্য অ্যাকাউন্টের সাথে এই ডেটা সংশ্লিষ্ট করতে পারবেন না৷ বিকল্প হিসেবে আপনি আপনার বিদ্যমান Chrome ডেটা আলাদা রাখার জন্য একটি নতুন প্রোফাইল তৈরি করতে পারেন৷ <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Chrome-এ Gemini-র ফিচার ছেড়ে বেরিয়ে আসতে বা ফিরে যেতে, কীবোর্ড শর্টকাট ব্যবহার করুন।</translation>
 <translation id="7274402351400635015">আপনি মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ক্লিক করে যেকোনও সময় Chrome ব্যবহার করতে পারবেন। এছাড়াও এটি আপনার টাস্কবারেও পিন করা হবে।</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> Chrome ম্যানেজ করে</translation>
 <translation id="7285990705317078173">আপনার ফোনে Chrome ডাউনলোড করুন যাতে দাম ট্র্যাক করতে পারেন এবং কোনও সাইটে দাম কমলে সেই সম্পর্কিত সতর্কতা পান</translation>
@@ -699,6 +706,7 @@
 <translation id="8221491193165283816">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। এই সাইট থেকে বিজ্ঞপ্তি পেতে, এখানে ক্লিক করুন।</translation>
 <translation id="8253851811470049684">যেকোনও অ্যাপ থেকে Chrome-এ লিঙ্ক খুলুন এবং ব্রাউজারটি আপনার টাস্কবারে অ্যাক্সেসযোগ্য করে রাখুন</translation>
 <translation id="8255190535488645436">Google Chrome আপনার ক্যামেরা এবং মাইক্রোফোন ব্যবহার করছে৷</translation>
+<translation id="8260086374035800939">Chrome-এ Gemini খোলা থাকলে, নতুন ট্যাব তৈরি করার সময় সাইড প্যানেল খোলা থাকে</translation>
 <translation id="8267953129876836456">আপনার পর্যালোচনার জন্য Chrome কিছু সুরক্ষা সম্পর্কিত সাজেশন খুঁজে পেয়েছে</translation>
 <translation id="8286862437124483331">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে। এটির অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="829923460755755423">Google Password Manager-এ শর্টকাট যোগ করুন</translation>
@@ -710,6 +718,7 @@
 <translation id="8362914115861174987">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="8366770919198174997">পারফর্ম্যান্স কমিয়ে দেয় তবে অ্যাটাকের হাত থেকে Chrome-কে আরও বেশি প্রতিরোধক করে তোলে</translation>
 <translation id="8367705492654390392">যেকোনও কিছু জিজ্ঞাসা করুন</translation>
+<translation id="8367950957770994118">প্রয়োজন হলেই, দ্রুত Chrome-এ Gemini খুলুন</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
 <translation id="8377158135256176353">Chrome ক্যানারি-তে Gemini টগল করুন</translation>
 <translation id="8387459386171870978">Chrome ব্যবহার করা চালিয়ে যান</translation>
@@ -727,6 +736,7 @@
 <translation id="8498858610309223613">Google Chrome-এর জন্য একটি বিশেষ নিরাপত্তা আপডেট এইমাত্র প্রয়োগ করা হয়েছে। এখনই রিস্টার্ট করুন এবং আপনার ট্যাব আমরা রিস্টোর করব।</translation>
 <translation id="8521348052903287641">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome ডেভেলপারের জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="852529348814672339">Chrome এই ভাষায় দেখতে চাই</translation>
+<translation id="8525579356836940628">ইনস্টল করার কাজ বন্ধ করা হয়েছে</translation>
 <translation id="8533056045953418157">আপনার ডিফল্ট PDF ভিউয়ার হিসেবে Google Chrome সেট করুন</translation>
 <translation id="8555465886620020932">পরিষেবায় সমস্যা হয়েছে: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ভাষার তালিকা সার্চ করুন</translation>

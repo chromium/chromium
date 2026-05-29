@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">AI મોડ બંધ કરો</translation>
 <translation id="1554477036522844996">નવી વિંડો</translation>
 <translation id="1558391695376153246">છૂપી ટૅબ બંધ કરો</translation>
+<translation id="1560153516220021659">સેકન્ડરી ટૂલબાર બટનને નાનું કર્યું</translation>
 <translation id="1565371473877914088">નવું છૂપું ટૅબ</translation>
 <translation id="1567960978791353852">વાંચન મોડ બતાવો</translation>
 <translation id="1571780780926010134">છૂપા ટૅબ</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">મેઇલ મોકલ્યો છે.</translation>
 <translation id="1582732959743469162">આનાથી તમારું હાલનું ડાઉનલોડ આગળ વધતું અટકી જશે.</translation>
 <translation id="1594034544529347967">ઇવેન્ટ શરૂ થવાનો સમય</translation>
+<translation id="1598485494295307681">સાંભળી રહ્યાં છીએ</translation>
 <translation id="1598751033135758830">ઍપમાં ખોલો…</translation>
 <translation id="1600571977391127696">અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે.</translation>
 <translation id="1601560923496285236">લાગુ કરો</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">માફ કરશો, તમારી આઇટમને શેર કરવામાં સમસ્યા આવી હતી.</translation>
 <translation id="4944543191714094452">પેજમાં શોધો…</translation>
 <translation id="4945756290001680296">પાસવર્ડના સેટિંગને ઍક્સેસ કરો</translation>
+<translation id="4946307855175300628">જવાબ આપી રહ્યાં છીએ</translation>
 <translation id="4949302115427722371">સેટિંગને મેનેજ કરો…</translation>
 <translation id="4958444002117714549">સૂચિ વિસ્તૃત કરો</translation>
 <translation id="496392417432935267">અન્ય ક્યાંક ખોલેલું છે</translation>
@@ -1552,6 +1555,7 @@
 <translation id="6355820183143562453">કિંમત ટ્રૅકિંગ કાર્ડને છુપાવો</translation>
 <translation id="6355820205320395730">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. તમે સશક્ત પાસવર્ડ બનાવવાની ખાતરી કરો. <ph name="BEGIN_LINK" />સુરક્ષા સંબંધિત વધુ ટિપ જુઓ.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">તમારા પાસવર્ડ, બુકમાર્ક જેવી તમામ વસ્તુઓ મેળવવા માટે સાઇન ઇન કરો.</translation>
+<translation id="6364268785720100355">તમારા બધા ડિવાઇસ પર પાસવર્ડ અને બીજું ઘણું મેળવવા સાઇન ઇન કરો.</translation>
 <translation id="6368038301482806847">સૂચિમાંથી શોધ એન્જિન પસંદ કરો.</translation>
 <translation id="6368102751067608420">બધા પાસવર્ડ મેનેજરનો ડેટા ડિલીટ કરવા માટે</translation>
 <translation id="6372558618707314581">તમને ગમે તેવા કોઈપણ પેજ પર જાઓ</translation>
@@ -1681,6 +1685,7 @@
 <translation id="6736243959894955139">સરનામું</translation>
 <translation id="6746338529702829275">તમારો એકાઉન્ટ ડેટા રિવ્યૂ કરો</translation>
 <translation id="6750456911389438250">{count,plural, =1{ઇતિહાસની {count} આઇટમની આયાત કરી}one{ઇતિહાસની {count} આઇટમની આયાત કરી}other{ઇતિહાસની {count} આઇટમની આયાત કરી}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{તમારા કીબોર્ડ પર લૉગ ઇન વિગત માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર લૉગ ઇન વિગત માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર લૉગ ઇન વિગત માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="6755200887046212842">એકાઉન્ટ્સનું સંચાલન કરો</translation>
 <translation id="6757899787818440812">મધ્યમ ઊંચાઈ</translation>
 <translation id="6759709389246683070">પછીથી ફરી મુલાકાત લેવા માટે રિમાઇન્ડર સેટ કરવા માટે તમે આ ટૅબને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો</translation>

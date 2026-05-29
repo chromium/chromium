@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1000614056227025171">A página inferior da mensagem promocional "Personalize sua página inicial" está aberta no tamanho máximo</translation>
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1046742265332833834">Tema azul</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Os sites podem tocar sons</translation>
 <translation id="3065787901655140044">A Proteção Avançada está ativada</translation>
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
+<translation id="3084983642903364837">Edite a página inicial quando quiser no menu de três pontos.</translation>
 <translation id="310297983047869047">Slide anterior</translation>
 <translation id="3108122610701115301">Definir padrão</translation>
 <translation id="310979712355504754">Excluir tudo</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Conectado a uma porta serial</translation>
 <translation id="4223404254440398437">Acesso ao microfone não permitido</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
+<translation id="4227965147357783918">A página inferior da mensagem promocional "Personalize sua página inicial" está aberta a meia-altura na tela</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Depois que você sai de um site, ele pode continuar a sincronização para finalizar tarefas, como o upload de fotos ou o envio de uma mensagem de chat</translation>
 <translation id="4278390842282768270">Permitido</translation>

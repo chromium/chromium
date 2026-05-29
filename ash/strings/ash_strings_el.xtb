@@ -39,6 +39,7 @@
 <translation id="1104621072296271835">Οι συσκευές σας λειτουργούν ακόμα καλύτερα συνδυαστικά</translation>
 <translation id="1111021433905331574">Μπορείτε να αλλάξετε το χρώμα του οπίσθιου φωτισμού του πληκτρολογίου σας στις Ρυθμίσεις &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Εναλλαγή δεδομένων κινητής τηλεφωνίας <ph name="STATE" />.</translation>
+<translation id="1118738876271697201">Το σύστημα δεν κατάφερε να προσδιορίσει το μοντέλο ή τον σειριακό αριθμό της συσκευής.</translation>
 <translation id="1122849163460178706">Μερικά πράγματα που μπορείτε να δοκιμάσετε</translation>
 <translation id="112308213915226829">Αυτόματη απόκρυψη ραφιού</translation>
 <translation id="1129383337808748948">Ανανέωση <ph name="CONTENT_TITLE" /></translation>
@@ -94,6 +95,7 @@
 <translation id="1247519845643687288">Πρόσφατες εφαρμογές</translation>
 <translation id="1252999807265626933">Φόρτιση από <ph name="POWER_SOURCE" /></translation>
 <translation id="1256734167083229794">Πατήσατε τη συντόμευση πληκτρολογίου για τη μεγέθυνση πλήρους οθόνης. Χρησιμοποιήστε το <ph name="ZOOM_IN_ACCELERATOR" /> για μεγέθυνση και το <ph name="ZOOM_OUT_ACCELERATOR" /> για σμίκρυνση. Χρησιμοποιήστε τα πλήκτρα ctrl+alt+βέλη για να μετακινηθείτε στη μεγεθυμένη προβολή.</translation>
+<translation id="126156426083987769">Παρουσιάστηκε ένα πρόβλημα με τις άδειες των συσκευών λειτουργίας επίδειξης.</translation>
 <translation id="1269405891096105529">Το περιφερειακό δεν υποστηρίζεται στη λειτουργία επισκέπτη</translation>
 <translation id="1270290102613614947">Το πληκτρολόγιο οθόνης είναι απενεργοποιημένο</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
@@ -158,6 +160,7 @@
 <translation id="1420408895951708260">Εναλλαγή νυχτερινού φωτισμού. <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">Προτεινόμενη ομάδα</translation>
 <translation id="1426410128494586442">Ναι</translation>
+<translation id="142655739075382478">Η εφαρμογή <ph name="APP_NAME" /> αποκλείστηκε</translation>
 <translation id="1435537621343861112">Δεν είναι δυνατή η έναρξη της υπαγόρευσης. Το μικρόφωνό σας είναι απενεργοποιημένο.</translation>
 <translation id="1445031758921122223">Έγινε λήψη των αρχείων ελέγχου προσώπου</translation>
 <translation id="1447907279406111651">Τώρα · Τελειώνει: <ph name="END_TIME" /></translation>
@@ -239,6 +242,7 @@
 <translation id="1677472565718498478">Απομένουν <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Η λειτουργία <ph name="FEATURE_NAME" /> δεν συνδέθηκε.</translation>
 <translation id="1677582821739292812">Κάποιο άτομο βλέπει την οθόνη σας</translation>
+<translation id="167983332380191032">Η υπηρεσία διαχείρισης έστειλε σφάλμα HTTP.</translation>
 <translation id="1679841710523778799">Αύξηση φωτεινότητας</translation>
 <translation id="1680659827022803830">Στοιχεία ελέγχου βιντεοκλήσεων</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -297,6 +301,7 @@
 <translation id="1838011306813517425">Ρυθμίσεις λειτουργίας συγκέντρωσης</translation>
 <translation id="1838895407229022812">Ο Νυχτερινός φωτισμός είναι ανενεργός.</translation>
 <translation id="1840920496749066704">°C</translation>
+<translation id="1841616161104323629">Λείπει κάποιο αρχείο συσκευής.</translation>
 <translation id="1854180393107901205">Διακοπή μετάδοσης</translation>
 <translation id="1862077610023398675">Απόκρυψη στοιχείων ελέγχου</translation>
 <translation id="1862380676329487333">Ενημέρωση και αποσύνδεση</translation>
@@ -400,6 +405,7 @@
 <translation id="2248634276911611268">Άνοιγμα συνδέσμου σε νέα καρτέλα και εναλλαγή σε αυτήν τη νέα καρτέλα</translation>
 <translation id="2251809247798634662">Νέο παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="2253808149208613283">Εγκαταστήστε την εφαρμογή για να προσαρμόσετε αυτή τη συσκευή</translation>
+<translation id="2255077166240162850">Αυτή η συσκευή κλειδώθηκε σε διαφορετικό τομέα ή λειτουργία.</translation>
 <translation id="225614027745146050">Καλώς ορίσατε</translation>
 <translation id="225680501294068881">Σάρωση για συσκευές…</translation>
 <translation id="2257486738914982088">Παρουσιάστηκε κάποιο πρόβλημα κατά τη λήψη του αρχείου <ph name="FILENAME" /></translation>
@@ -482,6 +488,7 @@
 <translation id="2453860139492968684">Τέλος</translation>
 <translation id="2455994958736234930">Προσθέστε το www. και το .com στη γραμμή διευθύνσεων και έπειτα ανοίξτε τον ιστότοπο</translation>
 <translation id="2456008742792828469">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2458591546854598341">Το διακριτικό διαχείρισης συσκευής δεν είναι έγκυρο.</translation>
 <translation id="246052086404491029">Αναλυτικές πληροφορίες</translation>
 <translation id="2465145153332031561">Υγεία μπαταρίας <ph name="BATTERY_HEALTH_PERCENTAGE" />%, πλήθος κύκλων <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Επιβεβαίωση ανάλυσης</translation>
@@ -557,6 +564,7 @@
 <translation id="2672142220933875349">Κατεστραμμένο αρχείο crx, η αποσυσκευασία απέτυχε.</translation>
 <translation id="2673968385134502798">Παιχνίδια</translation>
 <translation id="2678852583403169292">Μενού λειτουργίας Επιλέξτε για αυτόματη ανάγνωση</translation>
+<translation id="2682498795777673382">Ενημέρωση από τον γονέα σου</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> προηγούμενη εβδομάδα</translation>
 <translation id="2687510499067466116">Η συντόμευση πληκτρολογίου έχει αλλάξει</translation>
 <translation id="2689613560355655046">Γραφείο 8</translation>
@@ -604,6 +612,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2805760958323556153">Η τιμή πολιτικής ExtensionInstallForcelist δεν είναι έγκυρη. Επικοινωνήστε με τον διαχειριστή.</translation>
+<translation id="281390819046738856">Δεν ήταν δυνατή η έγκριση του αιτήματος.</translation>
 <translation id="2814448776515246190">Μερική λήψη</translation>
 <translation id="2815594810045873507">Δοκιμάστε έναν φορτιστή με περισσότερα watt (W) ή χρησιμοποιήστε τον αρχικό φορτιστή.</translation>
 <translation id="2819276065543622893">Θα αποσυνδεθείτε τώρα.</translation>
@@ -637,6 +646,7 @@
 <translation id="2880541185262491188">Πάρα πολλές προσπάθειες εισαγωγής του PIN. Περιμένετε <ph name="TIME_LEFT" /> και δοκιμάστε ξανά</translation>
 <translation id="2882943222317434580">Θα γίνει άμεσα επανεκκίνηση και επαναφορά του <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2883271196820422439">Συνέχιση πλήκτρων ελέγχου ποντικιού</translation>
+<translation id="2885729872133513017">Παρουσιάστηκε ένα πρόβλημα κατά την αποκωδικοποίηση απάντησης διακομιστή.</translation>
 <translation id="2885950158625301909">Μάθετε περισσότερα</translation>
 <translation id="2891209721153296020">"Αποεπιλογή"</translation>
 <translation id="2893701697603065178">Διαχειριζόμενο περιβάλλον ανάπτυξης</translation>
@@ -685,6 +695,7 @@
 <translation id="3026897869154397692">Προστέθηκε στο Ημερολόγιο</translation>
 <translation id="3033545621352269033">Eνεργό</translation>
 <translation id="3033912566804961911">Συνδυασμός με <ph name="DESK_NAME" /></translation>
+<translation id="3039491566278747710">Αποτυχία εγκατάστασης πολιτικής εκτός σύνδεσης στη συσκευή.</translation>
 <translation id="3039939407102840004">Το επίπεδο της μπαταρίας της γραφίδας είναι <ph name="PERCENTAGE" />%.</translation>
 <translation id="304097922505898963">Άνοιγμα εφαρμογής Συντομεύσεις πληκτρολογίου</translation>
 <translation id="3040982432432547149">Βοηθήστε μας να βελτιώσουμε το Steam για Chromebook</translation>
@@ -756,11 +767,13 @@
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3233611303007751344">Η Εξοικονόμηση μπαταρίας απενεργοποιήθηκε</translation>
 <translation id="3238409143297336341">Ρύθμιση γονικών ελέγχων για εφαρμογές</translation>
+<translation id="3239373508713281971">Το χρονικό όριο για την εφαρμογή <ph name="APP_NAME" /> καταργήθηκε.</translation>
 <translation id="324366796737464147">Εξουδετέρωση θορύβου</translation>
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
 <translation id="3253743281242075461">Τύπος εργασιών: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Κατάργηση της επισήμανσης από κάποιο στοιχείο στο ράφι σας</translation>
 <translation id="3256274561709196882">Αλλαγή PIN</translation>
+<translation id="3259723213051400722">Δοκιμάστε ξανά.</translation>
 <translation id="3260969790895726815">Η επεξεργασία της ομιλίας γίνεται τοπικά και η υπαγόρευση λειτουργεί εκτός σύνδεσης, αλλά ορισμένες φωνητικές εντολές δεν θα λειτουργούν.</translation>
 <translation id="3264031581203585083">Απόκρυψη όλων των προτάσεων του Google Drive</translation>
 <translation id="3265032511221679826">Ενεργοποίηση πρόσβασης στην ακριβή τοποθεσία;</translation>
@@ -814,6 +827,7 @@
 <translation id="3428447136709161042">Αποσύνδεση από το δίκτυο <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Για να επιστρέψετε, σύρετε από τα δεξιά.</translation>
 <translation id="3431517721463707585">Γραφείο 14</translation>
+<translation id="3433507769937235446">Κλείδωμα κατά την αποχώρηση</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435967511775410570">Το δακτυλικό αποτύπωμα αναγνωρίστηκε.</translation>
 <translation id="3437677362970530951">Παιχνίδια στο Play Store και σε άλλες πλατφόρμες gaming</translation>
@@ -862,6 +876,7 @@
 <translation id="3554637740840164787">Το στοιχείο <ph name="ITEM_TITLE" /> καρφιτσώθηκε</translation>
 <translation id="3554928024630051016">Για να προσθέσετε επιπλέον συσκευές USB, δοκιμάστε να καταργήσετε μία και, στη συνέχεια, συνδέστε μια νέα</translation>
 <translation id="3558768885091059911">Ενεργοποίηση πρόσβασης στην κάμερα και το μικρόφωνο;</translation>
+<translation id="3559262020195162408">Αποτυχία εγκατάστασης πολιτικής στη συσκευή.</translation>
 <translation id="3560174576767922131">Εγγραφή βίντεο</translation>
 <translation id="3562423906127931518">Αυτή η διαδικασία μπορεί να διαρκέσει μερικά λεπτά. Ρύθμιση του κοντέινερ Linux.</translation>
 <translation id="3563432852173030730">Δεν ήταν δυνατή η λήψη της εφαρμογής Kiosk.</translation>
@@ -935,6 +950,7 @@
 <translation id="3712143870407382523">Επιλέξτε ένα παράθυρο για αυτή την πλευρά</translation>
 <translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
 <translation id="3713734891607377840">Άνοιγμα όταν ολοκληρωθεί</translation>
+<translation id="3714195043138862580">Αυτή η συσκευή επίδειξης έχει τεθεί σε κατάσταση κατάργησης παροχής.</translation>
 <translation id="3716065403310915079">Πρόγραμμα εγκατάστασης <ph name="VM_NAME" /></translation>
 <translation id="3726171378575546917">Οι εφαρμογές <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> και <ph name="UNAVAILABLE_APPS_COUNT" /> ακόμη εφαρμογές δεν βρίσκονται σε αυτήν τη συσκευή.</translation>
 <translation id="3727231512028252576">Δεν ήταν δυνατή η φόρτωση των στοιχείων. Δοκιμάστε ξανά μόλις συνδεθείτε στο διαδίκτυο.</translation>
@@ -951,6 +967,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Μπορείτε να απενεργοποιήσετε αυτή την υπηρεσία από τις Ρυθμίσεις.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">Το τηλέφωνό σας <ph name="PHONE_NAME" /> μπορεί πλέον να απενεργοποιήσει και αυτή τη συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Μετάδοση οθόνης</translation>
+<translation id="3765246971671567135">Δεν ήταν δυνατή η ανάγνωση της πολιτικής λειτουργίας επίδειξης εκτός σύνδεσης.</translation>
 <translation id="3765841382945324995">Η συντόμευση <ph name="SIX_PACK_KEY_NAME" /> ενημερώθηκε σε <ph name="NEW_SHORTCUT" /> από <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Έγινε επεξεργασία σήμερα</translation>
 <translation id="3772109172035555611">Προσαρμογή του TrackPoint</translation>
@@ -968,6 +985,7 @@
 <translation id="3804737937830804242">Σύμπτυξη κάμερας</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Δεν υπάρχουν άλλα αποτελέσματα.}other{# emoji. Δεν υπάρχουν άλλα αποτελέσματα.}}</translation>
 <translation id="381202950560906753">Προσθήκη άλλης συσκευής</translation>
+<translation id="3819261658055281761">Το σύστημα δεν κατάφερε να αποθηκεύσει το μακροπρόθεσμο διακριτικό πρόσβασης API για αυτήν τη συσκευή.</translation>
 <translation id="3822403841174077928">Δεν ήταν δυνατή η αντιγραφή με μορφοποίηση</translation>
 <translation id="3824621460022590830">Το διακριτικό εγγραφής συσκευής δεν είναι έγκυρο. Επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Αυτό επιτρέπει την πρόσβαση στην κάμερα για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
@@ -987,6 +1005,7 @@
 <translation id="3861638017150647085">Δεν είναι διαθέσιμο το όνομα χρήστη "<ph name="USERNAME" />".</translation>
 <translation id="3861651314799684201">Press Enter για εγγραφή πλήρους οθόνης</translation>
 <translation id="3870197372373144624">Δοκιμάστε να τερματίσετε τη λειτουργία της συσκευής σας.</translation>
+<translation id="3873915545594852654">Παρουσιάστηκε ένα πρόβλημα με το ARC++.</translation>
 <translation id="3879748587602334249">Διαχείριση λήψεων</translation>
 <translation id="3884007280698606545">Το όριο USB συμπληρώθηκε</translation>
 <translation id="3886872229787704059">Ανοίχτηκαν σήμερα</translation>
@@ -1040,6 +1059,7 @@
 <translation id="4026843240379844265">Μετακίνηση ενεργού παραθύρου μεταξύ οθονών</translation>
 <translation id="4028481283645788203">Απαιτείται κωδικός πρόσβασης για περισσότερη ασφάλεια.</translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + αριστερό βέλος</translation>
+<translation id="4036778507053569103">Η πολιτική της οποίας έγινε λήψη από τον διακομιστή δεν είναι έγκυρη.</translation>
 <translation id="4039699481424758547">Πατήστε Enter για λήψη στιγμιότυπου οθόνης του παραθύρου: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Μοιράζεστε την οθόνη σας</translation>
 <translation id="404437169852192935">Οι ενημερώσεις σταμάτησαν</translation>
@@ -1055,6 +1075,7 @@
 <translation id="4072805772816336153">Δοκιμάστε ξανά αργότερα</translation>
 <translation id="4077623680826964850">Χρονικό όριο κατά την εκκίνηση ή την επανασύνδεση με VM.</translation>
 <translation id="4086921558679520050">Ενεργοποιήστε τον φυσικό διακόπτη μικροφώνου στη συσκευή σας</translation>
+<translation id="4099874310852108874">Παρουσιάστηκε σφάλμα δικτύου.</translation>
 <translation id="4101772068965291327">Άνοιγμα αρχικής σελίδας</translation>
 <translation id="4102906002417106771">Επανεκκίνηση για powerwash</translation>
 <translation id="4112140312785995938">Αναζήτηση προς τα πίσω</translation>
@@ -1062,6 +1083,7 @@
 <translation id="4114315158543974537">Ενεργοποίηση του Phone Hub</translation>
 <translation id="4115378294792113321">Ματζέντα</translation>
 <translation id="4116704186509653070">Άνοιγμα ξανά</translation>
+<translation id="4118579674665737931">Επανεκκινήστε τη συσκευή και δοκιμάστε ξανά.</translation>
 <translation id="411881149140864134">Ενεργοποίηση γραφείου στα αριστερά</translation>
 <translation id="4119928251231465047">Πάρα πολλές προσπάθειες εισαγωγής του PIN</translation>
 <translation id="412298498316631026">παράθυρο</translation>
@@ -1072,6 +1094,7 @@
 <translation id="4136724716305260864">Ενεργό μέχρι την ανατολή του ηλίου</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + δεξί βέλος</translation>
 <translation id="4146671046252289537">Μετακίνηση στο τέλος της επόμενης λέξης</translation>
+<translation id="4147911968024186208">Δοκιμάστε ξανά. Εάν εμφανιστεί ξανά αυτό το σφάλμα, επικοινωνήστε με τον εκπρόσωπο υποστήριξης.</translation>
 <translation id="4150201353443180367">Οθόνη</translation>
 <translation id="4151054805501931758">Ρετουσάρισμα πορτρέτου</translation>
 <translation id="4151449637210235443">Πείτε μας για το πρόσφατο gameplay σας</translation>
@@ -1194,6 +1217,7 @@
 <translation id="445765352722456792">Προσαρμογή προτάσεων</translation>
 <translation id="4458688154122353284">Διακοπή εγγραφής οθόνης</translation>
 <translation id="445923051607553918">Σύνδεση με δίκτυο Wi-Fi</translation>
+<translation id="4465236939126352372">Έχει ρυθμιστεί χρονικό όριο <ph name="TIME" /> για την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="4471354919263203780">Πραγματοποιείται λήψη των αρχείων αναγνώρισης ομιλίας… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ενημέρωση συσκευής τώρα}=1{Ενημέρωση συσκευής εντός 1 δευτερολέπτου}other{Ενημέρωση συσκευής εντός # δευτερολέπτων}}</translation>
 <translation id="4472575034687746823">Έναρξη</translation>
@@ -1213,6 +1237,7 @@
 <translation id="4513946894732546136">Σχόλια</translation>
 <translation id="4518096944902121253">Δεν υπάρχουν άλλες ενέργειες για αυτή τη γλώσσα</translation>
 <translation id="4518404433291145981">Για να ξεκλειδώσετε το Chromebook, ξεκλειδώστε πρώτα το τηλέφωνό σας</translation>
+<translation id="4524832533047962394">Η παρεχόμενη λειτουργία εγγραφής δεν υποστηρίζεται από αυτή την έκδοση του λειτουργικού συστήματος. Βεβαιωθείτε ότι εκτελείτε την πιο πρόσφατη έκδοση.</translation>
 <translation id="4525887279712865285">Εμφάνιση ρυθμίσεων του Quick Share</translation>
 <translation id="4527045527269911712">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης.</translation>
 <translation id="4531536770443562276">Διατίθεται μόνο σε πλήρη οθόνη</translation>
@@ -1253,6 +1278,7 @@
 <translation id="4613144866899789710">Ακύρωση εγκατάστασης Linux…</translation>
 <translation id="462160925400706389">Η συσκευή <ph name="NAME" /> συνδέθηκε.</translation>
 <translation id="4623167406982293031">Επαλήθευση λογαριασμού</translation>
+<translation id="4623189117674524348">Το σύστημα δεν κατάφερε να εξουσιοδοτήσει την πρόσβαση API για την παρούσα συσκευή.</translation>
 <translation id="4628757576491864469">Συσκευές</translation>
 <translation id="4628762811416793313">Η ρύθμιση του κοντέινερ Linux δεν ολοκληρώθηκε. Δοκιμάστε ξανά.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Αξιολόγηση με αστέρι <ph name="RATING_SCORE" /></translation>
@@ -1260,14 +1286,17 @@
 <translation id="4633757335284074492">Δημιουργία αντιγράφων ασφαλείας στο Google Drive. Επαναφέρετε τα δεδομένα ή αλλάξτε συσκευή ανά πάσα στιγμή με ευκολία. Αυτό το αντίγραφο ασφαλείας περιλαμβάνει δεδομένα εφαρμογών. Τα δεδομένα μεταφορτώνονται στην Google και κρυπτογραφούνται χρησιμοποιώντας τον κωδικό πρόσβασης του Λογαριασμού Google του παιδιού σας.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Άμεση επαναφορά της έκδοσης της συσκευής σε προηγούμενη}=1{Επαναφορά της έκδοσης της συσκευής σε προηγούμενη εντός 1 δευτερολέπτου}other{Επαναφορά της έκδοσης της συσκευής σε προηγούμενη εντός # δευτερολέπτων}}</translation>
 <translation id="4642092649622328492">Λήψη μερικού στιγμιότυπου οθόνης</translation>
+<translation id="4643833688073835173">Το Chromebook χρησιμοποιεί έναν ενσωματωμένο αισθητήρα για να εντοπίσει άτομα που βρίσκονται μπροστά στη συσκευή σας. Όλα τα δεδομένα υποβάλλονται αμέσως σε επεξεργασία στη συσκευή σας και έπειτα διαγράφονται. Τα δεδομένα αισθητήρα δεν αποστέλλονται ποτέ στην Google.</translation>
 <translation id="4644727592819780893">Η περιοχή είναι πολύ μικρή για προσαρμογή στην κάμερα.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Πρόταση εφαρμογής</translation>
 <translation id="4649019912155580914">Το επεξεργαστήκατε εσείς</translation>
+<translation id="4651484272688821107">Δεν ήταν δυνατή η φόρτωση του ηλεκτρονικού στοιχείου με τους πόρους της λειτουργίας επίδειξης.</translation>
 <translation id="4654916960643280876">Επιλέχθηκε το πλαίσιο ελέγχου <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="465686131535918331">Μπορείτε να εξατομικεύσετε τις ρυθμίσεις για <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="4657775630156561295">Η παρακάτω πρόταση θα καταργηθεί οριστικά από το ιστορικό προτάσεων του λογαριασμού σας:
 
 <ph name="QUERY" /></translation>
+<translation id="4658285806588491142">Διατηρήστε το περιεχόμενο της οθόνης ιδιωτικό</translation>
 <translation id="4659419629803378708">Το ChromeVox ενεργοποιήθηκε</translation>
 <translation id="4666911709726371538">Περισσότερες εφαρμογές</translation>
 <translation id="4667099493359681081">Λήψη <ph name="FILENAME" /></translation>
@@ -1290,6 +1319,7 @@
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Αριστερό)</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
+<translation id="4735803855089279419">Το σύστημα δεν κατάφερε να προσδιορίσει αναγνωριστικά συσκευής για αυτήν τη συσκευή.</translation>
 <translation id="4735944890391795473">Γραφείο 12</translation>
 <translation id="4736732123074402682">Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
@@ -1309,6 +1339,7 @@
 <translation id="4778095205580009397">Ο Βοηθός Google δεν είναι διαθέσιμος σε περίοδο λειτουργίας επίδειξης.</translation>
 <translation id="4781633367688946589">Συνέχεια σε νέα περίοδο λειτουργίας</translation>
 <translation id="4785412405516449976">Μόνο οι επαφές σας με Λογαριασμό Google</translation>
+<translation id="4788092183367008521">Ελέγξτε τη σύνδεση δικτύου σας και δοκιμάστε ξανά.</translation>
 <translation id="4789348252524569426">Δεν είναι δυνατή η εγκατάσταση αρχείων ομιλίας. Η συσκευή σας πρέπει να ενημερωθεί. Επανεκκινήστε τη συσκευή και δοκιμάστε ξανά.</translation>
 <translation id="478959186716341421">Μετάδοση</translation>
 <translation id="4798403412327076414">Την επόμενη φορά που θα συνδεθείτε θα εμφανιστούν τα παράθυρα και οι εφαρμογές που έχετε ανοίξει στο παρελθόν</translation>
@@ -1433,6 +1464,7 @@
 <translation id="5137349216872139332">Η σύνδεση στο άμεσο σημείο πρόσβασης Wi-Fi απέτυχε</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, Αναζήτηση <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Εναλλαγή εισόδου ήχου;</translation>
+<translation id="5145464978649806571">Εάν απομακρυνθείτε από τη συσκευή, η οθόνη σας θα κλειδώσει αυτόματα. Όταν είστε μπροστά στη συσκευή, η οθόνη θα παραμείνει σε κανονική κατάσταση λειτουργίας για μεγαλύτερο χρονικό διάστημα. Εάν η οθόνη κλειδώματος είναι απενεργοποιημένη, η συσκευή δεν θα κλειδωθεί αλλά θα μεταβεί σε λειτουργία αδράνειας.</translation>
 <translation id="5147567197700016471">Ξεκλειδώθηκε</translation>
 <translation id="5150070631291639005">Ρυθμίσεις απορρήτου</translation>
 <translation id="5155897006997040331">Ταχύτητα ανάγνωσης</translation>
@@ -1452,6 +1484,7 @@
 <translation id="5198039720391525849">Επιλεγμένα GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> συμβάντα</translation>
 <translation id="5198715732953550718">Η εφαρμογή <ph name="MOVED_APP_NAME" /> συνδυάστηκε με την εφαρμογή <ph name="IN_PLACE_APP" /> για τη δημιουργία νέου φακέλου.</translation>
+<translation id="5204673965307125349">Κάντε powerwash στη συσκευή και δοκιμάστε ξανά.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ακόμη ειδοποίηση}other{# ακόμη ειδοποιήσεις}}</translation>
 <translation id="5207949376430453814">Επισήμανση δρομέα κειμένου</translation>
@@ -1504,6 +1537,7 @@
 <translation id="5322611492012084517">Δεν βρίσκετε το τηλέφωνό σας</translation>
 <translation id="5323994101633366939">Απόκρυψη ονόματος γραφείου</translation>
 <translation id="5327248766486351172">Όνομα</translation>
+<translation id="5327570636534774768">Αυτή η συσκευή έχει επισημανθεί για διαχείριση από διαφορετικό τομέα. Καταργήστε την από αυτόν τον τομέα πριν ρυθμίσετε τη λειτουργία επίδειξης.</translation>
 <translation id="532943162177641444">Πατήστε στην ειδοποίηση στο τηλέφωνο <ph name="PHONE_NAME" /> για να ρυθμίσετε το σημείο πρόσβασης Wi-Fi για κινητά που μπορεί να χρησιμοποιηθεί από αυτήν τη συσκευή.</translation>
 <translation id="5329548388331921293">Σύνδεση…</translation>
 <translation id="5331975486040154427">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
@@ -1579,6 +1613,7 @@
 <translation id="5570122939431135380">Άνοιγμα νέας καρτέλας σε νέο παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="5571066253365925590">Το Bluetooth έχει ενεργοποιηθεί</translation>
 <translation id="5572632238877308040">Απαραίτητα</translation>
+<translation id="5575528586625653441">Παρουσιάστηκε πρόβλημα με το αίτημα εγγραφής στην επίδειξη.</translation>
 <translation id="557563299383177668">Επόμενη παράγραφος</translation>
 <translation id="5577082622442191756">Εναλλαγή Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο στο τηλέφωνό σας για να χρησιμοποιήσετε το Phone Hub.</translation>
@@ -1629,6 +1664,7 @@
 <translation id="5693255400847650006">Μικρόφωνο σε χρήση</translation>
 <translation id="5699366815052349604">Εκχώρηση ενεργού παραθύρου σε όλα τα γραφεία</translation>
 <translation id="570043786759263127">Εφαρμογές και υπηρεσίες Google Play</translation>
+<translation id="5701080607174488915">Σφάλμα ανάκτησης πολιτικής από τον διακομιστή.</translation>
 <translation id="570390244361237317">Όλες οι εφαρμογές, πλοηγηθείτε με τα πλήκτρα βέλους για πρόσβαση σε όλες τις εφαρμογές</translation>
 <translation id="5705197514573687092">Εμφάνιση ρυθμίσεων λειτουργίας συγκέντρωσης. Το χρονόμετρο έχει οριστεί σε <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Η συσκευή σας υποστηρίζει υψηλότερο ρυθμό μετάδοσης δεδομένων σε σχέση με το καλώδιό σας. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
@@ -1688,6 +1724,7 @@
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5864691701242730005">Εμφάνιση ρυθμίσεων Quick Share. Επιλέχθηκε ορατότητα για τη <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5865508026715185451">Η εφαρμογή <ph name="APP_NAME" /> θα τεθεί σύντομα σε παύση.</translation>
 <translation id="5867217927013474703">Συλλογή πληροφοριών δικτύου</translation>
 <translation id="5867606971598166637">Ο διαχειριστής συστήματος παρακολουθεί τις οθόνες σας</translation>
 <translation id="5876666360658629066">Εισαγάγετε κωδικό γονέα</translation>
@@ -1715,6 +1752,7 @@
 <translation id="5947494881799873997">Επαναφορά</translation>
 <translation id="595202126637698455">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
 <translation id="5955304353782037793">εφαρμογή</translation>
+<translation id="5955809630138889698">Αυτή η συσκευή μπορεί να είναι κατάλληλη μόνο για λειτουργία επίδειξης στο διαδίκτυο. Επικοινωνήστε με τον εκπρόσωπο υποστήριξης για περισσότερες λεπτομέρειες.</translation>
 <translation id="5958529069007801266">Εποπτευόμενος χρήστης</translation>
 <translation id="5959471481388474538">Το δίκτυο δεν είναι διαθέσιμο</translation>
 <translation id="596035801491797438">Απενεργοποίηση Ελέγχου με το πρόσωπο</translation>
@@ -1767,6 +1805,7 @@
 <translation id="6062360702481658777">Θα αποσυνδεθείτε αυτόματα σε <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Δεν χρησιμοποιώ πλέον αυτό το αρχείο</translation>
 <translation id="6068258534237496331">Στοιχεία ελέγχου βιντεοκλήσης</translation>
+<translation id="6071576563962215370">Το σύστημα απέτυχε να εφαρμόσει το κλείδωμα χρόνου εγκατάστασης χαρακτηριστικών.</translation>
 <translation id="6073451960410192870">Διακοπή εγγραφής</translation>
 <translation id="6074087755403037157">Κανάλι έκδοσης Beta</translation>
 <translation id="6075098173600599596">Αλλαγή χρήσης κεφαλαίων</translation>
@@ -1808,6 +1847,7 @@
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Πλήρης φόρτιση τώρα</translation>
 <translation id="6193431488227440296">Προγραμματιστές</translation>
+<translation id="6195693561221576702">Δεν είναι δυνατή η ρύθμιση αυτής της συσκευής σε λειτουργία επίδειξης εκτός σύνδεσης.</translation>
 <translation id="6198252989419008588">Αλλαγή PIN</translation>
 <translation id="6199775032047436064">Επανάληψη φόρτωσης τρέχουσας σελίδας</translation>
 <translation id="6200515304866777730">Δεν υποστηρίζεται από την εφαρμογή</translation>
@@ -1979,6 +2019,7 @@
 <translation id="666343722268997814">Άνοιγμα του μενού δεξιού κλικ για το στοιχείο που έχετε επισημάνει</translation>
 <translation id="6665545700722362599">Εκχωρήσει άδειες σε ιστοτόπους, εφαρμογές και επεκτάσεις για τη χρήση υπηρεσιών τοποθεσίας, του μικροφώνου ή της κάμερας της συσκευής ή άλλων λειτουργιών</translation>
 <translation id="6667908387435388584">Συνδεθείτε στο σημείο πρόσβασης Wi-Fi του τηλεφώνου σας, θέστε σε σίγαση και εντοπίστε τη συσκευή σας και δείτε τις πρόσφατες καρτέλες Chrome που είναι ανοικτές στο τηλέφωνό σας.</translation>
+<translation id="6670142487971298264">Η εφαρμογή <ph name="APP_NAME" /> είναι πλέον διαθέσιμη</translation>
 <translation id="6670153871843998651">Γραφείο 3</translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
 <translation id="6671661918848783005">Δεν είναι δυνατό το ξεκλείδωμα του Chromebook</translation>
@@ -2169,6 +2210,7 @@
 <translation id="7285232777292757180">Χρησιμοποιήστε το εργαλείο καταγραφής οθόνης στις γρήγορες ρυθμίσεις για λήψη στιγμιότυπων οθόνης</translation>
 <translation id="7301826272005790482">Παράβλεψη προτάσεων παραθύρου</translation>
 <translation id="7302889331339392448">Οι Ζωντανοί υπότιτλοι είναι απενεργοποιημένοι.</translation>
+<translation id="7303281435234579599">Δυστυχώς, παρουσιάστηκε κάποιο πρόβλημα κατά τη ρύθμιση της λειτουργίας επίδειξης.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
 <translation id="7312210124139670355">Ο διαχειριστής σας επαναφέρει την eSIM. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
@@ -2180,6 +2222,7 @@
 <translation id="7331646370422660166">alt + κάτω βέλος</translation>
 <translation id="7336943714413713812">Αναζήτηση στο ιστορικό περιήγησης</translation>
 <translation id="7337660433630200387">+10 λεπτά</translation>
+<translation id="7338630283264858612">Ο σειριακός αριθμός της συσκευής δεν είναι έγκυρος.</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7340731148882810149">Μενού αυτόματων κλικ</translation>
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
@@ -2273,6 +2316,7 @@
 <translation id="7569886975397378678">Παράβλεψη ρύθμισης προβολής των ειδοποιήσεων και εφαρμογών του τηλεφώνου σας</translation>
 <translation id="7571361473021531288">Μπαταρία <ph name="BATTERY_PERCENTAGE" />% | Χρόνος που απομένει: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Το ενεργό παράθυρο αγκυρώθηκε δεξιά.</translation>
+<translation id="7576976045740938453">Παρουσιάστηκε πρόβλημα με τον λογαριασμό επίδειξης.</translation>
 <translation id="7579778809502851308">Λήψη οθόνης</translation>
 <translation id="7588317312481506627">Αντιγράφηκε στο πρόχειρο.</translation>
 <translation id="7593891976182323525">Search ή Shift</translation>
@@ -2290,6 +2334,7 @@
 <translation id="761530003705945209">Δημιουργία αντιγράφων ασφαλείας στο Google Drive. Επαναφέρετε τα δεδομένα σας ή αλλάξτε συσκευή ανά πάσα στιγμή με ευκολία. Το αντίγραφο ασφαλείας συμπεριλαμβάνει τα δεδομένα εφαρμογών. Τα αντίγραφα ασφαλείας σας ανεβαίνουν στο Google και κρυπτογραφούνται χρησιμοποιώντας τον κωδικό πρόσβασης του Λογαριασμού σας Google.</translation>
 <translation id="761736749114493194">Εναλλαγή καδραρίσματος κάμερας. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Ρυθμίσεις Quick Share</translation>
+<translation id="7621382409404463535">Το σύστημα δεν κατάφερε να αποθηκεύσει τη διαμόρφωση της συσκευής.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Κάντε μια ερώτηση</translation>
 <translation id="7629858978065675960">Άγνωστο αποτέλεσμα.</translation>
@@ -2310,6 +2355,7 @@
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7659861092419699379">Το γραφείο και τα παράθυρα έκλεισαν</translation>
 <translation id="7660160718439869192">Η συσκευή <ph name="NAME" /> θα εμφανίζεται σε συσκευές που είναι συνδεδεμένες με τον λογαριασμό <ph name="EMAIL" /></translation>
+<translation id="7661451191293163002">Δεν ήταν δυνατή η ανάκτηση ενός πιστοποιητικού εγγραφής.</translation>
 <translation id="7661694115779363471">Επιλεγμένη λαβή κάτω αριστερά, χρησιμοποιήστε τα πλήκτρα βέλους για μετακίνηση</translation>
 <translation id="7662283695561029522">Πατήστε για διαμόρφωση</translation>
 <translation id="7670953955701272011">Άνοιγμα αυτής της ημερομηνίας στο Ημερολόγιο Google</translation>
@@ -2331,6 +2377,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ειδοποίηση}other{# ειδοποιήσεις}}</translation>
 <translation id="7723703419796509666">Εμφάνιση ή απόκρυψη της κονσόλας Εργαλείων για προγραμματιστές</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>
+<translation id="7724711098786238351">Η λειτουργία επίδειξης προορίζεται για χρήστες 18 ετών και άνω και διέπεται από τους Όρους Παροχής Υπηρεσιών και την Πολιτική απορρήτου της Google. Τα δεδομένα που εισάγονται σε αυτή τη συσκευή μπορεί να είναι ορατά σε άλλα άτομα μεταξύ των περιοδικών εκκαθαρίσεων.</translation>
 <translation id="7725108879223146004">Εμφάνιση λεπτομερειών σημείου πρόσβασης Wi-Fi. Γίνεται απενεργοποίηση του σημείου πρόσβασης Wi-Fi.</translation>
 <translation id="7726391492136714301">Δείτε τις ειδοποιήσεις και τις εφαρμογές του τηλεφώνου σας.</translation>
 <translation id="7727952505535211425">Άνοιγμα του ιστοτόπου στη γραμμή διευθύνσεων σε νέα καρτέλα</translation>
@@ -2347,6 +2394,7 @@
 <translation id="7769299611924763557">Το GIF θα είναι έτοιμο σύντομα</translation>
 <translation id="7773536009433685931">Εναλλακτικά, ενεργοποιήστε το Wi-Fi</translation>
 <translation id="77747521138552256">Πάρα πολλές προσπάθειες εισαγωγής του PIN. Περιμένετε <ph name="TIME_LEFT" /> και δοκιμάστε ξανά το PIN ή εισαγάγετε τον κωδικό πρόσβασης, για να συνδεθείτε αμέσως.</translation>
+<translation id="7774792847912242537">Πάρα πολλά αιτήματα.</translation>
 <translation id="7780094051999721182">συντομεύσεις</translation>
 <translation id="7780159184141939021">Περιστροφή οθόνης</translation>
 <translation id="7781335840981796660">Θα καταργηθούν όλοι οι λογαριασμοί χρηστών και τα τοπικά δεδομένα.</translation>
@@ -2362,6 +2410,7 @@
 <translation id="7824864914877854148">Δεν ήταν δυνατή η ολοκλήρωση δημιουργίας αντιγράφων ασφαλείας λόγω σφάλματος</translation>
 <translation id="7825412704590278437">Από προσεχές συμβάν ημερολογίου</translation>
 <translation id="7826249772873145665">Η αποσφαλμάτωση ADB απενεργοποιήθηκε</translation>
+<translation id="7826254698725248775">Αναγνωριστικό συσκευής που προκαλεί διένεξη.</translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>
 <translation id="7830453190047749513">Μπορείτε να εξατομικεύσετε τις ενέργειες κουμπιών, την ταχύτητα του δείκτη και πολλά άλλα για τη συσκευή <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Προειδοποίηση: Πειραματική λειτουργία</translation>
@@ -2557,6 +2606,7 @@
 <translation id="8382715499079447151">Προστασία προβολής</translation>
 <translation id="8383614331548401927">Καλωσόρισμα Recap</translation>
 <translation id="838540623579162843">Αποκτήστε το Music Premium</translation>
+<translation id="8386091599636877289">Η πολιτική δεν βρέθηκε.</translation>
 <translation id="8388750414311082622">Δεν είναι δυνατή η κατάργηση του τελευταίου γραφείου.</translation>
 <translation id="8390392581097975659">Εγκατάσταση του λογισμικού σαρωτή</translation>
 <translation id="8394567579869570560">Ο γονέας σας κλείδωσε αυτήν τη συσκευή</translation>
@@ -2651,6 +2701,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Πατήστε Enter για λήψη μερικού στιγμιότυπου οθόνης</translation>
 <translation id="8665180165765946056">Η δημιουργία αντιγράφου ασφαλείας ολοκληρώθηκε</translation>
+<translation id="867085395664725367">Παρουσιάστηκε προσωρινό σφάλμα διακομιστή.</translation>
 <translation id="8673530374848624865">Ο διαχειριστής σας ενημέρωσε τις απαιτήσεις ασφαλείας για τη συσκευή σας</translation>
 <translation id="8676770494376880701">Ο συνδεδεμένος φορτιστής παρέχει χαμηλή ισχύ</translation>
 <translation id="8679158879996532670">Εμφάνιση ρυθμίσεων λειτουργίας συγκέντρωσης. Η λειτουργία συγκέντρωσης είναι ενεργή, <ph name="REMAINING_TIME" /> ακόμη.</translation>
@@ -2666,6 +2717,7 @@
 <translation id="8714138378966541668">Κλειδώθηκε από τον πάροχο</translation>
 <translation id="8716931980467311658">Να διαγραφούν όλες οι εφαρμογές και τα δεδομένα Linux που περιέχονται στον φάκελο αρχεία Linux από αυτήν τη συσκευή <ph name="DEVICE_TYPE" />;</translation>
 <translation id="8717459106217102612">Επιλογή προηγούμενης λέξης ή γράμματος</translation>
+<translation id="8720816553731218127">Η περίοδος προετοιμασίας των χαρακτηριστικών χρόνου εγκατάστασης έχει λήξει.</translation>
 <translation id="8721053961083920564">Εναλλαγή έντασης ήχου. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Λήψη ολόκληρης της οθόνης</translation>
 <translation id="8724405322205516354">Όταν βλέπετε αυτό το εικονίδιο, χρησιμοποιήστε το δακτυλικό σας αποτύπωμα για ταυτοποίηση ή για την έγκριση αγορών.</translation>
@@ -2682,6 +2734,7 @@
 <translation id="8742395827132970586">Η εγκατάσταση απέτυχε, γίνεται εκκαθάριση</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749865622265861882">Χρησιμοποιείτε μια συσκευή επίδειξης</translation>
 <translation id="8751299148074971734">Συνεχίστε έτσι!</translation>
 <translation id="8753368202781196133">Αυτή η γλώσσα δεν υποστηρίζεται προς το παρόν.</translation>
 <translation id="8755498163081687682">Επαλήθευση της ταυτότητάς σας: Το <ph name="ORIGIN_NAME" /> θέλει να επαληθεύσει την ταυτότητά σας.</translation>

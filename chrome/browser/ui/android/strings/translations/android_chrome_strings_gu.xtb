@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો બંધ કર્યો</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1045899828449635435">આ સાઇટમાંથી પણ ડેટા સાફ કરીએ?</translation>
+<translation id="1049461303780085993">જવાબો, મુખ્ય મુદ્દા અને બીજું ઘણું મેળવવા માટે Gemini in Chrome અજમાવી જુઓ</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1052842760770519282">તમારા પાસવર્ડમાંથી અમુક ઍક્સેસિબલ નથી</translation>
 <translation id="1057623954802068161">સ્ક્રોલ કરીને પેજની સૌથી ઉપરની બાજુએ જાઓ</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">કૉલ કરવા માટે ટૅપ કરો</translation>
 <translation id="232137538351753795">પાછળ જવા માટે ડાબી કિનારીએથી સ્વાઇપ કરો</translation>
 <translation id="2323763861024343754">સાઇટ સ્ટોરેજ</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> તરફથી</translation>
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
 <translation id="2330186936255788117">વધુ બુકમાર્ક</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">'નવું ટૅબ' પેજ ખોલો</translation>
 <translation id="4595276580892809760">ગૅલરીમાંથી છબીઓ જોડો</translation>
 <translation id="4595805675102978678">Google એકાઉન્ટમાં ભૂલ</translation>
+<translation id="4599585406846903742">સિંગલ પેજ વ્યૂ</translation>
 <translation id="4601095002996233687">શંકાસ્પદ ડાઉનલોડ માટે સવિસ્તર સ્કૅનની સુવિધા.</translation>
 <translation id="4606559747793337066">જ્યારે કોઈ સાઇટ કે ઍપ દ્વારા તેમના પેજ પર લિંકને ખાનગી રીતે પહેલેથી લોડ કરવાનું કહેવામાં આવે, ત્યારે Chrome, કુકી વિના Googleના સર્વર મારફતે પેજને એન્ક્રિપ્ટ અને પહેલેથી લોડ કરે છે. આ પહેલેથી લોડ કરેલી સાઇટથી તમારી ઓળખ છુપાવે છે.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ખોલો</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">વધુ વિકલ્પો બટનમાંથી આ પેજનો અનુવાદ કોઈપણ ભાષામાં કરો</translation>
 <translation id="5696597120588531049">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે</translation>
 <translation id="5698878456427040674">ચેક કરો કે પસંદ કરેલા એકાઉન્ટને સપોર્ટ આપવામાં આવે છે કે નહીં.</translation>
+<translation id="5700415746238689851">Gemini ખોલો</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> સિરિઅલ પોર્ટ સાથે કનેક્ટ કરવા માગે છે</translation>
 <translation id="5715150588940290235">શું સાચવેલા સુરક્ષા કોડ ડિલીટ કરીએ?</translation>
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">સ્પામની જાણ કરો</translation>
 <translation id="8277710303010772444">શોધ શરૂ કરો</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> દ્વારા સુરક્ષિત</translation>
+<translation id="8280797717392145626">લિંક મળી</translation>
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8282297628636750033">શક્ય હોય ત્યારે સાઇટ પર ઘેરી થીમ લાગુ કરો</translation>
 <translation id="8282950411412455249">સુરક્ષા સેટિંગ પર જાઓ</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" />ને ફરી પરવાનગીઓ આપવામાં આવી</translation>
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8872506776304248286">ઍપ્લિકેશનમાં ખોલો</translation>
+<translation id="8880275451109933094">બે પેજવાળો વ્યૂ</translation>
 <translation id="8890668505403261809">તમારા છૂપા ટૅબ શોધો</translation>
 <translation id="8892234476517513962">તમે પહેલેથી જ સાઇન ઇન કરેલું છે</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, પસંદ કરેલું રેકોર્ડ કરતું છૂપું ટૅબ</translation>

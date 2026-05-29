@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">რჩევების შეტყობინების პრომო დაიხურა</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1045899828449635435">ამ საიტების მონაცემთა გასუფთავებაც გსურთ?</translation>
+<translation id="1049461303780085993">სცადეთ Gemini Chrome-ში, რათა მიიღოთ პასუხები, ძირითადი დასკვნები და სხვა</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
 <translation id="1052842760770519282">თქვენი ზოგიერთი პაროლი მიუწვდომელია</translation>
 <translation id="1057623954802068161">გვერდის დასაწყისში გადაადგილება</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">შეეხეთ ზარის განსახორციელებლად</translation>
 <translation id="232137538351753795">უკან დასაბრუნებლად გადაუსვით მარცხენა კიდიდან</translation>
 <translation id="2323763861024343754">საიტების მეხსიერება</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" />-დან</translation>
 <translation id="2328474416100889417">ყველა მომენტალურად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“, ხოლო მოსაწვევის ბმულები გამოირთვება</translation>
 <translation id="2330186936255788117">სხვა სანიშნეები</translation>
 <translation id="2332515770639153015">გაძლიერებული Safe Browsing ჩართულია</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">გახსენით ახალი ჩანართის გვერდი</translation>
 <translation id="4595276580892809760">სურათების მიმაგრება გალერეიდან</translation>
 <translation id="4595805675102978678">Google ანგარიშის შეცდომა</translation>
+<translation id="4599585406846903742">ერთგვერდიანი ხედი</translation>
 <translation id="4601095002996233687">საეჭვო ჩამოტვირთვების სიღრმისეული სკანირების ფუნქცია.</translation>
 <translation id="4606559747793337066">როცა საიტი ან აპი გთხოვთ, უფლება მისცეთ, კონფიდენციალურად ჩატვირთოს თავის გვერდზე არსებული ბმულები, Chrome დაშიფრავს და წინასწარ ჩატვირთავს გვერდებს Google-ის სერვერების მეშვეობით, ქუქი-ჩანაწერების გარეშე. აღნიშნული დამალავს თქვენს ვინაობას წინასწარ ჩატვირთული საიტისგან.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-ის გახსნა</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">თარგმნეთ ეს გვერდი ნებისმიერ ენაზე „სხვა ვარიანტების“ ღილაკის მეშვეობით</translation>
 <translation id="5696597120588531049">Chromium დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არაუსაფრთხო ვებსაიტებისა და სხვა უსიამოვნებისგან</translation>
 <translation id="5698878456427040674">შეამოწმეთ, მხარდაჭერილია თუ არა არჩეული ანგარიში.</translation>
+<translation id="5700415746238689851">Gemini-ს გახსნა</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ითხოვს დაკავშირებას თანმიმდევრულ პორტთან</translation>
 <translation id="5715150588940290235">გსურთ, წაშალოთ უსაფრთხოების შენახული კოდები?</translation>
 <translation id="572328651809341494">ბოლო ჩანართები</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">სპამის შესახებ შეტყობინება</translation>
 <translation id="8277710303010772444">ძიების დაწყება</translation>
 <translation id="8279945625179116733">უზრუნველყოფს <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">მიღებული ბმულები</translation>
 <translation id="8281886186245836920">გამოტოვება</translation>
 <translation id="8282297628636750033">საიტებზე მუქი თემის გამოყენება (შეძლებისდაგვარად)</translation>
 <translation id="8282950411412455249">უსაფრთხოების პარამეტრებზე გადასვლა</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">ნებართვების ხელახლა დაიშვა <ph name="SITE_NAME" />-ისთვის</translation>
 <translation id="8865415417596392024">თქვენს ანგარიშში შენახული Chrome მონაცემები</translation>
 <translation id="8872506776304248286">აპში გახსნა</translation>
+<translation id="8880275451109933094">ორგვერდიანი ხედი</translation>
 <translation id="8890668505403261809">მოიძიეთ ინკოგნიტო ჩანართებში</translation>
 <translation id="8892234476517513962">თქვენ უკვე შესული ხართ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, არჩეულია ინკოგნიტო ჩანართი, რომელშიც მიმდინარეობს ჩაწერა</translation>

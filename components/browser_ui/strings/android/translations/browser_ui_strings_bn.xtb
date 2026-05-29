@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1000614056227025171">আপনার হোমপেজ কাস্টমাইজ করার প্রোমো স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="1006017844123154345">অনলাইনে খুলুন</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1046742265332833834">ব্লু থিম</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">সাইট সাউন্ড চালাতে পারে</translation>
 <translation id="3065787901655140044">উন্নত সুরক্ষা চালু আছে</translation>
 <translation id="3069226013421428034">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইনের অনুমতি দিন।</translation>
+<translation id="3084983642903364837">পরে ৩-ডট মেনুর মাধ্যমে আপনার হোমপেজ এডিট করুন।</translation>
 <translation id="310297983047869047">আগের স্লাইড</translation>
 <translation id="3108122610701115301">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="310979712355504754">সব মুছুন</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">কোনও সিরিয়াল পোর্টের সাথে কানেক্ট করা আছে</translation>
 <translation id="4223404254440398437">মাইক্রোফোন ব্যবহারের অনুমতি নেই</translation>
 <translation id="4226663524361240545">বিজ্ঞপ্তি আসলে ডিভাইস ভাইব্রেট হতে পারে</translation>
+<translation id="4227965147357783918">আপনার হোমপেজ কাস্টমাইজ করার প্রোমো স্ক্রিনের নিচে অ্যাটাচ করা শিট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="4259722352634471385">নেভিগেশন অবরুদ্ধ করা হয়েছে: <ph name="URL" /></translation>
 <translation id="4274673989874969668">সাইট থেকে আপনি বেরিয়ে আসার পরে, টাস্ক শেষ করতে ফটো আপলোড করা অথবা চ্যাট মেসেজ পাঠানোর মতো সিঙ্ক করা চলতে থাকতে পারে</translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>

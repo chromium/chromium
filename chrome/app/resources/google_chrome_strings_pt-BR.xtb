@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Para excluir apenas os dados de navegação deste dispositivo e mantê-los na sua Conta do Google, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Clique para fechar a caixa de diálogo de login do Chrome</translation>
 <translation id="1051793555070215510">Responda a esta pesquisa de um minuto e ajude a melhorar a navegação anônima.</translation>
+<translation id="1055295352198814912">Mostrar o Gemini no Chrome na barra de menus do Mac e ativar o atalho do teclado</translation>
 <translation id="1059838145689930908">Para usar essa extensão com a conta <ph name="USER_EMAIL_ADDRESS" />, faça login no Chrome.</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="1070377999570795893">Outro programa no seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.
@@ -278,6 +279,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Tente usar outra.</translation>
+<translation id="3965532487635448963">Mostrar o Gemini no Chrome na bandeja do sistema e ativar o atalho do teclado</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3968962723676998462">Digite a senha longa para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">O Chrome quer excluir seus dados do Gerenciador de senhas do Google. Digite sua senha do Windows para conceder essa permissão.</translation>
@@ -320,6 +322,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4367027658822022112">Você pode fixar o Google Lens para facilitar o acesso. Clique no botão "Fixar" na parte de cima do painel lateral</translation>
 <translation id="4372389195695053189">O Chrome agora é seu navegador padrão</translation>
 <translation id="4389991535395284064">Quando você está no modo de navegação anônima, o Chrome avisa antes de carregar um site usando uma conexão sem segurança</translation>
+<translation id="4400772909124543403">Nenhuma atualização disponível</translation>
 <translation id="4427306783828095590">A Proteção reforçada é mais eficiente no combate a golpes de phishing e malware</translation>
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Login na rede - <ph name="PAGE_TITLE" /></translation>
@@ -358,6 +361,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4891791193823137474">Executar o Google Chrome em segundo plano</translation>
 <translation id="4895437082222824641">Abrir link em nova &amp;guia do Chrome</translation>
 <translation id="4896867431081882115">Defina o Chrome como o navegador padrão para acessar com facilidade seus recursos favoritos. O Chrome será fixado na barra de tarefas para agilizar o seu acesso.</translation>
+<translation id="4904953848704395458">Abra o Gemini no Chrome com um atalho do teclado.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="4926882258455737990">Para usar outra Conta do Google com o Gemini no Chrome, <ph name="BEGIN_LINK" />crie um novo perfil<ph name="END_LINK" /> e faça login com a conta desejada</translation>
@@ -516,6 +520,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6434035853014503219">Agradecemos por escolher o Chrome como seu navegador padrão.</translation>
 <translation id="6438015621983209660">Amplie a Navegação Segura com Maior Proteção com o Chrome no seu celular</translation>
 <translation id="6442774133615368941">Compre, traduza e identifique qualquer coisa com a câmera no Chrome para iOS</translation>
+<translation id="6448835208126432197">Para selecionar parte da tela no Gemini no Chrome, use o atalho do teclado.</translation>
 <translation id="6473905796280459355">Acesse a página "Sobre o Chrome"</translation>
 <translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com proteção reforçada" protege você ainda mais contra sites e downloads perigosos</translation>
@@ -528,6 +533,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6520670145826811516">Para usar a localização, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6532945796722480006">Abrir o Gemini no Chrome Canary</translation>
+<translation id="6539493053177300926">Acesse o Gemini no Chrome com facilidade no dispositivo, mesmo se o Chrome estiver minimizado.</translation>
 <translation id="6585124893636629274">Fechar o Gemini no Chrome</translation>
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="6631524303639368205">Continue de onde você parou: o Chrome restaurou as guias da sua última sessão. Para desativar essa opção, acesse as</translation>
@@ -587,6 +593,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7161904924553537242">Que bom te ver no Google Chrome!</translation>
 <translation id="7193885263065350793">Sua organização vai fechar o Chrome se ele não for usado por <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Google Chrome. Seus dados do Google Chrome, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. Você tem a opção de criar um novo perfil para manter seus dados existentes do Google Chrome separados. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Para sair ou voltar ao Gemini no Chrome, use o atalho do teclado.</translation>
 <translation id="7274402351400635015">Você pode usar o Chrome sempre que clicar em links contidos em mensagens, documentos e outros apps. Ele também será fixado na barra de tarefas.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gerencia o Chrome</translation>
 <translation id="7285990705317078173">Baixe o Chrome no seu celular para monitorar preços e receber alertas quando houver uma redução em algum site</translation>
@@ -696,6 +703,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8221491193165283816">Você geralmente bloqueia notificações. Para permitir que esse site envie notificações, clique aqui.</translation>
 <translation id="8253851811470049684">Clicar em links de qualquer app vai abri-los no Chrome, e você poderá acessar o navegador com mais rapidez na barra de tarefas.</translation>
 <translation id="8255190535488645436">O Google Chrome está usando sua câmera e seu microfone.</translation>
+<translation id="8260086374035800939">Se o Gemini no Chrome estiver aberto, o painel lateral ficará aberto ao criar novas guias</translation>
 <translation id="8267953129876836456">O Chrome encontrou algumas recomendações de segurança para sua avaliação</translation>
 <translation id="8286862437124483331">O Google Chrome está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gerenciador de senhas do Google</translation>
@@ -707,6 +715,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8362914115861174987">Traduzir para </translation>
 <translation id="8366770919198174997">Reduz o desempenho, mas torna o Chrome mais resistente a ataques</translation>
 <translation id="8367705492654390392">Pergunte o que quiser</translation>
+<translation id="8367950957770994118">Abra o Gemini no Chrome com rapidez sempre que precisar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8377158135256176353">Ativar/desativar o Gemini no Chrome Canary</translation>
 <translation id="8387459386171870978">Continuar usando o Chrome</translation>
@@ -724,6 +733,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8498858610309223613">Uma atualização especial de segurança para o Google Chrome acabou de ser aplicada. Reinicie agora, e suas guias serão restauradas.</translation>
 <translation id="8521348052903287641">Regra interna do Google Chrome Dev que permite o tráfego mDNS.</translation>
 <translation id="852529348814672339">Mostrar o Chrome neste idioma</translation>
+<translation id="8525579356836940628">Instalação interrompida</translation>
 <translation id="8533056045953418157">Defina o Google Chrome como seu leitor de PDF padrão</translation>
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Кеңештер камтылган жарнамалык билдирме жабылды</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1045899828449635435">Маалымат бул сайттардан да өчүрүлсүнбү?</translation>
+<translation id="1049461303780085993">Жоопторду, негизги сунуштарды жана башкаларды алуу үчүн Chrome'догу Gemini'ды колдонуп көрүңүз</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
 <translation id="1052842760770519282">Айрым сырсөздөрүңүз жеткиликсиз</translation>
 <translation id="1057623954802068161">Беттин жогору жагына сыдыруу</translation>
@@ -297,6 +298,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2318045970523081853">Чалуу үчүн басыңыз</translation>
 <translation id="232137538351753795">Артка кайтуу үчүн экранды солдон оңго карай сүрүңүз</translation>
 <translation id="2323763861024343754">Сайт дайындары</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> баштап</translation>
 <translation id="2328474416100889417">Ар бир адам дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот жана бардык чакыруу шилтемелери өчүрүлөт</translation>
 <translation id="2330186936255788117">Дагы башка кыстармалар</translation>
 <translation id="2332515770639153015">Өркүндөтүлгөн коопсуз серептөө күйүк</translation>
@@ -834,6 +836,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4595237294768457124">Жаңы өтмөк бетин ачуу</translation>
 <translation id="4595276580892809760">Галереядан сүрөттөрдү тиркөө</translation>
 <translation id="4595805675102978678">Google аккаунтундагы ката</translation>
+<translation id="4599585406846903742">Бир бет көрүнүшү</translation>
 <translation id="4601095002996233687">Жүктөлүп алынган шектүү файлдарды тереңирээк текшерүү</translation>
 <translation id="4606559747793337066">Cайт же колдонмо барактагы шилтемелерди алдын ала жүктөөнү суранса, Chrome барактарды шифрлеп, Google'дун серверлери аркылуу алдын ала жүктөйт (cookie файлдарысыз). Ушуну менен өздүгүңүз тууралуу маалымат алдын ала жүктөлгөн сайттан жашырылат.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> колдонмосун ачуу</translation>
@@ -1088,6 +1091,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="569536719314091526">"Дагы параметрлер" баскычын басып, бул баракты каалаган тилге котортуп алыңыз</translation>
 <translation id="5696597120588531049">Chrome сырсөздөрүңүздү коопсуз сактоого, кооптуу вебсайттардан жана башкалардан коргоого жардам берет</translation>
 <translation id="5698878456427040674">Тандалган акккаунт колдоого алынганын текшериңиз.</translation>
+<translation id="5700415746238689851">Gemini'ды ачуу</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> сериялык портко туташканы жатат</translation>
 <translation id="5715150588940290235">Сакталган коопсуздук коддору өчүрүлсүнбү?</translation>
 <translation id="572328651809341494">Акыркы өтмөктөр</translation>
@@ -1769,6 +1773,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8271267069224406035">Спам деп кабарлоо</translation>
 <translation id="8277710303010772444">Издеп баштоо</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> тарабынан корголгон</translation>
+<translation id="8280797717392145626">Шилтемелер алынды</translation>
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
 <translation id="8282297628636750033">Cайттарга караңгы теманы колдонуу (мүмкүн болгондо)</translation>
 <translation id="8282950411412455249">Коопсуздук параметрлерине өтүү</translation>
@@ -1904,6 +1909,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> сайтына уруксаттар кайра берилди</translation>
 <translation id="8865415417596392024">Аккаунтуңуздагы Chrome дайын-даректери</translation>
 <translation id="8872506776304248286">Колдонмосунда ачуу</translation>
+<translation id="8880275451109933094">Эки бет көрүнүшү</translation>
 <translation id="8890668505403261809">Жашыруун өтмөктөрдөн издеңиз</translation>
 <translation id="8892234476517513962">Аккаунтуңузга кирип турасыз</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, тандалган жашыруун өтмөктө медиа жаздырылууда</translation>

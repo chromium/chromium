@@ -3104,6 +3104,7 @@ Los niveles de complejidad se basan en las métricas de calidad de contraseñas 
 
 Consulta el artículo del Centro de ayuda para obtener explicaciones detalladas de lo que implica cada nivel para los PIN y las contraseñas.</translation>
 <translation id="2926813071464307947">Inhabilitar la zona de pruebas del contenedor de la app del renderizador</translation>
+<translation id="2930792103747180259">Inhabilitado: Se permite Background Fetch de los service workers sin restricciones.</translation>
 <translation id="2931888116345994552">Si habilitas la política o no la estableces, se permitirán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
 
       Si la inhabilitas, no se permitirán las actualizaciones. Sin embargo, algunos componentes están exceptuados de esta política: no se inhabilitarán las actualizaciones de componentes que no contengan código ejecutable y que sean fundamentales para la seguridad del navegador.
@@ -3219,6 +3220,7 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="2976033779241323433">Habilitar el teclado virtual táctil según la heurística predeterminada del sistema</translation>
 <translation id="2976429807269247880">Configuración del comportamiento de las cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredadas</translation>
 <translation id="2979696534869541158">Forzar la implementación anterior</translation>
+<translation id="2984696342503554732">Habilitado: Se restringe Background Fetch de los service workers.</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API de Bluetooth web</translation>
@@ -9384,6 +9386,7 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 Si habilitas la política o no la estableces, los usuarios podrán guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> desde el menú contextual. Si la inhabilitas, los usuarios no podrán ver la opción en el menú contextual.
 Esta política no impide que los usuarios guarden imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> de otras formas además del menú contextual.</translation>
 <translation id="6823711520976094072">Si la estableces en menos de 1 MB o no la estableces, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado (256 MB) para almacenar en caché las apps y extensiones cuando las instalen varios usuarios del mismo dispositivo. Esta acción evitará que cada usuario las tenga que volver a descargar.</translation>
+<translation id="6828918560681256273">Restringir la API de Background Fetch cuando se llama desde un service worker</translation>
 <translation id="6829632070341067746">Esta política controla la refactorización reciente de las APIs de Graphics3D en el complemento PPAPI.
 
 La migración solo afecta los detalles de implementación internos y no debe
@@ -12558,6 +12561,16 @@ Esta política dejará de estar disponible a partir de la versión 144 de <ph na
 <translation id="8757552286070680084">Configuración de DTC wilco</translation>
 <translation id="8758831693895931466">Habilitar la inscripción obligatoria en la administración de la nube</translation>
 <translation id="8759829385824155666">Se permiten los tipos de encriptación de Kerberos</translation>
+<translation id="8762128467207353085">Una lista de orígenes de apps de cliente de escritorio remoto que pueden ejecutar solicitudes a la API de WebAuthn
+que se originan a partir de una sesión de navegación en un host remoto.
+
+Cualquier origen configurado en esta política puede realizar solicitudes de WebAuthn para Relying
+Party IDs (RP IDs) que normalmente no se pueden reclamar.
+
+Solo se permiten orígenes HTTPS válidos. Los comodines no son compatibles.
+Se ignoran las entradas no válidas.
+
+Esta política solo se aplica a los usuarios afiliados.</translation>
 <translation id="8765401957266318536">Habilitar la integración de la app de Lens/Galería en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Si habilitas la política, los usuarios podrán usar <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web, p. ej., para agilizar la confirmación de la compra y los cambios de contraseña. El uso de <ph name="ASSISTANT_PRODUCT_NAME" /> requiere consentimiento adicional del usuario, y <ph name="ASSISTANT_PRODUCT_NAME" /> solo se ejecutará si los usuarios lo otorgan, incluso si la política está habilitada.
 

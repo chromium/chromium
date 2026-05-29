@@ -39,6 +39,7 @@
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
 <translation id="1111021433905331574">[設定] &gt; [<ph name="APP_TITLE" />] でキーボードのバックライトの色を変更できます</translation>
 <translation id="1117719261843403176">モバイルデータのオンとオフを切り替える。<ph name="STATE" />。</translation>
+<translation id="1118738876271697201">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="1122849163460178706">次をお試しください</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> を更新する</translation>
@@ -94,6 +95,7 @@
 <translation id="1247519845643687288">最近使ったアプリ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1256734167083229794">全画面拡大鏡のキーボード ショートカットを押しました。拡大するには <ph name="ZOOM_IN_ACCELERATOR" />、縮小するには <ph name="ZOOM_OUT_ACCELERATOR" /> を使用します。拡大した状態で移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
+<translation id="126156426083987769">デモモードデバイスライセンスで問題が発生しました。</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -158,6 +160,7 @@
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">提案グループ</translation>
 <translation id="1426410128494586442">はい</translation>
+<translation id="142655739075382478"><ph name="APP_NAME" /> はブロックされています</translation>
 <translation id="1435537621343861112">音声入力を開始できません。マイクがオフになっています。</translation>
 <translation id="1445031758921122223">フェイス コントロール ファイルをダウンロードしました</translation>
 <translation id="1447907279406111651">進行中 · <ph name="END_TIME" /> に終了</translation>
@@ -239,6 +242,7 @@
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1677582821739292812">他の人があなたの画面を見ています</translation>
+<translation id="167983332380191032">管理サービスから HTTP エラーが送信されました。</translation>
 <translation id="1679841710523778799">明るさを上げる</translation>
 <translation id="1680659827022803830">ビデオ通話コントロール</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -297,6 +301,7 @@
 <translation id="1838011306813517425">フォーカス モード設定</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
 <translation id="1840920496749066704">°C</translation>
+<translation id="1841616161104323629">デバイスレコードがありません。</translation>
 <translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1862077610023398675">コントロールを非表示</translation>
 <translation id="1862380676329487333">更新してログアウト</translation>
@@ -380,6 +385,7 @@
 <translation id="2152796271648108398">現在の天気</translation>
 <translation id="2152895518047545149">未提出のものはないようです。よくできました！</translation>
 <translation id="2159568970844941445">「ファイル」に画像はありません</translation>
+<translation id="2160985496866145279">Bruschetta をシャットダウン</translation>
 <translation id="2161132820593978283">ビデオ通話で画面の中央にくるように、カメラのフレーミングをお試しください。クイック設定でオンにできます。</translation>
 <translation id="216955976692983107">タイル表示のウィンドウを右方向にサイズ変更</translation>
 <translation id="2185166372312820725">前のタブに移動する</translation>
@@ -399,6 +405,7 @@
 <translation id="2248634276911611268">新しいタブでリンクを開いて、新しいタブに切り替える</translation>
 <translation id="2251809247798634662">新しいシークレット ウィンドウ</translation>
 <translation id="2253808149208613283">このデバイスをカスタマイズするには、アプリをインストールしてください</translation>
+<translation id="2255077166240162850">このデバイスは別のドメインまたはモードにロックされています。</translation>
 <translation id="225614027745146050">ようこそ</translation>
 <translation id="225680501294068881">デバイスをスキャンしています...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> のダウンロード中にエラーが発生しました</translation>
@@ -481,6 +488,7 @@
 <translation id="2453860139492968684">終了</translation>
 <translation id="2455994958736234930">アドレスバーに「www.」と「.com」を追加してからウェブサイトを開く</translation>
 <translation id="2456008742792828469">カレンダー、<ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2458591546854598341">デバイス管理トークンが無効です。</translation>
 <translation id="246052086404491029">ドリルダウン</translation>
 <translation id="2465145153332031561">バッテリー ヘルス <ph name="BATTERY_HEALTH_PERCENTAGE" />%、サイクル数 <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">解像度の確定</translation>
@@ -556,6 +564,7 @@
 <translation id="2672142220933875349">不正な crx ファイルです。解凍できませんでした。</translation>
 <translation id="2673968385134502798">ゲーム</translation>
 <translation id="2678852583403169292">選択して読み上げメニュー</translation>
+<translation id="2682498795777673382">保護者の方による更新</translation>
 <translation id="2683887737780133806">先週の <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">キーボード ショートカットが変更されました</translation>
 <translation id="2689613560355655046">デスク 8</translation>
@@ -603,6 +612,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2805760958323556153">ExtensionInstallForcelist ポリシーの値が無効です。管理者にお問い合わせください。</translation>
+<translation id="281390819046738856">リクエストに署名できませんでした。</translation>
 <translation id="2814448776515246190">画面の一部のキャプチャ</translation>
 <translation id="2815594810045873507">ワット（W）数の大きい充電器を使用するか、付属の充電器を使用してください。</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
@@ -636,6 +646,7 @@
 <translation id="2880541185262491188">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> ほど待ってから、もう一度お試しください</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> の再起動とリセットを行います</translation>
 <translation id="2883271196820422439">マウスキーを再開</translation>
+<translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2885950158625301909">詳細</translation>
 <translation id="2891209721153296020">「選択解除」</translation>
 <translation id="2893701697603065178">管理対象の開発環境</translation>
@@ -684,6 +695,7 @@
 <translation id="3026897869154397692">カレンダーに追加しました</translation>
 <translation id="3033545621352269033">オン</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> に移動</translation>
+<translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="3039939407102840004">タッチペンのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="304097922505898963">キー ショートカット アプリを開く</translation>
 <translation id="3040982432432547149">Chromebook の Steam の改善にご協力ください</translation>
@@ -755,11 +767,13 @@
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3233611303007751344">バッテリー セーバーがオフになりました</translation>
 <translation id="3238409143297336341">保護者による使用制限をアプリに設定</translation>
+<translation id="3239373508713281971"><ph name="APP_NAME" /> の使用時間制限が削除されました</translation>
 <translation id="324366796737464147">ノイズ キャンセリング</translation>
 <translation id="3249513730522716925">ウィンドウ <ph name="WINDOW_TITLE" /> がデスク <ph name="ACTIVE_DESK" /> からデスク <ph name="TARGET_DESK" /> に移動されました</translation>
 <translation id="3253743281242075461">授業の種類: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">シェルフのアイテムのハイライト表示を解除する</translation>
 <translation id="3256274561709196882">PIN を変更してください</translation>
+<translation id="3259723213051400722">もう一度お試しください。</translation>
 <translation id="3260969790895726815">音声はローカルで処理されました。オフラインで音声入力を使用できますが、一部の音声コマンドは動作しません。</translation>
 <translation id="3264031581203585083">Google ドライブの提案をすべて非表示にする</translation>
 <translation id="3265032511221679826">正確な位置情報へのアクセスをオンにしますか？</translation>
@@ -813,6 +827,7 @@
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> との接続を解除します</translation>
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
 <translation id="3431517721463707585">デスク 14</translation>
+<translation id="3433507769937235446">離席時ロック</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435967511775410570">指紋を認識しました</translation>
 <translation id="3437677362970530951">Google Play ストアとその他のゲーム プラットフォームのゲーム</translation>
@@ -861,6 +876,7 @@
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> を固定しました</translation>
 <translation id="3554928024630051016">他の USB デバイスを追加するには、1 つ取り外してから新しいデバイスを接続してください</translation>
 <translation id="3558768885091059911">カメラとマイクへのアクセスをオンにしますか？</translation>
+<translation id="3559262020195162408">ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="3560174576767922131">動画を撮影</translation>
 <translation id="3562423906127931518">この処理には数分かかることがあります。Linux コンテナを設定します。</translation>
 <translation id="3563432852173030730">キオスク アプリケーションをダウンロードできませんでした。</translation>
@@ -934,6 +950,7 @@
 <translation id="3712143870407382523">こちら側のウィンドウを選択</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
+<translation id="3714195043138862580">このデモデバイスはプロビジョニングを解除されている状態です。</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> インストーラ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />、<ph name="UNAVAILABLE_APPS_COUNT" /> はこのデバイスにありません。</translation>
 <translation id="3727231512028252576">アイテムを読み込めませんでした。オンラインになったらもう一度お試しください。</translation>
@@ -950,6 +967,7 @@
         <ph name="BEGIN_PARAGRAPH3" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> でもこの <ph name="DEVICE_TYPE" /> のロックを解除できるようになりました。</translation>
 <translation id="3756485814916578707">画面をキャストしています</translation>
+<translation id="3765246971671567135">オフライン デモモード ポリシーを読み取ることができませんでした。</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> のショートカットが、<ph name="OLD_SHORTCUT" /> から <ph name="NEW_SHORTCUT" /> に変更されました</translation>
 <translation id="3765841986579723851">今日編集したファイル</translation>
 <translation id="3772109172035555611">TrackPoint のカスタマイズ</translation>
@@ -967,6 +985,7 @@
 <translation id="3804737937830804242">カメラをたたむ</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 個の絵文字が見つかりました。他に一致する結果はありません。}other{# 個の絵文字が見つかりました。他に一致する結果はありません。}}</translation>
 <translation id="381202950560906753">別の指紋を登録</translation>
+<translation id="3819261658055281761">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
 <translation id="3822403841174077928">書式設定付きでコピーできませんでした</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
@@ -986,6 +1005,7 @@
 <translation id="3861638017150647085">ユーザー名「<ph name="USERNAME" />」は使用できません</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
 <translation id="3870197372373144624">デバイスをシャットダウンしてみてください。</translation>
+<translation id="3873915545594852654">ARC++ で問題が発生しました。</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3884007280698606545">USB の上限に達しました</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
@@ -1039,6 +1059,7 @@
 <translation id="4026843240379844265">アクティブなウィンドウをディスプレイ間で移動する</translation>
 <translation id="4028481283645788203">セキュリティ強化のためパスワードが必要です</translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" />+左矢印</translation>
+<translation id="4036778507053569103">サーバーからダウンロードされたポリシーが無効です。</translation>
 <translation id="4039699481424758547">ウィンドウ「<ph name="WINDOW_TITLE" />」のスクリーンショットを撮影するには Enter キーを押してください</translation>
 <translation id="4042660782729322247">画面を共有しています</translation>
 <translation id="404437169852192935">更新は終了しました</translation>
@@ -1054,6 +1075,7 @@
 <translation id="4072805772816336153">しばらくしてからもう一度お試しください</translation>
 <translation id="4077623680826964850">VM の起動時または VM への再接続時にタイムアウトしました。</translation>
 <translation id="4086921558679520050">デバイスの物理的なマイクスイッチをオンにする</translation>
+<translation id="4099874310852108874">ネットワークエラーが発生しました。</translation>
 <translation id="4101772068965291327">ホームページを開く</translation>
 <translation id="4102906002417106771">再起動して Powerwash を実行</translation>
 <translation id="4112140312785995938">後方に移動</translation>
@@ -1061,6 +1083,7 @@
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="4116704186509653070">もう一度開く</translation>
+<translation id="4118579674665737931">デバイスを再起動してもう一度お試しください。</translation>
 <translation id="411881149140864134">左側のデスクを有効にする</translation>
 <translation id="4119928251231465047">PIN の試行回数が上限を超えました</translation>
 <translation id="412298498316631026">ウィンドウ</translation>
@@ -1071,6 +1094,7 @@
 <translation id="4136724716305260864">日の出までオン</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+右矢印</translation>
 <translation id="4146671046252289537">次の単語の末尾に移動</translation>
+<translation id="4147911968024186208">もう一度お試しください。このエラーが再び表示される場合は、サポート担当者にお問い合わせください。</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4151054805501931758">ポートレート レタッチ</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
@@ -1193,6 +1217,7 @@
 <translation id="445765352722456792">提案をカスタマイズ</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
 <translation id="445923051607553918">Wi-Fi ネットワークへの接続</translation>
+<translation id="4465236939126352372"><ph name="APP_NAME" /> の使用時間制限が <ph name="TIME" /> に設定されました</translation>
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
 <translation id="4472575034687746823">始める</translation>
@@ -1212,6 +1237,7 @@
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4518096944902121253">この言語に対するその他の操作はありません</translation>
 <translation id="4518404433291145981">Chromebook のロックを解除するには、先にスマートフォンのロックを解除します</translation>
+<translation id="4524832533047962394">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることをご確認ください。</translation>
 <translation id="4525887279712865285">Quick Share の設定を表示</translation>
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
 <translation id="4531536770443562276">全画面表示のみ</translation>
@@ -1252,6 +1278,7 @@
 <translation id="4613144866899789710">Linux のインストールをキャンセルしています...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> を接続しました</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
+<translation id="4623189117674524348">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="4628757576491864469">デバイス</translation>
 <translation id="4628762811416793313">Linux コンテナの設定を完了できませんでした。もう一度お試しください。</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />、評価 <ph name="RATING_SCORE" /></translation>
@@ -1259,14 +1286,17 @@
 <translation id="4633757335284074492">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="4635501805800894201">{0,plural, =0{今すぐデバイスを以前のバージョンに更新してください}=1{1 秒以内にデバイスを以前のバージョンに更新してください}other{# 秒以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
+<translation id="4643833688073835173">Chromebook では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。</translation>
 <translation id="4644727592819780893">領域が小さすぎてカメラに合いません</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />、おすすめのアプリ</translation>
 <translation id="4649019912155580914">最終編集</translation>
+<translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> チェックボックスはオンです。</translation>
 <translation id="465686131535918331"><ph name="PERIPHERAL_NAME" /> の設定をカスタマイズできます</translation>
 <translation id="4657775630156561295">次の候補はアカウントの候補履歴から完全に削除されます。
 
 <ph name="QUERY" /></translation>
+<translation id="4658285806588491142">画面を非公開のままにする</translation>
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> をダウンロードしています</translation>
@@ -1289,6 +1319,7 @@
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4734965478015604180">横</translation>
+<translation id="4735803855089279419">このデバイスのデバイス識別子を特定できませんでした。</translation>
 <translation id="4735944890391795473">デスク 12</translation>
 <translation id="4736732123074402682">接続を確認してから、もう一度お試しください。</translation>
 <translation id="473775607612524610">更新</translation>
@@ -1308,6 +1339,7 @@
 <translation id="4778095205580009397">Google アシスタントは、デモセッションではご利用いただけません。</translation>
 <translation id="4781633367688946589">新しいセッションに進む</translation>
 <translation id="4785412405516449976">Google アカウントを利用している連絡先のみ</translation>
+<translation id="4788092183367008521">ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="4789348252524569426">音声ファイルをインストールできません。デバイスを更新する必要があります。デバイスを再起動してもう一度お試しください。</translation>
 <translation id="478959186716341421">キャスト中</translation>
 <translation id="4798403412327076414">次回ログインしたときに、以前開いていたウィンドウとアプリが表示されます</translation>
@@ -1432,6 +1464,7 @@
 <translation id="5137349216872139332">インスタント アクセス ポイントに接続できませんでした</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />、<ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 検索</translation>
 <translation id="5144005092084035179">オーディオ入力を切り替えますか？</translation>
+<translation id="5145464978649806571">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を無効にしている場合、デバイスはロックされずにスリープ状態になります。</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
@@ -1451,6 +1484,7 @@
 <translation id="5198039720391525849">おすすめの GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> で <ph name="IN_PLACE_APP" /> を使用して新しいフォルダが作成されました。</translation>
+<translation id="5204673965307125349">デバイスで Powerwash を実行してもう一度お試しください。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />、<ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />、<ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{他 1 件の通知}other{他 # 件の通知}}</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
@@ -1503,6 +1537,7 @@
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5323994101633366939">デスク名を非表示</translation>
 <translation id="5327248766486351172">名前</translation>
+<translation id="5327570636534774768">このデバイスは別のドメインの管理対象として指定されています。デモモードを設定する前にそのドメインのプロビジョニングを解除してください。</translation>
 <translation id="532943162177641444">「<ph name="PHONE_NAME" />」で通知をタップして、このデバイスで使用できるモバイル アクセス ポイントを設定してください。</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
@@ -1578,6 +1613,7 @@
 <translation id="5570122939431135380">新しいシークレット ウィンドウで新しいタブを開く</translation>
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="5572632238877308040">必須アプリ</translation>
+<translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
 <translation id="557563299383177668">次の段落</translation>
 <translation id="5577082622442191756">Bluetooth を切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">スマートフォン ハブを使用するには、スマートフォンで Bluetooth が有効になっていることを確認してください</translation>
@@ -1628,6 +1664,7 @@
 <translation id="5693255400847650006">マイクを使用中</translation>
 <translation id="5699366815052349604">すべてのデスクにアクティブなウィンドウを割り当てる</translation>
 <translation id="570043786759263127">Google Play のアプリとサービス</translation>
+<translation id="5701080607174488915">サーバーからポリシーを取得するときにエラーが発生しました。</translation>
 <translation id="570390244361237317">すべてのアプリ、矢印キーで操作して、すべてのアプリにアクセスできます</translation>
 <translation id="5705197514573687092">フォーカス モード設定を表示します。タイマーを <ph name="FOCUS_DURATION" /> に設定しました。</translation>
 <translation id="5707775774148071965">ケーブルの対応データレートがデバイスより低くなっています。デバイスのパフォーマンスが制限される可能性があります。</translation>
@@ -1687,6 +1724,7 @@
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5864691701242730005">Quick Share の設定を表示します。「<ph name="VISIBILITY" />」の公開設定が選択済み</translation>
 <translation id="5864748620896638071">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5865508026715185451"><ph name="APP_NAME" /> はまもなく一時的に利用できなくなります</translation>
 <translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
 <translation id="5867606971598166637">システム管理者が画面をモニタリングしています</translation>
 <translation id="5876666360658629066">保護者用コードを入力してください</translation>
@@ -1714,6 +1752,7 @@
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
 <translation id="5955304353782037793">アプリ</translation>
+<translation id="5955809630138889698">このデバイスの使用はオンライン デモモードのみに限定されている可能性があります。詳しくはサポート担当者にお問い合わせください。</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="596035801491797438">フェイスナビをオフにする</translation>
@@ -1766,6 +1805,7 @@
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
 <translation id="6064463340679478396">このファイルはもう使用しない</translation>
 <translation id="6068258534237496331">ビデオ通話コントロール</translation>
+<translation id="6071576563962215370">デバイスの installation-time 属性のロックを確立できませんでした。</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6074087755403037157">Beta チャンネル</translation>
 <translation id="6075098173600599596">小文字と大文字を変更</translation>
@@ -1807,6 +1847,7 @@
 <translation id="6185696379715117369">ページ内を上に移動</translation>
 <translation id="619335566042889110">今すぐ完全に充電</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6195693561221576702">このデバイスはオフライン デモモードで設定できません。</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6199775032047436064">現在のページを再読み込みする</translation>
 <translation id="6200515304866777730">アプリが対応していません</translation>
@@ -1978,6 +2019,7 @@
 <translation id="666343722268997814">ハイライト表示されたアイテムで右クリックメニューを開く</translation>
 <translation id="6665545700722362599">ウェブサイト、アプリ、拡張機能に対して、位置情報サービスまたはデバイスのマイクやカメラなどの機能の使用を許可する</translation>
 <translation id="6667908387435388584">スマートフォンのアクセス ポイントに接続することや、スマートフォンをサイレント モードに切り替える、探すなどのほか、スマートフォンで最近使った Chrome タブを表示することができます</translation>
+<translation id="6670142487971298264">「<ph name="APP_NAME" />」を利用できます</translation>
 <translation id="6670153871843998651">デスク 3</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
 <translation id="6671661918848783005">Chromebook のロックを解除できません</translation>
@@ -2168,6 +2210,7 @@
 <translation id="7285232777292757180">クイック設定でスクリーン キャプチャ ツールを使用してスクリーンショットを撮る</translation>
 <translation id="7301826272005790482">ウィンドウの提案を閉じる</translation>
 <translation id="7302889331339392448">自動字幕起こしはオフになっています。</translation>
+<translation id="7303281435234579599">デモモードの設定中にエラーが発生しました。</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
@@ -2179,6 +2222,7 @@
 <translation id="7331646370422660166">Alt+下矢印</translation>
 <translation id="7336943714413713812">閲覧履歴を検索</translation>
 <translation id="7337660433630200387">10 分延長</translation>
+<translation id="7338630283264858612">デバイスのシリアル番号が無効です。</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7340731148882810149">自動クリックのメニュー</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -2273,6 +2317,7 @@
 <translation id="7569886975397378678">スマートフォンの通知とアプリの表示の設定を行わない</translation>
 <translation id="7571361473021531288">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 残り使用時間 <ph name="TIME" /></translation>
 <translation id="7573585051776738856">アクティブなウィンドウを右側に固定しました。</translation>
+<translation id="7576976045740938453">デモモード アカウントで問題が発生しました。</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7588317312481506627">クリップボードにコピーしました。</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
@@ -2290,6 +2335,7 @@
 <translation id="761530003705945209">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="761736749114493194">カメラのフレーミングを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Quick Share の設定</translation>
+<translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" /> 度</translation>
 <translation id="7627303771480696593">質問する</translation>
 <translation id="7629858978065675960">不明な結果。</translation>
@@ -2310,6 +2356,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659861092419699379">デスクとウィンドウを閉じました</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> は、<ph name="EMAIL" /> と関連付けられているデバイスに表示されます</translation>
+<translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>
 <translation id="7661694115779363471">選択した左下のハンドル、矢印キーを使用して移動します</translation>
 <translation id="7662283695561029522">設定するにはタップします</translation>
 <translation id="7670953955701272011">この日を Google カレンダーで開きます</translation>
@@ -2331,6 +2378,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7723703419796509666">デベロッパー ツール コンソールの表示と非表示を切り替える</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7724711098786238351">デモモードは 18 歳以上のユーザーを対象としており、Google の利用規約とプライバシー ポリシーが適用されます。このデバイスに入力されたデータは、定期的なワイプが実行されるまでの間に、他のユーザーに閲覧される可能性があります。</translation>
 <translation id="7725108879223146004">アクセス ポイントの詳細を表示します。アクセス ポイントはオフです。</translation>
 <translation id="7726391492136714301">スマートフォンの通知とアプリを表示します</translation>
 <translation id="7727952505535211425">新しいタブのアドレスバーでウェブサイトを開く</translation>
@@ -2347,6 +2395,7 @@
 <translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
 <translation id="7773536009433685931">代わりに Wi-Fi をオンにする</translation>
 <translation id="77747521138552256">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> 待ってから PIN をもう一度お試しください。パスワードを入力すれば、すぐにログインできます。</translation>
+<translation id="7774792847912242537">リクエストが多すぎます。</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7781335840981796660">すべてのユーザー アカウントとローカル データは削除されます。</translation>
@@ -2362,6 +2411,7 @@
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
 <translation id="7825412704590278437">カレンダーの今後の予定から</translation>
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
+<translation id="7826254698725248775">競合するデバイス識別子です。</translation>
 <translation id="7829386189513694949">電波: 強い</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" /> のボタン操作やカーソルの速度などをカスタマイズできます</translation>
 <translation id="7842569679327885685">警告: 試験運用版の機能</translation>
@@ -2557,6 +2607,7 @@
 <translation id="8382715499079447151">表示保護機能</translation>
 <translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="838540623579162843">Music Premium に登録</translation>
+<translation id="8386091599636877289">ポリシーが見つかりません。</translation>
 <translation id="8388750414311082622">最後のデスクは削除できません。</translation>
 <translation id="8390392581097975659">スキャナ ソフトウェアをインストールしています</translation>
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
@@ -2651,6 +2702,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">部分的なスクリーンショットを撮影するには Enter キーを押してください</translation>
 <translation id="8665180165765946056">バックアップが完了しました</translation>
+<translation id="867085395664725367">一時的なサーバーエラーが発生しました。</translation>
 <translation id="8673530374848624865">管理者がデバイスのセキュリティ要件を更新しました</translation>
 <translation id="8676770494376880701">低電力の充電器に接続されています</translation>
 <translation id="8679158879996532670">フォーカス モード設定を表示します。フォーカス モードはオンになっています。残り時間は <ph name="REMAINING_TIME" /> です。</translation>
@@ -2666,6 +2718,7 @@
 <translation id="8714138378966541668">プロバイダによってロックされています</translation>
 <translation id="8716931980467311658">[Linux ファイル] フォルダのすべての Linux アプリケーションとデータをこの <ph name="DEVICE_TYPE" /> から削除しますか？</translation>
 <translation id="8717459106217102612">前の単語または文字を選択する</translation>
+<translation id="8720816553731218127">installation-time 属性の初期化がタイムアウトしました。</translation>
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全画面キャプチャ</translation>
 <translation id="8724405322205516354">このアイコンが表示されているときは、本人確認や購入の承認に指紋認証を使用します。</translation>
@@ -2681,6 +2734,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: 有効にしています...</translation>
 <translation id="8742395827132970586">インストールに失敗したため、クリーンアップしています</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />、<ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749865622265861882">デモデバイスを使用しています</translation>
 <translation id="8751299148074971734">その調子で頑張りましょう。</translation>
 <translation id="8753368202781196133">この言語は現在サポートされていません。</translation>
 <translation id="8755498163081687682">本人確認: <ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>

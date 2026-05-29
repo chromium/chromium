@@ -349,7 +349,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1549470594296187301">A funkció használatához engedélyezni kell a JavaScriptet.</translation>
 <translation id="1553152622374372421">Téli sportok</translation>
 <translation id="1553358976309200471">A Chrome böngésző frissítése</translation>
-<translation id="1555014818414775661">Képek hozzáadása</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1555191101192706055">A felkeresni kívánt webhelyen tartózkodó támadók megpróbálhatják rávenni Önt olyan kártékony szoftver telepítésére, amely befolyásolja a böngészés módját – például módosítja a kezdőlapot, vagy további hirdetéseket jelenít meg a felkeresett webhelyeken.</translation>
 <translation id="1559231233244409191">Karton (triplafalú)</translation>
@@ -523,6 +522,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1810866804106729802">Mentett kártyával gyorsabban fizethet. A kártyaadatok az eszközére telepített Chrome-ba lesznek mentve.</translation>
 <translation id="1812527064848182527">fekvő</translation>
 <translation id="1812975699435941848">Egészségügyi oktatás és orvosképzés</translation>
+<translation id="18139523105317219">EDI fél neve</translation>
 <translation id="1816436748874040213">Engedélyt kérhet a megosztott lapok görgetésére és nagyítására</translation>
 <translation id="1816707915923025275">Írja be a @history kifejezést a böngészési előzmények közötti kereséshez</translation>
 <translation id="1817364650920811003">Szerep: Chrome-tipp. Kisegítő lehetőségek címkéje: <ph name="CHROME_TIP" /></translation>
@@ -586,6 +586,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="192095259937375524">Lap megosztása gomb. A gombot megnyomva megoszthatja ezt a lapot link megosztása, QR-kód létrehozása, átküldés és egyebek révén.</translation>
 <translation id="1924727005275031552">Új</translation>
 <translation id="1927439846988093361">Hajápolás</translation>
+<translation id="1932098463447129402">Ez előtt nem:</translation>
 <translation id="1935353813610900265">Visszajelzés küldése az előzmények közötti, AI-alapú kereséséről</translation>
 <translation id="1935995810530254458">Másolás mindenképpen</translation>
 <translation id="1938580037092872316">Új információ hozzáadása a mentett címhez</translation>
@@ -613,6 +614,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1962204205936693436">A(z) <ph name="DOMAIN" /> könyvjelzői</translation>
 <translation id="1973335181906896915">Szerializálási hiba</translation>
 <translation id="1973785048533660168">Irodai és adminisztrációs állások</translation>
+<translation id="1974043046396539880">Tanúsítvány-visszavonási lista (CRL) terjesztési pontjai</translation>
 <translation id="1974060860693918893">Speciális</translation>
 <translation id="1975457531113383421">Bemeneti tálca</translation>
 <translation id="1975584088563498795">10. postaláda</translation>
@@ -834,6 +836,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2296244067976588032">Azonosítókulcs • iCloud Kulcskarika</translation>
 <translation id="2296331629987861142">Fizetés egyszerű részletfizetéssel (jogosultságtól függően, díjköteles)</translation>
 <translation id="2300306941146563769">Nincs feltöltve</translation>
+<translation id="2301064673700597535">Minősített tanúsítványokról szóló nyilatkozatok</translation>
 <translation id="2301098101308036335">Mely webhelyek lettek felkeresve, és mikor.</translation>
 <translation id="2302571905116831849">Hűségkártya automatikus kitöltése</translation>
 <translation id="230286397113210245">Inkognitó ablak megnyitása gomb. A gombot megnyomva új inkognitó ablakot nyithat meg, amelyben privát módon böngészhet.</translation>
@@ -941,6 +944,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2459882793359532780">Alkalmazott böngészőházirendek (számítógépre és profilra vonatkozó házirendek)</translation>
 <translation id="2461385121573678775">A Chrome Enterprise Core egy központi eszközt biztosít a böngészőházirendek felhőből történő konfigurálásához</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
+<translation id="2462724976360937186">Tanúsítványkibocsátó kulcsazonosítója</translation>
 <translation id="2462932596748424101">Közösségi hálózatok</translation>
 <translation id="2465688316154986572">Kapocs</translation>
 <translation id="2465914000209955735">Kezelheti a Chrome-ban letöltött fájlokat.</translation>
@@ -1036,6 +1040,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2602283642570832995">Ez a művelet sértheti a(z) <ph name="DOMAIN" /> irányelveit</translation>
 <translation id="2605979593348332811">Név fonetikusan</translation>
 <translation id="2606760465469169465">Automatikus igazolás</translation>
+<translation id="2607101320794533334">Nyilvános kulcs adatai</translation>
 <translation id="2608019759319359258">Amikor egy adott téma le van tiltva, akkor a rendszer nem használja fel a hirdetések személyre szabására</translation>
 <translation id="2610561535971892504">Kattintson a másoláshoz</translation>
 <translation id="2612676031748830579">Kártyaszám</translation>
@@ -1055,6 +1060,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2631059741268498165">Az adminisztrátor megtalálta ezt az eszközt, miközben le volt tiltva. Az eszköz ismét engedélyezve lett, és használatra kész.</translation>
 <translation id="2631387782019878060">Ellenőrző kód: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">A(z) <ph name="HOST_NAME" /> szerver IP-címe nem található.</translation>
+<translation id="2635276683026132559">Aláírás</translation>
 <translation id="2638567100095052009">Írja be a @ jelet a következőkön való kereséshez: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Állapot:</translation>
 <translation id="2644219706149911059">Feltöltés a Google Drive-ra…</translation>
@@ -1124,6 +1130,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2731382536835015353">44 × 68 hüvelyk</translation>
 <translation id="2734797989819862638">Nem másolom át</translation>
 <translation id="273785062888389088">Légkondicionálás és klímák</translation>
+<translation id="2738771556149464852">Ezután nem:</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Otthonautomatizálás</translation>
 <translation id="2743512410823092182">Források és felszerelések DJ-k számára</translation>
@@ -1168,6 +1175,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2839501879576190149">Hamis webhely megnyitására készül</translation>
 <translation id="2840680829170913626">A fizetési oldal tartalmát megosztjuk a Google-lal, hogy felkínálhassuk ezeket a lehetőségeket. A fizetési konstrukciók a jogosultságtól függnek. Ha el szeretné rejteni a későbbi fizetési lehetőségeket az automatikus kitöltésnél, lépjen ide: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Görgeti és nagyítja a megosztott lapot?</translation>
+<translation id="2849936225196189499">Fontos</translation>
 <translation id="2851291081585704741">Offline állapotban van</translation>
 <translation id="2854163610915391726">Kezelheti, hogy milyen Chrome-adatokat mentsen a rendszer az Ön Google-fiókjába</translation>
 <translation id="2858134430383535011">200 × 300 mm</translation>
@@ -1299,6 +1307,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="305162504811187366">A Chrome távoliasztal-szolgáltatás előzményei, beleértve az időbélyegeket, a gazdagépeket és az ügyfelek munkamenet-azonosítóit is</translation>
 <translation id="3052868890529250114">Ön általában biztonságosan csatlakozik a webhelyekhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3053013834507634016">Tanúsítványkulcs felhasználása</translation>
 <translation id="3056660797732519147">A Késleltetett fizetés hibajelző képernyője. A billentyűzet el van rejtve.</translation>
 <translation id="3057844102210575426">Utazási információk kezelése</translation>
 <translation id="3061707000357573562">Javítókészlet szolgáltatás</translation>
@@ -1309,6 +1318,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3068118691172921711">A fájlok feltöltése a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba 1 perc múlva kezdődik</translation>
 <translation id="3076865167425975822">Operációs rendszer</translation>
 <translation id="3080254622891793721">Grafika</translation>
+<translation id="308268297242056490">URI</translation>
 <translation id="3085373848068196154">A(z) „<ph name="PROXY_INVALID_PROXY" />” nem érvényes proxy.</translation>
 <translation id="3086269988715347183">Ön korábban nem hagyta jóvá a következőt: <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Megfigyelik az Ön interneten végzett tevékenységeit</translation>
@@ -1438,7 +1448,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új esemény gyors létrehozásához a Google Naptár szolgáltatással</translation>
 <translation id="3261488570342242926">További információ a virtuális kártyákról</translation>
 <translation id="3262698603497362968">Vásárlási lehetőségek</translation>
-<translation id="3264315627780269177">Ez a lap nem osztható meg</translation>
 <translation id="3264637689694266148">Ha kikapcsolja a javaslatokat, a lapok oldalcímeit és URL-jeit továbbra is feldolgozhatja a rendszer más Chrome-funkciókhoz. A böngészőnek az adatokhoz való hozzáférését</translation>
 <translation id="3266793032086590337">Érték (ütközés)</translation>
 <translation id="3268451620468152448">Megnyitott lapok</translation>
@@ -1568,6 +1577,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3486406746948052912">Izzadásgátlók és dezodorok</translation>
 <translation id="3487845404393360112">4. tálca</translation>
 <translation id="3493660662684070951">Teherautók, furgonok és szabadidő-autók</translation>
+<translation id="3493881266323043047">Érvényesség</translation>
 <translation id="3495081129428749620">Keresés a következő oldalon:
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Fizetés</translation>
@@ -1776,6 +1786,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3792826587784915501">Kult- és független filmek</translation>
 <translation id="3793574014653384240">A nemrégiben előfordult összeomlások száma és kiváltó okai</translation>
 <translation id="3795624560191557077">Nemrég módosított egy olyan jelszót, amely egy nyilvános adatvédelmi incidensben volt érintett. Probléma esetén a Google Jelszókezelő segíthet a bejelentkezésben.</translation>
+<translation id="3798449238516105146">Verzió</translation>
 <translation id="3799805948399000906">Kért betűtípus</translation>
 <translation id="3800436529451849929">A(z) <ph name="SITE" /> webhelyről</translation>
 <translation id="3801297763951514916">Ön által gyakran felkeresett</translation>
@@ -1847,6 +1858,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3906954721959377182">Táblagép</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">További információ a beágyazott tartalmakról</translation>
+<translation id="3920504717067627103">Tanúsítvány-irányelvek</translation>
 <translation id="3921869355029467742">Adja meg a biztonsági kódot</translation>
 <translation id="3927538228901078312">Nincsenek összehasonlító táblázatok</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -1854,6 +1866,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3928806096717999469">Szerkesztés, új ablakban nyílik meg</translation>
 <translation id="3930260846839546333">Kézitáskák és pénztárcák</translation>
 <translation id="393417216277380082">Mozgás- és fényérzékelők</translation>
+<translation id="3937640725563832867">Tanúsítványkibocsátó egyéb neve</translation>
 <translation id="3937834511546249636">Védelmi ipar</translation>
 <translation id="3939773374150895049">A WebAuthn szolgáltatást szeretné használni a CVC helyett?</translation>
 <translation id="3941630233824954464">Kötelező újbóli hitelesítés engedélyezése</translation>
@@ -2628,6 +2641,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5148809049217731050">Felfelé fordítva</translation>
 <translation id="5148889558173091794">Szervezete letiltotta a(z) <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> webhelyet, mert irányelvet sért. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
+<translation id="5154702632169343078">Tárgy</translation>
 <translation id="5157504274688344097">Kereskedőláncok és áruházak</translation>
 <translation id="5158275234811857234">Borító</translation>
 <translation id="5159010409087891077">Oldal megnyitása új inkognitó ablakban (⇧⌘N)</translation>
@@ -3046,6 +3060,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5813119285467412249">&amp;Hozzáadás újra</translation>
 <translation id="5813274153495000141">Mentheti adatait, és gyorsabban tölthet ki űrlapokat. A rendszer az eszközére menti őket.</translation>
 <translation id="5813753398265398978">Fizika</translation>
+<translation id="5815645614496570556">X.400 cím</translation>
 <translation id="5817918615728894473">Párosítás</translation>
 <translation id="5820625124144807242">A megrendelés ellenőrzését követően be kell jelentkeznie <ph name="BNPL_ISSUER_NAME" />-fiókjába, vagy létre kell hoznia egy újat. Ezt a fiókot automatikusan összekapcsoljuk a Google Pay szolgáltatással.</translation>
 <translation id="5820751560028604030">Helyi letöltés letiltva</translation>
@@ -3173,7 +3188,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Nem sikerült menteni a videót a OneDrive-ra</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (szinkronizálva)</translation>
-<translation id="6025471531651464742">Fájlok hozzáadása</translation>
 <translation id="6028591542479806248">Mobilos és e-mailes értesítések kezelése</translation>
 <translation id="6028833024483927901">Világkonyha</translation>
 <translation id="603068602130820122">Két kapocs a jobb oldalon</translation>
@@ -3225,6 +3239,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6093795393556121384">Kártyáját ellenőriztük</translation>
 <translation id="6094253940069566294">Jármű szerkesztése</translation>
 <translation id="6094290315941448991">Rendszergazdai házirend tiltja felvétel készítését a képernyőről, ha bizalmas tartalom látható rajta.</translation>
+<translation id="6096326118418049043">X.500 név</translation>
 <translation id="6097297436119286254">A fizetési adatok kitöltéséhez igazolja személyazonosságát</translation>
 <translation id="6099269767116481177">22 × 29,5 hüvelyk</translation>
 <translation id="6101583188322746099">Élelmiszer-házhozszállítás</translation>
@@ -3334,6 +3349,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="625463612687472648">Engedélyezés leállítása</translation>
 <translation id="6259156558325130047">&amp;Átrendezés újra</translation>
 <translation id="6259282549512536479">Ön korábban letiltotta a következőt: <ph name="BLOCKED_URL" /></translation>
+<translation id="6263284346895336537">Nem fontos</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> könyvjelzők</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6264485186158353794">Vissza a biztonsághoz</translation>
@@ -3464,7 +3480,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6443406338865242315">Ön milyen bővítményeket és beépülő modulokat telepített.</translation>
 <translation id="6444329331928531170">Nyugdíjba vonulás és nyugdíj</translation>
 <translation id="6445051938772793705">Ország</translation>
-<translation id="6446256167362544629">AI oldalsó panel</translation>
 <translation id="6446608382365791566">További adatok hozzáadása</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6448371595882710519">További információ az adatszabályozókról</translation>
@@ -3552,10 +3567,10 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
 <translation id="6595495738567740002">Ha törölni szeretné a Google cookie-jait erről az eszközről, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="6596573334527383067">Tegnapi találatok megjelenítése</translation>
+<translation id="6596816719288285829">IP-cím</translation>
 <translation id="6597665340361269064">90 fok</translation>
 <translation id="6598976221101665070">Filmdrámák</translation>
 <translation id="6599642189720630047">Nyomon követett termékek</translation>
-<translation id="6608426252530537984">Legfeljebb 10 lapot adhat hozzá</translation>
 <translation id="6613742613135780554">kézmozgás követése</translation>
 <translation id="6613866251791999074">További információ a Chrome-ban használt keresőmotorról</translation>
 <translation id="6615297766614333076">2. kötegelő</translation>
@@ -3800,6 +3815,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6978236010531171013">Megosztás mindenképp</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Némítás (alapértelmezett)</translation>
+<translation id="6983783921975806247">Regisztrált OID</translation>
 <translation id="6987806006823772670">Boríték (bevonatolt)</translation>
 <translation id="6989256887001961296">Ez a tartalom le van tiltva.</translation>
 <translation id="6989763994942163495">Speciális beállítások megjelenítése...</translation>
@@ -3945,6 +3961,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="7219179957768738017">A kapcsolat a következőt használja: <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Feldolgozás alatt</translation>
 <translation id="7221855153210829124">Értesítéseket megjeleníteni</translation>
+<translation id="7222232353993864120">E-mail-cím</translation>
 <translation id="722454870747268814">Új inkognitó lap</translation>
 <translation id="7225676267118764980">Az automatikus kitöltés szolgáltatójának és egyéb beállítások módosítása</translation>
 <translation id="7226892411756387078">Egyszerű szöveg</translation>
@@ -4118,6 +4135,7 @@ További részletek:
 <translation id="7473891865547856676">Nem, köszönöm</translation>
 <translation id="7475618719385705713">Ez az oldal le van tiltva</translation>
 <translation id="7481312909269577407">Előre</translation>
+<translation id="748138892655239008">Tanúsítvány alapvető típusmegkötései</translation>
 <translation id="7481603210197454575">Olasz boríték</translation>
 <translation id="7482823403440483089">Továbbfejlesztett automatikus kitöltés</translation>
 <translation id="7483482939016730822">Iskolai eszközök és osztálytermi felszerelés</translation>
@@ -4360,6 +4378,7 @@ További részletek:
 <translation id="7827688884439021871">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával</translation>
 <translation id="782886543891417279">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a bejelentkezést a bejelentkezési oldalán.</translation>
 <translation id="7831993212387676366">Mi az a bevásárlólista?</translation>
+<translation id="7839192898639727867">Tanúsítványtulajdonos kulcsazonosítója</translation>
 <translation id="7840103971441592723">A képernyőfelvétel elindult</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">A fizetés folytatásához kiválasztható fizetési módok. A billentyűzet el van rejtve.</translation>
@@ -4427,6 +4446,7 @@ További részletek:
 <translation id="7947285636476623132">Ellenőrizze a lejárati évet, majd próbálja újra</translation>
 <translation id="7947310711271925113">Popzene</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt a Chrome funkcióival kapcsolatos további információkért</translation>
+<translation id="7948579849190819732">Jelenlegi lap</translation>
 <translation id="7949135979217012031">Vírusok és kártékony programok elleni védelem</translation>
 <translation id="7950027195171824198">Cookie-beállítások kezelése a Chrome-beállítások között</translation>
 <translation id="7951415247503192394">(32 bites)</translation>
@@ -4656,6 +4676,7 @@ További részletek:
 <translation id="8312841338723044391">ÉLŐ</translation>
 <translation id="8316555157357957253">Jelenleg használatban</translation>
 <translation id="8319269383395457801">Lakóingatlanok kereskedelme</translation>
+<translation id="8319414634934645341">Bővített kulcshasználat</translation>
 <translation id="831997045666694187">Este</translation>
 <translation id="8321448084834652864">Keresőmotorját bármikor módosíthatja a Chromium beállításai között</translation>
 <translation id="8321476692217554900">értesítések</translation>
@@ -4958,6 +4979,7 @@ További részletek:
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="882338992931677877">Manuális nyílás</translation>
 <translation id="8827067923357481311">Későbbi fizetési lehetőségek</translation>
+<translation id="8828933418460119530">DNS neve</translation>
 <translation id="8830320733681313421">Hagaki (képeslap)</translation>
 <translation id="8830565333350631528">Fájlok megtekintése itt: <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> összeg feletti vásárlás esetén áll rendelkezésre</translation>
@@ -5075,6 +5097,7 @@ További részletek:
 <translation id="9035022520814077154">Biztonsági hiba</translation>
 <translation id="9035824888276246493">Biztonsági kódok mentése</translation>
 <translation id="9036306139374661733">Engedélyezi a mikrofonhasználatot?</translation>
+<translation id="9036484080057916082">Az aláírt tanúsítvány időbélyeglistája</translation>
 <translation id="9038649477754266430">A várható kifejezés szolgáltatás használata az oldalak gyorsabb betöltése érdekében</translation>
 <translation id="9039213469156557790">Emellett az oldal más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
 <translation id="9040341831873780534">Itt találja a feltételeket</translation>

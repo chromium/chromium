@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">सुझावहरूका बारेमा दिइने नोटिफिकेसनहरूको प्रोमो बन्द गरिएको छ</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1045899828449635435">यी साइटहरूको डेटा पनि मेटाउने हो?</translation>
+<translation id="1049461303780085993">जवाफ, मुख्य बुँदा र अन्य कुरा प्राप्त गर्न Chrome मा उपलब्ध Gemini प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="1052842760770519282">तपाईंका केही पासवर्डहरू एक्सेस गर्न मिल्दैन</translation>
 <translation id="1057623954802068161">स्क्रोल गरी पेजको सिरानमा जानुहोस्</translation>
@@ -297,6 +298,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="232137538351753795">पछि फर्कन बायाँ किनाराबाट स्वाइप गर्नुहोस्</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> बाट</translation>
 <translation id="2328474416100889417">सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र निम्तोका सबै लिंकहरू रद्द गरिने छन्</translation>
 <translation id="2330186936255788117">थप बुकमार्कहरू</translation>
 <translation id="2332515770639153015">परिष्कृत Safe Browsing अन छ</translation>
@@ -833,6 +835,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4595237294768457124">नयाँ ट्याब पेज खोल्नुहोस्</translation>
 <translation id="4595276580892809760">ग्यालेरीबाट फोटोहरू एट्याच गर्नुहोस्</translation>
 <translation id="4595805675102978678">Google खातासम्बन्धी त्रुटि</translation>
+<translation id="4599585406846903742">एउटा पेज देखिने भ्यू</translation>
 <translation id="4601095002996233687">डाउनलोड गरिएका फाइल शङ्कास्पद देखिएमा विस्तृत रूपमा स्क्यान गर्ने सुविधा।</translation>
 <translation id="4606559747793337066">कुनै साइट वा एपले आफ्नो पेजमा भएका लिंकहरू गोप्य तरिकाले प्रिलोड गर्न लगाएका खण्डमा Chrome ले कुकीहरू प्रयोग नगरिकनै Google का सर्भरमार्फत पेजहरू इन्क्रिप्ट गरी प्रिलोड गर्छ। यसो गर्दा पेजहरू प्रिलोड गरिएको साइटमा भएको तपाईंको जानकारी लुकाइन्छ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> खोल्नुहोस्</translation>
@@ -1087,6 +1090,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="569536719314091526">थप विकल्पहरू नामक बटनबाट यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5696597120588531049">Chrome ले तपाईंलाई डेटा चोरीका घटना, असुरक्षित वेबसाइटहरू र थप समस्याहरूबाट जोगिन मद्दत गर्न सक्छ</translation>
 <translation id="5698878456427040674">चयन गरिएको खाता प्रयोग गर्न मिल्छ कि मिल्दैन भन्ने कुरा जाँच्नुहोस्।</translation>
+<translation id="5700415746238689851">Gemini खोल्नुहोस्</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> कुनै सिरियल पोर्टमा कनेक्ट हुन चाहन्छ</translation>
 <translation id="5715150588940290235">सेभ गरिएका सेक्युरिटी कोडहरू मेटाउने हो?</translation>
 <translation id="572328651809341494">हालका ट्याबहरू</translation>
@@ -1768,6 +1772,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8271267069224406035">स्प्यामका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="8277710303010772444">खोज्न थाल्नुहोस्</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> ले सुरक्षित राखेको</translation>
+<translation id="8280797717392145626">लिंकहरू प्राप्त भएका छन्</translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8282297628636750033">साइटहरूमा सकेसम्म अँध्यारो थिम लागू गर्नु…</translation>
 <translation id="8282950411412455249">सुरक्षासम्बन्धी सेटिङमा जानुहोस्</translation>
@@ -1903,6 +1908,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> लाई फेरि अनुमतिहरू दिइएका छन्</translation>
 <translation id="8865415417596392024">तपाईंको खातामा रहेको Chrome को डेटा</translation>
 <translation id="8872506776304248286">एपमा खोल्नुहोस्</translation>
+<translation id="8880275451109933094">दुई वटा पेज देखिने भ्यू</translation>
 <translation id="8890668505403261809">आफ्ना इन्कोग्निटो ट्याबहरू खोज्नुहोस्</translation>
 <translation id="8892234476517513962">तपाईं साइन इन अवस्थामै हुनुहुन्छ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, चयन गरिएको रेकर्डिङ इन्कोग्निटो ट्याब</translation>

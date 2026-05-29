@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Matikan AI Mode</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
+<translation id="1560153516220021659">Butang bar alat kedua dikuncupkan</translation>
 <translation id="1565371473877914088">Tab Inkognito Baharu</translation>
 <translation id="1567960978791353852">Tunjukkan Mod Membaca</translation>
 <translation id="1571780780926010134">Tab Inkognito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Mel dihantar.</translation>
 <translation id="1582732959743469162">Ini akan menghentikan semua kemajuan bagi muat turun semasa anda.</translation>
 <translation id="1594034544529347967">Bermula</translation>
+<translation id="1598485494295307681">Mendengar</translation>
 <translation id="1598751033135758830">Buka dalam apl…</translation>
 <translation id="1600571977391127696">Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang.</translation>
 <translation id="1601560923496285236">Gunakan</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Maaf, terdapat masalah mengongsi item anda.</translation>
 <translation id="4944543191714094452">Cari dalam Halaman…</translation>
 <translation id="4945756290001680296">Akses tetapan kata laluan</translation>
+<translation id="4946307855175300628">Menjawab</translation>
 <translation id="4949302115427722371">Urus tetapan…</translation>
 <translation id="4958444002117714549">Kembangkan senarai</translation>
 <translation id="496392417432935267">Dibuka pada tempat lain</translation>
@@ -1552,6 +1555,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6355820183143562453">Sembunyikan kad penjejakan harga</translation>
 <translation id="6355820205320395730">Kata laluan yang lemah mudah diteka. Pastikan anda sedang membuat kata laluan yang kukuh. <ph name="BEGIN_LINK" />Lihat lebih banyak petua keselamatan.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Log masuk untuk mendapatkan semua item anda seperti kata laluan, penanda halaman dan pelbagai lagi.</translation>
+<translation id="6364268785720100355">Log masuk untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="6368038301482806847">Pilih enjin carian daripada senarai.</translation>
 <translation id="6368102751067608420">Untuk memadamkan semua data pengurus kata laluan</translation>
 <translation id="6372558618707314581">Akses mana-mana halaman yang anda sukai</translation>
@@ -1681,6 +1685,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6746338529702829275">Semak data akaun anda</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item sejarah diimport}other{{count} item sejarah diimport}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} pilihan bukti kelayakan tersedia pada sebelah atas papan kekunci anda.}other{{count} pilihan bukti kelayakan tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="6755200887046212842">Urus Akaun</translation>
 <translation id="6757899787818440812">Ketinggian sederhana</translation>
 <translation id="6759709389246683070">Anda boleh menyentuh dan menahan tab ini untuk menetapkan peringatan untuk melawati semula kemudian</translation>

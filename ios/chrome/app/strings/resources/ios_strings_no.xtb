@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Slå av AI-modus</translation>
 <translation id="1554477036522844996">Nytt vindu</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
+<translation id="1560153516220021659">Sammenslått sekundær verktøylinje-knapp</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1567960978791353852">Vis lesemodus</translation>
 <translation id="1571780780926010134">Inkognitofaner</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-posten er sendt.</translation>
 <translation id="1582732959743469162">Dette stopper all fremdriften for den aktive nedlastingen.</translation>
 <translation id="1594034544529347967">Starter</translation>
+<translation id="1598485494295307681">Lytter</translation>
 <translation id="1598751033135758830">Åpne i appen…</translation>
 <translation id="1600571977391127696">Noe innhold er kanskje ikke egnet for alle.</translation>
 <translation id="1601560923496285236">Bruk</translation>
@@ -539,6 +541,7 @@
 <translation id="2829172210806130158">Søk på skjermen</translation>
 <translation id="2831109159746537587">Tegn en sirkel rundt eller trykk på bildet for å søke</translation>
 <translation id="2834399722155632105">3. Trykk på Passordvalg</translation>
+<translation id="2834418947367581526">Hei, jeg er Gemini. Nå starter vi Live-modus. Her kan du stille spørsmål om siden du er på, bare ved å snakke. Men før vi starter, bør du ta en rask titt på denne viktige informasjonen.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Klokkeslett</translation>
 <translation id="284581348330507117">Lag unike passord</translation>
@@ -691,6 +694,7 @@
 <translation id="3447332786336558089">Når du logger av, lukkes fanene, og kontodata som ikke er lagret, slettes fra denne enheten. Dette kan blant annet inkludere passord og logg.</translation>
 <translation id="3449029510150690417">Opprett en ny fanegruppe ved å gi den et navn og en farge</translation>
 <translation id="345348365500626747">Fant adressen</translation>
+<translation id="3459644598174926977">Bruk Live-modus med Gemini for å stille spørsmål om siden, tenke høyt og snakke sammen.</translation>
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
 <translation id="3469117812148449995">Alternativer for lagring av passord</translation>
 <translation id="3472469028191701821">Åpnes i en ny fane</translation>
@@ -1129,6 +1133,7 @@
 <translation id="4941089862236492464">Det oppsto et problem under delingen av artikkelen.</translation>
 <translation id="4944543191714094452">Finn på siden</translation>
 <translation id="4945756290001680296">Åpne passordinnstillingene</translation>
+<translation id="4946307855175300628">Svarer</translation>
 <translation id="4949302115427722371">Administrer innstillinger…</translation>
 <translation id="4958444002117714549">Utvid liste</translation>
 <translation id="496392417432935267">Åpnet et annet sted</translation>
@@ -1550,6 +1555,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6355820183143562453">Skjul «Prissporing»-kortet</translation>
 <translation id="6355820205320395730">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Logg på for å få tilgang til alt innholdet ditt, for eksempel passord og bokmerker.</translation>
+<translation id="6364268785720100355">Logg på for å få tilgang til passordene dine og mer på alle enheter.</translation>
 <translation id="6368038301482806847">Velg en søkemotor på listen.</translation>
 <translation id="6368102751067608420">For å slette alle dataene i passordlagringen</translation>
 <translation id="6372558618707314581">Gå til en hvilken som helst side</translation>
@@ -1679,6 +1685,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importerte {count} loggelement}other{Importerte {count} loggelementer}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} alternativ for påloggingsinformasjon er tilgjengelig over tastaturet.}other{{count} alternativer for påloggingsinformasjon er tilgjengelige over tastaturet.}}</translation>
 <translation id="6755200887046212842">Administrer kontoer</translation>
 <translation id="6757899787818440812">Middels høy</translation>
 <translation id="6759709389246683070">Du kan trykke og holde på denne fanen for å stille inn en påminnelse om å komme tilbake senere</translation>

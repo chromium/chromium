@@ -39,6 +39,7 @@
 <translation id="1104621072296271835">Your devices work even better together</translation>
 <translation id="1111021433905331574">You can change the colour of your keyboard backlight in Settings &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Toggle mobile data. <ph name="STATE" />.</translation>
+<translation id="1118738876271697201">The system failed to determine device model or serial number.</translation>
 <translation id="1122849163460178706">A few things to try</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1129383337808748948">Refresh <ph name="CONTENT_TITLE" /></translation>
@@ -94,6 +95,7 @@
 <translation id="1247519845643687288">Recent apps</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1256734167083229794">You pressed the keyboard shortcut for the full-screen magnifier. Use <ph name="ZOOM_IN_ACCELERATOR" /> to zoom in and <ph name="ZOOM_OUT_ACCELERATOR" /> to zoom out. Use Ctrl + Alt + arrows to move around the zoomed in view.</translation>
+<translation id="126156426083987769">A problem with demo mode device licences occurred.</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -158,6 +160,7 @@
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">Suggested group</translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
 <translation id="1435537621343861112">Can't start dictation. Your mic is off.</translation>
 <translation id="1445031758921122223">Face control files downloaded</translation>
 <translation id="1447907279406111651">Now · Ends at <ph name="END_TIME" /></translation>
@@ -239,6 +242,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
 <translation id="1677582821739292812">Someone is looking at your screen</translation>
+<translation id="167983332380191032">Management service sent HTTP error.</translation>
 <translation id="1679841710523778799">Turn brightness up</translation>
 <translation id="1680659827022803830">Video call controls</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -297,6 +301,7 @@
 <translation id="1838011306813517425">Focus settings</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
 <translation id="1840920496749066704">°C</translation>
+<translation id="1841616161104323629">Missing device record.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1862077610023398675">Hide controls</translation>
 <translation id="1862380676329487333">Update and sign out</translation>
@@ -400,6 +405,7 @@
 <translation id="2248634276911611268">Open link in new tab and switch to this new tab</translation>
 <translation id="2251809247798634662">New Incognito window</translation>
 <translation id="2253808149208613283">Install app to customise this device</translation>
+<translation id="2255077166240162850">This device was locked to different domain or mode.</translation>
 <translation id="225614027745146050">Welcome</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
 <translation id="2257486738914982088">Something went wrong while downloading <ph name="FILENAME" /></translation>
@@ -482,6 +488,7 @@
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2455994958736234930">Add www. and .com to the address bar, then open website</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2458591546854598341">Device management token is invalid.</translation>
 <translation id="246052086404491029">Drill down</translation>
 <translation id="2465145153332031561">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />%, cycle count <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirm resolution</translation>
@@ -557,6 +564,7 @@
 <translation id="2672142220933875349">Bad crx file, unpacking failed.</translation>
 <translation id="2673968385134502798">Games</translation>
 <translation id="2678852583403169292">Select to Speak menu</translation>
+<translation id="2682498795777673382">Update from a parent</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> last week</translation>
 <translation id="2687510499067466116">Keyboard shortcut has changed</translation>
 <translation id="2689613560355655046">Desk 8</translation>
@@ -604,6 +612,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805760958323556153">The policy value of ExtensionInstallForcelist is invalid. Please contact your administrator.</translation>
+<translation id="281390819046738856">Request could not be signed.</translation>
 <translation id="2814448776515246190">Partial capture</translation>
 <translation id="2815594810045873507">Try a charger with more watts (W) or use your original charger.</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
@@ -637,6 +646,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2880541185262491188">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try again</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> will restart and reset momentarily</translation>
 <translation id="2883271196820422439">Resume mouse keys</translation>
+<translation id="2885729872133513017">A problem occurred when decoding server response.</translation>
 <translation id="2885950158625301909">Learn more</translation>
 <translation id="2891209721153296020">'Unselect'</translation>
 <translation id="2893701697603065178">Managed development environment</translation>
@@ -685,6 +695,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3026897869154397692">Added to Calendar</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combine with <ph name="DESK_NAME" /></translation>
+<translation id="3039491566278747710">Failed to install offline policy on the device.</translation>
 <translation id="3039939407102840004">Stylus battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="304097922505898963">Open Key Shortcuts app</translation>
 <translation id="3040982432432547149">Help us improve Steam for Chromebook</translation>
@@ -756,11 +767,13 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3233611303007751344">Battery Saver turned off</translation>
 <translation id="3238409143297336341">Set up parental controls for apps</translation>
+<translation id="3239373508713281971">Time limit removed for <ph name="APP_NAME" /></translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Classwork type: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Remove the highlight from an item on your shelf</translation>
 <translation id="3256274561709196882">Change your PIN</translation>
+<translation id="3259723213051400722">Please try again.</translation>
 <translation id="3260969790895726815">Speech is processed locally and dictation works offline, but some voice commands won’t work.</translation>
 <translation id="3264031581203585083">Hide all Google Drive suggestions</translation>
 <translation id="3265032511221679826">Turn on precise location access?</translation>
@@ -814,6 +827,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3428447136709161042">Disconnect from <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swipe from the right to go back</translation>
 <translation id="3431517721463707585">Desk 14</translation>
+<translation id="3433507769937235446">Lock on leave</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435967511775410570">Fingerprint recognised</translation>
 <translation id="3437677362970530951">Games on the Play Store and other gaming platforms</translation>
@@ -862,6 +876,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
 <translation id="3554928024630051016">To add any additional USB devices, try removing one and then plug in a new one</translation>
 <translation id="3558768885091059911">Turn on camera and microphone access?</translation>
+<translation id="3559262020195162408">Failed to install policy on the device.</translation>
 <translation id="3560174576767922131">Record video</translation>
 <translation id="3562423906127931518">This process may take a few minutes. Setting up the Linux container.</translation>
 <translation id="3563432852173030730">Kiosk application could not be downloaded.</translation>
@@ -935,6 +950,7 @@ Connect your device to power.</translation>
 <translation id="3712143870407382523">Choose a window for this side</translation>
 <translation id="371370241367527062">Front microphone</translation>
 <translation id="3713734891607377840">Open when complete</translation>
+<translation id="3714195043138862580">This demo device has been placed into a deprovisioned state.</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> installer</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> and <ph name="UNAVAILABLE_APPS_COUNT" /> more aren't on this device.</translation>
 <translation id="3727231512028252576">Couldn't load items. Please try again when online.</translation>
@@ -951,6 +967,7 @@ Connect your device to power.</translation>
         <ph name="BEGIN_PARAGRAPH3" />You can turn this service off in settings.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">Your <ph name="PHONE_NAME" /> can now unlock this <ph name="DEVICE_TYPE" /> too.</translation>
 <translation id="3756485814916578707">Casting screen</translation>
+<translation id="3765246971671567135">Could not read offline demo mode policy.</translation>
 <translation id="3765841382945324995">The <ph name="SIX_PACK_KEY_NAME" /> shortcut is updated to <ph name="NEW_SHORTCUT" /> from <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Edited today</translation>
 <translation id="3772109172035555611">Customise your TrackPoint</translation>
@@ -968,6 +985,7 @@ Connect your device to power.</translation>
 <translation id="3804737937830804242">Collapse camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. No other results.}other{# emojis. No other results.}}</translation>
 <translation id="381202950560906753">Add another</translation>
+<translation id="3819261658055281761">The system failed to store the long-term API access token for this device.</translation>
 <translation id="3822403841174077928">Couldn't copy with formatting</translation>
 <translation id="3824621460022590830">Device enrolment token is invalid. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">This allows camera access for <ph name="APP_NAME" /> and all apps and websites with the camera permission. You may need to refresh the web page or restart the app.</translation>
@@ -987,6 +1005,7 @@ Connect your device to power.</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
 <translation id="3870197372373144624">Try shutting down your device.</translation>
+<translation id="3873915545594852654">A problem with ARC++ occurred.</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3884007280698606545">USB limit reached</translation>
 <translation id="3886872229787704059">Opened today</translation>
@@ -1040,6 +1059,7 @@ Connect your device to power.</translation>
 <translation id="4026843240379844265">Move active window between displays</translation>
 <translation id="4028481283645788203">Password required for more security</translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + left arrow</translation>
+<translation id="4036778507053569103">The policy downloaded from the server is invalid.</translation>
 <translation id="4039699481424758547">Press enter to capture screenshot of window: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">You're sharing your screen</translation>
 <translation id="404437169852192935">Updates ended</translation>
@@ -1055,6 +1075,7 @@ Connect your device to power.</translation>
 <translation id="4072805772816336153">Try again later</translation>
 <translation id="4077623680826964850">Timeout when booting or reconnecting to VM.</translation>
 <translation id="4086921558679520050">Turn on physical mic switch on your device</translation>
+<translation id="4099874310852108874">Network error occurred.</translation>
 <translation id="4101772068965291327">Open home page</translation>
 <translation id="4102906002417106771">Restart to Powerwash</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
@@ -1062,6 +1083,7 @@ Connect your device to power.</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Open again</translation>
+<translation id="4118579674665737931">Please reboot the device and try again.</translation>
 <translation id="411881149140864134">Activate desk on left</translation>
 <translation id="4119928251231465047">Too many PIN attempts</translation>
 <translation id="412298498316631026">window</translation>
@@ -1072,6 +1094,7 @@ Connect your device to power.</translation>
 <translation id="4136724716305260864">On until sunrise</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + right arrow</translation>
 <translation id="4146671046252289537">Move to end of next word</translation>
+<translation id="4147911968024186208">Please retry. If you see this error again, please contact your support representative.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4151054805501931758">Portrait touch-up</translation>
 <translation id="4151449637210235443">Tell us about your recent gameplay</translation>
@@ -1194,6 +1217,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="445765352722456792">Customise suggestions</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
 <translation id="445923051607553918">Join Wi-Fi network</translation>
+<translation id="4465236939126352372"><ph name="TIME" /> time limit set for <ph name="APP_NAME" /></translation>
 <translation id="4471354919263203780">Downloading speech recognition files <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update device now}=1{Update device within 1 second}other{Update device within # seconds}}</translation>
 <translation id="4472575034687746823">Get started</translation>
@@ -1213,6 +1237,7 @@ One device connected.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518096944902121253">No more actions for this language</translation>
 <translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
+<translation id="4524832533047962394">The supplied enrolment mode is not supported by this version of the operating system. Please make sure that you are running the newest version.</translation>
 <translation id="4525887279712865285">Show Quick Share settings</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
 <translation id="4531536770443562276">Only fullscreen available</translation>
@@ -1253,6 +1278,7 @@ One device connected.</translation>
 <translation id="4613144866899789710">Cancelling Linux installation...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> connected</translation>
 <translation id="4623167406982293031">Verify account</translation>
+<translation id="4623189117674524348">The system failed to authorise API access for this device.</translation>
 <translation id="4628757576491864469">Devices</translation>
 <translation id="4628762811416793313">The Linux container setup did not complete. Please try again.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, star rating <ph name="RATING_SCORE" /></translation>
@@ -1260,14 +1286,17 @@ One device connected.</translation>
 <translation id="4633757335284074492">Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Update device to previous version now}=1{Update device to previous version within 1 second}other{Update device to previous version within # seconds}}</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
+<translation id="4643833688073835173">Your Chromebook uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google.</translation>
 <translation id="4644727592819780893">Region is too small to fit camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app recommendation</translation>
 <translation id="4649019912155580914">You edited</translation>
+<translation id="4651484272688821107">Could not load online component with demo mode resources.</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> tick box ticked.</translation>
 <translation id="465686131535918331">You can personalise settings for <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="4657775630156561295">The following suggestion will be permanently removed from your account’s suggestion history:
 
 <ph name="QUERY" /></translation>
+<translation id="4658285806588491142">Keep your screen private</translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
@@ -1290,6 +1319,7 @@ One device connected.</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
 <translation id="4735944890391795473">Desk 12</translation>
 <translation id="4736732123074402682">Check your connection and try again.</translation>
 <translation id="473775607612524610">Update</translation>
@@ -1309,6 +1339,7 @@ One device connected.</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
 <translation id="4781633367688946589">Continue to new session</translation>
 <translation id="4785412405516449976">Only your contacts with a Google Account</translation>
+<translation id="4788092183367008521">Please check your network connection and try again.</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="478959186716341421">Casting</translation>
 <translation id="4798403412327076414">You'll see previously opened windows and apps the next time that you sign in</translation>
@@ -1433,6 +1464,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5137349216872139332">Instant hotspot connection failed</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> search</translation>
 <translation id="5144005092084035179">Switch audio input?</translation>
+<translation id="5145464978649806571">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.</translation>
 <translation id="5147567197700016471">Unlocked</translation>
 <translation id="5150070631291639005">Privacy settings</translation>
 <translation id="5155897006997040331">Reading speed</translation>
@@ -1452,6 +1484,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5198039720391525849">Featured GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> events</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combined with <ph name="IN_PLACE_APP" /> to create new folder.</translation>
+<translation id="5204673965307125349">Please powerwash the device and try again.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 other notification}other{# other notifications}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
@@ -1504,6 +1537,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5322611492012084517">Can't find your phone</translation>
 <translation id="5323994101633366939">Hide desk name</translation>
 <translation id="5327248766486351172">Name</translation>
+<translation id="5327570636534774768">This device is marked for management by a different domain. Deprovision it from that domain before setting up demo mode.</translation>
 <translation id="532943162177641444">Tap the notification on your <ph name="PHONE_NAME" /> to set up the mobile hotspot that can be used by this device.</translation>
 <translation id="5329548388331921293">Connecting…</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
@@ -1579,6 +1613,7 @@ No devices connected.</translation>
 <translation id="5570122939431135380">Open new tab in new incognito window</translation>
 <translation id="5571066253365925590">Bluetooth enabled</translation>
 <translation id="5572632238877308040">Essentials</translation>
+<translation id="5575528586625653441">A problem with demo registration request occurred.</translation>
 <translation id="557563299383177668">Next paragraph</translation>
 <translation id="5577082622442191756">Toggle Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Check that Bluetooth is enabled on your phone to use Phone Hub</translation>
@@ -1629,6 +1664,7 @@ No devices connected.</translation>
 <translation id="5693255400847650006">Microphone in use</translation>
 <translation id="5699366815052349604">Assign active window to all desks</translation>
 <translation id="570043786759263127">Google Play apps and services</translation>
+<translation id="5701080607174488915">Error when fetching policy from the server.</translation>
 <translation id="570390244361237317">All apps; navigate with arrow keys to access all apps</translation>
 <translation id="5705197514573687092">Show Focus settings. Timer set to <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Your device supports a higher data rate than your cable. Device performance may be limited.</translation>
@@ -1688,6 +1724,7 @@ No devices connected.</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5864691701242730005">Show Quick Share settings. <ph name="VISIBILITY" /> visibility selected</translation>
 <translation id="5864748620896638071">Battery <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
 <translation id="5867217927013474703">Collecting network information</translation>
 <translation id="5867606971598166637">Your system administrator is monitoring your screens</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
@@ -1715,6 +1752,7 @@ No devices connected.</translation>
 <translation id="5947494881799873997">Revert</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5955304353782037793">app</translation>
+<translation id="5955809630138889698">This device might be only eligible for online demo mode. Please contact your support representative for more details.</translation>
 <translation id="5958529069007801266">Supervised user</translation>
 <translation id="5959471481388474538">Network not available</translation>
 <translation id="596035801491797438">Turn off face control</translation>
@@ -1767,6 +1805,7 @@ No devices connected.</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Done using the file</translation>
 <translation id="6068258534237496331">Video Call Controls</translation>
+<translation id="6071576563962215370">The system failed to establish the device installation-time attributes lock.</translation>
 <translation id="6073451960410192870">Stop recording</translation>
 <translation id="6074087755403037157">Beta channel</translation>
 <translation id="6075098173600599596">Change capitalisation</translation>
@@ -1808,6 +1847,7 @@ No devices connected.</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Fully charge now</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6199775032047436064">Reload current page</translation>
 <translation id="6200515304866777730">Not supported by app</translation>
@@ -1979,6 +2019,7 @@ New install</translation>
 <translation id="666343722268997814">Open right-click menu for highlighted item</translation>
 <translation id="6665545700722362599">Grant websites, apps and extensions permission to use location services, the device’s microphone, camera or other features</translation>
 <translation id="6667908387435388584">Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone</translation>
+<translation id="6670142487971298264"><ph name="APP_NAME" /> is now available</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6671661918848783005">Can't unlock your Chromebook</translation>
@@ -2169,6 +2210,7 @@ New install</translation>
 <translation id="7285232777292757180">Use the screen capture tool in Quick Settings to take screenshots</translation>
 <translation id="7301826272005790482">Dismiss window suggestions</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
+<translation id="7303281435234579599">Oops! Something went wrong while setting up demo mode.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
@@ -2180,6 +2222,7 @@ New install</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7336943714413713812">Search browsing history</translation>
 <translation id="7337660433630200387">+10 min</translation>
+<translation id="7338630283264858612">Device serial number is invalid.</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>
 <translation id="7346909386216857016">OK, got it</translation>
@@ -2273,6 +2316,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7569886975397378678">Dismiss setting up viewing your phone's notifications and apps</translation>
 <translation id="7571361473021531288">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> left</translation>
 <translation id="7573585051776738856">Active window docked on right.</translation>
+<translation id="7576976045740938453">A problem with demo mode account occurred.</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7588317312481506627">Copied to clipboard.</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
@@ -2290,6 +2334,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="761530003705945209">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
 <translation id="761736749114493194">Toggle camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Quick Share settings</translation>
+<translation id="7621382409404463535">The system failed to save device configuration.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Ask a question</translation>
 <translation id="7629858978065675960">Unknown result.</translation>
@@ -2310,6 +2355,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7659861092419699379">Desk and windows have been closed</translation>
 <translation id="7660160718439869192">Your <ph name="NAME" /> will appear on devices linked with <ph name="EMAIL" /></translation>
+<translation id="7661451191293163002">A registration certificate could not be obtained.</translation>
 <translation id="7661694115779363471">Selected bottom-left handle, use arrow keys to move</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7670953955701272011">Open this date in Google Calendar</translation>
@@ -2331,6 +2377,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7723703419796509666">Show or hide Developer tools console</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7724711098786238351">Demo mode is intended for users aged 18+ and is governed by Google's Terms of Service and Privacy Policy. Data entered on this device may be viewed by others between periodic wipes.</translation>
 <translation id="7725108879223146004">Show hotspot details. Hotspot is turning off.</translation>
 <translation id="7726391492136714301">View your phone's notifications and apps</translation>
 <translation id="7727952505535211425">Open the website in the address bar in a new tab</translation>
@@ -2347,6 +2394,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7773536009433685931">Turn on Wi-Fi instead</translation>
 <translation id="77747521138552256">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try PIN again, or enter password to sign in immediately.</translation>
+<translation id="7774792847912242537">Too many requests.</translation>
 <translation id="7780094051999721182">shortcuts</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7781335840981796660">All user accounts and local data will be removed.</translation>
@@ -2362,6 +2410,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7824864914877854148">Backup couldn't be completed due to an error</translation>
 <translation id="7825412704590278437">From upcoming calendar event</translation>
 <translation id="7826249772873145665">ADB debugging disabled</translation>
+<translation id="7826254698725248775">Conflicting device identifier.</translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7830453190047749513">You can personalise button actions, cursor speed and more for your <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Warning: Experimental feature</translation>
@@ -2557,6 +2606,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8382715499079447151">Viewing protection</translation>
 <translation id="8383614331548401927">Welcome recap</translation>
 <translation id="838540623579162843">Get Music Premium</translation>
+<translation id="8386091599636877289">Policy not found.</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>
 <translation id="8390392581097975659">Installing scanner software</translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
@@ -2651,6 +2701,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Press enter to capture partial screenshot</translation>
 <translation id="8665180165765946056">Backup complete</translation>
+<translation id="867085395664725367">Temporary server error occurred.</translation>
 <translation id="8673530374848624865">Your administrator updated the security requirements for your device</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8679158879996532670">Show Focus settings. Focus is on, <ph name="REMAINING_TIME" /> left.</translation>
@@ -2666,6 +2717,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8714138378966541668">Locked by provider</translation>
 <translation id="8716931980467311658">Delete all Linux applications and data in your Linux files folder from this <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717459106217102612">Select previous word or letter</translation>
+<translation id="8720816553731218127">The initialisation of the installation-time attributes has timed out.</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
 <translation id="8724405322205516354">When you see this icon, use your fingerprint for identification or to approve purchases.</translation>
@@ -2682,6 +2734,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8742395827132970586">Install failed: Cleaning up</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749865622265861882">You are using a demo device</translation>
 <translation id="8751299148074971734">Keep it up!</translation>
 <translation id="8753368202781196133">This language isn't supported at this time.</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>

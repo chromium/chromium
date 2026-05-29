@@ -2987,6 +2987,7 @@ Les niveaux de complexité sont basés sur les métriques de qualité des mots d
 
 Consultez l'article du centre d'aide pour obtenir des explications détaillées sur ce qu'implique chaque niveau pour les codes et les mots de passe.</translation>
 <translation id="2926813071464307947">Désactiver le bac à sable du conteneur d'appli de moteur de rendu</translation>
+<translation id="2930792103747180259">Désactivée : la récupération en arrière-plan à partir des service workers est autorisée sans restriction.</translation>
 <translation id="2931888116345994552">Active la mise à jour de tous les composants de <ph name="PRODUCT_NAME" /> si la règle n'est pas configurée ou qu'elle est activée.
 
       Si elle est désactivée, la mise à jour des composants l'est aussi. Toutefois, certains composants échappent à cette règle : les mises à jour des composants sans code exécutable et qui sont essentiels à la sécurité du navigateur ne seront pas désactivées.
@@ -3101,6 +3102,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="2976033779241323433">Activer le clavier virtuel tactile en fonction de l'heuristique système par défaut</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Forcer l'ancienne implémentation</translation>
+<translation id="2984696342503554732">Activée : la récupération en arrière-plan depuis les service workers est restreinte.</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
@@ -9021,6 +9023,7 @@ Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLI
 Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> à partir du menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir cette option dans le menu contextuel.
 Elle ne les empêche pas d'enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> par d'autres moyens que le menu contextuel.</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
+<translation id="6828918560681256273">Restreindre l'API Background Fetch lorsqu'elle est appelée à partir d'un service worker</translation>
 <translation id="6829632070341067746">Cette règle contrôle la refactorisation récente des API Graphics3D dans le plug-in PPAPI.
 
 La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
@@ -12024,6 +12027,14 @@ Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />,
 <translation id="8757552286070680084">Configuration d'un dispositif DTC de Wilco</translation>
 <translation id="8758831693895931466">Activer l'inscription obligatoire à la gestion cloud</translation>
 <translation id="8759829385824155666">Types de chiffrement Kerberos autorisés</translation>
+<translation id="8762128467207353085">Liste des origines des applis clientes de bureau à distance pouvant exécuter des requêtes API WebAuthn envoyées à partir d'une session de navigation sur un hôte à distance.
+
+Toute origine configurée dans cette règle peut envoyer des requêtes WebAuthn pour des ID de tiers de confiance qu'elle ne devrait normalement pas pouvoir réclamer.
+
+Seules les origines HTTPS valides sont autorisées. Les caractères génériques ne sont pas pris en charge.
+Les entrées non valides sont ignorées.
+
+Cette règle ne s'applique qu'aux utilisateurs affiliés.</translation>
 <translation id="8765401957266318536">Activer l'intégration de l'appli Galerie/Lens sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Si cette règle est activée, elle permet à l'utilisateur de solliciter l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web (par exemple, pour payer et changer de mot de passe plus vite). Le recours à l'<ph name="ASSISTANT_PRODUCT_NAME" /> nécessite une autorisation supplémentaire de l'utilisateur. L'<ph name="ASSISTANT_PRODUCT_NAME" /> ne fonctionne que si l'utilisateur choisit de donner son autorisation, même si la règle est activée.
 

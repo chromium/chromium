@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1000614056227025171">برگ زیرین تبلیغات «سفارشی‌سازی صفحه اصلی» به‌صورت کامل باز شده است</translation>
 <translation id="1006017844123154345">باز کردن نسخه آنلاین</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1046742265332833834">زمینه آبی</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">سایت‌ها می‌توانند صدا پخش کنند</translation>
 <translation id="3065787901655140044">«محافظت پیشرفته» روشن شد</translation>
 <translation id="3069226013421428034">ورود به سیستم طرف سوم برای سایت خاصی مجاز می‌شود.</translation>
+<translation id="3084983642903364837">صفحه اصلی‌تان را بعداً ازطریق منوِ ۳نقطه‌ای ویرایش کنید.</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
 <translation id="3108122610701115301">تنظیم پیش‌فرض</translation>
 <translation id="310979712355504754">حذف همه</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">به درگاه سریالی متصل است</translation>
 <translation id="4223404254440398437">میکروفون مجاز نیست</translation>
 <translation id="4226663524361240545">اعلان‌ها ممکن است دستگاه را بلرزانند</translation>
+<translation id="4227965147357783918">برگ زیرین تبلیغات «سفارشی‌سازی صفحه اصلی» به‌صورت نیمه باز شده است</translation>
 <translation id="4259722352634471385">پیمایش مسدود شده است: <ph name="URL" /></translation>
 <translation id="4274673989874969668">بعداز اینکه از سایتی خارج شدید، آن سایت می‌تواند به همگام‌سازی ادامه دهد تا کارها را تکمیل کند، ازجمله تکمیل بارگذاری عکس‌ها یا ارسال پیام گپ</translation>
 <translation id="4278390842282768270">اجازه داشتن</translation>

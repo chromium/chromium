@@ -9811,6 +9811,13 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="7055022222176591388">Não permitir o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
 <translation id="7056040036973126753">Os dados de confiabilidade do domínio podem ser enviados ao Google dependendo da Política de Métricas do Usuário (UMA, na sigla em inglês) do Chrome.</translation>
 <translation id="7062803946218028349">Permitir a ativação do recurso "Seu smartphone"</translation>
+<translation id="7063646777978847358">Esta política controla se as solicitações de busca em segundo plano feitas por service workers são restritas. Se um recurso que baixa arquivos em segundo plano for afetado, esta política poderá ser relevante.
+
+Se a política estiver ativada ou não for configurada, a restrição ficará ativa e as solicitações de busca em segundo plano de contextos de service workers poderão ser bloqueadas.
+
+Se a política estiver desativada, a restrição será ignorada, permitindo que todos os service workers façam solicitações de busca em segundo plano.
+
+Esta política corporativa é temporária e será removida após a versão M152.</translation>
 <translation id="7066292150801784098">Desativar a interação de usuários remotos com janelas elevadas em sessões de assistência remota</translation>
 <translation id="706669471845501145">Permitir que os sites exibam notificações da área de trabalho</translation>
 <translation id="7067419518071223152">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais apps da web têm acesso aos tipos de arquivos.

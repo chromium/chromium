@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promotie voor meldingen met tips gesloten</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1045899828449635435">Ook gegevens van deze sites wissen?</translation>
+<translation id="1049461303780085993">Probeer Gemini in Chrome om onder meer antwoorden en belangrijke conclusies te krijgen</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Sommige van je wachtwoorden zijn niet toegankelijk</translation>
 <translation id="1057623954802068161">Naar bovenkant van pagina scrollen</translation>
@@ -297,6 +298,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2318045970523081853">Tik om te bellen</translation>
 <translation id="232137538351753795">Swipe vanaf de linkerrand om terug te gaan</translation>
 <translation id="2323763861024343754">Site-opslag</translation>
+<translation id="2327445548174191329">Van <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Iedereen raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en alle uitnodigingslinks worden uitgezet</translation>
 <translation id="2330186936255788117">Meer bookmarks</translation>
 <translation id="2332515770639153015">De uitgebreide versie van Safe Browsing staat aan</translation>
@@ -834,6 +836,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4595237294768457124">Open een pagina Nieuw tabblad</translation>
 <translation id="4595276580892809760">Afbeeldingen uit galerij bijvoegen</translation>
 <translation id="4595805675102978678">Fout met Google-account</translation>
+<translation id="4599585406846903742">Weergave met één pagina</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
 <translation id="4606559747793337066">Als een site of app vraagt om links op de sitepagina privé vooraf te laden, versleutelt en laadt Chrome de pagina's vooraf via Google-servers zonder cookies. Hierdoor wordt je identiteit voor de vooraf geladen site verborgen.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> openen</translation>
@@ -1088,6 +1091,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="569536719314091526">Vertaal deze pagina in een andere taal via de knop 'Meer opties'</translation>
 <translation id="5696597120588531049">Chrome kan je beschermen tegen gegevenslekken, onveilige websites en meer.</translation>
 <translation id="5698878456427040674">Check of het geselecteerde account wordt ondersteund.</translation>
+<translation id="5700415746238689851">Gemini openen</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> wil verbinding maken met een seriële poort</translation>
 <translation id="5715150588940290235">Opgeslagen beveiligingscodes verwijderen?</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
@@ -1769,6 +1773,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8271267069224406035">Spam melden</translation>
 <translation id="8277710303010772444">Zoeken starten</translation>
 <translation id="8279945625179116733">Beveiligd door <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Links ontvangen</translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282297628636750033">Donker thema zo mogelijk toepassen op sites</translation>
 <translation id="8282950411412455249">Naar beveiligingsinstellingen</translation>
@@ -1904,6 +1909,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8863714995118816041">Rechten opnieuw toegestaan voor <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-gegevens in je account</translation>
 <translation id="8872506776304248286">Openen in app</translation>
+<translation id="8880275451109933094">Weergave met twee pagina's</translation>
 <translation id="8890668505403261809">Zoek op je incognitotabbladen</translation>
 <translation id="8892234476517513962">Je bent al ingelogd</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, geselecteerd incognitotabblad voor opname</translation>

@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Desativar o Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
+<translation id="1560153516220021659">Botão da barra de ferramentas secundária fechado</translation>
 <translation id="1565371473877914088">Nova guia anônima</translation>
 <translation id="1567960978791353852">Mostrar Modo de Leitura</translation>
 <translation id="1571780780926010134">Guias anônimas</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Mensagem enviada.</translation>
 <translation id="1582732959743469162">Isso interromperá todo o progresso do download atual.</translation>
 <translation id="1594034544529347967">Início</translation>
+<translation id="1598485494295307681">Ouvindo</translation>
 <translation id="1598751033135758830">Abrir no app…</translation>
 <translation id="1600571977391127696">Alguns conteúdos podem não ser adequados para todos.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Ocorreu um problema ao compartilhar seu item.</translation>
 <translation id="4944543191714094452">Localizar na página…</translation>
 <translation id="4945756290001680296">Acessar configurações de senha</translation>
+<translation id="4946307855175300628">Respondendo</translation>
 <translation id="4949302115427722371">Gerenciar configurações…</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="496392417432935267">Aberto em outro lugar</translation>
@@ -1552,6 +1555,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6355820183143562453">Ocultar o card "Monitoramento de preços"</translation>
 <translation id="6355820205320395730">Senhas fracas são fáceis de adivinhar. Você precisa criar senhas fortes. <ph name="BEGIN_LINK" />Confira mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Faça login para acessar todos os seus itens, como senhas, favoritos e muito mais.</translation>
+<translation id="6364268785720100355">Faça login para acessar senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="6368038301482806847">Selecione um mecanismo de pesquisa na lista.</translation>
 <translation id="6368102751067608420">Para excluir todos os dados do Gerenciador de senhas</translation>
 <translation id="6372558618707314581">Acesse a página que quiser</translation>
@@ -1681,6 +1685,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6746338529702829275">Analise os dados da conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item do histórico importado}one{{count} item do histórico importado}other{{count} itens do histórico importados}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opção de credencial disponível acima do teclado.}one{{count} opção de credencial disponível acima do teclado.}other{{count} opções de credencial disponíveis acima do teclado.}}</translation>
 <translation id="6755200887046212842">Gerenciar contas</translation>
 <translation id="6757899787818440812">Altura média</translation>
 <translation id="6759709389246683070">Toque e pressione esta guia para definir um lembrete para voltar mais tarde</translation>

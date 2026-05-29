@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ಸಲಹೆಗಳ ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಪ್ರೋಮೋವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1045899828449635435">ಈ ಸೈಟ್‌ನ ಡೇಟಾ ತೆರವುಗೊಳಿಸಬೇಕೇ?</translation>
+<translation id="1049461303780085993">ಉತ್ತರಗಳು, ಪ್ರಮುಖ ಅಂಶಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು Chrome ನಲ್ಲಿ Gemini ಅನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
 <translation id="1052842760770519282">ನಿಮ್ಮ ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1057623954802068161">ಪುಟದ ಮೇಲ್ಭಾಗಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">ಕರೆ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="232137538351753795">ಹಿಂದಕ್ಕೆ ಹೋಗಲು ಎಡ ಎಡ್ಜ್‌ನಿಂದ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2323763861024343754">ಸೈಟ್ ಸಂಗ್ರಹಣೆ</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ಇಂದ</translation>
 <translation id="2328474416100889417">ಪ್ರತಿಯೊಬ್ಬರೂ ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಎಲ್ಲಾ ಆಹ್ವಾನ ಲಿಂಕ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="2330186936255788117">ಇನ್ನಷ್ಟು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="2332515770639153015">ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಆಗಿದೆ</translation>
@@ -833,6 +835,7 @@
 <translation id="4595237294768457124">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4595276580892809760">ಗ್ಯಾಲರಿಯಿಂದ ಚಿತ್ರಗಳನ್ನು ಲಗತ್ತಿಸಿ</translation>
 <translation id="4595805675102978678">Google ಖಾತೆಯ ದೋಷ</translation>
+<translation id="4599585406846903742">ಒಂದೇ ಪುಟದ ವೀಕ್ಷಣೆ</translation>
 <translation id="4601095002996233687">ಅನುಮಾನಾಸ್ಪದ ಡೌನ್‌ಲೋಡ್‌ಗಳಿಗಾಗಿ ಆಳವಾದ ಸ್ಕ್ಯಾನ್‌ಗಳು.</translation>
 <translation id="4606559747793337066">ತಮ್ಮ ಪುಟದಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ, ಪ್ರಿಲೋಡ್ ಮಾಡಲು ಸೈಟ್ ಅಥವಾ ಆ್ಯಪ್ ವಿನಂತಿಸಿದಾಗ, ಕುಕೀಗಳನ್ನು ಬಳಸದೆ Google ಸರ್ವರ್‌ಗಳ ಮೂಲಕ Chrome ಪುಟಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುತ್ತದೆ ಮತ್ತು ಪ್ರಿಲೋಡ್ ಮಾಡುತ್ತದೆ. ಇದು ಪ್ರಿಲೋಡ್ ಮಾಡಲಾದ ಸೈಟ್‌ನಿಂದ ನಿಮ್ಮ ಗುರುತನ್ನು ಮರೆಮಾಡುತ್ತದೆ.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ತೆರೆಯಿರಿ</translation>
@@ -1087,6 +1090,7 @@
 <translation id="569536719314091526">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಬಟನ್ ಮೂಲಕ ಈ ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗಾದರೂ ಅನುವಾದಿಸಿ</translation>
 <translation id="5696597120588531049">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು, ಸುರಕ್ಷಿತವಲ್ಲದ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು Chrome ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5698878456427040674">ಆಯ್ಕೆಮಾಡಿದ ಖಾತೆಯು ಬೆಂಬಲಿತವಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
+<translation id="5700415746238689851">Gemini ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ಒಂದು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="5715150588940290235">ಸೇವ್ ಮಾಡಲಾದ ಸೆಕ್ಯೂರಿಟಿ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="572328651809341494">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -1768,6 +1772,7 @@
 <translation id="8271267069224406035">ಸ್ಪ್ಯಾಮ್ ವರದಿ ಮಾಡಿ</translation>
 <translation id="8277710303010772444">ಹುಡುಕಾಟ ಆರಂಭಿಸಿ</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> ನಿಂದ ಸಂರಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="8280797717392145626">ಲಿಂಕ್‌ಗಳು ಬಂದಿವೆ</translation>
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8282297628636750033">ಸೈಟ್‌ಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ವಯಿಸಿ</translation>
 <translation id="8282950411412455249">ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
@@ -1903,6 +1908,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> ಗಾಗಿ ಪುನಃ ಅನುಮತಿಗಳನ್ನು ನೀಡಲಾಗಿದೆ</translation>
 <translation id="8865415417596392024">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾ</translation>
 <translation id="8872506776304248286">ಆಪ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="8880275451109933094">ಎರಡು ಪುಟಗಳ ವೀಕ್ಷಣೆ</translation>
 <translation id="8890668505403261809">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8892234476517513962">ನೀವು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ರೆಕಾರ್ಡಿಂಗ್ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>

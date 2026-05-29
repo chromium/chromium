@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1000614056227025171">Башкы бетти тууралоо бетинин ылдыйкы экраны толук ачылды</translation>
 <translation id="1006017844123154345">Онлайнда ачуу</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1046742265332833834">Көк тема</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Сайттар үн чыгара алат</translation>
 <translation id="3065787901655140044">Күчөтүлгөн коргоо иштетилди</translation>
 <translation id="3069226013421428034">Белгилүү бир сайтка үчүнчү тараптан кирүүгө уруксат бериңиз.</translation>
+<translation id="3084983642903364837">Башкы бетиңизди кийинчерээк 3 чекиттүү меню аркылуу түзөтүңүз.</translation>
 <translation id="310297983047869047">Мурунку слайд</translation>
 <translation id="3108122610701115301">Демейки катары коюу</translation>
 <translation id="310979712355504754">Баарын жок кылуу</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Сериялык портко туташтырылган</translation>
 <translation id="4223404254440398437">Микрофонду колдонууга тыюу салынды</translation>
 <translation id="4226663524361240545">Билдирмелер кегенде түзмөк дирилдейт</translation>
+<translation id="4227965147357783918">Башкы бетти тууралоо бетинин ылдыйкы экраны жарымына чейин ачылды</translation>
 <translation id="4259722352634471385">Чабыттоо бөгөттөлгөн: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Сайттан чыкканыңыздан кийин, сүрөттөрдү жүктөп берүү же чат билдирмелерин жөнөтүү сыяктуу иштерди бүтүрүү үчүн сайт шайкештирүүнү улантат</translation>
 <translation id="4278390842282768270">Уруксат берилген</translation>

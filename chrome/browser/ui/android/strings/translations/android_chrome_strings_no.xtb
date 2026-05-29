@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promoteringen av varsler med tips er lukket</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1045899828449635435">Vil du også slette data fra disse nettstedene?</translation>
+<translation id="1049461303780085993">Prøv Gemini i Chrome for å få svar, hovedpunkter og mer</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Noen av passordene dine er ikke tilgjengelige</translation>
 <translation id="1057623954802068161">Rull til toppen av siden</translation>
@@ -297,6 +298,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2318045970523081853">Trykk for å ringe</translation>
 <translation id="232137538351753795">Sveip fra venstre for å gå tilbake</translation>
 <translation id="2323763861024343754">Nettstedslagring</translation>
+<translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslinker deaktiveres</translation>
 <translation id="2330186936255788117">Flere bokmerker</translation>
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
@@ -834,6 +836,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4595237294768457124">Åpne en Ny fane-side</translation>
 <translation id="4595276580892809760">Legg ved bilder fra galleriet</translation>
 <translation id="4595805675102978678">Feil med Google-kontoen</translation>
+<translation id="4599585406846903742">Visning med én side</translation>
 <translation id="4601095002996233687">Dybdeskanninger av mistenkelige nedlastinger.</translation>
 <translation id="4606559747793337066">Når nettsteder eller apper ber om privat forhåndslasting av linker på sidene sine, medfører det at Chrome krypterer og forhåndslaster sider gjennom Googles tjenere uten informasjonskapsler. Dermed skjules identiteten din for det forhåndslastede nettstedet.</translation>
 <translation id="4616150815774728855">Åpne <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="569536719314091526">Oversett denne siden til hvilket som helst språk via Flere alternativer-knappen</translation>
 <translation id="5696597120588531049">Chrome kan beskytte deg mot databrudd, utrygge nettsteder med mer</translation>
 <translation id="5698878456427040674">Sjekk om den valgte kontoen støttes.</translation>
+<translation id="5700415746238689851">Åpne Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vil koble til en seriell port</translation>
 <translation id="5715150588940290235">Vil du slette lagrede sikkerhetskoder?</translation>
 <translation id="572328651809341494">Nylige faner</translation>
@@ -1769,6 +1773,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8271267069224406035">Rapportér nettsøppel</translation>
 <translation id="8277710303010772444">Start søk</translation>
 <translation id="8279945625179116733">Sikret med <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Mottatte linker</translation>
 <translation id="8281886186245836920">Hopp over</translation>
 <translation id="8282297628636750033">Bruk mørkt tema på nettsteder når mulig</translation>
 <translation id="8282950411412455249">Gå til sikkerhetsinnstillingene</translation>
@@ -1904,6 +1909,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> har fått tillatelsene tilbake</translation>
 <translation id="8865415417596392024">Chrome-data i kontoen din</translation>
 <translation id="8872506776304248286">Åpne i appen</translation>
+<translation id="8880275451109933094">Visning med to sider</translation>
 <translation id="8890668505403261809">Søk i inkognitofanene dine</translation>
 <translation id="8892234476517513962">Du er allerede logget på</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, valgt inkognitofane for opptak</translation>

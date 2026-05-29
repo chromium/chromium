@@ -3111,6 +3111,7 @@ Tingkat kompleksitas didasarkan pada metrik kualitas sandi Android (https://deve
 
 Lihat artikel pusat bantuan untuk penjelasan mendetail tentang arti setiap tingkat untuk PIN dan sandi.</translation>
 <translation id="2926813071464307947">Nonaktifkan sandbox Penampung Aplikasi Perender</translation>
+<translation id="2930792103747180259">Nonaktif: Background Fetch dari Service Worker diizinkan tanpa batasan.</translation>
 <translation id="2931888116345994552">Mengaktifkan update komponen untuk semua komponen di <ph name="PRODUCT_NAME" /> jika tidak disetel atau disetel ke aktif.
 
       Jika disetel ke nonaktif, update komponen akan dinonaktifkan. Namun, beberapa komponen akan dikecualikan dari kebijakan ini: update komponen apa pun yang tidak berisi kode yang dapat dieksekusi dan yang penting bagi keamanan browser, tidak akan dinonaktifkan.
@@ -3226,6 +3227,7 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="2976033779241323433">Aktifkan keyboard virtual sentuh berdasarkan heuristik sistem default</translation>
 <translation id="2976429807269247880">Setelan perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="2979696534869541158">Paksa implementasi lama</translation>
+<translation id="2984696342503554732">Diaktifkan: Background Fetch dari Service Worker dibatasi.</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
 <translation id="2987155890997901449">Aktifkan ARC</translation>
 <translation id="2987227569419001736">Mengontrol penggunaan API Bluetooth Web</translation>
@@ -9395,6 +9397,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan diizinkan menyimpan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> dari menu konteks. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melihat opsi tersebut di menu konteks.
 Kebijakan ini tidak mencegah pengguna menyimpan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> menggunakan cara lain selain menu konteks.</translation>
 <translation id="6823711520976094072">Jika disetel di bawah 1 MB atau tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan ukuran default 256 MiB untuk menyimpan cache aplikasi dan ekstensi yang akan diinstal oleh beberapa pengguna di satu perangkat, sehingga setiap pengguna tidak perlu mendownload ulang satu per satu aplikasi dan ekstensi tersebut.</translation>
+<translation id="6828918560681256273">Batasi Background Fetch API saat dipanggil dari Service Worker</translation>
 <translation id="6829632070341067746">Kebijakan ini mengontrol pemfaktoran ulang terbaru untuk Graphics3D API dalam plugin PPAPI.
 
 Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
@@ -12542,6 +12545,16 @@ Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 de
 <translation id="8757552286070680084">Konfigurasi DTC wilco</translation>
 <translation id="8758831693895931466">Aktifkan pendaftaran pengelolaan cloud wajib</translation>
 <translation id="8759829385824155666">Jenis enkripsi Kerberos yang diizinkan</translation>
+<translation id="8762128467207353085">Daftar origin aplikasi klien desktop jarak jauh yang dapat mengeksekusi permintaan WebAuthn API
+yang berasal dari sesi penjelajahan pada host jarak jauh.
+
+Setiap origin yang dikonfigurasi dalam kebijakan ini dapat membuat permintaan WebAuthn untuk ID Pihak
+Tepercaya (RP ID) yang biasanya tidak diizinkan untuk diklaim.
+
+Hanya origin HTTPS yang valid yang diizinkan. Karakter pengganti tidak didukung.
+Entri yang tidak valid akan diabaikan.
+
+Kebijakan ini hanya berlaku untuk pengguna terafiliasi.</translation>
 <translation id="8765401957266318536">Mengaktifkan integrasi Aplikasi Galeri/Lens di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan <ph name="ASSISTANT_PRODUCT_NAME" /> di web, misalnya untuk checkout dan mengubah sandi lebih cepat. Penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> memerlukan izin pengguna tambahan dan <ph name="ASSISTANT_PRODUCT_NAME" /> hanya akan berjalan jika pengguna memilih untuk memberikan izin ini, meskipun kebijakan disetel ke Aktif.
 

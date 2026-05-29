@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1000614056227025171">Feltet nederst for promotering av tilpasning av startsiden er åpnet i full høyde</translation>
 <translation id="1006017844123154345">Åpne på nettet</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1046742265332833834">Blått tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Nettsteder kan spille av lyd</translation>
 <translation id="3065787901655140044">Avansert beskyttelse er på</translation>
 <translation id="3069226013421428034">Tillat tredjepartspålogging for et bestemt nettsted.</translation>
+<translation id="3084983642903364837">Du kan endre startsiden senere via menyen med tre prikker.</translation>
 <translation id="310297983047869047">Forrige lysbilde</translation>
 <translation id="3108122610701115301">Angi som standard</translation>
 <translation id="310979712355504754">Slett alle</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Koblet til en seriell port</translation>
 <translation id="4223404254440398437">Mikrofon er ikke tillatt</translation>
 <translation id="4226663524361240545">Varsler kan gjøre at enheten vibrerer</translation>
+<translation id="4227965147357783918">Feltet nederst for promotering av tilpasning av startsiden er åpnet i halv høyde</translation>
 <translation id="4259722352634471385">Nettadressen er blokkert: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Når du forlater nettsteder, kan de fortsette å synkronisere for å fullføre oppgaver, som å laste opp bilder eller sende chatmeldinger</translation>
 <translation id="4278390842282768270">Tillatt</translation>

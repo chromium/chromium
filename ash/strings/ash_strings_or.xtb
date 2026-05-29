@@ -39,6 +39,7 @@
 <translation id="1104621072296271835">ଏକାଠି ହୋ‍ଇ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଆହୁରି ଭଲ କାର୍ଯ୍ୟ କରନ୍ତି</translation>
 <translation id="1111021433905331574">ଆପଣ ସେଟିଂସ &gt; <ph name="APP_TITLE" />ରେ ଆପଣଙ୍କ କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟର ରଙ୍ଗ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="1117719261843403176">ମୋବାଇଲ ଡାଟାକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE" />।</translation>
+<translation id="1118738876271697201">ସିଷ୍ଟମ୍ ଡିଭାଇସ୍ ମୋଡେଲ୍ କିମ୍ବା କ୍ରମାଙ୍କ ସଂଖ୍ୟା ନିର୍ଦ୍ଧାରିତ କରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="1122849163460178706">ବ୍ୟବହାର କରି ଦେଖିବାକୁ କିଛି ଜିନିଷ</translation>
 <translation id="112308213915226829">ସେଲ୍ଫକୁ ସ୍ୱଚାଳିତ ଭାବେ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> ରିଫ୍ରେସ କରନ୍ତୁ</translation>
@@ -94,6 +95,7 @@
 <translation id="1247519845643687288">ବର୍ତ୍ତମାନର ଆପଗୁଡ଼ିକ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ରୁ ଚାର୍ଜ ହେଉଛି</translation>
 <translation id="1256734167083229794">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ ମେଗ୍ନିଫାୟର ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟକୁ ଦବାଇଛନ୍ତି। ଜୁମ ଇନ କରିବାକୁ <ph name="ZOOM_IN_ACCELERATOR" /> ଏବଂ ଜୁମ ଆଉଟ କରିବାକୁ <ph name="ZOOM_OUT_ACCELERATOR" />କୁ ବ୍ୟବହାର କରନ୍ତୁ। ଜୁମ ହୋଇଥିବା ଭ୍ୟୁର ଚାରିପାଖରେ ମୁଭ କରିବାକୁ Ctrl+alt+ତୀର କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="126156426083987769">ଡେମୋ ମୋଡ୍ ଡିଭାଇସ୍ ଲାଇସେନ୍ସ ସହ ଏକ ସମସ୍ୟା ଉପୁଜିଛି।</translation>
 <translation id="1269405891096105529">ଅତିଥି ମୋଡରେ ପେରିଫେରାଲ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="1270290102613614947">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1272079795634619415">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -158,6 +160,7 @@
 <translation id="1420408895951708260">ନାଇଟ୍ ଲାଇଟ୍‍କୁ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
+<translation id="142655739075382478"><ph name="APP_NAME" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="1435537621343861112">ଡିକ୍ଟେସନ ଆରମ୍ଭ କରାଯାଇପାରିବ ନାହିଁ। ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବନ୍ଦ ଅଛି।</translation>
 <translation id="1445031758921122223">ଫେସ କଣ୍ଟ୍ରୋଲ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରାଯାଇଛି</translation>
 <translation id="1447907279406111651">ବର୍ତ୍ତମାନ · ଶେଷ ହେବ <ph name="END_TIME" /></translation>
@@ -239,6 +242,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ସଂଯୁକ୍ତ ହୋଇନାହିଁ।</translation>
 <translation id="1677582821739292812">କୌଣସି ବ୍ୟକ୍ତି ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଦେଖୁଛନ୍ତି</translation>
+<translation id="167983332380191032">ପରିଚାଳନା ସେବା HTTP ତ୍ରୁଟି ପଠାଇଛନ୍ତି</translation>
 <translation id="1679841710523778799">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1680659827022803830">ଭିଡିଓ କଲ ନିୟନ୍ତ୍ରଣ</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -297,6 +301,7 @@
 <translation id="1838011306813517425">ଫୋକସ ମୋଡ ସେଟିଂସ</translation>
 <translation id="1838895407229022812">ନାଇଟ୍ ଲାଇଟ୍ ବନ୍ଦ ଅଛି।</translation>
 <translation id="1840920496749066704">°C</translation>
+<translation id="1841616161104323629">ଡିଭାଇସ୍‍ର ରେକର୍ଡ ମିଳୁନାହିଁ।</translation>
 <translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1862077610023398675">ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1862380676329487333">ଅପଡେଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
@@ -380,6 +385,7 @@
 <translation id="2152796271648108398">ବର୍ତ୍ତମାନର ପାଣିପାଗ</translation>
 <translation id="2152895518047545149">କୌଣସି ଆସାଇନମେଣ୍ଟ ବାକି ନଥିବା ପରି ଲାଗୁଛି। ବଢ଼ିଆ କାମ!</translation>
 <translation id="2159568970844941445">Filesରେ କୌଣସି ଇମେଜ ନାହିଁ</translation>
+<translation id="2160985496866145279">Bruschettaକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2161132820593978283">କେମେରା ଫ୍ରେମିଂ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ଭିଡିଓ କଲରେ ସ୍କ୍ରିନର ମଝିରେ ରହିବେ। କ୍ୱିକ ସେଟିଂସରେ ଏହାକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="216955976692983107">ଟାଇଲ ଥିବା ୱିଣ୍ଡୋକୁ ଡାହାଣ ଆଡ଼କୁ ରିସାଇଜ କରନ୍ତୁ</translation>
 <translation id="2185166372312820725">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‍କୁ ଯାଆନ୍ତୁ</translation>
@@ -399,6 +405,7 @@
 <translation id="2248634276911611268">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲି ଏହି ନୂଆ ଟାବକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="2251809247798634662">ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ</translation>
 <translation id="2253808149208613283">ଏହି ଡିଭାଇସକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଆପ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
+<translation id="2255077166240162850">ଏହି ଡିଭାଇସ୍‌ ବିଭିନ୍ନ ଡୋମେନ୍‌ କିମ୍ବା ମୋଡ୍‌ରେ ଲକ୍‌ କରାଯାଇଥିଲା।</translation>
 <translation id="225614027745146050">ସ୍ଵାଗତ</translation>
 <translation id="225680501294068881">ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ପାଇଁ ସ୍କାନ୍ ହେଉଛି…</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି</translation>
@@ -481,6 +488,7 @@
 <translation id="2453860139492968684">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="2455994958736234930">ଠିକଣା ବାରରେ www. ଏବଂ .com ଯୋଗ କରି ୱେବସାଇଟ ଖୋଲନ୍ତୁ</translation>
 <translation id="2456008742792828469">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2458591546854598341">ଡିଭାଇସ୍ ପରିଚାଳନା ଟୋକନ୍ ଅବୈଧ ଅଟେ।</translation>
 <translation id="246052086404491029">ଡ୍ରିଲ ଡାଉନ</translation>
 <translation id="2465145153332031561">ବେଟେରୀ ହେଲ୍ଥ <ph name="BATTERY_HEALTH_PERCENTAGE" />%, ସାଇକେଲ ସଂଖ୍ୟା <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ରିଜୋଲ୍ୟୁସନ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -556,6 +564,7 @@
 <translation id="2672142220933875349">ଖରାପ crx ଫାଇଲ୍‌, ଅନ୍‍ପ୍ୟାକିଂ ବିଫଳ ହେଲା।</translation>
 <translation id="2673968385134502798">ଗେମଗୁଡ଼ିକ</translation>
 <translation id="2678852583403169292">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍ ମେନୁ</translation>
+<translation id="2682498795777673382">ନିଜ ବାପାମା'ଙ୍କ ଠାରୁ ଅପ୍‌ଡେଟ୍</translation>
 <translation id="2683887737780133806">ଗତ ସପ୍ତାହ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">କୀବୋର୍ଡ ସର୍ଟକଟ ପରିବର୍ତ୍ତନ ହୋଇଯାଇଛି</translation>
 <translation id="2689613560355655046">ଡେସ୍କ 8</translation>
@@ -603,6 +612,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="2805760958323556153">ExtensionInstallForcelistର ନୀତିର ମୂଲ୍ୟ ଅବୈଧ ଅଟେ। ଦୟାକରି ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
+<translation id="281390819046738856">ଅନୁରୋଧରେ ଦସ୍ତଖତ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="2814448776515246190">ଆଂଶିକ କ୍ୟାପଚର୍</translation>
 <translation id="2815594810045873507">ଅଧିକ ୱାଟ (W) ଥିବା ଏକ ଚାର୍ଜର ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ମୂଳ ଚାର୍ଜର ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="2819276065543622893">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରିଦିଆଯିବ।</translation>
@@ -636,6 +646,7 @@
 <translation id="2880541185262491188">PIN ଲେଖି ଅନେକ ଥର ପ୍ରଚେଷ୍ଟା କରାଯାଇଛି। <ph name="TIME_LEFT" /> ସମୟ ଅପେକ୍ଷା କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> କ୍ଷଣସ୍ଥାୟୀ ଭାବରେ ରିଷ୍ଟାର୍ଟ ଏବଂ ରିସେଟ୍ ହେବ</translation>
 <translation id="2883271196820422439">ମାଉସ କୀ ରିଜ୍ୟୁମ କରନ୍ତୁ</translation>
+<translation id="2885729872133513017">ସର୍ଭର୍ ପ୍ରତିକ୍ରିୟାକୁ ଡିକୋଡ୍‌କରିବା ସମୟରେ ଏକ ସମସ୍ୟା ହୋଇଛି।</translation>
 <translation id="2885950158625301909">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="2891209721153296020">"ଅଚୟନ କରନ୍ତୁ"</translation>
 <translation id="2893701697603065178">ପରିଚାଳିତ ଡେଭେଲପମେଣ୍ଟ ଏନଭାର୍ନମେଣ୍ଟ</translation>
@@ -684,6 +695,7 @@
 <translation id="3026897869154397692">କେଲେଣ୍ଡରରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3033545621352269033">ଚାଲୁ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ସହ ଏକତ୍ରିତ କରନ୍ତୁ</translation>
+<translation id="3039491566278747710">ଡିଭାଇସ୍‌ରେ ଅଫ୍‌ଲାଇନ୍ ନୀତି ଇନ୍‍ଷ୍ଟଲ୍‌ କରିବା ବିଫଳ।</translation>
 <translation id="3039939407102840004">ଷ୍ଟାଇଲସ୍ ବ୍ୟାଟେରୀ <ph name="PERCENTAGE" /> ଶତକଡ଼ା ଅଛି।</translation>
 <translation id="304097922505898963">Key Shortcuts ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="3040982432432547149">Chromebook ପାଇଁ Steamକୁ ଉନ୍ନତ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -755,11 +767,13 @@
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3233611303007751344">ବ୍ୟାଟେରୀ ସେଭର୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="3238409143297336341">ଆପ୍ସ ପାଇଁ ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ସେଟ ଅପ କରନ୍ତୁ</translation>
+<translation id="3239373508713281971"><ph name="APP_NAME" /> ପାଇଁ ସମୟ ସୀମା କଢ଼ାଯାଇଛି</translation>
 <translation id="324366796737464147">ନଏଜ୍ ହ୍ରାସ</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋ <ph name="ACTIVE_DESK" /> ଡେସ୍କରୁ <ph name="TARGET_DESK" />ଡେସ୍କକୁ ଘୁଞ୍ଚାଇ ଦିଆଯାଇଛି</translation>
 <translation id="3253743281242075461">କ୍ଲାସୱାର୍କର ପ୍ରକାର: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">ଆପଣଙ୍କ ସେଲ୍ଫରେ ଥିବା ଏକ ଆଇଟମ୍‌ରୁ ହାଇଲାଇଟ୍‌କୁ କାଢ଼ନ୍ତୁ</translation>
 <translation id="3256274561709196882">ଆପଣଙ୍କ PIN ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
+<translation id="3259723213051400722">ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3260969790895726815">ସ୍ପିଚକୁ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ଵିତ କରାଯାଇଛି ଏବଂ ଡିକ୍ଟେସନ ଅଫଲାଇନରେ କାମ କରେ, କିନ୍ତୁ କିଛି ଭଏସ କମାଣ୍ଡ କାମ କରିବ ନାହିଁ।</translation>
 <translation id="3264031581203585083">ସମସ୍ତ Google Drive ପରାମର୍ଶକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="3265032511221679826">ସଠିକ ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରିବେ?</translation>
@@ -813,6 +827,7 @@
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ରୁ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="3430396595145920809">ପଛକୁ ଫେରିବାକୁ ଡାହାଣ ପାର୍ଶ୍ୱରୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="3431517721463707585">ଡେସ୍କ 14</translation>
+<translation id="3433507769937235446">ଲକ-ଅନ-ଲିଭ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435967511775410570">ଟିପଚିହ୍ନ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="3437677362970530951">Play Store ଏବଂ ଅନ୍ୟ ଗେମିଂ ପ୍ଲାଟଫର୍ମରେ ଥିବା ଗେମଗୁଡ଼ିକ</translation>
@@ -861,6 +876,7 @@
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ପିନ୍ କରାଯାଇଥିଲା</translation>
 <translation id="3554928024630051016">ଯେ କୌଣସି ଅତିରିକ୍ତ USB ଡିଭାଇସ ଯୋଗ କରିବା ପାଇଁ, ଗୋଟିଏ ଡିଭାଇସ କାଢ଼ି ଦେବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ ଏବଂ ତା'ପରେ ଏକ ନୂଆ ଡିଭାଇସ ପ୍ଲଗ ଇନ କରନ୍ତୁ</translation>
 <translation id="3558768885091059911">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସ ଚାଲୁ କରିବେ?</translation>
+<translation id="3559262020195162408">ଡିଭାଇସ୍‌ରେ ନୀତି ଇନ୍‍ଷ୍ଟଲ୍‌ କରିବା ବିଫଳ ହୋ‍ଇଛି।</translation>
 <translation id="3560174576767922131">ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="3562423906127931518">ଏହି ପ୍ରକ୍ରିୟା ପାଇଁ ହୁଏତ କିଛି ସମୟ ଲାଗିପାରେ। Linux କଣ୍ଟେନର୍ ସେଟ୍ ଅପ୍ କରାଯାଉଛି।</translation>
 <translation id="3563432852173030730">କିଓସ୍କ ଆପ୍ଲିକେସନ୍ ଡାଉନ୍‌ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
@@ -934,6 +950,7 @@
 <translation id="3712143870407382523">ଏହି ସାଇଡ ପାଇଁ ଏକ ୱିଣ୍ଡୋ ବାଛନ୍ତୁ</translation>
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3713734891607377840">ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଖୋଲନ୍ତୁ</translation>
+<translation id="3714195043138862580">ଏହି ଡେମୋ ଡିଭାଇସ୍‌ଟିକୁ ଏକ ଅବ୍ୟବସ୍ଥିତ ସ୍ଥିତିରେ ରଖାଯାଇଛି।</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> ଇନଷ୍ଟଲର</translation>
 <translation id="3726171378575546917">ଏହି ଡିଭାଇସରେ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ଏବଂ <ph name="UNAVAILABLE_APPS_COUNT" />ଟି ଅଧିକ ଆପ ନାହିଁ।</translation>
 <translation id="3727231512028252576">ଆଇଟମଗୁଡ଼ିକୁ ଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ। ଅନଲାଇନ ହେଲେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -950,6 +967,7 @@
         <ph name="BEGIN_PARAGRAPH3" />ଆପଣ ସେଟିଂସରେ ଏହି ସର୍ଭିସେସକୁ ବନ୍ଦ କରିପାରିବେ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">ଆପଣଙ୍କର <ph name="PHONE_NAME" /> ବର୍ତ୍ତମାନ ଏହାକୁ <ph name="DEVICE_TYPE" /> ମଧ୍ୟ ଅନ୍‌ଲକ୍‌ କରିପାରିବ।</translation>
 <translation id="3756485814916578707">ସ୍କ୍ରିନ କାଷ୍ଟ କରାଯାଉଛି</translation>
+<translation id="3765246971671567135">ଅଫ୍‌ଲାଇନ୍‌ ଡେମୋ ମୋଡ୍‌ ନୀତି ପଢାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> ସର୍ଟକଟକୁ <ph name="OLD_SHORTCUT" />ରୁ <ph name="NEW_SHORTCUT" />କୁ ଅପଡେଟ କରାଯାଇଛି</translation>
 <translation id="3765841986579723851">ଆଜି ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="3772109172035555611">ଆପଣଙ୍କ TrackPointକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
@@ -967,6 +985,7 @@
 <translation id="3804737937830804242">କ୍ୟାମେରା ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ଇମୋଜି। ଅନ୍ୟ କୌଣସି ଫଳାଫଳ ନାହିଁ।}other{# ଇମୋଜି। ଅନ୍ୟ କୌଣସି ଫଳାଫଳ ନାହିଁ।}}</translation>
 <translation id="381202950560906753">ଆଉ ଗୋଟିଏ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="3819261658055281761">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ଲମ୍ବା ଅବଧିର API ଆକ୍ସେସ୍‍ ଟୋକନ୍ ଷ୍ଟୋର୍‌ କରିବାରେ ସିଷ୍ଟମ୍‌ ବିଫଳ ହେଲା।</translation>
 <translation id="3822403841174077928">ଫର୍ମାଟିଂ ସହ କପି କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3824621460022590830">ଡିଭାଇସ୍ ପଞ୍ଜିକରଣ ଟୋକନ୍ ଅବୈଧ ଅଟେ। ଦୟାକରି ଆପଣଙ୍କ ଡିଭାଇସର ମାଲିକ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ। ତ୍ରୁଟି କୋଡ୍: <ph name="ERROR_CODE" />।</translation>
 <translation id="3824784079442479685">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP_NAME" />, ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ। ଆପଣଙ୍କୁ ୱେବ ପୃଷ୍ଠାକୁ ରିଫ୍ରେସ କରିବା କିମ୍ବା ଆପକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ହୋଇପାରେ।</translation>
@@ -986,6 +1005,7 @@
 <translation id="3861638017150647085">ଉପଯୋଗକର୍ତ୍ତାନାମ "<ph name="USERNAME" />" ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3861651314799684201">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="3870197372373144624">ଆପଣଙ୍କ ଡିଭାଇସକୁ ବନ୍ଦ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="3873915545594852654">ARC++ ସହିତ ଏକ ସମସ୍ୟା ହୋ‍ଇଛି।</translation>
 <translation id="3879748587602334249">ଡାଉନ୍‌ଲୋଡ୍ ପରିଚାଳକ</translation>
 <translation id="3884007280698606545">USB ସୀମା ପହଞ୍ଚିଯାଇଛି</translation>
 <translation id="3886872229787704059">ଆଜି ଖୋଲାଯାଇଛି</translation>
@@ -1039,6 +1059,7 @@
 <translation id="4026843240379844265">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡିସ୍‌ପ୍ଲେଗୁଡ଼ିକ ମଧ୍ୟକୁ ନିଅନ୍ତୁ</translation>
 <translation id="4028481283645788203">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + ବାମ ତୀର</translation>
+<translation id="4036778507053569103">ସର୍ଭରରୁ ଡାଉନ୍‌ଲୋଡ୍ ହୋଇଥିବା ନୀତି ଅବୈଧ ଅଟେ।</translation>
 <translation id="4039699481424758547">ୱିଣ୍ଡୋର ସ୍କ୍ରିନସଟ କେପଚର କରିବାକୁ Enter ଦବାନ୍ତୁ: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">ଆପଣ, ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାର୍ କରୁଛନ୍ତି</translation>
 <translation id="404437169852192935">ଅପଡେଟଗୁଡ଼ିକ ସମାପ୍ତ ହୋଇଛି</translation>
@@ -1054,6 +1075,7 @@
 <translation id="4072805772816336153">ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="4077623680826964850">VMକୁ ବୁଟ କରିବା କିମ୍ବା ପୁଣି କନେକ୍ଟ କରିବା ସମୟରେ ସମୟ ସମାପ୍ତ ହୋଇଛି।</translation>
 <translation id="4086921558679520050">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫିଜିକାଲ ମାଇକ ସ୍ୱିଚକୁ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="4099874310852108874">ନେଟ୍‍ୱର୍କରେ ସମସ୍ଯା।</translation>
 <translation id="4101772068965291327">ମୂଳପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="4102906002417106771">ପାୱାରୱାସ୍ କରିବାକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
@@ -1061,6 +1083,7 @@
 <translation id="4114315158543974537">ଫୋନ୍ ହବ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4115378294792113321">ମାଜେଣ୍ଟା</translation>
 <translation id="4116704186509653070">ପୁଣି ଖୋଲନ୍ତୁ</translation>
+<translation id="4118579674665737931">ଦୟାକରି ଡିଭାଇସ୍‌କୁ ରିବୁଟ୍ କରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="411881149140864134">ବାମ ପଟ ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4119928251231465047">PIN ଲେଖି ଅନେକ ଥର ପ୍ରଚେଷ୍ଟା କରାଯାଇଛି</translation>
 <translation id="412298498316631026">ୱିଣ୍ଡୋ</translation>
@@ -1071,6 +1094,7 @@
 <translation id="4136724716305260864">ସୂର୍ଯ୍ୟୋଦୟ ପର୍ଯ୍ୟନ୍ତ ଚାଲୁ ଅଛି</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + ଡାହାଣ ତୀର</translation>
 <translation id="4146671046252289537">ପରବର୍ତ୍ତୀ ଶବ୍ଦର ଶେଷକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="4147911968024186208">ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ଯଦି ଆପଣ ପୁଣି ଏହି ତ୍ରୁଟି ଦେଖନ୍ତି, ତେବେ ଆପଣଙ୍କ ସହଯୋଗ ପ୍ରତିନିଧିଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="4150201353443180367">ଡିସ୍‌ପ୍ଲେ</translation>
 <translation id="4151054805501931758">ପୋର୍ଟ୍ରେଟ ଟଚ-ଅପ</translation>
 <translation id="4151449637210235443">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଗେମପ୍ଲେ ବିଷୟରେ ଆମକୁ କୁହନ୍ତୁ</translation>
@@ -1193,6 +1217,7 @@
 <translation id="445765352722456792">ପରାମର୍ଶଗୁଡ଼ିକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="4458688154122353284">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="445923051607553918">ୱାଇ-ଫାଇ ନେଟୱାର୍କରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
+<translation id="4465236939126352372"><ph name="APP_NAME" /> ପାଇଁ <ph name="TIME" />ର ସମୟ ସୀମା ସେଟ୍ କରାଯାଇଛି</translation>
 <translation id="4471354919263203780">ସ୍ପିଚ୍ ଚିହ୍ନଟକରଣ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଉଛି... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{ବର୍ତ୍ତମାନ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}=1{1 ସେକେଣ୍ଡ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}other{# ସେକେଣ୍ଡ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
 <translation id="4472575034687746823">ଆରମ୍ଭ କରନ୍ତୁ</translation>
@@ -1212,6 +1237,7 @@
 <translation id="4513946894732546136">ମତାମତ</translation>
 <translation id="4518096944902121253">ଏହି ଭାଷା ପାଇଁ ଆଉ କୌଣସି କାର୍ଯ୍ୟ ନାହିଁ</translation>
 <translation id="4518404433291145981">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଫୋନକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
+<translation id="4524832533047962394">ପ୍ରଦାନ କରାଯାଇଥିବା ନାମାଙ୍କନ ମୋଡ୍, ଅପରେଟିଂ ସିଷ୍ଟମ୍‍ର ଏହି ସଂସ୍କରଣରେ ସମର୍ଥିତ ନୁହେଁ। ଦୟାକରି ସୁନିଶ୍ଚିତ କରନ୍ତୁ କି ଆପଣ ନବୀନତମ ସଂସ୍କରଣ ଚଲାଉଛନ୍ତି।</translation>
 <translation id="4525887279712865285">କୁଇକ ସେୟାରିଂ ସେଟିଂ ଦେଖାନ୍ତୁ</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ପେୟାର୍ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି।</translation>
 <translation id="4531536770443562276">କେବଳ ପୂର୍ଣ୍ଣସ୍କ୍ରିନ ଉପଲବ୍ଧ ଅଟେ</translation>
@@ -1252,6 +1278,7 @@
 <translation id="4613144866899789710">Linuxର ଇନ୍‍ଷ୍ଟଲେସନ୍ ବାତିଲ୍ ହେଉଛି...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="4623189117674524348">ଏହି ଡିଭାଇସ୍ ପାଇଁ API ଆକ୍ସେସ୍ ସ୍ୱୀକୃତ କରିବାରେ ସିଷ୍ଟମ୍ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="4628757576491864469">ଡିଭାଇସ୍</translation>
 <translation id="4628762811416793313">Linux କଣ୍ଟେନର୍ ସେଟ୍‍ଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ତାରା ମୂଲ୍ୟାଙ୍କନ <ph name="RATING_SCORE" /></translation>
@@ -1259,14 +1286,17 @@
 <translation id="4633757335284074492">Google Driveରେ ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ। ସହଜରେ ଡାଟା ରିଷ୍ଟୋର୍ କରନ୍ତୁ କିମ୍ୱା ଯେ କୌଣସି ସମୟରେ ଡିଭାଇସ୍ ସ୍ୱିଚ୍ କରନ୍ତୁ। ଏହି ବ୍ୟାକଅପ୍ ଆପ୍ ଡାଟା ଅନ୍ତର୍ଭୁକ୍ତ କରେ। ବ୍ୟାକଅପଗୁଡ଼ିକୁ Googleରେ ଅପଲୋଡ୍ କରାଯାଇଛି ଏବଂ ଆପଣଙ୍କ ପିଲାର Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡ ବ୍ୟବହାର କରି ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="4635501805800894201">{0,plural, =0{ବର୍ତ୍ତମାନ ଡିଭାଇସକୁ ପୂର୍ବବର୍ତ୍ତୀ ଭର୍ସନକୁ ଅପଡେଟ କରନ୍ତୁ}=1{ଡିଭାଇସକୁ 1 ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ଭର୍ସନକୁ ଅପଡେଟ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ଭର୍ସନକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
 <translation id="4642092649622328492">ଆଶିଂକ ସ୍କ୍ରିନ୍‌ସଟ୍‍ ନିଅନ୍ତୁ</translation>
+<translation id="4643833688073835173">ଆପଣଙ୍କ ଡିଭାଇସ ସମ୍ମୁଖରେ ଥିବା ଲୋକମାନଙ୍କୁ ଚିହ୍ନଟ କରିବା ପାଇଁ ଆପଣଙ୍କ Chromebook ଏକ ବିଲ୍ଟ-ଇନ ସେନ୍ସର ବ୍ୟବହାର କରେ। ସମସ୍ତ ଡାଟାକୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ତୁରନ୍ତ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରି ଡିଲିଟ କରାଯାଏ। ସେନ୍ସର ଡାଟାକୁ କେବେ ବି Googleକୁ ପଠାଯାଏ ନାହିଁ।</translation>
 <translation id="4644727592819780893">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ ଦେଖାଇବା ପାଇଁ ଅଞ୍ଚଳଟି ବହୁତ ଛୋଟ ଅଟେ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ଆପ୍‍ର ସୁପାରିଶ</translation>
 <translation id="4649019912155580914">ଆପଣ ଏଡିଟ କରିଛନ୍ତି</translation>
+<translation id="4651484272688821107">ଡେମୋ ମୋଡ୍ ସାଧନଗୁଡ଼ିକ ସହିତ ଅନ୍‌ଲାଇନ୍ କମ୍ପୋନେଟ୍ ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ଚେକବକ୍ସକୁ ଟିକ କରାଯାଇଛି।</translation>
 <translation id="465686131535918331">ଆପଣ <ph name="PERIPHERAL_NAME" /> ପାଇଁ ସେଟିଂସକୁ ପର୍ସନାଲାଇଜ କରିପାରିବେ</translation>
 <translation id="4657775630156561295">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ପରାମର୍ଶ ଇତିହାସରୁ ନିମ୍ନୋକ୍ତ ପରାମର୍ଶକୁ ସ୍ଥାୟୀ ଭାବେ କାଢ଼ି ଦିଆଯିବ:
 
 <ph name="QUERY" /></translation>
+<translation id="4658285806588491142">ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ବ୍ୟକ୍ତିଗତ ରଖନ୍ତୁ</translation>
 <translation id="4659419629803378708">ChromeVox ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4666911709726371538">ଅଧିକ ଆପ୍</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ଡାଉନଲୋଡ ହେଉଛି</translation>
@@ -1289,6 +1319,7 @@
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ବାମ)</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
+<translation id="4735803855089279419">ଏହି ଡିଭାଇସ୍ ପାଇଁ ଡିଭାଇସ୍ ଚିହ୍ନଟକାରୀ ନିର୍ଦ୍ଦିଷ୍ଟ କରିବାରେ ସିଷ୍ଟମ୍ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="4735944890391795473">ଡେସ୍କ 12</translation>
 <translation id="4736732123074402682">ଆପଣଙ୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
@@ -1308,6 +1339,7 @@
 <translation id="4778095205580009397">ଏକ ଡେମୋ ସମୟ ଅବଧିରେ Google ଆସିଷ୍ଟାଣ୍ଟ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="4781633367688946589">ନୂଆ ସେସନରେ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4785412405516449976">କେବଳ ଏକ Google ଆକାଉଣ୍ଟ ଥିବା ଆପଣଙ୍କ କଣ୍ଟାକ୍ଟ</translation>
+<translation id="4788092183367008521">ଦୟାକରି ଆପଣଙ୍କ ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4789348252524569426">ସ୍ପିଚ ଫାଇଲଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରାଯାଇପାରିବ ନାହିଁ। ଆପଣଙ୍କ ଡିଭାଇସକୁ ଅପଡେଟ କରାଯିବ ଆବଶ୍ୟକ। ଆପଣଙ୍କ ଡିଭାଇସକୁ ରିଷ୍ଟାର୍ଟ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="478959186716341421">କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="4798403412327076414">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣ ସାଇନ ଇନ କରିବା ବେଳେ ପୂର୍ବରୁ ଖୋଲାଯାଇଥିବା ୱିଣ୍ଡୋ ଏବଂ ଆପ୍ସକୁ ଦେଖିବେ</translation>
@@ -1432,6 +1464,7 @@
 <translation id="5137349216872139332">ଇନଷ୍ଟାଣ୍ଟ ହଟସ୍ପଟ କନେକ୍ସନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ସର୍ଚ୍ଚ</translation>
 <translation id="5144005092084035179">ଅଡିଓ ଇନପୁଟ ସୁଇଚ କରିବେ?</translation>
+<translation id="5145464978649806571">ଯଦି ଆପଣ ଆପଣଙ୍କ ଡିଭାଇସଠାରୁ ଦୂରକୁ ଯିବେ, ତେବେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ସ୍ୱଚାଳିତ ଭାବେ ଲକ ହୋଇଯିବ। ଆପଣ ଆପଣଙ୍କ ଡିଭାଇସ ସମ୍ମୁଖରେ ଥିବା ବେଳେ, ଆପଣଙ୍କ ସ୍କ୍ରିନ ଅଧିକ ସମୟ ପାଇଁ ଚାଲୁ ରହିବ। ଯଦି ଲକ ସ୍କ୍ରିନକୁ ଅକ୍ଷମ କରାଯାଏ, ତେବେ ଆପଣଙ୍କ ଡିଭାଇସ ଲକ ହେବା ପରିବର୍ତ୍ତେ ସ୍ଲିପ ମୋଡକୁ ଯିବ।</translation>
 <translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5150070631291639005">ଗୋପନୀୟତା ସେଟିଂସ</translation>
 <translation id="5155897006997040331">ପଢ଼ିବା ବେଗ</translation>
@@ -1451,6 +1484,7 @@
 <translation id="5198039720391525849">ଫିଚର କରାଯାଇଥିବା GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" />ଟି ଇଭେଣ୍ଟ</translation>
 <translation id="5198715732953550718">ନୂଆ ଫୋଲ୍ଡର୍ ତିଆରି କରିବାକୁ<ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> ସହ ସମ୍ମିଳିତ ହୋଇଛି।</translation>
+<translation id="5204673965307125349">ଦୟାକରି ଡିଭାଇସ୍‌କୁ ପାୱାର୍‍ୱାସ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}other{#ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="5207949376430453814">ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
@@ -1503,6 +1537,7 @@
 <translation id="5322611492012084517">ଆପଣଙ୍କ ଫୋନ୍ ମିଳି ପାରୁନାହିଁ</translation>
 <translation id="5323994101633366939">ଡେସ୍କର ନାମ ଲୁଚାନ୍ତୁ</translation>
 <translation id="5327248766486351172">ନାମ</translation>
+<translation id="5327570636534774768">ଏହି ଡିଭାଇସ୍‌, ଏକ ଅଲଗା ଡୋମେନ୍‌ ଚରଫରୁ ପରିଚାଳିତ ହେବା ପାଇଁ ଚିହ୍ନଟ କରାଯାଇଛି। ଡେମୋ ମୋଡ୍‌କୁ ସେଟ୍‌ ଅପ୍‍ କରିବା ପୂର୍ବରୁ ଡିଭାଇସ୍‌କୁ ସେହି ଡୋମେନ୍‌ର ବ୍ୟବହାରରୁ ବାହାର କରନ୍ତୁ ।</translation>
 <translation id="532943162177641444">ମୋବାଇଲ୍‌ ହଟ୍‌ସ୍ପଟ୍‍ ସେଟ୍‍ ଅପ୍‌ କରିବାକୁ ଯାହା ଏହି ଡିଭାଇସ୍‌ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଇପାରିବ, ଆପଣଙ୍କର <ph name="PHONE_NAME" />ର ବିଜ୍ଞପ୍ତିରେ ଟାପ୍‌ କରନ୍ତୁ।</translation>
 <translation id="5329548388331921293">ସଂଯୋଗ ହେଉଛି...</translation>
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
@@ -1578,6 +1613,7 @@
 <translation id="5570122939431135380">ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="5571066253365925590">ବ୍ଲୁଟୁଥ୍‌ ସକ୍ଷମ ଅଛି</translation>
 <translation id="5572632238877308040">ଅତ୍ୟାବଶ୍ୟକୀୟ</translation>
+<translation id="5575528586625653441">ଡେମୋ ପଞ୍ଜିକରଣ ଅନୁରୋଧରେ ଏକ ସମସ୍ୟା ହୋ‍ଇଛି।</translation>
 <translation id="557563299383177668">ପରବର୍ତ୍ତୀ ଅନୁଚ୍ଛେଦ</translation>
 <translation id="5577082622442191756">ବ୍ଲୁଟୁଥ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="5577281275355252094">ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1628,6 +1664,7 @@
 <translation id="5693255400847650006">ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="5699366815052349604">ସମସ୍ତ ଡେସ୍କ ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋ ଆସାଇନ କରନ୍ତୁ</translation>
 <translation id="570043786759263127">Google Play ଆପ୍ସ ଏବଂ ସେବା</translation>
+<translation id="5701080607174488915">ସର୍ଭର୍‌ରୁ ନୀତି ଆଣିବା ସମୟରେ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="570390244361237317">ସମସ୍ତ ଆପ, ସମସ୍ତ ଆପକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ତୀର କୀ ସହ ନାଭିଗେଟ କରନ୍ତୁ</translation>
 <translation id="5705197514573687092">ଫୋକସ ମୋଡ ସେଟିଂସ ଦେଖାନ୍ତୁ। <ph name="FOCUS_DURATION" />ରେ ଟାଇମର ସେଟ କରାଯାଇଛି।</translation>
 <translation id="5707775774148071965">ଆପଣଙ୍କ କେବୁଲ ଅପେକ୍ଷା ଆପଣଙ୍କ ଡିଭାଇସ ଅଧିକ ଡାଟା ରେଟକୁ ସମର୍ଥନ କରେ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>
@@ -1687,6 +1724,7 @@
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5864691701242730005">Quick Share ସେଟିଂ ଦେଖାନ୍ତୁ। <ph name="VISIBILITY" /> ଭିଜିବିଲିଟୀ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5864748620896638071">ବେଟେରୀ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5865508026715185451"><ph name="APP_NAME" /> ଶୀଘ୍ର ବିରତ ହେବ</translation>
 <translation id="5867217927013474703">ନେଟୱାର୍କ ସୂଚନା ସଂଗ୍ରହ କରାଯାଉଛି</translation>
 <translation id="5867606971598166637">ଆପଣଙ୍କ ସିଷ୍ଟମ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ସ୍କ୍ରିନକୁ ମନିଟର କରୁଛି</translation>
 <translation id="5876666360658629066">ବାପାମା କୋଡ୍ ଲେଖନ୍ତୁ</translation>
@@ -1714,6 +1752,7 @@
 <translation id="5947494881799873997">ପୂର୍ବାବସ୍ଥାକୁ ଆଣନ୍ତୁ</translation>
 <translation id="595202126637698455">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5955304353782037793">ଆପ୍</translation>
+<translation id="5955809630138889698">ଅନ୍‍ଲାଇନ୍‍ ଡେମୋ ମୋଡ୍‌ ପାଇଁ କେବଳ ଏହି ଡିଭାଇସ୍‌ ଯୋଗ୍ୟ ହୋ‍ଇପାରେ। ଅଧିକ ବିବରଣୀ ପାଇଁ, ଦୟାକରି ସହଯୋଗୀ ପ୍ରତିନିଧିଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="5958529069007801266">ନିରୀକ୍ଷିତ ୟୁଜର</translation>
 <translation id="5959471481388474538">ନେଟ୍‌ୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="596035801491797438">ଫେସ ନିୟନ୍ତ୍ରଣ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1766,6 +1805,7 @@
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>
 <translation id="6064463340679478396">ଏହି ଫାଇଲକୁ ବ୍ୟବହାର କରିସାରିଛି</translation>
 <translation id="6068258534237496331">ଭିଡିଓ କଲ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
+<translation id="6071576563962215370">ସିଷ୍ଟମ୍, ଡିଭାଇସ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍-ସମୟ ବୈଶିଷ୍ଟ୍ୟ ଲକ୍ ସ୍ଥାପନା କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6074087755403037157">ବିଟା ଚ୍ୟାନେଲ</translation>
 <translation id="6075098173600599596">କେପିଟାଲାଇଜେସନ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -1807,6 +1847,7 @@
 <translation id="6185696379715117369">ଉପରର ପୃଷ୍ଠା</translation>
 <translation id="619335566042889110">ବର୍ତ୍ତମାନ ସମ୍ପୂର୍ଣ୍ଣ ଚାର୍ଜ କରନ୍ତୁ</translation>
 <translation id="6193431488227440296">ଡେଭ</translation>
+<translation id="6195693561221576702">ଏହି ଡିଭାଇସ୍‌ଟି ଅଫ୍‌ଲାଇନ୍ ଡେମୋ ମୋଡ୍‌ରେ ସେଟ୍‍ ଅପ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="6198252989419008588">PIN ବଦଳାନ୍ତୁ</translation>
 <translation id="6199775032047436064">ବର୍ତ୍ତମାନର ପୃଷ୍ଠାକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ</translation>
 <translation id="6200515304866777730">ଆପ ଦ୍ଵାରା ସମର୍ଥିତ ନୁହେଁ</translation>
@@ -1977,6 +2018,7 @@
 <translation id="666343722268997814">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଆଇଟମ୍‌ଗୁଡ଼ିକ ପାଇଁ ଡାହାଣ-କ୍ଲିକ୍ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="6665545700722362599">ଲୋକେସନ୍ ସେବା, ଡିଭାଇସ୍‌ର ମାଇକ୍ରୋଫୋନ୍, କ୍ୟାମେରା, ବା ଅନ୍ୟାନ୍ୟ ବୈଶିଷ୍ଠ୍ୟ ବ୍ୟବହାର କରିବା ପାଇଁ ୱେବ୍‍ସାଇଟ୍, ଆପ୍ସ, ଏବଂ ସଂପ୍ରସାରଣର ଅନୁମତି ପ୍ରଦାନ କରନ୍ତୁ</translation>
 <translation id="6667908387435388584">ଆପଣଙ୍କ ଫୋନର ହଟସ୍ପଟ୍ ସହିତ ସଂଯୋଗ କରନ୍ତୁ, ଆପଣଙ୍କର ଡିଭାଇସକୁ ନୀରବ କରି ଏହାକୁ ଲୋକେଟ୍ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫୋନରେ ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା Chrome ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
+<translation id="6670142487971298264"><ph name="APP_NAME" /> ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="6670153871843998651">ଡେସ୍କ 3</translation>
 <translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
 <translation id="6671661918848783005">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -2167,6 +2209,7 @@
 <translation id="7285232777292757180">ସ୍କ୍ରିନସଟ ନେବା ପାଇଁ କୁଇକ ସେଟିଂସରେ ସ୍କ୍ରିନ କେପଚର ଟୁଲ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7301826272005790482">ୱିଣ୍ଡୋ ପରାମର୍ଶଗୁଡ଼ିକୁ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="7302889331339392448">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ବନ୍ଦ ଅଛି।</translation>
+<translation id="7303281435234579599">ଓହୋଃ! ଡେମୋ ମୋଡ୍‌ ସେଟ୍‍ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="7312210124139670355">ଆପଣଙ୍କ ଆଡମିନଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର eSIMକୁ ରିସେଟ କରୁଛନ୍ତି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
@@ -2178,6 +2221,7 @@
 <translation id="7331646370422660166">alt + ଡାଉନ ତୀର</translation>
 <translation id="7336943714413713812">ବ୍ରାଉଜିଂ ଇତିହାସ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="7337660433630200387">+10 ମିନିଟ</translation>
+<translation id="7338630283264858612">ଡିଭାଇସ୍‌ର କ୍ରମିକ ସଂଖ୍ୟା ଅବୈଧ ଅଟେ।</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="7340731148882810149">ସ୍ୱଚାଳିତ କ୍ଲିକ ମେନୁ</translation>
 <translation id="7346909386216857016">ଠିକ ଅଛି, ଏହା ବୁଝିଗଲି</translation>
@@ -2271,6 +2315,7 @@
 <translation id="7569886975397378678">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଭ୍ୟୁ କରିବାକୁ ସେଟ ଅପ କରିବା ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="7571361473021531288">ବେଟେରୀ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="7573585051776738856">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡାହାଣପଟେ ଡକ କରାଯାଇଛି।</translation>
+<translation id="7576976045740938453">ଡେମୋ ମୋଡ୍ ଆକାଉଣ୍ଟରେ ଏକ ସମସ୍ୟା ଦେଖାଦେଲା।</translation>
 <translation id="7579778809502851308">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
 <translation id="7588317312481506627">କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି।</translation>
 <translation id="7593891976182323525">Search କିମ୍ବା Shift</translation>
@@ -2288,6 +2333,7 @@
 <translation id="761530003705945209">Google Driveରେ ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ। ସହଜରେ ଆପଣଙ୍କ ଡାଟା ରିଷ୍ଟୋର୍ କରନ୍ତୁ କିମ୍ୱା ଯେ କୌଣସି ସମୟରେ ଡିଭାଇସ୍ ସ୍ୱିଚ୍ କରନ୍ତୁ। ଆପଣଙ୍କ ବ୍ୟାକଅପ୍ ଆପ୍ ଡାଟା ଅନ୍ତର୍ଭୁକ୍ତ କରେ। ଆପଣଙ୍କ ବ୍ୟାକଅପଗୁଡ଼ିକୁ Googleରେ ଅପଲୋଡ୍ କରାଯାଇଛି ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡକୁ ବ୍ୟବହାର କରି ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="761736749114493194">କେମେରା ଫ୍ରେମିଂକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Quick Share ସେଟିଂସ</translation>
+<translation id="7621382409404463535">ଡିଭାଇସ୍‌ କନ୍‍ଫିଗ୍‌ରେସନ୍‌ ସେଭ୍‍ କରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ଫାରେନହାଇଟ୍</translation>
 <translation id="7627303771480696593">ଏକ ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ</translation>
 <translation id="7629858978065675960">ଅଜଣା ଫଳାଫଳ।</translation>
@@ -2308,6 +2354,7 @@
 <translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7659861092419699379">ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> ସହିତ ଲିଙ୍କ ହୋଇଥିବା ଡିଭାଇସଗୁଡ଼ିକରେ ଆପଣଙ୍କ <ph name="NAME" /> ଦେଖାଯିବ</translation>
+<translation id="7661451191293163002">ଏକ ପଞ୍ଜିକରଣ ସାର୍ଟିଫିକେଟ୍‌ ପ୍ରାପ୍ତ କରିହେଲା ନାହିଁ।</translation>
 <translation id="7661694115779363471">ନିମ୍ନ ବାମପଟରେ ଥିବା ହେଣ୍ଡେଲକୁ ଚୟନ କରାଯାଇଛି, ମୁଭ କରିବା ପାଇଁ ତୀର କୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="7670953955701272011">Google Calendarରେ ଏହି ତାରିଖ ଖୋଲନ୍ତୁ</translation>
@@ -2329,6 +2376,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1ଟି ବିଜ୍ଞପ୍ତି}other{#ଟି ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="7723703419796509666">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକର କନସୋଲ ଦେଖାନ୍ତୁ କିମ୍ବା ଲୁଚାନ୍ତୁ</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7724711098786238351">ଡେମୋ ମୋଡ 18+ ବୟସର ୟୁଜରମାନଙ୍କ ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ଏବଂ ଏହା Googleର ସେବାର ସର୍ତ୍ତାବଳୀ ଓ ଗୋପନୀୟତା ନୀତି ଦ୍ୱାରା ପରିଚାଳିତ। ଏହି ଡିଭାଇସରେ ଲେଖାଯାଇଥିବା ଡାଟାକୁ ଅନ୍ୟମାନେ ପର୍ଯ୍ୟାୟକ୍ରମେ ୱାଇପ ମଧ୍ୟରେ ଭ୍ୟୁ କରିପାରନ୍ତି।</translation>
 <translation id="7725108879223146004">ହଟସ୍ପଟ ବିବରଣୀ ଦେଖାନ୍ତୁ। ହଟସ୍ପଟକୁ ବନ୍ଦ କରାଯାଉଛି।</translation>
 <translation id="7726391492136714301">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="7727952505535211425">ଏକ ନୂଆ ଟାବରେ ଥିବା ଠିକଣା ବାରରେ ୱେବସାଇଟ ଖୋଲନ୍ତୁ</translation>
@@ -2345,6 +2393,7 @@
 <translation id="7769299611924763557">ଆପଣଙ୍କ GIF ଖୁବ ଶୀଘ୍ର ପ୍ରସ୍ତୁତ ହୋଇଯିବ</translation>
 <translation id="7773536009433685931">ଏହା ପରିବର୍ତ୍ତେ ୱାଇଫାଇକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="77747521138552256">PIN ଲେଖି ଅନେକ ଥର ପ୍ରଚେଷ୍ଟା କରାଯାଇଛି। <ph name="TIME_LEFT" /> ଅପେକ୍ଷା କରି ପୁଣି PIN ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ତୁରନ୍ତ ସାଇନ ଇନ କରିବାକୁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
+<translation id="7774792847912242537">ଅନେକଗୁଡ଼ିଏ ଅନୁରୋଧ।</translation>
 <translation id="7780094051999721182">ସର୍ଟକଟଗୁଡ଼ିକ</translation>
 <translation id="7780159184141939021">ସ୍କ୍ରିନ୍‌କୁ ଘୂରାନ୍ତୁ</translation>
 <translation id="7781335840981796660">ସମସ୍ତ ୟୁଜର ଆକାଉଣ୍ଟ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ କାଢ଼ି ଦିଆଯିବ।</translation>
@@ -2360,6 +2409,7 @@
 <translation id="7824864914877854148">ତ୍ରୁଟି ହେତୁ ବ୍ୟାକ୍‍ଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="7825412704590278437">ଆଗାମୀ କେଲେଣ୍ଡର ଇଭେଣ୍ଟ ଠାରୁ</translation>
 <translation id="7826249772873145665">ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
+<translation id="7826254698725248775">ପରସ୍ପର ବିରୋଧୀ ଡିଭାଇସ୍ ଚିହ୍ନଟକାରୀ।</translation>
 <translation id="7829386189513694949">ଶକ୍ତିଶାଳୀ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="7830453190047749513">ଆପଣ ଆପଣଙ୍କ <ph name="PERIPHERAL_NAME" /> ପାଇଁ ବଟନ କାର୍ଯ୍ୟ, କର୍ସର ସ୍ପିଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ପର୍ସନାଲାଇଜ କରିପାରିବେ</translation>
 <translation id="7842569679327885685">ଚେତାବନୀ: ପରୀକ୍ଷାମୂଳକ ବୈଶିଷ୍ଟ୍ୟ</translation>
@@ -2555,6 +2605,7 @@
 <translation id="8382715499079447151">ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା</translation>
 <translation id="8383614331548401927">Recapକୁ ସ୍ୱାଗତ</translation>
 <translation id="838540623579162843">Music Premium ପାଆନ୍ତୁ</translation>
+<translation id="8386091599636877289">ନୀତି ମିଳିଲା ନାହିଁ।</translation>
 <translation id="8388750414311082622">ଶେଷ ଡେସ୍କକୁ କଢ଼ା ଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="8390392581097975659">ସ୍କାନର ସଫ୍ଟୱେରକୁ ଇନଷ୍ଟଲ କରାଯାଉଛି</translation>
 <translation id="8394567579869570560">ଆପଣଙ୍କ ମାତା-ପିତା ଏହି ଡିଭାଇସ୍‌କୁ ଲକ୍‌ କରିଦେଇଛନ୍ତି</translation>
@@ -2649,6 +2700,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ଆଂଶିକ ସ୍କ୍ରିନସଟ କ୍ୟାପଚର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8665180165765946056">ବ୍ୟାକଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେଲା</translation>
+<translation id="867085395664725367">ଅସ୍ଥାୟୀ ସର୍ଭରରେ ତ୍ରୁଟି ଦେଖାଦେଇଛି।</translation>
 <translation id="8673530374848624865">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କ ଡିଭାଇସ ପାଇଁ ସିକ୍ୟୁରିଟି ଆବଶ୍ୟକତାଗୁଡ଼ିକୁ ଅପଡେଟ କରିଛନ୍ତି</translation>
 <translation id="8676770494376880701">ନିମ୍ନ-ଶକ୍ତିର ଚାର୍ଜର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8679158879996532670">ଫୋକସ ମୋଡ ସେଟିଂସ ଦେଖାନ୍ତୁ। ଫୋକସ ମୋଡ ଚାଲୁ ଅଛି, <ph name="REMAINING_TIME" /> ବାକି ଅଛି।</translation>
@@ -2664,6 +2716,7 @@
 <translation id="8714138378966541668">ପ୍ରଦାନକାରୀ ଦ୍ୱାରା ଲକ କରାଯାଇଛି</translation>
 <translation id="8716931980467311658">ଏହି <ph name="DEVICE_TYPE" />ରୁ ଆପଣଙ୍କ Linux ଫାଇଲ୍ ଫୋଲ୍ଡର୍‌ରେ ଥିବା ସମସ୍ତ Linux ଆପ୍ଲିକେସନ୍ ଏବଂ ଡାଟାକୁ ଡିଲିଟ୍ କରିବେ କି?</translation>
 <translation id="8717459106217102612">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦ କିମ୍ବା ଅକ୍ଷରକୁ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="8720816553731218127">ଇନ୍‌ଷ୍ଟଲେସନ୍ ସମୟ ବିଶେଷତାଗୁଡ଼ିକ ଆରମ୍ଭ କରିବାର ସମୟ ଅବଧି ଶେଷ ହୋଇଗଲା।</translation>
 <translation id="8721053961083920564">ଭଲ୍ୟୁମ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
 <translation id="8724405322205516354">ଆପଣ ଯେତେବେଳେ ଏହି ଆଇକନ୍‌କୁ ଦେଖନ୍ତି, ଚିହ୍ନଟକରଣ ପାଇଁ କିମ୍ବା କ୍ରୟଗୁଡିକୁ ଅନୁମୋଦନ କରିବା ପାଇଁ ଆପଣଙ୍କର ଟିପ ଚିହ୍ନ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -2680,6 +2733,7 @@
 <translation id="8742395827132970586">ଇନଷ୍ଟଲ ବିଫଳ ହୋଇଛି, ଖାଲି କରାଯାଉଛି</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749865622265861882">ଆପଣ ଏକ ଡେମୋ ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="8751299148074971734">ଏହାକୁ ଜାରି ରଖନ୍ତୁ!</translation>
 <translation id="8753368202781196133">ବର୍ତ୍ତମାନ ଏହି ଭାଷାକୁ ସପୋର୍ଟ କରୁନାହିଁ।</translation>
 <translation id="8755498163081687682">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ: ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହୁଁଛି</translation>

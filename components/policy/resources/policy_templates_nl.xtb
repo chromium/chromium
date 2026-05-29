@@ -9387,6 +9387,13 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="7055022222176591388">Verouderde <ph name="FLASH_PLUGIN_NAME" /> niet toestaan</translation>
 <translation id="7056040036973126753">Gegevens over domeinbetrouwbaarheid kunnen naar Google worden gestuurd, afhankelijk van het Chrome-beleid voor gebruikersstatistieken</translation>
 <translation id="7062803946218028349">Toestaan dat Telefoonhub wordt aangezet</translation>
+<translation id="7063646777978847358">Met dit beleid wordt bepaald of achtergrondverzoeken van service workers worden beperkt. Dit beleid kan relevant zijn als een functie die bestanden op de achtergrond downloadt, wordt beïnvloed.
+
+Als je dit beleid toepast of niet instelt, is de beperking actief en kunnen verzoeken voor ophalen op de achtergrond vanuit service worker-contexten worden geblokkeerd.
+
+Als je dit beleid niet toepast, wordt de beperking omzeild en kunnen alle service workers verzoeken voor ophalen op de achtergrond doen.
+
+Dit bedrijfsbeleid is tijdelijk en wordt verwijderd na M152.</translation>
 <translation id="7066292150801784098">Externe gebruikers niet toestaan om vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="706669471845501145">Sites toestaan bureaubladmeldingen te tonen</translation>
 <translation id="7067419518071223152">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke web-apps toegang tot bestandstypen krijgen.

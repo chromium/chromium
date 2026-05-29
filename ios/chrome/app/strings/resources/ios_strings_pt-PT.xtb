@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Desativar Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
+<translation id="1560153516220021659">Botão da barra de ferramentas secundária reduzido</translation>
 <translation id="1565371473877914088">Novo separador de navegação anónima</translation>
 <translation id="1567960978791353852">Mostrar modo de leitura</translation>
 <translation id="1571780780926010134">Separadores de navegação anónima</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Correio enviado.</translation>
 <translation id="1582732959743469162">Esta ação vai interromper totalmente o progresso da transferência atual.</translation>
 <translation id="1594034544529347967">Início</translation>
+<translation id="1598485494295307681">A ouvir</translation>
 <translation id="1598751033135758830">Abrir na app…</translation>
 <translation id="1600571977391127696">Algum conteúdo pode não ser adequado para todos.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Lamentamos, mas ocorreu um erro ao partilhar o seu item.</translation>
 <translation id="4944543191714094452">Localizar na página…</translation>
 <translation id="4945756290001680296">Aceder às definições de palavras-passe</translation>
+<translation id="4946307855175300628">A responder</translation>
 <translation id="4949302115427722371">Gerir definições…</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="496392417432935267">Aberta noutro local</translation>
@@ -1552,6 +1555,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6355820183143562453">Ocultar cartão de acompanhamento de preço</translation>
 <translation id="6355820205320395730">As palavras-passe fracas são fáceis de adivinhar. Certifique-se de que cria palavras-passe fortes. <ph name="BEGIN_LINK" />Veja mais sugestões de segurança.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Inicie sessão para ter acesso a todo o seu conteúdo, como palavras-passe, marcadores e muito mais.</translation>
+<translation id="6364268785720100355">Inicie sessão para obter as suas palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="6368038301482806847">Selecione um motor de pesquisa na lista.</translation>
 <translation id="6368102751067608420">Para eliminar todos os dados do Gestor de Palavras-passe</translation>
 <translation id="6372558618707314581">Aceda a qualquer página que queira</translation>
@@ -1681,6 +1685,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6746338529702829275">Reveja os dados da sua conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item do histórico importado}other{{count} itens do histórico importados}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opção para a credencial disponível acima do teclado.}other{{count} opções para a credencial disponíveis acima do teclado.}}</translation>
 <translation id="6755200887046212842">Gerir contas</translation>
 <translation id="6757899787818440812">Altura média</translation>
 <translation id="6759709389246683070">Pode tocar sem soltar neste separador para definir um lembrete para consultar mais tarde</translation>

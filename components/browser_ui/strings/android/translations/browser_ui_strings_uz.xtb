@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1000614056227025171">Bosh sahifani sozlash tanituvi quyi ekrani toʻliq hajmda ochildi</translation>
 <translation id="1006017844123154345">Onlayn versiyasini ochish</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1046742265332833834">Koʻk rangli mavzu</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Saytlar ovoz chiqarishi mumkin</translation>
 <translation id="3065787901655140044">Kengaytirilgan himoya yoqildi</translation>
 <translation id="3069226013421428034">Muayyan sayt uchun tashqi xizmatga kirishga ruxsat bering.</translation>
+<translation id="3084983642903364837">Bosh sahifani keyinroq 3 nuqtali menyu orqali tahrirlang.</translation>
 <translation id="310297983047869047">Avvalgi slaydi</translation>
 <translation id="3108122610701115301">Birlamchi qilib belgilash</translation>
 <translation id="310979712355504754">Hammasini oʻchirish</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Seriyali portga ulandi</translation>
 <translation id="4223404254440398437">Mikrofondan foydalanishga ruxsat berilmagan</translation>
 <translation id="4226663524361240545">Bildirishnoma kelganida qurilma tebranishi mumkin</translation>
+<translation id="4227965147357783918">Bosh sahifani sozlash tanituvi quyi ekrani yarim hajmda ochildi</translation>
 <translation id="4259722352634471385">Sahifa bloklandi: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Odatda saytlar yopilganda ular rasmni yuklash yoki chat xabarini yuborish kabi amallarni yakunlash uchun sinxronlashda davom etadi</translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>

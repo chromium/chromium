@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">AI-modus uitzetten</translation>
 <translation id="1554477036522844996">Nieuw venster</translation>
 <translation id="1558391695376153246">Incognitotabbladen sluiten</translation>
+<translation id="1560153516220021659">Samengevouwen secundaire werkbalkknop</translation>
 <translation id="1565371473877914088">Nieuw incognitotabblad</translation>
 <translation id="1567960978791353852">Leesmodus tonen</translation>
 <translation id="1571780780926010134">Incognitotabbladen</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-mail verzonden.</translation>
 <translation id="1582732959743469162">Hiermee wordt de voortgang van de huidige download gestopt.</translation>
 <translation id="1594034544529347967">Begint</translation>
+<translation id="1598485494295307681">Ik luister</translation>
 <translation id="1598751033135758830">Openen in app…</translation>
 <translation id="1600571977391127696">Bepaalde content is misschien niet geschikt voor iedereen.</translation>
 <translation id="1601560923496285236">Toepassen</translation>
@@ -539,6 +541,7 @@
 <translation id="2829172210806130158">Zoeken op je scherm</translation>
 <translation id="2831109159746537587">Omcirkel of tik op de afbeelding om te zoeken</translation>
 <translation id="2834399722155632105">3. Tik op Wachtwoordopties.</translation>
+<translation id="2834418947367581526">Hallo, ik ben Gemini. We staan op het punt om live te gaan. Zo kun je gewoon door te praten vragen stellen over de pagina waarop je je bevindt. Maar laten we voordat we beginnen even deze belangrijke informatie bekijken.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Tijd</translation>
 <translation id="284581348330507117">Maak unieke wachtwoorden</translation>
@@ -691,6 +694,7 @@
 <translation id="3447332786336558089">Nadat je bent uitgelogd, worden tabbladen gesloten en worden niet-opgeslagen accountgegevens van dit apparaat verwijderd. Dit kunnen onder andere wachtwoorden en geschiedenis zijn.</translation>
 <translation id="3449029510150690417">Maak een nieuwe tabbladgroep door deze een naam en kleur te geven</translation>
 <translation id="345348365500626747">Adres gevonden</translation>
+<translation id="3459644598174926977">Ga Live met Gemini om vragen te stellen over een pagina, hardop te brainstormen en een gesprek te voeren.</translation>
 <translation id="3464194322481586217">Kan de prijs niet volgen.</translation>
 <translation id="3469117812148449995">Opties om een wachtwoord op te slaan</translation>
 <translation id="3472469028191701821">Opent in nieuw tabblad</translation>
@@ -1129,6 +1133,7 @@
 <translation id="4941089862236492464">Er is een probleem opgetreden bij het delen van je item.</translation>
 <translation id="4944543191714094452">Zoeken op pagina…</translation>
 <translation id="4945756290001680296">Wachtwoordinstellingen openen</translation>
+<translation id="4946307855175300628">Reageren</translation>
 <translation id="4949302115427722371">Instellingen beheren…</translation>
 <translation id="4958444002117714549">Lijst uitvouwen</translation>
 <translation id="496392417432935267">Ergens anders geopend</translation>
@@ -1550,6 +1555,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6355820183143562453">Kaart Prijzen volgen verbergen</translation>
 <translation id="6355820205320395730">Zwakke wachtwoorden zijn makkelijk te raden. Zorg dat je sterke wachtwoorden maakt. <ph name="BEGIN_LINK" />Meer beveiligingstips bekijken<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Log in om onder andere je wachtwoorden en bookmarks te gebruiken.</translation>
+<translation id="6364268785720100355">Log in om onder andere je wachtwoorden op al je apparaten te gebruiken.</translation>
 <translation id="6368038301482806847">Selecteer een zoekmachine in de lijst.</translation>
 <translation id="6368102751067608420">Alle gegevens van de wachtwoordmanager verwijderen</translation>
 <translation id="6372558618707314581">Ga naar een pagina naar keuze</translation>
@@ -1679,6 +1685,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Check je accountgegevens</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geschiedenisitem geïmporteerd}other{{count} geschiedenisitems geïmporteerd}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} optie voor inloggegevens beschikbaar boven je toetsenbord.}other{{count} opties voor inloggegevens beschikbaar boven je toetsenbord.}}</translation>
 <translation id="6755200887046212842">Accounts beheren</translation>
 <translation id="6757899787818440812">Gemiddelde hoogte</translation>
 <translation id="6759709389246683070">Je kunt je vinger op dit tabblad houden om een herinnering in te stellen om het later opnieuw te bezoeken</translation>

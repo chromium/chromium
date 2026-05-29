@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1000614056227025171">הגיליון התחתון של ההצעה להתאמה אישית של דף הבית נפתח בגובה מלא</translation>
 <translation id="1006017844123154345">פתיחת גרסה אונליין</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1046742265332833834">עיצוב כחול</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">אתרים יכולים להשמיע צלילים</translation>
 <translation id="3065787901655140044">ההגנה המתקדמת מופעלת</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
+<translation id="3084983642903364837">אפשר לערוך את דף הבית בהמשך דרך סמל האפשרויות הנוספות (3 נקודות).</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3108122610701115301">קבע כברירת מחדל</translation>
 <translation id="310979712355504754">מחיקת הכול</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">מחובר ליציאה טורית</translation>
 <translation id="4223404254440398437">אין הרשאת גישה למיקרופון</translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
+<translation id="4227965147357783918">הגיליון התחתון של ההצעה להתאמה אישית של דף הבית נפתח בחצי מגובה המסך</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
 <translation id="4274673989874969668">לאחר יציאה מאתרים, ייתכן שפעולות סנכרון שלהם ימשיכו כדי להשלים משימות, כמו העלאת תמונות או שליחת הודעות צ'אט</translation>
 <translation id="4278390842282768270">יש אישור</translation>
