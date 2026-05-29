@@ -8,6 +8,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
@@ -41,7 +43,12 @@ class AppServer : public App {
 
   scoped_refptr<const UpdaterPrefs> prefs() const { return prefs_; }
 
-  scoped_refptr<Configurator> config() const { return config_; }
+  // Thread-safe: COM MTA RPC threads access this getter concurrently
+  // with main sequence writes during shutdown.
+  scoped_refptr<Configurator> config() const {
+    base::AutoLock lock(config_lock_);
+    return config_;
+  }
 
   void TaskStarted();
   void TaskCompleted();
@@ -104,7 +111,8 @@ class AppServer : public App {
       CreateExternalConstants();
   base::OnceClosure first_task_;
   scoped_refptr<UpdaterPrefs> prefs_;
-  scoped_refptr<Configurator> config_;
+  mutable base::Lock config_lock_;
+  scoped_refptr<Configurator> config_ GUARDED_BY(config_lock_);
   base::RepeatingTimer hang_timer_;
 
   // If true, this version of the updater uninstalls itself during shutdown.

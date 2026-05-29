@@ -1416,14 +1416,26 @@ PolicyStatusImpl::PolicyStatusImpl()
                                    {IID_MAP_ENTRY_SYSTEM(IPolicyStatus4),
                                     IID_MAP_ENTRY_SYSTEM(IPolicyStatus3),
                                     IID_MAP_ENTRY_SYSTEM(IPolicyStatus2),
-                                    IID_MAP_ENTRY_SYSTEM(IPolicyStatus)}),
-      policy_service_(GetAppServerWinInstance()->config()->GetPolicyService()) {
-}
+                                    IID_MAP_ENTRY_SYSTEM(IPolicyStatus)}) {}
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
 HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
   VLOG(2) << __func__;
   LogComCaller(__FUNCTION__);
+
+  scoped_refptr<AppServerWin> app_server = GetAppServerWinInstance();
+  if (!app_server) {
+    return E_FAIL;
+  }
+  scoped_refptr<Configurator> config = app_server->config();
+  if (!config) {
+    return E_FAIL;
+  }
+  policy_service_ = config->GetPolicyService();
+  if (!policy_service_) {
+    return E_FAIL;
+  }
+
   return S_OK;
 }
 

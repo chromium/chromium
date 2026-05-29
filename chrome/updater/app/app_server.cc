@@ -21,6 +21,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -98,12 +99,17 @@ base::OnceClosure AppServer::ModeCheck() {
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
       prefs_ = local_prefs;
-      config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_,
-                                                   updater_scope());
+      scoped_refptr<Configurator> config;
+      {
+        base::AutoLock lock(config_lock_);
+        config_ = base::MakeRefCounted<Configurator>(
+            prefs_, external_constants_, updater_scope());
+        config = config_;
+      }
       if (IsInternalService()) {
         return base::BindOnce(
             &AppServer::ActiveDutyInternal, this,
-            MakeQualifyingUpdateServiceInternal(config_, local_prefs));
+            MakeQualifyingUpdateServiceInternal(config, local_prefs));
       }
 
 #if BUILDFLAG(IS_WIN)
@@ -140,11 +146,16 @@ base::OnceClosure AppServer::ModeCheck() {
 
   server_starts_ = global_prefs->CountServerStarts();
   prefs_ = global_prefs;
-  config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_,
-                                               updater_scope());
+  scoped_refptr<Configurator> config;
+  {
+    base::AutoLock lock(config_lock_);
+    config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_,
+                                                 updater_scope());
+    config = config_;
+  }
   return base::BindOnce(
       &AppServer::ActiveDuty, this,
-      base::MakeRefCounted<UpdateServiceImpl>(updater_scope(), config_));
+      base::MakeRefCounted<UpdateServiceImpl>(updater_scope(), config));
 }
 
 void AppServer::TaskStarted() {
@@ -176,9 +187,14 @@ bool AppServer::IsIdle() const {
 }
 
 void AppServer::Uninitialize() {
-  if (config_ && config_->GetEventLogger()) {
+  scoped_refptr<Configurator> config;
+  {
+    base::AutoLock lock(config_lock_);
+    config = config_;
+  }
+  if (config && config->GetEventLogger()) {
     base::RunLoop run_loop;
-    config_->GetEventLogger()->Flush(run_loop.QuitClosure());
+    config->GetEventLogger()->Flush(run_loop.QuitClosure());
     run_loop.Run();
   }
   // Simply stopping the timer does not destroy its task. The task holds a
@@ -199,16 +215,24 @@ void AppServer::Uninitialize() {
   // Because this instance is leaky when running on Windows, the following
   // references must be reset to destroy the objects, otherwise `Prefs` leaks.
   prefs_ = nullptr;
-  config_ = nullptr;
+  {
+    base::AutoLock lock(config_lock_);
+    config_ = nullptr;
+  }
 }
 
 void AppServer::MaybeUninstall() {
-  if (!config_ || IsInternalService()) {
+  scoped_refptr<Configurator> config;
+  {
+    base::AutoLock lock(config_lock_);
+    config = config_;
+  }
+  if (!config || IsInternalService()) {
     return;
   }
 
   scoped_refptr<PersistedData> persisted_data =
-      config_->GetUpdaterPersistedData();
+      config->GetUpdaterPersistedData();
   if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
                       persisted_data->GetHadApps())) {
     std::optional<base::FilePath> executable =
