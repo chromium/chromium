@@ -233,6 +233,15 @@
       }
     }
 
+    // Do not fall through to the NSURL-host fallback for android:// service
+    // identifiers. NSURL parses "android://<hash>@<package>" as a generic
+    // RFC 3986 URI and yields .host == <package>, which would let a web
+    // origin whose DNS name collides with the Java package name match an
+    // unrelated Android-app credential.
+    if ([credential.serviceIdentifier hasPrefix:@"android://"]) {
+      continue;
+    }
+
     // Fallback to matching the parsed host of the credential's
     // serviceIdentifier.
     NSURL* credURL = credential.serviceIdentifier
