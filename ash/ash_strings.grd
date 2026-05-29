@@ -264,9 +264,6 @@ Style notes:
       <message name="IDS_ASH_SHELF_BACK_BUTTON_TITLE" desc="The title used for the back button on the Shelf, which is avaliable in tablet mode.">
         Back
       </message>
-      <message name="IDS_ASH_SHELF_OVERFLOW_NAME" desc="The title used for the Ash overflow button in the shelf">
-        Overflow
-      </message>
       <message name="IDS_ASH_SHELF_CONTEXT_MENU_AUTO_HIDE" desc="Title of the menu item in the context menu for auto-hiding the shelf when the current window is not maximized">
         Autohide shelf
       </message>
@@ -345,9 +342,6 @@ Style notes:
       <message name="IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR" desc="The title used for the desk button on the shelf with no profile avatar.">
         Current desk: <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>2</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
-      <message name="IDS_SHELF_DESK_BUTTON_TITLE_WITH_PROFILE_AVATAR" desc="The title used for the desk button on the shelf with profile avatar.">
-        Current desk: <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>. <ph name="PROFILE_NAME">$2<ex>Profile name</ex></ph> <ph name="EMAIL">$3<ex>test@gmail.com</ex></ph>. Desk <ph name="DESK_INDEX">$4<ex>2</ex></ph> of <ph name="DESK_COUNT">$5<ex>3</ex></ph>.
-      </message>
       <message name="IDS_SHELF_NEXT_DESK_BUTTON_TITLE" desc="The title used for the next desk button within the desk button on the shelf.">
         Next desk: <ph name="DESK_NAME">$1<ex>Desk 3</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>3</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
@@ -390,9 +384,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_LOCALE_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for locale settings accessed through the quick settings locale feature pod in demo mode.">
         Language Settings
-      </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for media controls pod in quick settings.">
-        Media controls, now playing <ph name="MEDIA_TITLE">$1<ex>(Song name)</ex></ph>
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for global media controls accessed through the media controls pod.">
         Media Controls
@@ -672,12 +663,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE_AUTO_SCHEDULED" desc="Button label for the Dark theme feature when auto scheduling is enabled." meaning="Dark mode is automatically scheduled to be off until sunset. [CHAR_LIMIT=16]">
         Off until sunset
-      </message>
-      <message name="IDS_ASH_DARK_LIGHT_MODE_EDUCATIONAL_NUDGE_IN_CLAMSHELL_MODE" desc="The label used for the dark light mode educational nudge in clamshell mode.">
-        Switch between dark and light theme. Right-click on the desktop and select Wallpaper &#0038; style.
-      </message>
-      <message name="IDS_ASH_DARK_LIGHT_MODE_EDUCATIONAL_NUDGE_IN_TABLET_MODE" desc="The label used for the dark light mode educational nudge in tablet mode.">
-        Switch between dark and light theme. Touch and hold on the desktop, then select Wallpaper &#0038; style.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_UNKNOWN" desc="The label used when we have detected we are casting but do not know what we are casting or who we are casting to.">
         Casting on an unknown receiver
@@ -1657,9 +1642,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL" desc="Label shown instead of email for supervised users">
          Supervised user
       </message>
-      <message name="IDS_ASH_USER_IS_SUPERVISED_BY_NOTICE" desc="Text for notifications showing that this user is supervised">
-        Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL">$1<ex>user@example.com</ex></ph>) on chrome.com.
-      </message>
       <message name="IDS_ASH_CHILD_USER_IS_MANAGED_BY_ONE_PARENT_NOTICE" desc="Text for notifications showing that this user is managed by parent's account.">
         Account managed by <ph name="MANAGER_EMAIL">$1<ex>user@example.com</ex></ph>
       </message>
@@ -1777,23 +1759,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Scanning
       </message>
 
-      <!-- Holding Space Wallpaper Nudge -->
-      <message name="IDS_ASH_HOLDING_SPACE_WALLPAPER_NUDGE_DROP_DISABLED_TEXT" desc="Text shown on a nudge anchored to the holding space tray in the shelf to inform new users where files should be dropped for quick access in lieu of the desktop.">
-              Keep important files in <ph name="HOLDING_SPACE_TITLE">$1</ph> instead of on the desktop. Just drag files to <ph name="HOLDING_SPACE_TITLE">$1</ph>.
-      </message>
-      <message name="IDS_ASH_HOLDING_SPACE_WALLPAPER_NUDGE_DROP_ENABLED_TEXT" desc="Text shown on a nudge anchored to the holding space tray in the shelf to inform new users where to find files dropped on the desktop.">
-        Drop files on the desktop to add them to <ph name="HOLDING_SPACE_TITLE">$1</ph>. You can't add files to desktop.
-      </message>
-
-      <!--  Video Conference Speaking On Mute Nudge  -->
-      <message name="IDS_VIDEO_CONFERENCE_SPEAKING_ON_MUTE_OPT_IN_TITLE" desc="The title of the nudge shown to a user asking them to opt-in to the speaking on mute feature.">
-        Turn on mute nudge?
-      </message>
-      <message name="IDS_VIDEO_CONFERENCE_SPEAKING_ON_MUTE_OPT_IN_BODY" desc="The body of the nudge shown to a user asking them to opt-in to the speaking on mute feature.">
-        You’ll get notified if you talk while muted. Audio never leaves your device.
-      </message>
-
-       <!-- Video Conference tray  -->
+      <!-- Video Conference tray  -->
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP" desc="The tooltip for the toggle bubble button in the video conference tray.">
         Camera and audio controls
       </message>
@@ -1902,9 +1868,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
         <ph name="TITLE">$1<ex>Test your mic</ex></ph>. <ph name="DESCRIPTION">$2<ex>Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.</ex></ph>
-      </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
-        Dismiss
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
         Create with AI
@@ -2033,9 +1996,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is currently sending a signal and try to connect to the phone.">
         <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph> is connecting.
       </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_CONNECTED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is not available to use.">
-        <ph name="FEATURE_NAME">$1<ex>Enable Hotspot</ex></ph> is not connected.
-      </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is not available to use.">
         <ph name="FEATURE_NAME">$1<ex>Enable Hotspot</ex></ph> is connected.
       </message>
@@ -2050,9 +2010,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE" desc="Quick actions state in phone hub bubble." meaning="The feature is currently sending a signal and try to connect to the phone.">
         Connecting...
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_CONNECTED_STATE" desc="Quick actions state in phone hub bubble." meaning="The feature is not connected to the phone.">
-        Not connected
       </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE" desc="Quick actions state in phone hub bubble." meaning="The feature is connected to the phone and ready to use.">
         Connected
@@ -2078,23 +2035,8 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
         Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone
       </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON" desc="Dimiss button on the onboarding dialog for user to opt out this feature.">
-        Dismiss
-      </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON" desc="Get started button on the onboarding dialog for user to opt in this feature and start the consent flow.">
         Get started
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_TITLE" desc="The title of the dialog that pops up after user clicks the dismiss button on the onboarding dialog.">
-        Set up Phone Hub later
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2.">
-        Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1.">
-        You can always set up later from Settings.
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_OK_BUTTON" desc="Confirm button on the onboarding dismiss dialog to acknowledge.">
-        OK
       </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_TITLE" desc="The title of the generic connecting dialog that indicates the device is trying to connect to your phone.">
         Connecting...
@@ -2122,9 +2064,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">
         Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Please turn on Bluetooth to use Phone Hub.
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_OK_BUTTON" desc="Confirm button on the bluetooth disabled dialog to acknowledge.">
-        Ok, got it
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the bluetooth disabled dialog to show more related information.">
         Learn more
@@ -2330,9 +2269,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STYLUS_TOOLS_MAGNIFIER_MODE" desc="Title of the magnification mode in the stylus tools. Clicking this button opens up a magnifier. The magnifier remains active until the user turns it off by tapping the same button again.">
         Magnifying glass
       </message>
-      <message name="IDS_ASH_STYLUS_TOOLS_MARKER_MODE" desc="Title of the marker mode in the stylus tools. Clicking this button turns the mouse into a marker. The marker remains active until the user turns it off by tapping the same button again.">
-        Marker tool
-      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_TITLE" desc="The title of the stylus tools dialog in the ash shelf.">
         Stylus tools
       </message>
@@ -2344,30 +2280,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_PALETTE_SETTINGS" desc="The label on the setting button used to open palette setting page.">
         Stylus settings
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LOCALE_UNSUPPORTED_TOAST_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed but the locale is unsupported.">
-        The Google Assistant doesn’t speak this language.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_SECONDARY_USER_TOAST_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed but the active user profile is not the primary user profile.">
-        The Google Assistant is only available for primary profile.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DISABLED_BY_POLICY_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed but the feature is disabled by enterprise policy.">
-        The Google Assistant is disabled by your administrator.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DISABLED_IN_DEMO_MODE_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed in a demo session, which does not support Assistant.">
-        The Google Assistant is not available in a demo session.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed in a public session, which does not support Assistant.">
-        The Google Assistant is not available in a public session.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DISABLED_IN_GUEST_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed in a guest session, which does not support Assistant.">
-        The Google Assistant is not available in a guest session.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DISABLED_BY_ACCOUNT_MESSAGE" desc="Message content on the toast that appears when the Assistant shortcut is pressed but current logged in user account does not support Assistant.">
-        The Google Assistant is not available for current user account.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is focusing on an assistant query">
-        <ph name="QUERY_NAME">$1<ex>Harry Potter</ex></ph>, Google Assistant
       </message>
       <message name="IDS_ASH_VERSION_IN_LAUNCHER_MESSAGE" desc="Message content for the title of the answer card with the current version in the launcher.">
         Version <ph name="VERSION_NAME">$1<ex>109.0.5414.125</ex></ph> (<ph name="OFFICIAL_STATUS">$2<ex>Official Build</ex></ph>) <ph name="CHANNEL_NAME">$3<ex>Beta</ex></ph> <ph name="PROCESSOR_VARIATION">$4<ex>(64-bit)</ex></ph>
@@ -2449,9 +2361,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_ACCESSIBILITY_LABEL_SETTINGS_PAGE_IN_LAUNCHER" desc="Accessibility string for settings page in System Info Answer cards.">
         Settings page
-      </message>
-      <message name="IDS_ASH_STORAGE_MANAGEMENT_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage management in launcher search that should trigger a storage answer card result.">
-        storage management
       </message>
       <message name="IDS_ASH_STORAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage in launcher search that should trigger a storage answer card result.">
         storage
@@ -2883,18 +2792,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and all of its windows.">
         Close <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> and windows
       </message>
-      <message name="IDS_ASH_DESKS_DESK_PROFILES_BUTTON" desc="The desk profile button's accessible name">
-        Desk profile menu. <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>
-      </message>
-      <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_CHECKED" desc="The profile menu item's accessible name">
-        <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box checked.
-      </message>
-      <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_NOT_CHECKED" desc="The profile menu item's accessible name">
-        <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box not checked.
-      </message>
-      <message name="IDS_ASH_DESKS_OPEN_PROFILE_MANAGER" desc="The tooltip and context menu text that describes the action of open the profile manager.">
-        Manage profiles
-      </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT" desc="Text provided in toast that notifies user that they have closed a desk and all of its windows.">
         Desk and windows have been closed
       </message>
@@ -2903,9 +2800,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_UNDONE_NOTIFICATION" desc="ChromeVox announcement that is read when the user presses the button to undo desk removal.">
         Desk and windows reopened
-      </message>
-      <message name="IDS_ASH_DESKS_NAME_HIGHLIGHT_NOTIFICATION" desc="Alert spoken by screen readers when user tabs to the name view of a virtual desk.">
-        Press enter or search + space to select the text for editing.
       </message>
 
       <!-- Status tray charging strings. -->
@@ -3377,9 +3271,6 @@ No devices connected.
       <message name="IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON" desc="The label used as the button to turn on hotspot.">
         Turn on hotspot
       </message>
-      <message name="IDS_ASH_HOTSPOT_NOTIFICATION_WIFI_TURN_ON_BUTTON" desc="The label for button to turn WiFi on in the hotspot notification.">
-        Turn on WiFi instead
-      </message>
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE" desc="Message displayed in the system notification shown when hotspot is disabled due to WiFi being turned on.">
         Hotspot has been turned off to use WiFi. To use hotspot, turn WiFi off.
       </message>
@@ -3679,9 +3570,6 @@ No devices connected.
       <message name="IDS_AURA_OPEN_PERSONALIZATION_HUB" desc="The label used to open personalization hub in context menu">
         Set wallpaper &amp; style
       </message>
-      <message name="IDS_AURA_SET_DESKTOP_WALLPAPER" desc="The label used for change wallpaper in context menu">
-        Set wallpaper
-      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_TRACING_NOTIFICATION_TITLE" desc="The title of a notification indicating that performance tracing is running.">
         Performance tracing active
@@ -3733,12 +3621,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_RESOLUTION_CHANGE_DIALOG_TITLE" desc="The title used in the dialog to notify that the display resolution settings has changed and asks the user to confirm the new resolution.">
         Confirm Resolution
-      </message>
-      <message name="IDS_ASH_RESOLUTION_CHANGE_DIALOG_CHANGED" desc="The label used in the dialog to notify that the display resolution settings has changed.">
-        <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> resolution changed to <ph name="RESOLUTION">$2<ex>2560x1600</ex></ph>. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS">$3</ph>.
-      </message>
-      <message name="IDS_ASH_RESOLUTION_CHANGE_DIALOG_FALLBACK" desc="The label used in the dialog to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution.">
-        <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> doesn't support <ph name="SPECIFIED_RESOLUTION">$2<ex>1920x1080</ex></ph>. The resolution was changed to <ph name="FALLBACK_RESOLUTION">$3<ex>1920x1200</ex></ph>. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS">$4</ph>.
       </message>
       <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_FALLBACK" desc="The title used in the dialog to notify that the display resolution settings has changed and asks the user to confirm the new resolution. This is used when the resolution user requested is not supported.">
         Confirm new resolution?
@@ -3977,15 +3859,6 @@ No devices connected.
       <message name="IDS_ASH_DISPLAY_FAILURE_MAX_DISPLAY_LIMIT" desc="An error message to show that the system failed to configure multiple displays due to max display reached.">
         You can connect up to <ph name="DISPLAY_LIMIT">$1<ex>2</ex></ph> external displays.
       </message>
-      <message name="IDS_ASH_DISPLAY_RESOLUTION_CHANGE_ACCEPT" desc="A button label shown in the notification for the resolution change to accept the change">
-        Accept
-      </message>
-      <message name="IDS_ASH_DISPLAY_RESOLUTION_CHANGE_REVERT" desc="A button label shown in the notification for the resolution change to revert the change">
-        Revert
-      </message>
-      <message name="IDS_ASH_DISPLAY_RESOLUTION_TIMEOUT" desc="A message for to notify the user about the timeout of display resolution change.">
-        Reverting to old resolution in <ph name="TIMEOUT_SECONDS">$1</ph>
-      </message>
       <message name="IDS_ASH_LOW_PERIPHERAL_BATTERY_NOTIFICATION_TEXT" desc="The text of the notification when a peripheral device is in low battery condition.">
         Battery low (<ph name="percentage">$1<ex>56</ex></ph>%)
       </message>
@@ -3994,9 +3867,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_LOW_STYLUS_BATTERY_NOTIFICATION_BODY" desc="The message of the notification which notifies user of the battery level of a stylus.">
         Replace or recharge the battery
-      </message>
-      <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT" desc="The text of the popup when the user preses the exit shortcut in chrome-os.">
-        Press Ctrl+Shift+Q twice to sign out.
       </message>
       <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_DYNAMIC" desc="The text of the popup when the user preses the exit shortcut in chrome-os.">
         Press <ph name="accelerator">$1<ex>Ctrl+Shift+Q</ex></ph> twice to sign out.
@@ -4040,9 +3910,6 @@ No devices connected.
       <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY" desc="The text for the screen magnifier dialog, explaining how to move around with keyboard shortcuts.">
         You pressed the keyboard shortcut for the full-screen magnifier. Use ctrl + alt + arrows to move around the zoomed in view.
       </message>
-      <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY_DYNAMIC" desc="The text for the screen magnifier dialog, explaining how to zoom in/out and move around with keyboard shortcuts.">
-        You pressed the keyboard shortcut for the full-screen magnifier. Use <ph name="zoom_in_accelerator">$1<ex>ctrl+alt+brightness up</ex></ph> to zoom in and <ph name="zoom_out_accelerator">$2<ex>ctrl+alt+brightness down</ex></ph> to zoom out. Use ctrl+alt+arrows to move around the zoomed in view.
-      </message>
       <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TURN_OFF_BUTTON" desc="Dialog cancel button for when screen magnifier is enabled by keyboard shortcut.">
         Turn off
       </message>
@@ -4084,21 +3951,8 @@ No devices connected.
       <message name="IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the select-to-speak menu icon in the status tray.">
         Select-to-speak button
       </message>
-      <message name="IDS_ASH_AUTOCLICK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the automatic clicks menu icon in the status tray.">
-        Automatic clicks button
-      </message>
-
       <!-- Deprecated Accelerators Messages -->
       <!-- Shortcut keys MUST be connected with pluses (e.g. Ctrl+Shift+L). -->
-      <message name="IDS_SHORTCUT_TASK_MANAGER_OLD" desc="the old deprecated shortcut to open the task manager.">
-        Shift+Esc
-      </message>
-      <message name="IDS_SHORTCUT_IME_BUBBLE_OLD" desc="the old deprecated shortcut to show the input options menu bubble in the shelf.">
-        Alt+Shift+K
-      </message>
-      <message name="IDS_SHORTCUT_IME_BUBBLE_NEW" desc="the new shortcut to show the input options menu bubble in the shelf.">
-        Search+Shift+K
-      </message>
       <message name="IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW" desc="the new shortcut to open the shortcut viewer app.">
         ctrl+search+s
       </message>
@@ -4112,10 +3966,6 @@ No devices connected.
       <message name="IDS_DEPRECATED_OPEN_GET_HELP_MSG"
                desc="Notification message to tell users about the deprecation of Ctrl+/ shortcut to open help in explore app.">
         Open "Help" in Explore app with "<ph name="NEW_SHORTCUT">$1<ex>search + h</ex></ph>".
-      </message>
-      <message name="IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG"
-               desc="Notification message to tell users about the deprecation of Alt+Shift+K shortcut to show the input options menu bubble in the shelf.">
-        The shortcut to show the input options menu bubble in the shelf has changed. Please use <ph name="NEW_SHORTCUT">$1<ex>Search+Shift+K</ex></ph> instead of <ph name="OLD_SHORTCUT">$2<ex>Alt+Shift+K</ex></ph>.
       </message>
       <message name="IDS_DEPRECATED_SHORTCUT_TITLE" desc="Notification title to tell users that the keyboard accelerator is deprecated.">
         Use the updated shortcut
@@ -4478,9 +4328,6 @@ No devices connected.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" desc="Label for accelerator action - Open new tab in new Incognito window.">
         Open new tab in new Incognito window
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_TAB" translateable="false" desc="Label for accelerator action - Open new tab.">
-        Open new tab
-      </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_WINDOW" desc="Label for accelerator action - Open new tab in new window.">
         Open new tab in new window
       </message>
@@ -4598,9 +4445,6 @@ No devices connected.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_DOWN" desc="Label for accelerator action - Page down.">
         Page down
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" desc="Label for accelerator action - Right click a link.">
-        Right-click a link
-      </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_AUTO_COMPLETE" desc="Label for accelerator action - Add www. and .com to the address bar, then open website.">
         Add www. and .com to the address bar, then open website
       </message>
@@ -4678,9 +4522,6 @@ No devices connected.
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CARET_BROWSING" desc="Label for accelerator description - Turn caret browsing on or off.">
         Turn caret browsing on or off
-      </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
-        Move between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_FORWARDS" desc="Label for accelerator description - Move forwards between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
         Move forwards between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
@@ -4775,9 +4616,6 @@ No devices connected.
       <message name="IDS_AMBIENT_ACCELERATOR_CYCLE_BACKWARD_MRU" desc="Action for accelerator action - Open the window that has been unused for the longest time.">
         Press and hold <ph name="MODIFIER_1">$1<ex>alt</ex></ph><ph name="MODIFIER_2">$2<ex>shift</ex></ph>, tap <ph name="KEY">$3<ex>tab</ex></ph> until you get to the window you want to open, then release
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_RIGHT_CLICK" desc="Action for accelerator action - Right-click a link.">
-        Press <ph name="MODIFIER">$1<ex>alt</ex></ph> and click a link
-      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_SAVE_LINK_AS_BOOKMARK" desc="Action for accelerator action - Drag link to bookmarks bar.">
         Drag link to bookmarks bar
       </message>
@@ -4798,9 +4636,6 @@ No devices connected.
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_REMOVE_HIGHLIGHT_ON_SHELF" desc="Action for accelerator action - Remove the highlight from an item on your shelf.">
         <ph name="MODIFIER_ONE">$1<ex>shift</ex></ph><ph name="MODIFIER_TWO">$2<ex>alt</ex></ph><ph name="KEY_ONE">$3<ex>l</ex></ph> then <ph name="KEY_TWO">$4<ex>esc</ex></ph>
-      </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_SWITCH_FOCUS" desc="Action for accelerator action - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
-        <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph><ph name="KEY_ONE">$2<ex>browser_back</ex></ph> or <ph name="MODIFIER_TWO">$3<ex>ctrl</ex></ph><ph name="MODIFIER_THREE">$4<ex>shift</ex></ph><ph name="KEY_TWO">$5<ex>browser_back</ex></ph>
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_MOVE_APPS_IN_GRID" desc="Action for accelerator action - Move an app icon within app grid.">
         <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph>then <ph name="KEY_ONE">$2<ex>left</ex></ph> or <ph name="KEY_TWO">$3<ex>right</ex></ph> or <ph name="KEY_THREE">$4<ex>up</ex></ph> or <ph name="KEY_FOUR">$5<ex>down</ex></ph>
@@ -5074,9 +4909,6 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_PIN_REQUEST_HELP" desc="Label of a button shown on the pin request input dialog.">
         Need help?
       </message>
-      <message name="IDS_ASH_LOGIN_PIN_REQUEST_NEXT_NUMBER_PROMPT" desc="Accessible prompt read when next access code input field has been focused. Asks user to enter next piece of the access code.">
-        Next number
-      </message>
       <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_TITLE" desc="Title of the local authentication input dialog that allows the user to login during the reauthenticate session.">
         Finish verifying your identity
       </message>
@@ -5198,9 +5030,6 @@ No devices connected.
       </message>
       <message name="IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_SUBSEQUENT" desc="Notification message shown when there is a device discovered with Fast Pair that has already been saved to a user's account on another device.">
         Connect <ph name="NAME">$1<ex>Pixel Buds</ex></ph> previously saved to <ph name="EMAIL">$2<ex>alisha123@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_FAST_PAIR_CANCEL_BUTTON" desc="Message on button to tell users to cancel bluetooth device connection with Fast Pair.">
-        Cancel
       </message>
       <message name="IDS_FAST_PAIR_PAIRING_NOTIFICATION_TITLE" desc="Notification title shown when a there is a device being paired with Fast Pair.">
         Connecting <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
@@ -5349,9 +5178,6 @@ No devices connected.
       <message name="IDS_ASH_MAHI_RETRY_LINK_CLICK_ACTIVATION_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the retry link is clicked">
         Retry link activated
       </message>
-      <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the learn more button is focused">
-        Learn more link. Redirect to the browser when activated
-      </message>
       <message name="IDS_ASH_MAHI_LEARN_MORE_CLICK_ACTIVATION_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the learn more button is clicked">
         Opened learn more link in the browser
       </message>
@@ -5415,8 +5241,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_MULTIPROFILES_INTRO_MESSAGE" desc="Content of the multi-profiles intro dialog shown when the user adds another user in multi-profiles mode.">
         This feature allows you to quickly access any signed-in user without requiring a password. Only use this feature with accounts you trust.
-      </message>
-      <message name="IDS_ASH_MULTIPROFILES_INTRO_EXPLANATION" desc="Content of the multi-profiles intro dialog shown when the user adds another user in multi-profiles mode.">
       </message>
 
       <!-- Strings shown within MultiDevice setup notifications -->
@@ -5490,35 +5314,14 @@ No devices connected.
       <message name="IDS_ASH_MESSAGE_CENTER_CLEAR_ALL_BUTTON_LABEL" desc="The label text for clearing all notifications.">
         Clear all
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_EXPAND_ALL_NOTIFICATIONS_BUTTON_LABEL" desc="The label text for expanding all notifications.">
-        See all notifications
-      </message>
       <message name="IDS_ASH_MESSAGE_CENTER_HIDDEN_NOTIFICATION_COUNT_LABEL" desc="The label text the number of hidden notifications.">
         +<ph name="COUNT">$1<ex>2</ex></ph> more
       </message>
       <message name="IDS_ASH_MESSAGE_CENTER_STACKING_BAR_CLEAR_ALL_BUTTON_TOOLTIP" desc="The tooltip text for the top clear all button, which also has the total number of notifications. Note: This button only appears when there are 2 or more notifications.">
         Clear all <ph name="COUNT">$1<ex>2</ex></ph> notifications
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_SETTINGS_BUTTON_TOOLTIP" desc="The tooltip text for visiting the appropriate settings page in the footer of the message center.">
-        Settings
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_COLLAPSE_BUTTON_TOOLTIP" desc="The tooltip text for closing notifier settings.">
-        Close settings
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_SETTINGS_TITLE" desc="The title for the message center's list of checkboxes that allows a user to enable/disable notifications from various sources.">
-        Settings
-      </message>
       <message name="IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION" desc="A message to describe a list of toggle-able notification sources.">
         Allow notifications from the following
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_FOOTER_TITLE" desc="The label in the footer of the message center">
-        Notifications
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_FOOTER_LOCKSCREEN" desc="The label in the footer of the message center on lock screen">
-        Unlock device to view your notifications
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_NO_MESSAGES" desc="The message displayed in the message center when there are no notifications.">
-        All done
       </message>
       <message name="IDS_ASH_MESSAGE_CENTER_NO_NOTIFIERS" desc="The message displayed in the message center when there are no notification sources.">
         Nothing to see just yet
@@ -5800,14 +5603,6 @@ No devices connected.
       <message name="IDS_ASH_DETACHABLE_BASE_NOTIFICATION_UPDATE_NEEDED_MESSAGE" desc="Body for the notification shown to the user when the detachable base (keyboard) connected to the device has to be updated. This notification is shown if the keyboard is usable without the update.">
         To get the update, restart your Chromebook with the keyboard attached.
       </message>
-      <message name="IDS_ASH_DETACHABLE_BASE_NOTIFICATION_CRITICAL_UPDATE_NEEDED_MESSAGE" desc="Body for the notification shown to the user when the detachable base (keyboard) connected to the device has to be updated. This notification is shown if the keyboard is not usable without the update.">
-        To get the update, use the touchscreen to restart your Chromebook with the keyboard attached.
-      </message>
-
-      <!-- For ScreenCaptureTrayItemView -->
-      <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">
-        Your system administrator is monitoring your screens
-      </message>
 
       <!-- For privacy indicators notification -->
       <message name="IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC" desc="Title for a notification shown when an app is using the camera and the microphone.">
@@ -5941,50 +5736,9 @@ No devices connected.
         Unlock device as <ph name="login_id">$1<ex>example@gmail.com</ex></ph> to perform the notification action
       </message>
 
-      <!-- Media Notification -->
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK" desc="The button to trigger media playback to go to the previous track.">
-        Previous Track
-      </message>
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_SEEK_BACKWARD" desc="The button to trigger media playback to seek backwards a few seconds.">
-        Seek Backward
-      </message>
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_PLAY" desc="The button to trigger media playback to start.">
-        Play
-      </message>
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_PAUSE" desc="The button to trigger media playback to pause.">
-        Pause
-      </message>
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_SEEK_FORWARD" desc="The button to trigger media playback to seek forwards a few seconds.">
-        Seek Forward
-      </message>
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK" desc="The button to trigger media playback to go to the next track.">
-        Next Track
-      </message>
-      <message name="IDS_ASH_MEDIA_NOTIFICATION_ACCESSIBLE_NAME" desc="The accessible name for the media notification to control playback">
-        Media Controls
-      </message>
-
-        <!-- Lock Screen Media Controls -->
+      <!-- Lock Screen Media Controls -->
       <message name="IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME" desc="Text that is spoken when requesting the lock screen name.">
         Lock Screen
-      </message>
-      <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_PREVIOUS_TRACK" desc="The button to trigger media playback to go to the previous track.">
-        Previous Track
-      </message>
-      <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_SEEK_BACKWARD" desc="The button to trigger media playback to seek backward a few seconds.">
-        Seek Backward
-      </message>
-      <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_PLAY" desc="The button to trigger media playback to start.">
-        Play
-      </message>
-      <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_PAUSE" desc="The button to trigger media playback to pause.">
-        Pause
-      </message>
-      <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_SEEK_FORWARD" desc="The button to trigger media playback to seek forward a few seconds.">
-        Seek Forward
-      </message>
-      <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_NEXT_TRACK" desc="The button to trigger media playback to go to the next track.">
-        Next Track
       </message>
       <message name="IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME" desc="The accessible name for the lock screen media controls view.">
         Media Controls
@@ -6128,20 +5882,11 @@ No devices connected.
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_VIDEO_RECORD_TABLET" desc="The capture label message which shows in the middle of the screen when in fullscreen video record mode in tablet mode.">
         Tap anywhere to record full screen
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE" desc="The capture label message which shows in the middle of the screen when in region image capture mode.">
-        Drag to select an area to capture
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD" desc="The capture label message which shows in the middle of the screen when in region video record mode.">
-        Drag to select an area to record
-      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE_KEYBOARD_NAVIGATION" desc="The capture label message which shows in the middle of the screen when in region image capture mode. Includes keyboard navigation instructions.">
         Drag or press Space to select an area to capture
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD_KEYBOARD_NAVIGATION" desc="The capture label message which shows in the middle of the screen when in region video record mode. Includes keyboard navigation instructions.">
         Drag or press Space to select an area to record
-      </message>
-      <message name="IDS_ASH_SUNFISH_CAPTURE_LABEL" desc="The capture label message which shows in the middle of the screen when in sunfish session." translateable="false">
-        Drag to select an area to search
       </message>
       <message name="IDS_ASH_SUNFISH_CAPTURE_LABEL_KEYBOARD_NAVIGATION" desc="The capture label message which shows in the middle of the screen when in sunfish session. Includes keyboard navigation instructions.">
         Drag or press Space to select an area to search
@@ -6166,12 +5911,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE" desc="The share to YouTube button label for the screen capture notification.">
         Share to YouTube
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE" desc="The message shown in a toast widget to nudge the user and alert them to check out the new settings that allow them to show camera during video recording.">
-        You can now record yourself and your screen at the same time
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_SHOW_DEMO_TOOLS_USER_NUDGE" desc="The message shown in a toast widget to nudge the user and alert them to check out the new settings that allow them to show clicks and keyboard shortcuts during video recording.">
-        You can now show clicks and keyboard shortcuts in screen recordings
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SURFACE_TOO_SMALL_USER_NUDGE" desc="The message shown in a toast widget to alert the user that the current capture surface is too small to show the camera preview.">
         Region is too small to fit camera
@@ -6205,42 +5944,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENRECORD" desc="Tooltip of the toggle button indicates the video record mode.">
         Screen record
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_SCREEN_RECORDING" desc="Alert spoken by screen readers when user tabs to screen recording.">
-        Screen recording mode
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_SCREENSHOT" desc="Alert spoken by screen readers when user tabs to screenshot.">
-        Screenshot mode
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_FULLSCREEN" desc="Alert spoken by screen readers when user tabs to full screen capture.">
-        Full screen capture
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_REGION" desc="Alert spoken by screen readers when user tabs to partial capture.">
-        Partial capture
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_WINDOW" desc="Alert spoken by screen readers when user tabs to window capture.">
-        Window capture
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_CLOSE" desc="Alert spoken by screen readers when user tabs to the close button.">
-        Dismiss capture mode
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_START_RECORD" desc="Alert spoken by screen readers when user tabs to record button.">
-        Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_STOP_RECORD" desc="Alert spoken by screen readers when user tabs to stop recording pod.">
-        Stop recording
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_CAPTURE" desc="Alert spoken by screen readers when user tabs to capture button.">
-        Take screenshot
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SETTINGS_OPENED" desc="Alert spoken by screen readers when the settings menu is opened.">
-        Settings menu opened
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SETTINGS_CLOSED" desc="Alert spoken by screen readers when the settings menu is closed.">
-        Settings menu closed
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_RECORD_MICROPHONE_TOGGLE" desc="Alert spoken by screen readers when record microphone setting is toggled.">
-        Record microphone <ph name="STATE">$1<ex>off</ex></ph>
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON" desc="Alert spoken by screen readers when camera preview is shown.">
         Camera preview on
@@ -6283,15 +5986,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT_ON_CONFLICT" desc="Alert spoken by screen readers when camera preview being snapped to lower left corner because its bounds overlap with other system surface.">
         Camera snapped to lower left corner. Conflict with system surface.
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_RECORD_MICROPHONE" desc="Alert spoken by screen readers when user tabs to record microphone setting.">
-        Record microphone <ph name="CURRENT_STATE">$1<ex>off</ex></ph>, Press enter to turn microphone recording <ph name="NEW_STATE">$2<ex>on</ex></ph>
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_SETTING_ON_STATE" desc="Description for a setting toggle on state.">
-        on
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_SETTING_OFF_STATE" desc="Description for a setting toggle off state.">
-        off
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_KEYBOARD_NAVIGATION_ALERT_OPEN_REVISED" desc="Alert spoken by screen readers on entering capture mode. Contains details about using keyboard navigation in a session.">
         In screen capture, set to <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab to choose capture type. Press enter to capture. To select capture area, set to partial screenshot. If not already active, press space to select region.
@@ -6340,9 +6034,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME" desc="The accessible name of the selected region in capture mode.">
         Selected area, use arrow keys to move
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_DRAG_HANDLE_ACCESSIBLE_TITLE" desc="The accessible name of a drag handle that can be used to adjust the selected region in capture mode.">
-        Selected handle, use arrow keys to move
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_LEFT_ACCESSIBLE_NAME" desc="The accessible name of the top left drag handle that can be used to adjust the selected region in capture mode.">
         Selected top left handle, use arrow keys to move
@@ -6625,27 +6316,6 @@ No devices connected.
       </message>
 
       <!-- Snap Group -->
-      <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS" desc="Click to lock the windows.">
-        Lock the windows
-      </message>
-      <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS" desc="Click to unlock the locked windows.">
-        Unlock the windows
-      </message>
-      <message name="IDS_ASH_SNAP_GROUP_SEND_FEEDBACK" desc="Send feedback.">
-        Send feedback
-      </message>
-      <message name="IDS_ASH_SNAP_GROUP_MORE_OPTIONS" desc="Click to see more options.">
-        More options
-      </message>
-      <message name="IDS_ASH_SNAP_GROUP_SWAP_WINDOWS" desc="Swap the windows in the snap group.">
-        Swap the windows
-      </message>
-      <message name="IDS_ASH_SNAP_GROUP_UPDATE_LEFT_WINDOW" desc="Update the left window in the snap group in horizontal screen orientation.">
-        Update the left window
-      </message>
-      <message name="IDS_ASH_SNAP_GROUP_UPDATE_RIGHT_WINDOW" desc="Update the right window in the snap group in horizontal screen orientation.">
-        Update the right window
-      </message>
       <message name="IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_NAME" desc="Accessible name of the snap group divider">
         Split screen divider
       </message>
@@ -6944,14 +6614,8 @@ No devices connected.
       <message name="IDS_AUTH_FACTOR_LABEL_UNLOCK_METHOD_SELECTION" desc="Label for the Smart Lock and Fingerprint icons on user's lock screen to select unlock method.">
         To unlock your Chromebook, use your fingerprint or unlock your phone
       </message>
-      <message name="IDS_AUTH_FACTOR_LABEL_USE_FINGERPRINT" desc="Label on user's lock screen to use their fingerprint to unlock Chromebook.">
-        To unlock your Chromebook, use your fingerprint
-      </message>
       <message name="IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK" desc="Label on user's lock screen when unlock authentication methods fail.">
         Can't unlock your Chromebook
-      </message>
-      <message name="IDS_AUTH_FACTOR_LABEL_CANNOT_SIGN_IN" desc="Label on user's lock screen when sign in authentication methods fail.">
-        Can't sign in to your Chromebook
       </message>
       <message name="IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED" desc="Label on user's lock screen prompting user to enter password after other sign in authentication methods fail.">
         Enter password for more security
@@ -7046,30 +6710,6 @@ No devices connected.
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_BUTTON" desc="Text for the privacy notice accepting button in the continue section of the launcher, which shows recent files and apps that the user can continue using.">
         OK
       </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_TITLE" desc="The title for the feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions).">
-        Remove this suggestion?
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FEEDBACK_TEXT" desc="The text asking the user to provide optional feedback in a dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions).">
-        Provide optional feedback to improve suggestions:
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_ANY_SUGGESTIONS_OPTION" desc="A radio button option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). The user can select this option to indicate that they are not interested in any file suggestions. The feedback dialog has another radio button to indicate the user is not interested in the specific suggestion that is being removed.">
-        Not interested in any suggestions
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_THIS_SUGGESTION_OPTION" desc="A radio button option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). The user can select this option to indicate that they are not interested in the specific file suggestion that is being removed. The feedback dialog has another radio button to indicate the user is not interested in the any file suggestions. After the user selects this choice, more options will be presented in the form of checkbox buttons to provide additional feedback for an specific suggestion.">
-        Not interested in this suggestion
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FILE_DONE_OPTION" desc="A checkbutton option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This option will be shown only to users who indicate that are not interested in one particular suggestion. The user can check this option to indicate that they will not use the file any further.">
-        Done using the file
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_DO_NOT_SHOW_FILE_OPTION" desc="A checkbutton option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This option will be shown only to users who indicate that are not interested in one particular suggestion. The user can check this option to indicate that they are concerned about this file suggestion showing.">
-        Don't want this file shown
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_CANCEL_BUTTON_LABEL" desc="The label for the cancel button in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This button closes the dialog without removing the item suggestion.">
-        Cancel
-      </message>
-      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_REMOVE_BUTTON_LABEL" desc="The label for the remove button in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This button removes the item suggestion and collects the feedback provided by the user (if any).">
-        Remove
-      </message>
 
       <!-- Launcher / App List -->
       <message name="IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE" desc="Title of the context menu in apps grid view in Productivity Launcher that allows users to sort their apps in the laucher. The context menu will have provide options to sort by name or color.">
@@ -7113,24 +6753,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TABLET_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the ChromeOS launcher UI in tablet mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
         Touch &amp; hold anywhere to reorder your apps
-      </message>
-      <message name="IDS_SUGGESTED_APPS_INDICATOR" desc="Indicator text in the launcher on top of suggested apps.">
-        SUGGESTED APPS
-      </message>
-      <message name="IDS_FREQUENTLY_USED_INDICATOR" desc="Indicator text in the launcher on top of frequently used apps.">
-        FREQUENTLY USED
-      </message>
-      <message name="IDS_RECOMMENDED_APPS_INDICATOR" desc="Indicator text in the launcher on top of reccomended apps.">
-        RECOMMENDED APPS
-      </message>
-      <message name="IDS_MOST_LIKELY_INDICATOR" desc="Indicator text in the launcher on top of most likely apps to be clicked.">
-        MOST LIKELY
-      </message>
-      <message name="IDS_APP_SUGGESTIONS_INDICATOR" desc="Indicator text in the launcher on top of app suggestions.">
-        APP SUGGESTIONS
-      </message>
-      <message name="IDS_ALL_APPS_INDICATOR" desc="Indicator text in the launcher on top of all apps.">
-        ALL APPS
       </message>
       <message name="IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE" desc="The spoken feedback text for when an app icon is focused and has a notification badge shown on the icon.">
         <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> requests your attention.
@@ -7203,9 +6825,6 @@ New install
       <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
         Remove
       </message>
-      <message name="IDS_APP_LIST_KEYBOARD_SHORTCUT_OR" desc="Joiner text for several keyboard shortcuts that all do the same thing. Eg: 'Ctrl-A or Ctrl-B or Ctrl-C'">
-        Or
-      </message>
       <message name="IDS_FILE_SUGGESTION_JUSTIFICATION" desc="Format for text within a file suggestion chip shown as part of  the Chrome OS launcher UI. The suggestion chip provides users suggestions for files they may open on the recent activity. This text is shown under the file name and provides justification for why the file is shown. The text has two parts - the user action that caused the file to be shown, and the time when that action was performed, separate by a separator.">
         <ph name="action_description">$1<ex>You edited</ex></ph> · <ph name="time">$2<ex>Dec 5</ex></ph>
       </message>
@@ -7239,9 +6858,6 @@ New install
       <message name="IDS_APP_LIST_CONTINUE_EDITED_PAST_WEEK" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
         Edited in the past week
       </message>
-      <message name="IDS_APP_LIST_CONTINUE_EDITED_RECENTLY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Recently' should apply to any time between 'just now' and 'a week ago'.">
-        Edited recently
-      </message>
       <message name="IDS_APP_LIST_CONTINUE_EDITED_TODAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
         Edited today
       </message>
@@ -7257,9 +6873,6 @@ New install
       <message name="IDS_APP_LIST_CONTINUE_OPENED_PAST_WEEK" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
         Opened in the past week
       </message>
-      <message name="IDS_APP_LIST_CONTINUE_OPENED_RECENTLY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Recently' should apply to any time between 'just now' and 'a week ago'.">
-        Opened recently
-      </message>
       <message name="IDS_APP_LIST_CONTINUE_OPENED_TODAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
         Opened today
       </message>
@@ -7269,26 +6882,11 @@ New install
       <message name="IDS_APP_LIST_OPEN_TAB_HINT" desc="Shown alongside launcher search results which will take the user to an open tab when clicked.">
         <ph name="delimiter">$1<ex> - </ex></ph> Go to this tab
       </message>
-      <message name="IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX" desc="Shown next to a video game search result, begins a list of cloud gaming platforms the game is playable on.">
-        on
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_SCREENSHOT_SHORTCUT" desc="Template string for a keyboard shortcut describing two ways to take a screenshot: the snip key or Ctrl+Shift+Overview.">
-        <ph name="snip">$1<ex>Snip</ex></ph> or <ph name="ctrl">$2<ex>Ctrl</ex></ph><ph name="separator1">$3<ex>+</ex></ph><ph name="shift">$4<ex>Ctrl</ex></ph><ph name="separator2">$5<ex>+</ex></ph><ph name="overview">$6<ex>Overview</ex></ph>
-      </message>
-      <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
-        Google Assistant
-      </message>
       <message name="IDS_APP_LIST_PAGE_SWITCHER" desc="Tooltip for page switcher for each page in fullscreen view which shows all apps.">
         Page <ph name="selected_page">$1<ex>1</ex></ph> of <ph name="total_page_num">$2<ex>3</ex></ph>
       </message>
-      <message name="IDS_APP_LIST_LEARN_MORE" desc="Text of Learn more links.">
-        Learn more
-      </message>
       <message name="IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC" desc="Accessibility text for a Play Store app with star rating.">
         <ph name="APP_NAME_TYPE">$1<ex>Snapchat, Playstore App</ex></ph>, Star rating <ph name="RATING_SCORE">$2<ex>5.0</ex></ph>
-      </message>
-       <message name="IDS_APP_ACCESSIBILITY_APP_WITH_PRICE_ARC" desc="Accessibility text for a Play Store app with price.">
-        <ph name="APP_NAME_INFO">$1<ex>Snapchat, Playstore App, Star rating 4.1</ex></ph>, <ph name="PRICE">$2<ex>Free</ex></ph>
       </message>
       <message name="IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is a play store app.">
         <ph name="APP_NAME">$1<ex>Snapchat</ex></ph>, Play Store App
@@ -7298,9 +6896,6 @@ New install
       </message>
       <message name="IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC" desc="Accessibility text to specify a search result is an app recommendation.">
         <ph name="APP_NAME">$1<ex>Instagram</ex></ph>, App recommendation
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER" desc="Placeholder text for the search box shown in the app list UI.">
-        Search your device, apps, settings, web...
       </message>
       <message name="IDS_ASH_LAUNCHER_RECENT_APPS_A11Y_NAME" desc="Accessible name of the recent apps section in launcher UI which guides users to traverse the recent apps using arrow keys. The recent apps section shows a list of recent apps that the user can continue using.">
         Recent Apps, navigate with left or right arrow keys to access all recent apps
@@ -7703,31 +7298,6 @@ New install
         Update
       </message>
 
-      <!-- USB-C cable notifications -->
-      <message name="IDS_ASH_USB_NOTIFICATION_LEARN_MORE" desc="Notification button text. If the user clicks on it, it will send them to a relevant webpage." translateable="false">
-        Learn More
-      </message>
-      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_TITLE" desc="Notification title text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals." translateable="false">
-        Cable may not support displays
-      </message>
-      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_BODY" desc="Notification body text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals." translateable="false">
-        Your USB-C cable may not connect to diplays properly
-      </message>
-      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE" desc="Notification title text for when a user connects something to the USB-C port on their Chromebook and performance is in some way limited by the cable." translateable="false">
-        Cable may impact performance
-      </message>
-      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_USB4_SUPPORT_BODY" desc="Notification body text for when a user connects a USB4 device to their Chromebook with a cable that does not support USB4." translateable="false">
-        Your USB-C cable does not support USB4. Device performance may be limited.
-      </message>
-      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_TBT_SUPPORT_BODY" desc="Notification body text for when a user connects a Thunderbolt device to their Chromebook with a cable that does not support Thunderbolt." translateable="false">
-        Your USB-C cable does not support Thunderbolt. Device performance may be limited.
-      </message>
-      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_SPEED_LIMITED_BODY" desc="Notification body text for when a user connects a device to their Chromebook with a cable that has a lower maximum data rate than the device." translateable="false">
-        Your device supports a higher data rate than your cable. Device performance may be limited.
-      </message>
-      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_NOTIFIER" desc="A string explaining that the origin of the notification is the snooping protection feature.">
-        Viewing protection
-      </message>
       <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_TITLE" desc="Notification title explaining that a notification has been hidden.">
         New notification hidden
       </message>
@@ -7810,9 +7380,6 @@ New install
       </message>
 
       <!-- Adaptive charging -->
-      <message name="IDS_ASH_ADAPTIVE_CHARGING_EDUCATIONAL_NUDGE_TEXT" desc="The body text explaining to the user that adaptive charging is on.">
-        Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.
-      </message>
       <message name="IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_TITLE" desc="Title of adaptive charging notification explaining adpative charging is on.">
         Adaptive charging is on
       </message>
@@ -8019,9 +7586,6 @@ Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS"
       </message>
       <message name="IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR" desc="A glanceables classroom bubble displays a notification with an error message when an error occurs while fetching data. This is the text that describes the error to the user and appears on the notification.">
         Can't show items. Try reopening this panel.
-      </message>
-      <message name="IDS_GLANCEABLES_OVERVIEW_REMOVE_CHIP" desc="The text shown on the removing glanceable chip panel in Overview">
-        Remove this suggestion
       </message>
       <message name="IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER" desc="The text used as a placeholder for the textfield used when adding or editing a task.">
         Title
@@ -8540,26 +8104,6 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
         Resizable
-      </message>
-
-      <!-- Ash download command text -->
-      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL" desc="Text of the command to cancel a download.">
-        Cancel
-      </message>
-      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_COPY_TO_CLIPBOARD" desc="Text of the command to copy the download file to clipboard.">
-        Copy to clipboard
-      </message>
-      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE" desc="Text of the command to pause a download.">
-        Pause
-      </message>
-      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME" desc="Text of the command to resume a paused download.">
-        Resume
-      </message>
-      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER" desc="Text of the command to show the download file in folder.">
-        Show in folder
-      </message>
-      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_VIEW_DETAILS_IN_BROWSER" desc="Text of the command to view a download's details in browser.">
-        View details in browser
       </message>
 
       <!-- Post login glanceables -->
