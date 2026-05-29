@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
 

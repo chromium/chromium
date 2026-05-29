@@ -7,9 +7,11 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "sql/database.h"
 #include "url/gurl.h"
 
@@ -30,7 +32,7 @@ class PageContentStore {
   PageContentStore& operator=(const PageContentStore&) = delete;
 
   // Initializes the encryptor. Must be called before any get/add methods.
-  void InitWithEncryptor(os_crypt_async::Encryptor encryptor);
+  void InitWithEncryptor(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Adds a new page content entry to the database.
   // `visit_timestamp` is the timestamp at which the URL was visited.
@@ -81,7 +83,7 @@ class PageContentStore {
   sql::Database db_;
 
   bool db_initialized_ = false;
-  std::optional<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

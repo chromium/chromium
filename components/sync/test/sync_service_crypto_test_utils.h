@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SYNC_TEST_SYNC_SERVICE_CRYPTO_TEST_UTILS_H_
 #define COMPONENTS_SYNC_TEST_SYNC_SERVICE_CRYPTO_TEST_UTILS_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
 namespace syncer {
 
-os_crypt_async::Encryptor GetEncryptorForTest();
+scoped_refptr<os_crypt_async::Encryptor> GetEncryptorForTest();
 
 }  // namespace syncer
 

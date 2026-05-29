@@ -5,6 +5,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -28,6 +29,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -129,10 +131,10 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override { identity_test_env_adaptor_.reset(); }
 
-  std::optional<os_crypt_async::Encryptor> CreateEncryptor() {
-    std::optional<os_crypt_async::Encryptor> encryptor;
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor;
     os_crypt_async_->GetInstance(base::BindLambdaForTesting(
-        [&](os_crypt_async::Encryptor new_encryptor) {
+        [&](scoped_refptr<os_crypt_async::Encryptor> new_encryptor) {
           encryptor = std::move(new_encryptor);
         }));
     return encryptor;
@@ -848,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
   password_manager::HashPasswordManager hash_password_manager(
-      std::move(*encryptor));
+      std::move(encryptor));
   hash_password_manager.set_prefs(profile->GetPrefs());
   EXPECT_FALSE(hash_password_manager.HasPasswordHash(
       user_manager::kStubUserEmail, /*is_gaia_password=*/true));
@@ -894,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
   password_manager::HashPasswordManager hash_password_manager(
-      std::move(*encryptor));
+      std::move(encryptor));
   hash_password_manager.set_prefs(profile->GetPrefs());
   hash_password_manager.set_local_prefs(g_browser_process->local_state());
   EXPECT_FALSE(hash_password_manager.HasPasswordHash(

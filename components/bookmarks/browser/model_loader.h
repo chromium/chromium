@@ -61,8 +61,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // unencrypted or encrypted bookmarks, see
   // BookmarkStorage::SaveBookmarksToSecondaryFile for more details.
   static scoped_refptr<ModelLoader> Create(
-      scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-          encryptor,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor,
       const base::FilePath& local_or_syncable_file_path,
       const base::FilePath& encrypted_local_or_syncable_file_path,
       const base::FilePath& account_file_path,
@@ -98,8 +97,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
 
   // Performs the load on a background thread.
   std::unique_ptr<BookmarkLoadDetails> DoLoadOnBackgroundThread(
-      scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-          encryptor,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor,
       const base::FilePath& local_or_syncable_file_path,
       const base::FilePath& encrypted_local_or_syncable_file_path,
       const base::FilePath& account_file_path,

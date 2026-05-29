@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_request_manager.h"
@@ -36,12 +37,12 @@ void WebDatabaseBackend::AddTable(std::unique_ptr<WebDatabaseTable> table) {
 }
 
 void WebDatabaseBackend::MaybeInitEncryptorOnUiSequence(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   CHECK(!encryptor_) << "Init should only be called once.";
   // Encryptor is thread safe. This transfers it from the UI sequence to the DB
   // sequence. The CHECKs above and below guarantee this only happens once,
   // before any tasks have been posted to the DB sequence.
-  encryptor_.emplace(std::move(encryptor));
+  encryptor_ = std::move(encryptor);
 }
 
 void WebDatabaseBackend::InitDatabase() {
@@ -141,7 +142,7 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
       &WebDatabaseBackend::DatabaseErrorCallback, base::Unretained(this)));
   diagnostics_.clear();
   catastrophic_error_occurred_ = false;
-  init_status_ = db_->Init(db_path_, &(*encryptor_));
+  init_status_ = db_->Init(db_path_, encryptor_);
 
   if (init_status_ != sql::INIT_OK) {
     // The database failed to be opened. This can be caused by a third-party
@@ -155,7 +156,7 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
     // and empty database.
     db_->GetSQLConnection()->Close();
     sql::InitStatus memory_init_status =
-        db_->Init(base::FilePath(WebDatabase::kInMemoryPath), &(*encryptor_));
+        db_->Init(base::FilePath(WebDatabase::kInMemoryPath), encryptor_);
     CHECK_EQ(memory_init_status, sql::INIT_OK);
   }
 

@@ -8,10 +8,12 @@
 #include <set>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "components/database_utils/url_converter.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "sql/error_delegate_util.h"
 #include "sql/init_status.h"
@@ -119,7 +121,8 @@ bool PageContentStore::InitializeDb() {
   return true;
 }
 
-void PageContentStore::InitWithEncryptor(os_crypt_async::Encryptor encryptor) {
+void PageContentStore::InitWithEncryptor(
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   encryptor_ = std::move(encryptor);
 }
@@ -130,7 +133,7 @@ bool PageContentStore::AddPageContent(const GURL& url,
                                       base::Time extraction_timestamp,
                                       std::optional<int64_t> tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_initialized_ || !encryptor_.has_value()) {
+  if (!db_initialized_ || !encryptor_) {
     return false;
   }
 
@@ -190,7 +193,7 @@ bool PageContentStore::AddPageContent(const GURL& url,
 std::optional<proto::PageContext> PageContentStore::GetPageContent(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_initialized_ || !encryptor_.has_value()) {
+  if (!db_initialized_ || !encryptor_) {
     return std::nullopt;
   }
 
@@ -209,7 +212,7 @@ std::optional<proto::PageContext> PageContentStore::GetPageContent(
 std::optional<proto::PageContext> PageContentStore::GetPageContentForTab(
     int64_t tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_initialized_ || !encryptor_.has_value()) {
+  if (!db_initialized_ || !encryptor_) {
     return std::nullopt;
   }
 

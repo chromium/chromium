@@ -77,6 +77,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/sync/android/jni_headers/ExplicitPassphrasePlatformClient_jni.h"
 #include "components/sync/android/sync_service_android_bridge.h"
@@ -553,9 +554,14 @@ void SyncServiceImpl::TryStart() {
   // OSCryptAsync will just queue the callbacks and run them once the
   // encryptor is available. The first call to TryStartImpl() that succeeds
   // will create the engine, and subsequent ones will be no-ops.
-  auto barrier = base::BarrierCallback<os_crypt_async::Encryptor>(
-      2, base::BindOnce(&SyncServiceImpl::TryStartImpl,
-                        weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+  // TODO(crbug.com/514283732): Now that Encryptor is a refcounted object, we
+  // can the barrier is probably not needed anymore. Investigate if it can be
+  // removed.
+  auto barrier =
+      base::BarrierCallback<scoped_refptr<os_crypt_async::Encryptor>>(
+          2,
+          base::BindOnce(&SyncServiceImpl::TryStartImpl,
+                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 
   // One instance of Encryptor is needed for SyncServiceImpl and one for
   // SyncEngine.
@@ -565,7 +571,7 @@ void SyncServiceImpl::TryStart() {
 
 void SyncServiceImpl::TryStartImpl(
     base::TimeTicks try_start_time,
-    std::vector<os_crypt_async::Encryptor> encryptors) {
+    std::vector<scoped_refptr<os_crypt_async::Encryptor>> encryptors) {
   base::Time deferral_time;
   std::swap(deferring_first_start_since_, deferral_time);
 
@@ -580,8 +586,7 @@ void SyncServiceImpl::TryStartImpl(
 
   // One instance of Encryptor is needed for SyncServiceImpl and one for
   // SyncEngine.
-  crypto_.SetEncryptor(
-      std::make_unique<os_crypt_async::Encryptor>(std::move(encryptors[0])));
+  crypto_.SetEncryptor(std::move(encryptors[0]));
 
   if (!deferral_time.is_null()) {
     base::UmaHistogramCustomTimes("Sync.Startup.TimeDeferred2",
@@ -638,8 +643,7 @@ void SyncServiceImpl::TryStartImpl(
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
 
-  params.encryptor =
-      std::make_unique<os_crypt_async::Encryptor>(std::move(encryptors[1]));
+  params.encryptor = std::move(encryptors[1]);
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();

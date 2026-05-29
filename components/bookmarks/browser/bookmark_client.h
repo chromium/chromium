@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/bookmark_form_factor.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -146,8 +147,8 @@ class BookmarkClient {
   // Returns an encryptor instance to read / write bookmarks from / to the disk
   // in an encrypted form.
   virtual void GetEncryptor(
-      base::OnceCallback<void(os_crypt_async::Encryptor encryptor)>
-          callback) = 0;
+      base::OnceCallback<void(
+          scoped_refptr<os_crypt_async::Encryptor> encryptor)> callback) = 0;
 };
 
 }  // namespace bookmarks

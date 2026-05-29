@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
@@ -197,8 +198,9 @@ class SafeBrowsingUIHandler {
   void OnGetCookie(const std::string& callback_id,
                    const std::vector<net::CanonicalCookie>& cookies);
 
-  void GetSavedPasswordsImpl(const std::string& callback_id,
-                             os_crypt_async::Encryptor encryptor);
+  void GetSavedPasswordsImpl(
+      const std::string& callback_id,
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
 

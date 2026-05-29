@@ -10,12 +10,14 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_store.h"
 #include "url/gurl.h"
 
@@ -224,7 +226,7 @@ void PageContentCache::CleanUpAndRecordMetrics(
 }
 
 void PageContentCache::OnOsCryptAsyncReady(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   store_.AsyncCall(&optimization_guide::PageContentStore::InitWithEncryptor)
       .WithArgs(std::move(encryptor))
       .Then(base::BindOnce(&PageContentCache::OnStoreInitialized,

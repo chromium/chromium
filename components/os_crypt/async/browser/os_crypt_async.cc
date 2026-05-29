@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
@@ -59,7 +60,7 @@ OSCryptAsync::OSCryptAsync(
     : providers_(SortProviders(std::move(providers))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (providers_.empty()) {
-    SetEncryptorInstance(Encryptor());
+    SetEncryptorInstance(base::WrapRefCounted(new Encryptor()));
   }
 }
 
@@ -114,9 +115,9 @@ void OSCryptAsync::HandleKey(
   }
 
   if (++current == providers_.end()) {
-    SetEncryptorInstance(
-        Encryptor(std::move(key_ring_), provider_for_encryption_,
-                  provider_for_os_crypt_sync_compatible_encryption_));
+    SetEncryptorInstance(base::WrapRefCounted(
+        new Encryptor(std::move(key_ring_), provider_for_encryption_,
+                      provider_for_os_crypt_sync_compatible_encryption_)));
     for (auto& callback : callbacks_) {
       std::move(callback).Run();
     }
@@ -128,11 +129,11 @@ void OSCryptAsync::HandleKey(
                                     weak_factory_.GetWeakPtr(), current));
 }
 
-void OSCryptAsync::SetEncryptorInstance(Encryptor encryptor) {
+void OSCryptAsync::SetEncryptorInstance(scoped_refptr<Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_initialized_);
   is_initialized_ = true;
-  encryptor_instance_ = std::make_unique<Encryptor>(std::move(encryptor));
+  encryptor_instance_ = std::move(encryptor);
   size_t available_keys = 0;
   size_t unavailable_keys = 0;
   for (const auto& key : encryptor_instance_->keys_) {

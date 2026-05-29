@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -64,7 +65,7 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   };
 
   void OnOsCryptReady(InitCallback callback,
-                      os_crypt_async::Encryptor encryptor);
+                      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   void OnServiceAccountIdentityChanged();
 
@@ -76,7 +77,7 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   const raw_ptr<PrefService> local_state_;
 
   const raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::optional<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   // This and the |token_decrypted_| field are mutable because they are modified
   // on the first call to |GetRefreshToken()|, which is const.

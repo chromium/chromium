@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_features.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
@@ -96,7 +97,7 @@ bool CommandStorageManager::ShouldWriteEncryptedFiles() const {
 
 void CommandStorageManager::OnEncryptorReady(
     base::TimeTicks start_time,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK(ShouldWriteEncryptedFiles());
   base::UmaHistogramTimes(
       "Session.CommandStorageManager.OnEncryptorReadyDuration",

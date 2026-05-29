@@ -65,6 +65,7 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -4292,7 +4293,7 @@ void EnclaveManager::Act() {
 
     loading_ = true;
 
-    if (!encryptor_.has_value()) {
+    if (!encryptor_) {
       g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
           &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -4594,7 +4595,7 @@ void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
 
 void EnclaveManager::DoWriteState(std::string serialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(encryptor_.has_value());
+  CHECK(encryptor_);
 
   currently_writing_ = true;
 
@@ -4771,9 +4772,10 @@ bool EnclaveManager::IsSecurityDomainReset(
               user_->wrapped_security_domain_secrets().end());
 }
 
-void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
-  CHECK(!encryptor_.has_value());
-  encryptor_.emplace(std::move(encryptor));
+void EnclaveManager::OnOsCryptReady(
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+  CHECK(!encryptor_);
+  encryptor_ = std::move(encryptor);
   loading_ = false;
   Act();
 }

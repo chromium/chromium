@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -63,7 +64,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   void SetUp() override {
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(base::FilePath(WebDatabase::kInMemoryPath), &encryptor_);
+    db_.Init(base::FilePath(WebDatabase::kInMemoryPath), encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
     bridge_ = std::make_unique<AutofillWalletCredentialSyncBridge>(
@@ -145,7 +146,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   }
 
  private:
-  const os_crypt_async::Encryptor encryptor_;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;

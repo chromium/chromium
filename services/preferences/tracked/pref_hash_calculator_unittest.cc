@@ -27,6 +27,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
+#include "base/memory/scoped_refptr.h"
 #endif
 
 namespace {
@@ -40,7 +41,7 @@ class PrefHashCalculatorEncryptedTest : public testing::Test {
         test_encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
 
   PrefHashCalculator calculator_;
-  const os_crypt_async::TestEncryptor test_encryptor_;
+  scoped_refptr<os_crypt_async::TestEncryptor> test_encryptor_;
 };
 
 // A test key provider that takes a name and produces a deterministic key based
@@ -263,19 +264,20 @@ TEST_F(PrefHashCalculatorEncryptedTest, CalculateEncryptedHash) {
   const base::Value value_dict_val(value_dict.Clone());
   const base::Value* null_ptr = static_cast<const base::Value*>(nullptr);
 
-  std::optional<std::string> hash1_opt =
-      calculator_.CalculateEncryptedHash("p.int", &value_int, &test_encryptor_);
-  std::optional<std::string> hash2_opt =
-      calculator_.CalculateEncryptedHash("p.str", &value_str, &test_encryptor_);
+  std::optional<std::string> hash1_opt = calculator_.CalculateEncryptedHash(
+      "p.int", &value_int, test_encryptor_.get());
+  std::optional<std::string> hash2_opt = calculator_.CalculateEncryptedHash(
+      "p.str", &value_str, test_encryptor_.get());
   std::optional<std::string> hash1_again_opt =
-      calculator_.CalculateEncryptedHash("p.int", &value_int, &test_encryptor_);
+      calculator_.CalculateEncryptedHash("p.int", &value_int,
+                                         test_encryptor_.get());
   std::optional<std::string> hash_dict_opt = calculator_.CalculateEncryptedHash(
-      "p.dict", &value_dict_val, &test_encryptor_);
+      "p.dict", &value_dict_val, test_encryptor_.get());
   std::optional<std::string> hash_dict_ptr_opt =
       calculator_.CalculateEncryptedHash("p.dict", &value_dict,
-                                         &test_encryptor_);
-  std::optional<std::string> hash_null_opt =
-      calculator_.CalculateEncryptedHash("p.null", null_ptr, &test_encryptor_);
+                                         test_encryptor_.get());
+  std::optional<std::string> hash_null_opt = calculator_.CalculateEncryptedHash(
+      "p.null", null_ptr, test_encryptor_.get());
 
   // Verify the values.
   ASSERT_TRUE(hash1_opt.has_value());
@@ -306,55 +308,62 @@ TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
 
   // Generate a VALID hash using the calculator and test encryptor instance
   std::optional<std::string> valid_hash_opt =
-      calculator_.CalculateEncryptedHash(path, &value_int, &test_encryptor_);
+      calculator_.CalculateEncryptedHash(path, &value_int,
+                                         test_encryptor_.get());
   ASSERT_TRUE(valid_hash_opt.has_value());
   const std::string& valid_hash_base64 = *valid_hash_opt;
 
   // Generate hash for null value
   std::optional<std::string> null_hash_opt = calculator_.CalculateEncryptedHash(
-      "p.null", null_value_ptr, &test_encryptor_);
+      "p.null", null_value_ptr, test_encryptor_.get());
   ASSERT_TRUE(null_hash_opt.has_value());
   const std::string& null_hash_base64 = *null_hash_opt;
 
   // Valid case: Correct value, path, and generated hash
   EXPECT_EQ(PrefHashCalculator::VALID_ENCRYPTED,
             calculator_.ValidateEncrypted(path, &value_int, valid_hash_base64,
-                                          &test_encryptor_));
+                                          test_encryptor_.get()));
 
   // Wrong value: Correct path and hash, but different value being checked
-  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
-            calculator_.ValidateEncrypted(path, &value_other_int,
-                                          valid_hash_base64, &test_encryptor_));
+  EXPECT_EQ(
+      PrefHashCalculator::INVALID_ENCRYPTED,
+      calculator_.ValidateEncrypted(path, &value_other_int, valid_hash_base64,
+                                    test_encryptor_.get()));
 
   // Wrong path: Correct value and hash, but different path being checked
-  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
-            calculator_.ValidateEncrypted("p.wrong", &value_int,
-                                          valid_hash_base64, &test_encryptor_));
+  EXPECT_EQ(
+      PrefHashCalculator::INVALID_ENCRYPTED,
+      calculator_.ValidateEncrypted("p.wrong", &value_int, valid_hash_base64,
+                                    test_encryptor_.get()));
 
   // Non-Base64 stored hash: Validation should fail (Base64Decode returns false)
-  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
-            calculator_.ValidateEncrypted(
-                path, &value_int, "this is not base64!", &test_encryptor_));
+  EXPECT_EQ(
+      PrefHashCalculator::INVALID_ENCRYPTED,
+      calculator_.ValidateEncrypted(path, &value_int, "this is not base64!",
+                                    test_encryptor_.get()));
 
   // Test validation of null value
-  EXPECT_EQ(PrefHashCalculator::VALID_ENCRYPTED,
-            calculator_.ValidateEncrypted("p.null", null_value_ptr,
-                                          null_hash_base64, &test_encryptor_));
+  EXPECT_EQ(
+      PrefHashCalculator::VALID_ENCRYPTED,
+      calculator_.ValidateEncrypted("p.null", null_value_ptr, null_hash_base64,
+                                    test_encryptor_.get()));
   // Null expected, int provided -> Invalid
   EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
-            calculator_.ValidateEncrypted("p.null", &value_int,
-                                          null_hash_base64, &test_encryptor_));
+            calculator_.ValidateEncrypted(
+                "p.null", &value_int, null_hash_base64, test_encryptor_.get()));
   // Int expected, null provided -> Invalid
-  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
-            calculator_.ValidateEncrypted(path, null_value_ptr,
-                                          valid_hash_base64, &test_encryptor_));
+  EXPECT_EQ(
+      PrefHashCalculator::INVALID_ENCRYPTED,
+      calculator_.ValidateEncrypted(path, null_value_ptr, valid_hash_base64,
+                                    test_encryptor_.get()));
 }
 
 TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
   base::DictValue dict;
   dict.Set("key", "value");
   std::optional<std::string> encrypted_hash =
-      calculator_.CalculateEncryptedHash("p.dict", &dict, &test_encryptor_);
+      calculator_.CalculateEncryptedHash("p.dict", &dict,
+                                         test_encryptor_.get());
 
   // The hash was encrypted with test_encryptor_, then base64-encoded. Since
   // TestEncryptor uses a random key, and Encryptors always use a random nonce,
@@ -362,7 +371,7 @@ TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
   // then decrypt the hash to get the raw hash value, and compare it against a
   // known hash.
   std::optional<std::string> decrypted_hash =
-      test_encryptor_.DecryptData(*base::Base64Decode(*encrypted_hash));
+      test_encryptor_->DecryptData(*base::Base64Decode(*encrypted_hash));
   ASSERT_TRUE(decrypted_hash.has_value());
 
   // Despite using a std::string to represent it, the decrypted hash is actually
@@ -401,15 +410,15 @@ TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
                            std::make_unique<TestKeyProvider>("v10"));
     os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
 
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     os_crypt.GetInstance(future.GetCallback());
     const auto encryptor = future.Take();
 
     // This encrypted hash is now encrypted with v10 key.
-    encrypted_hash =
-        calculator_.CalculateEncryptedHash("p.dict", &value_int, &encryptor);
+    encrypted_hash = calculator_.CalculateEncryptedHash("p.dict", &value_int,
+                                                        encryptor.get());
     const auto validation_result = calculator_.ValidateEncrypted(
-        "p.dict", &value_int, *encrypted_hash, &encryptor);
+        "p.dict", &value_int, *encrypted_hash, encryptor.get());
     EXPECT_EQ(validation_result, PrefHashCalculator::VALID_ENCRYPTED);
   }
 
@@ -425,12 +434,12 @@ TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
                            std::make_unique<TestKeyProvider>("v20"));
     os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
 
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     os_crypt.GetInstance(future.GetCallback());
     const auto encryptor = future.Take();
 
     const auto validation_result = calculator_.ValidateEncrypted(
-        "p.dict", &value_int, *encrypted_hash, &encryptor);
+        "p.dict", &value_int, *encrypted_hash, encryptor.get());
     EXPECT_EQ(validation_result, GetParam()
                                      ? PrefHashCalculator::WEAK_HASH_ENCRYPTED
                                      : PrefHashCalculator::VALID_ENCRYPTED);

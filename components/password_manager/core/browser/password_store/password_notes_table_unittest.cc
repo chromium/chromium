@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
@@ -61,8 +63,8 @@ class PasswordNotesTableTest : public testing::Test {
 
   LoginDatabase* login_db() { return login_db_.get(); }
 
-  os_crypt_async::Encryptor CreateEncryptor() {
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     test_oscrypt_async_->GetInstance(future.GetCallback(),
                                      os_crypt_async::Encryptor::Option::kNone);
     return future.Take();

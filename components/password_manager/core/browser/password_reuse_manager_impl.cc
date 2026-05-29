@@ -32,6 +32,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #endif
 
@@ -402,7 +404,7 @@ void PasswordReuseManagerImpl::InitHashPasswordManager(
 }
 
 void PasswordReuseManagerImpl::OnOsCryptAsyncReady(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   hash_password_manager_ =
       std::make_unique<HashPasswordManager>(std::move(encryptor));
   state_callback_list_subscription_ =

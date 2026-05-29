@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -57,13 +58,13 @@ bool LoginDatabaseAsyncHelper::Initialize(
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::RepeatingCallback<void(password_manager::IsAccountStore)>
         on_undecryptable_passwords_removed,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   remote_forms_changes_received_callback_ =
       std::move(remote_form_changes_received);
 
-  is_encryption_available_ = encryptor.IsEncryptionAvailable();
+  is_encryption_available_ = encryptor->IsEncryptionAvailable();
 
   bool success = true;
   if (!login_db_->Init(std::move(on_undecryptable_passwords_removed),

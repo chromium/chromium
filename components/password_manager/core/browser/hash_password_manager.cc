@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -61,7 +63,8 @@ bool StringToLengthAndSalt(const std::string& s,
 
 // TODO(b/325053878): Refactor class after safe_browsing_ui.* migration to
 // the //chrome directory.
-HashPasswordManager::HashPasswordManager(os_crypt_async::Encryptor encryptor)
+HashPasswordManager::HashPasswordManager(
+    scoped_refptr<os_crypt_async::Encryptor> encryptor)
     : encryptor_(std::move(encryptor)) {}
 
 HashPasswordManager::~HashPasswordManager() = default;
@@ -351,7 +354,7 @@ std::string HashPasswordManager::DecryptBase64String(
   }
 
   std::string plain_text;
-  if (!encryptor_.DecryptString(encrypted_string, &plain_text)) {
+  if (!encryptor_->DecryptString(encrypted_string, &plain_text)) {
     return std::string();
   }
 
@@ -361,7 +364,7 @@ std::string HashPasswordManager::DecryptBase64String(
 std::string HashPasswordManager::EncryptString(
     const std::string& plain_text) const {
   std::string encrypted_text;
-  if (!encryptor_.EncryptString(plain_text, &encrypted_text)) {
+  if (!encryptor_->EncryptString(plain_text, &encrypted_text)) {
     return std::string();
   }
   return base::Base64Encode(encrypted_text);

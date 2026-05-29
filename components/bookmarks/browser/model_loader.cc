@@ -12,6 +12,7 @@
 #include "base/hash/hash.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -42,8 +43,7 @@ const base::FilePath::CharType kBackupExtension[] = FILE_PATH_LITERAL("bak");
 // kJSONParsingFailed and kBookmarkCodecDecodingFailed aren't possible return
 // values.
 base::expected<std::string, metrics::BookmarksFileLoadResult> ReadFile(
-    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     StorageFileEncryptionType encryption_type,
     const base::FilePath& file_path,
     metrics::StorageFileForUma storage_file_for_uma) {
@@ -65,7 +65,7 @@ base::expected<std::string, metrics::BookmarksFileLoadResult> ReadFile(
 
   CHECK(encryptor);
   std::string decrypted_json_string;
-  if (!encryptor->data.DecryptString(json_string, &decrypted_json_string)) {
+  if (!encryptor->DecryptString(json_string, &decrypted_json_string)) {
     return base::unexpected(
         metrics::BookmarksFileLoadResult::kDecryptionFailed);
   }
@@ -93,8 +93,7 @@ DeserializeStringToDict(std::string_view json_string) {
 
 void ReadBookmarksInSecondaryFileAndVerifyContentOnBackgroundSequence(
     std::string primary_json_string,
-    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     StorageFileEncryptionType secondary_encryption_type,
     const base::FilePath secondary_file_path,
     metrics::StorageFileForUma storage_file_for_uma,
@@ -121,8 +120,7 @@ void ReadBookmarksInSecondaryFileAndVerifyContentOnBackgroundSequence(
 
 void MaybeScheduleReadBookmarksInSecondaryFileAndVerifyContent(
     std::string primary_json_string,
-    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     StorageFileEncryptionType secondary_encryption_type,
     const base::FilePath& secondary_file_path,
     metrics::StorageFileForUma storage_file_for_uma,
@@ -138,8 +136,8 @@ void MaybeScheduleReadBookmarksInSecondaryFileAndVerifyContent(
       FROM_HERE,
       base::BindOnce(
           &ReadBookmarksInSecondaryFileAndVerifyContentOnBackgroundSequence,
-          std::move(primary_json_string), encryptor, secondary_encryption_type,
-          secondary_file_path, storage_file_for_uma,
+          std::move(primary_json_string), std::move(encryptor),
+          secondary_encryption_type, secondary_file_path, storage_file_for_uma,
           std::move(save_single_file_callback)));
 }
 
@@ -208,8 +206,7 @@ void MaybeCleanUpFiles(StorageFileEncryptionType primary_source_encryption_type,
 }
 
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
-    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
@@ -501,8 +498,7 @@ void RecordLoadMetrics(
 
 // static
 scoped_refptr<ModelLoader> ModelLoader::Create(
-    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
@@ -551,8 +547,7 @@ ModelLoader::ModelLoader()
 ModelLoader::~ModelLoader() = default;
 
 std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
-    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
@@ -561,7 +556,7 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
     SaveSingleFileCallback save_account_single_file_callback,
     LoadManagedNodeCallback load_managed_node_callback) {
   std::unique_ptr<BookmarkLoadDetails> details =
-      LoadBookmarks(encryptor, local_or_syncable_file_path,
+      LoadBookmarks(std::move(encryptor), local_or_syncable_file_path,
                     encrypted_local_or_syncable_file_path, account_file_path,
                     encrypted_account_file_path,
                     std::move(save_local_or_syncable_single_file_callback),

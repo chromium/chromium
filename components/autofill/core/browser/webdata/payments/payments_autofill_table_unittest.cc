@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -43,6 +44,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -86,7 +88,7 @@ class PaymentsAutofillTableTest : public testing::Test {
     table_.emplace();
     db_.emplace();
     db_->AddTable(&*table_);
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, &*encryptor_));
+    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, encryptor_));
   }
 
   // Get date_modifed `column` of `table_name` with specific `instrument_id` or
@@ -111,7 +113,7 @@ class PaymentsAutofillTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::optional<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
   std::optional<PaymentsAutofillTable> table_;
   std::optional<WebDatabase> db_;
 };

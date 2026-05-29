@@ -24,9 +24,10 @@ namespace os_crypt_async {
 
 namespace {
 
-Encryptor GetInstanceSync(OSCryptAsync& factory,
-                          Encryptor::Option option = Encryptor::Option::kNone) {
-  base::test::TestFuture<Encryptor> future;
+scoped_refptr<Encryptor> GetInstanceSync(
+    OSCryptAsync& factory,
+    Encryptor::Option option = Encryptor::Option::kNone) {
+  base::test::TestFuture<scoped_refptr<Encryptor>> future;
   factory.GetInstance(future.GetCallback(), option);
   return future.Take();
 }
@@ -46,10 +47,10 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, EncryptDecrypt) {
   // metrics callback before anything else gets a chance to.
   histogram_tester_.ExpectTotalCount("OSCrypt.AsyncInitialization.Time", 1u);
 
-  auto ciphertext = encryptor.EncryptString("plaintext");
+  auto ciphertext = encryptor->EncryptString("plaintext");
   ASSERT_TRUE(ciphertext);
 
-  auto decrypted = encryptor.DecryptData(*ciphertext);
+  auto decrypted = encryptor->DecryptData(*ciphertext);
   ASSERT_TRUE(decrypted);
 
   EXPECT_EQ(*decrypted, "plaintext");
@@ -61,11 +62,11 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, SandboxedEncryptionTest) {
   // on all platforms when inside a sandbox without transferring the key over
   // manually.
   auto os_crypt_async = GetTestOSCryptAsyncForTesting();
-  Encryptor encryptor = GetInstanceSync(*os_crypt_async);
+  scoped_refptr<Encryptor> encryptor = GetInstanceSync(*os_crypt_async);
 
   constexpr char kTestData[] = "testdatatest";
   // First, encrypt the data.
-  const auto encrypted_data = encryptor.EncryptString(kTestData);
+  const auto encrypted_data = encryptor->EncryptString(kTestData);
   ASSERT_TRUE(encrypted_data.has_value());
 
   // Launch sandboxed echo service.
@@ -83,9 +84,9 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, SandboxedEncryptionTest) {
 
   // Obtain a second encryptor, since the first one was consumed in the mojo
   // call above.
-  Encryptor encryptor2 = GetInstanceSync(*os_crypt_async);
+  scoped_refptr<Encryptor> encryptor2 = GetInstanceSync(*os_crypt_async);
   // Finally, decrypt the data again.
-  const auto plaintext = encryptor2.DecryptData(*result);
+  const auto plaintext = encryptor2->DecryptData(*result);
   ASSERT_TRUE(plaintext.has_value());
   EXPECT_EQ(*plaintext, kTestData);
 }
@@ -96,11 +97,11 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, SandboxedEncryptionTest) {
 IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, OSCryptBackwardsCompatTest) {
   auto encryptor = GetInstanceSync(*g_browser_process->os_crypt_async(),
                                    Encryptor::Option::kEncryptSyncCompat);
-  auto ciphertext = encryptor.EncryptString("plaintext");
+  auto ciphertext = encryptor->EncryptString("plaintext");
   ASSERT_TRUE(ciphertext);
 
   {
-    const auto decrypted = encryptor.DecryptData(*ciphertext);
+    const auto decrypted = encryptor->DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ(*decrypted, "plaintext");
   }
@@ -110,15 +111,15 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, OSCryptBackwardsCompatTest) {
     // decrypted with a kNone encryptor.
     auto full_encryptor = GetInstanceSync(*g_browser_process->os_crypt_async(),
                                           Encryptor::Option::kNone);
-    const auto decrypted = full_encryptor.DecryptData(*ciphertext);
+    const auto decrypted = full_encryptor->DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ(decrypted, "plaintext");
 
     // Verify that data encrypted from a kNone encryptor can be decrypted with a
     // kEncryptSyncCompat encryptor.
-    const auto ciphertext2 = full_encryptor.EncryptString("more_plaintext");
+    const auto ciphertext2 = full_encryptor->EncryptString("more_plaintext");
     ASSERT_TRUE(ciphertext2);
-    const auto decrypted2 = encryptor.DecryptData(*ciphertext2);
+    const auto decrypted2 = encryptor->DecryptData(*ciphertext2);
     ASSERT_TRUE(decrypted2);
     EXPECT_EQ(*decrypted2, "more_plaintext");
   }

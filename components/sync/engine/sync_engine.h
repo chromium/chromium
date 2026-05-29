@@ -65,7 +65,7 @@ class SyncEngine : public DataTypeConfigurer {
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor;
+    scoped_refptr<os_crypt_async::Encryptor> encryptor;
   };
 
   SyncEngine();

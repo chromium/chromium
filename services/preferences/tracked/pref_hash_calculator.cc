@@ -22,6 +22,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "crypto/hash.h"
 #include "crypto/hmac.h"
 #include "crypto/secure_util.h"

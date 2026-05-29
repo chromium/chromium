@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 
 #include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,10 +80,10 @@ class HashPasswordManagerTest : public testing::Test {
 
   ~HashPasswordManagerTest() override = default;
 
-  std::optional<os_crypt_async::Encryptor> CreateEncryptor() {
-    std::optional<os_crypt_async::Encryptor> encryptor;
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor;
     os_crypt_async_->GetInstance(base::BindLambdaForTesting(
-        [&](os_crypt_async::Encryptor new_encryptor) {
+        [&](scoped_refptr<os_crypt_async::Encryptor> new_encryptor) {
           encryptor = std::move(new_encryptor);
         }));
     return encryptor;
@@ -99,7 +100,7 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashData) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   std::u16string password(u"password");
   std::string username("user@example.com");
@@ -139,7 +140,7 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashDataNotCanonicalized) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   std::u16string password(u"password");
   std::string canonical_username("user@gmail.com");
@@ -202,7 +203,7 @@ TEST_F(HashPasswordManagerTest, SavingGaiaPasswordAndNonGaiaPassword) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   hash_password_manager.set_local_prefs(&local_prefs_);
   std::u16string password(u"password");
@@ -225,7 +226,7 @@ TEST_F(HashPasswordManagerTest, SavingMultipleHashesAndRetrieveAll) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   hash_password_manager.set_local_prefs(&local_prefs_);
   std::u16string password(u"password");
@@ -280,7 +281,7 @@ TEST_F(HashPasswordManagerTest, ClearingPasswordHashData) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   hash_password_manager.set_local_prefs(&local_prefs_);
   hash_password_manager.SavePasswordHash("username1", u"sync_password",
@@ -314,7 +315,7 @@ TEST_F(HashPasswordManagerTest, RetrievingPasswordHashData) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   hash_password_manager.set_local_prefs(&local_prefs_);
   hash_password_manager.SavePasswordHash("username@gmail.com", u"password",
@@ -352,7 +353,7 @@ TEST_F(HashPasswordManagerTest,
        EnterprisePasswordHashesAreMigratedToLocalState) {
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   hash_password_manager.set_local_prefs(&local_prefs_);
 
@@ -384,7 +385,7 @@ TEST_F(HashPasswordManagerTest,
 TEST_F(HashPasswordManagerTest, QueryingDefaultEmptyPrefListDoesNotCrash) {
   auto encryptor = CreateEncryptor();
   ASSERT_TRUE(encryptor);
-  HashPasswordManager hash_password_manager(std::move(*encryptor));
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs_);
   hash_password_manager.set_local_prefs(&local_prefs_);
   std::string username("user@example.com");

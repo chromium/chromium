@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -122,8 +123,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
   }
 
  protected:
-  os_crypt_async::Encryptor GetEncryptorInstance() {
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+  scoped_refptr<os_crypt_async::Encryptor> GetEncryptorInstance() {
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     os_crypt_->GetInstance(future.GetCallback());
     return future.Take();
   }

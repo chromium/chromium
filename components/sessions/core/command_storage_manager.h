@@ -147,7 +147,7 @@ class SESSIONS_EXPORT CommandStorageManager {
   // Called when an Encryptor is ready to be used.  start_time is the time when
   // os_crypt_async->GetInstance() was called.
   void OnEncryptorReady(base::TimeTicks start_time,
-                        os_crypt_async::Encryptor encryptor);
+                        scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   const base::FilePath file_path_;
   const SessionType session_type_;

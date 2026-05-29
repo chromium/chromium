@@ -131,7 +131,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   void OnEncryptorReceived(RemoteChangesReceived remote_form_changes_received,
                            base::RepeatingClosure sync_enabled_or_disabled_cb,
                            base::OnceCallback<void(bool)> completion,
-                           os_crypt_async::Encryptor encryptor);
+                           scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   void WritePasswordRemovalReasonPrefs(IsAccountStore is_account_store);
 

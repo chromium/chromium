@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -121,8 +122,7 @@ class SyncServiceCryptoTest : public testing::Test {
     trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
                                                       kInitialTrustedVaultKeys);
 
-    crypto_.SetEncryptor(
-        std::make_unique<os_crypt_async::Encryptor>(GetEncryptorForTest()));
+    crypto_.SetEncryptor(GetEncryptorForTest());
 
     ON_CALL(delegate_, GetPassphraseType())
         .WillByDefault(ReturnPointee(&passphrase_type_));
@@ -135,13 +135,12 @@ class SyncServiceCryptoTest : public testing::Test {
   void SetUp() override {
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
-    crypto_.SetEncryptor(
-        std::make_unique<os_crypt_async::Encryptor>(GetEncryptor()));
-    encryptor_ = std::make_unique<os_crypt_async::Encryptor>(GetEncryptor());
+    crypto_.SetEncryptor(GetEncryptor());
+    encryptor_ = GetEncryptor();
   }
 
-  os_crypt_async::Encryptor GetEncryptor() {
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+  scoped_refptr<os_crypt_async::Encryptor> GetEncryptor() {
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     os_crypt_async_->GetInstance(future.GetCallback());
     return future.Take();
   }
@@ -166,7 +165,7 @@ class SyncServiceCryptoTest : public testing::Test {
   testing::NiceMock<MockSyncEngine> engine_;
   SyncServiceCrypto crypto_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 };
 
 // Happy case where no user action is required upon startup.

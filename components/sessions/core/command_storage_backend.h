@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -86,7 +87,7 @@ class SESSIONS_EXPORT CommandStorageBackend
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
       const base::FilePath& path,
       CommandStorageManager::SessionType type,
-      std::unique_ptr<os_crypt_async::Encryptor> encryptor,
+      scoped_refptr<os_crypt_async::Encryptor> encryptor,
       base::Clock* clock = nullptr);
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
@@ -288,7 +289,7 @@ class SESSIONS_EXPORT CommandStorageBackend
   raw_ptr<base::Clock> clock_;
 
   // May be null, in which case the file is not encrypted.
-  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   // File and path commands are being written.
   std::unique_ptr<OpenFile> open_file_;

@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_encryption_delegate.h"
@@ -33,7 +35,8 @@ class TestCacheEncryptionProvider
   ~TestCacheEncryptionProvider() override = default;
 
   void GetEncryptor(
-      base::OnceCallback<void(os_crypt_async::Encryptor)> callback) override {
+      base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
+          callback) override {
     if (return_invalid_encryptor_) {
       std::move(callback).Run(
           os_crypt_async::GetTestEncryptorWithoutKeysForTesting());
@@ -54,11 +57,11 @@ class TestCacheEncryptionProvider
     }
     oscrypt_async_->GetInstance(base::BindOnce(
         [](GetEncryptedCacheEncryptionKeyCallback callback,
-           os_crypt_async::Encryptor encryptor) {
+           scoped_refptr<os_crypt_async::Encryptor> encryptor) {
           const std::string primary_key_plaintext = "my primary key";
           std::string primary_key_ciphertext;
-          CHECK(encryptor.EncryptString(primary_key_plaintext,
-                                        &primary_key_ciphertext));
+          CHECK(encryptor->EncryptString(primary_key_plaintext,
+                                         &primary_key_ciphertext));
           std::move(callback).Run(std::vector<uint8_t>(
               primary_key_ciphertext.begin(), primary_key_ciphertext.end()));
         },
@@ -66,7 +69,8 @@ class TestCacheEncryptionProvider
   }
 
   void DoGetEncryptor(
-      base::OnceCallback<void(os_crypt_async::Encryptor)> callback) {
+      base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
+          callback) {
     oscrypt_async_->GetInstance(std::move(callback));
   }
 
@@ -96,7 +100,8 @@ class TestCacheEncryptionProvider
   bool call_get_encryptor_immediately_ = true;
   bool return_invalid_encryptor_ = false;
   bool return_empty_key_ = false;
-  base::OnceCallback<void(os_crypt_async::Encryptor)> get_encryptor_callback_;
+  base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
+      get_encryptor_callback_;
   mojo::Receiver<network::mojom::CacheEncryptionProvider> receiver_{this};
 };
 

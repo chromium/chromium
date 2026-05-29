@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +51,7 @@ class EntityTableTest : public testing::Test {
     db_.AddTable(&table_);
     ASSERT_EQ(sql::INIT_OK,
               db_.Init(temp_dir_.GetPath().AppendASCII("TestWebDatabase"),
-                       &encryptor_));
+                       encryptor_));
   }
 
   EntityTable& table() { return table_; }
@@ -57,7 +59,7 @@ class EntityTableTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
-  const os_crypt_async::Encryptor encryptor_ =
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_ =
       os_crypt_async::GetTestEncryptorForTesting();
   EntityTable table_;
   WebDatabase db_;

@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,6 +25,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -206,10 +208,9 @@ class SyncEngineImplTest : public testing::Test {
 
     std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
         os_crypt_async::GetTestOSCryptAsyncForTesting();
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     os_crypt_async->GetInstance(future.GetCallback());
-    params.encryptor =
-        std::make_unique<os_crypt_async::Encryptor>(future.Take());
+    params.encryptor = future.Take();
 
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))
         .WillOnce(

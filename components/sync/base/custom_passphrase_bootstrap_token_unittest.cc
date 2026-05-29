@@ -4,6 +4,7 @@
 
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -23,8 +24,8 @@ MATCHER_P(MatchesToken, expected_token, "") {
 TEST(CustomPassphraseBootstrapTokenTest, ShouldBeEmptyWhenDefaultConstructed) {
   CustomPassphraseBootstrapToken token;
   EXPECT_TRUE(token.IsEmpty());
-  EXPECT_EQ(token.ToEncryptedPref(os_crypt_async::GetTestEncryptorForTesting()),
-            "");
+  EXPECT_EQ(
+      token.ToEncryptedPref(*os_crypt_async::GetTestEncryptorForTesting()), "");
 }
 
 TEST(CustomPassphraseBootstrapTokenTest,
@@ -53,14 +54,14 @@ TEST(CustomPassphraseBootstrapTokenTest,
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::FromProto(proto);
 
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
-  std::string encrypted_pref = token.ToEncryptedPref(encryptor);
+  std::string encrypted_pref = token.ToEncryptedPref(*encryptor);
   EXPECT_NE(encrypted_pref, "");
 
   CustomPassphraseBootstrapToken decrypted_token =
       CustomPassphraseBootstrapToken::FromEncryptedPref(encrypted_pref,
-                                                        encryptor);
+                                                        *encryptor);
   EXPECT_THAT(decrypted_token, MatchesToken(token));
 }
 

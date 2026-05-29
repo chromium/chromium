@@ -33,6 +33,7 @@ class TestEncryptor : public Encryptor {
   }
 
  private:
+  friend class base::RefCountedThreadSafe<Encryptor>;
   friend class TestOSCryptAsync;
 
   TestEncryptor() = default;
@@ -42,7 +43,9 @@ class TestEncryptor : public Encryptor {
       const std::string& provider_for_encryption,
       const std::string& provider_for_os_crypt_sync_compatible_encryption);
 
-  TestEncryptor Clone(Option option) const;
+  ~TestEncryptor() override = default;
+
+  scoped_refptr<TestEncryptor> Clone(Option option) const;
 
   std::optional<bool> is_encryption_available_;
   std::optional<bool> is_decryption_available_;

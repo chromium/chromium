@@ -17,6 +17,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -33,6 +34,7 @@
 #include "build/chromecast_buildflags.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
@@ -265,9 +267,9 @@ MATCHER(IsBasicAuthAccount, "") {
   return arg.scheme == PasswordForm::Scheme::kBasic;
 }
 
-os_crypt_async::Encryptor GetInstanceSync(
+scoped_refptr<os_crypt_async::Encryptor> GetInstanceSync(
     os_crypt_async::OSCryptAsync* factory) {
-  base::test::TestFuture<os_crypt_async::Encryptor> future;
+  base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
 
   factory->GetInstance(future.GetCallback(),
                        os_crypt_async::Encryptor::Option::kNone);
@@ -302,7 +304,7 @@ class LoginDatabaseTestBase : public testing::Test {
 
   LoginDatabase& db() { return *db_; }
 
-  os_crypt_async::Encryptor CreateEncryptor() {
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
     return GetInstanceSync(test_oscrypt_async_.get());
   }
 
@@ -1959,7 +1961,7 @@ TEST_F(LoginDatabaseTest, EncryptionEnabled) {
     EXPECT_EQ(AddChangeForForm(cred), db.AddLogin(CloneStoredCredential(cred)));
   }
   std::u16string decrypted_pw;
-  ASSERT_TRUE(CreateEncryptor().DecryptString16(
+  ASSERT_TRUE(CreateEncryptor()->DecryptString16(
       GetColumnValuesFromDatabase<std::string>(file, "password_value").at(0),
       &decrypted_pw));
 
@@ -2133,7 +2135,7 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
     task_environment_.FastForwardBy(delta);
   }
 
-  os_crypt_async::Encryptor CreateEncryptor() {
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
     return GetInstanceSync(test_oscrypt_async_.get());
   }
 
@@ -2292,7 +2294,7 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
 
   base::Environment* env() { return env_.get(); }
 
-  os_crypt_async::Encryptor CreateEncryptor() {
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
     return GetInstanceSync(test_oscrypt_async_.get());
   }
 
@@ -3437,7 +3439,7 @@ class LoginDatabaseForAccountStoreTest : public testing::Test {
 
   LoginDatabase& db() { return *db_; }
 
-  os_crypt_async::Encryptor CreateEncryptor() {
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
     return GetInstanceSync(test_oscrypt_async_.get());
   }
 

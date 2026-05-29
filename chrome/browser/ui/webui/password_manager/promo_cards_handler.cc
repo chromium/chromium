@@ -32,6 +32,7 @@
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -184,9 +185,9 @@ PasswordPromoCardBase* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void PromoCardsHandler::OnEncryptorReceived(
     base::Value callback_id,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   relaunch_chrome_promo_->set_is_encryption_available(
-      encryptor.IsEncryptionAvailable());
+      encryptor->IsEncryptionAvailable());
   FinishGetAvailablePromoCard(callback_id);
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

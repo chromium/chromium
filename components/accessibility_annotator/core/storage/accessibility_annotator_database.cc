@@ -9,10 +9,12 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/intent_table.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -24,8 +26,9 @@ AccessibilityAnnotatorDatabase::AccessibilityAnnotatorDatabase() = default;
 
 AccessibilityAnnotatorDatabase::~AccessibilityAnnotatorDatabase() = default;
 
-bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path,
-                                          os_crypt_async::Encryptor encryptor) {
+bool AccessibilityAnnotatorDatabase::Init(
+    const base::FilePath& db_path,
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(
@@ -91,7 +94,7 @@ bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path,
     return false;
   }
 
-  if (!content_annotations_table_.Init(db_.get(), &encryptor_.value())) {
+  if (!content_annotations_table_.Init(db_.get(), encryptor_)) {
     return false;
   }
 
@@ -131,7 +134,7 @@ bool AccessibilityAnnotatorDatabase::AddContentAnnotation(
     history::VisitID visit_id,
     const ContentAnnotationsData& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+  if (!db_ || !db_->is_open() || !encryptor_) {
     return false;
   }
 
@@ -142,7 +145,7 @@ std::optional<ContentAnnotationsData>
 AccessibilityAnnotatorDatabase::GetContentAnnotation(
     history::VisitID visit_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+  if (!db_ || !db_->is_open() || !encryptor_) {
     return std::nullopt;
   }
 
@@ -152,7 +155,7 @@ AccessibilityAnnotatorDatabase::GetContentAnnotation(
 std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
 AccessibilityAnnotatorDatabase::GetAllContentAnnotations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+  if (!db_ || !db_->is_open() || !encryptor_) {
     return {};
   }
 
@@ -163,7 +166,7 @@ std::vector<history::VisitID>
 AccessibilityAnnotatorDatabase::DeleteContentAnnotations(
     base::span<const history::VisitID> visit_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+  if (!db_ || !db_->is_open() || !encryptor_) {
     return {};
   }
 
@@ -172,7 +175,7 @@ AccessibilityAnnotatorDatabase::DeleteContentAnnotations(
 
 bool AccessibilityAnnotatorDatabase::ClearAllContentAnnotations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+  if (!db_ || !db_->is_open() || !encryptor_) {
     return false;
   }
 
@@ -183,7 +186,7 @@ bool AccessibilityAnnotatorDatabase::MigrateOldVersionsAsNeeded(
     int detected_user_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+  if (!db_ || !db_->is_open() || !encryptor_) {
     return false;
   }
 

@@ -12,9 +12,11 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 #include "services/preferences/tracked/device_id.h"
 #include "services/preferences/tracked/hash_store_contents.h"
@@ -89,9 +91,10 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
  public:
   // Constructs a PrefHashStoreTransactionImpl which can use the private
   // members of its |outer| PrefHashStoreImpl.
-  PrefHashStoreTransactionImpl(PrefHashStoreImpl* outer,
-                               HashStoreContents* storage,
-                               const os_crypt_async::Encryptor* encryptor);
+  PrefHashStoreTransactionImpl(
+      PrefHashStoreImpl* outer,
+      HashStoreContents* storage,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor);
 
   PrefHashStoreTransactionImpl(const PrefHashStoreTransactionImpl&) = delete;
   PrefHashStoreTransactionImpl& operator=(const PrefHashStoreTransactionImpl&) =
@@ -160,7 +163,7 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
  private:
   raw_ptr<PrefHashStoreImpl> outer_;
   raw_ptr<HashStoreContents> contents_;
-  raw_ptr<const os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
 
   bool super_mac_valid_;
   bool super_mac_dirty_;
@@ -180,7 +183,7 @@ PrefHashStoreImpl::~PrefHashStoreImpl() {}
 
 std::unique_ptr<PrefHashStoreTransaction> PrefHashStoreImpl::BeginTransaction(
     HashStoreContents* storage,
-    const os_crypt_async::Encryptor* encryptor) {
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
   return std::make_unique<PrefHashStoreTransactionImpl>(this, storage,
                                                         encryptor);
 }
@@ -299,10 +302,10 @@ void PrefHashStoreImpl::FilterEncryptedHashesRecursive(
 PrefHashStoreImpl::PrefHashStoreTransactionImpl::PrefHashStoreTransactionImpl(
     PrefHashStoreImpl* outer,
     HashStoreContents* storage,
-    const os_crypt_async::Encryptor* encryptor_ptr)
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor_ptr)
     : outer_(outer),
       contents_(storage),
-      encryptor_(encryptor_ptr),
+      encryptor_(std::move(encryptor_ptr)),
       super_mac_valid_(false),
       super_mac_dirty_(false),
       super_encrypted_hash_valid_(false),
@@ -334,7 +337,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::PrefHashStoreTransactionImpl(
       // Filter out legacy MACs to compute the hash over encrypted hashes only.
       FilterEncryptedHashesRecursive(*contents, filtered_dict);
       std::string expected_hash =
-          outer_->ComputeEncryptedHash("", &filtered_dict, encryptor_);
+          outer_->ComputeEncryptedHash("", &filtered_dict, encryptor_.get());
       if (super_encrypted_hash == expected_hash) {
         super_encrypted_hash_valid_ = true;
       } else {
@@ -382,7 +385,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::
       FilterEncryptedHashesRecursive(*hashes_dict, filtered_dict);
       if (!filtered_dict.empty()) {
         std::string super_encrypted_hash =
-            outer_->ComputeEncryptedHash("", &filtered_dict, encryptor_);
+            outer_->ComputeEncryptedHash("", &filtered_dict, encryptor_.get());
         if (!super_encrypted_hash.empty()) {
           contents_->SetSuperEncryptedHash(super_encrypted_hash);
         }
@@ -438,7 +441,7 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
     if (stored_encrypted_hash.has_value()) {
       const ValidationResult result =
           outer_->pref_hash_calculator_.ValidateEncrypted(
-              path, value, *stored_encrypted_hash, encryptor_);
+              path, value, *stored_encrypted_hash, encryptor_.get());
       if (result == ValidationResult::VALID_ENCRYPTED) {
         return ValueState::UNCHANGED_ENCRYPTED;
       }
@@ -541,7 +544,7 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreEncryptedHash(
   }
 
   const std::string encrypted_hash_str =
-      outer_->ComputeEncryptedHash(path, value, encryptor_);
+      outer_->ComputeEncryptedHash(path, value, encryptor_.get());
 
   std::string enc_key = GetEncryptedHashKey(path);
 
@@ -591,7 +594,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
             const std::string keyed_path = path + "." + item.first;
             const auto validation_result =
                 outer_->pref_hash_calculator_.ValidateEncrypted(
-                    keyed_path, &item.second, it->second, encryptor_);
+                    keyed_path, &item.second, it->second, encryptor_.get());
             if (validation_result != ValidationResult::VALID_ENCRYPTED) {
               MaybeReportWeakHash(validation_result, reporting_id);
               invalid_keys->push_back(item.first);
@@ -749,7 +752,8 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitEncryptedHash(
 
   if (split_value) {
     base::DictValue split_encrypted_hashes =
-        outer_->ComputeSplitEncryptedHashes(path, split_value, encryptor_);
+        outer_->ComputeSplitEncryptedHashes(path, split_value,
+                                            encryptor_.get());
 
     for (const auto item : split_encrypted_hashes) {
       DCHECK(item.second.is_string());

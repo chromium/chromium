@@ -15,6 +15,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
@@ -24,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -57,8 +59,8 @@ class LoginDatabaseIOSTest : public PlatformTest {
                     /*encryptor=*/CreateEncryptor());
   }
 
-  os_crypt_async::Encryptor CreateEncryptor() {
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+  scoped_refptr<os_crypt_async::Encryptor> CreateEncryptor() {
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
 
     test_oscrypt_async_->GetInstance(future.GetCallback(),
                                      os_crypt_async::Encryptor::Option::kNone);
@@ -454,8 +456,8 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     std::vector<std::string> password_values(GetEncryptedPasswordValues());
     ASSERT_EQ(password_values.size(), 1u);
     std::string decrypted_password;
-    ASSERT_TRUE(CreateEncryptor().DecryptString(password_values[0],
-                                                &decrypted_password));
+    ASSERT_TRUE(CreateEncryptor()->DecryptString(password_values[0],
+                                                 &decrypted_password));
     EXPECT_EQ(decrypted_password, "test1");
   }
 
@@ -573,7 +575,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     ASSERT_EQ(note_values.size(), 1u);
     std::u16string decrypted_note;
     ASSERT_TRUE(
-        CreateEncryptor().DecryptString16(note_values[0], &decrypted_note));
+        CreateEncryptor()->DecryptString16(note_values[0], &decrypted_note));
     EXPECT_EQ(decrypted_note, u"password note");
   }
 }
@@ -618,7 +620,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     ASSERT_EQ(note_values.size(), 1u);
     std::u16string decrypted_note;
     ASSERT_TRUE(
-        CreateEncryptor().DecryptString16(note_values[0], &decrypted_note));
+        CreateEncryptor()->DecryptString16(note_values[0], &decrypted_note));
     EXPECT_EQ(decrypted_note, u"test_note");
   }
 }

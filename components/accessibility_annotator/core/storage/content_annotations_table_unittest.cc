@@ -26,8 +26,8 @@ class ContentAnnotationsTableTest : public testing::Test {
     db_ = std::make_unique<sql::Database>(sql::DatabaseOptions(),
                                           sql::test::kTestTag);
     ASSERT_TRUE(db_->Open(temp_dir_.GetPath().AppendASCII("test.db")));
-    encryptor_.emplace(os_crypt_async::GetTestEncryptorForTesting());
-    ASSERT_TRUE(table_.Init(db_.get(), &*encryptor_));
+    encryptor_ = os_crypt_async::GetTestEncryptorForTesting();
+    ASSERT_TRUE(table_.Init(db_.get(), encryptor_));
   }
 
   void TearDown() override { db_->Close(); }
@@ -46,14 +46,14 @@ class ContentAnnotationsTableTest : public testing::Test {
  protected:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<sql::Database> db_;
-  std::optional<os_crypt_async::TestEncryptor> encryptor_;
+  scoped_refptr<os_crypt_async::TestEncryptor> encryptor_;
   ContentAnnotationsTable table_;
 };
 
 // Tests that initialization fails if the input database is null.
 TEST_F(ContentAnnotationsTableTest, InitNullDb) {
   ContentAnnotationsTable table;
-  EXPECT_FALSE(table.Init(nullptr, &*encryptor_));
+  EXPECT_FALSE(table.Init(nullptr, encryptor_));
 }
 
 // Tests that initialization fails if the input encryptor is null.

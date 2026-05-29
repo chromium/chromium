@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -82,7 +83,7 @@ StoredCredential CreateStoredCredential(
 }
 
 std::optional<PasswordHashData> GetPasswordFromPref(
-    os_crypt_async::Encryptor encryptor,
+    scoped_refptr<os_crypt_async::Encryptor> encryptor,
     const std::string& username,
     bool is_gaia_password,
     TestingPrefServiceSimple& prefs) {
@@ -253,15 +254,13 @@ class PasswordReuseManagerImplTest : public testing::Test {
     return password_reuse_detector_;
   }
 
-  os_crypt_async::Encryptor CreateTestEncryptor() const {
-    // os_crypt_async::Encryptor doesn't have a public constructor, so use an
-    // optional to hold the null value until GetInstance() finishes.
-    std::optional<os_crypt_async::Encryptor> encryptor;
+  scoped_refptr<os_crypt_async::Encryptor> CreateTestEncryptor() const {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor;
     os_crypt_async_->GetInstance(base::BindLambdaForTesting(
-        [&](os_crypt_async::Encryptor new_encryptor) {
+        [&](scoped_refptr<os_crypt_async::Encryptor> new_encryptor) {
           encryptor = std::move(new_encryptor);
         }));
-    return std::move(*encryptor);
+    return encryptor;
   }
 
   std::optional<PasswordHashData> ConvertToPasswordHashData(

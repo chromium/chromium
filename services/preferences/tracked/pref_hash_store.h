@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "services/preferences/tracked/pref_hash_calculator.h"
@@ -30,7 +31,7 @@ class PrefHashStore {
   // |storage| must outlive the returned transaction.
   virtual std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
       HashStoreContents* storage,
-      const os_crypt_async::Encryptor* encryptor) = 0;
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor) = 0;
   std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
       HashStoreContents* storage);
 

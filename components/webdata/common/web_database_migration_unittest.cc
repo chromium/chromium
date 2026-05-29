@@ -113,7 +113,7 @@ class WebDatabaseMigrationTest : public testing::Test {
     db.AddTable(&valuables_table);
 
     // This causes the migration to occur.
-    ASSERT_EQ(sql::INIT_OK, db.Init(GetDatabasePath(), &encryptor_));
+    ASSERT_EQ(sql::INIT_OK, db.Init(GetDatabasePath(), encryptor_));
   }
 
  protected:
@@ -157,7 +157,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   //   > .dump
   void LoadDatabase(const base::FilePath::StringType& file);
 
-  os_crypt_async::TestEncryptor encryptor_;
+  scoped_refptr<os_crypt_async::TestEncryptor> encryptor_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -1527,8 +1527,8 @@ class WebDatabaseMigrationTestEncryption
 
 // Tests addition of the url_hash column to the keywords table.
 TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
-  encryptor_.set_encryption_available_for_testing(IsEncryptionAvailable());
-  encryptor_.set_decryption_available_for_testing(IsEncryptionAvailable());
+  encryptor_->set_encryption_available_for_testing(IsEncryptionAvailable());
+  encryptor_->set_decryption_available_for_testing(IsEncryptionAvailable());
 
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
   const char kTestUrl[] = "chrome://test/?q={searchTerms}";
@@ -1564,7 +1564,7 @@ TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
 
     EXPECT_EQ(type, sql::ColumnType::kBlob);
     const auto encrypted_hash = stmt.ColumnBlob(0);
-    const auto hash = encryptor_.DecryptData(encrypted_hash);
+    const auto hash = encryptor_->DecryptData(encrypted_hash);
     EXPECT_TRUE(hash.has_value());
     TemplateURLData data;
     data.id = kTestId;

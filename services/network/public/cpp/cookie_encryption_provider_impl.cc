@@ -4,7 +4,9 @@
 
 #include "services/network/public/cpp/cookie_encryption_provider_impl.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 CookieEncryptionProviderImpl::CookieEncryptionProviderImpl(
     os_crypt_async::OSCryptAsync* os_crypt_async)
@@ -14,7 +16,8 @@ CookieEncryptionProviderImpl::~CookieEncryptionProviderImpl() = default;
 
 void CookieEncryptionProviderImpl::GetEncryptor(GetEncryptorCallback callback) {
   os_crypt_async_->GetInstance(base::BindOnce(
-      [](GetEncryptorCallback callback, os_crypt_async::Encryptor encryptor) {
+      [](GetEncryptorCallback callback,
+         scoped_refptr<os_crypt_async::Encryptor> encryptor) {
         std::move(callback).Run(std::move(encryptor));
       },
       std::move(callback)));

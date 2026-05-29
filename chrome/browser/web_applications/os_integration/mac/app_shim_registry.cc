@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
@@ -376,11 +377,12 @@ void AppShimRegistry::SaveCdHashForApp(const std::string& app_id,
           .Then(std::move(callback)));
 }
 
-void AppShimRegistry::DoSaveCdHashForApp(const std::string& app_id,
-                                         std::vector<uint8_t> cd_hash,
-                                         os_crypt_async::Encryptor encryptor) {
+void AppShimRegistry::DoSaveCdHashForApp(
+    const std::string& app_id,
+    std::vector<uint8_t> cd_hash,
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   std::string cd_hash_hmac_base64 = base::Base64Encode(
-      crypto::hmac::SignSha256(GetCdHashHmacKey(encryptor), cd_hash));
+      crypto::hmac::SignSha256(GetCdHashHmacKey(*encryptor), cd_hash));
   SetAppInfo(app_id, /*installed_profiles=*/nullptr,
              /*last_active_profiles=*/nullptr, /*handlers=*/nullptr,
              &cd_hash_hmac_base64,
@@ -403,7 +405,7 @@ void AppShimRegistry::VerifyCdHashForApp(
 bool AppShimRegistry::DoVerifyCdHashForApp(
     const std::string& app_id,
     std::vector<uint8_t> cd_hash,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   const base::DictValue& cache = GetPrefService()->GetDict(kAppShims);
   const base::DictValue* app_info = cache.FindDict(app_id);
   if (!app_info) {
@@ -430,7 +432,7 @@ bool AppShimRegistry::DoVerifyCdHashForApp(
     return false;
   }
 
-  return crypto::hmac::VerifySha256(GetCdHashHmacKey(encryptor), cd_hash,
+  return crypto::hmac::VerifySha256(GetCdHashHmacKey(*encryptor), cd_hash,
                                     *cd_hash_hmac_span);
 }
 

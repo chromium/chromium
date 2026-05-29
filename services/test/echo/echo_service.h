@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +40,7 @@ class EchoService : public mojom::EchoService {
                          LoadNativeLibraryCallback callback) override;
 #endif
 
-  void DecryptEncrypt(os_crypt_async::Encryptor encryptor,
+  void DecryptEncrypt(scoped_refptr<os_crypt_async::Encryptor> encryptor,
                       const std::vector<uint8_t>& input,
                       DecryptEncryptCallback callback) override;
 

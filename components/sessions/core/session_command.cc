@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/pickle.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 namespace sessions {
 

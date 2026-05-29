@@ -13,6 +13,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -23,6 +24,7 @@
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "url/gurl.h"
 
 namespace os_crypt_async {
@@ -113,7 +115,7 @@ class AccessibilityAnnotatorBackendImpl
 
   // Called in the backend constructor if the encryptor is available.
   // Initializes the database.
-  void OnInitWithEncryptor(os_crypt_async::Encryptor encryptor);
+  void OnInitWithEncryptor(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Called when the database initialization completes.
   void OnDatabaseInitialized(bool success);

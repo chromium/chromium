@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -125,8 +126,7 @@ class SyncUserSettingsImplTest : public testing::Test {
 
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(
         &sync_service_crypto_delegate_, &trusted_vault_client_);
-    sync_service_crypto_->SetEncryptor(
-        std::make_unique<os_crypt_async::Encryptor>(GetEncryptorForTest()));
+    sync_service_crypto_->SetEncryptor(GetEncryptorForTest());
 
     ON_CALL(delegate_, IsCustomPassphraseAllowed).WillByDefault(Return(true));
     ON_CALL(delegate_, GetSyncAccountStateForPrefs)
@@ -659,74 +659,74 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenForSyncingUser) {
   SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   ASSERT_TRUE(
-      sync_user_settings->GetEncryptionBootstrapToken(encryptor).IsEmpty());
+      sync_user_settings->GetEncryptionBootstrapToken(*encryptor).IsEmpty());
 
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
 
-  sync_user_settings->SetEncryptionBootstrapToken(token, encryptor);
-  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(encryptor),
+  sync_user_settings->SetEncryptionBootstrapToken(token, *encryptor);
+  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(*encryptor),
               MatchesToken(token));
-  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(encryptor),
+  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(*encryptor),
               MatchesToken(sync_prefs_->GetEncryptionBootstrapTokenForAccount(
-                  encryptor, kTestGaiaId)));
+                  *encryptor, kTestGaiaId)));
   sync_prefs_->ClearEncryptionBootstrapTokenForAccount(kTestGaiaId);
   EXPECT_TRUE(
-      sync_user_settings->GetEncryptionBootstrapToken(encryptor).IsEmpty());
+      sync_user_settings->GetEncryptionBootstrapToken(*encryptor).IsEmpty());
 }
 
 TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccountSignedOut) {
   SetSyncAccountState(SyncPrefs::SyncAccountState::kNotSignedIn);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   EXPECT_TRUE(
-      sync_user_settings->GetEncryptionBootstrapToken(encryptor).IsEmpty());
+      sync_user_settings->GetEncryptionBootstrapToken(*encryptor).IsEmpty());
 }
 
 TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccount) {
   SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   ASSERT_TRUE(
-      sync_user_settings->GetEncryptionBootstrapToken(encryptor).IsEmpty());
+      sync_user_settings->GetEncryptionBootstrapToken(*encryptor).IsEmpty());
 
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
 
-  sync_user_settings->SetEncryptionBootstrapToken(token, encryptor);
-  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(encryptor),
+  sync_user_settings->SetEncryptionBootstrapToken(token, *encryptor);
+  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(*encryptor),
               MatchesToken(token));
-  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(encryptor),
+  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(*encryptor),
               MatchesToken(sync_prefs_->GetEncryptionBootstrapTokenForAccount(
-                  encryptor, kTestGaiaId)));
+                  *encryptor, kTestGaiaId)));
 }
 
 TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
   SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   ASSERT_TRUE(
-      sync_user_settings->GetEncryptionBootstrapToken(encryptor).IsEmpty());
+      sync_user_settings->GetEncryptionBootstrapToken(*encryptor).IsEmpty());
 
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
 
-  sync_user_settings->SetEncryptionBootstrapToken(token, encryptor);
+  sync_user_settings->SetEncryptionBootstrapToken(token, *encryptor);
   sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({kTestGaiaId});
-  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(encryptor),
+  EXPECT_THAT(sync_user_settings->GetEncryptionBootstrapToken(*encryptor),
               MatchesToken(token));
   sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({});
   EXPECT_TRUE(
-      sync_user_settings->GetEncryptionBootstrapToken(encryptor).IsEmpty());
+      sync_user_settings->GetEncryptionBootstrapToken(*encryptor).IsEmpty());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

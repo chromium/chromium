@@ -145,8 +145,9 @@ class GCMDriverDesktop : public GCMDriver,
   };
 
   void OnOsCryptReady(
-      base::OnceCallback<void(os_crypt_async::Encryptor)> io_callback,
-      os_crypt_async::Encryptor encryptor);
+      base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
+          io_callback,
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   void DoValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                               const std::string& registration_id,

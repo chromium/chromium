@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_handler.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
@@ -116,7 +117,7 @@ void SafeBrowsingUIHandler::GetSavedPasswords(const base::ListValue& args) {
 
 void SafeBrowsingUIHandler::GetSavedPasswordsImpl(
     const std::string& callback_id,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   password_manager::HashPasswordManager hash_manager(std::move(encryptor));
   hash_manager.set_prefs(user_prefs());
   hash_manager.set_local_prefs(delegate_->GetLocalState());

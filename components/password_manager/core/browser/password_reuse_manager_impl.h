@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -101,7 +102,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
 
   void InitHashPasswordManager(PrefService* local_prefs);
 
-  void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
+  void OnOsCryptAsyncReady(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Schedules the update of password hashes used by reuse detector.
   // |sign_in_state_for_metrics|, if not nullopt, is used for metrics only.

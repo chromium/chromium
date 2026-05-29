@@ -20,16 +20,17 @@ namespace cookie_config {
 namespace {
 
 void OnOsCryptReadyOnUi(
-    base::OnceCallback<void(os_crypt_async::Encryptor)> callback,
+    base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)> callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(encryptor)));
 }
 
-void InitOnUi(base::OnceCallback<void(os_crypt_async::Encryptor)> callback,
-              os_crypt_async::OSCryptAsync* os_crypt_async,
-              scoped_refptr<base::SequencedTaskRunner> task_runner) {
+void InitOnUi(
+    base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)> callback,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   os_crypt_async->GetInstance(
       base::BindOnce(&OnOsCryptReadyOnUi, std::move(callback),
                      std::move(task_runner)),
@@ -58,11 +59,11 @@ class CookieOSCryptoDelegate : public net::CookieCryptoDelegate {
                      std::string* plaintext) override;
 
  private:
-  void OnOsCryptReady(os_crypt_async::Encryptor encryptor);
+  void OnOsCryptReady(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  std::optional<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   bool initializing_ = false;
   std::vector<base::OnceClosure> init_callbacks_;
@@ -78,7 +79,7 @@ CookieOSCryptoDelegate::CookieOSCryptoDelegate(
 CookieOSCryptoDelegate::~CookieOSCryptoDelegate() = default;
 
 void CookieOSCryptoDelegate::Init(base::OnceClosure callback) {
-  if (encryptor_.has_value()) {
+  if (encryptor_) {
     std::move(callback).Run();
     return;
   }
@@ -114,7 +115,7 @@ bool CookieOSCryptoDelegate::DecryptString(const std::string& ciphertext,
 }
 
 void CookieOSCryptoDelegate::OnOsCryptReady(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   encryptor_ = std::move(encryptor);
   initializing_ = false;
   for (auto& callback : init_callbacks_) {

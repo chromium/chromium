@@ -379,8 +379,9 @@ class SyncServiceImpl : public SyncService,
   void TryStart();
 
   // The actual synchronous implementation of TryStart().
-  void TryStartImpl(base::TimeTicks try_start_time,
-                    std::vector<os_crypt_async::Encryptor> encryptors);
+  void TryStartImpl(
+      base::TimeTicks try_start_time,
+      std::vector<scoped_refptr<os_crypt_async::Encryptor>> encryptors);
 
   // Whether sync has been authenticated with an account ID.
   bool IsSignedIn() const;

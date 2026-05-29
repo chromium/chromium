@@ -6,11 +6,13 @@
 
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +41,10 @@ class DeviceOAuth2TokenStoreDesktopTest : public testing::Test {
 
   ~DeviceOAuth2TokenStoreDesktopTest() override = default;
 
-  std::optional<os_crypt_async::Encryptor> GetTestEncryptorForTesting() {
-    std::optional<os_crypt_async::Encryptor> encryptor;
+  scoped_refptr<os_crypt_async::Encryptor> GetTestEncryptorForTesting() {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor;
     os_crypt_async_->GetInstance(base::BindLambdaForTesting(
-        [&](os_crypt_async::Encryptor new_encryptor) {
+        [&](scoped_refptr<os_crypt_async::Encryptor> new_encryptor) {
           encryptor = std::move(new_encryptor);
         }));
     return encryptor;
@@ -84,7 +86,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
   std::string token = "test_token";
   std::string encrypted_token;
   auto encryptor = GetTestEncryptorForTesting();
-  ASSERT_TRUE(encryptor.has_value());
+  ASSERT_TRUE(encryptor);
   EXPECT_TRUE(encryptor->EncryptString(token, &encrypted_token));
 
   std::string encoded = base::Base64Encode(encrypted_token);
@@ -112,7 +114,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
   std::string token = "test_token";
   std::string encrypted_token;
   auto encryptor = GetTestEncryptorForTesting();
-  ASSERT_TRUE(encryptor.has_value());
+  ASSERT_TRUE(encryptor);
   EXPECT_TRUE(encryptor->EncryptString(token, &encrypted_token));
 
   std::string encoded = base::Base64Encode(encrypted_token);
@@ -162,7 +164,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
   base::Base64Decode(persisted_token, &decoded);
   std::string decrypted;
   auto encryptor = GetTestEncryptorForTesting();
-  ASSERT_TRUE(encryptor.has_value());
+  ASSERT_TRUE(encryptor);
   EXPECT_TRUE(encryptor->DecryptString(decoded, &decrypted));
 
   EXPECT_EQ(token, store.GetRefreshToken());
@@ -200,7 +202,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveTokenBeforeInit) {
   base::Base64Decode(persisted_token, &decoded);
   std::string decrypted;
   auto encryptor = GetTestEncryptorForTesting();
-  ASSERT_TRUE(encryptor.has_value());
+  ASSERT_TRUE(encryptor);
   EXPECT_TRUE(encryptor->DecryptString(decoded, &decrypted));
 
   EXPECT_EQ(token, store.GetRefreshToken());

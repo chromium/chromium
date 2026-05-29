@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/pickle.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -69,20 +70,19 @@ TEST(SessionCommandTest, GetContents) {
 class SessionCommandParamTest : public testing::TestWithParam<bool> {
  protected:
   bool encrypted() const { return GetParam(); }
-  os_crypt_async::Encryptor* encryptor() {
+  scoped_refptr<os_crypt_async::Encryptor> encryptor() {
     if (encrypted()) {
       if (!encryptor_) {
-        encryptor_ = std::make_unique<os_crypt_async::TestEncryptor>(
-            os_crypt_async::GetTestEncryptorForTesting());
+        encryptor_ = os_crypt_async::GetTestEncryptorForTesting();
       }
-      return encryptor_.get();
+      return encryptor_;
     } else {
       return nullptr;
     }
   }
 
  private:
-  std::unique_ptr<os_crypt_async::TestEncryptor> encryptor_;
+  scoped_refptr<os_crypt_async::TestEncryptor> encryptor_;
 };
 
 TEST_P(SessionCommandParamTest, GetSerializedSize) {
@@ -90,14 +90,14 @@ TEST_P(SessionCommandParamTest, GetSerializedSize) {
   const std::string contents = "session_data";
   SessionCommand command(id, contents.size());
   command.contents().copy_from(base::as_byte_span(contents));
-  std::vector<uint8_t> serialized = command.Serialize(encryptor());
+  std::vector<uint8_t> serialized = command.Serialize(encryptor().get());
 
   // Not enough data for size (we need sizeof(uint32_t) for encrypted)
   const size_t size_field_size =
       encrypted() ? sizeof(uint32_t) : sizeof(uint16_t);
   EXPECT_EQ(std::nullopt, SessionCommand::GetSerializedSize(
                               base::span(serialized).first(size_field_size - 1),
-                              encryptor()));
+                              encryptor().get()));
 
   // Enough data for size
   std::optional<size_t> size =
@@ -148,7 +148,7 @@ TEST_P(SessionCommandParamTest, SerializeAndDeserialize) {
   SessionCommand command(id, contents.size());
   command.contents().copy_from(base::as_byte_span(contents));
 
-  std::vector<uint8_t> serialized = command.Serialize(encryptor());
+  std::vector<uint8_t> serialized = command.Serialize(encryptor().get());
 
   if (encrypted()) {
     // Size should be: sizeof(encrypted_size_type) + encrypted_contents_size.
@@ -163,7 +163,7 @@ TEST_P(SessionCommandParamTest, SerializeAndDeserialize) {
   }
 
   std::unique_ptr<SessionCommand> deserialized =
-      SessionCommand::Deserialize(serialized, encryptor());
+      SessionCommand::Deserialize(serialized, encryptor().get());
   ASSERT_TRUE(deserialized);
   EXPECT_EQ(id, deserialized->id());
   EXPECT_EQ(contents.size(), deserialized->contents().size());
@@ -174,9 +174,9 @@ TEST_P(SessionCommandParamTest, SerializeAndDeserializeEmpty) {
   const id_type id = 42;
   SessionCommand command(id, 0);
 
-  std::vector<uint8_t> serialized = command.Serialize(encryptor());
+  std::vector<uint8_t> serialized = command.Serialize(encryptor().get());
   std::unique_ptr<SessionCommand> deserialized =
-      SessionCommand::Deserialize(serialized, encryptor());
+      SessionCommand::Deserialize(serialized, encryptor().get());
   ASSERT_TRUE(deserialized);
   EXPECT_EQ(id, deserialized->id());
   EXPECT_EQ(0u, deserialized->contents().size());
@@ -228,22 +228,21 @@ TEST(SessionCommandTest, DeserializeCleartextErrors) {
 }
 
 TEST(SessionCommandTest, DeserializeEncryptedErrors) {
-  os_crypt_async::TestEncryptor test_encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
-  os_crypt_async::Encryptor* encryptor = &test_encryptor;
 
   // Too small to contain encrypted_size_type.
   EXPECT_FALSE(SessionCommand::Deserialize(base::span<const uint8_t>({1, 2, 3}),
-                                           encryptor));
+                                           encryptor.get()));
 
   // Size field indicates more data than available.
   // size field = 10 (little endian), but only 2 bytes available.
   const uint8_t bad_size_data[] = {10, 0, 0, 0, 0, 0};
-  EXPECT_FALSE(SessionCommand::Deserialize(bad_size_data, encryptor));
+  EXPECT_FALSE(SessionCommand::Deserialize(bad_size_data, encryptor.get()));
 
   // Not decryptable data (valid size, but invalid ciphertext).
   const uint8_t bad_crypto_data[] = {4, 0, 0, 0, 1, 2, 3, 4};
-  EXPECT_FALSE(SessionCommand::Deserialize(bad_crypto_data, encryptor));
+  EXPECT_FALSE(SessionCommand::Deserialize(bad_crypto_data, encryptor.get()));
 }
 
 }  // namespace

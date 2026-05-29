@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -14,11 +15,11 @@
 
 namespace syncer {
 
-os_crypt_async::Encryptor GetEncryptorForTest() {
+scoped_refptr<os_crypt_async::Encryptor> GetEncryptorForTest() {
   static base::NoDestructor<std::unique_ptr<os_crypt_async::OSCryptAsync>>
       os_crypt_async(os_crypt_async::GetTestOSCryptAsyncForTesting(
           /*is_sync_for_unittests=*/true));
-  base::test::TestFuture<os_crypt_async::Encryptor> future;
+  base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
   (*os_crypt_async)
       ->GetInstance(future.GetCallback(),
                     os_crypt_async::Encryptor::Option::kNone);

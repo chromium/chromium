@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/test_encryptor.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_database.h"
@@ -47,12 +49,13 @@ class KeywordTableTest : public testing::Test {
   }
 
   // Pass in an `encryptor` if wanting to override the default one.
-  void InitDatabase(const os_crypt_async::Encryptor* encryptor = nullptr) {
+  void InitDatabase(
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor = nullptr) {
     table_ = std::make_unique<KeywordTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK,
-              db_->Init(file_, encryptor ? encryptor : &encryptor_));
+              db_->Init(file_, encryptor ? encryptor : encryptor_));
   }
 
   void CloseDatabase() {
@@ -121,7 +124,7 @@ class KeywordTableTest : public testing::Test {
   base::FilePath file_;
 
  protected:
-  os_crypt_async::TestEncryptor encryptor_;
+  scoped_refptr<os_crypt_async::TestEncryptor> encryptor_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -340,7 +343,7 @@ TEST_P(KeywordTableTestEncryption, KeywordBadHash) {
           db.Execute("UPDATE keywords SET keyword='badkeyword' WHERE id=1"));
     }
   }
-  encryptor_.set_decryption_available_for_testing(
+  encryptor_->set_decryption_available_for_testing(
       GetParam().encryption_enabled);
   base::HistogramTester histograms;
   InitDatabase();
@@ -394,7 +397,7 @@ TEST_F(KeywordTableTest, KeywordBadCrypto) {
     // A replacement encryptor with a new key that will make decryption of the
     // hash fail.
     const auto new_encryptor = os_crypt_async::GetTestEncryptorForTesting();
-    InitDatabase(&new_encryptor);
+    InitDatabase(new_encryptor);
     {
       KeywordTable::Keywords keywords(GetKeywords());
       EXPECT_TRUE(keywords.empty());
@@ -444,8 +447,8 @@ TEST_F(KeywordTableTest, MigrateVersion152ExpandHashColumnRetainsData) {
     // allowing access to retrieve the keyword data without hash verification,
     // which is important as it's not yet present.
     auto encryptor = os_crypt_async::GetTestEncryptorForTesting();
-    encryptor.set_decryption_available_for_testing(false);
-    InitDatabase(&encryptor);
+    encryptor->set_decryption_available_for_testing(false);
+    InitDatabase(encryptor);
     keywords_no_hash.emplace(GetKeywords());
     CloseDatabase();
   }

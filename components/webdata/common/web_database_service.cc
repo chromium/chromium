@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -70,7 +71,7 @@ void WebDatabaseService::AddTable(std::unique_ptr<WebDatabaseTable> table) {
 }
 
 void WebDatabaseService::CompleteLoadDatabase(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK(web_db_backend_);
   // All AddTable calls must have happened by the time LoadDatabase is called.
   web_db_backend_->MaybeInitEncryptorOnUiSequence(std::move(encryptor));

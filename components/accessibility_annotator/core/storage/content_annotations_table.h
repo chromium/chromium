@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/history/core/browser/history_types.h"
 
@@ -55,7 +56,8 @@ class ContentAnnotationsTable {
 
   // Initializes the table with the given SQLite database. Returns true on
   // success. Must be called before any other methods.
-  bool Init(sql::Database* db, const os_crypt_async::Encryptor* encryptor);
+  bool Init(sql::Database* db,
+            scoped_refptr<const os_crypt_async::Encryptor> encryptor);
 
   // Creates the tables required at database version 1. Returns true on success.
   // Should only be called when creating the database from a clean state. Must
@@ -87,7 +89,7 @@ class ContentAnnotationsTable {
  private:
   // Owned by the `AccessibilityAnnotatorDatabase`.  Outlives `this`.
   raw_ptr<sql::Database> db_ = nullptr;
-  raw_ptr<const os_crypt_async::Encryptor> encryptor_ = nullptr;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_ = nullptr;
 };
 
 }  // namespace accessibility_annotator

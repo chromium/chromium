@@ -6,9 +6,11 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/test_encryptor.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,9 +19,9 @@ namespace syncer {
 
 namespace {
 
-os_crypt_async::Encryptor GetInstanceSync(
+scoped_refptr<os_crypt_async::Encryptor> GetInstanceSync(
     os_crypt_async::OSCryptAsync* factory) {
-  base::test::TestFuture<os_crypt_async::Encryptor> future;
+  base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
   factory->GetInstance(future.GetCallback(),
                        os_crypt_async::Encryptor::Option::kNone);
   return future.Take();
@@ -49,9 +51,8 @@ class NigoriStorageImplTest : public testing::Test {
         base::FilePath(FILE_PATH_LITERAL("some_file")));
   }
 
-  std::unique_ptr<os_crypt_async::Encryptor> GetEncryptor() {
-    return std::make_unique<os_crypt_async::Encryptor>(
-        GetInstanceSync(os_crypt_.get()));
+  scoped_refptr<os_crypt_async::Encryptor> GetEncryptor() {
+    return GetInstanceSync(os_crypt_.get());
   }
 
  private:

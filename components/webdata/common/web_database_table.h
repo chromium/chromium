@@ -6,11 +6,9 @@
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/webdata_export.h"
-
-namespace os_crypt_async {
-class Encryptor;
-}
 
 namespace sql {
 class Database;
@@ -40,7 +38,7 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // Stores the passed members as instance variables.
   void Init(sql::Database* db,
             sql::MetaTable* meta_table,
-            const os_crypt_async::Encryptor* encryptor);
+            scoped_refptr<const os_crypt_async::Encryptor> encryptor);
 
   // Resets the members stored during `Init()`.
   void Shutdown();
@@ -64,7 +62,9 @@ class WEBDATA_EXPORT WebDatabaseTable {
 
   sql::MetaTable* meta_table() const { return meta_table_; }
 
-  const os_crypt_async::Encryptor* encryptor() const { return encryptor_; }
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor() const {
+    return encryptor_;
+  }
 
  private:
   // Non-null, except before `Init()` and after `Shutdown()`. Effectively, this
@@ -75,7 +75,7 @@ class WEBDATA_EXPORT WebDatabaseTable {
   raw_ptr<sql::MetaTable> meta_table_;
   // Non-null, except before `Init()` and after `Shutdown()`. This object is
   // owned by the `WebdatabaseBackend` owning `this`.
-  raw_ptr<const os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_

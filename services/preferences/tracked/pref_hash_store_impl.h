@@ -6,7 +6,9 @@
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_IMPL_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "services/preferences/tracked/pref_hash_calculator.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 
@@ -49,7 +51,7 @@ class PrefHashStoreImpl : public PrefHashStore {
   // PrefHashStore implementation.
   std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
       HashStoreContents* storage,
-      const os_crypt_async::Encryptor* encryptor) override;
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor) override;
 
   std::string ComputeMac(const std::string& path,
                          const base::Value* new_value) override;

@@ -60,7 +60,7 @@ TEST_F(HistoryEmbeddingsPassagesUtilTest,
   const auto encryptor = os_crypt_async::GetTestEncryptorForTesting();
   for (size_t i = 0; i < kPassageCount; i++) {
     std::string ciphertext;
-    ASSERT_TRUE(encryptor.EncryptString(passages[i], &ciphertext));
+    ASSERT_TRUE(encryptor->EncryptString(passages[i], &ciphertext));
     EXPECT_NE(passages[i], ciphertext);
 
     EXPECT_LT(ciphertext.size(), passages[i].size() * 2)
@@ -75,7 +75,7 @@ TEST_F(HistoryEmbeddingsPassagesUtilTest,
   base::ElapsedTimer decrypt_timer;
   for (size_t i = 0; i < kPassageCount; i++) {
     std::string decrypted_plaintext;
-    ASSERT_TRUE(encryptor.DecryptString(encrypted[i], &decrypted_plaintext));
+    ASSERT_TRUE(encryptor->DecryptString(encrypted[i], &decrypted_plaintext));
     EXPECT_EQ(decrypted_plaintext, passages[i]);
   }
   LOG(INFO) << "Decrypted " << kPassageCount << " passages in "
@@ -99,7 +99,7 @@ TEST_F(HistoryEmbeddingsPassagesUtilTest, ProtoToBlobAndBack) {
   std::vector<uint8_t> blob;
 
   base::ElapsedTimer proto_to_blob_timer;
-  blob = PassagesProtoToBlob(original_proto, encryptor);
+  blob = PassagesProtoToBlob(original_proto, *encryptor);
   ASSERT_FALSE(blob.empty());
 
   LOG(INFO) << "Proto to Blob in: " << proto_to_blob_timer.Elapsed();
@@ -108,7 +108,7 @@ TEST_F(HistoryEmbeddingsPassagesUtilTest, ProtoToBlobAndBack) {
 
   std::optional<proto::PassagesValue> read_proto;
   base::ElapsedTimer blob_to_proto_timer;
-  read_proto = PassagesBlobToProto(blob, encryptor);
+  read_proto = PassagesBlobToProto(blob, *encryptor);
   ASSERT_TRUE(read_proto.has_value());
 
   LOG(INFO) << "Blob to Proto in: " << blob_to_proto_timer.Elapsed();

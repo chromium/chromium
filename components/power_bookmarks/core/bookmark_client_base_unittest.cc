@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -18,6 +19,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,9 +82,9 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
   void SchedulePersistentTimerForDailyMetrics(
       base::RepeatingClosure metrics_callback) override {}
 
-  void GetEncryptor(
-      base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback)
-      override {}
+  void GetEncryptor(base::OnceCallback<
+                    void(scoped_refptr<os_crypt_async::Encryptor> encryptor)>
+                        callback) override {}
 };
 
 class MockSuggestionProvider : public SuggestedSaveLocationProvider {

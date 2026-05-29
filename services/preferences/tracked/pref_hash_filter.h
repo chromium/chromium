@@ -25,6 +25,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -164,7 +165,8 @@ class PrefHashFilter final : public InterceptablePrefFilter {
       std::unique_ptr<base::DictValue> changed_paths_and_macs,
       bool write_success);
 
-  void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) override;
+  void OnEncryptorReceived(
+      scoped_refptr<os_crypt_async::Encryptor> encryptor) override;
 
   // Performs the deferred work of re-validating preferences after the
   // encryptor has been fetched. This is posted from FinalizeFilterOnLoad.
@@ -235,7 +237,7 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   const bool encrypted_hashing_enabled_;
-  std::optional<os_crypt_async::Encryptor> encryptor_
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A callback to be run for testing purposes when deferred revalidation is

@@ -8,11 +8,14 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/encryptor.mojom.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -27,14 +30,15 @@ namespace mojo {
 
 // static
 bool StructTraits<os_crypt_async::mojom::EncryptorDataView,
-                  os_crypt_async::Encryptor>::
+                  scoped_refptr<os_crypt_async::Encryptor>>::
     Read(os_crypt_async::mojom::EncryptorDataView data,
-         os_crypt_async::Encryptor* out) {
-  if (!data.ReadProviderForEncryption(&out->provider_for_encryption_)) {
+         scoped_refptr<os_crypt_async::Encryptor>* out) {
+  *out = base::WrapRefCounted(new os_crypt_async::Encryptor());
+  if (!data.ReadProviderForEncryption(&(*out)->provider_for_encryption_)) {
     return false;
   }
 
-  if (!data.ReadKeyEntries(&out->keys_)) {
+  if (!data.ReadKeyEntries(&(*out)->keys_)) {
     return false;
   }
 
@@ -43,17 +47,18 @@ bool StructTraits<os_crypt_async::mojom::EncryptorDataView,
 
 // static
 const std::string& StructTraits<os_crypt_async::mojom::EncryptorDataView,
-                                os_crypt_async::Encryptor>::
-    provider_for_encryption(const os_crypt_async::Encryptor& in) {
-  return in.provider_for_encryption_;
+                                scoped_refptr<os_crypt_async::Encryptor>>::
+    provider_for_encryption(
+        const scoped_refptr<const os_crypt_async::Encryptor>& in) {
+  return in->provider_for_encryption_;
 }
 
 // static
 const std::map<std::string, std::optional<os_crypt_async::Encryptor::Key>>&
 StructTraits<os_crypt_async::mojom::EncryptorDataView,
-             os_crypt_async::Encryptor>::
-    key_entries(const os_crypt_async::Encryptor& in) {
-  return in.keys_;
+             scoped_refptr<os_crypt_async::Encryptor>>::
+    key_entries(const scoped_refptr<const os_crypt_async::Encryptor>& in) {
+  return in->keys_;
 }
 
 // static

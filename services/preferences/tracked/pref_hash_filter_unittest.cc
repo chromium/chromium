@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -253,7 +254,7 @@ class MockPrefHashStore : public PrefHashStore {
   // PrefHashStore implementation.
   std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
       HashStoreContents* storage,
-      const os_crypt_async::Encryptor* encryptor_ptr) override;
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor_ptr) override;
   std::string ComputeMac(const std::string& path,
                          const base::Value* new_value) override;
   base::DictValue ComputeSplitMacs(
@@ -408,7 +409,7 @@ void MockPrefHashStore::SetInvalidKeysResult(
 
 std::unique_ptr<PrefHashStoreTransaction> MockPrefHashStore::BeginTransaction(
     HashStoreContents* storage,
-    const os_crypt_async::Encryptor* encryptor_ptr) {
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor_ptr) {
   EXPECT_FALSE(transaction_active_);
   transaction_active_ = true;
   // Pass this mock store instance to the nested transaction mock

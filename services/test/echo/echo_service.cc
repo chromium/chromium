@@ -26,6 +26,9 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
+#include "components/os_crypt/async/common/encryptor.h"
+
 namespace echo {
 
 EchoService::EchoService(mojo::PendingReceiver<mojom::EchoService> receiver)
@@ -100,21 +103,22 @@ void EchoService::LoadNativeLibrary(const ::base::FilePath& library,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void EchoService::DecryptEncrypt(os_crypt_async::Encryptor encryptor,
-                                 const std::vector<uint8_t>& input,
-                                 DecryptEncryptCallback callback) {
-  CHECK(encryptor.IsDecryptionAvailable());
+void EchoService::DecryptEncrypt(
+    scoped_refptr<os_crypt_async::Encryptor> encryptor,
+    const std::vector<uint8_t>& input,
+    DecryptEncryptCallback callback) {
+  CHECK(encryptor->IsDecryptionAvailable());
   // Take the input, which was encrypted in the caller process, and decrypt it.
-  const auto plaintext = encryptor.DecryptData(input);
+  const auto plaintext = encryptor->DecryptData(input);
   if (!plaintext.has_value()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  CHECK(encryptor.IsEncryptionAvailable());
+  CHECK(encryptor->IsEncryptionAvailable());
   // Encrypt it again using the key inside this process, and return the
   // encrypted ciphertext to the caller.
-  std::move(callback).Run(encryptor.EncryptString(*plaintext));
+  std::move(callback).Run(encryptor->EncryptString(*plaintext));
 }
 
 void EchoService::VerifyCheckIsTest(VerifyCheckIsTestCallback callback) {

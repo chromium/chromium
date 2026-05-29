@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/webdata/common/web_database_table.h"
 #include "components/webdata/common/webdata_export.h"
 #include "sql/database.h"
@@ -87,8 +88,9 @@ class WEBDATA_EXPORT WebDatabase {
   // managing the database.
   //
   // `encryptor` must not be null except in test code.
-  sql::InitStatus Init(const base::FilePath& db_name,
-                       const os_crypt_async::Encryptor* encryptor = nullptr);
+  sql::InitStatus Init(
+      const base::FilePath& db_name,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor = nullptr);
 
   // Transactions management
   void BeginTransaction();

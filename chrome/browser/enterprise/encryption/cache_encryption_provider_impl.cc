@@ -4,8 +4,10 @@
 
 #include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "crypto/random.h"
 
@@ -38,14 +40,14 @@ void CacheEncryptionProviderImpl::GetEncryptedCacheEncryptionKey(
 
 void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
     GetEncryptedCacheEncryptionKeyCallback callback,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   bool needs_new_key = true;
 
   if (!encrypted_primary_key_.empty()) {
     // Validate the key by trying to decrypt it
     os_crypt_async::Encryptor::DecryptFlags flags;
     std::optional<std::string> decrypted =
-        encryptor.DecryptData(encrypted_primary_key_, &flags);
+        encryptor->DecryptData(encrypted_primary_key_, &flags);
     if (decrypted && decrypted->length() == kPrimaryKeySizeInBytes) {
       base::UmaHistogramBoolean(
           "Enterprise.EncryptedCache.KeyRetrievalFromPrefsSuccess", true);
@@ -57,7 +59,7 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
       if (flags.should_reencrypt) {
         DVLOG(1) << "Re-encrypting cache encryption key.";
         std::optional<std::vector<uint8_t>> encrypted =
-            encryptor.EncryptString(*decrypted);
+            encryptor->EncryptString(*decrypted);
         if (encrypted) {
           encrypted_primary_key_ = *encrypted;
           store_key_callback_.Run(encrypted_primary_key_);
@@ -97,7 +99,7 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
     std::vector<uint8_t> primary_key_bytes(kPrimaryKeySizeInBytes);
     crypto::RandBytes(primary_key_bytes);
 
-    std::optional<std::vector<uint8_t>> encrypted = encryptor.EncryptString(
+    std::optional<std::vector<uint8_t>> encrypted = encryptor->EncryptString(
         std::string(primary_key_bytes.begin(), primary_key_bytes.end()));
 
     if (encrypted) {

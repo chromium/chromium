@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -52,21 +53,24 @@ class EncryptorTest : public ::testing::Test {
   static_assert(kKeyLength == Encryptor::Key::kAES256GCMKeySize,
                 "Key lengths must be the same.");
 
-  static const Encryptor GetEncryptor() { return Encryptor(); }
-
-  static const Encryptor GetEncryptor(
-      Encryptor::KeyRing keys,
-      const std::string& provider_for_encryption) {
-    return Encryptor(std::move(keys), provider_for_encryption,
-                     provider_for_encryption);
+  static scoped_refptr<Encryptor> GetEncryptor() {
+    return base::WrapRefCounted(new Encryptor());
   }
 
-  static const Encryptor GetEncryptor(
+  static scoped_refptr<Encryptor> GetEncryptor(
+      Encryptor::KeyRing keys,
+      const std::string& provider_for_encryption) {
+    return base::WrapRefCounted(new Encryptor(
+        std::move(keys), provider_for_encryption, provider_for_encryption));
+  }
+
+  static scoped_refptr<Encryptor> GetEncryptor(
       Encryptor::KeyRing keys,
       const std::string& provider_for_encryption,
       const std::string& provider_for_os_crypt_sync_compatible_encryption) {
-    return Encryptor(std::move(keys), provider_for_encryption,
-                     provider_for_os_crypt_sync_compatible_encryption);
+    return base::WrapRefCounted(
+        new Encryptor(std::move(keys), provider_for_encryption,
+                      provider_for_os_crypt_sync_compatible_encryption));
   }
 
   static Encryptor::Key GenerateRandomAES256TestKey() {
@@ -92,7 +96,7 @@ class EncryptorTest : public ::testing::Test {
 class EncryptorParamTest : public EncryptorTest,
                            public ::testing::WithParamInterface<TestType> {
  protected:
-  const Encryptor GetTestEncryptor() {
+  scoped_refptr<Encryptor> GetTestEncryptor() {
     switch (GetParam()) {
       case TestType::kWithSingleKey: {
         Encryptor::KeyRing key_ring;
@@ -118,23 +122,23 @@ class EncryptorParamTest : public EncryptorTest,
 };
 
 TEST_P(EncryptorParamTest, StringInterface) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
   std::string plaintext = "secrets";
   std::string ciphertext;
-  EXPECT_TRUE(encryptor.EncryptString(plaintext, &ciphertext));
+  EXPECT_TRUE(encryptor->EncryptString(plaintext, &ciphertext));
   std::string decrypted;
-  EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
+  EXPECT_TRUE(encryptor->DecryptString(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 }
 
 TEST_P(EncryptorParamTest, SpanInterface) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
   std::string plaintext = "secrets";
 
-  auto ciphertext = encryptor.EncryptString(plaintext);
+  auto ciphertext = encryptor->EncryptString(plaintext);
   ASSERT_TRUE(ciphertext);
 
-  auto decrypted = encryptor.DecryptData(*ciphertext);
+  auto decrypted = encryptor->DecryptData(*ciphertext);
 
   ASSERT_TRUE(decrypted);
 
@@ -142,13 +146,13 @@ TEST_P(EncryptorParamTest, SpanInterface) {
 }
 
 TEST_P(EncryptorParamTest, EncryptStringDecryptSpan) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
 
   std::string plaintext = "secrets";
   std::string ciphertext;
-  EXPECT_TRUE(encryptor.EncryptString(plaintext, &ciphertext));
+  EXPECT_TRUE(encryptor->EncryptString(plaintext, &ciphertext));
 
-  auto decrypted = encryptor.DecryptData(base::as_byte_span(ciphertext));
+  auto decrypted = encryptor->DecryptData(base::as_byte_span(ciphertext));
 
   ASSERT_TRUE(decrypted);
 
@@ -159,15 +163,15 @@ TEST_P(EncryptorParamTest, EncryptStringDecryptSpan) {
 }
 
 TEST_P(EncryptorParamTest, EncryptSpanDecryptString) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
 
   std::string plaintext = "secrets";
 
-  auto ciphertext = encryptor.EncryptString(plaintext);
+  auto ciphertext = encryptor->EncryptString(plaintext);
   ASSERT_TRUE(ciphertext);
 
   std::string decrypted;
-  EXPECT_TRUE(encryptor.DecryptString(
+  EXPECT_TRUE(encryptor->DecryptString(
       std::string(ciphertext->begin(), ciphertext->end()), &decrypted));
   EXPECT_EQ(plaintext.size(), decrypted.size());
 
@@ -176,25 +180,25 @@ TEST_P(EncryptorParamTest, EncryptSpanDecryptString) {
 }
 
 TEST_P(EncryptorParamTest, EncryptDecryptString16) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
 
   const std::u16string plaintext = u"secrets";
   std::string ciphertext;
-  ASSERT_TRUE(encryptor.EncryptString16(plaintext, &ciphertext));
+  ASSERT_TRUE(encryptor->EncryptString16(plaintext, &ciphertext));
 
   std::u16string decrypted;
-  EXPECT_TRUE(encryptor.DecryptString16(ciphertext, &decrypted));
+  EXPECT_TRUE(encryptor->DecryptString16(ciphertext, &decrypted));
 
   EXPECT_EQ(plaintext, decrypted);
 }
 
 TEST_P(EncryptorParamTest, EncryptEmpty) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
 
-  auto ciphertext = encryptor.EncryptString(std::string());
+  auto ciphertext = encryptor->EncryptString(std::string());
   ASSERT_TRUE(ciphertext);
   Encryptor::DecryptFlags flags;
-  auto decrypted = encryptor.DecryptData(*ciphertext, &flags);
+  auto decrypted = encryptor->DecryptData(*ciphertext, &flags);
   ASSERT_FALSE(flags.should_reencrypt);
   ASSERT_TRUE(decrypted);
   EXPECT_TRUE(decrypted->empty());
@@ -204,10 +208,10 @@ TEST_P(EncryptorParamTest, EncryptEmpty) {
 // success and an empty buffer. This was already the behavior on non-Windows so
 // this change makes it consistent.
 TEST_P(EncryptorParamTest, DecryptEmpty) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
 
   Encryptor::DecryptFlags flags;
-  auto plaintext = encryptor.DecryptData({}, &flags);
+  auto plaintext = encryptor->DecryptData({}, &flags);
   ASSERT_FALSE(flags.should_reencrypt);
   ASSERT_TRUE(plaintext);
   EXPECT_TRUE(plaintext->empty());
@@ -216,7 +220,7 @@ TEST_P(EncryptorParamTest, DecryptEmpty) {
 // Non-Windows platforms can decrypt random data fine.
 #if BUILDFLAG(IS_WIN)
 TEST_P(EncryptorParamTest, DecryptInvalid) {
-  const Encryptor encryptor = GetTestEncryptor();
+  const scoped_refptr<Encryptor> encryptor = GetTestEncryptor();
 
   {
     std::vector<uint8_t> invalid_cipher(100);
@@ -225,13 +229,13 @@ TEST_P(EncryptorParamTest, DecryptInvalid) {
     }
 
     Encryptor::DecryptFlags flags;
-    auto plaintext = encryptor.DecryptData(invalid_cipher, &flags);
+    auto plaintext = encryptor->DecryptData(invalid_cipher, &flags);
     ASSERT_FALSE(flags.should_reencrypt);
     ASSERT_FALSE(plaintext);
   }
   {
     std::string plaintext;
-    ASSERT_FALSE(encryptor.DecryptString("a", &plaintext));
+    ASSERT_FALSE(encryptor->DecryptString("a", &plaintext));
     ASSERT_TRUE(plaintext.empty());
   }
 }
@@ -261,10 +265,11 @@ TEST_F(EncryptorTest, MultipleKeys) {
   key_ring_both.emplace("FOO", CloneKey(foo_key));
   key_ring_both.emplace("BAR", CloneKey(bar_key));
 
-  const Encryptor foo_encryptor = GetEncryptor(std::move(key_ring_both), "FOO");
+  const scoped_refptr<Encryptor> foo_encryptor =
+      GetEncryptor(std::move(key_ring_both), "FOO");
 
   // Should encrypt with FOO key.
-  auto ciphertext = foo_encryptor.EncryptString("secret");
+  auto ciphertext = foo_encryptor->EncryptString("secret");
   ASSERT_TRUE(ciphertext);
 
   // Look into the data and verify that it's used the FOO key by looking for the
@@ -277,8 +282,9 @@ TEST_F(EncryptorTest, MultipleKeys) {
   {
     Encryptor::KeyRing key_ring_foo;
     key_ring_foo.emplace("FOO", CloneKey(foo_key));
-    const Encryptor encryptor = GetEncryptor(std::move(key_ring_foo), "FOO");
-    auto decrypted = encryptor.DecryptData(*ciphertext);
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring_foo), "FOO");
+    auto decrypted = encryptor->DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ("secret", *decrypted);
   }
@@ -287,8 +293,9 @@ TEST_F(EncryptorTest, MultipleKeys) {
   {
     Encryptor::KeyRing key_ring_bar;
     key_ring_bar.emplace("BAR", CloneKey(bar_key));
-    const Encryptor encryptor = GetEncryptor(std::move(key_ring_bar), "BAR");
-    auto decrypted = encryptor.DecryptData(*ciphertext);
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring_bar), "BAR");
+    auto decrypted = encryptor->DecryptData(*ciphertext);
     EXPECT_FALSE(decrypted);
   }
 
@@ -297,8 +304,9 @@ TEST_F(EncryptorTest, MultipleKeys) {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BAR", CloneKey(bar_key));
     key_ring.emplace("FOO", CloneKey(foo_key));
-    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "FOO");
-    auto decrypted = encryptor.DecryptData(*ciphertext);
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "FOO");
+    auto decrypted = encryptor->DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ("secret", *decrypted);
 
@@ -306,7 +314,7 @@ TEST_F(EncryptorTest, MultipleKeys) {
     // encryption: "FOO" should always be picked. Note: because
     // Algorithm::kAES256GCM uses a random nonce, the encrypted values
     // themselves will be different.
-    auto ciphertext2 = encryptor.EncryptString("secret");
+    auto ciphertext2 = encryptor->EncryptString("secret");
     ASSERT_TRUE(ciphertext2);
     // Look into the data and verify that it's used the FOO key by looking for
     // the header.
@@ -320,16 +328,17 @@ TEST_F(EncryptorTest, MultipleKeys) {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BAR", CloneKey(bar_key));
     key_ring.emplace("FOO", CloneKey(foo_key));
-    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "BAR");
-    auto decrypted = encryptor.DecryptData(*ciphertext);
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "BAR");
+    auto decrypted = encryptor->DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ("secret", *decrypted);
   }
 
   // Verify that an empty Encryptor can't decrypt FOO.
   {
-    const Encryptor encryptor = GetEncryptor();
-    auto decrypted = encryptor.DecryptData(*ciphertext);
+    const scoped_refptr<Encryptor> encryptor = GetEncryptor();
+    auto decrypted = encryptor->DecryptData(*ciphertext);
     EXPECT_FALSE(decrypted);
   }
 }
@@ -337,7 +346,8 @@ TEST_F(EncryptorTest, MultipleKeys) {
 TEST_F(EncryptorTest, ShortCiphertext) {
   Encryptor::KeyRing key_ring;
   key_ring.emplace("TEST", GenerateRandomAES256TestKey());
-  const Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
+  const scoped_refptr<Encryptor> encryptor =
+      GetEncryptor(std::move(key_ring), "TEST");
   // Create some bad data for the decryptor. Use the "TEST" prefix to ensure it
   // gets passed to the AES256 decryptor.
   std::string bad_data = "TEST";
@@ -345,7 +355,7 @@ TEST_F(EncryptorTest, ShortCiphertext) {
   static const size_t kNonceLength = 12u;
   for (size_t i = 0; i < kNonceLength * 2; i++) {
     bad_data += "a";
-    auto decrypted = encryptor.DecryptData(base::as_byte_span(bad_data));
+    auto decrypted = encryptor->DecryptData(base::as_byte_span(bad_data));
     EXPECT_FALSE(decrypted);
   }
 }
@@ -354,18 +364,20 @@ TEST_F(EncryptorTest, IsEncryptionAvailable) {
   {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST", GenerateRandomAES256TestKey());
-    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
-    EXPECT_TRUE(encryptor.IsEncryptionAvailable());
-    EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST");
+    EXPECT_TRUE(encryptor->IsEncryptionAvailable());
+    EXPECT_TRUE(encryptor->IsDecryptionAvailable());
   }
   {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST", GenerateRandomAES256TestKey());
-    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "BLAH");
-    EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "BLAH");
+    EXPECT_FALSE(encryptor->IsEncryptionAvailable());
     // Decryption for data encrypted with TEST key is available, but encryption
     // is not available as there is no key BLAH.
-    EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+    EXPECT_TRUE(encryptor->IsDecryptionAvailable());
   }
 }
 
@@ -376,19 +388,21 @@ TEST_F(EncryptorTest, Clone) {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
     key_ring.emplace("TEST", GenerateRandomAES256TestKey());
-    auto encryptor = GetEncryptor(std::move(key_ring), "TEST", "BLAH");
+    scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST", "BLAH");
 
     {
-      auto cloned_encryptor = encryptor.Clone(Encryptor::Option::kNone);
-      EXPECT_EQ(cloned_encryptor.provider_for_encryption_, "TEST");
-      EXPECT_EQ(cloned_encryptor.keys_.size(), 2u);
+      scoped_refptr<Encryptor> cloned_encryptor =
+          encryptor->Clone(Encryptor::Option::kNone);
+      EXPECT_EQ(cloned_encryptor->provider_for_encryption_, "TEST");
+      EXPECT_EQ(cloned_encryptor->keys_.size(), 2u);
     }
 
     {
       auto cloned_encryptor =
-          encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
-      EXPECT_EQ(cloned_encryptor.provider_for_encryption_, "BLAH");
-      EXPECT_EQ(cloned_encryptor.keys_.size(), 2u);
+          encryptor->Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_EQ(cloned_encryptor->provider_for_encryption_, "BLAH");
+      EXPECT_EQ(cloned_encryptor->keys_.size(), 2u);
     }
   }
 
@@ -397,35 +411,37 @@ TEST_F(EncryptorTest, Clone) {
   {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
-    auto encryptor = GetEncryptor(std::move(key_ring), "BLAH", std::string());
-    EXPECT_EQ(encryptor.provider_for_encryption_, "BLAH");
+    scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "BLAH", std::string());
+    EXPECT_EQ(encryptor->provider_for_encryption_, "BLAH");
 
     {
-      auto cloned_encryptor = encryptor.Clone(Encryptor::Option::kNone);
-      EXPECT_EQ(cloned_encryptor.provider_for_encryption_, "BLAH");
+      scoped_refptr<Encryptor> cloned_encryptor =
+          encryptor->Clone(Encryptor::Option::kNone);
+      EXPECT_EQ(cloned_encryptor->provider_for_encryption_, "BLAH");
     }
 
     {
       auto cloned_encryptor =
-          encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
-      EXPECT_TRUE(cloned_encryptor.provider_for_encryption_.empty());
+          encryptor->Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_TRUE(cloned_encryptor->provider_for_encryption_.empty());
     }
   }
 
   // Test empty keyring.
   {
-    const auto empty_encryptor = GetEncryptor();
-    EXPECT_TRUE(empty_encryptor.provider_for_encryption_.empty());
+    const scoped_refptr<Encryptor> empty_encryptor = GetEncryptor();
+    EXPECT_TRUE(empty_encryptor->provider_for_encryption_.empty());
     {
       auto cloned_encryptor =
-          empty_encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
-      EXPECT_TRUE(cloned_encryptor.provider_for_encryption_.empty());
+          empty_encryptor->Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_TRUE(cloned_encryptor->provider_for_encryption_.empty());
     }
 
     {
       auto cloned_encryptor =
-          empty_encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
-      EXPECT_TRUE(cloned_encryptor.provider_for_encryption_.empty());
+          empty_encryptor->Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_TRUE(cloned_encryptor->provider_for_encryption_.empty());
     }
   }
 }
@@ -435,11 +451,12 @@ TEST_F(EncryptorTest, DecryptFlags) {
   {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
-    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
-    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST");
+    ASSERT_TRUE(encryptor->EncryptString("secrets", &ciphertext));
     Encryptor::DecryptFlags flags;
     std::string plaintext;
-    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    ASSERT_TRUE(encryptor->DecryptString(ciphertext, &plaintext, &flags));
     EXPECT_FALSE(flags.should_reencrypt);
   }
 
@@ -447,10 +464,11 @@ TEST_F(EncryptorTest, DecryptFlags) {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BLAH", DeriveAES256TestKey("BLAH"));
     key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
-    const auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "BLAH");
     Encryptor::DecryptFlags flags;
     std::string plaintext;
-    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    ASSERT_TRUE(encryptor->DecryptString(ciphertext, &plaintext, &flags));
     EXPECT_TRUE(flags.should_reencrypt);
   }
 }
@@ -461,8 +479,9 @@ TEST_F(EncryptorTest, KeyAvailability) {
     // Encrypt some data using the TEST key.
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
-    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
-    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST");
+    ASSERT_TRUE(encryptor->EncryptString("secrets", &ciphertext));
   }
 
   {
@@ -471,10 +490,11 @@ TEST_F(EncryptorTest, KeyAvailability) {
     // decides it can never recover a key and generates a new one.
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST", DeriveAES256TestKey("NOTTEST"));
-    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST");
     Encryptor::DecryptFlags flags;
     std::string plaintext;
-    ASSERT_FALSE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    ASSERT_FALSE(encryptor->DecryptString(ciphertext, &plaintext, &flags));
     EXPECT_FALSE(flags.temporarily_unavailable);
   }
 
@@ -483,10 +503,11 @@ TEST_F(EncryptorTest, KeyAvailability) {
     // key providers should signal a temporary failure using the proper API.
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BLAH", DeriveAES256TestKey("BLAH"));
-    const auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "BLAH");
     Encryptor::DecryptFlags flags;
     std::string plaintext;
-    ASSERT_FALSE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    ASSERT_FALSE(encryptor->DecryptString(ciphertext, &plaintext, &flags));
     EXPECT_FALSE(flags.temporarily_unavailable);
   }
 }
@@ -506,54 +527,72 @@ TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
     key_ring.emplace("TEST2",
                      Encryptor::Key(test_key2, mojom::Algorithm::kAES256GCM));
 
-    Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST1");
-    const auto ciphertext = encryptor.EncryptString("plaintext");
+    scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST1");
+    const auto ciphertext = encryptor->EncryptString("plaintext");
     ASSERT_TRUE(ciphertext.has_value());
 
-    Encryptor roundtripped;
+    scoped_refptr<Encryptor> roundtripped;
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
         encryptor, roundtripped));
 
-    EXPECT_EQ(roundtripped.provider_for_encryption_, "TEST1");
-    EXPECT_EQ(roundtripped.keys_.size(), 2U);
+    EXPECT_EQ(roundtripped->provider_for_encryption_, "TEST1");
+    EXPECT_EQ(roundtripped->keys_.size(), 2U);
 
-    EXPECT_EQ(roundtripped.keys_.at("TEST1"),
+    EXPECT_EQ(roundtripped->keys_.at("TEST1"),
               Encryptor::Key(test_key1, mojom::Algorithm::kAES256GCM));
-    EXPECT_EQ(roundtripped.keys_.at("TEST2"),
+    EXPECT_EQ(roundtripped->keys_.at("TEST2"),
               Encryptor::Key(test_key2, mojom::Algorithm::kAES256GCM));
-    const auto plaintext = roundtripped.DecryptData(*ciphertext);
+    const auto plaintext = roundtripped->DecryptData(*ciphertext);
     EXPECT_TRUE(plaintext.has_value());
     EXPECT_EQ(*plaintext, "plaintext");
   }
 
   {
-    Encryptor encryptor = GetEncryptor();
-    Encryptor roundtripped;
+    scoped_refptr<Encryptor> encryptor = GetEncryptor();
+    scoped_refptr<Encryptor> roundtripped;
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
         encryptor, roundtripped));
-    EXPECT_TRUE(roundtripped.keys_.empty());
-    EXPECT_TRUE(roundtripped.provider_for_encryption_.empty());
+    EXPECT_TRUE(roundtripped->keys_.empty());
+    EXPECT_TRUE(roundtripped->provider_for_encryption_.empty());
   }
 
   {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST", GenerateRandomAES256TestKey());
 
-    Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "TEST");
 
     // Reach into the encryptor and change the key length to an invalid length
     // for the kAES256GCM algorithm.
-    encryptor.keys_.at("TEST")->key_.resize(8u);
-    Encryptor roundtripped;
+    encryptor->keys_.at("TEST")->key_.resize(8u);
+    scoped_refptr<Encryptor> roundtripped;
 
     // Mojo will fail gracefully to serialize this bad Encryptor.
     EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
         encryptor, roundtripped));
   }
+
+  {
+    // Null input must round-trip to null output. This exercises both
+    // EncryptorMojomTraits::IsNull (serialize side, which must return true so
+    // the field getters are skipped) and ::SetToNull (deserialize side, which
+    // must reset the output refptr even if it was previously non-null).
+    scoped_refptr<Encryptor> null_encryptor;
+    ASSERT_FALSE(null_encryptor);
+
+    // Pre-seed `roundtripped` with a real Encryptor so we can prove SetToNull
+    // actually ran (vs. the output happening to already be null).
+    scoped_refptr<Encryptor> roundtripped = GetEncryptor();
+    ASSERT_TRUE(roundtripped);
+
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
+        null_encryptor, roundtripped));
+    EXPECT_FALSE(roundtripped);
+  }
 }
-
-
 
 }  // namespace os_crypt_async

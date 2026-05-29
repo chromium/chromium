@@ -19,6 +19,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
+#include "base/memory/scoped_refptr.h"
 #endif
 
 namespace {
@@ -653,8 +654,8 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
  protected:
   std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
       bool with_encryptor) {
-    const os_crypt_async::Encryptor* encryptor_arg =
-        with_encryptor ? &test_encryptor_ : nullptr;
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor_arg =
+        with_encryptor ? test_encryptor_ : nullptr;
     return hash_store_.BeginTransaction(&dictionary_contents_, encryptor_arg);
   }
 
@@ -770,7 +771,7 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
     dictionary_contents_.RemoveEntry(enc_base_key);
     if (values_to_hash) {
       base::DictValue computed_hashes = hash_store_.ComputeSplitEncryptedHashes(
-          path, values_to_hash, &test_encryptor_);
+          path, values_to_hash, test_encryptor_.get());
       for (auto item : computed_hashes) {
         if (item.second.is_string()) {
           dictionary_contents_.SetSplitMac(enc_base_key, item.first,
@@ -785,7 +786,7 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
   }
 
   PrefHashStoreImpl hash_store_;
-  os_crypt_async::Encryptor test_encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> test_encryptor_;
   base::DictValue pref_store_contents_;
   DictionaryHashStoreContents dictionary_contents_;
 };
@@ -798,7 +799,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashOnly) {
     // Pass |use_super_mac| => false, |use_super_encrypted_hash| => true.
     PrefHashStoreImpl local_hash_store(kSeed, false, true);
     auto tx = local_hash_store.BeginTransaction(&dictionary_contents_,
-                                                &test_encryptor_);
+                                                test_encryptor_);
     tx->StoreEncryptedHash(path, &value);
   }
 
@@ -1054,7 +1055,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
         // These are the "stored" hashes.
         base::DictValue computed_split_encrypted_hashes =
             hash_store_.ComputeSplitEncryptedHashes(
-                kPrefPath, &original_values_for_hashing, &test_encryptor_);
+                kPrefPath, &original_values_for_hashing, test_encryptor_.get());
         SeedSplitEncryptedHashes(kPrefPath, &computed_split_encrypted_hashes);
 
         // 2. Ensure no MACs are present for this path to isolate the encrypted
@@ -1186,13 +1187,13 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
 
   // Scenario 1: Null split_values
   base::DictValue result1 = hash_store_.ComputeSplitEncryptedHashes(
-      kBasePath, nullptr, &test_encryptor_);
+      kBasePath, nullptr, test_encryptor_.get());
   EXPECT_TRUE(result1.empty());
 
   // Scenario 2: Empty split_values dictionary
   base::DictValue empty_dict;
   base::DictValue result2 = hash_store_.ComputeSplitEncryptedHashes(
-      kBasePath, &empty_dict, &test_encryptor_);
+      kBasePath, &empty_dict, test_encryptor_.get());
   EXPECT_TRUE(result2.empty());
 
   // Scenario 3: Null encryptor
@@ -1209,7 +1210,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
 
   base::DictValue computed_hashes_for_dict4 =
       hash_store_.ComputeSplitEncryptedHashes(kBasePath, &input_dict4,
-                                              &test_encryptor_);
+                                              test_encryptor_.get());
 
   // Assertions for Scenario 4: Check structure and functional validity
   ASSERT_EQ(2u, computed_hashes_for_dict4.size());
@@ -1245,7 +1246,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
 
   base::DictValue computed_hashes_for_dict5 =
       hash_store_.ComputeSplitEncryptedHashes(kBasePath, &input_dict5,
-                                              &test_encryptor_);
+                                              test_encryptor_.get());
 
   // Assertions for Scenario 5 - EXPECTING bad_key_binary TO BE HASHED
   ASSERT_EQ(3u, computed_hashes_for_dict5.size())
@@ -1288,8 +1289,8 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeEncryptedHash_ForDict_Success) {
   test_dict.Set("d_key2", 456);
 
   // Assuming test_encryptor_instance_ works by default.
-  std::string encrypted_hash_str =
-      hash_store_.ComputeEncryptedHash(kPath, &test_dict, &test_encryptor_);
+  std::string encrypted_hash_str = hash_store_.ComputeEncryptedHash(
+      kPath, &test_dict, test_encryptor_.get());
   EXPECT_FALSE(encrypted_hash_str.empty());
   std::string decoded_once;
   EXPECT_TRUE(base::Base64Decode(encrypted_hash_str, &decoded_once))
@@ -1611,7 +1612,7 @@ TEST_F(
   old_split_content.Set("common_subkey", "common_value_old_hash");
   base::DictValue old_computed_split_ehs =
       hash_store_.ComputeSplitEncryptedHashes(kPath, &old_split_content,
-                                              &test_encryptor_);
+                                              test_encryptor_.get());
   SeedSplitEncryptedHashes(kPath, &old_computed_split_ehs);
 
   // Verify old split EHs are present.
@@ -1655,8 +1656,8 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   base::Value value("enterprise_value");
 
   SeedAtomicMac(kPath, hash_store_.ComputeMac(kPath, &value));
-  SeedAtomicEncryptedHash(
-      kPath, hash_store_.ComputeEncryptedHash(kPath, &value, &test_encryptor_));
+  SeedAtomicEncryptedHash(kPath, hash_store_.ComputeEncryptedHash(
+                                     kPath, &value, test_encryptor_.get()));
   SeedAtomicMac(kPath, "invalid_roaming_mac");
 
   std::optional<base::AutoReset<bool>> is_enterprise_device_for_testing_ =

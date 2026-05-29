@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -27,7 +28,8 @@ namespace password_manager {
 // All methods should be called on UI thread.
 class HashPasswordManager {
  public:
-  explicit HashPasswordManager(os_crypt_async::Encryptor encryptor);
+  explicit HashPasswordManager(
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   HashPasswordManager(const HashPasswordManager&) = delete;
   HashPasswordManager& operator=(const HashPasswordManager&) = delete;
@@ -110,7 +112,7 @@ class HashPasswordManager {
 
   bool IsGaiaPassword(const base::Value& dict) const;
 
-  const os_crypt_async::Encryptor encryptor_;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
 

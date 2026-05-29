@@ -10,8 +10,10 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/cache_encryption_provider.mojom.h"
 
@@ -52,8 +54,9 @@ class CacheEncryptionProviderImpl
   BindNewRemote();
 
  private:
-  void OnEncryptorReadyForKey(GetEncryptedCacheEncryptionKeyCallback callback,
-                              os_crypt_async::Encryptor encryptor);
+  void OnEncryptorReadyForKey(
+      GetEncryptedCacheEncryptionKeyCallback callback,
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   mojo::ReceiverSet<network::mojom::CacheEncryptionProvider>
       receivers_;

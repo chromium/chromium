@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -23,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -111,7 +113,7 @@ class BadLoginDatabase : public LoginDatabase {
   // LoginDatabase:
   bool Init(base::RepeatingCallback<void(password_manager::IsAccountStore)>
                 on_undecryptable_passwords_removed,
-            os_crypt_async::Encryptor encryptor) override {
+            scoped_refptr<os_crypt_async::Encryptor> encryptor) override {
     return false;
   }
 };

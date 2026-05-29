@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -140,8 +141,7 @@ void RecordSerializationResult(
 
 void SaveJsonContentToFile(
     std::string original_json_content,
-    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     StorageFileEncryptionType encryption_type,
     const base::FilePath file_path) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -149,7 +149,7 @@ void SaveJsonContentToFile(
   std::string json_content = std::move(original_json_content);
   if (encryption_type == StorageFileEncryptionType::kEncrypted) {
     std::string encrypted_json_content;
-    if (!encryptor->data.EncryptString(json_content, &encrypted_json_content)) {
+    if (!encryptor->EncryptString(json_content, &encrypted_json_content)) {
       RecordSerializationResult(
           start_time,
           GetImmediateImportantFileWriterTypeForMetrics(encryption_type),
@@ -175,8 +175,7 @@ constexpr base::TimeDelta BookmarkStorage::kSaveDelay;
 BookmarkStorage::BookmarkStorage(
     const BookmarkModel* model,
     PermanentNodeSelection permanent_node_selection,
-    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-        encryptor,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     const base::FilePath& clear_text_file_path,
     const base::FilePath& encrypted_file_path)
     : model_(model),
@@ -184,7 +183,7 @@ BookmarkStorage::BookmarkStorage(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       permanent_node_selection_(permanent_node_selection),
-      encryptor_(encryptor),
+      encryptor_(std::move(encryptor)),
       primary_file_encryption_type_(
           ShouldUseEncryptedBookmarksAsPrimarySource()
               ? StorageFileEncryptionType::kEncrypted
@@ -231,8 +230,7 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
   base::DictValue value = EncodeModelToDict(model_, permanent_node_selection_);
   return base::BindOnce(
       [](base::DictValue value,
-         scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-             encryptor,
+         scoped_refptr<const os_crypt_async::Encryptor> encryptor,
          StorageFileEncryptionType primary_file_encryption_type,
          const base::FilePath secondary_file_path)
           -> std::optional<std::string> {
@@ -252,8 +250,8 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
           case StorageFileEncryptionType::kEncrypted: {
             CHECK(encryptor);
             std::string encrypted_json_content;
-            const bool encryption_succeeded = encryptor->data.EncryptString(
-                json_content, &encrypted_json_content);
+            const bool encryption_succeeded =
+                encryptor->EncryptString(json_content, &encrypted_json_content);
             if (ShouldWriteBookmarksToSecondaryFileOnDisk()) {
               // Also write the unencrypted data to disk. Make sure this second
               // write is performed after the first one is completed.
@@ -284,8 +282,8 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
             if (ShouldWriteBookmarksToSecondaryFileOnDisk()) {
               CHECK(encryptor);
               std::string encrypted_json_content;
-              if (encryptor->data.EncryptString(json_content,
-                                                &encrypted_json_content)) {
+              if (encryptor->EncryptString(json_content,
+                                           &encrypted_json_content)) {
                 // Also write the encrypted data to disk. Make sure this second
                 // write is performed after the first one is completed.
                 base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

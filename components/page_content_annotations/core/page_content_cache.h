@@ -9,11 +9,13 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 class GURL;
 
@@ -89,7 +91,7 @@ class PageContentCache {
   void CleanUpAndRecordMetrics(const std::set<int64_t>& all_active_tab_ids,
                                const std::set<int64_t>& stale_tab_ids,
                                const std::set<int64_t>& cached_tab_ids);
-  void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
+  void OnOsCryptAsyncReady(scoped_refptr<os_crypt_async::Encryptor> encryptor);
   void OnCacheSizeCalculated(const std::set<int64_t>& all_active_tab_ids,
                              const std::set<int64_t>& cached_tab_ids,
                              std::optional<int64_t> total_cache_size_optional);

@@ -43,8 +43,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #else
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -286,7 +288,8 @@ void ChromeBookmarkClient::SchedulePersistentTimerForDailyMetrics(
 }
 
 void ChromeBookmarkClient::GetEncryptor(
-    base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback) {
+    base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor> encryptor)>
+        callback) {
   CHECK(g_browser_process);
   CHECK(g_browser_process->os_crypt_async());
   g_browser_process->os_crypt_async()->GetInstance(std::move(callback));

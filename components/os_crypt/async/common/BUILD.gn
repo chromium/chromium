@@ -18,9 +18,9 @@ mojom("common_mojom") {
       types = [
         {
           mojom = "os_crypt_async.mojom.Encryptor"
-          cpp = "::os_crypt_async::Encryptor"
-          default_constructible = false
-          move_only = true
+          cpp = "::scoped_refptr<::os_crypt_async::Encryptor>"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
         },
         {
           mojom = "os_crypt_async.mojom.Key"

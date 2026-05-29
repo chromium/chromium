@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
@@ -17,6 +18,7 @@
 #include "components/accessibility_annotator/core/storage/intent_table.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 namespace sql {
 class Database;
@@ -44,7 +46,8 @@ class AccessibilityAnnotatorDatabase {
 
   // Initializes the database connection and all tables. Must be called
   // before any other methods. Returns true on success.
-  bool Init(const base::FilePath& db_path, os_crypt_async::Encryptor encryptor);
+  bool Init(const base::FilePath& db_path,
+            scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Adds, deletes, or retrieves data in the content_annotations
   // table. See the identically named functions in `ContentAnnotationsTable`.
@@ -67,7 +70,7 @@ class AccessibilityAnnotatorDatabase {
 
   std::unique_ptr<sql::Database> db_;
 
-  std::optional<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   ContentAnnotationsTable content_annotations_table_
       GUARDED_BY_CONTEXT(sequence_checker_);

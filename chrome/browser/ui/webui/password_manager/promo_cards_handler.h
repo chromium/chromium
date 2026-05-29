@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -54,7 +56,7 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void OnEncryptorReceived(base::Value callback_id,
-                           os_crypt_async::Encryptor encryptor);
+                           scoped_refptr<os_crypt_async::Encryptor> encryptor);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   raw_ptr<Profile, DanglingUntriaged> profile_;

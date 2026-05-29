@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
@@ -23,7 +24,7 @@ namespace os_crypt_async {
 // This class is responsible for vending Encryptor instances.
 class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
  public:
-  using InitCallback = base::OnceCallback<void(Encryptor)>;
+  using InitCallback = base::OnceCallback<void(scoped_refptr<Encryptor>)>;
 
   // Higher precedence providers will be used for encryption over lower
   // preference ones.
@@ -75,9 +76,9 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
                  const std::string& tag,
                  base::expected<Encryptor::Key, KeyProvider::KeyError> key);
   // Sets the `encryptor_instance_` and reports metrics.
-  void SetEncryptorInstance(Encryptor encryptor);
+  void SetEncryptorInstance(scoped_refptr<Encryptor> encryptor);
 
-  std::unique_ptr<Encryptor> encryptor_instance_
+  scoped_refptr<Encryptor> encryptor_instance_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_initializing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +33,7 @@
 #include "components/history_embeddings/core/vector_database.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/web_contents.h"
@@ -201,7 +203,7 @@ void HistoryEmbeddingsService::UpdateVisitMetadata(
 }
 
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   storage_.AsyncCall(&Storage::SetEmbedderMetadata)
       .WithArgs(embedder_metadata_, std::move(encryptor));
 
@@ -545,7 +547,7 @@ HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir,
 
 void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
     passage_embeddings::EmbedderMetadata metadata,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   sql_database.SetEmbedderMetadata(metadata, std::move(encryptor));
 }
 

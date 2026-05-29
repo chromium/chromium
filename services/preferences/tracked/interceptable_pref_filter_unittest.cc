@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -35,7 +36,8 @@ class TestInterceptablePrefFilter final : public InterceptablePrefFilter {
   }
 
   void SetPrefService(PrefService* pref_service) override {}
-  void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) override {}
+  void OnEncryptorReceived(
+      scoped_refptr<os_crypt_async::Encryptor> encryptor) override {}
 
   base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

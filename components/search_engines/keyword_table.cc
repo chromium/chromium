@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -584,7 +585,8 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
     return false;
   }
 
-  UpdateAllKeywordHashes(db(), encryptor(), /*histogram_name=*/std::nullopt);
+  UpdateAllKeywordHashes(db(), encryptor().get(),
+                         /*histogram_name=*/std::nullopt);
 
   return transaction.Commit();
 }
@@ -596,7 +598,7 @@ bool KeywordTable::MigrateToVersion152ExpandHashColumn() {
     return false;
   }
 
-  UpdateAllKeywordHashes(db(), encryptor(),
+  UpdateAllKeywordHashes(db(), encryptor().get(),
                          "Search.KeywordTable.MigrationSuccess.V152");
 
   return transaction.Commit();

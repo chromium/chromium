@@ -10,8 +10,10 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "sql/transaction.h"
 
 const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
@@ -147,8 +149,9 @@ sql::Database* WebDatabase::GetSQLConnection() {
   return &db_;
 }
 
-sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
-                                  const os_crypt_async::Encryptor* encryptor) {
+sql::InitStatus WebDatabase::Init(
+    const base::FilePath& db_name,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
   // Only unit tests whose tables don't use any crypto for their tables pass in
   // a null encryptor.
   if (!encryptor) {

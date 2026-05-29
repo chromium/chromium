@@ -24,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -38,6 +39,7 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/sql_table_builder.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -1080,12 +1082,11 @@ LoginDatabase::~LoginDatabase() = default;
 
 bool LoginDatabase::Init(
     OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
   on_undecryptable_passwords_removed_ =
       std::move(on_undecryptable_passwords_removed);
-  encryptor_ =
-      std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
+  encryptor_ = std::move(encryptor);
 
   if (!db_.Open(db_path_)) {
     LogDatabaseInitError(OPEN_FILE_ERROR);
@@ -1887,7 +1888,7 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   db_.Close();
   sql::Database::Delete(db_path_);
   return Init(std::move(on_undecryptable_passwords_removed_),
-              std::move(*encryptor_));
+              std::move(encryptor_));
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {

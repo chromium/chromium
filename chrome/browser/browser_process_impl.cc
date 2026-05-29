@@ -286,7 +286,9 @@ void OnLocalStatePrefsLoaded();
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -1595,7 +1597,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
   // Trigger async initialization of OSCrypt key providers.
   os_crypt_async_->GetInstance(base::BindOnce(
-      [](base::TimeTicks start_time, os_crypt_async::Encryptor encryptor) {
+      [](base::TimeTicks start_time,
+         scoped_refptr<os_crypt_async::Encryptor> encryptor) {
         base::UmaHistogramTimes("OSCrypt.AsyncInitialization.Time",
                                 base::TimeTicks::Now() - start_time);
       },

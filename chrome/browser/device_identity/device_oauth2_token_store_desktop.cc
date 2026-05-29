@@ -8,8 +8,10 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/common/pref_names.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -61,7 +63,7 @@ void DeviceOAuth2TokenStoreDesktop::Init(InitCallback callback) {
 
 void DeviceOAuth2TokenStoreDesktop::OnOsCryptReady(
     InitCallback callback,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   encryptor_ = std::move(encryptor);
 
   const bool had_pending_requests = !pending_set_token_requests_.empty();

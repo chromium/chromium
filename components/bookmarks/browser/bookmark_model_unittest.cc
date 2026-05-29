@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -3127,11 +3128,11 @@ void AssertSameFileContent(const base::FilePath& unencrypted_file_path,
       base::ReadFileToString(encrypted_file_path, &encrypted_file_content));
 
   std::string decrypted_file_content;
-  base::test::TestFuture<os_crypt_async::Encryptor> future;
+  base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
   client->GetEncryptor(future.GetCallback());
-  os_crypt_async::Encryptor encryptor = future.Take();
-  ASSERT_TRUE(
-      encryptor.DecryptString(encrypted_file_content, &decrypted_file_content));
+  scoped_refptr<os_crypt_async::Encryptor> encryptor = future.Take();
+  ASSERT_TRUE(encryptor->DecryptString(encrypted_file_content,
+                                       &decrypted_file_content));
 
   EXPECT_FALSE(file_content.empty());
   EXPECT_EQ(file_content, decrypted_file_content);

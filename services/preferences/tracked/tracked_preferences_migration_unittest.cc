@@ -13,10 +13,12 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_name_set.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
@@ -68,7 +70,8 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
         .Run(std::move(pref_store_contents), prefs_altered);
   }
 
-  void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) override {}
+  void OnEncryptorReceived(
+      scoped_refptr<os_crypt_async::Encryptor> encryptor) override {}
 
   base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

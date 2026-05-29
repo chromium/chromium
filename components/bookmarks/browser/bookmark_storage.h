@@ -78,13 +78,11 @@ class BookmarkStorage
   // `encrypted_file_path` (appending suffix kBackupExtension).
   //
   // All disk writes will be executed as a task in a backend task runner.
-  BookmarkStorage(
-      const BookmarkModel* model,
-      PermanentNodeSelection permanent_node_selection,
-      const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-          encryptor,
-      const base::FilePath& clear_text_file_path,
-      const base::FilePath& encrypted_file_path);
+  BookmarkStorage(const BookmarkModel* model,
+                  PermanentNodeSelection permanent_node_selection,
+                  scoped_refptr<const os_crypt_async::Encryptor> encryptor,
+                  const base::FilePath& clear_text_file_path,
+                  const base::FilePath& encrypted_file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
   BookmarkStorage& operator=(const BookmarkStorage&) = delete;
@@ -152,8 +150,7 @@ class BookmarkStorage
 
   // Used to hold the encryptor that is shared between BookmarkStorage and the
   // background sequence.
-  const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor_;
+  const scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
 
   // The encryption type of the primary file.
   const StorageFileEncryptionType primary_file_encryption_type_;

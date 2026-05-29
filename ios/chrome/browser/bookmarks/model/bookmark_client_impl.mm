@@ -175,7 +175,8 @@ void BookmarkClientImpl::SchedulePersistentTimerForDailyMetrics(
 }
 
 void BookmarkClientImpl::GetEncryptor(
-    base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback) {
+    base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor> encryptor)>
+        callback) {
   CHECK(GetApplicationContext());
   CHECK(GetApplicationContext()->GetOSCryptAsync());
   GetApplicationContext()->GetOSCryptAsync()->GetInstance(std::move(callback));

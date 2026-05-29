@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
@@ -171,8 +172,9 @@ class HistoryEmbeddingsService
 
     // Associate the given metadata with this Storage instance. The storage is
     // not considered initialized until this metadata is supplied.
-    void SetEmbedderMetadata(passage_embeddings::EmbedderMetadata metadata,
-                             os_crypt_async::Encryptor encryptor);
+    void SetEmbedderMetadata(
+        passage_embeddings::EmbedderMetadata metadata,
+        scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
     // Called on the worker sequence to persist passages and embeddings.
     void ProcessAndStorePassages(UrlData url_data);
@@ -219,7 +221,7 @@ class HistoryEmbeddingsService
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
 
-  void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
+  void OnOsCryptAsyncReady(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // This can be overridden to prepare a log entry that will then be filled
   // with data and sent on destruction. Default implementation returns null.

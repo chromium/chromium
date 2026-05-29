@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
@@ -128,7 +129,7 @@ class ValuableSyncBridgeTest : public testing::Test {
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&entity_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
-             &encryptor_);
+             encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
@@ -210,7 +211,7 @@ class ValuableSyncBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  const os_crypt_async::Encryptor encryptor_ =
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_ =
       os_crypt_async::GetTestEncryptorForTesting();
   ValuablesTable valuables_table_;
   AutofillSyncMetadataTable sync_metadata_table_;

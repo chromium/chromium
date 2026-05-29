@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -142,7 +143,7 @@ class WEBDATA_EXPORT WebDatabaseService
   void OnDatabaseLoadDone(sql::InitStatus status,
                           const std::string& diagnostics);
 
-  void CompleteLoadDatabase(os_crypt_async::Encryptor encryptor);
+  void CompleteLoadDatabase(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   base::FilePath path_;
 

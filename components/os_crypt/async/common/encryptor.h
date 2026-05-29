@@ -13,6 +13,8 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
 namespace mojo {
@@ -34,8 +36,11 @@ class OSCryptAsync;
 class TestOSCryptAsync;
 
 // This class is used for data encryption. A thread-safe instance can be
-// obtained by calling `os_crypt_async::OSCryptAsync::GetInstance`.
-class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
+// obtained by calling `os_crypt_async::OSCryptAsync::GetInstance`. Instances
+// are reference counted and immutable from the perspective of callers; share
+// a single instance across consumers via `scoped_refptr<Encryptor>`.
+class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor
+    : public base::RefCountedThreadSafe<Encryptor> {
  public:
   // A class used by the Encryptor to hold an encryption key and carry out
   // encryption and decryption operations using the specified Algorithm and
@@ -129,11 +134,9 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // Mojo uses this public constructor for serialization.
   explicit Encryptor(mojo::DefaultConstruct::Tag);
 
-  virtual ~Encryptor();
-
-  // Moveable, not copyable.
-  Encryptor(Encryptor&& other);
-  Encryptor& operator=(Encryptor&& other);
+  // Not moveable, not copyable. Share via scoped_refptr.
+  Encryptor(Encryptor&& other) = delete;
+  Encryptor& operator=(Encryptor&& other) = delete;
   Encryptor(const Encryptor&) = delete;
   Encryptor& operator=(const Encryptor&) = delete;
 
@@ -186,16 +189,20 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
       const std::string& provider_for_encryption,
       const std::string& provider_for_os_crypt_sync_compatible_encryption);
 
-  // Clone is used internally by the factory to vend instances.
-  Encryptor Clone(Option option) const;
+  virtual ~Encryptor();
+
+  // Clone is used internally by the factory to vend instances with different
+  // `Option`s. Returns a new refcounted Encryptor.
+  scoped_refptr<Encryptor> Clone(Option option) const;
 
  private:
+  friend class base::RefCountedThreadSafe<Encryptor>;
   friend class EncryptorTest;
   friend class EncryptorParamTest;
   friend class OSCryptAsync;
   friend class TestEncryptor;
   friend struct mojo::StructTraits<os_crypt_async::mojom::EncryptorDataView,
-                                   os_crypt_async::Encryptor>;
+                                   scoped_refptr<os_crypt_async::Encryptor>>;
 
   FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
   FRIEND_TEST_ALL_PREFIXES(EncryptorTest, Clone);

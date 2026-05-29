@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_request_manager.h"
@@ -95,7 +96,8 @@ class WEBDATA_EXPORT WebDatabaseBackend
                          std::unique_ptr<WebDataRequest> request);
 
   // Called on UI sequence to initialize the encryptors in the tables.
-  void MaybeInitEncryptorOnUiSequence(os_crypt_async::Encryptor encryptor);
+  void MaybeInitEncryptorOnUiSequence(
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Task runners to run database tasks.
   void ExecuteWriteTask(WebDatabaseService::WriteTask task);
@@ -122,7 +124,7 @@ class WEBDATA_EXPORT WebDatabaseBackend
 
   // This Encryptor is held on the db sequence and passed to each table during
   // initialization. Must outlive `db_`.
-  std::optional<const os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
 
   // The tables that participate in managing the database. These are
   // owned here but other than that this class does nothing with

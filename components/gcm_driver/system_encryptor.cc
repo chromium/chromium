@@ -4,21 +4,25 @@
 
 #include "components/gcm_driver/system_encryptor.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "components/os_crypt/async/common/encryptor.h"
+
 namespace gcm {
 
-SystemEncryptor::SystemEncryptor(os_crypt_async::Encryptor encryptor)
+SystemEncryptor::SystemEncryptor(
+    scoped_refptr<os_crypt_async::Encryptor> encryptor)
     : encryptor_(std::move(encryptor)) {}
 
 SystemEncryptor::~SystemEncryptor() = default;
 
 bool SystemEncryptor::EncryptString(const std::string& plaintext,
                                     std::string* ciphertext) {
-  return encryptor_.EncryptString(plaintext, ciphertext);
+  return encryptor_->EncryptString(plaintext, ciphertext);
 }
 
 bool SystemEncryptor::DecryptString(const std::string& ciphertext,
                                     std::string* plaintext) {
-  return encryptor_.DecryptString(ciphertext, plaintext);
+  return encryptor_->DecryptString(ciphertext, plaintext);
 }
 
 }  // namespace gcm

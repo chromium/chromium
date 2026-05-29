@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -105,10 +106,10 @@ SqlDatabase::~SqlDatabase() = default;
 
 void SqlDatabase::SetEmbedderMetadata(
     passage_embeddings::EmbedderMetadata embedder_metadata,
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   embedder_metadata_ = embedder_metadata;
-  CHECK(!encryptor_.has_value()) << "Cannot call SetEmbedderMetadata twice.";
-  encryptor_.emplace(std::move(encryptor));
+  CHECK(!encryptor_) << "Cannot call SetEmbedderMetadata twice.";
+  encryptor_ = std::move(encryptor);
 }
 
 bool SqlDatabase::LazyInit(bool force_init_for_deletion) {

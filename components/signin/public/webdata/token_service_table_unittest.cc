@@ -9,6 +9,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -52,12 +53,12 @@ class TokenServiceTableTest : public testing::Test {
     table_ = std::make_unique<TokenServiceTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, &encryptor_));
+    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, encryptor_));
   }
 
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
-  const os_crypt_async::Encryptor encryptor_;
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
   std::unique_ptr<TokenServiceTable> table_;
   std::unique_ptr<WebDatabase> db_;
 };
@@ -301,7 +302,7 @@ TEST_F(TokenServiceTableTest, GetNullMtlsTokenBinding) {
 
   // Test reading null values
   std::string encrypted_token;
-  ASSERT_TRUE(encryptor_.EncryptString("pepperoni", &encrypted_token));
+  ASSERT_TRUE(encryptor_->EncryptString("pepperoni", &encrypted_token));
 
   // Manually insert an entry without setting `mtls_token_binding` to verify
   // that having a null value is read back as `false`.
@@ -391,9 +392,9 @@ class TokenServiceTableEncryptionOptionsTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
-  os_crypt_async::Encryptor GetInstanceSync(
+  scoped_refptr<os_crypt_async::Encryptor> GetInstanceSync(
       os_crypt_async::Encryptor::Option option) {
-    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
     os_crypt_->GetInstance(future.GetCallback(), option);
     return future.Take();
   }
@@ -419,7 +420,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     db.AddTable(&table);
     const auto encryptor =
         GetInstanceSync(os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
-    ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
+    ASSERT_EQ(sql::INIT_OK, db.Init(filename, encryptor));
 
     std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
@@ -438,7 +439,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     db.AddTable(&table);
     const auto encryptor =
         GetInstanceSync(os_crypt_async::Encryptor::Option::kNone);
-    ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
+    ASSERT_EQ(sql::INIT_OK, db.Init(filename, encryptor));
 
     std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
@@ -460,7 +461,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     db.AddTable(&table);
     const auto encryptor =
         GetInstanceSync(os_crypt_async::Encryptor::Option::kNone);
-    ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
+    ASSERT_EQ(sql::INIT_OK, db.Init(filename, encryptor));
 
     std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
@@ -480,7 +481,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     db.AddTable(&table);
     const auto encryptor =
         GetInstanceSync(os_crypt_async::Encryptor::Option::kNone);
-    ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
+    ASSERT_EQ(sql::INIT_OK, db.Init(filename, encryptor));
 
     std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
@@ -501,7 +502,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     db.AddTable(&table);
     const auto encryptor =
         GetInstanceSync(os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
-    ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
+    ASSERT_EQ(sql::INIT_OK, db.Init(filename, encryptor));
 
     std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;

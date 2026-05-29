@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -74,76 +75,76 @@ class SyncPrefsTest : public testing::Test {
 };
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   EXPECT_TRUE(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, GaiaId())
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, GaiaId())
           .IsEmpty());
 }
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   ASSERT_TRUE(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_)
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_)
           .IsEmpty());
   CustomPassphraseBootstrapToken token1 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
 
-  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token1, encryptor,
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token1, *encryptor,
                                                      gaia_id_);
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
       MatchesToken(token1));
 
   GaiaId gaia_id_2("account_gaia_2");
   EXPECT_TRUE(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_2)
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_2)
           .IsEmpty());
 
   CustomPassphraseBootstrapToken token2 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(2);
 
-  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token2, encryptor,
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token2, *encryptor,
                                                      gaia_id_2);
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
       MatchesToken(token1));
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_2),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_2),
       MatchesToken(token2));
 }
 
 TEST_F(SyncPrefsTest, ClearEncryptionBootstrapTokenPerAccount) {
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   ASSERT_TRUE(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_)
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_)
           .IsEmpty());
   CustomPassphraseBootstrapToken token1 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
 
-  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token1, encryptor,
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token1, *encryptor,
                                                      gaia_id_);
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
       MatchesToken(token1));
 
   GaiaId gaia_id_2("account_gaia_2");
   EXPECT_TRUE(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_2)
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_2)
           .IsEmpty());
 
   CustomPassphraseBootstrapToken token2 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(2);
 
-  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token2, encryptor,
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount(token2, *encryptor,
                                                      gaia_id_2);
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
       MatchesToken(token1));
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_2),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_2),
       MatchesToken(token2));
 
   // Remove account 2 from device by setting the available_gaia_ids to have the
@@ -151,10 +152,10 @@ TEST_F(SyncPrefsTest, ClearEncryptionBootstrapTokenPerAccount) {
   sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers(
       /*available_gaia_ids=*/{gaia_id_});
   EXPECT_THAT(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
       MatchesToken(token1));
   EXPECT_TRUE(
-      sync_prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_2)
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_2)
           .IsEmpty());
 }
 
@@ -946,7 +947,7 @@ TEST_F(SyncPrefsMigrationTest,
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   SyncPrefs prefs(&pref_service_);
   // Passphrase is not set.
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   ASSERT_TRUE(
       pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken)
@@ -956,16 +957,16 @@ TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   EXPECT_TRUE(
       pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken)
           .empty());
-  EXPECT_TRUE(prefs.GetEncryptionBootstrapTokenForAccount(encryptor, GaiaId())
+  EXPECT_TRUE(prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, GaiaId())
                   .IsEmpty());
 }
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   CustomPassphraseBootstrapToken token1 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
-  std::string encrypted_token1 = token1.ToEncryptedPref(encryptor);
+  std::string encrypted_token1 = token1.ToEncryptedPref(*encryptor);
 
   SyncPrefs prefs(&pref_service_);
   pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
@@ -974,23 +975,23 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
   EXPECT_EQ(
       pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
       encrypted_token1);
-  EXPECT_THAT(prefs.GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+  EXPECT_THAT(prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
               MatchesToken(token1));
   GaiaId gaia_id_2("account_gaia_2");
-  EXPECT_TRUE(prefs.GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_2)
+  EXPECT_TRUE(prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_2)
                   .IsEmpty());
 }
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   CustomPassphraseBootstrapToken token1 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
-  std::string encrypted_token1 = token1.ToEncryptedPref(encryptor);
+  std::string encrypted_token1 = token1.ToEncryptedPref(*encryptor);
 
   CustomPassphraseBootstrapToken token2 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(2);
-  std::string encrypted_token2 = token2.ToEncryptedPref(encryptor);
+  std::string encrypted_token2 = token2.ToEncryptedPref(*encryptor);
 
   SyncPrefs prefs(&pref_service_);
   pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
@@ -999,7 +1000,7 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
   EXPECT_EQ(
       pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
       encrypted_token1);
-  EXPECT_THAT(prefs.GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+  EXPECT_THAT(prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
               MatchesToken(token1));
 
   // Force old pref to change for testing purposes.
@@ -1010,20 +1011,20 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
   EXPECT_EQ(
       pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
       encrypted_token2);
-  EXPECT_THAT(prefs.GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+  EXPECT_THAT(prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
               MatchesToken(token1));
 }
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
-  os_crypt_async::Encryptor encryptor =
+  scoped_refptr<os_crypt_async::Encryptor> encryptor =
       os_crypt_async::GetTestEncryptorForTesting();
   CustomPassphraseBootstrapToken token1 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(1);
-  std::string encrypted_token1 = token1.ToEncryptedPref(encryptor);
+  std::string encrypted_token1 = token1.ToEncryptedPref(*encryptor);
 
   CustomPassphraseBootstrapToken token2 =
       CustomPassphraseBootstrapToken::CreateFakeForTesting(2);
-  std::string encrypted_token2 = token2.ToEncryptedPref(encryptor);
+  std::string encrypted_token2 = token2.ToEncryptedPref(*encryptor);
 
   {
     SyncPrefs prefs(&pref_service_);
@@ -1034,7 +1035,7 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
         pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
         encrypted_token1);
     EXPECT_THAT(
-        prefs.GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+        prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
         MatchesToken(token1));
     // Force old pref to change for testing purposes.
     pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
@@ -1050,7 +1051,7 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
         pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
         encrypted_token2);
     EXPECT_THAT(
-        prefs.GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id_),
+        prefs.GetEncryptionBootstrapTokenForAccount(*encryptor, gaia_id_),
         MatchesToken(token1));
   }
 }

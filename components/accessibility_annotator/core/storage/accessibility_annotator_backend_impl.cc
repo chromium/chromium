@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +28,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/proto/features/content_annotation.to_value.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace accessibility_annotator {
@@ -204,7 +206,7 @@ void AccessibilityAnnotatorBackendImpl::Shutdown() {
 }
 
 void AccessibilityAnnotatorBackendImpl::OnInitWithEncryptor(
-    os_crypt_async::Encryptor encryptor) {
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::Init)
       .WithArgs(db_path_, std::move(encryptor))
       .Then(base::BindOnce(

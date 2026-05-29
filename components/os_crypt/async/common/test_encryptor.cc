@@ -16,11 +16,16 @@ TestEncryptor::TestEncryptor(
                 provider_for_encryption,
                 provider_for_os_crypt_sync_compatible_encryption) {}
 
-TestEncryptor TestEncryptor::Clone(Option option) const {
-  auto cloned = Encryptor::Clone(option);
-  return TestEncryptor(
-      std::move(cloned.keys_), cloned.provider_for_encryption_,
-      cloned.provider_for_os_crypt_sync_compatible_encryption_);
+scoped_refptr<TestEncryptor> TestEncryptor::Clone(Option option) const {
+  // Reuse Encryptor::Clone() to produce the new key state, then wrap in a
+  // TestEncryptor that preserves the testing overrides.
+  scoped_refptr<Encryptor> cloned = Encryptor::Clone(option);
+  auto result = base::WrapRefCounted(new TestEncryptor(
+      std::move(cloned->keys_), cloned->provider_for_encryption_,
+      cloned->provider_for_os_crypt_sync_compatible_encryption_));
+  result->is_encryption_available_ = is_encryption_available_;
+  result->is_decryption_available_ = is_decryption_available_;
+  return result;
 }
 
 bool TestEncryptor::IsEncryptionAvailable() const {

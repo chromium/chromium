@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -92,8 +93,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
   // Must be called once an encryptor is available, before any method that
   // encrypts/decrypts is called. `encryptor` must not be null.
-  void SetEncryptor(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
-  const os_crypt_async::Encryptor* GetEncryptor() const;
+  void SetEncryptor(scoped_refptr<os_crypt_async::Encryptor> encryptor);
+  const scoped_refptr<os_crypt_async::Encryptor>& GetEncryptor() const;
 
   // Creates a proxy observer object that will post calls to this thread.
   std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
@@ -200,7 +201,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   const raw_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 
   // May be null if OSCryptAsync is not used.
-  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.

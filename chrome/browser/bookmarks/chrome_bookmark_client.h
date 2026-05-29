@@ -12,11 +12,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/power_bookmarks/core/bookmark_client_base.h"
 
 class BookmarkUndoService;
@@ -90,9 +92,9 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
   void SchedulePersistentTimerForDailyMetrics(
       base::RepeatingClosure metrics_callback) override;
-  void GetEncryptor(
-      base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback)
-      override;
+  void GetEncryptor(base::OnceCallback<
+                    void(scoped_refptr<os_crypt_async::Encryptor> encryptor)>
+                        callback) override;
 
  private:
   // Pointer to the associated Profile. Must outlive ChromeBookmarkClient.

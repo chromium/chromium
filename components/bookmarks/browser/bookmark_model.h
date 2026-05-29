@@ -30,6 +30,7 @@
 #include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -611,8 +612,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // otherwise encryptor will be null.
   void ContinueLoadWithEncryptor(
       const base::FilePath& profile_path,
-      const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-          encryptor);
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor);
 
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;

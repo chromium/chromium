@@ -563,7 +563,7 @@ class EnclaveManager : public EnclaveManagerInterface {
           state);
 
   // Called when the OSCrypt encryptor is available.
-  void OnOsCryptReady(os_crypt_async::Encryptor encryptor);
+  void OnOsCryptReady(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Stores keys in the pending state (the keys will remain in this state until
   // `AddDeviceToAccount` is called).
@@ -643,7 +643,7 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   base::ObserverList<Observer> observer_list_;
 
-  std::optional<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

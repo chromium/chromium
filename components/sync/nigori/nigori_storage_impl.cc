@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -17,7 +18,7 @@ namespace syncer {
 
 NigoriStorageImpl::NigoriStorageImpl(
     const base::FilePath& path,
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor)
+    scoped_refptr<os_crypt_async::Encryptor> encryptor)
     : path_(path), encryptor_(std::move(encryptor)) {}
 
 NigoriStorageImpl::~NigoriStorageImpl() {

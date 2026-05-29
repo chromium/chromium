@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -1063,14 +1064,13 @@ base::FilePath CreateCopyWithBackup(const base::FilePath& filepath,
 std::optional<base::FilePath> CreateTempEncryptedFile(
     const base::FilePath& file,
     const std::string_view& file_name,
-    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>&
-        encryptor) {
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
   std::string file_content;
   if (!base::ReadFileToString(file, &file_content)) {
     return std::nullopt;
   }
   std::string encrypted_file_content;
-  if (!encryptor->data.EncryptString(file_content, &encrypted_file_content)) {
+  if (!encryptor->EncryptString(file_content, &encrypted_file_content)) {
     return std::nullopt;
   }
   const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
@@ -1164,11 +1164,8 @@ class ModelLoaderWithSecondayFileTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor_ = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place,
-          os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor_ =
+      os_crypt_async::GetTestEncryptorForTesting();
 };
 
 TEST_P(ModelLoaderWithSecondayFileTest,
@@ -1548,10 +1545,8 @@ TEST(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
       GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
       "Bookmarks");
@@ -1608,10 +1603,8 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
       GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
       "Bookmarks");
@@ -1660,10 +1653,8 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
       GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
       "Bookmarks");
@@ -1735,10 +1726,8 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
       GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json"),
       "Bookmarks");
@@ -1814,10 +1803,8 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
   test::InitFeaturesForBookmarkTestEncryptionStage(
       features,
       BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted);
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -1901,10 +1888,8 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
   test::InitFeaturesForBookmarkTestEncryptionStage(
       features,
       BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted);
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -1959,10 +1944,8 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
   test::InitFeaturesForBookmarkTestEncryptionStage(
       features,
       BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted);
-  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
-      encryptor = base::MakeRefCounted<
-          base::RefCountedData<const os_crypt_async::Encryptor>>(
-          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

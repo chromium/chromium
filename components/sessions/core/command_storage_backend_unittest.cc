@@ -109,13 +109,12 @@ class CommandStorageBackendTest : public testing::Test {
       const SessionType session_type,
       bool encrypted,
       base::Clock* clock = nullptr) {
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor;
+    scoped_refptr<os_crypt_async::Encryptor> encryptor;
     if (encrypted) {
       base::RunLoop run_loop;
-      os_crypt_->GetInstance(
-          base::BindLambdaForTesting([&](os_crypt_async::Encryptor e) {
-            encryptor =
-                std::make_unique<os_crypt_async::Encryptor>(std::move(e));
+      os_crypt_->GetInstance(base::BindLambdaForTesting(
+          [&](scoped_refptr<os_crypt_async::Encryptor> e) {
+            encryptor = std::move(e);
             run_loop.Quit();
           }));
       run_loop.Run();

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -237,10 +238,10 @@ class AppShimRegistry {
  private:
   void DoSaveCdHashForApp(const std::string& app_id,
                           std::vector<uint8_t> cd_hash,
-                          os_crypt_async::Encryptor encryptor);
+                          scoped_refptr<os_crypt_async::Encryptor> encryptor);
   bool DoVerifyCdHashForApp(const std::string& app_id,
                             std::vector<uint8_t> cd_hash,
-                            os_crypt_async::Encryptor encryptor);
+                            scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // An in-memory cache of the HMAC key.
   std::optional<HmacKey> hmac_key_;

@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
  private:
   // Callbacks for initialization
   void OnEncryptorReceived(base::OnceClosure done_closure,
-                           os_crypt_async::Encryptor encryptor);
+                           scoped_refptr<os_crypt_async::Encryptor> encryptor);
   void OnCacheKeyReceived(base::OnceClosure done_closure,
                           const std::vector<uint8_t>& key);
   void InitCallback();
@@ -75,7 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
     kInitialized,
   };
 
-  std::optional<os_crypt_async::Encryptor> instance_;
+  scoped_refptr<os_crypt_async::Encryptor> instance_;
   std::vector<uint8_t> encrypted_primary_key_;
   mojo::PendingRemote<network::mojom::CacheEncryptionProvider> provider_
       GUARDED_BY_CONTEXT(sequence_checker_);

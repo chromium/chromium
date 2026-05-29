@@ -5,6 +5,7 @@
 #include "components/page_content_annotations/core/page_content_store.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -40,7 +41,7 @@ class PageContentStoreTest : public testing::Test {
     base::RunLoop run_loop;
     os_crypt_async->GetInstance(base::BindOnce(
         [](PageContentStore* store, base::RunLoop* run_loop,
-           os_crypt_async::Encryptor encryptor) {
+           scoped_refptr<os_crypt_async::Encryptor> encryptor) {
           store->InitWithEncryptor(std::move(encryptor));
           run_loop->Quit();
         },

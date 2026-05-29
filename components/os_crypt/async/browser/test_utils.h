@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/test_encryptor.h"
 
@@ -28,12 +29,12 @@ std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
 // is called, and different from the ones vended from the test OSCryptAsync
 // above. An `option` can be specified in the same way as calling `GetInstance`
 // on `OSCryptAsync`.
-TestEncryptor GetTestEncryptorForTesting(
+scoped_refptr<TestEncryptor> GetTestEncryptorForTesting(
     Encryptor::Option option = Encryptor::Option::kNone);
 
 // Obtain a test Encryptor that doesn't have any encryption keys. This
 // Encryptor will fail all encryption/decryption operations.
-TestEncryptor GetTestEncryptorWithoutKeysForTesting();
+scoped_refptr<TestEncryptor> GetTestEncryptorWithoutKeysForTesting();
 
 }  // namespace os_crypt_async
 

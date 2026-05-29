@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,6 +32,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_service_commands.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -156,8 +158,9 @@ class SessionFileReader {
     bool has_marker = false;
   };
 
-  static MarkerStatus GetMarkerStatus(const base::FilePath& path,
-                                      os_crypt_async::Encryptor* encryptor) {
+  static MarkerStatus GetMarkerStatus(
+      const base::FilePath& path,
+      scoped_refptr<os_crypt_async::Encryptor> encryptor) {
     SessionFileReader reader(path, encryptor);
     MarkerStatus status;
     status.is_header_valid = reader.IsHeaderValid();
@@ -177,14 +180,14 @@ class SessionFileReader {
 
   // Reads the state of commands from the specified file.
   static ReadResult Read(const base::FilePath& path,
-                         os_crypt_async::Encryptor* encryptor) {
-    SessionFileReader reader(path, encryptor);
+                         scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+    SessionFileReader reader(path, std::move(encryptor));
     return reader.Read();
   }
 
  private:
   SessionFileReader(const base::FilePath& path,
-                    os_crypt_async::Encryptor* encryptor)
+                    scoped_refptr<os_crypt_async::Encryptor> encryptor)
       : buffer_(CommandStorageBackend::kFileReadBufferSize, 0),
         encryptor_(encryptor) {
     file_ = std::make_unique<base::File>(
@@ -256,7 +259,7 @@ class SessionFileReader {
   bool did_check_header_ = false;
 
   // This encryptor is owned by the caller (CommandStorageBackend).
-  raw_ptr<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   // The version the file was written with. Should only be used if
   // IsHeaderValid() returns true.
@@ -398,7 +401,7 @@ SessionFileReader::ReadResult SessionFileReader::ReadCommand() {
     }
   }
   std::unique_ptr<SessionCommand> command = SessionCommand::Deserialize(
-      ConsumeBufferedData(*total_size), encrypted ? encryptor_ : nullptr);
+      ConsumeBufferedData(*total_size), encrypted ? encryptor_.get() : nullptr);
   if (!command) {
     if (encrypted && encryptor_ && !encryptor_->IsDecryptionAvailable()) {
       result.status = ReadStatus::kDecryptionUnavailable;
@@ -463,7 +466,7 @@ CommandStorageBackend::CommandStorageBackend(
     scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
     const base::FilePath& path,
     SessionType type,
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor,
+    scoped_refptr<os_crypt_async::Encryptor> encryptor,
     base::Clock* clock)
     : RefCountedDeleteOnSequence(owning_task_runner),
       type_(type),

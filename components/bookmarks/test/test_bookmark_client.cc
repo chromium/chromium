@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/android_buildflags.h"
@@ -20,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_storage.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "ui/gfx/image/image.h"
 
 namespace bookmarks {
@@ -194,7 +196,8 @@ void TestBookmarkClient::TriggerPersistentLogInterval() {
 }
 
 void TestBookmarkClient::GetEncryptor(
-    base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback) {
+    base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor> encryptor)>
+        callback) {
   if (os_crypt_async_) {
     os_crypt_async_->GetInstance(std::move(callback));
   } else {

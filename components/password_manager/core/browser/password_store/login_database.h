@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #endif
 
 namespace affiliations {
@@ -78,7 +79,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   // should be called.
   virtual bool Init(
       OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
-      os_crypt_async::Encryptor encryptor);
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -367,7 +368,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
   SyncMetadataStore password_sync_metadata_store_{this};
-  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   std::optional<bool> were_undecryptable_logins_deleted_;
   bool is_user_data_dir_policy_set_ = false;

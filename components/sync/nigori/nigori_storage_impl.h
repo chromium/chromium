@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/nigori/nigori_storage.h"
 
@@ -22,7 +23,7 @@ class NigoriStorageImpl : public NigoriStorage {
   // If `encryptor` is not null, it will be used for encryption. Otherwise,
   // the synchronous OSCrypt will be used.
   NigoriStorageImpl(const base::FilePath& path,
-                    std::unique_ptr<::os_crypt_async::Encryptor> encryptor);
+                    scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   NigoriStorageImpl(const NigoriStorageImpl&) = delete;
   NigoriStorageImpl& operator=(const NigoriStorageImpl&) = delete;
@@ -37,7 +38,7 @@ class NigoriStorageImpl : public NigoriStorage {
 
  private:
   base::FilePath path_;
-  const std::unique_ptr<::os_crypt_async::Encryptor> encryptor_;
+  const scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

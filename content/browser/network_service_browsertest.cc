@@ -97,6 +97,7 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "content/browser/network/network_service_process_tracker_win.h"
 #include "content/common/features.h"
@@ -1884,7 +1885,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
         os_crypt_async.GetInstance(base::BindOnce(
             [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
                    callback,
-               os_crypt_async::Encryptor encryptor) {
+               scoped_refptr<os_crypt_async::Encryptor> encryptor) {
               std::move(callback).Run(std::move(encryptor));
             },
             std::move(callback)));

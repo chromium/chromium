@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/database_utils/url_converter.h"
@@ -68,13 +69,14 @@ std::optional<ContentAnnotationsData> ToContentAnnotationsData(
 ContentAnnotationsTable::ContentAnnotationsTable() = default;
 ContentAnnotationsTable::~ContentAnnotationsTable() = default;
 
-bool ContentAnnotationsTable::Init(sql::Database* db,
-                                   const os_crypt_async::Encryptor* encryptor) {
+bool ContentAnnotationsTable::Init(
+    sql::Database* db,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
   if (!db || !encryptor) {
     return false;
   }
   db_ = db;
-  encryptor_ = encryptor;
+  encryptor_ = std::move(encryptor);
   return true;
 }
 
@@ -154,7 +156,7 @@ ContentAnnotationsTable::GetContentAnnotation(history::VisitID visit_id) {
     return std::nullopt;
   }
 
-  return ToContentAnnotationsData(statement, encryptor_);
+  return ToContentAnnotationsData(statement, encryptor_.get());
 }
 
 std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
@@ -175,7 +177,7 @@ ContentAnnotationsTable::GetAllContentAnnotations() {
   while (statement.Step()) {
     history::VisitID visit_id = statement.ColumnInt64(0);
     std::optional<ContentAnnotationsData> data =
-        ToContentAnnotationsData(statement, encryptor_);
+        ToContentAnnotationsData(statement, encryptor_.get());
     if (!data.has_value()) {
       // TODO(crbug.com/503879910): Emit a metric here for failed parsing.
       continue;
