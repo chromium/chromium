@@ -85,11 +85,15 @@
     NSString* note = base::SysUTF16ToNSString(credential.note) ?: @"";
     NSURL* URL =
         net::NSURLWithGURL(credential.GetURL()) ?: [NSURL URLWithString:@""];
+    NSDate* creationDate = credential.creation_time.has_value()
+                               ? credential.creation_time->ToNSDate()
+                               : nil;
     CredentialExchangePassword* exportedPassword =
         [[CredentialExchangePassword alloc] initWithURL:URL
                                                username:username
                                                password:password
-                                                   note:note];
+                                                   note:note
+                                           creationDate:creationDate];
     [exportedPasswords addObject:exportedPassword];
   }
   return exportedPasswords;

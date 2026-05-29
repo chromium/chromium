@@ -38,6 +38,7 @@ password_manager::StoredCredential CreateStoredCredential() {
   cred.password_value = u"password";
   cred.signon_realm = "http://www.example.com/";
   cred.url = GURL("http://www.example.com/");
+  cred.date_created = base::Time::FromMillisecondsSinceUnixEpoch(987654321000);
   cred.in_store = password_manager::PasswordForm::Store::kProfileStore;
   cred.notes = {password_manager::PasswordNote(u"note", base::Time::Now())};
   return cred;
@@ -62,14 +63,14 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics() {
 
 CredentialExchangePassword* CreateCredentialExchangePassword() {
   return [[CredentialExchangePassword alloc]
-      initWithURL:[NSURL URLWithString:@"http://www.example.com/"]
-         username:@"username"
-         password:@"password"
-             note:@"note"];
+       initWithURL:[NSURL URLWithString:@"http://www.example.com/"]
+          username:@"username"
+          password:@"password"
+              note:@"note"
+      creationDate:[NSDate dateWithTimeIntervalSince1970:987654321.0]];
 }
 
-CredentialExchangePasskey* CreateCredentialExchangePasskey(
-    NSDate* creationDate = nil) {
+CredentialExchangePasskey* CreateCredentialExchangePasskey() {
   return [[CredentialExchangePasskey alloc]
       initWithCredentialId:ToNSData("1234567890123456")
                       rpId:@"example.com"
@@ -77,7 +78,7 @@ CredentialExchangePasskey* CreateCredentialExchangePasskey(
            userDisplayName:@"userDisplayName"
                     userId:ToNSData("user_id")
                 privateKey:ToNSData("private_key")
-              creationDate:creationDate];
+              creationDate:[NSDate dateWithTimeIntervalSince1970:123456789.0]];
 }
 
 class CredentialExporterTest : public PlatformTest {
@@ -146,12 +147,9 @@ TEST_F(CredentialExporterTest, ExportsPasskeys) {
         [[CredentialExporter alloc] initWithWindow:window_
                                           delegate:mock_delegate_];
 
-    NSDate* expectedCreationDate =
-        [NSDate dateWithTimeIntervalSince1970:123456789.0];
     [[mockExportManager expect]
         startExportWithPasswords:@[]
-                        passkeys:@[ CreateCredentialExchangePasskey(
-                                     expectedCreationDate) ]
+                        passkeys:@[ CreateCredentialExchangePasskey() ]
                           window:window_
                        userEmail:kUserEmail
                     exporterName:[OCMArg any]];

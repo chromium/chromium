@@ -139,7 +139,11 @@ struct CredentialUIEntry {
   // The origin of identity provider used for federated login.
   url::SchemeHostPort federation_origin;
 
-  // The creation time, if this is a passkey, nullopt otherwise.
+  // The creation time of the credential. It can be `std::nullopt` in some
+  // cases, e.g. when the field is not set during credential import.
+  // TODO(crbug.com/501020786): Credential import / export should probably
+  // operate on `StoredCredential`. Modify comment back if it's just used for
+  // passkeys in settings UI.
   std::optional<base::Time> creation_time;
 
   // Indicates the stores where the credential is stored.

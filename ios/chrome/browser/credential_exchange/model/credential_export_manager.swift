@@ -21,6 +21,7 @@ import UIKit
     let password: String
     let host: String
     let note: String?
+    let creationDate: Date
 
     init?(_ cred: CredentialExchangePassword) {
       guard let url = cred.url,
@@ -35,6 +36,7 @@ import UIKit
       self.password = password
       self.host = host
       self.note = cred.note
+      self.creationDate = cred.creationDate ?? Date()
     }
   }
 
@@ -90,9 +92,8 @@ import UIKit
       }
       let scope = ASImportableCredentialScope(urls: [password.url])
       let item = ASImportableItem(
-        // TODO(crbug.com/447142330): Replace placeholder data: created, lastModified.
         id: UUID().uuidString.data(using: .utf8)!,
-        created: Date(),
+        created: password.creationDate,
         lastModified: Date(),
         title: password.host,
         subtitle: nil,

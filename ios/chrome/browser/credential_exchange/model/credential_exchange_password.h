@@ -25,10 +25,14 @@
 // Note associated with the credential.
 @property(nonatomic, copy) NSString* note;
 
+// Creation date of the credential.
+@property(nonatomic, copy) NSDate* creationDate;
+
 - (instancetype)initWithURL:(NSURL*)URL
                    username:(NSString*)username
                    password:(NSString*)password
-                       note:(NSString*)note NS_DESIGNATED_INITIALIZER;
+                       note:(NSString*)note
+               creationDate:(NSDate*)creationDate NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

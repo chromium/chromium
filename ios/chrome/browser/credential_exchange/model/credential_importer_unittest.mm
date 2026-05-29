@@ -55,7 +55,8 @@ CredentialExchangePassword* CreateTestPassword(NSString* url) {
       [[CredentialExchangePassword alloc] initWithURL:[NSURL URLWithString:url]
                                              username:@"username"
                                              password:@"password"
-                                                 note:@"note"];
+                                                 note:@"note"
+                                         creationDate:nil];
 }
 
 CredentialExchangePasskey* CreateTestPasskey() {
@@ -205,10 +206,11 @@ TEST_F(CredentialImporterTest, DoesNotImportInvalidPassword) {
                                            startingAtIndex:0];
   CredentialExchangePassword* invalidPassword =
       [[CredentialExchangePassword alloc]
-          initWithURL:[NSURL URLWithString:@"https://invalid.com"]
-             username:@"invalid_username"
-             password:tooLongPassword
-                 note:@"invalid_note"];
+           initWithURL:[NSURL URLWithString:@"https://invalid.com"]
+              username:@"invalid_username"
+              password:tooLongPassword
+                  note:@"invalid_note"
+          creationDate:nil];
 
   [importer_ onCredentialsTranslatedWithPasswords:@[
     invalidPassword, CreateTestPassword(@"https://example.com")
@@ -293,7 +295,8 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
       [[CredentialExchangePassword alloc] initWithURL:nil
                                              username:@"username"
                                              password:@"password"
-                                                 note:@"note"];
+                                                 note:@"note"
+                                         creationDate:nil];
   [importer_ onCredentialsTranslatedWithPasswords:@[
     passwordWithoutUrl, CreateTestPassword(@"example.com")
   ]
