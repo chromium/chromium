@@ -335,10 +335,7 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
       const content::RenderProcessHost* render_process_host =
           render_frame_host->GetProcess();
       for (auto* widget_view : web_contents->GetPopupWidgets()) {
-        // Only count popup widgets that are actively visible (showing) and
-        // belong to the process of the requesting frame.
-        if (widget_view && widget_view->IsShowing() &&
-            widget_view->GetRenderWidgetHost() &&
+        if (widget_view && widget_view->GetRenderWidgetHost() &&
             widget_view->GetRenderWidgetHost()->GetProcess() ==
                 render_process_host) {
           render_frame_info.has_active_popup = true;
