@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -36,10 +37,15 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider.QuickActionSearchWidgetProviderSearch;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
@@ -75,9 +81,11 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     private SearchActivityClient mClient;
 
     @Mock RemoteViews mMockRemoteViews;
+    @Mock LensController mMockLensController;
 
     @Before
     public void setUp() {
+        LensController.setInstanceForTesting(mMockLensController);
         mContext =
                 InstrumentationRegistry.getInstrumentation()
                         .getTargetContext()
@@ -85,12 +93,16 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         mClient = new SearchActivityClientImpl(mContext, IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
 
+        Intent startLensIntent = new Intent(mContext, QuickActionSearchWidgetProviderSearch.class);
+        startLensIntent.setAction(QuickActionSearchWidgetProviderSearch.ACTION_START_LENS);
+
         mDelegate =
                 new QuickActionSearchWidgetProviderDelegate(
                         mContext,
                         IntentHandler.createTrustedOpenNewTabIntent(
                                 mContext, /* incognito= */ true),
-                        createDinoIntent(mContext));
+                        createDinoIntent(mContext),
+                        startLensIntent);
 
         Resources res = mContext.getResources();
         float density = res.getDisplayMetrics().density;
@@ -126,6 +138,22 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                 },
                 /* shouldActivityLaunchVoiceMode= */ false);
         ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+    }
+
+    @Test
+    @SmallTest
+    public void testLensButtonClick() throws Exception {
+        QuickActionSearchWidgetTestUtils.clickOnView(mWidgetView, R.id.lens_quick_action_button);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        verify(mMockLensController)
+                                .startLens(any(Context.class), any(LensIntentParams.class));
+                    } catch (AssertionError e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     @Test

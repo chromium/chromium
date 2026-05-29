@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
  */
 @NullMarked
 public class QuickActionSearchWidgetProviderDelegate {
+
     /** Class describing widget variant characteristics. */
     @VisibleForTesting
     static class WidgetVariant {
@@ -179,6 +180,9 @@ public class QuickActionSearchWidgetProviderDelegate {
     /** The intent to begin the Dino game. */
     private final Intent mStartDinoGameIntent;
 
+    /** The intent to launch Google Lens. */
+    private final Intent mStartLensIntent;
+
     /** Widget variant describing the Medium widget. */
     private final WidgetVariant mMediumWidgetVariant;
 
@@ -197,11 +201,16 @@ public class QuickActionSearchWidgetProviderDelegate {
      *     events will be propagated.
      * @param startIncognitoTabIntent A trusted intent starting a new Incognito tab.
      * @param startDinoGameIntent A trusted intent starting the Dino game.
+     * @param startLensIntent An intent to start Lens.
      */
     public QuickActionSearchWidgetProviderDelegate(
-            Context context, Intent startIncognitoTabIntent, Intent startDinoGameIntent) {
+            Context context,
+            Intent startIncognitoTabIntent,
+            Intent startDinoGameIntent,
+            Intent startLensIntent) {
         mStartIncognitoTabIntent = startIncognitoTabIntent;
         mStartDinoGameIntent = startDinoGameIntent;
+        mStartLensIntent = startLensIntent;
 
         context = context.getApplicationContext();
         mMediumWidgetVariant =
@@ -493,8 +502,7 @@ public class QuickActionSearchWidgetProviderDelegate {
                 R.id.incognito_quick_action_button, incognitoTabPendingIntent);
 
         // Lens Search Intent
-        PendingIntent lensSearchPendingIntent =
-                createPendingIntentForAction(context, client, SearchType.LENS);
+        PendingIntent lensSearchPendingIntent = createLensPendingIntent(context);
         remoteViews.setOnClickPendingIntent(R.id.lens_quick_action_button, lensSearchPendingIntent);
 
         // Dino Game intent
@@ -532,6 +540,15 @@ public class QuickActionSearchWidgetProviderDelegate {
                 context,
                 /* requestCode= */ 0,
                 intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
+    }
+
+    private PendingIntent createLensPendingIntent(Context context) {
+        return PendingIntent.getBroadcast(
+                context,
+                /* requestCode= */ 0,
+                mStartLensIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }

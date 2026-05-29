@@ -255,7 +255,7 @@ public class LensOverlayCoordinatorUnitTest {
         coordinator.saveCompositedImageAndLaunch(mWindowAndroid, mockBitmap);
 
         // Verify that the LensController was NEVER called.
-        verify(mLensControllerMock, never()).startLens(any(), any());
+        verify(mLensControllerMock, never()).startLens(any(WindowAndroid.class), any());
 
         // Verify that the showing state was reset to false.
         assertFalse(LensOverlayTabHelper.isOverlayShowing(mTab));

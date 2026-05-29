@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.lens;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -78,6 +79,11 @@ public class LensControllerDelegate {
      * @see {@link LensController#startLens(WindowAndroid, Intent, LensIntentParams)}
      */
     public void startLens(WindowAndroid window, LensIntentParams lensIntentParams) {}
+
+    /**
+     * @see {@link LensController#startLens(Context, LensIntentParams)}
+     */
+    public void startLens(Context context, LensIntentParams lensIntentParams) {}
 
     /**
      * @see {@link LensController#isLensEnabled(LensQueryParams)}

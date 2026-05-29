@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.SizeF;
 import android.widget.RemoteViews;
@@ -30,6 +31,9 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -46,6 +50,9 @@ import java.util.Map;
  */
 @NullMarked
 public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider {
+    public static final String ACTION_START_LENS =
+            "org.chromium.chrome.browser.quickactionsearchwidget.ACTION_START_LENS";
+
     /**
      * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that can
      * resize.
@@ -117,8 +124,20 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        if (intent == null) return;
+
         if (Intent.ACTION_LOCALE_CHANGED.equals(intent.getAction())) {
             updateWidgetsWithNewLocale(context);
+        } else if (ACTION_START_LENS.equals(intent.getAction())) {
+            String account = SearchActivityPreferencesManager.getCurrent().accountEmail;
+            LensController.getInstance()
+                    .startLens(
+                            context,
+                            new LensIntentParams.Builder(
+                                            LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+                                            /* isIncognito= */ TextUtils.isEmpty(account))
+                                    .withAccountName(account)
+                                    .build());
         }
     }
 
@@ -184,9 +203,12 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         Intent dinoIntent = createDinoIntent(context);
 
+        Intent startLensIntent = new Intent(context, QuickActionSearchWidgetProviderSearch.class);
+        startLensIntent.setAction(ACTION_START_LENS);
+
         sDelegate =
                 new QuickActionSearchWidgetProviderDelegate(
-                        context, trustedIncognitoIntent, dinoIntent);
+                        context, trustedIncognitoIntent, dinoIntent, startLensIntent);
         return sDelegate;
     }
 

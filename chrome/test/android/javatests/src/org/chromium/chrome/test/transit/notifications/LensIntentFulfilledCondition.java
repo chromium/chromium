@@ -16,6 +16,7 @@ import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Condition fulfilled when the Google Lens intent is launched. */
 public class LensIntentFulfilledCondition extends InstrumentationThreadCondition {
@@ -30,7 +31,8 @@ public class LensIntentFulfilledCondition extends InstrumentationThreadCondition
     @Override
     protected ConditionStatus checkWithSuppliers() {
         try {
-            verify(mLensController).startLens(any(), mLensIntentParamsCaptor.capture());
+            verify(mLensController)
+                    .startLens(any(WindowAndroid.class), mLensIntentParamsCaptor.capture());
             return whether(
                     mLensIntentParamsCaptor.getValue() != null
                             && mLensIntentParamsCaptor.getValue().getLensEntryPoint()

@@ -597,7 +597,7 @@ public class GoogleBottomBarActionsHandlerTest {
         Context context = mActivity;
         mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
-        verify(mLensController, never()).startLens(any(), any());
+        verify(mLensController, never()).startLens(any(WindowAndroid.class), any());
     }
 
     @Test
@@ -610,7 +610,8 @@ public class GoogleBottomBarActionsHandlerTest {
         Context context = mActivity;
         mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
-        verify(mLensController).startLens(any(), mLensIntentParamsArgumentCaptor.capture());
+        verify(mLensController)
+                .startLens(any(WindowAndroid.class), mLensIntentParamsArgumentCaptor.capture());
         LensIntentParams params = mLensIntentParamsArgumentCaptor.getValue();
         assertEquals(LensEntryPoint.GOOGLE_BOTTOM_BAR, params.getLensEntryPoint());
     }

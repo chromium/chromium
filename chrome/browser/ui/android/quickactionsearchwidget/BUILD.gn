@@ -37,6 +37,7 @@ android_library("javatests") {
     "//chrome/android:chrome_java",
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/lens:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/searchactivityutils:java",

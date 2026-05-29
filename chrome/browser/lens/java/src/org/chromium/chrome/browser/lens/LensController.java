@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.lens;
 
+import android.content.Context;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -95,6 +97,16 @@ public class LensController {
      */
     public void startLens(WindowAndroid window, LensIntentParams lensIntentParams) {
         mDelegate.startLens(window, lensIntentParams);
+    }
+
+    /**
+     * Launch lens with an intent.
+     *
+     * @param context The current context.
+     * @param lensIntentParams The intent parameters for Lens
+     */
+    public void startLens(Context context, LensIntentParams lensIntentParams) {
+        mDelegate.startLens(context, lensIntentParams);
     }
 
     /** Starts the Lens connection. */
