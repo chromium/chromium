@@ -1039,17 +1039,22 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
-    public void testDoSynchronousLayoutAndCapture() {
+    public void testDoSynchronousLayout() {
         initControlContainer(R.layout.toolbar_phone);
         ViewResourceAdapter mockAdapter = mock(ViewResourceAdapter.class);
 
         ToolbarControlContainer spyContainer = spy(mControlContainer);
         doReturn(mockAdapter).when(spyContainer).getToolbarResourceAdapter();
 
-        spyContainer.doSynchronousLayoutAndCapture();
-
+        // Test with forceCaptureAfterLayout = false
+        spyContainer.doSynchronousLayout(false);
         verify(spyContainer).measure(anyInt(), anyInt());
         verify(spyContainer).layout(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mockAdapter, never()).invalidate(null);
+        verify(mockAdapter, never()).triggerBitmapCapture();
+
+        // Test with forceCaptureAfterLayout = true
+        spyContainer.doSynchronousLayout(true);
         verify(mockAdapter).invalidate(null);
         verify(mockAdapter).triggerBitmapCapture();
     }

@@ -932,7 +932,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         // update before its position is moved to the bottom. In this case, skips calling
         // doSynchronousLayoutAndCapture() again.
         if (isLayoutChanged) {
-            mControlContainer.doSynchronousLayoutAndCapture();
+            mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ true);
         }
     }
 

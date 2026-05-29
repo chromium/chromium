@@ -1174,15 +1174,17 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     @Override
-    public void doSynchronousLayoutAndCapture() {
+    public void doSynchronousLayout(boolean forceCaptureAfterLayout) {
         int widthSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), View.MeasureSpec.EXACTLY);
         int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 
         measure(widthSpec, heightSpec);
         layout(getLeft(), getTop(), getLeft() + getMeasuredWidth(), getTop() + getMeasuredHeight());
 
-        ViewResourceAdapter resourceAdapter = getToolbarResourceAdapter();
-        resourceAdapter.invalidate(null);
-        resourceAdapter.triggerBitmapCapture();
+        if (forceCaptureAfterLayout) {
+            ViewResourceAdapter resourceAdapter = getToolbarResourceAdapter();
+            resourceAdapter.invalidate(null);
+            resourceAdapter.triggerBitmapCapture();
+        }
     }
 }

@@ -1050,21 +1050,21 @@ public class ToolbarPositionControllerTest {
         assertTrue(mController.getIsFirstPositionChangeForTesting());
         // After setUp, mIsFirstPositionChange is true because initial position (TOP) didn't change.
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
-        verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
+        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
 
         // Trigger a position change to set mIsFirstPositionChange to false.
         setUserToolbarAnchorPreference(false); // Changes to BOTTOM
         assertControlsAtBottom();
         // During this first change, maybeForceToolbarLayoutUpdateAndCapture() was called inside
         // updateCurrentPosition(), but mIsFirstPositionChange was still true, so it did nothing.
-        verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
+        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
 
         // mIsFirstPositionChange is now false.
         assertFalse(mController.getIsFirstPositionChangeForTesting());
 
         // 2. Test active tab is NTP.
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
-        verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
+        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
 
         // 3. Test active tab is not NTP, and layout changed.
         // We need onToEdgeChange to return true.
@@ -1075,13 +1075,13 @@ public class ToolbarPositionControllerTest {
         mActivityTabSupplier.set(mTab);
         mController.onToEdgeChange(50, true, LayoutType.BROWSING);
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
-        verify(mControlContainer).doSynchronousLayoutAndCapture();
+        verify(mControlContainer).doSynchronousLayout(true);
 
         // 4. Test active tab is not NTP, but layout DID NOT change.
         // mTopInset is now 0 (from previous call).
         clearInvocations(mControlContainer);
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
-        verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
+        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
     }
 
     @Test

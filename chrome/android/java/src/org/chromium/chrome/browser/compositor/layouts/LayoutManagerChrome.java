@@ -194,7 +194,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                         getContentContainer(),
                         () -> {
                             if (controlContainer != null) {
-                                controlContainer.doSynchronousLayoutAndCapture();
+                                controlContainer.doSynchronousLayout(
+                                        /* forceCaptureAfterLayout= */ true);
                             }
                         });
 

@@ -334,6 +334,7 @@ public class MiniOriginBarController implements Observer {
         mControlContainer.toggleLocationBarOnlyMode(false);
 
         mControlContainer.mutateLayoutParams().height = LayoutParams.WRAP_CONTENT;
+        mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ false);
 
         var locationBarView = mLocationBar.getContainerView();
         locationBarView.setLayoutParams(mDefaultLocationBarLayoutParams);
