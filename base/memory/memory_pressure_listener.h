@@ -66,7 +66,7 @@ enum class MemoryPressureListenerTag {
   // kGpuChildThread = 33,
   // kNavigationEntryScreenshotManager = 34,
   kGlicKeyedService = 35,
-  kRenderThreadImpl = 36,
+  // kRenderThreadImpl = 36,  // Deprecated
   kSpareRenderProcessHostManagerImpl = 37,
   // kDOMStorageContextWrapper = 38,
   // kGpuProcessHost = 39,

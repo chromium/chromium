@@ -113,15 +113,6 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
   CHECK(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
-  TRACE_EVENT_INSTANT(
-      trace_event::MemoryDumpManager::kTraceCategory,
-      "MemoryPressureListener::NotifyMemoryPressure",
-      [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_memory_pressure_notification();
-        data->set_level(
-            trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
-      });
 
   if (!Exists()) {
     return;
@@ -219,6 +210,18 @@ void MemoryPressureListenerRegistry::SetMemoryPressureLevel(
       last_memory_pressure_level_ == MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
+
+  TRACE_COUNTER("memory", "MemoryPressureLevel",
+                static_cast<int>(memory_pressure_level));
+
+  TRACE_EVENT(
+      "memory", "MemoryPressureListenerRegistry::SetMemoryPressureLevel",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(
+            trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
+      });
 
   last_memory_pressure_level_ = memory_pressure_level;
 

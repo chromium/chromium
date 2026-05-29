@@ -615,15 +615,6 @@ void RenderThreadImpl::Init() {
   // been initialized by the Zygote before this instance became a Renderer.
   media::InitializeMediaLibrary();
 
-  // In tests or in single-process mode, the render thread does not live on the
-  // main thread of the process, so we can't register a sync listener.
-  if (base::SingleThreadTaskRunner::GetMainThreadDefault()
-          ->BelongsToCurrentThread()) {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            base::MemoryPressureListenerTag::kRenderThreadImpl, this);
-  }
-
   mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
       manager_remote;
   BindHostReceiver(manager_remote.InitWithNewPipeAndPassReceiver());
@@ -1703,18 +1694,6 @@ void RenderThreadImpl::OnRendererForegrounded() {
       MainFrameCounter::has_main_frame());
   blink::OnProcessForegrounded();
   process_foregrounded_count_++;
-}
-
-void RenderThreadImpl::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  TRACE_EVENT(
-      "memory", "RenderThreadImpl::OnMemoryPressure",
-      [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_memory_pressure_notification();
-        data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
-            memory_pressure_level));
-      });
 }
 
 void RenderThreadImpl::OnRendererInterfaceReceiver(
