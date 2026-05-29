@@ -4,7 +4,7 @@
 
 package org.chromium.printing;
 
-import android.print.PrintDocumentAdapter;
+import android.os.ParcelFileDescriptor;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,10 +26,9 @@ public interface PrintingController {
     int getDpi();
 
     /**
-     * @return The file descriptor number of the file into which Chromium will write the PDF.  This
-     *         is provided to us by {@link PrintDocumentAdapter#onWrite}.
+     * @return The ParcelFileDescriptor of the file into which Chromium will write the PDF.
      */
-    int getFileDescriptor();
+    @Nullable ParcelFileDescriptor getParcelFileDescriptor();
 
     /**
      * @return The media height in mils (thousands of an inch).

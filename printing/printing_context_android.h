@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/file_descriptor_posix.h"
+#include "base/files/scoped_file.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 
@@ -66,15 +67,14 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
   printing::NativeDrawingContext context() const override;
 
  private:
-  bool is_file_descriptor_valid() const { return fd_ > base::kInvalidFd; }
-
   base::android::ScopedJavaGlobalRef<jobject> j_printing_context_;
 
   // The callback from AskUserForSettings to be called when the settings are
   // ready on the Java side
   PrintSettingsCallback callback_;
 
-  int fd_ = base::kInvalidFd;
+  // File descriptor for the PDF file and owned by this layer.
+  base::ScopedFD scoped_fd_;
 };
 
 }  // namespace printing
