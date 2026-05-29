@@ -1538,14 +1538,6 @@ const FeatureEntry::Choice kContextualSuggestionsUiImprovementsChoices[] = {
      "OpenLensActionUITweaks"},
 };
 
-const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
-    {"NtpNextDisablementContextMenuParam", "true"},
-};
-
-const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalDefault[] =
     {
         {"ModuleMinStalenessUpdateTimeInterval", "24h"},
@@ -1598,6 +1590,14 @@ const FeatureEntry::FeatureParam kComposeboxNextThreadsRail[] = {
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- With Threads Rail", kComposeboxNextThreadsRail, nullptr},
+};
+
+const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
+    {"NtpNextDisablementContextMenuParam", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
+    {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
@@ -7031,14 +7031,20 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kTabFaviconChipsToCoins)},
 
     {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
-     flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
+     flag_descriptions::kNtpComposeboxDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
                                     kNtpComposeboxVariations,
                                     "NtpComposebox")},
 
     {"ntp-realbox-next", flag_descriptions::kNtpRealboxNextName,
-     flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
+     flag_descriptions::kNtpRealboxNextDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
+
+    {"ntp-next-features", flag_descriptions::kNtpNextFeaturesName,
+     flag_descriptions::kNtpNextFeaturesDescription, kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpNextFeatures,
+                                    kNtpNextVariations,
+                                    "NtpNextFeatures")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"ntp-alpha-background-collections",
@@ -7149,12 +7155,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpModuleSignInRequirementName,
      flag_descriptions::kNtpModuleSignInRequirementDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModuleSignInRequirement)},
-
-    {"ntp-next-features", flag_descriptions::kNtpNextFeaturesName,
-     flag_descriptions::kNtpNextFeaturesDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpNextFeatures,
-                                    kNtpNextVariations,
-                                    "NtpNextFeatures")},
 
     {"ntp-next-canvas-chip", flag_descriptions::kNtpNextCanvasChipName,
      flag_descriptions::kNtpNextCanvasChipDescription, kOsDesktop,
