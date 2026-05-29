@@ -151,13 +151,11 @@ public class RealboxCoordinator implements NtpSearchBox, LocationBarEmbedder {
 
     @Override
     public @Nullable AsyncViewStub getSuggestionsContainerStub() {
-        // TODO(https://crbug.com/507131334): Implement.
-        return null;
+        return mView.getRootView().findViewById(R.id.ntp_realbox_results_container_stub);
     }
 
     @Override
     public @IdRes int getSuggestionsContainerInflatedViewId() {
-        // TODO(https://crbug.com/507131334): Implement.
-        return View.NO_ID;
+        return R.id.ntp_realbox_results_container;
     }
 }
