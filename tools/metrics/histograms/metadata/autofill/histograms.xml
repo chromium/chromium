@@ -2528,7 +2528,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.BetterAuth.OptInPromoNotOfferedReason"
     enum="WebauthnOptInPromoNotOfferedReason" expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
-  <owner>shgar@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records when the Better Auth (FIDO) opt-in promo could have been offered on
