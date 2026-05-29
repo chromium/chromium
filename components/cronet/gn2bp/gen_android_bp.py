@@ -647,6 +647,9 @@ def write_blueprint_key_value(output,
   purely cosmetic feature to make the Blueprint file more readable.
   """
 
+    def escape(s):
+        return str(s).replace('\\', '\\\\').replace('"', '\\"')
+
     if isinstance(value, bool):
         if value:
             output.append('    %s: true,' % name)
@@ -660,7 +663,7 @@ def write_blueprint_key_value(output,
     if isinstance(value, list) and not list_to_multiline_string:
         output.append('    %s: [' % name)
         for item in sorted(value) if sort else value:
-            output.append('        "%s",' % item)
+            output.append('        "%s",' % escape(item))
         output.append('    ],')
         return
     if isinstance(value, Module.Target):
@@ -680,7 +683,7 @@ def write_blueprint_key_value(output,
         '    %s: "%s",' %
         (name,
          NEWLINE.join(
-             str(line).replace('\\', '\\\\').replace('"', '\\"')
+             escape(line)
              for line in (value if isinstance(value, list) else [value]))))
 
 
@@ -1204,7 +1207,7 @@ def _set_rust_flags(module: Module.Target, rust_flags: List[str],
         if feature_regex:
             module.features.add(feature_regex.group(1))
         else:
-            module.cfgs.add(cfg.replace("\"", "\\\""))
+            module.cfgs.add(cfg)
 
     pre_filter_flags = []
     for (key, values) in rust_flags_dict.items():
@@ -2798,8 +2801,7 @@ def _get_cflags(cflags, defines):
         cflags.append(f"-U{libcpp_hardening_flag}")
 
     # Consider proper allowlist or denylist if needed
-    cflags.extend(
-        sorted(["-D%s" % define.replace("\"", "\\\"") for define in defines]))
+    cflags.extend(sorted(["-D%s" % define for define in defines]))
     return cflags
 
 
