@@ -1910,6 +1910,7 @@ Called by update_net_error_codes.py.-->
   <int value="-503" label="ADD_USER_CERT_FAILED"/>
   <int value="-502" label="NO_PRIVATE_KEY_FOR_CERT"/>
   <int value="-501" label="INSECURE_RESPONSE"/>
+  <int value="-414" label="CACHE_COMPRESSION_FAILURE"/>
   <int value="-413" label="CACHE_OPEN_OR_CREATE_FAILURE"/>
   <int value="-412" label="CACHE_DOOM_FAILURE"/>
   <int value="-411" label="CACHE_ENTRY_NOT_SUITABLE"/>
@@ -21742,6 +21743,7 @@ Called by update_net_error_codes.py.-->
   <int value="411" label="CACHE_ENTRY_NOT_SUITABLE"/>
   <int value="412" label="CACHE_DOOM_FAILURE"/>
   <int value="413" label="CACHE_OPEN_OR_CREATE_FAILURE"/>
+  <int value="414" label="CACHE_COMPRESSION_FAILURE"/>
   <int value="501" label="INSECURE_RESPONSE"/>
   <int value="502" label="NO_PRIVATE_KEY_FOR_CERT"/>
   <int value="503" label="ADD_USER_CERT_FAILED"/>

@@ -925,6 +925,9 @@ NET_ERROR(CACHE_DOOM_FAILURE, -412)
 // The disk cache is unable to open or create this entry.
 NET_ERROR(CACHE_OPEN_OR_CREATE_FAILURE, -413)
 
+// Zstd compression of a cache entry body failed.
+NET_ERROR(CACHE_COMPRESSION_FAILURE, -414)
+
 // The server's response was insecure (e.g. there was a cert error).
 NET_ERROR(INSECURE_RESPONSE, -501)
 

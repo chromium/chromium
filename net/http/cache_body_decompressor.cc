@@ -35,14 +35,15 @@ bool CacheBodyDecompressor::Init() {
   // from requesting a huge window (up to 2GB by default), which would cause
   // excessive memory allocation. 23 = log2(8MB).
   //
-  // RFC 9659 §6.1 permits dictionary-compressed responses to use windows up
-  // to 2^27 (128 MB), so this cap is intentionally tighter than the spec
+  // RFC 9659 Section 6.1 permits dictionary-compressed responses to use windows
+  // up to 2^27 (128 MB), so this cap is intentionally tighter than the spec
   // ceiling: an 8 MB working set is sufficient for the cache-storage
   // workload (where the writer controls compression parameters and there is
-  // no need to honor servers' larger windows). The companion write path
-  // (CL2) MUST cap the writer's windowLog to <= 23 to
-  // match — entries written with a larger window will be silently rejected
-  // here, dooming the entry and triggering a network refetch (cache thrash).
+  // no need to honor servers' larger windows). CacheBodyCompressor uses zstd
+  // level 1 whose default windowLog=19 (512 KB), well within this limit.
+  // Entries written with a larger window will be silently rejected
+  // here, dooming the entry and triggering a network
+  // refetch (cache thrash).
   //
   // This cap is a security boundary: if the parameter cannot be set, fail
   // Init() rather than run with the default unbounded window.

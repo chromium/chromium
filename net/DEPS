@@ -68,8 +68,19 @@ specific_include_rules = {
     "+third_party/zstd",
   ],
 
+  # CDT cache compression: zstd compression at cache-write time.
+  "cache_body_compressor\.(cc|h)": [
+    "+third_party/zstd",
+  ],
+
   # Tests call ZSTD_compress() to produce fixtures for zstd read-path coverage.
   "http_cache_unittest\.cc": [
+    "+third_party/zstd",
+  ],
+
+  # Unit test for the cache compressor uses ZSTD_decompressStream() to verify
+  # round-trip correctness.
+  "cache_body_compressor_unittest\.cc": [
     "+third_party/zstd",
   ],
 
