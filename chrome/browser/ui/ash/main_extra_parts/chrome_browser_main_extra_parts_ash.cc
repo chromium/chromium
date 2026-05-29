@@ -462,7 +462,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
     return;
   }
 
-  login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
+  login_screen_client_ =
+      std::make_unique<LoginScreenClientImpl>(g_browser_process->local_state());
 
   management_disclosure_client_ =
       std::make_unique<ManagementDisclosureClientImpl>(

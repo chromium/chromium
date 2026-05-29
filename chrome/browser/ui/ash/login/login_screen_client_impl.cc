@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -59,8 +58,9 @@ LoginScreenClientImpl::Delegate::~Delegate() = default;
 
 LoginScreenClientImpl::ParentAccessDelegate::~ParentAccessDelegate() = default;
 
-LoginScreenClientImpl::LoginScreenClientImpl()
-    : auth_recorder_(std::make_unique<ash::LoginAuthRecorder>()) {
+LoginScreenClientImpl::LoginScreenClientImpl(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)),
+      auth_recorder_(std::make_unique<ash::LoginAuthRecorder>()) {
   // Register this object as the client interface implementation.
   ash::LoginScreen::Get()->SetClient(this);
 
@@ -375,8 +375,7 @@ void LoginScreenClientImpl::ShowGuestTosScreen() {
 
 void LoginScreenClientImpl::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
-  // TODO(crbug.com/403154552): Avoid using g_browser_process here.
-  RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()), account_id,
+  RecordReauthReason(local_state_.get(), account_id,
                      ash::ReauthReason::kIncorrectPasswordEntered);
 }
 

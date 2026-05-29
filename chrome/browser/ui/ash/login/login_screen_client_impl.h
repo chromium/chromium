@@ -10,6 +10,7 @@
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
@@ -21,6 +22,8 @@ namespace ash {
 enum class ParentCodeValidationResult;
 class LoginAuthRecorder;
 }  // namespace ash
+
+class PrefService;
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
@@ -64,7 +67,8 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
     virtual bool ValidateParentAccessCode(const std::string& access_code) = 0;
   };
 
-  LoginScreenClientImpl();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit LoginScreenClientImpl(PrefService* local_state);
 
   LoginScreenClientImpl(const LoginScreenClientImpl&) = delete;
   LoginScreenClientImpl& operator=(const LoginScreenClientImpl&) = delete;
@@ -140,6 +144,8 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
 
   void ShowGaiaSigninInternal(const AccountId& prefilled_account);
   void StartUserRecoveryInternal(const AccountId& account_to_recover);
+
+  const raw_ref<PrefService> local_state_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 

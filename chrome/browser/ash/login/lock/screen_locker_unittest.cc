@@ -126,7 +126,8 @@ class ScreenLockerUnitTest : public testing::Test {
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     session_controller_client_->Init();
 
-    login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
+    login_screen_client_ = std::make_unique<LoginScreenClientImpl>(
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     // Initialize AssistantBrowserDelegate:
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
