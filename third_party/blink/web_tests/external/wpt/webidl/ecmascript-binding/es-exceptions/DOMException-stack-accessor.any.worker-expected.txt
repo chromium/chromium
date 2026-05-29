@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] new DOMException() has a stack property that is a string
+  assert_equals: stack must be a string expected "string" but got "undefined"
+[FAIL] new DOMException() with no arguments has a stack property that is a string
+  assert_equals: stack must be a string expected "string" but got "undefined"
+[FAIL] Error.prototype.stack is an accessor property with correct attributes
+  assert_not_equals: Error.prototype must have a stack property descriptor got disallowed value undefined
+[FAIL] Error.prototype.stack getter works on DOMException instances
+  Cannot read properties of undefined (reading 'get')
+[FAIL] Error.prototype.stack setter installs own data property on DOMException instances
+  Cannot read properties of undefined (reading 'set')
+[FAIL] Error.prototype.stack setter ignores Error.prototype itself
+  Cannot read properties of undefined (reading 'set')
+Harness: the test ran to completion.
+

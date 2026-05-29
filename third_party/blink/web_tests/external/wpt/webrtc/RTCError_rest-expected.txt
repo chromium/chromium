@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] RTCError httpRequestStatusCode should not be supported.
-  assert_false: Should not be supported on the prototype expected false got true
+Harness Error. harness_status.status = 2 , harness_status.message = 
 Harness: the test ran to completion.
 

@@ -2826,6 +2826,14 @@ crbug.com/515679398 virtual/jxl-enabled/external/wpt/jpegxl/progressive-1.html [
 crbug.com/515679398 virtual/jxl-enabled/external/wpt/jpegxl/progressive-2.html [ Failure ]
 crbug.com/515679398 virtual/jxl-enabled/external/wpt/jpegxl/progressive-3.html [ Failure ]
 
+external/wpt/css/css-overflow/table-max-content-with-scrollable-descendant.html [ Failure ]
+external/wpt/html/rendering/replaced-elements/images/abs-pos-transferred-max-width-from-percentage-max-height-in-auto-height-containing-block.html [ Failure ]
+external/wpt/webrtc/RTCError.html?rest [ Timeout ]
+
+# Potentially unstable floats in `*-expected.txt`
+external/wpt/css/css-properties-values-api/font-property-unit-cycles.tentative.html [ Failure ]
+[ Win ] external/wpt/css/css-viewport/zoom/font-relative-units-with-zoom.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/510924299 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-base-display.html [ Failure ]
 crbug.com/510499376 external/wpt/content-security-policy/inheritance/auxiliary-blank-document.html [ Timeout ]
@@ -3335,7 +3343,7 @@ crbug.com/431938385 [ Win11-arm64 ] external/wpt/device-bound-session-credential
 crbug.com/438909307 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error.tentative.html [ Crash ]
 crbug.com/438780143 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition.https.html [ Skip Timeout ]
 crbug.com/438780122 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
-crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash Pass Failure ]
+crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash Failure Pass ]
 crbug.com/438789183 [ Mac ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash Pass ]
 crbug.com/438873385 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro_cross-origin.https.html [ Crash ]
 crbug.com/438780144 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=same_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
@@ -3736,7 +3744,7 @@ crbug.com/408039416 [ Mac12 ] external/wpt/speech-api/SpeechRecognition-onstart-
 crbug.com/408039416 [ Mac12 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-onerror.https.html [ Timeout ]
 crbug.com/408039416 [ Mac12 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-onstart-onend.https.html [ Timeout ]
 crbug.com/406805472 [ Mac12 ] external/wpt/import-maps/data-url-specifiers.sub.html [ Skip Timeout ]
-crbug.com/406805472 crbug.com/405243128 crbug.com/405192517 crbug.com/40288240 [ Mac ] external/wpt/speculation-rules/prerender/protocol-handler-register.https.html [ Pass Timeout Crash ]
+crbug.com/406805472 crbug.com/405243128 crbug.com/405192517 crbug.com/40288240 [ Mac ] external/wpt/speculation-rules/prerender/protocol-handler-register.https.html [ Crash Pass Timeout ]
 crbug.com/406805472 crbug.com/405243128 crbug.com/405192517 crbug.com/40288240 [ Mac ] external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html [ Pass Timeout ]
 crbug.com/405192518 [ Mac ] external/wpt/css/cssom-view/visual-scrollIntoView-003.html [ Failure Pass Skip ]
 crbug.com/405177547 [ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-powered-on-getAvailability.https.window.html [ Failure Timeout ]

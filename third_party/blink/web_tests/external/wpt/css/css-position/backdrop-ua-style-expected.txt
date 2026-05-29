@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] UA styles for ::backdrop
+  assert_equals: expected "fixed" but got "absolute"
+Harness: the test ran to completion.
+

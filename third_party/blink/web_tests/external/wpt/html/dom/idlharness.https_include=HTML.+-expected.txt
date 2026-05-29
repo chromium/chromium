@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute autocorrect
   assert_true: The prototype object must have a property "autocorrect" expected true got false
 [FAIL] HTMLElement interface: attribute headingOffset
@@ -44,6 +44,14 @@ Found 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "fastSeek" missing
 [FAIL] HTMLMediaElement interface: operation getStartDate()
   assert_own_property: interface prototype object missing non-static operation expected property "getStartDate" missing
+[FAIL] HTMLAreaElement interface: attribute hreflang
+  assert_true: The prototype object must have a property "hreflang" expected true got false
+[FAIL] HTMLAreaElement interface: attribute type
+  assert_true: The prototype object must have a property "type" expected true got false
+[FAIL] HTMLAreaElement interface: document.createElement("area") must inherit property "hreflang" with the proper type
+  assert_inherits: property "hreflang" not found in prototype chain
+[FAIL] HTMLAreaElement interface: document.createElement("area") must inherit property "type" with the proper type
+  assert_inherits: property "type" not found in prototype chain
 [FAIL] HTMLInputElement interface: attribute alpha
   assert_true: The prototype object must have a property "alpha" expected true got false
 [FAIL] HTMLInputElement interface: attribute colorSpace

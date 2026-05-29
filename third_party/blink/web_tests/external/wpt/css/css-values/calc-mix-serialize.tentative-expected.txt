@@ -1,0 +1,250 @@
+This is a testharness.js-based test.
+Found 123 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] 'calc-mix(1 100%)' as a specified value should serialize as 'calc(1)'.
+  assert_not_equals: 'calc-mix(1 100%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 100%)' as a computed value should serialize as '1'.
+  assert_equals: 'calc-mix(1 100%)' and '1' should serialize the same in computed values. expected "1" but got "none"
+[FAIL] 'calc-mix(1 50%, 3 50%)' as a specified value should serialize as 'calc(2)'.
+  assert_not_equals: 'calc-mix(1 50%, 3 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 50%, 3 50%)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 50%, 3 50%)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 25%, 3 25%, 5 50%)' as a specified value should serialize as 'calc(3.5)'.
+  assert_not_equals: 'calc-mix(1 25%, 3 25%, 5 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 25%, 3 25%, 5 50%)' as a computed value should serialize as '3.5'.
+  assert_equals: 'calc-mix(1 25%, 3 25%, 5 50%)' and '3.5' should serialize the same in computed values. expected "3.5" but got "none"
+[FAIL] 'calc-mix(1 25%, 3 25%, 7 0%, 5 50%)' as a specified value should serialize as 'calc(3.5)'.
+  assert_not_equals: 'calc-mix(1 25%, 3 25%, 7 0%, 5 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 25%, 3 25%, 7 0%, 5 50%)' as a computed value should serialize as '3.5'.
+  assert_equals: 'calc-mix(1 25%, 3 25%, 7 0%, 5 50%)' and '3.5' should serialize the same in computed values. expected "3.5" but got "none"
+[FAIL] 'calc-mix(1)' as a specified value should serialize as 'calc(1)'.
+  assert_not_equals: 'calc-mix(1)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1)' as a computed value should serialize as '1'.
+  assert_equals: 'calc-mix(1)' and '1' should serialize the same in computed values. expected "1" but got "none"
+[FAIL] 'calc-mix(1 50%, 3)' as a specified value should serialize as 'calc(2)'.
+  assert_not_equals: 'calc-mix(1 50%, 3)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 50%, 3)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 50%, 3)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1, 3, 5 50%)' as a specified value should serialize as 'calc(3.5)'.
+  assert_not_equals: 'calc-mix(1, 3, 5 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1, 3, 5 50%)' as a computed value should serialize as '3.5'.
+  assert_equals: 'calc-mix(1, 3, 5 50%)' and '3.5' should serialize the same in computed values. expected "3.5" but got "none"
+[FAIL] 'calc-mix(1 75%, 3 75%)' as a specified value should serialize as 'calc(2)'.
+  assert_not_equals: 'calc-mix(1 75%, 3 75%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 75%, 3 75%)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 75%, 3 75%)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 50%, 3 50%, 5 50%)' as a specified value should serialize as 'calc(3)'.
+  assert_not_equals: 'calc-mix(1 50%, 3 50%, 5 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 50%, 3 50%, 5 50%)' as a computed value should serialize as '3'.
+  assert_equals: 'calc-mix(1 50%, 3 50%, 5 50%)' and '3' should serialize the same in computed values. expected "3" but got "none"
+[FAIL] 'calc-mix(1 75%, 3 75%, 5, 7)' as a specified value should serialize as 'calc(2)'.
+  assert_not_equals: 'calc-mix(1 75%, 3 75%, 5, 7)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 75%, 3 75%, 5, 7)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 75%, 3 75%, 5, 7)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(10px 75%, 3em 75%)' as a specified value should serialize as 'calc-mix(10px 50%, 3em 50%)'.
+  assert_not_equals: 'calc-mix(10px 75%, 3em 75%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(10px 75%, 3em 75%)' as a computed value should serialize as '20px'.
+  assert_equals: 'calc-mix(10px 75%, 3em 75%)' and '20px' should serialize the same in computed values. expected "20px" but got "0px"
+[FAIL] 'calc-mix(10px 50%, 3em 50%, 5em 50%, 7em 50%)' as a specified value should serialize as 'calc-mix(10px 25%, 3em 25%, 5em 25%, 7em 25%)'.
+  assert_not_equals: 'calc-mix(10px 50%, 3em 50%, 5em 50%, 7em 50%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(10px 50%, 3em 50%, 5em 50%, 7em 50%)' as a computed value should serialize as '40px'.
+  assert_equals: 'calc-mix(10px 50%, 3em 50%, 5em 50%, 7em 50%)' and '40px' should serialize the same in computed values. expected "40px" but got "0px"
+[FAIL] 'calc-mix(10px 75%, 3em 75%, 5em, 7em)' as a specified value should serialize as 'calc-mix(10px 50%, 3em 50%)'.
+  assert_not_equals: 'calc-mix(10px 75%, 3em 75%, 5em, 7em)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(10px 75%, 3em 75%, 5em, 7em)' as a computed value should serialize as '20px'.
+  assert_equals: 'calc-mix(10px 75%, 3em 75%, 5em, 7em)' and '20px' should serialize the same in computed values. expected "20px" but got "0px"
+[FAIL] 'calc-mix(1 25%, 3 25%)' as a specified value should serialize as 'calc(1)'.
+  assert_not_equals: 'calc-mix(1 25%, 3 25%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 25%, 3 25%)' as a computed value should serialize as '1'.
+  assert_equals: 'calc-mix(1 25%, 3 25%)' and '1' should serialize the same in computed values. expected "1" but got "none"
+[FAIL] 'calc-mix(1 25%, 3 25%, 5, 7)' as a specified value should serialize as 'calc(4)'.
+  assert_not_equals: 'calc-mix(1 25%, 3 25%, 5, 7)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 25%, 3 25%, 5, 7)' as a computed value should serialize as '4'.
+  assert_equals: 'calc-mix(1 25%, 3 25%, 5, 7)' and '4' should serialize the same in computed values. expected "4" but got "none"
+[FAIL] 'calc-mix(10px 25%, 3em 25%)' as a specified value should serialize as 'calc-mix(10px 25%, 3em 25%)'.
+  assert_not_equals: 'calc-mix(10px 25%, 3em 25%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(10px 25%, 3em 25%)' as a computed value should serialize as '10px'.
+  assert_equals: 'calc-mix(10px 25%, 3em 25%)' and '10px' should serialize the same in computed values. expected "10px" but got "0px"
+[FAIL] 'calc-mix(10px 25%, 3em 25%, 5em, 7em)' as a specified value should serialize as 'calc-mix(10px 25%, 3em 25%, 5em 25%, 7em 25%)'.
+  assert_not_equals: 'calc-mix(10px 25%, 3em 25%, 5em, 7em)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(10px 25%, 3em 25%, 5em, 7em)' as a computed value should serialize as '40px'.
+  assert_equals: 'calc-mix(10px 25%, 3em 25%, 5em, 7em)' and '40px' should serialize the same in computed values. expected "40px" but got "0px"
+[FAIL] 'calc-mix(1 0%)' as a specified value should serialize as 'calc(0)'.
+  assert_not_equals: 'calc-mix(1 0%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 0%)' as a computed value should serialize as '0'.
+  assert_equals: 'calc-mix(1 0%)' and '0' should serialize the same in computed values. expected "0" but got "none"
+[FAIL] 'calc-mix(1 0%, 3 0%, 5 0%)' as a specified value should serialize as 'calc(0)'.
+  assert_not_equals: 'calc-mix(1 0%, 3 0%, 5 0%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 0%, 3 0%, 5 0%)' as a computed value should serialize as '0'.
+  assert_equals: 'calc-mix(1 0%, 3 0%, 5 0%)' and '0' should serialize the same in computed values. expected "0" but got "none"
+[FAIL] 'calc-mix(1 0%, 3 0%, 5 * sibling-index() 0%)' as a specified value should serialize as 'calc(0)'.
+  assert_not_equals: 'calc-mix(1 0%, 3 0%, 5 * sibling-index() 0%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 0%, 3 0%, 5 * sibling-index() 0%)' as a computed value should serialize as '0'.
+  assert_equals: 'calc-mix(1 0%, 3 0%, 5 * sibling-index() 0%)' and '0' should serialize the same in computed values. expected "0" but got "none"
+[FAIL] 'calc-mix(1px 0%)' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%) ' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1px 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1px 0%, 3px 0%, 5px 0%)' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%, 3px 0%, 5px 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%, 3px 0%, 5px 0%) ' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%, 3px 0%, 5px 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%, 3px 0%, 5px 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1px 0%, 3px 0%, 5px 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1px 0%, 3px 0%, 5px * sibling-index() 0%)' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%, 3px 0%, 5px * sibling-index() 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%, 3px 0%, 5px * sibling-index() 0%) ' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%, 3px 0%, 5px * sibling-index() 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%, 3px 0%, 5px * sibling-index() 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1px 0%, 3px 0%, 5px * sibling-index() 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1% 0%)' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%)' as a computed value should serialize as '0%'.
+  assert_equals: 'calc-mix(1% 0%)' and '0%' should serialize the same in computed values. expected "0%" but got "0px"
+[FAIL] 'calc-mix(1% 0%) ' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1% 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% 0%)' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%, 3% 0%, 5% 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% 0%)' as a computed value should serialize as '0%'.
+  assert_equals: 'calc-mix(1% 0%, 3% 0%, 5% 0%)' and '0%' should serialize the same in computed values. expected "0%" but got "0px"
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% 0%) ' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%, 3% 0%, 5% 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1% 0%, 3% 0%, 5% 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%)' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%)' as a computed value should serialize as '0%'.
+  assert_equals: 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%)' and '0%' should serialize the same in computed values. expected "0%" but got "0px"
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%) ' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1% 0%, 3% 0%, 5% * sibling-index() 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1% 0%, 3px 0%)' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%, 3px 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%, 3px 0%)' as a computed value should serialize as '0%'.
+  assert_equals: 'calc-mix(1% 0%, 3px 0%)' and '0%' should serialize the same in computed values. expected "0%" but got "0px"
+[FAIL] 'calc-mix(1% 0%, 3px 0%) ' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% 0%, 3px 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1% 0%, 3px 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1% 0%, 3px 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1px 0%, 3% 0%)' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%, 3% 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%, 3% 0%) ' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px 0%, 3% 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1px 0%, 3% 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1px 0%, 3% 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1% * sibling-index() 0%, 3px 0%)' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% * sibling-index() 0%, 3px 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1% * sibling-index() 0%, 3px 0%)' as a computed value should serialize as '0%'.
+  assert_equals: 'calc-mix(1% * sibling-index() 0%, 3px 0%)' and '0%' should serialize the same in computed values. expected "0%" but got "0px"
+[FAIL] 'calc-mix(1% * sibling-index() 0%, 3px 0%) ' as a specified value should serialize as 'calc(0%)'.
+  assert_not_equals: 'calc-mix(1% * sibling-index() 0%, 3px 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1% * sibling-index() 0%, 3px 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1% * sibling-index() 0%, 3px 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc-mix(1px * sibling-index() 0%, 3% 0%)' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px * sibling-index() 0%, 3% 0%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(1px * sibling-index() 0%, 3% 0%) ' as a specified value should serialize as 'calc(0px)'.
+  assert_not_equals: 'calc-mix(1px * sibling-index() 0%, 3% 0%) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(1px * sibling-index() 0%, 3% 0%) ' as a computed value should serialize as '0px'.
+  assert_equals: 'calc-mix(1px * sibling-index() 0%, 3% 0%) ' and '0px' should serialize the same in computed values. expected "0px" but got "100px"
+[FAIL] 'calc(10px + calc-mix(1% 0%, 3px 0%))' as a specified value should serialize as 'calc(0% + 10px)'.
+  assert_not_equals: 'calc(10px + calc-mix(1% 0%, 3px 0%))' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(1% 0%, 3px 0%))' as a computed value should serialize as 'calc(0% + 10px)'.
+  assert_equals: 'calc(10px + calc-mix(1% 0%, 3px 0%))' and 'calc(0% + 10px)' should serialize the same in computed values. expected "calc(0% + 10px)" but got "0px"
+[FAIL] 'calc(10px + calc-mix(1% 0%, 3px 0%)) ' as a specified value should serialize as 'calc(0% + 10px)'.
+  assert_not_equals: 'calc(10px + calc-mix(1% 0%, 3px 0%)) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(1% 0%, 3px 0%)) ' as a computed value should serialize as '10px'.
+  assert_equals: 'calc(10px + calc-mix(1% 0%, 3px 0%)) ' and '10px' should serialize the same in computed values. expected "10px" but got "100px"
+[FAIL] 'calc(10% + calc-mix(1% 0%, 3px 0%))' as a specified value should serialize as 'calc(10%)'.
+  assert_not_equals: 'calc(10% + calc-mix(1% 0%, 3px 0%))' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc(10% + calc-mix(1% 0%, 3px 0%))' as a computed value should serialize as '10%'.
+  assert_equals: 'calc(10% + calc-mix(1% 0%, 3px 0%))' and '10%' should serialize the same in computed values. expected "10%" but got "0px"
+[FAIL] 'calc(10% + calc-mix(1% 0%, 3px 0%)) ' as a specified value should serialize as 'calc(10%)'.
+  assert_not_equals: 'calc(10% + calc-mix(1% 0%, 3px 0%)) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc(10% + calc-mix(1% 0%, 3px 0%)) ' as a computed value should serialize as '10px'.
+  assert_equals: 'calc(10% + calc-mix(1% 0%, 3px 0%)) ' and '10px' should serialize the same in computed values. expected "10px" but got "100px"
+[FAIL] 'calc(10px + calc-mix(1px 0%, 3% 0%))' as a specified value should serialize as 'calc(10px)'.
+  assert_not_equals: 'calc(10px + calc-mix(1px 0%, 3% 0%))' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(1px 0%, 3% 0%))' as a computed value should serialize as '10px'.
+  assert_equals: 'calc(10px + calc-mix(1px 0%, 3% 0%))' and '10px' should serialize the same in computed values. expected "10px" but got "0px"
+[FAIL] 'calc(10px + calc-mix(1px 0%, 3% 0%)) ' as a specified value should serialize as 'calc(10px)'.
+  assert_not_equals: 'calc(10px + calc-mix(1px 0%, 3% 0%)) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(1px 0%, 3% 0%)) ' as a computed value should serialize as '10px'.
+  assert_equals: 'calc(10px + calc-mix(1px 0%, 3% 0%)) ' and '10px' should serialize the same in computed values. expected "10px" but got "100px"
+[FAIL] 'calc(10% + calc-mix(1px 0%, 3% 0%))' as a specified value should serialize as 'calc(10% + 0px)'.
+  assert_not_equals: 'calc(10% + calc-mix(1px 0%, 3% 0%))' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc(10% + calc-mix(1px 0%, 3% 0%))' as a computed value should serialize as '10%'.
+  assert_equals: 'calc(10% + calc-mix(1px 0%, 3% 0%))' and '10%' should serialize the same in computed values. expected "10%" but got "0px"
+[FAIL] 'calc(10% + calc-mix(1px 0%, 3% 0%)) ' as a specified value should serialize as 'calc(10% + 0px)'.
+  assert_not_equals: 'calc(10% + calc-mix(1px 0%, 3% 0%)) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc(10% + calc-mix(1px 0%, 3% 0%)) ' as a computed value should serialize as '10px'.
+  assert_equals: 'calc(10% + calc-mix(1px 0%, 3% 0%)) ' and '10px' should serialize the same in computed values. expected "10px" but got "100px"
+[FAIL] 'calc-mix(1 * sibling-index() 50%, 3 50%)' as a specified value should serialize as 'calc-mix(1 * sibling-index() 50%, 3 50%)'.
+  assert_not_equals: 'calc-mix(1 * sibling-index() 50%, 3 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 * sibling-index() 50%, 3 50%)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 * sibling-index() 50%, 3 50%)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 * sibling-index() 50%, 3 50%, 5, 7)' as a specified value should serialize as 'calc-mix(1 * sibling-index() 50%, 3 50%)'.
+  assert_not_equals: 'calc-mix(1 * sibling-index() 50%, 3 50%, 5, 7)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 * sibling-index() 50%, 3 50%, 5, 7)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 * sibling-index() 50%, 3 50%, 5, 7)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 * sibling-index() 0%, 3 100%)' as a specified value should serialize as 'calc(3)'.
+  assert_not_equals: 'calc-mix(1 * sibling-index() 0%, 3 100%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 * sibling-index() 0%, 3 100%)' as a computed value should serialize as '3'.
+  assert_equals: 'calc-mix(1 * sibling-index() 0%, 3 100%)' and '3' should serialize the same in computed values. expected "3" but got "none"
+[FAIL] 'calc-mix(1 calc(50% * sibling-index()), 3 50%)' as a specified value should serialize as 'calc-mix(1 calc(50% * sibling-index()), 3 50%)'.
+  assert_not_equals: 'calc-mix(1 calc(50% * sibling-index()), 3 50%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 calc(50% * sibling-index()), 3 50%)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 calc(50% * sibling-index()), 3 50%)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 calc(50% * sibling-index()), 3)' as a specified value should serialize as 'calc-mix(1 calc(50% * sibling-index()), 3)'.
+  assert_not_equals: 'calc-mix(1 calc(50% * sibling-index()), 3)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 calc(50% * sibling-index()), 3)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 calc(50% * sibling-index()), 3)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 calc(50% * sibling-index()), 3 50%, 5, 7)' as a specified value should serialize as 'calc-mix(1 calc(50% * sibling-index()), 3 50%, 5, 7)'.
+  assert_not_equals: 'calc-mix(1 calc(50% * sibling-index()), 3 50%, 5, 7)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 calc(50% * sibling-index()), 3 50%, 5, 7)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 calc(50% * sibling-index()), 3 50%, 5, 7)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 calc(150%), 3 100%)' as a specified value should serialize as 'calc-mix(1 calc(150%), 3 100%)'.
+  assert_not_equals: 'calc-mix(1 calc(150%), 3 100%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 calc(150%), 3 100%)' as a computed value should serialize as '2'.
+  assert_equals: 'calc-mix(1 calc(150%), 3 100%)' and '2' should serialize the same in computed values. expected "2" but got "none"
+[FAIL] 'calc-mix(1 calc(-50%), 3 100%)' as a specified value should serialize as 'calc-mix(1 calc(-50%), 3 100%)'.
+  assert_not_equals: 'calc-mix(1 calc(-50%), 3 100%)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc-mix(1 calc(-50%), 3 100%)' as a computed value should serialize as '3'.
+  assert_equals: 'calc-mix(1 calc(-50%), 3 100%)' and '3' should serialize the same in computed values. expected "3" but got "none"
+[FAIL] 'calc(10px + calc-mix(10% 50%, 30% 50%))' as a specified value should serialize as 'calc(20% + 10px)'.
+  assert_not_equals: 'calc(10px + calc-mix(10% 50%, 30% 50%))' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(10% 50%, 30% 50%))' as a computed value should serialize as 'calc(20% + 10px)'.
+  assert_equals: 'calc(10px + calc-mix(10% 50%, 30% 50%))' and 'calc(20% + 10px)' should serialize the same in computed values. expected "calc(20% + 10px)" but got "0px"
+[FAIL] 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%))' as a specified value should serialize as 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%))'.
+  assert_not_equals: 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%))' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%))' as a computed value should serialize as 'calc(20% + 10px)'.
+  assert_equals: 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%))' and 'calc(20% + 10px)' should serialize the same in computed values. expected "calc(20% + 10px)" but got "0px"
+[FAIL] 'calc(10px + calc-mix(10% 50%, 30% 50%)) ' as a specified value should serialize as 'calc(20% + 10px)'.
+  assert_not_equals: 'calc(10px + calc-mix(10% 50%, 30% 50%)) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(10% 50%, 30% 50%)) ' as a computed value should serialize as '30px'.
+  assert_equals: 'calc(10px + calc-mix(10% 50%, 30% 50%)) ' and '30px' should serialize the same in computed values. expected "30px" but got "100px"
+[FAIL] 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%)) ' as a specified value should serialize as 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%))'.
+  assert_not_equals: 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%)) ' should be valid in width. got disallowed value ""
+[FAIL] 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%)) ' as a computed value should serialize as '30px'.
+  assert_equals: 'calc(10px + calc-mix(10% * sibling-index() 50%, 30% 50%)) ' and '30px' should serialize the same in computed values. expected "30px" but got "100px"
+[FAIL] 'calc-mix(10em 50%, 30px 50%)' as a specified value should serialize as 'calc-mix(10em 50%, 30px 50%)'.
+  assert_not_equals: 'calc-mix(10em 50%, 30px 50%)' should be valid in text-indent. got disallowed value ""
+[FAIL] 'calc-mix(10em 50%, 30px 50%)' as a computed value should serialize as '65px'.
+  assert_equals: 'calc-mix(10em 50%, 30px 50%)' and '65px' should serialize the same in computed values. expected "65px" but got "0px"
+[FAIL] 'calc-mix(10em 50%, 30px 50% )' as a specified value should serialize as 'calc-mix(10em 50%, 30px 50%)'.
+  assert_not_equals: 'calc-mix(10em 50%, 30px 50% )' should be valid in width. got disallowed value ""
+[FAIL] 'calc-mix(10em 50%, 30px 50% )' as a computed value should serialize as '65px'.
+  assert_equals: 'calc-mix(10em 50%, 30px 50% )' and '65px' should serialize the same in computed values. expected "65px" but got "100px"
+[FAIL] 'calc(sign(calc-mix(1 50%, 3 50%)) + 10)' as a specified value should serialize as 'calc(11)'.
+  assert_not_equals: 'calc(sign(calc-mix(1 50%, 3 50%)) + 10)' should be valid in scale. got disallowed value ""
+[FAIL] 'calc(sign(calc-mix(1 50%, 3 50%)) + 10)' as a computed value should serialize as '11'.
+  assert_equals: 'calc(sign(calc-mix(1 50%, 3 50%)) + 10)' and '11' should serialize the same in computed values. expected "11" but got "none"
+[FAIL] 'calc(max(calc-mix(1 50%, 3 50%), 1))' as a specified value should serialize as 'calc(2)'.
+  assert_not_equals: 'calc(max(calc-mix(1 50%, 3 50%), 1))' should be valid in scale. got disallowed value ""
+[FAIL] 'calc(max(calc-mix(1 50%, 3 50%), 1))' as a computed value should serialize as '2'.
+  assert_equals: 'calc(max(calc-mix(1 50%, 3 50%), 1))' and '2' should serialize the same in computed values. expected "2" but got "none"
+Harness: the test ran to completion.
+

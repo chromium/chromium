@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] exit Picture-in-Picture algorithm runs as part of unloading document cleanup steps
+  step_wait_func: pipWindow.width and pipWindow.height become 0 after the iframe document is unloaded Timed out waiting on condition
+Harness: the test ran to completion.
+

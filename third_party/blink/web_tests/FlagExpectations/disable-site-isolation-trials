@@ -93,7 +93,7 @@ crbug.com/400832116 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.off
 crbug.com/400832116 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Failure Pass Skip ]
 crbug.com/398894517 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash Failure ]
 crbug.com/396460424 external/wpt/html/semantics/the-button-element/command-and-commandfor/button-event-dispatch.tentative.html [ Crash Failure ]
-crbug.com/395462245 external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout Failure ]
+crbug.com/395462245 external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Failure Timeout ]
 crbug.com/388345823 crbug.com/494522724 external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Crash Failure ]
 crbug.com/494522724 virtual/produce-compile-hints/external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Failure ]
 crbug.com/386547453 external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4 [ Crash ]

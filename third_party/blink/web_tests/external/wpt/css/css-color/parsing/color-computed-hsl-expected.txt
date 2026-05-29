@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'hsla(calc(50deg + (sign(2cqw - 10px) * 10deg)), 100%, 37.5%, 52%)'
+  assert_equals: expected "rgba(191, 128, 0, 0.52)" but got "rgba(191, 127, 0, 0.52)"
+Harness: the test ran to completion.
+

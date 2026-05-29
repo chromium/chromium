@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] structuredClone() preserves .stack on DOMException
+  assert_equals: original stack must be a string expected "string" but got "undefined"
+[FAIL] structuredClone() preserves .stack on a thrown DOMException
+  assert_equals: cloned stack must be a string expected "string" but got "undefined"
+[FAIL] structuredClone() preserves .stack via [[Stack]] internal slot, not as own property
+  assert_false: cloned error must not have an own stack property expected false got true
+Harness: the test ran to completion.
+

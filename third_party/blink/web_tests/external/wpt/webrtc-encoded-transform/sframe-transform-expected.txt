@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
 [FAIL] Cannot reuse attached transforms
-  promise_test: Unhandled rejection with value: object "ReferenceError: SFrameTransform is not defined"
-[FAIL] SFrameTransform exposes readable and writable
-  SFrameTransform is not defined
-[FAIL] readable/writable are locked when attached and after being attached
-  promise_test: Unhandled rejection with value: object "ReferenceError: SFrameTransform is not defined"
-[FAIL] SFrame with array buffer - authentication size 10
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpSFrameEncrypter is not defined"
+[FAIL] SFrameEncrypterStream exposes readable and writable
+  SFrameEncrypterStream is not defined
+[FAIL] SFrame with array buffer - AES_128_CTR_HMAC_SHA256_80
   promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'importKey')"
 [FAIL] SFrame decryption with array buffer that is too small
   promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'importKey')"

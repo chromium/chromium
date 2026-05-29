@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] ::part() attr() resolves on shadow host
+  assert_equals: ::part() attr() reads data-color from host expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] ::part() attr() with percentage type resolves on shadow host
+  assert_equals: ::part() attr() reads data-size from host expected "32px" but got "16px"
+[FAIL] ::part() attr() invalidation on host attribute change
+  assert_equals: ::part() attr() invalidates when host attribute changes expected "rgb(0, 0, 255)" but got "rgb(255, 0, 0)"
+[FAIL] ::part() attr() resolves on the originating host across exportparts
+  assert_equals: ::part() across two shadow boundaries reads from the outer host expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] ::part() attr() invalidation across exportparts
+  assert_equals: ::part() across two shadow boundaries invalidates on outer host attribute change expected "rgb(0, 0, 255)" but got "rgb(255, 0, 0)"
+Harness: the test ran to completion.
+

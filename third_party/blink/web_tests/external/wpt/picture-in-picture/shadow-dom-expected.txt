@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Picture-in-Picture on a video inside an open shadow root attached to a disconnected host
+  assert_equals: shadowRoot.pictureInPictureElement is null while the shadow root's host is not connected expected null but got Element node <video src="/media/movie_5.webm"></video>
+[FAIL] Picture-in-Picture on a video inside a closed shadow root attached to a disconnected host
+  assert_equals: shadowRoot.pictureInPictureElement is null while the shadow root's host is not connected expected null but got Element node <video src="/media/movie_5.webm"></video>
+[FAIL] Connecting a previously-disconnected shadow host after Picture-in-Picture starts exposes the video through shadowRoot.pictureInPictureElement
+  assert_equals: shadowRoot.pictureInPictureElement is null while the shadow root's host is not connected expected null but got Element node <video src="/media/movie_5.webm"></video>
+[FAIL] Picture-in-Picture on a video inside nested shadow roots whose outer host is disconnected
+  assert_equals: expected null but got Element node <div></div>
+Harness: the test ran to completion.
+

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] e.style['border'] = "hairline dotted green" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-width'] = "5px hairline" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-width'] = "hairline" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-left-width'] = "hairline" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] Computed hairline width is within bounds
+  assert_less_than_equal: expected a number less than or equal to 1 but got 3
+Harness: the test ran to completion.
+

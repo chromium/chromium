@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] svg 5
+  assert_equals: \n<svg viewBox="0 0 4 1" data-expected-client-width="300" data-expected-client-height="75"></svg>\nclientWidth expected 300 but got 765
+Harness: the test ran to completion.
+

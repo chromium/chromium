@@ -91,7 +91,7 @@ crbug.com/485920248 external/wpt/speculation-rules/prerender/no-vary-search.http
 crbug.com/417428652 external/wpt/touch-events/single-touch-vertical-rl.html [ Failure Pass ]
 crbug.com/485924027 external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure Pass ]
 crbug.com/453103188 external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Failure Pass ]
-crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Failure Crash Pass ]
+crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash Failure Pass ]
 crbug.com/485900039 fast/canvas/canvas-composite-alpha.html [ Failure Pass ]
 crbug.com/486067683 fast/compositor-wheel-scroll-latching/non-animated-scroll/subpixel-accumulation.html [ Failure Pass ]
 

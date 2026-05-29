@@ -1,0 +1,81 @@
+This is a testharness.js-based test.
+[FAIL] headingoffset property mutations update descendant headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] nested headingoffset property mutations propagate to descendants
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations update all heading types
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations propagate to deeply nested desendants
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations on shadow host update shadow DOM headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations on ancestors of shadow host propagate to shadow DOM
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations inside shadow DOM update correctly
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations on slot element update slotted headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations on slot traverse into slotted element shadow roots
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations respect level clamping
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations propagate through two levels of shadow DOM with slotting
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations propagate through three levels of nested shadow DOM
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset property mutations update headings at multiple shadow DOM levels independently
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations update descendant headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] nested headingoffset attribute mutations propagate to descendants
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations update all heading types
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations propagate to deeply nested desendants
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations on shadow host update shadow DOM headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations on ancestors of shadow host propagate to shadow DOM
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations inside shadow DOM update correctly
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations on slot element update slotted headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations on slot traverse into slotted element shadow roots
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations respect level clamping
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations propagate through two levels of shadow DOM with slotting
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations propagate through three levels of nested shadow DOM
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingoffset attribute mutations update headings at multiple shadow DOM levels independently
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingreset mutations update descendant headings
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] headingreset and headingoffset mutations interact correctly
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] invalid headingoffset attribute values are handled correctly on mutation
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] slot name attribute changes update slotted heading levels
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] element slot attribute changes update heading levels
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] slot element removal and addition updates slotted heading levels
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] default slot to named slot transitions update heading levels
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] swapping slot names updates multiple headings correctly
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] manual slot assignment updates heading levels
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] manual slot reassignment between slots updates heading levels
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] non-HTML elements (SVG) slotted with heading descendants get updated
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] non-HTML elements (MathML) slotted with heading descendants get updated
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+[FAIL] manual slot assignment of non-HTML elements updates heading descendants
+  Failed to execute 'matches' on 'Element': ':heading(1)' is not a valid selector.
+Harness: the test ran to completion.
+

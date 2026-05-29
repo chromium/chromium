@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Initial colors: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Initial colors: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1[headingoffset=1]: #has_heading_2
+  assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1[headingoffset=1]: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1[headingoffset=2]: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1 with headingoffset removed: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1 with headingoffset removed: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor[headingoffset=1]: #has_heading_2
+  assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor[headingoffset=1]: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor[headingoffset=2]: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1[headingreset] (cuts ancestor offset): #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1[headingreset] (cuts ancestor offset): #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1 with headingreset removed: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor with headingoffset removed: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor with headingoffset removed: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingOffset = 1: #has_heading_2
+  assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingOffset = 1: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingOffset = 0: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingOffset = 0: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor[headingoffset=2] again: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingReset = true: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingReset = true: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.headingReset = false: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+Harness: the test ran to completion.
+

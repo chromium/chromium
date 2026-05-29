@@ -1,5 +1,9 @@
 This is a testharness.js-based test.
-[FAIL] Sctp transport has null maxChannels and maxMessageSize in have-local-offer after rollback
+[FAIL] Sctp transport has null maxChannels and 65536 maxMessageSize in have-local-offer
+  assert_equals: maxMessageSize must be 65536 expected 65536 but got Infinity
+[FAIL] Sctp transport has null maxChannels and 65536 maxMessageSize in have-local-offer after rollback
   assert_true: pc.sctp in have-local-offer again expected true got false
+[FAIL] Sctp transport has null maxChannels and 65536 maxMessageSize in have-remote-offer after rollback
+  assert_equals: maxMessageSize must be 65536 expected 65536 but got Infinity
 Harness: the test ran to completion.
 
