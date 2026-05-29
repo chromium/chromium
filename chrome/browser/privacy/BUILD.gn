@@ -67,6 +67,7 @@ if (is_android) {
     sources = [ "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManager.java" ]
     deps = [
       "//base:base_java",
+      "//components/metrics:metrics_java",
       "//components/minidump_uploader:minidump_uploader_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]

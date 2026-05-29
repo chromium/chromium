@@ -8,6 +8,7 @@ import androidx.annotation.UiThread;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.metrics.MetricsReportingLevel;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 
 /**
@@ -22,13 +23,22 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      *
      * @param enabled A boolean corresponding whether usage and crash reports uploads are allowed.
      */
+    // TODO(heychirag): Remove this method once the migration has been completed.
     void setUsageAndCrashReporting(boolean enabled);
 
     /**
      * Update usage and crash preferences based on Android preferences if possible in case they are
      * out of sync.
      */
+    // TODO(heychirag): Remove this method once the migration has been completed.
     void syncUsageAndCrashReportingPrefs();
+
+    /**
+     * Sets the metrics reporting level.
+     *
+     * @param level The metrics reporting level.
+     */
+    void setMetricsReportingLevel(@MetricsReportingLevel int level);
 
     /**
      * Sets whether this client is in-sample for usage metrics reporting. See {@link
@@ -99,6 +109,7 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
     /**
      * @return Whether usage and crash reporting pref is enabled.
      */
+    // TODO(heychirag): Rename this method to isBasicMetricsReportingEnabled.
     boolean isMetricsReportingEnabled();
 
     /** Sets whether the usage and crash reporting pref should be enabled. */

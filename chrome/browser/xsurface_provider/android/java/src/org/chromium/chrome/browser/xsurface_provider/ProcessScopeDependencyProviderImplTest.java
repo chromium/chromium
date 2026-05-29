@@ -17,6 +17,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.components.metrics.MetricsReportingLevel;
 
 /** Tests for ProcessScopeDependencyProviderImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -82,6 +83,9 @@ public final class ProcessScopeDependencyProviderImplTest {
 
                 @Override
                 public void setMetricsReportingEnabled(boolean enabled) {}
+
+                @Override
+                public void setMetricsReportingLevel(@MetricsReportingLevel int level) {}
 
                 @Override
                 public MonotonicObservableSupplier<Boolean>

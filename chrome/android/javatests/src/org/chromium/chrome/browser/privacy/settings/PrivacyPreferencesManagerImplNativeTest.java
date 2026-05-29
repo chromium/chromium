@@ -20,13 +20,84 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.metrics.MetricsReportingLevel;
 
 /** Tests "Usage and Crash reporting" settings screen. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class PrivacyPreferencesManagerImplNativeTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testSetMetricsReportingLevel() {
+        PermissionContext context =
+                new PermissionContext(ApplicationProvider.getApplicationContext());
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new PrivacyPreferencesManagerImpl(context);
+
+        // This test assumes not enforced by policy, which is true for a fresh test environment.
+        preferenceManager.setMetricsReportingLevel(MetricsReportingLevel.BASIC);
+        Assert.assertEquals(
+                MetricsReportingLevel.BASIC,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, -1));
+
+        preferenceManager.setMetricsReportingLevel(MetricsReportingLevel.ADVANCED);
+        Assert.assertEquals(
+                MetricsReportingLevel.ADVANCED,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, -1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testIsMetricsReportingDisabledByPolicy() {
+        PermissionContext context =
+                new PermissionContext(ApplicationProvider.getApplicationContext());
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new PrivacyPreferencesManagerImpl(context);
+
+        // Fresh test environment should have no policy enforcement.
+        Assert.assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
+                                false));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testSyncMetricsReportingDisabledByPolicy() {
+        PermissionContext context =
+                new PermissionContext(ApplicationProvider.getApplicationContext());
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new PrivacyPreferencesManagerImpl(context);
+
+        // Ensure native is initialized for the manager.
+        preferenceManager.onNativeInitialized();
+
+        // Clear the Java-side preference to ensure it gets re-synced.
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY);
+
+        preferenceManager.syncMetricsReportingDisabledByPolicy();
+
+        // Since it's a fresh environment, it should be false (not enforced).
+        Assert.assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
+                                true));
+    }
 
     @Test
     @SmallTest
