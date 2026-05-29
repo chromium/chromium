@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -353,6 +354,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @DisabledTest(message = "https://crbug.com/517964367")
     public void testFindFocus() throws Throwable {
         // Load a page with 56 arbitrary buttons and two focusable elements and a tall div.
         // The idea behind 56 buttons comes from the flakyness of the test: we do a scroll to clear
