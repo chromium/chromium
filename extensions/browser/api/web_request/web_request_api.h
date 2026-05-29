@@ -124,8 +124,12 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     //
     // Each Proxy may be responsible for multiple requests, but any given
     // request identified by `id` must be associated with only a single proxy.
-    void AssociateProxyWithRequestId(Proxy* proxy,
-                                     const content::GlobalRequestID& id);
+    //
+    // Returns true on success, or false if `id` is already associated with a
+    // proxy.
+    [[nodiscard]] bool AssociateProxyWithRequestId(
+        Proxy* proxy,
+        const content::GlobalRequestID& id);
 
     // Disassociates `proxy` with `id`. `proxy` must already be registered
     // within this ProxySet.

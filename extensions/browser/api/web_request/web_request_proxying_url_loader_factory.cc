@@ -82,6 +82,11 @@ namespace {
 constexpr char kWebRequestProxyingURLLoaderFactoryScope[] =
     "WebRequestProxyingURLLoaderFactory";
 
+// A message when `WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart()`
+// is called with a request ID already in use by another active request.
+constexpr char kDuplicateRequestIdError[] =
+    "Tried to proxy a web request with a duplicate request ID.";
+
 // This shutdown notifier makes sure the proxy is destroyed if an incognito
 // browser context is destroyed. This is needed because WebRequestAPI only
 // clears the proxies when the original browser context is destroyed.
@@ -1568,11 +1573,19 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     // correlation against any auth events received by the browser.
     // Requests with a request ID of 0 therefore do not support
     // dispatching |WebRequest.onAuthRequired| events.
-    proxies_->AssociateProxyWithRequestId(
-        this, content::GlobalRequestID(
-                  content::ToOriginatingProcessIdUnsafe(render_process_id_),
-                  request_id));
-    network_request_id_to_web_request_id_.emplace(request_id, web_request_id);
+    content::GlobalRequestID global_id(
+        content::ToOriginatingProcessIdUnsafe(render_process_id_), request_id);
+    // Associate the proxy with this request ID. If the request ID is already
+    // in use, abort and report a bad IPC message.
+    if (!proxies_->AssociateProxyWithRequestId(this, global_id)) {
+      if (render_process_id_ != -1) {
+        proxy_receivers_.ReportBadMessage(kDuplicateRequestIdError);
+      }
+      return;
+    }
+    auto emplace_result = network_request_id_to_web_request_id_.emplace(
+        request_id, web_request_id);
+    CHECK(emplace_result.second);
   }
 
   auto result = requests_.emplace(

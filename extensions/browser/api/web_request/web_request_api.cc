@@ -281,15 +281,18 @@ void WebRequestAPI::ProxySet::RemoveProxy(Proxy* proxy) {
   proxies_.erase(proxy_it);
 }
 
-void WebRequestAPI::ProxySet::AssociateProxyWithRequestId(
+bool WebRequestAPI::ProxySet::AssociateProxyWithRequestId(
     Proxy* proxy,
     const content::GlobalRequestID& id) {
   DCHECK(proxy);
   DCHECK(proxies_.count(proxy));
   DCHECK(id.request_id);
   auto result = request_id_to_proxy_map_.emplace(id, proxy);
-  DCHECK(result.second) << "Unexpected request ID collision.";
+  if (!result.second) {
+    return false;
+  }
   proxy_to_request_id_map_[proxy].insert(id);
+  return true;
 }
 
 void WebRequestAPI::ProxySet::DisassociateProxyWithRequestId(
