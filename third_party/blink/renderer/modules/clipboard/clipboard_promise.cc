@@ -308,6 +308,14 @@ void ClipboardPromise::HandleReadWithPermission(
     return;
   }
 
+  // Snapshot the sequence number before format enumeration so a clipboard
+  // change during the async IPC will be detected by getType() (fail-closed).
+  // See crbug.com/498411773.
+  if (RuntimeEnabledFeatures::
+          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
+    sequence_number_at_read_start_ = GetSystemClipboard()->SequenceNumber();
+  }
+
 #if BUILDFLAG(IS_MAC)
   // Check macOS platform permission state if the runtime flag is enabled
   if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
@@ -336,8 +344,7 @@ void ClipboardPromise::ResolveRead() {
   if (RuntimeEnabledFeatures::
           ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
     clipboard_items = {MakeGarbageCollected<ClipboardItem>(
-        item_mime_types_, GetSystemClipboard()->SequenceNumber(),
-        GetExecutionContext(),
+        item_mime_types_, sequence_number_at_read_start_, GetExecutionContext(),
         /*sanitize_html_for_lazy_read=*/!will_read_unprocessed_html_,
         ClipboardItem::AccessMode::kLazy)};
   } else {

@@ -230,6 +230,11 @@ void MockClipboardHost::ReadAvailableCustomAndStandardFormats(
   Vector<String> format_names = ReadStandardFormatNames();
   for (const auto& item : unsanitized_custom_data_map_)
     format_names.emplace_back(item.key);
+  // TOCTOU race hook: lets tests mutate clipboard state inside the async
+  // gap. See crbug.com/498411773.
+  if (read_available_formats_hook_for_testing_) {
+    read_available_formats_hook_for_testing_.Run(this);
+  }
   std::move(callback).Run(std::move(format_names));
 }
 

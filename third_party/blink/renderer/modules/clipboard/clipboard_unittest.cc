@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_read_options.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -67,16 +68,35 @@ class ClipboardItemGetType final
   ScriptPromise<Blob> React(ScriptState* script_state,
                             HeapVector<Member<ClipboardItem>> clipboard_items) {
     if (clipboard_items.empty()) {
-      return ScriptPromise<Blob>();
+      return ScriptPromise<Blob>::RejectWithDOMException(
+          script_state,
+          MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotFoundError,
+                                             "No clipboard items"));
     }
 
     auto& clipboard_item = clipboard_items[0];
 
-    ExceptionState exception_state(script_state->GetIsolate());
+    // Use DummyExceptionStateForTesting to avoid the ExceptionState destructor
+    // DCHECK that requires a pending V8 exception. We handle the exception
+    // ourselves by converting to a rejected promise.
+    DummyExceptionStateForTesting exception_state;
 
     // Call getType to trigger the underlying clipboard read
-    return clipboard_item->getType(script_state, expected_type_,
-                                   exception_state);
+    ScriptPromise<Blob> result =
+        clipboard_item->getType(script_state, expected_type_, exception_state);
+
+    // If getType() threw (e.g., DataError due to clipboard change detection),
+    // it returns an empty ScriptPromise. We must return a properly rejected
+    // promise instead, because ThenCallable's ToV8Traits will DCHECK on an
+    // empty promise.
+    if (exception_state.HadException()) {
+      return ScriptPromise<Blob>::RejectWithDOMException(
+          script_state, MakeGarbageCollected<DOMException>(
+                            exception_state.CodeAs<DOMExceptionCode>(),
+                            exception_state.Message()));
+    }
+
+    return result;
   }
 
  private:
@@ -790,6 +810,71 @@ TEST_F(ClipboardTest, ReadTextIsAsyncWhenClipboardReadIsSlow) {
   String returned_string;
   promise_tester.Value().ToString(returned_string);
   EXPECT_EQ(returned_string, testing_string);
+
+  executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::PermissionService::Name_, {});
+}
+
+// Verifies TOCTOU protection: clipboard change during format enumeration
+// causes getType() to reject with DataError.
+TEST_F(ClipboardTest, ClipboardChangeDuringReadRejectsGetType) {
+  V8TestingScope scope;
+  ExecutionContext* executionContext = GetFrame().DomWindow();
+
+  mock_clipboard_host()->WriteText("OriginalText");
+  mock_clipboard_host()->CommitWrite();
+
+  // Simulate clipboard change during ReadAvailableFormats.
+  mock_clipboard_host()->SetReadAvailableFormatsHookForTesting(
+      base::BindRepeating([](MockClipboardHost* host) {
+        host->WriteText("OverwrittenText");
+        host->CommitWrite();
+      }));
+
+  EXPECT_CALL(permission_service_, RequestPermission)
+      .WillOnce(WithArg<1>(
+          [](mojom::blink::PermissionService::RequestPermissionCallback
+                 callback) {
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
+          }));
+  BindMockPermissionService(executionContext);
+  SetSecureOrigin(executionContext);
+  SetPageFocus(true);
+
+  ScriptPromise<IDLSequence<ClipboardItem>> promise =
+      ClipboardPromise::CreateForRead(executionContext, scope.GetScriptState(),
+                                      nullptr, scope.GetExceptionState());
+
+  ScriptPromiseTester read_tester(scope.GetScriptState(), promise);
+  read_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_tester.IsFulfilled());
+
+  mock_clipboard_host()->SetReadAvailableFormatsHookForTesting({});
+
+  // getType() should detect the clipboard change and reject.
+  auto* get_type_helper =
+      MakeGarbageCollected<ClipboardItemGetType>("text/plain");
+  auto chained_promise = promise.Then(scope.GetScriptState(), get_type_helper);
+
+  ScriptPromiseTester promise_tester(scope.GetScriptState(), chained_promise);
+  promise_tester.WaitUntilSettled();
+
+  if (promise_tester.IsFulfilled()) {
+    ScriptValue value = promise_tester.Value();
+    v8::Local<v8::Value> v8_value = value.V8Value();
+    if (v8_value->IsPromise()) {
+      ScriptPromise<Blob> inner_promise =
+          ScriptPromise<Blob>::FromV8Value(scope.GetScriptState(), v8_value);
+      ScriptPromiseTester inner_tester(scope.GetScriptState(), inner_promise);
+      inner_tester.WaitUntilSettled();
+      EXPECT_TRUE(inner_tester.IsRejected())
+          << "getType() should reject when clipboard changed during read";
+    } else {
+      ADD_FAILURE() << "Expected rejection but got a non-promise value";
+    }
+  }
 
   executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::PermissionService::Name_, {});
