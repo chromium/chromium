@@ -455,6 +455,28 @@ public class WebContentsAccessibilityTest {
         return true;
     }
 
+    /**
+     * Helper method for clearing extended selection and confirming that the associated text
+     * selection event have been dispatched before continuing with test.
+     *
+     * @param viewId int virtualViewId of the node from which selection is cleared.
+     * @throws ExecutionException Error
+     */
+    private void clearSelectionOnUiThreadAndWaitForSelectionEvent(int viewId)
+            throws ExecutionException {
+        // Reset value for selection event.
+        mTestData.setReceivedSelectionEvent(false);
+
+        mActivityTestRule.clearSelectionOnUiThread(viewId);
+
+        // Poll until selection event is received.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mTestData.hasReceivedSelectionEvent();
+                },
+                TEXT_SELECTION_ERROR);
+    }
+
     private void setAndAssertExtendedSelection(
             int rootVvid, int startNodeId, int startOffset, int endNodeId, int endOffset)
             throws ExecutionException {
@@ -3257,6 +3279,26 @@ public class WebContentsAccessibilityTest {
                 false,
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, paragraph1Vvid, 1, input2Vvid, 1));
+    }
+
+    /** Test that clearing extended selection clears the selection on the root node. */
+    @Test
+    @SmallTest
+    public void testPerformAction_clearExtendedSelection() throws Throwable {
+        setupTestWithHTML("<p id='p1'>Paragraph1</p>");
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int paragraph1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+
+        // Select.
+        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, paragraph1Vvid, 5);
+
+        // Clear selection.
+        clearSelectionOnUiThreadAndWaitForSelectionEvent(rootVvid);
+
+        // Expected result: root#getSelection should be null
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNull(selection);
     }
 
     /** Test extended selection cross frames. */

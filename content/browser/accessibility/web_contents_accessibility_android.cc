@@ -2238,7 +2238,6 @@ void WebContentsAccessibilityAndroid::ClearExtendedSelection(JNIEnv* env,
   ui::BrowserAccessibility::AXPosition end_position =
       node->CreatePositionForSelectionAt(ax::mojom::kNoSelectionOffset);
 
-  // TODO(crbug.com/443078007): Add test.
   node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
       std::move(start_position), std::move(end_position)));
 }

@@ -430,8 +430,26 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
             throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mWcax.setExtendedSelectionForTesting(
-                                viewId, startNodeId, startNodeOffset, endNodeId, endNodeOffset));
+                        WebContentsAccessibilityImplJni.get()
+                                .setExtendedSelection(
+                                        mWcax.mNativeObj,
+                                        viewId,
+                                        startNodeId,
+                                        startNodeOffset,
+                                        endNodeId,
+                                        endNodeOffset));
+    }
+
+    /**
+     * Helper method to clear extended selection.
+     *
+     * @param viewId int virtualViewId of the node from which selection is cleared.
+     */
+    public void clearSelectionOnUiThread(int viewId) throws ExecutionException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebContentsAccessibilityImplJni.get()
+                                .clearExtendedSelection(mWcax.mNativeObj, viewId));
     }
 
     /** Helper method for executing a given JS method for the current web contents. */
