@@ -113,10 +113,9 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
 
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
-      crypto::Aead aead(crypto::Aead::AES_256_GCM);
       base::span<const uint8_t> key(key_);
 #if BUILDFLAG(IS_WIN)
-      // Copy. This makes it thread safe. Must outlive aead.
+      // Copy. This makes it thread safe.
       std::vector<uint8_t> decrypted_key(key_);
       absl::Cleanup zero_memory = [&decrypted_key] {
         ::SecureZeroMemory(decrypted_key.data(), decrypted_key.size());
@@ -129,15 +128,15 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
         key = base::span<const uint8_t>(decrypted_key);
       }
 #endif  // BUILDFLAG(IS_WIN)
-      aead.Init(key);
 
-      // Note: can only check this once AEAD is initialized.
-      DCHECK_EQ(kNonceLength, aead.NonceLength());
+      DCHECK_EQ(kNonceLength,
+                crypto::aead::NonceSizeFor(crypto::aead::AES_256_GCM));
 
       std::array<uint8_t, kNonceLength> nonce = {};
       crypto::RandBytes(nonce);
       std::vector<uint8_t> ciphertext =
-          aead.Seal(plaintext, nonce, /*additional_data=*/{});
+          crypto::aead::Seal(crypto::aead::AES_256_GCM, key, plaintext, nonce,
+                             /*associated_data=*/{});
 
       // Nonce goes at the front of the ciphertext.
       ciphertext.insert(ciphertext.begin(), nonce.cbegin(), nonce.cend());
@@ -160,11 +159,9 @@ std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
       if (ciphertext.size() < kNonceLength) {
         return std::nullopt;
       }
-      crypto::Aead aead(crypto::Aead::AES_256_GCM);
-
       base::span<const uint8_t> key(key_);
 #if BUILDFLAG(IS_WIN)
-      // Copy. This makes it thread safe. Must outlive aead.
+      // Copy. This makes it thread safe.
       std::vector<uint8_t> decrypted_key(key_);
       absl::Cleanup zero_memory = [&decrypted_key] {
         ::SecureZeroMemory(decrypted_key.data(), decrypted_key.size());
@@ -176,13 +173,13 @@ std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
         key = base::span<const uint8_t>(decrypted_key);
       }
 #endif  // BUILDFLAG(IS_WIN)
-      aead.Init(key);
 
       // The nonce is at the start of the ciphertext and must be removed.
       auto nonce = ciphertext.first(kNonceLength);
       auto data = ciphertext.subspan(kNonceLength);
 
-      return aead.Open(data, nonce, /*additional_data=*/{});
+      return crypto::aead::Open(crypto::aead::AES_256_GCM, key, data, nonce,
+                                /*associated_data=*/{});
     }
     case mojom::Algorithm::kAES128CBC: {
       auto plaintext =
