@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,8 @@ class DefaultBrowserControllerTest : public testing::Test {
   }
 
   void TearDown() override { setter_ = nullptr; }
+
+  content::BrowserTaskEnvironment task_environment_;
 
   raw_ptr<StrictlyMockedDefaultBrowserSetter> setter_;
   std::unique_ptr<DefaultBrowserController> controller_;
@@ -101,6 +104,9 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
 
   histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
                                       true, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "DefaultBrowser.ShellIntegration.SuccessDuration", 1);
 }
 
 TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
@@ -122,6 +128,9 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
 
   histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
                                       false, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "DefaultBrowser.ShellIntegration.SuccessDuration", 0);
 }
 
 }  // namespace default_browser

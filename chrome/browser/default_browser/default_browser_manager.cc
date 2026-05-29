@@ -15,9 +15,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
@@ -145,14 +147,16 @@ DEFINE_USER_DATA(DefaultBrowserManager);
 DefaultBrowserManager::DefaultBrowserManager(
     BrowserProcess* browser_process,
     std::unique_ptr<ShellDelegate> shell_delegate,
-    ProfileProviderCallback profile_provider_callback)
+    ProfileProviderCallback profile_provider_callback,
+    std::unique_ptr<DefaultBrowserMonitor> monitor)
     : shell_delegate_(std::move(shell_delegate)),
       profile_provider_callback_(std::move(profile_provider_callback)),
       scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(!profile_provider_callback_.is_null());
   if (IsDefaultBrowserFrameworkEnabled()) {
-    monitor_ = std::make_unique<DefaultBrowserMonitor>();
+    monitor_ = monitor ? std::move(monitor)
+                       : std::make_unique<DefaultBrowserMonitor>();
 
     monitor_subscription_ = monitor_->RegisterDefaultBrowserChanged(
         base::BindRepeating(&DefaultBrowserManager::OnMonitorDetectedChange,
@@ -228,6 +232,7 @@ void DefaultBrowserManager::OnDefaultBrowserCheckResult(
       PerformDefaultBrowserCheckValidations(default_state);
     }
   }
+
   std::move(callback).Run(default_state);
 }
 
@@ -266,6 +271,31 @@ void DefaultBrowserManager::OnMonitorDetectedChange() {
 
 void DefaultBrowserManager::NotifyObservers(DefaultBrowserState state) {
   observers_.Notify(state);
+}
+
+void DefaultBrowserManager::TrackTimeAfterSetterFailure(
+    DefaultBrowserEntrypointType entrypoint,
+    DefaultBrowserSetterType setter) {
+  tracker_subscription_ = {};
+  tracker_ =
+      std::make_unique<TimeAfterSetterFailureTracker>(entrypoint, setter);
+
+  tracker_subscription_ = RegisterDefaultBrowserChanged(base::BindRepeating(
+      &DefaultBrowserManager::OnDefaultBrowserStateChangedForTracker,
+      base::Unretained(this)));
+
+  GetDefaultBrowserState(base::BindOnce(
+      &DefaultBrowserManager::OnDefaultBrowserStateChangedForTracker,
+      base::Unretained(this)));
+}
+
+void DefaultBrowserManager::OnDefaultBrowserStateChangedForTracker(
+    DefaultBrowserState state) {
+  if (tracker_ && state == DefaultBrowserState::IS_DEFAULT) {
+    tracker_->OnDefaultBrowserSet();
+    tracker_subscription_ = {};
+    tracker_.reset();
+  }
 }
 
 }  // namespace default_browser

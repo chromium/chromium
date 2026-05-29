@@ -13,6 +13,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/default_browser/default_browser_monitor.h"
+#include "chrome/browser/default_browser/default_browser_time_after_setter_failure_tracker.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
@@ -62,7 +64,8 @@ class DefaultBrowserManager {
   explicit DefaultBrowserManager(
       BrowserProcess* browser_process,
       std::unique_ptr<ShellDelegate> shell_delegate,
-      ProfileProviderCallback profile_provider_callback);
+      ProfileProviderCallback profile_provider_callback,
+      std::unique_ptr<DefaultBrowserMonitor> monitor = nullptr);
   ~DefaultBrowserManager();
 
   DefaultBrowserManager(const DefaultBrowserManager&) = delete;
@@ -91,7 +94,14 @@ class DefaultBrowserManager {
   base::CallbackListSubscription RegisterDefaultBrowserChanged(
       DefaultBrowserChangedCallback callback);
 
+  // Starts tracking the asynchronous success of a default browser flow after
+  // failure.
+  void TrackTimeAfterSetterFailure(DefaultBrowserEntrypointType entrypoint,
+                                   DefaultBrowserSetterType setter);
+
  private:
+  void OnDefaultBrowserStateChangedForTracker(DefaultBrowserState state);
+
   void OnDefaultBrowserCheckResult(
       default_browser::DefaultBrowserCheckCompletionCallback callback,
       default_browser::DefaultBrowserState default_state);
@@ -128,6 +138,9 @@ class DefaultBrowserManager {
   ProfileProviderCallback profile_provider_callback_;
 
   ui::ScopedUnownedUserData<DefaultBrowserManager> scoped_unowned_user_data_;
+
+  std::unique_ptr<TimeAfterSetterFailureTracker> tracker_;
+  base::CallbackListSubscription tracker_subscription_;
 };
 
 }  // namespace default_browser

@@ -29,6 +29,8 @@ source_set("default_browser") {
     "default_browser_notification_observer.cc",
     "default_browser_notification_observer.h",
     "default_browser_setter.h",
+    "default_browser_time_after_setter_failure_tracker.cc",
+    "default_browser_time_after_setter_failure_tracker.h",
     "setters/default_browser_visual_guided_setter.cc",
     "setters/default_browser_visual_guided_setter.h",
     "setters/shell_integration_default_browser_setter.cc",

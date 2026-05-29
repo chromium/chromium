@@ -410,6 +410,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.DefaultSetAfterSetterFailure"
+    enum="BooleanSuccess" expires_after="2027-04-27">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Recorded when the primary setter fails (e.g. times out). Records whether
+    Chrome eventually becomes the default browser asynchronously from
+    {DefaultBrowserEntrypointType} with {DefaultBrowserSetterType} as the
+    setter.
+  </summary>
+</histogram>
+
+<histogram
     name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.Interaction"
     enum="DefaultBrowserUserInteraction" expires_after="2027-04-27">
   <owner>alsan@chromium.org</owner>
@@ -436,6 +451,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.TimeAfterSetterFailure"
+    units="ms" expires_after="2027-04-27">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Recorded when the primary setter fails (e.g. times out) but Chrome
+    eventually becomes the default browser asynchronously. Records the duration
+    from when the setter failed until Chrome becomes the default browser from
+    {DefaultBrowserEntrypointType} with {DefaultBrowserSetterType} as the
+    setter.
+  </summary>
+</histogram>
+
 <histogram name="DefaultBrowser.{DefaultBrowserSetterType}.Result"
     enum="BooleanSuccess" expires_after="2026-10-25">
   <owner>alsan@chromium.org</owner>
@@ -445,6 +476,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether setting Chrome as the default browser was successful using
     {DefaultBrowserSetterType}.
+  </summary>
+</histogram>
+
+<histogram name="DefaultBrowser.{DefaultBrowserSetterType}.SuccessDuration"
+    units="ms" expires_after="2027-04-27">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Only recorded when setting Chrome as the default browser succeeds
+    synchronously (within the setter's timeout) after the user accepts the
+    default browser flow using {DefaultBrowserSetterType}.
   </summary>
 </histogram>
 

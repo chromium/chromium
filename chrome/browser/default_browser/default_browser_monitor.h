@@ -23,7 +23,7 @@ namespace default_browser {
 class DefaultBrowserMonitor {
  public:
   DefaultBrowserMonitor();
-  ~DefaultBrowserMonitor();
+  virtual ~DefaultBrowserMonitor();
 
   DefaultBrowserMonitor(const DefaultBrowserMonitor&) = delete;
   const DefaultBrowserMonitor& operator=(const DefaultBrowserMonitor&) = delete;
