@@ -17,4 +17,7 @@ specific_include_rules = {
   "run_all_unittests\.cc": [
     "+mojo/core/embedder",
   ],
+  ".*_shim\.(cc|h)": [
+    "+third_party/rust/cxx/v1/cxx.h",
+  ],
 }

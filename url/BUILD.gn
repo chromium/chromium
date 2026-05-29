@@ -405,3 +405,43 @@ if (!is_cronet_build && target_os == "android") {
     }
   }
 }
+
+# Provides FFI bindings for Chromium's C++ URL types (specifically GURL and
+# url::Origin) using the cxx crate, enabling Rust code to interact with and use
+# these types.
+rust_static_library("url_rust") {
+  crate_name = "url"
+  crate_root = "url.rs"
+  sources = [
+    "gurl.rs",
+    "origin.rs",
+    "url.rs",
+  ]
+  allow_unsafe = true
+  deps = [
+    ":url",
+    ":url_shim",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+  cxx_bindings = [
+    "gurl.rs",
+    "origin.rs",
+  ]
+}
+
+# Contains C++ shim code that supports the Rust FFI bindings for GURL and
+# url::Origin. This is compiled as a separate C++ target to prevent exposing
+# Rust-specific FFI shim functionality (such as shims returning rust::Str
+# or FFI ordering functions) directly to general C++ users of the url library.
+source_set("url_shim") {
+  sources = [
+    "gurl_shim.cc",
+    "gurl_shim.h",
+    "origin_shim.cc",
+    "origin_shim.h",
+  ]
+  deps = [
+    ":url",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+}

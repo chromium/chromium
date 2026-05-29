@@ -62,7 +62,10 @@ rust_static_library("child_process_security_policy_impl") {
   sources = [ "child_process_security_policy_impl.rs" ]
   cxx_bindings = [ "child_process_security_policy_impl.rs" ]
   visibility = [ ":browser" ]
-  deps = [ "//third_party/rust/cxx/v1:lib" ]
+  deps = [
+    "//third_party/rust/cxx/v1:lib",
+    "//url:url_rust",
+  ]
 }
 
 if (is_ios) {
