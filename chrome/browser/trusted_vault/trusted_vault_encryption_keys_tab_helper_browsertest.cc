@@ -294,14 +294,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
          {site_isolation::features::
               kPartialSiteIsolationMemoryThresholdParamName,
           "0"}});
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {trusted_vault::kSetClientEncryptionKeysJsApi},
-        /*disabled_features=*/{});
-#else
-    feature_list_.InitAndEnableFeature(
-        trusted_vault::kSetClientEncryptionKeysJsApi);
 #endif
   }
 
