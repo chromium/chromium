@@ -136,13 +136,6 @@ class GlicInstance {
 
   virtual GlicActorTaskManager* GetActorTaskManager() = 0;
 
-  // Metrics springboard for selection area changed.
-  // TODO(b/500385503): Figure out what to do here. This is exposed for now
-  // given that GlicInstanceMetrics can't be used outside of glic
-  // implementation.
-  virtual void OnSelectionAreasChanged(int count) = 0;
-  virtual void OnPolylinePointsChanged(const std::vector<int>& counts) = 0;
-
   // Returns true if the instance is currently performing an actuation task.
   virtual bool IsActuating() const = 0;
 

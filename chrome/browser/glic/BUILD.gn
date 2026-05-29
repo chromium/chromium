@@ -266,6 +266,9 @@ source_set("glic_metrics") {
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/glic/selection" ]
+  }
 }
 
 # TODO(b/430371855): This is the better target for resources only needed

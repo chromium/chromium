@@ -56,6 +56,9 @@ class SelectionOverlayController
   static SelectionOverlayController* FromTabWebContents(
       content::WebContents* tab_web_contents);
 
+  size_t GetSelectedRegionCount() const { return selected_regions_.size(); }
+  std::vector<int> GetPolylineCounts() const;
+
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and ready to bind.
@@ -101,7 +104,7 @@ class SelectionOverlayController
   void NotifyOverlayClosing() override;
   bool IsResultsSidePanelShowing() override;
   GURL GetInitialURL() override;
-  void NotifyIsOverlayShowing(bool is_showing) override;
+  void NotifyIsOverlayShowing(bool is_showing) override {}
   int GetToolResourceId() override;
   ui::ElementIdentifier GetViewContainerId() const override;
   SidePanelType GetSidePanelType() override;

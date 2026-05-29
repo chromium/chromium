@@ -167,6 +167,16 @@ SelectionOverlayController* SelectionOverlayController::FromTabWebContents(
                  ->GetUnownedUserDataHost());
 }
 
+std::vector<int> SelectionOverlayController::GetPolylineCounts() const {
+  std::vector<int> polyline_counts;
+  for (const auto& [id, region] : selected_regions_) {
+    if (region->shape->is_polyline()) {
+      polyline_counts.push_back(region->shape->get_polyline().size());
+    }
+  }
+  return polyline_counts;
+}
+
 void SelectionOverlayController::BindOverlay(
     mojo::PendingReceiver<selection::SelectionOverlayPageHandler> receiver,
     mojo::PendingRemote<selection::SelectionOverlayPage> page) {
@@ -377,18 +387,6 @@ GURL SelectionOverlayController::GetInitialURL() {
   return GURL(chrome::kChromeUIGlicSelectionOverlayURL);
 }
 
-void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {
-  if (!is_showing) {
-    GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-    if (service) {
-      if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
-        instance->OnSelectionAreasChanged(0);
-        instance->OnPolylinePointsChanged({});
-      }
-    }
-  }
-}
-
 int SelectionOverlayController::GetToolResourceId() {
   return IDS_GLIC_SELECTION_OVERLAY_RENDERER_LABEL;
 }
@@ -566,8 +564,6 @@ void SelectionOverlayController::RenderRegions(bool should_focus_panel) {
     mojom::AdditionalContextPtr additional_context =
         CreateAdditionalContext(std::move(captured_regions));
     instance->SendAdditionalContext(std::move(additional_context));
-    instance->OnSelectionAreasChanged(selected_regions_.size());
-    instance->OnPolylinePointsChanged(polyline_counts);
     // If the event that triggered this was initiated via keyboard, do not
     // focus the panel to avoid stealing focus away from the selection pane.
     if (should_focus_panel) {

@@ -307,9 +307,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnUserResizeStarted(const gfx::Size& start_size);
   void OnUserResizeEnded(const gfx::Size& end_size);
 
-  void OnSelectionAreasChanged(int count);
-  void OnPolylinePointsChanged(const std::vector<int>& counts);
-
   void OnZoomLevelChange();
 
   // Records the number of tabs attached as context for a Glic response.
@@ -449,10 +446,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The number of scroll attempts (tracked per session and reset when the
   // session ends).
   int scroll_attempt_count_ = 0;
-
-  // Whether region selection is active.
-  int selection_areas_count_ = 0;
-  std::vector<int> polyline_point_counts_;
 
   // The number of zoom change attempts (tracked per instance and reset when
   // the instance is destroyed).

@@ -40,6 +40,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#endif
+
 namespace glic {
 
 namespace {
@@ -77,6 +81,38 @@ enum class GlicTurnSource {
   kMaxValue = kFloatyAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnSource)
+
+void RecordSelectionOverlayMetrics(
+    const std::vector<tabs::TabInterface*>& pinned_tabs) {
+// Selection Overlays are not currently implemented on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  int selection_areas_count = 0;
+  std::vector<int> polyline_point_counts;
+  for (tabs::TabInterface* tab : pinned_tabs) {
+    if (auto* web_contents = tab->GetContents()) {
+      if (auto* selection_overlay_controller =
+              SelectionOverlayController::FromTabWebContents(web_contents)) {
+        selection_areas_count +=
+            selection_overlay_controller->GetSelectedRegionCount();
+        std::vector<int> counts =
+            selection_overlay_controller->GetPolylineCounts();
+        polyline_point_counts.insert(polyline_point_counts.end(),
+                                     counts.begin(), counts.end());
+      }
+    }
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicCaptureRegion)) {
+    base::UmaHistogramExactLinear("Glic.Instance.InputSubmitted.SelectionCount",
+                                  selection_areas_count, 10);
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
+    for (int count : polyline_point_counts) {
+      base::UmaHistogramCounts1000(
+          "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", count);
+    }
+  }
+#endif
+}
 
 }  // namespace
 
@@ -175,15 +211,6 @@ void GlicInstanceMetrics::OnGlicScrollComplete(bool success) {
   } else if (turn_.pending_scroll_complete_) {
     record_scroll_metric(turn_);
   }
-}
-
-void GlicInstanceMetrics::OnSelectionAreasChanged(int count) {
-  selection_areas_count_ = count;
-}
-
-void GlicInstanceMetrics::OnPolylinePointsChanged(
-    const std::vector<int>& counts) {
-  polyline_point_counts_ = counts;
 }
 
 void GlicInstanceMetrics::OnPinnedTabsChanged(
@@ -928,16 +955,11 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
-  if (base::FeatureList::IsEnabled(features::kGlicCaptureRegion)) {
-    base::UmaHistogramExactLinear("Glic.Instance.InputSubmitted.SelectionCount",
-                                  selection_areas_count_, 10);
+
+  if (sharing_manager_) {
+    RecordSelectionOverlayMetrics(sharing_manager_->GetPinnedTabs());
   }
-  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
-    for (int count : polyline_point_counts_) {
-      base::UmaHistogramCounts1000(
-          "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", count);
-    }
-  }
+
   // Reset turn data and start populating it for the new turn being started.
   turn_ = {};
   turn_.input_submitted_time_ = base::TimeTicks::Now();
