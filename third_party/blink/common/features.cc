@@ -836,9 +836,6 @@ BASE_FEATURE(kFileHandlingIcons, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFileSystemUrlNavigation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFileSystemUrlNavigationForChromeAppsOnly,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFilteringScrollPrediction,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT

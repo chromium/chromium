@@ -514,11 +514,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFileHandlingIcons);
 // Switch to temporary turn back on file system url navigation.
 // TODO(https://crbug.com/1332598): Remove this feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFileSystemUrlNavigation);
-// TODO(https://crbug.com/1360512): this feature creates a carveout for
-// enabling filesystem: URL navigation within Chrome Apps regardless of whether
-// kFileSystemUrlNavigation is enabled or not.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFileSystemUrlNavigationForChromeAppsOnly);
 
 // Enables filtering of predicted scroll events on compositor thread.
 // Uses the kFilterName* values in ui_base_features.h as the 'filter' feature

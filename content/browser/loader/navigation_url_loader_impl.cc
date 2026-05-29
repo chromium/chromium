@@ -2192,8 +2192,6 @@ NavigationURLLoaderImpl::CreateTerminalNonNetworkLoaderFactory(
 
   if (url.GetScheme() == url::kFileSystemScheme) {
     bool is_nav_allowed =
-        base::FeatureList::IsEnabled(
-            blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
         GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
             storage_partition->browser_context(), url);
     if (is_nav_allowed ||

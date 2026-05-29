@@ -510,10 +510,6 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Iframes) {
 
 // Tests that platform apps can perform filesystem: URL navigations.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AllowFileSystemURLNavigation) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFileSystemUrlNavigationForChromeAppsOnly)) {
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(RunExtensionTest("platform_apps/filesystem_url",
                                {.launch_as_platform_app = true}))
       << message_;

@@ -55,9 +55,7 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
       request->frame_tree_node()->frame_tree().root()->current_frame_host();
   BrowserContext* browser_context = top_frame->GetBrowserContext();
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
-      !IsExternalMountedFile(request->GetURL()) &&
+  if (!IsExternalMountedFile(request->GetURL()) &&
       (url::Origin::Create(request->GetURL()) ==
        request->GetInitiatorOrigin()) &&
       GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
@@ -119,12 +117,9 @@ void BlockedSchemeNavigationThrottle::MaybeCreateAndAdd(
   RenderFrameHost* current_frame_host =
       NavigationRequest::From(&handle)->frame_tree_node()->current_frame_host();
   BrowserContext* browser_context = current_frame_host->GetBrowserContext();
-  // A navigation is permitted if the relevant feature flag is enabled, the
-  // request origin is equivalent to the initiator origin, and the embedder
-  // explicitly allows it.
+  // A navigation is permitted if the request origin is equivalent to the
+  // initiator origin, and the embedder explicitly allows it.
   bool is_navigation_allowed =
-      base::FeatureList::IsEnabled(
-          blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
       (url::Origin::Create(handle.GetURL()) == handle.GetInitiatorOrigin()) &&
       GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
           browser_context, handle.GetURL());
