@@ -95,6 +95,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/features.h"
@@ -1034,6 +1035,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
               StrikeDatabaseFactory::GetForProfile(profile_)) {
         strike_database->ClearAllStrikes();
       }
+
+      autofill::prefs::ClearEmailVerificationState(prefs, delete_begin_,
+                                                   delete_end_);
 
       autofill::PersonalDataManager* data_manager =
           autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);

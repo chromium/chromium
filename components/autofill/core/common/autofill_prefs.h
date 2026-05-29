@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 class PrefRegistrySimple;
@@ -302,6 +303,10 @@ bool IsPaymentCardBenefitsEnabled(const PrefService* prefs);
 void SetPaymentCardBenefits(PrefService* prefs, bool value);
 
 void ClearSyncTransportOptIns(PrefService* prefs);
+
+void ClearEmailVerificationState(PrefService* prefs,
+                                 const base::Time& delete_begin,
+                                 const base::Time& delete_end);
 
 void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
 

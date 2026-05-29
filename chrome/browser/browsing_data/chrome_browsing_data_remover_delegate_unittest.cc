@@ -105,6 +105,7 @@
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -152,6 +153,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -2385,6 +2387,56 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
   ASSERT_FALSE(tester.HasProfileAndCard());
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       EmailVerificationStateClearedOnAutofillRemoval) {
+  PrefService* prefs = GetProfile()->GetPrefs();
+
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+
+  // 1. Populate kAutofillEmailVerificationState preference.
+  {
+    ScopedDictPrefUpdate update(
+        prefs, autofill::prefs::kAutofillEmailVerificationState);
+
+    base::DictValue dict_recent;
+    dict_recent.Set("allowed", true);
+    dict_recent.Set("issuer_site", "https://issuer1.com");
+    dict_recent.Set("timestamp", base::TimeToValue(now));
+    update->Set("recent@example.com", std::move(dict_recent));
+
+    base::DictValue dict_old;
+    dict_old.Set("allowed", true);
+    dict_old.Set("issuer_site", "https://issuer2.com");
+    dict_old.Set("timestamp", base::TimeToValue(two_hours_ago));
+    update->Set("old@example.com", std::move(dict_old));
+  }
+
+  // Verify the setup.
+  EXPECT_EQ(
+      2u,
+      prefs->GetDict(autofill::prefs::kAutofillEmailVerificationState).size());
+
+  // 2. Perform removal for the last hour.
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
+
+  // "recent@example.com" should be removed. "old@example.com" should remain.
+  const base::DictValue& state_after_partial =
+      prefs->GetDict(autofill::prefs::kAutofillEmailVerificationState);
+  EXPECT_EQ(1u, state_after_partial.size());
+  EXPECT_FALSE(state_after_partial.contains("recent@example.com"));
+  EXPECT_TRUE(state_after_partial.contains("old@example.com"));
+
+  // 3. Perform removal for all-time.
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
+
+  // All entries should be removed.
+  EXPECT_TRUE(
+      prefs->GetDict(autofill::prefs::kAutofillEmailVerificationState).empty());
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
