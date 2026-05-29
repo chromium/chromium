@@ -16,6 +16,7 @@ import subprocess
 import tempfile
 import threading
 import time
+from xml.dom import minidom
 import zipfile
 
 from google.protobuf import text_format  # pylint: disable=import-error
@@ -369,6 +370,8 @@ class AvdConfig:
     self.avd_proto_path = avd_proto_path
     self.avd_proto_name = os.path.splitext(os.path.basename(avd_proto_path))[0]
     self._config = _Load(avd_proto_path)
+    self._system_image_name = None
+    self._system_image_dir = None
 
     self._initialized = False
     self._initializer_lock = threading.Lock()
@@ -477,7 +480,41 @@ class AvdConfig:
     return os.path.join(self.avd_home, '%s.avd' % self.avd_name)
 
   @property
-  def _system_image_dir(self):
+  def system_image_package(self):
+    """A helper to get the {,raw_}system_image_package from config file.
+
+    As avd.proto only allows one of:
+      * system_image_package
+      * raw_system_image_package
+    """
+    return getattr(self._config, self._config.WhichOneof('system_image'))
+
+  @property
+  def system_image_name(self):
+    """A helper to get the system_image_name.
+
+    The script will locate "package.xml" from the system image and grab the
+    value from "path" attribute from the "localPackage" element.
+    """
+    if self._system_image_name:
+      return self._system_image_name
+
+    base_path = os.path.join(COMMON_CIPD_ROOT,
+                             self.GetDestPath(self.system_image_package))
+    for root, _, files in os.walk(os.path.join(base_path, 'system-images')):
+      if 'package.xml' in files:
+        doc = minidom.parse(os.path.join(root, 'package.xml'))
+        elements = doc.getElementsByTagName('localPackage')
+        if elements:
+          self._system_image_name = elements[0].getAttribute('path')
+        break
+
+    if not self._system_image_name:
+      raise AvdException('Could not generate system_image_name.')
+    return self._system_image_name
+
+  @property
+  def system_image_dir(self):
     """The path of the directory that directly contains the system images.
 
     For example, if the system_image_name is
@@ -488,9 +525,15 @@ class AvdConfig:
 
     This is used to rebase the paths in qcow2 images.
     """
-    return os.path.join(COMMON_CIPD_ROOT,
-                        self.GetDestPath(self._config.system_image_package),
-                        *self._config.system_image_name.split(';'))
+    if not self._system_image_dir:
+      base_path = os.path.join(COMMON_CIPD_ROOT,
+                               self.GetDestPath(self.system_image_package))
+      self._system_image_dir = os.path.join(base_path,
+                                            *self.system_image_name.split(';'))
+      if not os.path.exists(self._system_image_dir):
+        raise AvdException('System image dir %r does not exist' %
+                           self._system_image_dir)
+    return self._system_image_dir
 
   @property
   def _root_ini_path(self):
@@ -612,7 +655,7 @@ class AvdConfig:
 
     logging.info('Creating AVD.')
     avd_manager.Create(avd_name=self.avd_name,
-                       system_image=self._config.system_image_name,
+                       system_image=self.system_image_name,
                        force=force)
 
     try:
@@ -765,8 +808,7 @@ class AvdConfig:
             '-tag',
             'emulator_version:%s' % self._config.emulator_package.version,
             '-tag',
-            'system_image_version:%s' %
-            self._config.system_image_package.version,
+            'system_image_version:%s' % self.system_image_package.version,
         ]
         if cipd_json_output:
           cipd_create_cmd.extend([
@@ -1021,7 +1063,7 @@ class AvdConfig:
       qcow2_image_path = os.path.join(self._avd_dir, '%s.qcow2' % f)
       if not os.path.exists(qcow2_image_path):
         continue
-      backing_file_path = os.path.join(self._system_image_dir, f)
+      backing_file_path = os.path.join(self.system_image_dir, f)
       logging.info('Rebasing the qcow2 image %r with the backing file %r',
                    qcow2_image_path, backing_file_path)
       cmd_helper.RunCmd([
@@ -1037,27 +1079,33 @@ class AvdConfig:
       ])
 
   def _ListPackages(self, packages):
+    if packages is _PACKAGES_ALL:
+      return [
+          self._config.avd_package,
+          self._config.emulator_package,
+          self._config.system_image_package,
+          self._config.raw_system_image_package,
+          *self._config.privileged_apk,
+          *self._config.additional_apk,
+      ]
+
     if packages is _PACKAGES_RUNTIME:
       packages = [
           self._config.avd_package,
           self._config.emulator_package,
-          self._config.system_image_package,
       ]
     elif packages is _PACKAGES_CREATION:
       packages = [
           self._config.emulator_package,
-          self._config.system_image_package,
           *self._config.privileged_apk,
           *self._config.additional_apk,
       ]
-    elif packages is _PACKAGES_ALL:
-      packages = [
-          self._config.avd_package,
-          self._config.emulator_package,
-          self._config.system_image_package,
-          *self._config.privileged_apk,
-          *self._config.additional_apk,
-      ]
+
+    # Add system_image_path if exists. raw_system_image_package should not be
+    # added here as we need to pre-process it.
+    if self._config.HasField('system_image_package'):
+      packages.append(self._config.system_image_package)
+
     return packages
 
   def _IterCipdPackages(self, packages, check_version=True):

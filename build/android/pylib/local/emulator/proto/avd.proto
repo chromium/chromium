@@ -14,7 +14,9 @@ message CIPDPackage {
   string version = 2;
   // Path into which the package should be installed.
   // relative to pylib.local.emulator.avd.COMMON_CIPD_ROOT.
-  string dest_path = 3;
+  //
+  // When empty, the script will use the basename of the config file name
+  optional string dest_path = 3;
 }
 
 message ScreenSettings {
@@ -84,7 +86,10 @@ message Avd {
     CIPDPackage raw_system_image_package = 13;
   }
   // The name of the system image to use, as reported by sdkmanager.
-  string system_image_name = 3;
+  //
+  // When empty, the script will parse the "package.xml" file from system image
+  // and use the attribute value "path" from the element "localPackage".
+  optional string system_image_name = 3;
 
   // The AVD to create or use.
   // (Only the package_name is used during AVD creation.)
