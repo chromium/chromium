@@ -48,7 +48,6 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::WeakPtr<aura::Window>,
                                    kTabDraggingSourceWindowKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kForceVisibleInMiniViewKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(uint64_t, kLacrosProfileId, 0)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPipOriginalWindowKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(float, kPipSnapFractionKey)

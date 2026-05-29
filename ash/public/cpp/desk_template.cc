@@ -99,7 +99,6 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   desk_template->set_client_cache_guid(client_cache_guid_);
   desk_template->should_launch_on_startup_ = should_launch_on_startup_;
   desk_template->policy_definition_ = policy_definition_.Clone();
-  desk_template->lacros_profile_id_ = lacros_profile_id_;
   desk_template->set_coral_tab_app_entities(
       mojo::Clone(coral_tab_app_entities_));
   return desk_template;
@@ -125,8 +124,6 @@ std::string DeskTemplate::ToDebugString() const {
   result += "Time updated: " + base::TimeFormatHTTP(updated_time_) + "\n";
   result += "auto launch: ";
   result += should_launch_on_startup_ ? "yes\n" : "no\n";
-  result +=
-      "Lacros profile ID: " + base::NumberToString(lacros_profile_id_) + "\n";
 
   // Converting to value and printing the debug string may be more
   // intensive but gives more complete information which increases
