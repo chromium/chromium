@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "PageContentProtoViewStructureBuilderUnitTest\.java":[
+  "PageContentProtoViewStructureBuilderUnitTest\\.java":[
     "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
   ]
 }

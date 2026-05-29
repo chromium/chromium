@@ -83,7 +83,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  'HistoricalTabModelObserver\.java': [
+  'HistoricalTabModelObserver\\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java",
@@ -92,27 +92,27 @@ specific_include_rules = {
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
     "+chrome/browser/tab_group_sync/android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java",
   ],
-  'HistoricalTabSaver\.java': [
+  'HistoricalTabSaver\\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
   ],
-  'HistoricalTabSaverImpl\.java': [
+  'HistoricalTabSaverImpl\\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
   ],
   'InterceptNavigationDelegateClientImpl.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
   ],
-  'RedirectHandlerTabHelper\.java': [
+  'RedirectHandlerTabHelper\\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabIntentDataProvider.java",
   ],
-  'RequestDesktopUtils\.java': [
+  'RequestDesktopUtils\\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
   ],
-  'TabContextMenuItemDelegate\.java': [
+  'TabContextMenuItemDelegate\\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupFeatureUtils.java",
   ],
-  'TabImpl\.java': [
+  'TabImpl\\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
@@ -149,30 +149,30 @@ specific_include_rules = {
     "+components/user_prefs/android/java/src/org/chromium/components/user_prefs/UserPrefs.java",
     "+components/version_info/android",
   ],
-  'PageContentProtoViewStructureBuilder\.java':[
+  'PageContentProtoViewStructureBuilder\\.java':[
     "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
   ],
-  'TabStateBrowserControlsVisibilityDelegate\.java': [
+  'TabStateBrowserControlsVisibilityDelegate\\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
   ],
-  'TabUtils\.java' : [
+  'TabUtils\\.java' : [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
   ],
-  'TabViewManagerImpl\.java': [
+  'TabViewManagerImpl\\.java': [
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",
   ],
-  'TabWebContentsObserver\.java': [
+  'TabWebContentsObserver\\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
     "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java",
   ],
-  'TabArchiver\.java': [
+  'TabArchiver\\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java"
   ],
-  'TabArchiverImpl\.java': [
+  'TabArchiverImpl\\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManager.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
@@ -185,7 +185,7 @@ specific_include_rules = {
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java"
   ],
-  'TabHelpers\.java': [
+  'TabHelpers\\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
     "+chrome/browser/ui/android/edge_to_edge/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java"
   ]

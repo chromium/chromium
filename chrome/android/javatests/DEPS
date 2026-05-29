@@ -79,34 +79,34 @@ specific_include_rules = {
   "federated_identity_test_utils.cc": [
     "+content/public/browser/webid/federated_identity_api_permission_context_delegate.h",
   ],
-  "WebappNavigationTest\.java": [
+  "WebappNavigationTest\\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
-  "PageContentProtoViewStructureBuilderTest\.java":[
+  "PageContentProtoViewStructureBuilderTest\\.java":[
     "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
   ],
-  "TabImplTest\.java":[
+  "TabImplTest\\.java":[
     "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
   ],
-  "WebApkIntegrationTest\.java": [
+  "WebApkIntegrationTest\\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
-  "AuthenticatorTest\.java": [
+  "AuthenticatorTest\\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
-  "DigitalCredentialProviderTest\.java": [
+  "DigitalCredentialProviderTest\\.java": [
     "+content/public/android/java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",
   ],
   "Fido2CredentialRequestTest.java": [
     "+content/public/android/java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
   ],
-  "PageInfoPopupTest\.java": [
+  "PageInfoPopupTest\\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
-  "ToolbarPhoneTest\.java": [
+  "ToolbarPhoneTest\\.java": [
     "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
   ],
-  "MessageTest\.java": [
+  "MessageTest\\.java": [
     "+content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java",
   ]
 }

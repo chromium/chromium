@@ -19,122 +19,122 @@ include_rules = [
 specific_include_rules = {
   # Exceptions to the ChromeActivity dependency restriction. These will all eventually be removed
   # new code should rely on acceptable dependency aquisition patterns.
-  "ChromeTabbedActivity\.java": [
+  "ChromeTabbedActivity\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "LaunchIntentDispatcher\.java": [
+  "LaunchIntentDispatcher\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ContextualSearchTabHelper\.java": [
+  "ContextualSearchTabHelper\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "BaseCustomTabActivity\.java": [
+  "BaseCustomTabActivity\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "DownloadMessageUiDelegate\.java": [
+  "DownloadMessageUiDelegate\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ScreenshotTask\.java": [
+  "ScreenshotTask\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ProcessInitializationHandler\.java": [
+  "ProcessInitializationHandler\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "OfflineIndicatorController\.java": [
+  "OfflineIndicatorController\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "UpdateInfoBarController\.java": [
+  "UpdateInfoBarController\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "UpdateStatusProvider\.java": [
+  "UpdateStatusProvider\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "FakeAppUpdateManagerWrapper\.java": [
+  "FakeAppUpdateManagerWrapper\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "AutocompleteMediator\.java": [
+  "AutocompleteMediator\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "AndroidPaymentApp\.java": [
+  "AndroidPaymentApp\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ChromePaymentRequestService\.java": [
+  "ChromePaymentRequestService\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "InterceptNavigationDelegateClientImpl\.java": [
+  "InterceptNavigationDelegateClientImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "TabImpl\.java": [
+  "TabImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "TrustedCdn\.java": [
+  "TrustedCdn\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ChromeTabCreator\.java": [
+  "ChromeTabCreator\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ChromeAsyncTabLauncher\.java": [
+  "ChromeAsyncTabLauncher\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ReturnToChromeUtil\.java": [
+  "ReturnToChromeUtil\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ViewShiftingActionBarDelegate\.java": [
+  "ViewShiftingActionBarDelegate\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ArCompositorDelegateImpl\.java": [
+  "ArCompositorDelegateImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "VrCompositorDelegateImpl\.java": [
+  "VrCompositorDelegateImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "InfoBarContainer\.java": [
+  "InfoBarContainer\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
 
   # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
   # new code should rely on acceptable dependency aquisition patterns.
-  "VideoPlayerActivity\.java": [
+  "VideoPlayerActivity\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "ContextualSearchQuickActionControl\.java": [
+  "ContextualSearchQuickActionControl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
   ],
-  "DownloadUtils\.java": [
+  "DownloadUtils\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "IncognitoNotificationServiceImpl\.java": [
+  "IncognitoNotificationServiceImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "MultiInstanceManager\.java": [
+  "MultiInstanceManager\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "MultiInstanceManagerApi31\.java": [
+  "MultiInstanceManagerApi31\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "MultiInstanceOrchestratorImpl\.java": [
+  "MultiInstanceOrchestratorImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "MultiWindowUtils\.java": [
+  "MultiWindowUtils\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "OfflinePageDownloadBridge\.java": [
+  "OfflinePageDownloadBridge\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "TabModelImpl\.java": [
+  "TabModelImpl\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "TabReparentingDelegate\.java": [
+  "TabReparentingDelegate\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "TabbedCrashRecoveryDelegate\.java": [
+  "TabbedCrashRecoveryDelegate\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "ChromeAsyncTabLauncher\.java": [
+  "ChromeAsyncTabLauncher\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "DragAndDropLauncherActivity\.java": [
+  "DragAndDropLauncherActivity\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
 }
