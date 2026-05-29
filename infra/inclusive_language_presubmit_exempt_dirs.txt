@@ -142,7 +142,6 @@ components/rlz
 components/safe_browsing/content/browser
 components/safe_browsing/core/common
 components/security_interstitials/content/android/java/src/org/chromium/components/security_interstitials
-components/services/storage/dom_storage
 components/signin/public/base
 components/signin/public/identity_manager
 components/soda
@@ -227,6 +226,7 @@ media/filters
 media/formats/mp4
 media/formats/webm
 media/gpu
+media/gpu/sandbox
 media/gpu/vaapi
 media/gpu/windows
 media/muxers
@@ -389,7 +389,6 @@ third_party/blink/web_tests/external/wpt/import-maps/data-driven
 third_party/blink/web_tests/external/wpt/infrastructure/assumptions
 third_party/blink/web_tests/external/wpt/infrastructure/reftest/legacy
 third_party/blink/web_tests/external/wpt/interfaces
-third_party/blink/web_tests/external/wpt/mathml/relations/html5-tree
 third_party/blink/web_tests/external/wpt/media-source/mp4
 third_party/blink/web_tests/external/wpt/payment-method-basic-card
 third_party/blink/web_tests/external/wpt/payment-request
@@ -526,7 +525,6 @@ third_party/lzma_sdk/google
 third_party/markdown
 third_party/markdown/extensions
 third_party/material_web_components/components-chromium/node_modules/lit-html
-third_party/material_web_components/components-chromium/node_modules/@types/trusted-types
 third_party/mediapipe/src
 third_party/mediapipe/src/.github/ISSUE_TEMPLATE
 third_party/mediapipe/src/mediapipe/calculators/core
