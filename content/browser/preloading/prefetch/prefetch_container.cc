@@ -274,6 +274,185 @@ void RecordPrefetchProxyPrefetchMainframeRespCode(int response_code) {
                            response_code);
 }
 
+// TODO(crbug.com/517847437): Consider migrating
+// `network::ResourceRequest::TrustedParams::EqualsForTesting` to non-test.
+// Currently this is used for `DUMP_WILL_BE_CHECK()` below (not strictly a test
+// but test-ish).
+bool OptionalTrustedParamsEqualsForTesting(  // IN-TEST
+    const std::optional<network::ResourceRequest::TrustedParams>& lhs,
+    const std::optional<network::ResourceRequest::TrustedParams>& rhs) {
+  return (!lhs && !rhs) ||
+         (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
+}
+
+// Validates PrePrefetch `ResourceRequest`, to confirm that we correctly
+// construct it. See
+// https://docs.google.com/document/d/12cjL04kEjtLs5hSthgg8o_UK-LeS_RcF992Z2vCp7Vk/edit?usp=sharing
+// for illustrating #A/#B+/#C.
+//
+// If any of the validation fails, we might want to:
+// - Fix the usage of OMTPrefetch (i.e. WebView API caller side; not all WebView
+//   prefetch parameters, APIs, and use cases are supported, as OMTPrefetch is
+//   an experimental feature), or
+// - Extend the supported usage of OMTPrefetch or fix bugs in OMTPrefetch
+//   (i.e. fix the prefetch side).
+enum class ValidateResourceRequestMode {
+  // (#A): `resource_request_for_validation` is the `ResourceRequest` that would
+  // be created for Prefetch, if the PrePrefetch wouldn't have been performed.
+  //
+  // (#C) and (#A) should be mostly the same, with some expected differences
+  // (see comments and logic in the method body below):
+  // - `devtools_request_id`
+  // - `content::GetCorsExemptRequestedWithHeaderName()` header
+  // - Timing differences, e.g. Client Hints values are changed between
+  //   PrePrefetch and its consumption.
+  //   (Note: not excluded from comparison)
+  kOnRequestConstruction,
+
+  // (#B+): `resource_request_for_validation` is the `ResourceRequest` after the
+  // PrePrefetch `ResourceRequest` (#C) is promoted and goes through
+  // `WillCreateURLLoaderFactory` etc.
+  //
+  // (#C) and (#B+) should be exactly the same.
+  kAfterWillCreateURLLoaderFactory,
+};
+NOINLINE void ValidateResourceRequestForPrePrefetch(
+    // (#C): `resource_request_for_pre_prefetch` is the `ResourceRequest`
+    // created for PrePrefetch.
+    const network::ResourceRequest& resource_request_for_pre_prefetch,
+    const network::ResourceRequest& resource_request_for_validation,
+    ValidateResourceRequestMode mode) {
+  // Migrated from `ResourceRequest::EqualsForTesting`, except for headers
+  // and some other fields (commented below).
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.method,
+                        resource_request_for_validation.method);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.url,
+                        resource_request_for_validation.url);
+  DUMP_WILL_BE_CHECK(
+      resource_request_for_pre_prefetch.site_for_cookies.IsEquivalent(
+          resource_request_for_validation.site_for_cookies));
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.update_first_party_url_on_redirect,
+      resource_request_for_validation.update_first_party_url_on_redirect);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.request_initiator ==
+                     resource_request_for_validation.request_initiator);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.isolated_world_origin ==
+                     resource_request_for_validation.isolated_world_origin);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.referrer,
+                        resource_request_for_validation.referrer);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.referrer_policy,
+                        resource_request_for_validation.referrer_policy);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.load_flags,
+                        resource_request_for_validation.load_flags);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.resource_type,
+                        resource_request_for_validation.resource_type);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.priority,
+                        resource_request_for_validation.priority);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.priority_incremental,
+                        resource_request_for_validation.priority_incremental);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.devtools_stack_id ==
+                     resource_request_for_validation.devtools_stack_id);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.cors_preflight_policy,
+                        resource_request_for_validation.cors_preflight_policy);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.originated_from_service_worker,
+      resource_request_for_validation.originated_from_service_worker);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.skip_service_worker,
+                        resource_request_for_validation.skip_service_worker);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.mode,
+                        resource_request_for_validation.mode);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.required_ip_address_space,
+      resource_request_for_validation.required_ip_address_space);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.credentials_mode,
+                        resource_request_for_validation.credentials_mode);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.redirect_mode,
+                        resource_request_for_validation.redirect_mode);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.fetch_integrity,
+                        resource_request_for_validation.fetch_integrity);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.expected_public_keys ==
+                     resource_request_for_validation.expected_public_keys);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.destination,
+                        resource_request_for_validation.destination);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.request_body,
+                        resource_request_for_validation.request_body);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.keepalive,
+                        resource_request_for_validation.keepalive);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.shared_storage_writable_eligible,
+      resource_request_for_validation.shared_storage_writable_eligible);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.has_user_gesture,
+                        resource_request_for_validation.has_user_gesture);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.enable_load_timing,
+                        resource_request_for_validation.enable_load_timing);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.enable_upload_progress,
+      resource_request_for_validation.enable_upload_progress);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.do_not_prompt_for_login,
+      resource_request_for_validation.do_not_prompt_for_login);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.is_outermost_main_frame,
+      resource_request_for_validation.is_outermost_main_frame);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.transition_type,
+                        resource_request_for_validation.transition_type);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.is_reload_navigation,
+                        resource_request_for_validation.is_reload_navigation);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.previews_state,
+                        resource_request_for_validation.previews_state);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.upgrade_if_insecure,
+                        resource_request_for_validation.upgrade_if_insecure);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.is_revalidating,
+                        resource_request_for_validation.is_revalidating);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.throttling_profile_id ==
+                     resource_request_for_validation.throttling_profile_id);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.fetch_window_id ==
+                     resource_request_for_validation.fetch_window_id);
+  if (mode != ValidateResourceRequestMode::kOnRequestConstruction) {
+    // For `kOnRequestConstruction`, `resource_request_for_validation` has its
+    // fresh random `devtools_request_id` token.
+    DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.devtools_request_id ==
+                       resource_request_for_validation.devtools_request_id);
+  }
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.is_fetch_like_api,
+                        resource_request_for_validation.is_fetch_like_api);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.is_fetch_later_api,
+                        resource_request_for_validation.is_fetch_later_api);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.is_favicon,
+                        resource_request_for_validation.is_favicon);
+  DUMP_WILL_BE_CHECK(
+      resource_request_for_pre_prefetch.recursive_prefetch_token ==
+      resource_request_for_validation.recursive_prefetch_token);
+  DUMP_WILL_BE_CHECK(OptionalTrustedParamsEqualsForTesting(  // IN-TEST
+      resource_request_for_pre_prefetch.trusted_params,
+      resource_request_for_validation.trusted_params));
+  DUMP_WILL_BE_CHECK(
+      resource_request_for_pre_prefetch.devtools_accepted_stream_types ==
+      resource_request_for_validation.devtools_accepted_stream_types);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.trust_token_params ==
+                     resource_request_for_validation.trust_token_params);
+  // `web_bundle_token_params` isn't set for prefetch.
+  DUMP_WILL_BE_CHECK(
+      !resource_request_for_pre_prefetch.web_bundle_token_params);
+  DUMP_WILL_BE_CHECK(!resource_request_for_validation.web_bundle_token_params);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.net_log_create_info ==
+                     resource_request_for_validation.net_log_create_info);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.net_log_reference_info ==
+                     resource_request_for_validation.net_log_reference_info);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.shared_dictionary_writer_enabled,
+      resource_request_for_validation.shared_dictionary_writer_enabled);
+  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.socket_tag,
+                        resource_request_for_validation.socket_tag);
+  DUMP_WILL_BE_CHECK_EQ(
+      resource_request_for_pre_prefetch.allows_device_bound_sessions,
+      resource_request_for_validation.allows_device_bound_sessions);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.permissions_policy ==
+                     resource_request_for_validation.permissions_policy);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.fetch_retry_options ==
+                     resource_request_for_validation.fetch_retry_options);
+}
+
 }  // namespace
 
 // static
@@ -669,6 +848,7 @@ PrefetchContainer::CreatePrePrefetchURLLoaderFactory() {
           [](mojo::PendingRemote<network::mojom::URLLoader> pre_prefetch_loader,
              mojo::PendingReceiver<network::mojom::URLLoaderClient>
                  pre_prefetch_client_receiver,
+             base::WeakPtr<PrefetchContainer> prefetch_container,
              const network::ResourceRequest& resource_request,
              mojo::PendingReceiver<network::mojom::URLLoader> receiver,
              mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
@@ -676,9 +856,20 @@ PrefetchContainer::CreatePrePrefetchURLLoaderFactory() {
                             std::move(pre_prefetch_loader));
             mojo::FusePipes(std::move(pre_prefetch_client_receiver),
                             std::move(client));
+            if (prefetch_container) {
+              // We can serve navigation even after its `PrefetchContainer` is
+              // gone. In such cases, skip the validation here, as it should be
+              // rare and we don't expect the validation can fail specifically
+              // for such cases.
+              CHECK(prefetch_container->GetResourceRequest());
+              ValidateResourceRequestForPrePrefetch(
+                  resource_request, *prefetch_container->GetResourceRequest(),
+                  ValidateResourceRequestMode::
+                      kAfterWillCreateURLLoaderFactory);
+            }
           },
           std::move(pre_prefetch_loader_),
-          std::move(pre_prefetch_loader_client_receiver_)));
+          std::move(pre_prefetch_loader_client_receiver_), GetWeakPtr()));
 
   // Currently `feature::kPrefetchOffTheMainThread` doesn't support the
   // request w/ isolated context.
@@ -1438,13 +1629,14 @@ void PrefetchContainer::OnPrefetchStarted() {
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
     CHECK(resource_request_for_pre_prefetch_);
 
-    // TODO(crbug.com/452389538): `resource_request_for_pre_prefetch_` was
-    // constructed from a non-main thread snapshot during PrePrefetch. We can
-    // validate `resource_request_for_pre_prefetch_` by comparing it with the
-    // strictly accurate resource request that is constructed here and modified
-    // via `URLLoaderFactory`s. This can only be done after
-    // `URLLoaderFactory::CreateLoaderAndStart` on
-    // `PrefetchStreamingURLLoader::Start()`.
+    ValidateResourceRequestForPrePrefetch(
+        *resource_request_for_pre_prefetch_,
+        *MakeInitialResourceRequestForPrefetch(request(), IsDecoy()),
+        ValidateResourceRequestMode::kOnRequestConstruction);
+
+    // `resource_request_for_pre_prefetch_` was constructed from a non-main
+    // thread snapshot during PrePrefetch, and we promote it as a
+    // `PrefetchContainer`'s `resource_request_`.
     resource_request_ = std::move(resource_request_for_pre_prefetch_);
   } else {
     resource_request_ =
