@@ -123,6 +123,8 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
   [self observeCurrentBrowser];
 
+  [self startObservingWindows];
+
   [self updateScreenshotProtection];
 }
 
@@ -139,11 +141,14 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
-  // Restore the window's state.
+  // Restore the windows state.
   if (_currentProtectionState == ProtectionState::kEnabled) {
     _currentProtectionState = ProtectionState::kDisabled;
-    [self applyScreenshotProtection:NO toWindow:self.sceneState.window];
+    [self applyScreenshotProtection:NO toWindows:self.sceneState.scene.windows];
   }
+
+  [self stopObservingWindows];
+
   [sceneState.profileState removeObserver:self];
   [sceneState.incognitoState removeObserver:self];
   [sceneState.tabGridState removeObserver:self];
@@ -321,8 +326,8 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
     return;
   }
 
-  UIWindow* window = self.sceneState.window;
-  if (!window) {
+  UIWindowScene* windowScene = self.sceneState.scene;
+  if (!windowScene) {
     return;
   }
 
@@ -340,7 +345,42 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
   _currentProtectionState = targetState;
 
-  [self applyScreenshotProtection:shouldProtect toWindow:window];
+  [self applyScreenshotProtection:shouldProtect toWindows:windowScene.windows];
+}
+
+// Observes changes in the Scene's windows.
+- (void)startObservingWindows {
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(windowDidBecomeVisible:)
+             name:UIWindowDidBecomeVisibleNotification
+           object:nil];
+}
+
+// Removes observation on the Scene's windows.
+- (void)stopObservingWindows {
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIWindowDidBecomeVisibleNotification
+              object:nil];
+}
+
+// Applies screenshot protection to new windows.
+- (void)windowDidBecomeVisible:(NSNotification*)notification {
+  UIWindow* newWindow = notification.object;
+
+  if (newWindow.windowScene != self.sceneState.scene) {
+    return;
+  }
+  if (![self isSceneStateReadyForProtection]) {
+    return;
+  }
+
+  if (_currentProtectionState == ProtectionState::kDisabled) {
+    return;
+  }
+
+  [self applyScreenshotProtection:YES toWindow:newWindow];
 }
 
 // Tracks pref and rule service changes for updating screenshot protection.
@@ -429,6 +469,14 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   return self.sceneState.incognitoState.incognitoContentVisible
              ? profile->GetOffTheRecordProfile()
              : profile;
+}
+
+// Applies or removes screenshot protection on `windows`.
+- (void)applyScreenshotProtection:(BOOL)isProtected
+                        toWindows:(NSArray<UIWindow*>*)windows {
+  for (UIWindow* window in windows) {
+    [self applyScreenshotProtection:isProtected toWindow:window];
+  }
 }
 
 // Applies or removes screenshot protection on the given window.

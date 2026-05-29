@@ -84,6 +84,14 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
     interface.incognitoBrowserProvider = incognito_provider;
 
     scene_state_.browserProviderInterface = interface;
+    mock_window_scene_ = OCMClassMock([UIWindowScene class]);
+    // Scene state requires its scene to have a session identifier.
+    id mock_session = OCMClassMock([UISceneSession class]);
+    OCMStub([mock_session persistentIdentifier]).andReturn(@"fake_identifier");
+    OCMStub([mock_window_scene_ session]).andReturn(mock_session);
+    NSArray<UIWindow*>* windows = @[ scene_state_.window ];
+    OCMStub([mock_window_scene_ windows]).andReturn(windows);
+    scene_state_.scene = mock_window_scene_;
 
     mock_agent_ = OCMPartialMock(agent_);
     [mock_agent_ setExpectationOrderMatters:YES];
@@ -101,6 +109,7 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
     [scene_state_ shutdown];
     agent_ = nil;
     scene_state_ = nil;
+    mock_window_scene_ = nil;
     profile_state_ = nil;
     browser_.reset();
     incognito_browser_.reset();
@@ -143,12 +152,14 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
 
   // Adds an expectation for a call to `applyScreenshotProtection` with the
   // given protection.
-  void ExpectApplyScreenshotProtection(BOOL applied_protection) {
+  void ExpectApplyScreenshotProtection(BOOL applied_protection,
+                                       UIWindow* window = nil) {
     // Add expectation to the mock agent then forward to the real one.
     // Forwarding makes sure that invariants in the real implementation are
     // checked by tests.
-    OCMExpect([mock_agent_ applyScreenshotProtection:applied_protection
-                                            toWindow:OCMOCK_ANY])
+    OCMExpect([mock_agent_
+                  applyScreenshotProtection:applied_protection
+                                   toWindow:window ? window : OCMOCK_ANY])
         .andForwardToRealObject();
   }
 
@@ -182,6 +193,7 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
 
   ProfileState* profile_state_;
+  id mock_window_scene_;
   FakeSceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
@@ -739,4 +751,52 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
 
   // Expect no protection. No crash means success.
   ExpectNoCallsToApplyScreenshotProtection();
+}
+
+// Tests that screenshot protection is applied to all windows in the scene.
+TEST_F(DataProtectionSceneAgentTransitionTest, MultiWindowProtection) {
+  // Create two windows.
+  UIWindow* window1 = [[UIWindow alloc] init];
+  UIWindow* window2 = [[UIWindow alloc] init];
+
+  // Mock the scene to return both windows.
+  id mock_scene = OCMClassMock([UIWindowScene class]);
+  // Scene state requires its scene to have a session identifier.
+  id mock_session = OCMClassMock([UISceneSession class]);
+  OCMStub([mock_session persistentIdentifier]).andReturn(@"fake_identifier");
+  OCMStub([mock_scene session]).andReturn(mock_session);
+  NSArray<UIWindow*>* windows = @[ window1, window2 ];
+  OCMStub([mock_scene windows]).andReturn(windows);
+  scene_state_.scene = mock_scene;
+
+  SetDataControlsRulesPolicyManaged();
+
+  // Entering the tab grid should protect both windows.
+  ExpectApplyScreenshotProtection(YES, window1);
+  ExpectApplyScreenshotProtection(YES, window2);
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+}
+
+// Tests that new windows added to the scene receive screenshot protection if it
+// is enabled.
+TEST_F(DataProtectionSceneAgentTransitionTest, NewWindowProtection) {
+  SetDataControlsRulesPolicyManaged();
+
+  // Entering the tab grid should protect the current window.
+  ExpectApplyScreenshotProtection(YES);
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Simulate a new window becoming visible in the same scene.
+  UIWindow* new_window = [[UIWindow alloc] init];
+  id mock_scene = scene_state_.scene;
+  id mock_window = OCMPartialMock(new_window);
+  OCMStub([mock_window windowScene]).andReturn(mock_scene);
+
+  ExpectApplyScreenshotProtection(YES, new_window);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIWindowDidBecomeVisibleNotification
+                    object:new_window];
 }
