@@ -694,7 +694,14 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
     }
 
     const size_t buffer_size = planes[0].bytesused;
-    const size_t max_buffer_capacity = planes[0].length;
+    // SECURITY: planes[0].length is the kernel-reported *dmabuf* size, but
+    // FinalizeJpegImage() only mmap()s output_frame->layout().planes()[0].size
+    // bytes (the caller-supplied plane.size). Bounds-check against the smaller
+    // of the two so we never write past the mapped region.
+    const size_t mapped_size =
+        job_record->output_frame->layout().planes()[0].size;
+    const size_t max_buffer_capacity =
+        std::min(static_cast<size_t>(planes[0].length), mapped_size);
     const size_t jpeg_size = FinalizeJpegImage(
         job_record->output_frame, buffer_size, max_buffer_capacity,
         std::move(job_record->exif_mapping));
