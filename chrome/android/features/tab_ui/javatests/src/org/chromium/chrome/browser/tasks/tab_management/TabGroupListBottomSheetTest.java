@@ -66,6 +66,8 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(
+            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_tip_bottom_sheet/false")
     public void testNewGroup_RegularNewTabPageStation() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
