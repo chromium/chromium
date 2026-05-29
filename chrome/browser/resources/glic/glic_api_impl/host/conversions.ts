@@ -772,6 +772,7 @@ export function additionalContextPartToClient(
       mimeType: part.data.mimeType,
       data: getArrayBufferFromBigBuffer(part.data.data)!,
     };
+    result.filename = optionalToClient(part.data.filename);
     extras.addTransfer(result.data.data);
   } else if (part.screenshot) {
     result.screenshot = screenshotToClient(part.screenshot, extras);

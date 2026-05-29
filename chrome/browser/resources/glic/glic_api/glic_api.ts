@@ -76,6 +76,8 @@ export declare interface AdditionalContextPart {
    * to read it as a stream if the data is large.
    */
   data?: Blob;
+  /** The filename of the data, if available. */
+  filename?: string;
   /**
    * The following four fields can be contained by `tabContext` and are
    * deprecated
@@ -3043,6 +3045,8 @@ export enum InvocationSource {
   TOOLBAR_BUTTON = 31,
   // User clicked on an Indigo page action.
   INDIGO_PAGE_ACTION = 32,
+  // User dropped a file/image onto the GLIC panel.
+  WEB_DRAG_DROP = 33,
 }
 
 ///////////////////////////////////////////////
@@ -3120,6 +3124,7 @@ export enum AdditionalContextSource {
   SHARE_CONTEXT_MENU = 0,
   REGION_SELECTION = 1,
   TEXT_SELECTION = 3,
+  WEB_DRAG_DROP = 4,
 }
 
 ///////////////////////////////////////////////

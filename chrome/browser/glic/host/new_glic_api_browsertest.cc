@@ -1232,7 +1232,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
   std::vector<uint8_t> data = {'t', 'e', 's', 't'};
   additional_context->parts.push_back(
       glic::mojom::AdditionalContextPart::NewData(glic::mojom::ContextData::New(
-          "text/plain", mojo_base::BigBuffer(data))));
+          "text/plain", mojo_base::BigBuffer(data), std::nullopt)));
 
   // Add a part with a screenshot.
   std::vector<uint8_t> screenshot_data = {1, 2, 3, 4};
@@ -1299,7 +1299,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContextQueued) {
   std::vector<uint8_t> data = {'q', 'u', 'e', 'u', 'e', 'd'};
   additional_context->parts.push_back(
       glic::mojom::AdditionalContextPart::NewData(glic::mojom::ContextData::New(
-          "text/plain", mojo_base::BigBuffer(data))));
+          "text/plain", mojo_base::BigBuffer(data), std::nullopt)));
 
   instance->SendAdditionalContext(std::move(additional_context));
 

@@ -1701,6 +1701,8 @@ enum InvocationSource {
   [MinVersion=22] kToolbarButton = 31,
   // User clicked on an Indigo page action.
   [MinVersion=23] kIndigoPageAction = 32,
+  // User dropped a file/image onto the GLIC panel.
+  [MinVersion=24] kWebDragDrop = 33,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)
@@ -1861,6 +1863,8 @@ struct ContextData {
   string mime_type;
   // The context data.
   mojo_base.mojom.BigBuffer data;
+  // The filename of the data, if available.
+  string? filename;
 };
 
 // Part of an additional context object.
@@ -1883,6 +1887,7 @@ enum AdditionalContextSource {
   kShareContextMenu = 0,
   kRegionSelection = 1,
   kTextSelection = 3,
+  [MinVersion=1] kWebDragDrop = 4,
 };
 
 // An additional context object.

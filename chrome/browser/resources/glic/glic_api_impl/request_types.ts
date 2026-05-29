@@ -1022,6 +1022,7 @@ export declare interface AdditionalContextPartPrivate extends
   annotatedPageData?: AnnotatedPageDataPrivate;
   pdf?: PdfDocumentDataPrivate;
   data?: {mimeType: string, data: ArrayBuffer};
+  filename?: string;
   tabContext?: TabContextResultPrivate;
 }
 

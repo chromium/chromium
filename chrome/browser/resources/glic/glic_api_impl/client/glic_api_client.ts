@@ -1803,11 +1803,13 @@ function convertAdditionalContextFromPrivate(context: AdditionalContextPrivate):
         convertAnnotatedPageDataFromPrivate(p.annotatedPageData);
     const pdf = p.pdf && convertPdfDocumentDataFromPrivate(p.pdf);
     const data = p.data && new Blob([p.data.data], {type: p.data.mimeType});
+    const filename = p.filename;
     const tabContext =
         p.tabContext && convertTabContextResultFromPrivate(p.tabContext);
     return {
       ...p,
       data,
+      filename,
       annotatedPageData,
       pdf,
       tabContext,
