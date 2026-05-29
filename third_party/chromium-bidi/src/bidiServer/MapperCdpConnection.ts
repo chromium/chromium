@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import debug, {type Debugger} from 'debug';
+import {debuglog} from 'node:util';
 import type {Protocol} from 'devtools-protocol';
 
 import type {MapperCdpClient} from '../cdp/CdpClient.js';
@@ -24,16 +24,16 @@ import type {LogPrefix, LogType} from '../utils/log.js';
 
 import {SimpleTransport} from './SimpleTransport.js';
 
-const debugInternal = debug('bidi:mapper:internal');
-const debugInfo = debug('bidi:mapper:info');
-const debugOthers = debug('bidi:mapper:debug:others');
+const debugInternal = debuglog('bidi:mapper:internal');
+const debugInfo = debuglog('bidi:mapper:info');
+const debugOthers = debuglog('bidi:mapper:debug:others');
 // Memorizes a debug creation
-const loggers = new Map<string, Debugger>();
+const loggers = new Map<string, ReturnType<typeof debuglog>>();
 const getLogger = (type: LogPrefix) => {
   const prefix = `bidi:mapper:${type}`;
   let logger = loggers.get(prefix);
   if (!logger) {
-    logger = debug(prefix);
+    logger = debuglog(prefix);
     loggers.set(prefix, logger);
   }
   return logger;
@@ -110,7 +110,7 @@ export class MapperServerCdpConnection {
 
       if (log.logType !== undefined && log.messages !== undefined) {
         const logger = getLogger(log.logType);
-        logger(log.messages);
+        (logger as (...args: any[]) => void)(...log.messages);
       }
     } catch {
       // Fall back to raw log in case of unknown

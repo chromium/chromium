@@ -21,7 +21,7 @@ import os from 'os';
 import path from 'path';
 
 import {launch, type Process} from '@puppeteer/browsers';
-import debug from 'debug';
+import {debuglog} from 'node:util';
 
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 
@@ -30,7 +30,7 @@ import {PipeTransport} from './PipeTransport.js';
 import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
 
-const debugInternal = debug('bidi:mapper:internal');
+const debugInternal = debuglog('bidi:mapper:internal');
 
 export interface ChromeOptions {
   chromeArgs: string[];

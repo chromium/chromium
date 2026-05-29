@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 import http from 'http';
+import {debuglog} from 'node:util';
 
-import debug from 'debug';
 import * as websocket from 'websocket';
 
 import {ErrorCode, type Session} from '../protocol/protocol.js';
@@ -25,10 +25,10 @@ import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
 
-export const debugInfo = debug('bidi:server:info');
-const debugInternal = debug('bidi:server:internal');
-const debugSend = debug('bidi:server:SEND ▸');
-const debugRecv = debug('bidi:server:RECV ◂');
+export const debugInfo = debuglog('bidi:server:info');
+const debugInternal = debuglog('bidi:server:internal');
+const debugSend = debuglog('bidi:server:SEND ▸');
+const debugRecv = debuglog('bidi:server:RECV ◂');
 
 interface Session {
   sessionId: string;

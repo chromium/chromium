@@ -141,6 +141,7 @@ export function createBiDiServerProcess() {
           DEBUG,
           DEBUG_COLORS,
           DEBUG_DEPTH,
+          NODE_DEBUG: DEBUG,
           NODE_OPTIONS,
           PORT,
           VERBOSE,

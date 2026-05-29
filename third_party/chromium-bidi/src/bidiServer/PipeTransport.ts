@@ -15,11 +15,11 @@
  * limitations under the License.
  *
  */
-import debug from 'debug';
+import {debuglog} from 'node:util';
 
 import type {Transport} from '../utils/transport.js';
 
-const debugInternal = debug('bidi:server:pipeTranspot');
+const debugInternal = debuglog('bidi:server:pipeTranspot');
 
 export class PipeTransport implements Transport {
   #pipeWrite: NodeJS.WritableStream;
