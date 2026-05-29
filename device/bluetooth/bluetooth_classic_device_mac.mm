@@ -87,6 +87,15 @@
   // destruction will see a null |_device| and become a no-op instead of
   // dereferencing a freed object.
   _device = nullptr;
+
+  // Keep self alive for a brief period to allow any already-enqueued
+  // notifications on the main run loop to fire safely (and become no-ops
+  // since _device is now null) rather than hitting a deallocated object.
+  // See FB13705522.
+  __strong auto strongSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    (void)strongSelf;
+  });
 }
 
 @end

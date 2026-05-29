@@ -100,6 +100,9 @@ void IOBluetoothPreferenceSetControllerPowerState(int state);
 
 - (void)deviceConnected:(IOBluetoothUserNotification*)notification
                  device:(IOBluetoothDevice*)device {
+  if (!_ui_task_runner) {
+    return;
+  }
   _ui_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&device::BluetoothAdapterMac::OnConnectNotification,
@@ -108,6 +111,17 @@ void IOBluetoothPreferenceSetControllerPowerState(int state);
 
 - (void)stopListening {
   [_connectNotification unregister];
+  _ui_task_runner = nullptr;
+  _adapter = nullptr;
+
+  // Keep self alive for a brief period to allow any already-enqueued
+  // notifications on the main run loop to fire safely (and become no-ops
+  // since _ui_task_runner is now null) rather than hitting a deallocated
+  // object. See FB13705522.
+  __strong auto strongSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    (void)strongSelf;
+  });
 }
 
 @end
