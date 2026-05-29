@@ -353,11 +353,11 @@ void VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfos(
     GetDeviceInfosCallback callback,
     const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
   std::vector<media::VideoCaptureDeviceInfo> all_device_infos;
+  all_device_infos.insert(std::end(all_device_infos), std::begin(device_infos),
+                          std::end(device_infos));
   for (const auto& device_entry : virtual_devices_by_id_) {
     all_device_infos.push_back(device_entry.second.device_info());
   }
-  all_device_infos.insert(std::end(all_device_infos), std::begin(device_infos),
-                          std::end(device_infos));
   std::move(callback).Run(all_device_infos);
 }
 
