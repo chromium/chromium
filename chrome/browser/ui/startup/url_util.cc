@@ -19,7 +19,27 @@
 
 namespace startup {
 
-bool ValidateLaunchUrl(const GURL& url) {
+namespace {
+
+// Returns true if `url` is invalid or uses a nested scheme
+// (filesystem: or blob:) that could be used to launder privileged origins.
+bool IsNestedOrInvalid(const GURL& url) {
+  return !url.is_valid() || url.SchemeIsFileSystem() || url.SchemeIsBlob();
+}
+
+}  // namespace
+
+bool ValidateLaunchUrlWebSafe(const GURL& url) {
+  if (IsNestedOrInvalid(url)) {
+    return false;
+  }
+
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  return policy->IsWebSafeScheme(url.GetScheme()) ||
+         url.spec() == url::kAboutBlankURL;
+}
+
+bool ValidateLaunchUrlWebUnsafe(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }

@@ -239,6 +239,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("https://google.com"), output[0].url);
+    EXPECT_FALSE(output[0].is_untrusted_launch);
 
     EXPECT_EQ(CommandLineTabsPresent::kYes,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
@@ -372,12 +373,15 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("https://www.google.com"), output[0].url);
+    EXPECT_TRUE(output[0].is_untrusted_launch);
 
     EXPECT_EQ(CommandLineTabsPresent::kYes,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with a file URL.
+  // Custom scheme case with a file URL. This is not allowed because custom
+  // scheme redirects represent untrusted web context and are restricted to
+  // standard web schemes.
   {
     const std::string arg_ascii =
         base::StrCat({scheme_prefix, "file:///tmp/test.html"});
@@ -385,15 +389,15 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("file:///tmp/test.html"), output[0].url);
+    ASSERT_EQ(0u, output.size());
 
-    EXPECT_EQ(CommandLineTabsPresent::kYes,
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with a chrome:// URL. This is not allowed,
-  // except on ChromeOS where any settings page is allowed.
+  // Custom scheme case with a chrome:// URL. This is not allowed on any
+  // platform because custom scheme redirects are treated as untrusted web-safe
+  // launches and highly restricted to prevent privilege escalation.
   {
     const std::string arg_ascii =
         base::StrCat({scheme_prefix, "chrome://settings"});
@@ -401,24 +405,9 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
-#if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS, the browser and OS are integrated. Allowing command-line
-    // access to any settings page is considered a safe and useful feature for
-    // administrators and power users. ValidateUrl() contains an explicit
-    // platform-specific check to allow this.
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("chrome://settings"), output[0].url);
-    EXPECT_EQ(CommandLineTabsPresent::kYes,
-              instance.HasCommandLineTabs(command_line, base::FilePath()));
-#else
-    // On Windows, Mac, and Linux, Chrome is a guest application. To minimize
-    // the attack surface from other applications, command-line access to
-    // internal chrome:// pages is highly restricted. ValidateUrl() enforces
-    // a strict allowlist, which "chrome://settings" does not pass.
     ASSERT_EQ(0u, output.size());
     EXPECT_EQ(CommandLineTabsPresent::kNo,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
-#endif
   }
 
   // Custom scheme case with opaque format (no slashes).
@@ -478,29 +467,18 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with file: path fix up
+  // Custom scheme case with file: path fix up. This is not allowed because
+  // custom scheme redirects represent untrusted web context and are restricted
+  // to standard web schemes.
   {
     const std::string arg_ascii = base::StrCat({scheme_prefix, "file:foo.txt"});
     base::CommandLine command_line = MakeCommandLine(arg_ascii);
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
-    ASSERT_EQ(1u, output.size());
+    ASSERT_EQ(0u, output.size());
 
-#if BUILDFLAG(IS_WIN)
-    // On Windows, the URL parser in FixupRelativeFile misinterprets a string
-    // like "file:foo.txt" due to ambiguity with UNC paths (e.g., \\server).
-    // It incorrectly parses "foo.txt" as the "host" part of the URL,
-    // resulting in "file://foo.txt/". TODO(crbug.com/40265634)
-    EXPECT_EQ(GURL("file://foo.txt/"), output[0].url);
-#else
-    // On POSIX systems, the colon is a valid filename character, and the
-    // string is correctly interpreted as a relative path, resulting in the
-    // expected canonical "file:///foo.txt".
-    EXPECT_EQ(GURL("file:///foo.txt"), output[0].url);
-#endif
-
-    EXPECT_EQ(CommandLineTabsPresent::kYes,
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }

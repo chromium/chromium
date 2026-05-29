@@ -2298,7 +2298,8 @@ bool ChromeContentBrowserClient::HasWebRequestAPIProxy(
   if (!web_request_api) {
     return false;
   } else if (base::FeatureList::IsEnabled(
-          features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload)) {
+                 features::
+                     kOptimizeWebRequestProxyForServiceWorkerAutoPreload)) {
     return web_request_api->HasWebRequestOrDeclarativeWebRequestExtension();
   } else {
     return web_request_api->MayHaveProxies();
@@ -4146,10 +4147,11 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
   preferred_root_scrollbar_color_scheme =
       web_prefs.preferred_root_scrollbar_color_scheme;
 
-  if (auto* theme_client = night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+  if (auto* theme_client =
+          night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
     preferred_color_scheme = theme_client->IsNightModeEnabled()
-            ? blink::mojom::PreferredColorScheme::kDark
-            : blink::mojom::PreferredColorScheme::kLight;
+                                 ? blink::mojom::PreferredColorScheme::kDark
+                                 : blink::mojom::PreferredColorScheme::kLight;
     preferred_root_scrollbar_color_scheme = preferred_color_scheme;
   }
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -4844,8 +4846,10 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       web_prefs->dynamic_safe_area_insets_enabled =
           delegate->IsDynamicSafeAreaInsetsEnabled();
     }
-    if (auto* theme_client = night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
-      web_prefs->force_dark_mode_enabled = theme_client->IsForceDarkWebContentEnabled();
+    if (auto* theme_client =
+            night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+      web_prefs->force_dark_mode_enabled =
+          theme_client->IsForceDarkWebContentEnabled();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -5091,8 +5095,10 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
           old_preferred_root_scrollbar_color_scheme;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (auto* theme_client = night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
-    bool force_dark_mode_new_state = theme_client->IsForceDarkWebContentEnabled();
+  if (auto* theme_client =
+          night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+    bool force_dark_mode_new_state =
+        theme_client->IsForceDarkWebContentEnabled();
     prefs_changed |=
         (web_prefs->force_dark_mode_enabled != force_dark_mode_new_state);
     web_prefs->force_dark_mode_enabled = force_dark_mode_new_state;
@@ -7266,18 +7272,36 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
   // Handle the google-chrome:// scheme (and chromium://).
   // If the scheme is present, we strip it and navigate to the inner URL.
   // This avoids launching a new browser instance via the OS handler.
+  //
+  // For security, only standard web-safe URLs are allowed (nested filesystem:
+  // and blob: schemes are rejected by ValidateLaunchUrlWebSafe). These
+  // resolved navigations are treated as renderer-initiated with an opaque
+  // origin as a secure fallback when the initiator is missing.
   if (std::optional<GURL> new_url =
           startup::ExtractGoogleChromeSchemeInnerUrl(url)) {
-    if (startup::ValidateLaunchUrl(*new_url)) {
+    if (startup::ValidateLaunchUrlWebSafe(*new_url)) {
       auto* web_contents = web_contents_getter.Run();
       if (web_contents) {
+        // Treat this navigation as renderer-initiated to ensure downstream
+        // components apply all standard renderer-initiated security
+        // restrictions (such as blocking navigations to privileged chrome://
+        // pages).
+        //
+        // TODO(crbug.com/513728023): Block this scheme when coming from
+        // Chrome's own renderers, since this should only be allowed from
+        // external renderers. Blink should drop the scheme before it gets to
+        // the browser.
         content::OpenURLParams params(
             *new_url,
             content::Referrer(web_contents->GetLastCommittedURL(),
                               network::mojom::ReferrerPolicy::kDefault),
             WindowOpenDisposition::NEW_FOREGROUND_TAB, page_transition,
-            /*is_renderer_initiated=*/false);
-        params.initiator_origin = initiating_origin;
+            /*is_renderer_initiated=*/true);
+        // Fallback to an opaque origin if the initiating origin is not
+        // provided (e.g., for external OS-initiated or browser-initiated
+        // launches) to prevent it from being treated as a privileged
+        // browser-initiated navigation.
+        params.initiator_origin = initiating_origin.value_or(url::Origin());
         web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
         return true;
       }
@@ -9206,10 +9230,9 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
              GURL frame_url, web_app::AppLock& lock,
              base::DictValue& debug_value)
               -> std::optional<blink::mojom::RelatedApplication> {
-            debug_value.Set("input",
-                            base::DictValue()
-                                .Set("manifest_id", manifest_id.spec())
-                                .Set("frame_url", frame_url.spec()));
+            debug_value.Set("input", base::DictValue()
+                                         .Set("manifest_id", manifest_id.spec())
+                                         .Set("frame_url", frame_url.spec()));
 
             if (!lock.registrar().AppMatches(
                     app_id, web_app::WebAppFilter::InstalledInChrome())) {
@@ -9226,7 +9249,7 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
             application.platform = "webapp";
             std::optional<webapps::ManifestId> app_manifest_id =
                 lock.registrar().GetAppManifestId(app_id);
-            if(!app_manifest_id.has_value()){
+            if (!app_manifest_id.has_value()) {
               debug_value.Set("manifest_id", "invalid manifest id");
               return std::nullopt;
             }
@@ -9247,8 +9270,7 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
                     .Set("manifest_url", application.url.value_or("")));
             return application;
           },
-          std::move(app_id), *valid_manifest_id,
-          std::move(frame_url)),
+          std::move(app_id), *valid_manifest_id, std::move(frame_url)),
       std::move(callback), std::move(arg_for_shutdown));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -20,12 +20,17 @@ struct StartupTab {
   };
 
   explicit StartupTab(const GURL& url, Type type = Type::kNormal);
+  StartupTab(const GURL& url, bool is_untrusted_launch);
   ~StartupTab();
 
   // The url to load.
   GURL url;
 
-  Type type;
+  Type type = Type::kNormal;
+
+  // True if this tab was launched from an untrusted external custom protocol
+  // (e.g., google-chrome://) that was stripped on startup.
+  bool is_untrusted_launch = false;
 };
 
 using StartupTabs = std::vector<StartupTab>;

@@ -65,6 +65,7 @@
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/display/screen.h"
@@ -407,6 +408,13 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     }
 
     NavigateParams params(browser, tab.url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    if (tab.is_untrusted_launch) {
+      // Force an opaque initiator origin for custom scheme launches triggered
+      // externally (e.g., from another browser). This prevents downstream
+      // components from treating the navigation as a highly privileged,
+      // user-typed omnibox navigation.
+      params.initiator_origin = url::Origin();
+    }
     params.disposition = first_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
     params.tabstrip_add_types = add_types;

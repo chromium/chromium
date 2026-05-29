@@ -407,6 +407,7 @@ source_set("unit_tests") {
     ":startup",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:chrome_features",
   ]
 
   if (!is_android) {

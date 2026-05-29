@@ -27,7 +27,8 @@ static bool JNI_IntentHandler_IsCorsSafelistedHeader(
 static bool JNI_ExternalIntentUrlChecker_ValidateUrl(
     JNIEnv* env,
     const JavaRef<jobject>& url) {
-  return startup::ValidateLaunchUrl(url::GURLAndroid::ToNativeGURL(env, url));
+  return startup::ValidateLaunchUrlWebUnsafe(
+      url::GURLAndroid::ToNativeGURL(env, url));
 }
 
 }  // namespace android

@@ -156,6 +156,9 @@ class StartupTabProviderImpl : public StartupTabProvider {
     // URL for the tab to be created from this argument, will be populated when
     // `tab_parsed` is `CommandLineTabsPresent::kYes`.
     GURL tab_url;
+
+    // True if this tab was launched from a custom protocol that was stripped.
+    bool is_untrusted_launch = false;
   };
 
   // Parses a command line argument to extract a `ParsedCommandLineTabArg`
