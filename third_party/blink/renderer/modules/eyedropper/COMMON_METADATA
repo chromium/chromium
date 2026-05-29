@@ -1,0 +1,7 @@
+monorail: {
+  component: "Blink>Forms>Color"
+}
+team_email: "dom-dev@google.com"
+buganizer_public: {
+  component_id: 1456485
+}
