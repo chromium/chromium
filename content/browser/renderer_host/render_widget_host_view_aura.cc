@@ -1029,8 +1029,15 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
   }
 
   window_->Show();
+
+  base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+      weak_ptr_factory_.GetWeakPtr());
+
   ShowImpl(page_visibility);
 #if BUILDFLAG(IS_WIN)
+  if (!weak_this) {
+    return;
+  }
   if (page_visibility != PageVisibilityState::kVisible &&
       legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_->Hide();
