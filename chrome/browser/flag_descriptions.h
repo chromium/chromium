@@ -5013,11 +5013,11 @@ inline constexpr char kRewriterAPIForGeminiNanoDescription[] =
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of Generative AI.";
 
-inline constexpr char kProofreaderAPIForGeminiNanoName[] =
-    "Proofreader API for Gemini Nano";
-inline constexpr char kProofreaderAPIForGeminiNanoDescription[] =
+inline constexpr char kProofreaderAPIName[] =
+    "Proofreader API for Small Expert Model";
+inline constexpr char kProofreaderAPIDescription[] =
     "Enables the Proofreader API, allowing you to proofread a piece of text"
-    "with a built-in large language model (Gemini Nano in Chrome)."
+    "with a built-in small expert model in Chrome. "
     "The API may be subject to changes including the supported options."
     "Please refer to the built-in AI article [1] for details. "
     "You must comply with our Prohibited Use Policy [2] which provides "

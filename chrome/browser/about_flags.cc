@@ -10163,9 +10163,9 @@ const FeatureEntry kFeatureEntries[] = {
                                     "kAIRewriterAPI"),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
-    {"proofreader-api-for-gemini-nano",
-     flag_descriptions::kProofreaderAPIForGeminiNanoName,
-     flag_descriptions::kProofreaderAPIForGeminiNanoDescription, kOsDesktop,
+    {"proofreader-api",
+     flag_descriptions::kProofreaderAPIName,
+     flag_descriptions::kProofreaderAPIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kAIProofreaderChoices),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 

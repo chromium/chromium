@@ -7878,9 +7878,9 @@
     "expiry_milestone": 154
   },
   {
-    "name": "proofreader-api-for-gemini-nano",
+    "name": "proofreader-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "queeniezhang@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "protected-audience-debug-token",
