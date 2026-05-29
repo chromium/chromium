@@ -45,6 +45,8 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -239,6 +241,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
   authorized_oauth_browser_ = nullptr;
+  identity_credential_source_for_testing_ = nullptr;
 
   for (auto& observer : observers_) {
     observer.OnWindowTrackerCleanedup();
@@ -287,17 +290,27 @@ void LockedSessionWindowTracker::OnTabChangedAt(tabs::TabInterface* tab,
   }
 }
 
+ash::OnTaskPodController* LockedSessionWindowTracker::on_task_pod_controller() {
+  if (!on_task_pod_controller_) {
+    return nullptr;
+  }
+  return on_task_pod_controller_.get();
+}
+
 void LockedSessionWindowTracker::SetNotificationManagerForTesting(
     std::unique_ptr<ash::boca::OnTaskNotificationsManager>
         notifications_manager) {
   notifications_manager_ = std::move(notifications_manager);
 }
 
-ash::OnTaskPodController* LockedSessionWindowTracker::on_task_pod_controller() {
-  if (!on_task_pod_controller_) {
-    return nullptr;
-  }
-  return on_task_pod_controller_.get();
+void LockedSessionWindowTracker::SetIdentityCredentialSourceForTesting(
+    content::webid::IdentityCredentialSource* source) {
+  identity_credential_source_for_testing_ = source;
+}
+
+void LockedSessionWindowTracker::TriggerFedCmFederatedLoginCompletionForTesting(
+    bool success) {
+  OnFedCmFederatedLogin(success);
 }
 
 void LockedSessionWindowTracker::OnTabStripModelChanged(
@@ -461,14 +474,50 @@ void LockedSessionWindowTracker::DidFinishNavigation(
   if (!browser || !browser_) {
     return;
   }
-  if (browser != browser_) {
-    EnsureMaybeCloseBrowserTaskPosted(browser);
-  } else {
+  if (browser == browser_) {
     content::WebContents* const tab = navigation_handle->GetWebContents();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
                        weak_pointer_factory_.GetWeakPtr(), tab->GetWeakPtr()));
+  }
+}
+
+void LockedSessionWindowTracker::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  ash::BrowserDelegate* const browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(
+          content::WebContents::FromRenderFrameHost(render_frame_host));
+  if (!browser || !browser_) {
+    return;
+  }
+  if (browser != browser_) {
+    if (browser->GetType() == ash::BrowserType::kAppPopup) {
+      // Verify if there are pending FedCM oauth requests for tracking purposes.
+      content::webid::IdentityCredentialSource* const source =
+          GetIdentityCredentialSource(render_frame_host->GetPage());
+      if (source && source->HasPendingRequest()) {
+        set_oauth_in_progress(true, browser);
+      }
+    }
+    EnsureMaybeCloseBrowserTaskPosted(browser);
+  }
+}
+
+void LockedSessionWindowTracker::OnFedCmFederatedLogin(bool success) {
+  set_oauth_in_progress(false, nullptr);
+  if (web_contents()) {
+    ash::BrowserDelegate* const browser =
+        ash::BrowserController::GetInstance()->GetBrowserForTab(web_contents());
+    if (browser && browser != browser_) {
+      // Attempt to close the oauth popup window now that the oauth flow has
+      // completed.
+      EnsureMaybeCloseBrowserTaskPosted(browser);
+    }
   }
 }
 
@@ -483,4 +532,12 @@ void LockedSessionWindowTracker::EnsureMaybeCloseBrowserTaskPosted(
   pending_close_tasks_.emplace(browser, std::move(task));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, pending_close_tasks_[browser]->callback());
+}
+
+content::webid::IdentityCredentialSource*
+LockedSessionWindowTracker::GetIdentityCredentialSource(content::Page& page) {
+  if (identity_credential_source_for_testing_) {
+    return identity_credential_source_for_testing_.get();
+  }
+  return content::webid::IdentityCredentialSource::FromPage(page);
 }
