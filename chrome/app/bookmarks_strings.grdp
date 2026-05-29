@@ -580,4 +580,12 @@
   </message>
   <!-- End of screen reader message strings. -->
 
+  <!-- IPH strings for auto-hiding bookmark bar -->
+  <message name="IDS_BOOKMARK_BAR_HIDDEN_INACTIVITY_TOAST_LABEL" desc="Label shown in the toast promo when the bookmark bar is hidden due to inactivity.">
+    Your bookmarks bar was hidden because you haven't used it recently
+  </message>
+  <message name="IDS_BOOKMARK_BAR_HIDDEN_INACTIVITY_TOAST_SCREENREADER" desc="Screen reader text for the toast promo when the bookmark bar is hidden due to inactivity.">
+    Your bookmarks bar was hidden because you haven't used it recently
+  </message>
+
 </grit-part>
