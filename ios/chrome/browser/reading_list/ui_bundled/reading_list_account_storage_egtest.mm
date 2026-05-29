@@ -99,10 +99,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testSignInPromoInIncognito)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
