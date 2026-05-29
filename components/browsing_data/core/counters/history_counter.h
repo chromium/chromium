@@ -32,8 +32,7 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
                   ResultInt value,
                   bool is_sync_enabled,
                   bool has_synced_visits,
-                  std::string last_visited_domain,
-                  ResultInt unique_domains_result);
+                  std::string last_visited_domain);
     ~HistoryResult() override;
 
     bool has_synced_visits() const { return has_synced_visits_; }
@@ -42,15 +41,9 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
       return last_visited_domain_;
     }
 
-    ResultInt unique_domains_result() const { return unique_domains_result_; }
-
    private:
     bool has_synced_visits_;
     std::string last_visited_domain_;
-    // TODO(crbug.com/406227667): Migrate the `unique_domains_result_` to be the
-    // default value returned by HistoryResult once the Desktop UI is migrated
-    // to the new strings.
-    ResultInt unique_domains_result_;
   };
 
   explicit HistoryCounter(history::HistoryService* history_service,
@@ -68,7 +61,6 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
  private:
   void Count() override;
 
-  void OnGetLocalHistoryCount(history::HistoryCountResult result);
   void OnGetWebHistoryCount(
       history::WebHistoryService::Request* request,
       base::optional_ref<const history::WebHistoryService::QueryHistoryResult>
@@ -89,7 +81,6 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
 
   bool has_synced_visits_;
 
-  bool local_counting_finished_;
   bool web_counting_finished_;
   bool domain_fetching_finished_;
 
@@ -99,7 +90,6 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  BrowsingDataCounter::ResultInt local_result_;
   std::string last_visited_domain_;
   BrowsingDataCounter::ResultInt unique_domains_result_;
 

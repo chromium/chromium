@@ -39,7 +39,7 @@ struct QuickDeleteDomainResult {
 QuickDeleteDomainResult GetLastVisitedDomainAndUniqueDomainCountFromResult(
     const browsing_data::HistoryCounter::HistoryResult* result) {
   browsing_data::BrowsingDataCounter::ResultInt unique_domains_count =
-      result->unique_domains_result();
+      result->Value();
   std::u16string last_visited_domain =
       base::UTF8ToUTF16(result->last_visited_domain());
 

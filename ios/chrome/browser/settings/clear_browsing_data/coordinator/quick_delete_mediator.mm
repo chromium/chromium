@@ -844,7 +844,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     (const browsing_data::HistoryCounter::HistoryResult*)result {
   CHECK(result);
   browsing_data::BrowsingDataCounter::ResultInt uniqueDomainsCount =
-      result->unique_domains_result();
+      result->Value();
   if (uniqueDomainsCount < 1) {
     return @"";
   }

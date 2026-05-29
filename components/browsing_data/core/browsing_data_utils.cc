@@ -70,7 +70,7 @@ std::u16string CreateHistoryCounterString(
   }
 
   browsing_data::BrowsingDataCounter::ResultInt unique_domains_count =
-      history_result->unique_domains_result();
+      history_result->Value();
 
   if (unique_domains_count == 0) {
     if (history_result->has_synced_visits()) {

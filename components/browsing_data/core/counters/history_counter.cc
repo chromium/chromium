@@ -26,8 +26,8 @@ HistoryCounter::HistoryCounter(history::HistoryService* history_service,
       web_history_service_callback_(callback),
       sync_tracker_(this, sync_service),
       has_synced_visits_(false),
-      local_counting_finished_(false),
-      web_counting_finished_(false) {
+      web_counting_finished_(false),
+      domain_fetching_finished_(false) {
   DCHECK(history_service_);
 }
 
@@ -66,20 +66,10 @@ void HistoryCounter::Count() {
 
   history::WebHistoryService* web_history = GetWebHistoryService();
 
-  local_counting_finished_ = false;
   web_counting_finished_ = !web_history;
   domain_fetching_finished_ = false;
 
   // Count the locally stored items.
-  // TODO(crbug.com/397187800): Clean up GetHistoryCount logic once
-  // kDbdRevampDesktop is launched.
-  history_service_->GetHistoryCount(
-      GetPeriodStart(), GetPeriodEnd(),
-      history::VisitQuery404sPolicy::kInclude404s,
-      base::BindOnce(&HistoryCounter::OnGetLocalHistoryCount,
-                     weak_ptr_factory_.GetWeakPtr()),
-      &cancelable_task_tracker_);
-
   history_service_->GetUniqueDomainsVisited(
       GetPeriodStart(), GetPeriodEnd(),
       history::VisitQuery404sPolicy::kInclude404s,
@@ -130,21 +120,6 @@ void HistoryCounter::Count() {
       partial_traffic_annotation);
 
   // TODO(msramek): Include web history count when there is an API for it.
-}
-
-void HistoryCounter::OnGetLocalHistoryCount(
-    history::HistoryCountResult result) {
-  // Ensure that all callbacks are on the same thread, so that we do not need
-  // a mutex for `MergeResults`.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.success) {
-    return;
-  }
-
-  local_result_ = result.count;
-  local_counting_finished_ = true;
-  MergeResults();
 }
 
 void HistoryCounter::OnGetWebHistoryCount(
@@ -202,14 +177,13 @@ void HistoryCounter::OnWebHistoryTimeout() {
 }
 
 void HistoryCounter::MergeResults() {
-  if (!local_counting_finished_ || !web_counting_finished_ ||
-      !domain_fetching_finished_) {
+  if (!web_counting_finished_ || !domain_fetching_finished_) {
     return;
   }
 
   ReportResult(std::make_unique<HistoryResult>(
-      this, local_result_, sync_tracker_.IsSyncActive(), has_synced_visits_,
-      last_visited_domain_, unique_domains_result_));
+      this, unique_domains_result_, sync_tracker_.IsSyncActive(),
+      has_synced_visits_, last_visited_domain_));
 }
 
 bool HistoryCounter::IsHistorySyncEnabled(
@@ -221,12 +195,10 @@ HistoryCounter::HistoryResult::HistoryResult(const HistoryCounter* source,
                                              ResultInt value,
                                              bool is_sync_enabled,
                                              bool has_synced_visits,
-                                             std::string last_visited_domain,
-                                             ResultInt unique_domains_result)
+                                             std::string last_visited_domain)
     : SyncResult(source, value, is_sync_enabled),
       has_synced_visits_(has_synced_visits),
-      last_visited_domain_(std::move(last_visited_domain)),
-      unique_domains_result_(unique_domains_result) {}
+      last_visited_domain_(std::move(last_visited_domain)) {}
 
 HistoryCounter::HistoryResult::~HistoryResult() = default;
 
