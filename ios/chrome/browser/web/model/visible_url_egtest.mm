@@ -152,10 +152,6 @@ class PausableRequestHandler {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector
-            (testStoppingPendingBackNavigationAndReload)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
@@ -410,7 +406,6 @@ class PausableRequestHandler {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_disabled.push_back(
       web::features::kForceSynthesizedRestoreSession);
-  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
