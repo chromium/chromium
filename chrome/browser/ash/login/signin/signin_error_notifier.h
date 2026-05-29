@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
@@ -29,6 +30,7 @@ class IdentityManager;
 
 class Profile;
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 
@@ -36,7 +38,10 @@ namespace ash {
 class SigninErrorNotifier : public SigninErrorController::Observer,
                             public KeyedService {
  public:
-  SigninErrorNotifier(SigninErrorController* controller, Profile* profile);
+  // `local_state` must be non-null and must outlive `this`.
+  SigninErrorNotifier(PrefService* local_state,
+                      SigninErrorController* controller,
+                      Profile* profile);
 
   SigninErrorNotifier(const SigninErrorNotifier&) = delete;
   SigninErrorNotifier& operator=(const SigninErrorNotifier&) = delete;
@@ -86,6 +91,8 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // `message_center::HandleNotificationClickDelegate`.
   void HandleSecondaryAccountReauthNotificationClick(
       std::optional<int> button_index);
+
+  const raw_ref<PrefService> local_state_;
 
   // The error controller to query for error details.
   raw_ptr<SigninErrorController> error_controller_;

@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -178,9 +177,11 @@ std::unique_ptr<LegacyTokenHandleFetcher> CreateTokenHandleFetcher(
 
 }  // namespace
 
-SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
+SigninErrorNotifier::SigninErrorNotifier(PrefService* local_state,
+                                         SigninErrorController* controller,
                                          Profile* profile)
-    : error_controller_(controller),
+    : local_state_(CHECK_DEREF(local_state)),
+      error_controller_(controller),
       profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
       account_manager_(AccountManagerFactory::Get()->GetAccountManager(
@@ -225,8 +226,7 @@ void SigninErrorNotifier::OnTokenHandleCheck(const AccountId& account_id,
   if (!reauth_required) {
     return;
   }
-  // TODO(crbug.com/404133029): Avoid using g_browser_process here.
-  RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()), account_id,
+  RecordReauthReason(local_state_.get(), account_id,
                      ReauthReason::kInvalidTokenHandle);
   HandleDeviceAccountError(/*error_message=*/l10n_util::GetStringUTF16(
       IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE));
@@ -284,9 +284,8 @@ void SigninErrorNotifier::OnErrorChanged() {
   if (!IsAccountManagerAvailable(profile_)) {
     // If this flag is disabled, Chrome OS does not have a concept of Secondary
     // Accounts. Preserve existing behavior.
-    // TODO(crbug.com/404133029): Avoid using g_browser_process here.
-    RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()),
-                       account_id, ReauthReason::kSyncFailed);
+    RecordReauthReason(local_state_.get(), account_id,
+                       ReauthReason::kSyncFailed);
     HandleDeviceAccountError(
         /*error_message=*/GetMessageBodyForDeviceAccountErrors(
             /*error=*/error_controller_->auth_error().state()));
@@ -297,9 +296,8 @@ void SigninErrorNotifier::OnErrorChanged() {
   const CoreAccountId primary_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (error_account_id == primary_account_id) {
-    // TODO(crbug.com/404133029): Avoid using g_browser_process here.
-    RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()),
-                       account_id, ReauthReason::kSyncFailed);
+    RecordReauthReason(local_state_.get(), account_id,
+                       ReauthReason::kSyncFailed);
     HandleDeviceAccountError(
         /*error_message=*/GetMessageBodyForDeviceAccountErrors(
             /*error=*/error_controller_->auth_error().state()));
