@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import androidx.annotation.StringDef;
 
-import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -14,6 +13,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.ProfileDataUtils;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -333,16 +333,7 @@ final class SigninPromoMediator
         if (primaryAccount != null) {
             return mProfileDataCache.getById(primaryAccount.getId());
         }
-        // TODO(crbug.com/507370415): create a helper class similar to AccountUtils and move this
-        // logic there
-        Promise<List<DisplayableProfileData>> accountsPromise = mProfileDataCache.getAccounts();
-        if (accountsPromise.isFulfilled()) {
-            List<DisplayableProfileData> accounts = accountsPromise.getResult();
-            if (!accounts.isEmpty()) {
-                return accounts.get(0);
-            }
-        }
-        return null;
+        return ProfileDataUtils.getFirstIfFulfilledAndNotEmpty(mProfileDataCache.getAccounts());
     }
 
     private void recordEventHistogram(@Event String actionType) {

@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.ProfileDataUtils;
 import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -28,7 +28,6 @@ import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A {@link PickerAdapter} with special behavior tailored for Chrome.
@@ -120,12 +119,10 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         if (signedInAccountInfo != null) {
             return signedInAccountInfo.getEmail();
         }
-        Promise<List<DisplayableProfileData>> accountsPromise = mProfileDataCache.getAccounts();
-        if (accountsPromise.isFulfilled()) {
-            List<DisplayableProfileData> accounts = accountsPromise.getResult();
-            if (!accounts.isEmpty()) {
-                return accounts.get(0).getAccountEmail();
-            }
+        @Nullable DisplayableProfileData profileData =
+                ProfileDataUtils.getFirstIfFulfilledAndNotEmpty(mProfileDataCache.getAccounts());
+        if (profileData != null) {
+            return profileData.getAccountEmail();
         }
         return null;
     }
