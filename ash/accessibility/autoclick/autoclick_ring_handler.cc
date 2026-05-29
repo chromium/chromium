@@ -201,8 +201,8 @@ void AutoclickRingHandler::StopAutoclickRing() {
   current_animation_type_ = AnimationType::kNone;
   Stop();
   if (view_) {
-    ring_widget_->GetRootView()->RemoveChildViewT(view_.get());
-    view_ = nullptr;
+    ring_widget_->GetRootView()->RemoveChildViewT(
+        std::exchange(view_, nullptr));
   }
 }
 
@@ -226,8 +226,8 @@ void AutoclickRingHandler::AnimationStopped() {
     case AnimationType::kNone:
       // Fall through to reset the view.
       if (view_) {
-        ring_widget_->GetRootView()->RemoveChildViewT(view_.get());
-        view_ = nullptr;
+        ring_widget_->GetRootView()->RemoveChildViewT(
+            std::exchange(view_, nullptr));
       }
       break;
   }
