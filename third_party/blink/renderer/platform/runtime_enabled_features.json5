@@ -3048,7 +3048,7 @@
     },
     {
       name: "FlexWrapBalance",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://open-ui.org/components/scoped-focusgroup.explainer/
