@@ -43,7 +43,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -70,8 +69,8 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.MultiInstanceUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -101,7 +100,6 @@ import java.util.function.Supplier;
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = MultiInstanceManager.INVALID_TASK_ID;
 
-    private static final int HIGH_INSTANCE_LIMIT_MEMORY_THRESHOLD_MB = 6500;
     public static final String PERSISTENT_STATE_ID = "persistent_state_id";
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
@@ -226,11 +224,7 @@ public class MultiWindowUtils implements ActivityStateListener {
             return TabWindowManager.MAX_SELECTORS_1000;
         }
 
-        boolean isAboveMemoryThreshold =
-                SysUtils.amountOfPhysicalMemoryKB()
-                        >= HIGH_INSTANCE_LIMIT_MEMORY_THRESHOLD_MB
-                                * ConversionUtils.KILOBYTES_PER_MEGABYTE;
-        if (isAboveMemoryThreshold) {
+        if (!MultiInstanceUtils.isLowMemoryDevice()) {
             return TabWindowManager.MAX_SELECTORS_20;
         }
         return TabWindowManager.MAX_SELECTORS_S;

@@ -23,12 +23,17 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.util.MultiInstanceUtils;
 import org.chromium.ui.display.DisplayUtil;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
 @NullMarked
 public class IncognitoUtils {
     private static final double LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES = 8.0;
+    private static final double RESTRICTED_LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES = 10.0;
+    // Test emulators run as ~8" or ~9" tablets. We need a lower threshold of 8.0" to allow tests to
+    // execute incognito multi-window flows without being blocked by the 10.0" production limit.
+    private static final double LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES_FOR_TEST = 8.0;
     private static @Nullable Boolean sIsEnabledForTesting;
     private static @Nullable Boolean sShouldOpenIncognitoAsWindowForTesting;
 
@@ -101,7 +106,7 @@ public class IncognitoUtils {
                             || ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
-                                                    LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
+                                                    LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES_FOR_TEST));
             return sShouldOpenIncognitoAsWindowForTesting;
         }
 
@@ -109,6 +114,11 @@ public class IncognitoUtils {
         // Manifest launchMode check due to dependency restrictions on ChromeTabbedActivity.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
             return false;
+        }
+        if (ChromeFeatureList.sAndroidOpenIncognitoAsWindowRestrictions.isEnabled()) {
+            return !MultiInstanceUtils.isLowMemoryDevice()
+                    && DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
+                            RESTRICTED_LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES);
         }
         return DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
                 LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES);

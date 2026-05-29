@@ -13227,6 +13227,12 @@ const FeatureEntry kFeatureEntries[] = {
          payments::features::kPaymentRequestRejectTooSmallWindows)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"android-open-incognito-as-window-restrictions",
+     flag_descriptions::kAndroidOpenIncognitoAsWindowRestrictionsName,
+     flag_descriptions::kAndroidOpenIncognitoAsWindowRestrictionsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAndroidOpenIncognitoAsWindowRestrictions)},
     {"incognito-as-window-full-screen",
      flag_descriptions::kIncognitoAsWindowFullScreenName,
      flag_descriptions::kIncognitoAsWindowFullScreenDescription, kOsAndroid,
