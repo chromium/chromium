@@ -18,6 +18,8 @@
 
 enum class AccountMenuAccessPoint;
 class Browser;
+@class ScreenProvider;
+@class ShowSigninCommand;
 @protocol SystemIdentity;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
@@ -28,7 +30,6 @@ enum class SecurityDomainId;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-@class ShowSigninCommand;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
@@ -237,6 +238,24 @@ class PrefRegistrySyncable;
                                      promoAction:(signin_metrics::PromoAction)
                                                      promoAction
                                     showSnackbar:(BOOL)showSnackbar;
+
+// Returns a coordinator for signing users in using the `selectedAccountEmail`.
++ (SigninCoordinator*)
+    deeplinkSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                            browser:(Browser*)browser
+                               selectedAccountEmail:
+                                   (NSString*)selectedAccountEmail
+                                     screenProvider:
+                                         (ScreenProvider*)screenProvider
+                                       contextStyle:
+                                           (SigninContextStyle)contextStyle
+                                        accessPoint:
+                                            (signin_metrics::AccessPoint)
+                                                accessPoint
+                  changeProfileContinuationProvider:
+                      (const ChangeProfileContinuationProvider&)
+                          changeProfileContinuationProvider;
 
 // ChromeCoordinator.
 - (void)start NS_REQUIRES_SUPER;

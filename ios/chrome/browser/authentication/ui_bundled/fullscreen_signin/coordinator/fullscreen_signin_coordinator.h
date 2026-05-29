@@ -19,6 +19,11 @@
 // The delegate of the FullscreenSigninCoordinator
 @property(nonatomic, weak) id<FullscreenSigninCoordinatorDelegate> delegate;
 
+// `identity` is used to select a specific identity. If there are multiple
+// accounts on device this identity will be shown as chosen in account picker
+// flow.
+@property(nonatomic, weak) id<SystemIdentity> identity;
+
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).
 // `screenProvider` helps decide which screen to show.

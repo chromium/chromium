@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/two_screens_signin/coordinator/two_screens_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin/deeplink_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
@@ -351,6 +352,32 @@ using signin_metrics::PromoAction;
                     contextStyle:contextStyle
                      accessPoint:accessPoint
                     showSnackbar:showSnackbar];
+}
+
++ (SigninCoordinator*)
+    deeplinkSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                            browser:(Browser*)browser
+                               selectedAccountEmail:
+                                   (NSString*)selectedAccountEmail
+                                     screenProvider:
+                                         (ScreenProvider*)screenProvider
+                                       contextStyle:
+                                           (SigninContextStyle)contextStyle
+                                        accessPoint:
+                                            (signin_metrics::AccessPoint)
+                                                accessPoint
+                  changeProfileContinuationProvider:
+                      (const ChangeProfileContinuationProvider&)
+                          changeProfileContinuationProvider {
+  return [[DeeplinkSigninCoordinator alloc]
+             initWithBaseViewController:viewController
+                                browser:browser
+                   selectedAccountEmail:selectedAccountEmail
+                         screenProvider:screenProvider
+                           contextStyle:contextStyle
+                            accessPoint:accessPoint
+      changeProfileContinuationProvider:changeProfileContinuationProvider];
 }
 
 #pragma mark - SigninCoordinator

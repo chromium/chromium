@@ -160,6 +160,9 @@
       changeProfileContinuationProvider:_changeProfileContinuationProvider];
   self.mediator.consumer = self.viewController;
   self.mediator.delegate = self;
+  if (self.identity) {
+    self.mediator.selectedIdentity = self.identity;
+  }
   if (self.mediator.ignoreDismissGesture) {
     self.viewController.modalInPresentation = YES;
   }

@@ -72,6 +72,19 @@ class KeepGaiaID {
   GaiaId gaia_id_;
 };
 
+// Filter class skipping identities that do not have the given email.
+class KeepEmail {
+ public:
+  explicit KeepEmail(NSString* email) : email_(email) { CHECK(email_); }
+
+  bool ShouldFilter(id<SystemIdentity> identity) const {
+    return ![email_ isEqualToString:identity.userEmail];
+  }
+
+ private:
+  NSString* email_;
+};
+
 // Filter skipping identities if either sub-filter match.
 template <typename Filter1, typename Filter2>
 class CombineOr {
@@ -309,6 +322,16 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
     }
   }
   return identities;
+}
+
+id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithEmail(
+    NSString* email) const {
+  if (!email.length) {
+    return nil;
+  }
+  return IterateOverAllIdentitiesOnDevice(
+      FindFirstIdentity{},
+      CombineOr{SkipRestricted{restriction_}, KeepEmail{email}});
 }
 
 NSArray<id<SystemIdentity>>*

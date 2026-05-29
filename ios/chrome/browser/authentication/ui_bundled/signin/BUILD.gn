@@ -72,6 +72,7 @@ source_set("signin_impl") {
     "//ios/chrome/browser/authentication/two_screens_signin/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/signin:features",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin/instant_signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
