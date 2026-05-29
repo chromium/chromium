@@ -86,7 +86,7 @@ impl Finder {
     #[inline]
     pub fn new(needle: &[u8]) -> Finder {
         let mut s = Finder { hash: Hash::new(), hash_2pow: 1 };
-        let first_byte = match needle.get(0) {
+        let first_byte = match needle.first() {
             None => return s,
             Some(&first_byte) => first_byte,
         };

@@ -351,10 +351,7 @@ impl<'h, 'n> Iterator for FindRevIter<'h, 'n> {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        let pos = match self.pos {
-            None => return None,
-            Some(pos) => pos,
-        };
+        let pos = self.pos?;
         let result = self.finder.rfind(&self.haystack[..pos]);
         match result {
             None => None,

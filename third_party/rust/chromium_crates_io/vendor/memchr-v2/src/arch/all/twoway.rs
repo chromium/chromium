@@ -323,7 +323,7 @@ impl FinderRev {
         let nlen = needle.len();
         let mut pos = haystack.len();
         let mut shift = nlen;
-        let first_byte = match needle.get(0) {
+        let first_byte = match needle.first() {
             None => return Some(pos),
             Some(&first_byte) => first_byte,
         };
@@ -364,7 +364,7 @@ impl FinderRev {
     ) -> Option<usize> {
         let nlen = needle.len();
         let mut pos = haystack.len();
-        let first_byte = match needle.get(0) {
+        let first_byte = match needle.first() {
             None => return Some(pos),
             Some(&first_byte) => first_byte,
         };

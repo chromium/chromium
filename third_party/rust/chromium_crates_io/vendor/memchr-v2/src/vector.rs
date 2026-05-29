@@ -319,11 +319,24 @@ mod aarch64neon {
         }
 
         #[inline(always)]
+        #[cfg(target_endian = "little")]
         unsafe fn movemask(self) -> NeonMoveMask {
             let asu16s = vreinterpretq_u16_u8(self);
             let mask = vshrn_n_u16(asu16s, 4);
             let asu64 = vreinterpret_u64_u8(mask);
             let scalar64 = vget_lane_u64(asu64, 0);
+            NeonMoveMask(scalar64 & 0x8888888888888888)
+        }
+
+        #[inline(always)]
+        #[cfg(target_endian = "big")]
+        unsafe fn movemask(self) -> NeonMoveMask {
+            // Swap the endianness of each 16-bit input.
+            let asu16s = vreinterpretq_u16_u8(vrev16q_u8(self));
+            let mask = vshrn_n_u16(asu16s, 4);
+            let asu64 = vreinterpret_u64_u8(mask);
+            // Use `swap_bytes` to swap the endianness of the 64-bit output.
+            let scalar64 = vget_lane_u64(asu64, 0).swap_bytes();
             NeonMoveMask(scalar64 & 0x8888888888888888)
         }
 

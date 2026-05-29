@@ -630,10 +630,8 @@ impl Prefilter {
         if rarest_rank > MAX_FALLBACK_RANK {
             None
         } else {
-            let finder = crate::arch::all::packedpair::Finder::with_pair(
-                needle,
-                pair.clone(),
-            )?;
+            let finder =
+                crate::arch::all::packedpair::Finder::with_pair(needle, pair)?;
             let call = prefilter_kind_fallback;
             let kind = PrefilterKind { fallback: finder };
             Some(Prefilter { call, kind, rarest_byte, rarest_offset })
