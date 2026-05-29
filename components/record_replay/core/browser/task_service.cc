@@ -42,19 +42,29 @@ void TaskService::OnURLVisited(const GURL& visited_url) {
 void TaskService::OnTaskDefinitionsRetrieved(
     const GURL& visited_url,
     std::vector<TaskDefinition> task_definitions) {
-  for (const TaskDefinition& definition : task_definitions) {
+  for (TaskDefinition definition : task_definitions) {
     if (definition.url() == visited_url.spec()) {
-      // TODO(crbug.com/517099841): Split the observation logic from the
-      // execution logic.
-      observer_ = std::make_unique<TaskObserver>(
-          definition,
-          base::BindRepeating(&TaskService::OnTaskCompleted,
-                              weak_ptr_factory_.GetWeakPtr()),
-          task_parameters_extractor_);
-      observer_->StartObserving(visited_url);
-      observer_->OnURLVisited(visited_url);
+      StartObserving(visited_url, definition);
+      OfferExecuting(visited_url, definition);
     }
   }
+}
+
+void TaskService::StartObserving(const GURL& visited_url,
+                                 TaskDefinition definition) {
+  observer_ = std::make_unique<TaskObserver>(
+      definition,
+      base::BindRepeating(&TaskService::OnTaskCompleted,
+                          weak_ptr_factory_.GetWeakPtr()),
+      task_parameters_extractor_);
+  observer_->StartObserving(visited_url);
+  observer_->OnURLVisited(visited_url);
+}
+
+void TaskService::OfferExecuting(const GURL& visited_url,
+                                 TaskDefinition definition) {
+  // TODO(crbug.com/514303674): Pass the task definition and parameters to some
+  // further code that will offer the user to execute the task.
 }
 
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {

@@ -56,10 +56,12 @@ class TaskService : public KeyedService {
   const std::unique_ptr<TaskObserver>& getObserverForTesting() const {
     return observer_;
   }
-
  private:
   void OnTaskDefinitionsRetrieved(const GURL& visited_url,
                                   std::vector<TaskDefinition> task_definitions);
+
+  void StartObserving(const GURL& visited_url, TaskDefinition definition);
+  void OfferExecuting(const GURL& visited_url, TaskDefinition definition);
 
   raw_ptr<TaskStore> task_store_;
   raw_ptr<TaskParametersExtractor> task_parameters_extractor_;
