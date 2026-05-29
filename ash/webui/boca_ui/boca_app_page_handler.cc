@@ -957,7 +957,13 @@ void BocaAppHandler::StopPresentingOwnScreen(
 
 void BocaAppHandler::GetGeminiStatus(GetGeminiStatusCallback callback) {
   if (gemini_status_fetcher_) {
-    gemini_status_fetcher_->GetStatus(std::move(callback));
+    auto record_and_run_callback = base::BindOnce(
+        [](GetGeminiStatusCallback cb, bool enabled) {
+          ash::boca::RecordTeacherGetGeminiStatusEnabled(enabled);
+          std::move(cb).Run(enabled);
+        },
+        std::move(callback));
+    gemini_status_fetcher_->GetStatus(std::move(record_and_run_callback));
   } else {
     LOG(ERROR)
         << "Gemini status fetcher not available, fallback to default value";

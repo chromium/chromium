@@ -3984,13 +3984,31 @@ TEST_F(BocaAppPageHandlerConsumerTest, SetSitePermission_DeniedWhenNoWindows) {
   EXPECT_TRUE(remote().is_connected());
 }
 
-TEST_F(BocaAppPageHandlerProducerTest, GetGeminiStatusFallbackWhenFetcherNull) {
+struct GeminiStatusTestParam {
+  std::string test_name;
+  std::string state_string;
+  bool expected_enabled;
+  int expected_uma_enabled_value;
+};
+
+class BocaAppPageHandlerProducerGeminiStatusTest
+    : public BocaAppPageHandlerProducerTest,
+      public testing::WithParamInterface<GeminiStatusTestParam> {};
+
+TEST_F(BocaAppPageHandlerProducerGeminiStatusTest,
+       GetGeminiStatusFallbackWhenFetcherNull) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> future;
   boca_app_handler()->GetGeminiStatus(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectTotalCount("Ash.Boca.TeacherGetGeminiStatus.Enabled",
+                                    0);
 }
 
-TEST_F(BocaAppPageHandlerProducerTest, GetGeminiStatusSuccessWhenFetcherValid) {
+TEST_P(BocaAppPageHandlerProducerGeminiStatusTest,
+       GetGeminiStatusSuccessWhenFetcherValid) {
+  const GeminiStatusTestParam& param = GetParam();
+  base::HistogramTester histogram_tester;
   network::TestURLLoaderFactory test_url_loader_factory;
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakePrimaryAccountAvailable("test_user@gmail.com",
@@ -4012,13 +4030,29 @@ TEST_F(BocaAppPageHandlerProducerTest, GetGeminiStatusSuccessWhenFetcherValid) {
       {kGaiaId.ToString()}, nullptr);
   test_url_loader_factory.AddResponse(
       url, base::ReplaceStringPlaceholders(kGeminiStatusFetchResponseTemplate,
-                                           {kGeminiStateDisabled}, nullptr));
+                                           {param.state_string}, nullptr));
 
   base::test::TestFuture<bool> future;
   handler->GetGeminiStatus(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), param.expected_enabled);
+  histogram_tester.ExpectTotalCount("Ash.Boca.TeacherGetGeminiStatus.Enabled",
+                                    1);
+  histogram_tester.ExpectBucketCount("Ash.Boca.TeacherGetGeminiStatus.Enabled",
+                                     param.expected_uma_enabled_value, 1);
   mock_content_settings_handler_ = nullptr;
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    BocaAppPageHandlerProducerGeminiStatusTests,
+    BocaAppPageHandlerProducerGeminiStatusTest,
+    testing::Values(GeminiStatusTestParam{"GeminiEnabled", kGeminiStateEnabled,
+                                          true, 1},
+                    GeminiStatusTestParam{"GeminiDisabled",
+                                          kGeminiStateDisabled, false, 0}),
+    [](const testing::TestParamInfo<
+        BocaAppPageHandlerProducerGeminiStatusTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 TEST_F(BocaAppPageHandlerConsumerTest, GetWindowsTabsListVerifyUrlType) {
   int32_t test_tab_id = 123;
