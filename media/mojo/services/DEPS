@@ -1,23 +1,23 @@
 specific_include_rules = {
-  "gpu_mojo_media_client_cros\.cc": [
+  "gpu_mojo_media_client_cros\\.cc": [
     "+chromeos/components/cdm_factory_daemon",
   ],
-  "media_manifest\.cc": [
+  "media_manifest\\.cc": [
     "+chromecast/common/mojom",
   ],
-  "mojo_cdm_service_context\.h": [
+  "mojo_cdm_service_context\\.h": [
     "+chromeos/components/cdm_factory_daemon/remote_cdm_context.h",
   ],
-  "oop_video_decoder_service\.h": [
+  "oop_video_decoder_service\\.h": [
     "+chromeos/components/cdm_factory_daemon/remote_cdm_context.h",
   ],
-  "oop_video_decoder_factory_service\.cc": [
+  "oop_video_decoder_factory_service\\.cc": [
     "+components/viz/common/switches.h",
   ],
-  "oop_video_decoder_factory_process_service\.cc": [
+  "oop_video_decoder_factory_process_service\\.cc": [
     "+services/viz/public/cpp/gpu/gpu.h",
   ],
-  "webrtc_video_perf_mojolpm_fuzzer\.cc": [
+  "webrtc_video_perf_mojolpm_fuzzer\\.cc": [
     "+third_party/libprotobuf-mutator/src/src",
     "+components/leveldb_proto/testing/fake_db.h",
   ],
