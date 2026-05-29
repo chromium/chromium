@@ -32,17 +32,9 @@ declare_args() {
   # when the default value is used.
   cast_build_incremental = "999999"
 
-
-
-
   # If true, the mixer will be instantiated inside cast_shell. When false, the
   # mixer is expected to be running in another process.
   mixer_in_cast_shell = true
-
-
-
-
-
 
   # unified flag to pick monotonic_clock OR monotonic_clock_raw
   media_clock_monotonic_raw = !is_android && !is_cast_desktop_build
@@ -58,12 +50,9 @@ declare_args() {
   # TODO(ziyangch): make the parsing logic have ability to quote/escape characters.
   default_command_line_flags = []
 
-
-
   # Set to true to enable external Mojo services to communicate with services
   # within cast_shell.
   enable_external_mojo_services = is_linux || is_chromeos || is_android
-
 
   # Recording happens at this sample rate. Must be 16000, 48000 or 96000 Hz.
   audio_input_sample_rate = 16000
@@ -71,15 +60,11 @@ declare_args() {
   # Whether use unix sockets in Cast input/output stream.
   use_unix_sockets = is_linux || is_chromeos || is_android
 
-
   # Extra rpath to use for standalone services.
   iot_service_rpath = ""
 
-
-
   # True to use the Chromium runtime for cast rendering.
   enable_chromium_runtime_cast_renderer = false
-
 
   # device specific string to append to User string.
   device_user_agent_suffix = ""
@@ -116,7 +101,6 @@ declare_args() {
   # For local user build we set it to "local.${USER}" value.
   cast_build_release = "local." + getenv("USER")
 }
-
 
 # All locales supported by Cast builds. This provides a single point of
 # reference for all GN files referencing a locales list.

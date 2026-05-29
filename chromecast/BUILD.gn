@@ -227,7 +227,6 @@ cast_test_group("cast_tests") {
           # hotlist/461351
           gtest_excludes += [ "CastNavigationBrowserTest.VideoPlaybackMp4" ]
         }
-
       }
       filters += [ cast_shell_browsertests_filter ]
     }

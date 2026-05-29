@@ -10,7 +10,6 @@ import("//testing/test.gni")
 # Alsa must be used for these targets to build.
 assert(use_alsa)
 
-
 cast_source_set("alsa_wrapper") {
   sources = [
     "alsa_wrapper.cc",

@@ -37,8 +37,6 @@ cast_source_set("backend") {
   if (enable_chromium_runtime_cast_renderer) {
     deps += [ "//chromecast/media/cma/backend/proxy" ]
   }
-
-
 }
 
 # Target for OEM partners to override media shared library, i.e.
@@ -137,7 +135,6 @@ cast_source_set("saved_volumes") {
   ]
 }
 
-
 test("cast_audio_backend_unittests") {
   testonly = true
   sources = [ "volume_map_unittest.cc" ]
@@ -148,7 +145,6 @@ test("cast_audio_backend_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-
     "//media",
     "//testing/gmock",
     "//testing/gtest",

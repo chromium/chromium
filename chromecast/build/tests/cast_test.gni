@@ -428,7 +428,8 @@ template("cast_test_group_list") {
       args += invoker.additional_options
     }
 
-    # Depend first on the "pack_build" step, so that the build lists are created.
+    # Depend first on the "pack_build" step, so that the build lists are
+    # created.
     deps = [ ":$_pack_build_action" ]
 
     # Next, depend on the filter steps, such that they are created before this

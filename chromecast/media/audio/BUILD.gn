@@ -130,7 +130,6 @@ cast_source_set("audio") {
     "//base",
     "//chromecast/base",
     "//chromecast/media/api",
-
     "//chromecast/media/audio/net:proto",
     "//chromecast/media/base",
     "//chromecast/media/base:monotonic_clock",
