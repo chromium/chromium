@@ -62,8 +62,10 @@ namespace {
 using glic::test::internal::kGlicFreShowingDialogState;
 using glic::test::internal::kGlicInstanceCoordinatorState;
 
+#if !BUILDFLAG(IS_WIN)
 constexpr base::FilePath::StringViewType kRecordingDirectoryPath =
     FILE_PATH_LITERAL("chrome/browser/glic/e2e_test/internal/wpr_recordings");
+#endif
 
 const char kGlicE2ETestModeSwitch[] = "glic-e2e-test-mode";
 const char kHostResolverRulesValue[] =
@@ -272,6 +274,10 @@ GlicE2ETest::WaitForAndInstrumentGlic() {
 
 void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
     const std::string recording_filename) {
+#if BUILDFLAG(IS_WIN)
+  GTEST_SKIP() << "(crbug.com/517199038) WPR tests are temporarily skipped on "
+                  "Windows due to WPR process failure";
+#else
   if (test_mode_ == kRealBackend && !use_wpr_for_real_backend_) {
     return;
   }
@@ -288,6 +294,7 @@ void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
   }
 
   ASSERT_TRUE(web_page_replay_server_wrapper()->Start(recording_path));
+#endif
 }
 
 GlicKeyedService* GlicE2ETest::glic_service() {
