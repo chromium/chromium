@@ -37,7 +37,10 @@ import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Unit tests for {@link AdaptiveToolbarFeatures}. */
 @Config(manifest = Config.NONE)
@@ -48,6 +51,7 @@ public class AdaptiveToolbarFeaturesUnitTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+    @Mock private PrefService mPrefService;
 
     private Context mContext;
 
@@ -55,6 +59,7 @@ public class AdaptiveToolbarFeaturesUnitTest {
     public void setUp() {
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
         mContext = ApplicationProvider.getApplicationContext();
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
     }
@@ -118,5 +123,21 @@ public class AdaptiveToolbarFeaturesUnitTest {
         assertEquals(
                 AdaptiveToolbarButtonVariant.SHARE,
                 AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext, mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsTranslateEnabled_ManagedAndDisabled() {
+        when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+        assertFalse(AdaptiveToolbarFeatures.isTranslateEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsTranslateEnabled_UserModifiedAndDisabled() {
+        when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+        assertTrue(AdaptiveToolbarFeatures.isTranslateEnabled(mProfile));
     }
 }

@@ -128,7 +128,8 @@ public class TranslateToolbarButtonControllerUnitTest {
     }
 
     @Test
-    public void testShouldNotShowUpWhenDisabled() {
+    public void testShouldNotShowUpWhenDisabledByPolicy() {
+        when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
         TranslateToolbarButtonController translateToolbarButtonController =
                 new TranslateToolbarButtonController(
@@ -136,5 +137,17 @@ public class TranslateToolbarButtonControllerUnitTest {
         ButtonData buttonData = translateToolbarButtonController.get(mTab);
 
         assertFalse(buttonData.canShow());
+    }
+
+    @Test
+    public void testShouldShowUpWhenDisabledByUser() {
+        when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+        TranslateToolbarButtonController translateToolbarButtonController =
+                new TranslateToolbarButtonController(
+                        () -> mTab, mDrawable, "Translate button description", () -> mTracker);
+        ButtonData buttonData = translateToolbarButtonController.get(mTab);
+
+        assertTrue(buttonData.canShow());
     }
 }

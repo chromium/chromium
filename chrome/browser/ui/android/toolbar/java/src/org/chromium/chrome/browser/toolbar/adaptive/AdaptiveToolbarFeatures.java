@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -166,7 +167,11 @@ public class AdaptiveToolbarFeatures {
      * @return Whether the translate button is enabled by policy/preference.
      */
     public static boolean isTranslateEnabled(Profile profile) {
-        return UserPrefs.get(profile).getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
+        PrefService prefService = UserPrefs.get(profile);
+        if (prefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)) {
+            return prefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
+        }
+        return true;
     }
 
     public static boolean isTabGroupingPageActionEnabled() {
