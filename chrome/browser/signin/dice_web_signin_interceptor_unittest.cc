@@ -2406,7 +2406,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
   EXPECT_THAT(
       interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
-      testing::UnorderedElementsAre(initiator_info.account_id));
+      testing::ElementsAre(initiator_info.account_id,
+                           secondary_info.account_id));
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
 }
 
@@ -2461,8 +2462,181 @@ TEST_F(DiceWebSigninInterceptorTest,
   // This should immediately trigger ProceedWithProfileCreation.
   std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
   EXPECT_THAT(
       interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
-      testing::UnorderedElementsAre(initiator_info.account_id));
+      testing::ElementsAre(initiator_info.account_id,
+                           secondary_info.account_id));
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_SecondaryFailure) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_info);
+  initiator_info =
+      AccountInfo::Builder(initiator_info).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_info);
+
+  // Secondary 1: Bob has no refresh token in the source profile (simulates a
+  // failed background fetch of a new account).
+  // We only need a valid CoreAccountId for him, no extended setup needed.
+  CoreAccountId secondary_bob_id = CoreAccountId::FromString("bob_id");
+
+  // Secondary 2: Charlie has a valid refresh token in the source profile
+  // (simulates an account with a pre-existing token).
+  AccountInfo secondary_charlie =
+      identity_test_env()->MakeAccountAvailable("charlie@example.com");
+  MakeValidAccountInfo(&secondary_charlie);
+  secondary_charlie =
+      AccountInfo::Builder(secondary_charlie).SetGivenName("Charlie").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(secondary_charlie);
+  identity_test_env()->SetRefreshTokenForAccount(secondary_charlie.account_id);
+
+  // Setup mock delegate.
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  // Start interception.
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  ASSERT_TRUE(bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // User accepts immediately.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
+  // Simulate session completion.
+  // Bob has no refresh token, while Charlie has a valid token.
+  // Expected: Both are passed to the creator, which will filter out Bob.
+  std::vector<CoreAccountId> secondary_ids = {secondary_bob_id,
+                                              secondary_charlie.account_id};
+
+  interceptor()->OnDiceSigninSessionComplete(initiator_info.account_id,
+                                             secondary_ids);
+
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
+  // Alice, Bob, and Charlie are passed to the creator. Only Alice and Charlie
+  // are actually moved, while Bob is skipped inside the creator.
+  // Note: The actual moving of tokens and verification of the target profile's
+  // database is tested in `dice_signed_in_profile_creator_unittest.cc`. In this
+  // file, we verify that the interceptor correctly gathers and delegates the
+  // expected list of accounts to the creator.
+  EXPECT_THAT(
+      interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
+      testing::ElementsAre(initiator_info.account_id, secondary_bob_id,
+                           secondary_charlie.account_id));
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_LateSignalFromDifferentAccountIsIgnored) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+
+  // Account 1: Alice (Initiator 1)
+  AccountInfo initiator_alice =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_alice);
+  initiator_alice =
+      AccountInfo::Builder(initiator_alice).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_alice);
+
+  // Account 2: Bob (Initiator 2)
+  AccountInfo initiator_bob =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&initiator_bob);
+  initiator_bob =
+      AccountInfo::Builder(initiator_bob).SetGivenName("Bob").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_bob);
+
+  // 1. Start Alice's interception.
+  base::OnceCallback<void(SigninInterceptionResult)> alice_bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&alice_bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            alice_bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_alice.account_id,
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  ASSERT_TRUE(alice_bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // 2. Alice's interception is declined (Reset is called).
+  std::move(alice_bubble_callback).Run(SigninInterceptionResult::kDeclined);
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
+  EXPECT_FALSE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
+  // 3. Start Bob's interception.
+  base::OnceCallback<void(SigninInterceptionResult)> bob_bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bob_bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bob_bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_bob.account_id,
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  ASSERT_TRUE(bob_bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // 4. Now, Alice's late session completion signal arrives!
+  // This must be safely ignored because the active interception is for Bob.
+  std::vector<CoreAccountId> alice_secondaries = {};
+  interceptor()->OnDiceSigninSessionComplete(initiator_alice.account_id,
+                                             alice_secondaries);
+
+  // Verify that Alice's late signal did NOT trigger profile creation or change
+  // the active state.
+  EXPECT_FALSE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+
+  // 5. Bob's session completion signal arrives.
+  std::vector<CoreAccountId> bob_secondaries = {};
+  interceptor()->OnDiceSigninSessionComplete(initiator_bob.account_id,
+                                             bob_secondaries);
+
+  // User accepts Bob's bubble.
+  std::move(bob_bubble_callback).Run(SigninInterceptionResult::kAccepted);
+
+  // Verify profile creator was successfully started for Bob!
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_THAT(
+      interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
+      testing::ElementsAre(initiator_bob.account_id));
 }

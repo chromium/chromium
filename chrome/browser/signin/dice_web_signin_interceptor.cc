@@ -1450,7 +1450,7 @@ void DiceWebSigninInterceptor::ProceedWithProfileCreation(
   // Unretained is fine because the profile creator is owned by this.
   state_->dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile_, state_->account_id_, std::vector<CoreAccountId>(),
+          profile_, state_->account_id_, state_->secondary_accounts_,
           profile_name, profiles::GetPlaceholderAvatarIndex(),
           base::BindOnce(
               &DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
@@ -1464,7 +1464,7 @@ void DiceWebSigninInterceptor::ProceedWithProfileSwitch(
   // Unretained is fine because the profile creator is owned by this.
   state_->dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile_, state_->account_id_, std::vector<CoreAccountId>(),
+          profile_, state_->account_id_, state_->secondary_accounts_,
           profile_path,
           base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
                          base::Unretained(this), std::nullopt));
