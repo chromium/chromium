@@ -22,14 +22,6 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTest, IntroApp) {
   RunTest("intro/intro_app_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(IntroBrowserTest, FinishOrContinue) {
-  RunTest("intro/finish_or_continue_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(IntroBrowserTest, SignInCelebration) {
-  RunTest("intro/sign_in_celebration_test.js", "mocha.run()");
-}
-
 class IntroBrowserTestWithRefreshEnabled : public IntroBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -43,4 +35,26 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithRefreshEnabled, SignInPromoRefresh) {
 IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithRefreshEnabled,
                        DefaultBrowserRefresh) {
   RunTest("intro/default_browser_refresh_test.js", "mocha.run()");
+}
+
+class IntroBrowserTestWithRevampEnabled : public IntroBrowserTest {
+ protected:
+  IntroBrowserTestWithRevampEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kFirstRunDesktopRefresh,
+                              switches::kFirstRunDesktopChoiceScreenRefresh,
+                              switches::kFirstRunDesktopRevamp},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithRevampEnabled, FinishOrContinue) {
+  RunTest("intro/finish_or_continue_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithRevampEnabled, SignInCelebration) {
+  RunTest("intro/sign_in_celebration_test.js", "mocha.run()");
 }
