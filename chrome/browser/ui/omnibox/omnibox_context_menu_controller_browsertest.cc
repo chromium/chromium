@@ -417,9 +417,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   omnibox::InputState test_state;
   // Explicitly allow Gemini Pro and Auto models.
-  test_state.allowed_models.push_back(
+  test_state.allowed_models.emplace_back(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  test_state.allowed_models.push_back(
+  test_state.allowed_models.emplace_back(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
   handler->input_state_model()->set_state_for_testing(test_state);
 
@@ -479,8 +479,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   auto* handler = popup_ui->composebox_handler();
 
   omnibox::InputState test_state;
-  test_state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-  test_state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  test_state.allowed_tools.emplace_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  test_state.allowed_tools.emplace_back(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   handler->input_state_model()->set_state_for_testing(test_state);
 
   // Create the controller after the state is injected.
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   ASSERT_TRUE(handler->input_state_model());
 
   omnibox::InputState test_state;
-  test_state.allowed_input_types.push_back(
+  test_state.allowed_input_types.emplace_back(
       omnibox::InputType::INPUT_TYPE_DRIVE);
   test_state.max_total_inputs = 5;
   handler->input_state_model()->set_state_for_testing(test_state);
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   file->mime_type = "image/png";
   file->type = "photo";
   file->size_bytes = 1000;
-  files.push_back(std::move(file));
+  files.emplace_back(std::move(file));
 
   handler->OnSelection(std::move(files));
 
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   ASSERT_TRUE(handler->input_state_model());
 
   omnibox::InputState test_state;
-  test_state.allowed_input_types.push_back(
+  test_state.allowed_input_types.emplace_back(
       omnibox::InputType::INPUT_TYPE_DRIVE);
   handler->input_state_model()->set_state_for_testing(test_state);
 
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   ASSERT_TRUE(handler->input_state_model());
 
   omnibox::InputState test_state;
-  test_state.allowed_input_types.push_back(
+  test_state.allowed_input_types.emplace_back(
       omnibox::InputType::INPUT_TYPE_DRIVE);
   handler->input_state_model()->set_state_for_testing(test_state);
 
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   ASSERT_TRUE(handler->input_state_model());
 
   omnibox::InputState test_state;
-  test_state.allowed_input_types.push_back(
+  test_state.allowed_input_types.emplace_back(
       omnibox::InputType::INPUT_TYPE_DRIVE);
   handler->input_state_model()->set_state_for_testing(test_state);
 
@@ -785,9 +785,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   // Configure active and allowed AI models.
   omnibox::InputState input_state;
-  input_state.allowed_models.push_back(
+  input_state.allowed_models.emplace_back(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  input_state.allowed_models.push_back(
+  input_state.allowed_models.emplace_back(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
   input_state.active_model =
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
