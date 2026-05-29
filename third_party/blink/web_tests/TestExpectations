@@ -8828,15 +8828,6 @@ crbug.com/40839871 http/tests/inspector-protocol/network/cookies-protocol-test.j
 ## Flaky CSS WPT Tests on headless_shell_wpt:
 crbug.com/390162928 external/wpt/css/css-rhythm/block-step-size-establishes-block-formatting-context-list-item.html [ Failure Skip Timeout ]
 crbug.com/390162928 external/wpt/css/css-rhythm/block-step-size-establishes-block-formatting-context.html [ Failure Skip Timeout ]
-crbug.com/390162928 external/wpt/css/css-sizing/aspect-ratio/replaced-element-035.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-grid/grid-items/anonymous-grid-item-001.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-5.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/selectors/user-invalid.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/selectors/user-valid-user-invalid-multifield-inputs.tentative.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-children-height-013.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-writing-modes/nested-orthogonal-001.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-contain/contain-size-select-elem-003.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ Failure Skip ]
 
 #Disable due to high frequency flakiness
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
