@@ -187,8 +187,9 @@ void OnIsVerifiable(
     return;
   }
 
+  net::SchemefulSite issuer_site = result->issuer_site;
   manager->client().ShowEmailVerificationPopup(
-      email_field_bounds, result->issuer_site, email,
+      email_field_bounds, issuer_site, email,
       base::BindOnce(&OnEmailVerificationDecision, manager, email_field_id,
                      base::UTF16ToUTF8(email), nonce_field_id, nonce,
                      std::move(*result)));
