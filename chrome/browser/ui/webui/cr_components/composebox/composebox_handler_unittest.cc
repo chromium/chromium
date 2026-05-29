@@ -306,3 +306,56 @@ TEST_F(ComposeboxHandlerTest, OnContextMenuOpenedTriggersFetch) {
   EXPECT_CALL(query_controller(), TriggerFetchClusterInfo());
   handler().OnContextMenuOpened();
 }
+
+// Verifies that when views deletes context, it notifies the webUI to update.
+TEST_F(ComposeboxHandlerTest, DeleteContext_NotifiesPage) {
+  base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
+
+  std::unique_ptr<contextual_search::FileInfo> file_info =
+      std::make_unique<contextual_search::FileInfo>();
+  file_info->file_name = "test.png";
+  file_info->mime_type = lens::MimeType::kImage;
+  file_info->upload_status =
+      contextual_search::ContextUploadStatus::kNotUploaded;
+
+  EXPECT_CALL(query_controller(), GetFileInfo(delete_file_token))
+      .WillRepeatedly(testing::Return(file_info.get()));
+  EXPECT_CALL(query_controller(), DeleteFile(delete_file_token))
+      .WillOnce(testing::Return(true));
+
+  // Verify that C++ notifies WebUI page with kUploadReplaced status.
+  EXPECT_CALL(mock_searchbox_page_,
+              OnContextualInputStatusChanged(
+                  delete_file_token,
+                  contextual_search::ContextUploadStatus::kUploadReplaced,
+                  std::optional<contextual_search::ContextUploadErrorType>()))
+      .Times(1);
+
+  handler().DeleteContextFromBrowser(delete_file_token,
+                                     /*from_automatic_chip=*/false);
+  mock_searchbox_page_.FlushForTesting();
+}
+
+// Verifies that when views does not delete context,
+// it does not notify the webUI to update.
+TEST_F(ComposeboxHandlerTest, DeleteContext_MojoDoesNotNotifyPage) {
+  base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
+
+  std::unique_ptr<contextual_search::FileInfo> file_info =
+      std::make_unique<contextual_search::FileInfo>();
+  file_info->file_name = "test.png";
+  file_info->mime_type = lens::MimeType::kImage;
+  file_info->upload_status =
+      contextual_search::ContextUploadStatus::kNotUploaded;
+
+  EXPECT_CALL(query_controller(), GetFileInfo(delete_file_token))
+      .WillRepeatedly(testing::Return(file_info.get()));
+  EXPECT_CALL(query_controller(), DeleteFile(delete_file_token))
+      .WillOnce(testing::Return(true));
+
+  // Verify that C++ does NOT notify WebUI page.
+  EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged).Times(0);
+
+  handler().DeleteContext(delete_file_token, /*from_automatic_chip=*/false);
+  mock_searchbox_page_.FlushForTesting();
+}

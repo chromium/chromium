@@ -305,6 +305,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
+      "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/contextual_search/internal:test_support",

@@ -23,12 +23,14 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -914,5 +916,141 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
     // LHS icon is still the model icon.
     EXPECT_FALSE(final_model->GetIconAt(pro_index.value()).IsEmpty());
     EXPECT_NE(final_model->GetIconAt(pro_index.value()), check_icon);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
+                       RecentTabsCheckmarkToggle) {
+  // Navigate the initial tab to the popup URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+
+  // Set the popup state to composebox so that session handle and
+  // composebox handler are active.
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Get the test URL.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+
+  // Set up an override to construct `MockTabContextualizationController`
+  // to mock the context of the tab.
+  ui::UserDataFactory::ScopedOverride controller_override =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindRepeating(
+              [](GURL url, tabs::TabInterface& tab)
+                  -> std::unique_ptr<lens::TabContextualizationController> {
+                auto mock =
+                    std::make_unique<MockTabContextualizationController>(&tab);
+                EXPECT_CALL(*mock, GetPageContext)
+                    .WillOnce([url](lens::TabContextualizationController::
+                                        GetPageContextCallback callback) {
+                      auto data = std::make_unique<lens::ContextualInputData>();
+                      data->is_page_context_eligible = true;
+                      data->page_url = url;
+                      data->page_title = "Title 1";
+                      data->primary_content_type =
+                          lens::MimeType::kAnnotatedPageContent;
+                      std::move(callback).Run(std::move(data));
+                    });
+                return mock;
+              },
+              url));
+
+  // Add a recent tab (created with the mock controller) in the background.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/false));
+
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  // Initial State: Tab is not added (unchecked).
+  {
+    auto* web_ui = web_contents->GetWebUI();
+    auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+    auto* handler = popup_ui->composebox_handler();
+    ASSERT_TRUE(handler);
+    EXPECT_TRUE(handler->selected_tabs.empty());
+
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    ui::SimpleMenuModel* model = controller.menu_model();
+
+    // Find the recent tab item in the menu.
+    std::optional<size_t> index =
+        model->GetIndexOfCommandId(kMinOmniboxContextMenuRecentTabsCommandId);
+    ASSERT_TRUE(index.has_value());
+
+    // Verify that the minor icon is empty (not checked).
+    EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
+  }
+
+  // Select the tab -> This should add the tab to the context (stage it).
+  {
+    tabs::TabInterface* tab = browser()->tab_strip_model()->GetTabAtIndex(1);
+    ASSERT_TRUE(tab);
+    int32_t tab_id = tab->GetHandle().raw_value();
+
+    auto* web_ui = web_contents->GetWebUI();
+    auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+    auto* handler = popup_ui->composebox_handler();
+    ASSERT_TRUE(handler);
+
+    // Stage the tab directly via C++ handler.
+    handler->AddTabContext(tab_id, /*delay_upload=*/false, base::DoNothing());
+
+    // Verify the tab is staged for upload in C++ tracking.
+    EXPECT_EQ(1u, handler->selected_tabs.size());
+    EXPECT_EQ(tab_id, handler->selected_tabs.begin()->second);
+  }
+
+  // Verify the tab is now checked (has minor icon).
+  {
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    ui::SimpleMenuModel* model = controller.menu_model();
+
+    std::optional<size_t> index =
+        model->GetIndexOfCommandId(kMinOmniboxContextMenuRecentTabsCommandId);
+    ASSERT_TRUE(index.has_value());
+
+    // Verify that the minor icon is not empty (it has the checkmark),
+    EXPECT_FALSE(model->GetMinorIconAt(index.value()).IsEmpty());
+  }
+
+  // Select the tab again -> This should remove/uncheck it from the context.
+  {
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    // Execute command on already checked tab should toggle it off
+    controller.ExecuteCommand(kMinOmniboxContextMenuRecentTabsCommandId, 0);
+  }
+
+  // Verify the tab is now unchecked again.
+  {
+    auto* web_ui = web_contents->GetWebUI();
+    auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+    auto* handler = popup_ui->composebox_handler();
+    ASSERT_TRUE(handler);
+    // Verify the tab is removed from C++ tracking for staged uploads.
+    EXPECT_TRUE(handler->selected_tabs.empty());
+
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    ui::SimpleMenuModel* model = controller.menu_model();
+
+    std::optional<size_t> index =
+        model->GetIndexOfCommandId(kMinOmniboxContextMenuRecentTabsCommandId);
+    ASSERT_TRUE(index.has_value());
+
+    // Verify that the minor icon is empty again.
+    EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
   }
 }

@@ -341,6 +341,9 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     first_tab_index = menu_model_->GetItemCount();
   }
 
+  auto* composebox_handler =
+      GetOmniboxPopupUI() ? GetOmniboxPopupUI()->composebox_handler() : nullptr;
+
   // Add tabs to the target destination in UI.
   for (const auto& tab : tabs) {
     target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
@@ -353,6 +356,27 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     AddTabFavicon(next_command_id_, tab.url, tab.title);
     input_type_for_command_id_[next_command_id_] =
         omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+
+    // If tab has been staged for uploading, set `is_checked` to `true`,
+    // meaning a checkmark should be drawn.
+    bool is_checked = false;
+    if (composebox_handler) {
+      is_checked = std::ranges::any_of(
+          composebox_handler->selected_tabs,
+          [&](const auto& pair) { return tab.tab_id == pair.second; });
+    }
+    // If the tab is selected, add a check mark icon.
+    if (is_checked) {
+      size_t index = target_menu_model->GetItemCount() - 1;
+      auto check_icon = ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+      target_menu_model->SetMinorIcon(index, check_icon);
+      // Set checkmark icon on the right.
+      target_menu_model->SetMinorIconOnRight(
+          ui::MenuModel::MinorIconOnRightPasskey(index), true);
+    }
+
     next_command_id_ += 1;
   }
 
@@ -541,11 +565,6 @@ OmniboxContextMenuController::GetRecentTabs() {
     content::WebContents* web_contents = tab->GetContents();
     const auto& last_committed_url = web_contents->GetLastCommittedURL();
     if (!IsValidTab(last_committed_url)) {
-      continue;
-    }
-    if (std::ranges::any_of(uploaded_file_infos, [&](const auto& info) {
-          return last_committed_url == info.tab_url;
-        })) {
       continue;
     }
 
@@ -1055,17 +1074,43 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                                  ? kAimContextTypeHistogramPrefix
                                  : kClassicContextTypeHistogramPrefix;
   const std::string sliced_prefix = base::StrCat({prefix, ".Clicked"});
-  // Add tab context if tab is selected.
   if (id >= kMinOmniboxContextMenuRecentTabsCommandId &&
       id < kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions()) {
-    base::UmaHistogramExactLinear(
-        "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
-        /*ContextMenu*/ 0, 4);
     std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
     int tab_index_in_menu = id - kMinOmniboxContextMenuRecentTabsCommandId;
     if (static_cast<size_t>(tab_index_in_menu) < tabs.size()) {
+      // Get the tab ID based on the command ID in the simple menu.
       const auto& tab_info = tabs[tab_index_in_menu];
-      AddTabContext(tab_info);
+      auto* composebox_handler = GetOmniboxPopupUI()
+                                     ? GetOmniboxPopupUI()->composebox_handler()
+                                     : nullptr;
+      bool was_uploaded = false;
+      base::UnguessableToken file_token_to_delete;
+      if (composebox_handler) {
+        for (const auto& pair : composebox_handler->selected_tabs) {
+          if (tab_info.tab_id == pair.second) {
+            was_uploaded = true;
+            file_token_to_delete = pair.first;
+            break;
+          }
+        }
+      }
+      // If was already staged for upload, delete it, as this function was
+      // called because user clicked on tab again.:
+      if (was_uploaded) {
+        // `composebox_handler` is guaranteed to be non-null since it was
+        // checked to set `was_uploaded` to true.
+        composebox_handler->DeleteContextFromBrowser(
+            file_token_to_delete, /*from_automatic_chip=*/false);
+        // Refresh omnibox popup UI.
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
+      } else {  // If not staged for upload, then stage for upload.
+        base::UmaHistogramExactLinear(
+            "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
+            /*ContextMenu*/ 0, 4);
+        AddTabContext(tab_info);
+      }
     }
     RecordContextMenuItemSelection(sliced_prefix, id);
   } else {

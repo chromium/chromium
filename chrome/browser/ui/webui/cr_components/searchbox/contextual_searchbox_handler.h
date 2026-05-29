@@ -134,6 +134,8 @@ class ContextualSearchboxHandler
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
+  void DeleteContextFromBrowser(const base::UnguessableToken& file_token,
+                                bool from_automatic_chip);
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
   void ClearFiles(bool should_block_auto_suggested_tabs, bool query_submitted);
   void SubmitQuery(const std::string& query_text,

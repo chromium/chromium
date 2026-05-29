@@ -1225,6 +1225,15 @@ void ContextualSearchboxHandler::DeleteContext(
   }
 }
 
+void ContextualSearchboxHandler::DeleteContextFromBrowser(
+    const base::UnguessableToken& context_token,
+    bool from_automatic_chip) {
+  DeleteContext(context_token, from_automatic_chip);
+  page_->OnContextualInputStatusChanged(
+      context_token, contextual_search::ContextUploadStatus::kUploadReplaced,
+      std::nullopt);
+}
+
 void ContextualSearchboxHandler::ClearFiles(
     bool should_block_auto_suggested_tabs) {
   ClearFiles(should_block_auto_suggested_tabs, /*query_submitted=*/false);
