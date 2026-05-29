@@ -232,11 +232,6 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   instance_coordinator().Shutdown();
-
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (glic_profile_manager) {
-    glic_profile_manager->OnServiceShutdown(this);
-  }
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
@@ -246,11 +241,6 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
   CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
-
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (glic_profile_manager) {
-    glic_profile_manager->SetActiveGlic(this);
-  }
 
   if (MaybeInvoke(bwi, source)) {
     return;
@@ -298,11 +288,6 @@ base::WeakPtr<GlicInstance> GlicKeyedService::InvokeWithAutoSubmit(
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (glic_profile_manager) {
-    glic_profile_manager->SetActiveGlic(this);
-  }
-
   return static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
       .InvokeWithAutoSubmit(auto_submit_passkey, std::move(options),
                             std::move(auto_submit_options));
@@ -311,11 +296,6 @@ base::WeakPtr<GlicInstance> GlicKeyedService::InvokeWithAutoSubmit(
 base::WeakPtr<GlicInstance> GlicKeyedService::Invoke(
     GlicInvokeOptions options) {
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
-
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (glic_profile_manager) {
-    glic_profile_manager->SetActiveGlic(this);
-  }
 
   return static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
       .Invoke(std::move(options));

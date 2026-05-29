@@ -32,11 +32,6 @@ class GlicProfileManager : public ProfileManagerObserver,
   GlicProfileManager();
   ~GlicProfileManager() override;
 
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnLastActiveGlicProfileChanged(Profile* profile) = 0;
-  };
-
   // Returns the global instance.
   static GlicProfileManager* GetInstance();
 
@@ -47,18 +42,10 @@ class GlicProfileManager : public ProfileManagerObserver,
   // is no eligible profile.
   Profile* GetProfileForLaunch() const;
 
-  // Called by GlicKeyedService. Closes any existing active glic in the
-  // single-instance implementation, which enforces at most one floaty per
-  // profile.
-  void SetActiveGlic(GlicKeyedService* glic);
-
   // Used in GlicMultiInstance. Called when a GlicFloatingUi is shown and closes
   // any previous existing floating glic. Resets the tracked glic if a null
   // profile is passed.
   void SetCurrentDetachedGlic(Profile* profile);
-
-  // Called by GlicKeyedService.
-  void OnServiceShutdown(GlicKeyedService* glic);
 
   // Called by GlobalFeatures.
   void Shutdown();
@@ -70,19 +57,11 @@ class GlicProfileManager : public ProfileManagerObserver,
   void ShouldPreloadForProfile(Profile* profile,
                                ShouldPreloadCallback callback);
 
-  // Returns the active Glic service, nullptr if there is none.
-  GlicKeyedService* GetLastActiveGlic() const;
-
   // Opens the panel if the "glic-open-on-startup" command line switch was used
   // and glic has not already opened like this.
   void MaybeAutoOpenGlicPanel();
 
   void ShowProfilePicker();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  bool IsShowing() const;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -116,11 +95,6 @@ class GlicProfileManager : public ProfileManagerObserver,
   // or the glic panel (i.e., this excludes specific checks for those two
   // surfaces).
   void CanPreloadForProfile(Profile* profile, ShouldPreloadCallback callback);
-
-  bool IsLastActiveGlicProfile(Profile* profile) const;
-
-  base::ObserverList<Observer> observers_;
-  base::WeakPtr<GlicKeyedService> last_active_glic_;
 
   // Used in GlicMultiInstance to track the GlicKeyedService of the current
   // detached glic, if any.

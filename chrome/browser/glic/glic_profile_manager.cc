@@ -141,22 +141,6 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
   return nullptr;
 }
 
-void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
-  if (last_active_glic_ && last_active_glic_.get() != glic &&
-      last_active_glic_->instance_coordinator().IsAnyPanelShowing()) {
-    last_active_glic_->instance_coordinator().Close({});
-  }
-  Profile* last_active_glic_profile = nullptr;
-  if (glic) {
-    last_active_glic_ = glic->GetWeakPtr();
-    last_active_glic_profile = last_active_glic_->profile();
-  } else {
-    last_active_glic_.reset();
-  }
-  observers_.Notify(&Observer::OnLastActiveGlicProfileChanged,
-                    last_active_glic_profile);
-}
-
 void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
   if (!profile) {
     current_detached_glic_.reset();
@@ -166,12 +150,6 @@ void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
     current_detached_glic_->instance_coordinator().Close({});
   }
   current_detached_glic_ = GlicKeyedService::Get(profile)->GetWeakPtr();
-}
-
-void GlicProfileManager::OnServiceShutdown(GlicKeyedService* glic) {
-  if (last_active_glic_ && last_active_glic_.get() == glic) {
-    SetActiveGlic(nullptr);
-  }
 }
 
 void GlicProfileManager::Shutdown() {
@@ -217,10 +195,6 @@ void GlicProfileManager::ShouldPreloadForProfile(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-GlicKeyedService* GlicProfileManager::GetLastActiveGlic() const {
-  return last_active_glic_.get();
-}
-
 void GlicProfileManager::MaybeAutoOpenGlicPanel() {
   if (did_auto_open_ || !base::CommandLine::ForCurrentProcess()->HasSwitch(
                             ::switches::kGlicOpenOnStartup)) {
@@ -239,8 +213,8 @@ void GlicProfileManager::ShowProfilePicker() {
   base::OnceCallback<void(Profile*)> callback = base::BindOnce(
       &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   // If the panel is not closed it will be on top of the profile picker.
-  if (last_active_glic_) {
-    last_active_glic_->instance_coordinator().Close({});
+  if (current_detached_glic_) {
+    current_detached_glic_->instance_coordinator().Close({});
   }
 
   // TODO(crbug.com/450679848): Profile Picker doesn't make sense on ChromeOS.
@@ -265,21 +239,6 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
   // profile.
   service->ToggleUI(nullptr, /*prevent_close=*/true,
                     mojom::InvocationSource::kProfilePicker);
-}
-
-void GlicProfileManager::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void GlicProfileManager::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-bool GlicProfileManager::IsShowing() const {
-  if (!last_active_glic_) {
-    return false;
-  }
-  return last_active_glic_->instance_coordinator().IsAnyPanelShowing();
 }
 
 void GlicProfileManager::OnProfileAdded(Profile* profile) {
@@ -359,10 +318,6 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
 
   if (!profile->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip)) {
     return produce_result(GlicPrewarmingChecksResult::kNotPinnedToTabstrip);
-  }
-
-  if (last_active_glic_ && last_active_glic_->profile() == profile) {
-    return produce_result(GlicPrewarmingChecksResult::kProfileIsLastActive);
   }
 
   if (IsUnderMemoryPressure()) {

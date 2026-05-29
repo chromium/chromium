@@ -9,10 +9,8 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -28,20 +26,13 @@ void GlicController::Show(mojom::InvocationSource source) {
 }
 
 void GlicController::Close() {
-  GlicKeyedService* glic_keyed_service =
-      glic::GlicProfileManager::GetInstance()->GetLastActiveGlic();
-  if (!glic_keyed_service) {
-    return;
+  GlicProfileManager* profile_manager = GlicProfileManager::GetInstance();
+  if (profile_manager && profile_manager->GetProfileForLaunch()) {
+    Profile* profile = profile_manager->GetProfileForLaunch();
+    if (auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
+      service->instance_coordinator().Close({});
+    }
   }
-  glic_keyed_service->ToggleUI(nullptr, /*prevent_close=*/false,
-                               mojom::InvocationSource::kOsButton);
-}
-
-bool GlicController::IsShowing() const {
-  GlicKeyedService* glic_keyed_service =
-      glic::GlicProfileManager::GetInstance()->GetLastActiveGlic();
-  return glic_keyed_service &&
-         glic_keyed_service->instance_coordinator().IsAnyPanelShowing();
 }
 
 void GlicController::ToggleUI(bool prevent_close,
@@ -49,9 +40,6 @@ void GlicController::ToggleUI(bool prevent_close,
   Profile* profile =
       glic::GlicProfileManager::GetInstance()->GetProfileForLaunch();
   if (!profile) {
-    // TODO(crbug.com/380095872): If there are no eligible profiles, show the
-    // profile picker to choose a profile in which to enter the first-run
-    // experience.
     return;
   }
 

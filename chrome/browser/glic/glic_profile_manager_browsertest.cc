@@ -201,41 +201,6 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
-                       SetActiveGlic_SameProfile) {
-  auto* service0 = GetMockGlicKeyedService(browser()->profile());
-  GlicProfileManager::GetInstance()->SetActiveGlic(service0);
-  // Opening glic twice for the same profile shouldn't cause it to close.
-  EXPECT_CALL(*service0, CloseFloatingPanel()).Times(0);
-  GlicProfileManager::GetInstance()->SetActiveGlic(service0);
-}
-
-// TODO(crbug.com/448406730): Re-enable after testing the logic of close panel
-// being now handled by EmbedderDelegate.
-IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
-                       DISABLED_SetActiveGlic_DifferentProfiles) {
-  auto* service0 = GetMockGlicKeyedService(browser()->profile());
-
-  auto* profile1 =
-#if BUILDFLAG(IS_CHROMEOS)
-      CreateNewUserSessionAndProfile(kAccountId1, /*allow_glic=*/true);
-#else
-      CreateNewProfile(/*signin_and_allow_glic=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  auto* service1 = GetMockGlicKeyedService(profile1);
-
-  auto* profile_manager = GlicProfileManager::GetInstance();
-  profile_manager->SetActiveGlic(service0);
-
-  EXPECT_CALL(service0->mock_coordinator(), IsAnyPanelShowing())
-      .WillRepeatedly(testing::Return(true));
-
-  // Opening glic from a second profile should make the profile manager close
-  // the first one.
-  EXPECT_CALL(*service0, CloseFloatingPanel());
-  profile_manager->SetActiveGlic(service1);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_WithDetachedGlic) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
@@ -257,7 +222,6 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   auto* profile_manager = GlicProfileManager::GetInstance();
   // Profile 0 is the last used Glic and Profile 1 is the last used window.
   // Profile 1 should be selected for launch.
-  profile_manager->SetActiveGlic(service0);
   CreateBrowser(profile1);
   EXPECT_EQ(profile1, profile_manager->GetProfileForLaunch());
 

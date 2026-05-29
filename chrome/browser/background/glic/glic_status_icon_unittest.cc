@@ -65,8 +65,8 @@ class MockStatusTray : public StatusTray {
 
 class MockGlicController : public GlicController {
  public:
-  MOCK_METHOD1(Toggle, void(mojom::InvocationSource));
-  MOCK_METHOD1(Show, void(mojom::InvocationSource));
+  MOCK_METHOD(void, Toggle, (mojom::InvocationSource source), (override));
+  MOCK_METHOD(void, Show, (mojom::InvocationSource source), (override));
 };
 
 }  // namespace
@@ -111,13 +111,13 @@ class GlicStatusIconTest : public testing::Test {
 
 #if !BUILDFLAG(IS_LINUX)
 TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
-  EXPECT_CALL(*glic_controller(), Toggle).Times(1);
+  EXPECT_CALL(*glic_controller(), Toggle(testing::_)).Times(1);
   status_icon()->DispatchClickEvent();
 }
 #endif
 
 TEST_F(GlicStatusIconTest, ExecuteCommand) {
-  EXPECT_CALL(*glic_controller(), Toggle).Times(1);
+  EXPECT_CALL(*glic_controller(), Toggle(testing::_)).Times(1);
   base::UserActionTester user_action_tester;
   auto* context_menu = status_icon()->GetContextMenuForTesting();
   context_menu->ExecuteCommand(IDC_GLIC_STATUS_ICON_MENU_TOGGLE, 0);
