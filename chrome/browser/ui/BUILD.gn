@@ -1673,6 +1673,7 @@ static_library("ui") {
       "//components/manta/proto",
       "//components/media_effects",
       "//components/media_router/common/mojom:media_router",
+      "//components/multistep_filter/core:features",
       "//components/network_session_configurator/common",
       "//components/omnibox/browser:mojo_bindings",
       "//components/page_load_metrics/browser",

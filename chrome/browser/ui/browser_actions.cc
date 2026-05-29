@@ -126,6 +126,7 @@
 #include "components/lens/lens_features.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -1769,6 +1770,26 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
           .SetText(l10n_util::GetStringUTF16(IDS_INDIGO_ENTRYPOINT_CHIP_TEXT))
           .Build());
+
+  if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder()
+            .SetActionId(kActionMultistepFilter)
+            // TODO(b/512435534): Add SetInvokeActionCallback once the
+            // controller is updated.
+            .SetImage(ui::ImageModel::FromVectorIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                vector_icons::kPlayCircleSparkIcon
+#else
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kPlayArrowIcon
+                    : vector_icons::kPlayArrowChromeRefreshOldIcon
+#endif
+                ))
+            .SetText(
+                l10n_util::GetStringUTF16(IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT))
+            .Build());
+  }
 
   if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
     root_action_item_->AddChild(

@@ -65,6 +65,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kContextualSidePanel:
     case PageActionIconType::kJsOptimizations:
     case PageActionIconType::kIndigo:
+    case PageActionIconType::kMultistepFilter:
     case PageActionIconType::kRecordReplay:
     case PageActionIconType::kPriceInsights:
     case PageActionIconType::kDiscounts:

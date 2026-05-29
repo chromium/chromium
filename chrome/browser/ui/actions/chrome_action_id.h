@@ -221,6 +221,7 @@
   E(kActionOpenRecentTab, IDC_OPEN_RECENT_TAB) \
   E(kActionIndigo) \
   E(kActionAnchoredContextualCue) \
+  E(kActionMultistepFilter) \
   /* Spell-check */ \
   /* Insert any additional suggestions before _LAST; these have to be */ \
   /* consecutive. */ \

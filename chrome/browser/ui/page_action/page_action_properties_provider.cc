@@ -36,6 +36,16 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
                 page_actions::PageActionPriorityCategory::kContextualCue,
         },
     },
+    {
+        kActionMultistepFilter,
+        {
+            .histogram_name = "MultistepFilter",
+            .type = PageActionIconType::kMultistepFilter,
+            .element_identifier = kMultistepFilterPageActionIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kContextualCue,
+        },
+    },
 
     {
         kActionSidePanelShowLensOverlayResults,

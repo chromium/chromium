@@ -58,7 +58,8 @@ enum class PageActionIconType {
   kAnchoredContextualCue = 43,
   kWebAuthnAmbientSignin = 44,
   kAutofillPayment = 45,
-  kMaxValue = kAutofillPayment,
+  kMultistepFilter = 46,
+  kMaxValue = kMultistepFilter,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
