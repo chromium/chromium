@@ -994,6 +994,9 @@
     'content_shell': {
       'filepath': 'content/shell/',
     },
+    'content_shell_filter': {
+      'filepath': 'third_party/blink/web_tests/TestLists/content_shell.filter',
+    },
     'content_worker': {
       'filepath': 'content/.*worker',
     },
@@ -2933,6 +2936,7 @@
                                'arthursonzogni+watch-csp@chromium.org',
                                'mkwst+watch-csp@chromium.org'],
     'content_shell': ['peter@chromium.org'],
+    'content_shell_filter': ['yangsharon@igalia.com'],
     'content_worker': ['blink-worker-reviews@chromium.org',
                        'kinuko+watch@chromium.org'],
     'core_timing': ['speed-metrics-dev+watchlist@chromium.org',
