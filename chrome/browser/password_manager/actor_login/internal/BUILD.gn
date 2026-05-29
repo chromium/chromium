@@ -11,6 +11,8 @@ source_set("internal") {
     "actor_login_federated_credentials_fetcher.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
+    "chrome_actor_login_delegate_client.cc",
+    "chrome_actor_login_delegate_client.h",
   ]
 
   visibility = [
@@ -49,6 +51,8 @@ source_set("unit_tests") {
     "actor_login_delegate_impl_unittest.cc",
     "actor_login_federated_credentials_fetcher_unittest.cc",
     "actor_login_siwg_controller_unittest.cc",
+    "fake_actor_login_delegate_client.cc",
+    "fake_actor_login_delegate_client.h",
   ]
 
   deps = [

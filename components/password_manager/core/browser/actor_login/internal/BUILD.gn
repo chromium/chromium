@@ -8,6 +8,7 @@ source_set("delegate") {
     "actor_login_credential_filler.h",
     "actor_login_credentials_fetcher.h",
     "actor_login_delegate.h",
+    "actor_login_delegate_client.h",
     "actor_login_form_finder.cc",
     "actor_login_form_finder.h",
     "actor_login_get_credentials_helper.cc",
