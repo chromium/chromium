@@ -13694,6 +13694,21 @@
             ]
         }
     ],
+    "IOSLensOmnientShaderV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOmnientShaderV2Enabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensStrokesAPI": [
         {
             "platforms": [
