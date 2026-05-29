@@ -53,9 +53,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
@@ -84,16 +81,13 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -190,7 +184,6 @@ public class SearchActivity extends AsyncInitializationActivity
         TerminationReason.CUSTOM_BACK_ARROW,
         TerminationReason.BRING_TAB_TO_FRONT,
         TerminationReason.BRING_TAB_GROUP_TO_FRONT,
-        TerminationReason.REROUTED,
         TerminationReason.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -205,8 +198,7 @@ public class SearchActivity extends AsyncInitializationActivity
         int CUSTOM_BACK_ARROW = 7;
         int BRING_TAB_TO_FRONT = 8;
         int BRING_TAB_GROUP_TO_FRONT = 9;
-        int REROUTED = 10;
-        int COUNT = 11;
+        int COUNT = 10;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SearchActivityTerminationReason)
@@ -254,7 +246,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private SearchActivityLocationBarLayout mSearchBox;
     private View mAnchorView;
 
-    private @Nullable SnackbarManager mSnackbarManager;
+    private SnackbarManager mSnackbarManager;
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
@@ -302,50 +294,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     @Override
-    protected void performPreInflationStartup() {
-        // Determine what to do early to avoid wasteful inflation.
-        if (maybeReroute(getIntent())) return;
-        super.performPreInflationStartup();
-    }
-
-    /**
-     * Given an intent, decides whether to reroute it for direct execution, bypassing the
-     * SearchActivity entirely.
-     */
-    /* package */ boolean maybeReroute(Intent intent) {
-        return maybeRerouteLensOnDesktop(intent);
-    }
-
-    /**
-     * Determine if the intent should be rerouted directly to Lens, suppressing the SearchActivity.
-     */
-    /* package */ boolean maybeRerouteLensOnDesktop(Intent intent) {
-        if (SearchActivityUtils.getIntentSearchType(intent) != SearchType.LENS) return false;
-        if (!OmniboxCapabilities.isDesktopPlatform()) return false;
-        WindowAndroid windowAndroid = getWindowAndroid();
-        if (windowAndroid == null) return false;
-
-        String account = SearchActivityPreferencesManager.getCurrent().accountEmail;
-
-        LensController.getInstance()
-                .startLens(
-                        windowAndroid,
-                        new LensIntentParams.Builder(
-                                        LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-                                        /* isIncognito= */ TextUtils.isEmpty(account))
-                                .withAccountName(account)
-                                .build());
-        finish(TerminationReason.REROUTED, /* loadUrlParams= */ null);
-        return true;
-    }
-
-    @Override
     protected void triggerLayoutInflation() {
-        // Edge case: Activity re-routing intents.
         enableHardwareAcceleration();
-        setVisible(false);
-        if (isFinishing()) return;
-
         boolean isIncognito = SearchActivityUtils.getIntentIncognitoStatus(getIntent());
         mSearchBoxDataProvider.initialize(this, isIncognito);
 
@@ -652,7 +602,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     public void onNewIntent(Intent intent) {
-        if (maybeReroute(intent)) return;
         super.onNewIntent(intent);
         handleNewIntent(intent, true);
     }
@@ -672,12 +621,6 @@ public class SearchActivity extends AsyncInitializationActivity
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
             umaSessionEnd();
         }
-    }
-
-    @Override
-    public void onResume() {
-        setVisible(true);
-        super.onResume();
     }
 
     @Override
@@ -712,7 +655,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     public SnackbarManager getSnackbarManager() {
-        return assertNonNull(mSnackbarManager);
+        return mSnackbarManager;
     }
 
     private void beginQuery() {

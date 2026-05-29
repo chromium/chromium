@@ -42,7 +42,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -64,9 +63,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -88,14 +84,10 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
@@ -134,12 +126,8 @@ public class SearchActivityUnitTest {
     private @Mock LocationBarCoordinator mLocationBarCoordinator;
     private @Mock UrlBarCoordinator mUrlCoordinator;
     private @Mock StatusCoordinator mStatusCoordinator;
-    private @Mock LensController mLensController;
-    private @Mock ActivityWindowAndroid mWindowAndroid;
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-
-    private @Captor ArgumentCaptor<LensIntentParams> mLensIntentParamsCaptor;
 
     private ActivityController<SearchActivity> mController;
     private SearchActivity mActivity;
@@ -195,9 +183,6 @@ public class SearchActivityUnitTest {
         TabBuilder.setTabForTesting(mTab);
         RevenueStats.setCustomTabSearchClientHookForTesting(mSetCustomTabSearchClient);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        LensController.setInstanceForTesting(mLensController);
-
-        doReturn(mWindowAndroid).when(mActivity).getWindowAndroid();
     }
 
     @After
@@ -1157,91 +1142,5 @@ public class SearchActivityUnitTest {
         assertEquals(
                 expectedRegularColor,
                 ((ColorDrawable) mControlContainer.getBackground()).getColor());
-    }
-
-    @Test
-    public void maybeReroute_lensQuery_startsLensAndFinishesOnDesktop() {
-        SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(
-                        "email@gmail.com",
-                        "DSE",
-                        new GURL("DSE.com"),
-                        /* voiceSearchAvailable= */ true,
-                        /* googleLensAvailable= */ true,
-                        /* incognitoAvailable= */ true),
-                /* updateStorage= */ false);
-
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-
-        Intent intent =
-                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
-                        .setSearchType(SearchType.LENS)
-                        .build();
-
-        assertTrue(mActivity.maybeReroute(intent));
-
-        // Verify Lens params
-        verify(mLensController).startLens(eq(mWindowAndroid), mLensIntentParamsCaptor.capture());
-        assertEquals(
-                LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-                mLensIntentParamsCaptor.getValue().getLensEntryPoint());
-        assertFalse(mLensIntentParamsCaptor.getValue().getIsIncognito());
-
-        // Verify Activity behavior.
-        verify(mActivity).finish(TerminationReason.REROUTED, null);
-    }
-
-    @Test
-    public void maybeReroute_lensQuery_startsLensAndContinuesOnMobile() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
-
-        Intent intent =
-                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
-                        .setSearchType(SearchType.LENS)
-                        .build();
-
-        assertFalse(mActivity.maybeReroute(intent));
-    }
-
-    @Test
-    public void maybeReroute_textQuery_doesNotFinish() {
-        Intent intent =
-                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
-                        .setSearchType(SearchType.TEXT)
-                        .build();
-
-        assertFalse(mActivity.maybeReroute(intent));
-    }
-
-    @Test
-    public void onNewIntent_lensQuery_startsLensAndFinishesOnDesktop() {
-        SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(
-                        "email@gmail.com",
-                        "DSE",
-                        new GURL("DSE.com"),
-                        /* voiceSearchAvailable= */ true,
-                        /* googleLensAvailable= */ true,
-                        /* incognitoAvailable= */ true),
-                /* updateStorage= */ false);
-
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        Intent intent =
-                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
-                        .setSearchType(SearchType.LENS)
-                        .build();
-
-        mActivity.onNewIntent(intent);
-
-        // Verify Lens params
-        verify(mLensController).startLens(eq(mWindowAndroid), mLensIntentParamsCaptor.capture());
-        assertEquals(
-                LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-                mLensIntentParamsCaptor.getValue().getLensEntryPoint());
-        assertFalse(mLensIntentParamsCaptor.getValue().getIsIncognito());
-
-        // Verify Activity behavior.
-        verify(mActivity).finish(TerminationReason.REROUTED, null);
-        verify(mActivity, never()).handleNewIntent(any(), anyBoolean());
     }
 }
