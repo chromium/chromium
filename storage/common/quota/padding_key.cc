@@ -45,15 +45,10 @@ int64_t ComputeStableResponsePadding(const blink::StorageKey& storage_key,
                                      const base::Time& response_time,
                                      const std::string& request_method,
                                      int64_t side_data_size) {
-  static std::array<uint8_t, 16> s_padding_key;
-  static bool s_padding_key_generated = false;
-
-  if (!s_padding_key_generated) {
-    // This just needs to be consistent within a single browser session, so we
-    // generate it the first time we need it.
-    crypto::RandBytes(s_padding_key);
-    s_padding_key_generated = true;
-  }
+  // This just needs to be consistent within a single browser session, so we
+  // generate it the first time we need it.
+  static const std::array<uint8_t, 16> s_padding_key =
+      crypto::RandBytesAsArray<16>();
 
   DCHECK(!response_url.empty());
 
