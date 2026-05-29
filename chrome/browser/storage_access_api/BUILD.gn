@@ -26,6 +26,7 @@ source_set("storage_access_api") {
   ]
 
   deps = [
+    "//chrome/browser:bad_message",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/webid",

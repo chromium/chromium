@@ -15,6 +15,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
@@ -221,6 +224,32 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   return fedcm_context;
 }
 
+// Verifies that the given RenderFrameHost is allowed to request this
+// permission. If the RenderFrameHost is not allowed to request permission, this
+// calls `bad_message::ReceivedBadMessage` to close the pipe.
+base::expected<void, content::PermissionStatusSource>
+ValidatePermissionEligibility(content::RenderFrameHost* rfh,
+                              const net::SchemefulSite& requesting_site) {
+  if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
+      rfh->IsNestedWithinFencedFrame() ||
+      rfh->IsSandboxed(
+          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
+      rfh->GetStorageKey().ForbidsUnpartitionedStorageAccess()) {
+    // No need to log anything here, since well-behaved renderers have already
+    // done these checks and have logged to the console. This block is to handle
+    // compromised renderers.
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+                        requesting_site);
+    bad_message::ReceivedBadMessage(
+        rfh->GetProcess(), bad_message::BadMessageReason::
+                               SAGPC_INVALID_PERMISSION_REQUEST_CONTEXT);
+    return base::unexpected(rfh->IsNestedWithinFencedFrame()
+                                ? content::PermissionStatusSource::FENCED_FRAME
+                                : content::PermissionStatusSource::UNSPECIFIED);
+  }
+  return base::ok();
+}
+
 }  // namespace
 
 // static
@@ -259,6 +288,15 @@ void StorageAccessGrantPermissionContext::RequestPermission(
   // This callback (synchronously) handles the browser side of that.
   content::GlobalRenderFrameHostId frame_host_id =
       request_data->id.global_render_frame_host_id();
+
+  RETURN_IF_ERROR(ValidatePermissionEligibility(
+                      content::RenderFrameHost::FromID(frame_host_id),
+                      net::SchemefulSite(request_data->requesting_origin)),
+                  [&](content::PermissionStatusSource source) {
+                    std::move(callback).Run(content::PermissionResult(
+                        blink::mojom::PermissionStatus::DENIED, source));
+                  });
+
   ContentSettingPermissionContextBase::RequestPermission(
       std::move(request_data),
       base::BindOnce(
@@ -301,24 +339,11 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   const url::Origin embedding_origin =
       url::Origin::Create(request_data->embedding_origin);
 
-  if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
-      rfh->IsNestedWithinFencedFrame() ||
-      rfh->IsSandboxed(
-          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
-      rfh->GetStorageKey().ForbidsUnpartitionedStorageAccess()) {
-    // No need to log anything here, since well-behaved renderers have already
-    // done these checks and have logged to the console. This block is to handle
-    // compromised renderers.
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
-                        requesting_site);
-    mojo::ReportBadMessage(
-        "requestStorageAccess: Must not be called by a fenced frame, iframe "
-        "with an opaque origin, credentialless iframe, or sandboxed iframe");
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::FENCED_FRAME));
-    return;
-  }
+  RETURN_IF_ERROR(ValidatePermissionEligibility(rfh, requesting_site),
+                  [&](content::PermissionStatusSource source) {
+                    std::move(callback).Run(content::PermissionResult(
+                        blink::mojom::PermissionStatus::DENIED, source));
+                  });
 
   // Return early without letting SAA override any explicit user settings to
   // block 3p cookies.
