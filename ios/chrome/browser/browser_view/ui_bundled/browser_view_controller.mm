@@ -1580,6 +1580,7 @@ bool IsFullscreenNextIAEnabled() {
         view.translatesAutoresizingMaskIntoConstraints = NO;
         AddSameConstraints(self.browserContentViewController.view, view);
       }
+      [self invalidateFullscreenInsets];
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
     if (!IsFullscreenRefactoringEnabled() &&
