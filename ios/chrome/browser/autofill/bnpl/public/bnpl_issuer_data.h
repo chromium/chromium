@@ -24,8 +24,13 @@
 // The icon associated with the BNPL issuer.
 @property(readonly, strong, nonatomic) UIImage* icon;
 
-// Initializes from the autofill BNPL issuer, and an icon.
+// Whether the BNPL issuer is linked to the user's Google account.
+@property(readonly, nonatomic, getter=isLinked) BOOL linked;
+
+// Initializes from the autofill BNPL issuer, the selection option text, and an
+// icon.
 - (instancetype)initWithBnplIssuer:(const autofill::BnplIssuer&)bnplIssuer
+               selectionOptionText:(NSString*)selectionOptionText
                               icon:(UIImage*)icon;
 
 @end

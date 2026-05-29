@@ -4,15 +4,19 @@
 
 #import "ios/chrome/browser/autofill/bnpl/public/bnpl_issuer_data.h"
 
+#import "base/strings/sys_string_conversions.h"
+
 @implementation BnplIssuerData
 
 - (instancetype)initWithBnplIssuer:(const autofill::BnplIssuer&)bnplIssuer
+               selectionOptionText:(NSString*)selectionOptionText
                               icon:(UIImage*)icon {
   if ((self = [super init])) {
-    // TODO(crbug.com/469521271): Implement full property assignments from
-    // bnplIssuer.
     _issuerId = bnplIssuer.issuer_id();
+    _issuerName = base::SysUTF16ToNSString(bnplIssuer.GetDisplayName());
+    _selectionOptionText = [selectionOptionText copy];
     _icon = icon;
+    _linked = bnplIssuer.payment_instrument().has_value();
   }
   return self;
 }

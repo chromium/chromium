@@ -240,6 +240,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/autofill/bnpl:unit_tests",
     "//ios/chrome/browser/autofill/form_input_accessory/coordinator",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",
     "//ios/chrome/browser/autofill/manual_fill/coordinator",

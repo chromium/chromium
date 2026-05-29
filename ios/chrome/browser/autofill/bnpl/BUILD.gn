@@ -14,3 +14,14 @@ source_set("bnpl") {
   public_deps = [ "//components/autofill/core/browser" ]
   frameworks = [ "UIKit.framework" ]
 }
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bnpl_issuer_data_unittest.mm" ]
+  deps = [
+    ":bnpl",
+    "//base",
+    "//components/autofill/core/browser",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
