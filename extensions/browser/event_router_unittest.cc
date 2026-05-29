@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
@@ -30,7 +29,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
@@ -654,10 +652,6 @@ TEST_F(EventRouterTest, AddLazyListenerForUnloadedExtension) {
 // TODO(crbug.com/474558883): Remove this after webRequest listener
 // persistence is stable for a few milestones.
 TEST_F(EventRouterTest, RemovesOrphanedWebRequestEvents) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kWebRequestPersistFilteredEventsViaEventRouter);
-
   EventRouter* router = EventRouter::Get(browser_context());
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 

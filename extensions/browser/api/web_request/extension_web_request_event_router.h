@@ -75,12 +75,6 @@ class WebRequestEventRouter : public KeyedService {
     kOnCompleted = 1 << 8,
   };
 
-  // Key to the extension preference that stores serialized lazy webRequest
-  // listeners.
-  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
-  // is complete.
-  static const char kFilteredLazyListeners[];
-
   explicit WebRequestEventRouter(content::BrowserContext* browser_context);
   ~WebRequestEventRouter() override;
   WebRequestEventRouter(const WebRequestEventRouter&) = delete;
@@ -345,15 +339,6 @@ class WebRequestEventRouter : public KeyedService {
   // Called when a BrowserContext is being destroyed.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
 
-  // Loads persisted lazy listeners for the given extension into the given
-  // browser context. Called when the extension is loaded.
-  // NOTE: loads all listeners or none at all. If the persisted listeners
-  // were invalid, it clears the corresponding pref.
-  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
-  // is complete.
-  void LoadPersistedLazyListeners(content::BrowserContext* browser_context,
-                                  const ExtensionId& extension_id);
-
   // Get the number of listeners - for testing only.
   size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
                                     const std::string& event_name);
@@ -608,21 +593,6 @@ class WebRequestEventRouter : public KeyedService {
   void RemoveLazyListener(content::BrowserContext* original_context,
                           const ExtensionId& extension_id,
                           const std::string& sub_event_name);
-
-  // Adds a listener to the persisted lazy listeners for the given extension.
-  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
-  // is complete.
-  void AddPersistedLazyListener(content::BrowserContext* browser_context,
-                                const ExtensionId& extension_id,
-                                const EventListener& listener);
-
-  // Removes a listener from the persisted lazy listeners for the given
-  // extension.
-  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
-  // is complete.
-  void RemovePersistedLazyListener(content::BrowserContext* browser_context,
-                                   const ExtensionId& extension_id,
-                                   const std::string& sub_event_name);
 
   // Removes all listeners from `listeners` that matches the given criteria.
   // Optional criteria are ignored if not provided. Removes the matching

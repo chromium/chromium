@@ -7146,23 +7146,10 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   EXPECT_EQ(2, get_request_count());
 }
 
-class ManifestV3WebRequestApiTestWithEventRouterPersistence
-    : public ManifestV3WebRequestApiTest {
- public:
-  ManifestV3WebRequestApiTestWithEventRouterPersistence() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestPersistFilteredEventsViaEventRouter);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that, when the `kWebRequestPersistFilteredEventsViaEventRouter` feature
-// flag is enabled, adding a listener right after an extension has been
-// unloaded, but before its renderer has been shut down, doesn't cause a CHECK
-// failure in WebRequestAPI. Regression test for https://crbug.com/479841044.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTestWithEventRouterPersistence,
+// Test that adding a listener right after an extension has been unloaded, but
+// before its renderer has been shut down, doesn't cause a CHECK failure in
+// WebRequestAPI. Regression test for https://crbug.com/479841044.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                        DontCrashOnExtensionUnload) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -7338,7 +7325,7 @@ IN_PROC_BROWSER_TEST_F(
 // overwritten by a listener with a different filter in a previous run)
 // does not cause a crash. Regression test for crbug.com/508602546.
 IN_PROC_BROWSER_TEST_F(
-    ManifestV3WebRequestApiTestWithEventRouterPersistence,
+    ManifestV3WebRequestApiTest,
     ServiceWorkerWithWebRequest_RemoveStaleListenerDoesNotCrash) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =

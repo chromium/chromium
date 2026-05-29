@@ -335,12 +335,6 @@ BASE_DECLARE_FEATURE(kSearchEngineUnconditionalDialog);
 // Allowing them to retrieve certificate information from web requests.
 BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);
 
-// When enabled, filtered webRequest event listeners for service worker-based
-// extensions are persisted to ExtensionPrefs by the general mechanism in
-// EventRouter. If disabled, they're instead persisted by the custom mechanism
-// in WebRequestEventRouter.
-BASE_DECLARE_FEATURE(kWebRequestPersistFilteredEventsViaEventRouter);
-
 // When enabled, optimizes WebRequest proxying by strictly limiting it to
 // requests that are subject to interception. This ensures that the 'webview'
 // permission only triggers proxying for its own guest frames (e.g., <webview>

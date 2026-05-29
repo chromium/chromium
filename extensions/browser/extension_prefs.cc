@@ -35,7 +35,6 @@
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
-#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
@@ -2491,7 +2490,6 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
   extension_dict->Remove(EventRouter::kRegisteredServiceWorkerEvents);
   extension_dict->Remove(EventRouter::kFilteredEvents);
   extension_dict->Remove(EventRouter::kFilteredServiceWorkerEvents);
-  extension_dict->Remove(WebRequestEventRouter::kFilteredLazyListeners);
   extension_dict->Remove(kPrefHasStartedServiceWorker);
 
   // FYI, all code below here races on sudden shutdown because |extension_dict|,
@@ -2670,6 +2668,9 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
 
       // Added 2026-05.
       "mv2_deprecation_warning_ack",
+
+      // Added 2026-05.
+      "web_request.filtered_lazy_listeners",
   };
 
   for (auto key_value : extensions_dictionary) {

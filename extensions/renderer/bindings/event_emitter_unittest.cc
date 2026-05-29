@@ -6,13 +6,10 @@
 
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -206,20 +203,7 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
   EXPECT_TRUE(closure_data.did_invalidate_context);
 }
 
-class EventEmitterWithAlternativeAddListenerUnittest
-    : public EventEmitterUnittest {
- public:
-  EventEmitterWithAlternativeAddListenerUnittest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestPersistFilteredEventsViaEventRouter);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(EventEmitterWithAlternativeAddListenerUnittest,
-       AddListenerWithOptions_WebRequest) {
+TEST_F(EventEmitterUnittest, AddListenerWithOptions_WebRequest) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -269,8 +253,7 @@ TEST_F(EventEmitterWithAlternativeAddListenerUnittest,
   }
 }
 
-TEST_F(EventEmitterWithAlternativeAddListenerUnittest,
-       AddListenerWithOptions_FailsForNonWebRequest) {
+TEST_F(EventEmitterUnittest, AddListenerWithOptions_FailsForNonWebRequest) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 

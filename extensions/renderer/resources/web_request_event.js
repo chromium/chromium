@@ -9,8 +9,6 @@ var webRequestInternal = getInternalApi('webRequestInternal');
 var webRequestNatives = requireNative('web_request_natives');
 const allowAsyncResponsesForAllEvents =
     webRequestNatives.AllowAsyncResponsesForAllEvents();
-const isAlternativeAddListenerEnabled =
-    webRequestNatives.IsAlternativeAddListenerEnabled();
 const isServiceWorkerContext =
     requireNative('service_worker_natives').IsServiceWorkerContext();
 
@@ -93,13 +91,7 @@ WebRequestEventImpl.prototype.addListener =
   bindingUtil.validateCustomSignature(this.eventName,
                                       $Array.slice(arguments, 1));
 
-  var supportsFilters = isAlternativeAddListenerEnabled;
-  if (!isAlternativeAddListenerEnabled) {
-    webRequestInternal.addEventListener(
-      cb, opt_filter, opt_extraInfo, this.eventName, subEventName,
-      this.webViewInstanceId);
-  }
-
+  var supportsFilters = true;
   var supportsLazyListeners = true;
   var subEvent =
       bindingUtil.createCustomEvent(subEventName, supportsFilters,
@@ -157,12 +149,8 @@ WebRequestEventImpl.prototype.addListener =
   $Array.push(this.subEvents,
       {subEvent: subEvent, callback: cb, subEventCallback: subEventCallback});
 
-  if (isAlternativeAddListenerEnabled) {
-    subEvent.addListener(subEventCallback, opt_filter,
-      { extraInfo: opt_extraInfo, webViewInstanceId: this.webViewInstanceId });
-  } else {
-    subEvent.addListener(subEventCallback);
-  }
+  subEvent.addListener(subEventCallback, opt_filter,
+    { extraInfo: opt_extraInfo, webViewInstanceId: this.webViewInstanceId });
 };
 
 // Unregisters a callback.

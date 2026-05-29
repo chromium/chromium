@@ -16,7 +16,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -47,7 +46,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature.h"
@@ -1697,12 +1695,6 @@ void EventRouter::RemoveOrphanedWebRequestEvents(
     const ExtensionId& extension_id,
     std::set<std::string>& events,
     RegisteredEventType type) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::
-              kWebRequestPersistFilteredEventsViaEventRouter)) {
-    return;
-  }
-
   // Before the webRequest persisted listeners feature was enabled, webRequest
   // events from service workers were stored as unfiltered listeners. Now that
   // they are stored as filtered listeners, we need to clean up the old,

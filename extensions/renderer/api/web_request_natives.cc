@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/renderer/script_context.h"
 
@@ -22,10 +21,6 @@ void WebRequestNatives::AddRoutes() {
       "AllowAsyncResponsesForAllEvents",
       base::BindRepeating(&WebRequestNatives::AllowAsyncResponsesForAllEvents,
                           base::Unretained(this)));
-  RouteHandlerFunction(
-      "IsAlternativeAddListenerEnabled",
-      base::BindRepeating(&WebRequestNatives::IsAlternativeAddListenerEnabled,
-                          base::Unretained(this)));
 }
 
 void WebRequestNatives::AllowAsyncResponsesForAllEvents(
@@ -38,14 +33,6 @@ void WebRequestNatives::AllowAsyncResponsesForAllEvents(
       Manifest::IsPolicyLocation(extension->location());
 
   args.GetReturnValue().Set(always_allowed_async_handlers);
-}
-
-void WebRequestNatives::IsAlternativeAddListenerEnabled(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK_EQ(0, args.Length());
-
-  args.GetReturnValue().Set(base::FeatureList::IsEnabled(
-      extensions_features::kWebRequestPersistFilteredEventsViaEventRouter));
 }
 
 }  // namespace extensions

@@ -64,7 +64,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
-#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -418,12 +417,6 @@ WebRequestAPI::TestObserver::~TestObserver() = default;
 
 void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::
-              kWebRequestPersistFilteredEventsViaEventRouter)) {
-    return;
-  }
 
   WebRequestEventRouter::RequestFilter filter;
   std::string error;
@@ -1064,10 +1057,6 @@ void WebRequestAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
   if (HasAnyWebRequestPermissions(*extension)) {
     ++web_request_extension_count_;
     update_may_have_proxies = true;
-    if (BackgroundInfo::IsServiceWorkerBased(extension)) {
-      WebRequestEventRouter::Get(browser_context)
-          ->LoadPersistedLazyListeners(browser_context, extension->id());
-    }
   }
   if (HasAnyDeclarativeWebRequestPermissions(*extension)) {
     ++declarative_request_extension_count_;
