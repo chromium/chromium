@@ -300,9 +300,9 @@ void UmaSessionStats::SessionTimeTracker::BeginBackgroundSession() {
 // Updates metrics reporting state managed by native code. This should only be
 // called when consent is changing, and UpdateMetricsServiceState() should be
 // called immediately after for metrics services to be started or stopped as
-// needed. This is enforced by UmaSessionStats.changeMetricsReportingConsent on
+// needed. This is enforced by UmaSessionStats.changeMetricsReportingState on
 // the Java side.
-static void JNI_UmaSessionStats_ChangeMetricsReportingConsent(
+static void JNI_UmaSessionStats_ChangeMetricsReportingState(
     JNIEnv*,
     bool consent,
     int32_t called_from) {
@@ -365,7 +365,7 @@ static void JNI_UmaSessionStats_UpdateMetricsAndCrashReportingForTesting(
 //
 // This can be called at any time when consent hasn't changed, such as
 // connection type change, or start up. If consent has changed, then
-// ChangeMetricsReportingConsent() should be called first.
+// ChangeMetricsReportingState() should be called first.
 static void JNI_UmaSessionStats_UpdateMetricsServiceState(JNIEnv*,
                                                           bool may_upload) {
   // This will also apply the consent state, taken from Chrome Local State

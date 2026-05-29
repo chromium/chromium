@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.components.metrics.MetricsReportingLevel;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Provides first run related utility functions. */
@@ -43,8 +44,13 @@ public class FirstRunUtils {
      *     collect stats.
      */
     static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
-        UmaSessionStats.changeMetricsReportingConsent(
-                allowMetricsAndCrashUploading, ChangeMetricsReportingStateCalledFrom.UI_FIRST_RUN);
+        @MetricsReportingLevel
+        int level =
+                allowMetricsAndCrashUploading
+                        ? MetricsReportingLevel.BASIC
+                        : MetricsReportingLevel.NONE;
+        UmaSessionStats.changeMetricsReportingState(
+                level, ChangeMetricsReportingStateCalledFrom.UI_FIRST_RUN);
         setEulaAccepted();
     }
 

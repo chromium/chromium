@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.metrics.MetricsReportingLevel;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
@@ -187,19 +188,35 @@ public class UmaSessionStats {
     }
 
     /**
-     * Updates the metrics services based on a change of consent. This can happen during first-run
-     * flow, and when the user changes their preferences.
+     * Updates the metrics services based on user choice. This can happen during first-run flow, and
+     * when the user changes their preferences.
      */
-    public static void changeMetricsReportingConsent(
-            boolean consent, @ChangeMetricsReportingStateCalledFrom int calledFrom) {
+    public static void changeMetricsReportingState(
+            boolean enabled, @ChangeMetricsReportingStateCalledFrom int calledFrom) {
         PrivacyPreferencesManagerImpl privacyManager = PrivacyPreferencesManagerImpl.getInstance();
         // Update the metrics reporting preference.
-        privacyManager.setUsageAndCrashReporting(consent);
+        privacyManager.setUsageAndCrashReporting(enabled);
 
         // Perform native changes needed to reflect the new consent value.
-        UmaSessionStatsJni.get().changeMetricsReportingConsent(consent, calledFrom);
+        UmaSessionStatsJni.get().changeMetricsReportingState(enabled, calledFrom);
 
         updateMetricsServiceState();
+    }
+
+    /**
+     * Updates the metrics services based on a change of metrics reporting level. This can happen
+     * during first-run flow, and when the user changes their preferences.
+     */
+    public static void changeMetricsReportingState(
+            @MetricsReportingLevel int level,
+            @ChangeMetricsReportingStateCalledFrom int calledFrom) {
+        boolean enabled =
+                level == MetricsReportingLevel.BASIC || level == MetricsReportingLevel.ADVANCED;
+
+        // Update the metrics reporting preference.
+        PrivacyPreferencesManagerImpl.getInstance().setMetricsReportingLevel(level);
+
+        changeMetricsReportingState(enabled, calledFrom);
     }
 
     /** Initializes the metrics consent bit to false. Used only for testing. */
@@ -293,7 +310,7 @@ public class UmaSessionStats {
     public interface Natives {
         long init();
 
-        void changeMetricsReportingConsent(boolean consent, int calledFrom);
+        void changeMetricsReportingState(boolean enabled, int calledFrom);
 
         void initMetricsAndCrashReportingForTesting();
 
