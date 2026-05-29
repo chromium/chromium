@@ -11,6 +11,7 @@ static_library("power_ui") {
   ]
 
   deps = [
+    "//ash/strings",
     "//base",
     "//chrome/browser/ash/power",
     "//chrome/browser/profiles:profile",

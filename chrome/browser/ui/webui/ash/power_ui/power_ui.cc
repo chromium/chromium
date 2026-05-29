@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
@@ -22,7 +23,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/power/power_data_collector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/power_resources.h"
 #include "chrome/grit/power_resources_map.h"
 #include "content/public/browser/web_ui.h"
