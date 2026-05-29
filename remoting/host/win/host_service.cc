@@ -33,6 +33,7 @@
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/daemon_process.h"
+#include "remoting/host/win/acl_util.h"
 #include "remoting/host/win/com_security.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/host/win/wts_terminal_observer.h"
@@ -91,6 +92,20 @@ void DisableAutoStart() {
     PLOG(INFO) << "Failed to change the '" << kWindowsServiceName
                << "'service start type to 'manual'";
   }
+}
+
+// Grants PROCESS_QUERY_LIMITED_INFORMATION on the current process and
+// TOKEN_QUERY on its process token to standard users. This allows standard
+// user client processes to verify the session ID and integrity level of the
+// SYSTEM daemon process during named pipe connections.
+void GrantQueryAccessToAuthenticatedUsers() {
+  bool success = AddProcessAccessRightForWellKnownSid(
+                     base::win::WellKnownSid::kAuthenticatedUser,
+                     PROCESS_QUERY_LIMITED_INFORMATION) &&
+                 AddTokenAccessRightForWellKnownSid(
+                     base::win::WellKnownSid::kAuthenticatedUser, TOKEN_QUERY);
+  CHECK(success)
+      << "Failed to grant process/token query access to Authenticated Users.";
 }
 
 }  // namespace
@@ -325,6 +340,7 @@ void HostService::RunAsServiceImpl() {
     return;
   }
 
+  GrantQueryAccessToAuthenticatedUsers();
   CreateLauncher(scoped_refptr<AutoThreadTaskRunner>(
       new AutoThreadTaskRunner(main_task_runner_, run_loop.QuitClosure())));
 
@@ -379,6 +395,7 @@ int HostService::RunInConsole() {
   // Subscribe to session change notifications.
   if (WTSRegisterSessionNotification(window.hwnd(), NOTIFY_FOR_ALL_SESSIONS) !=
       FALSE) {
+    GrantQueryAccessToAuthenticatedUsers();
     CreateLauncher(scoped_refptr<AutoThreadTaskRunner>(
         new AutoThreadTaskRunner(main_task_runner_, run_loop.QuitClosure())));
 

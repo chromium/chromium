@@ -15,6 +15,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/ipc_constants.h"
@@ -31,7 +32,15 @@ namespace {
 mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
     const std::vector<mojo::NamedPlatformChannel::ServerName>& server_names) {
   for (const auto& server_name : server_names) {
-    auto endpoint = named_mojo_ipc_server::ConnectToServer(server_name);
+    mojo::PlatformChannelEndpoint endpoint;
+#if BUILDFLAG(IS_WIN)
+    mojo::NamedPlatformChannel::Options options;
+    options.server_name = server_name;
+    options.verify_server_privilege = true;
+    endpoint = named_mojo_ipc_server::ConnectToServer(options);
+#else
+    endpoint = named_mojo_ipc_server::ConnectToServer(server_name);
+#endif
     if (!endpoint.is_valid()) {
       VLOG(1) << "Cannot connect to IPC through server name " << server_name
               << ". Endpoint is invalid.";

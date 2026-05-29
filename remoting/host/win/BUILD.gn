@@ -426,6 +426,7 @@ shared_library("remoting_core") {
     "wts_session_process_delegate.cc",
   ]
   deps = [
+    ":acl_util",
     ":messages",
     ":remoting_lib_idl",
     ":remoting_lib_ps",

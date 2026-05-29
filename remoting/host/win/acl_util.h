@@ -17,6 +17,11 @@ bool AddProcessAccessRightForWellKnownSid(
     base::win::WellKnownSid well_known_sid,
     DWORD new_right);
 
+// Adds new access right to the current process token for |well_known_sid|.
+// Returns a boolean indicating whether the operation was successful.
+bool AddTokenAccessRightForWellKnownSid(base::win::WellKnownSid well_known_sid,
+                                        DWORD new_right);
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_WIN_ACL_UTIL_H_
