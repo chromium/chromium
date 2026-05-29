@@ -274,10 +274,14 @@ void TrustTokenRequestIssuanceHelper::Finalize(
     return;
   }
 
-  ProcessIssuanceResponse(std::string(*header_value), std::move(done));
-  // Can only remove the header after the last user of `header_value`, since it
-  // holds a pointer to the kTrustTokensSecTrustTokenHeader header's value.
+  // Copy the header value out of |response_headers| and strip the header
+  // *before* calling ProcessIssuanceResponse(): on the empty-value path that
+  // call runs |done| synchronously, which may re-enter URLLoader and delete it
+  // (and |response_headers|, and |this|) before returning.
+  std::string issuance_response(*header_value);
   response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
+  ProcessIssuanceResponse(std::move(issuance_response), std::move(done));
+  // |this| and |response_headers| may have been deleted.
 }
 
 void TrustTokenRequestIssuanceHelper::ProcessIssuanceResponse(
