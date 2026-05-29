@@ -66,13 +66,8 @@ class CORE_EXPORT SVGLayoutSupport {
 
   // Important functions used by nearly all SVG layoutObjects centralizing
   // coordinate transformations / visual rect calculations
-  static gfx::RectF LocalVisualRect(const LayoutObject&);
   // Applies the object's filters to the given rect.
   static gfx::RectF ApplyFiltersToRect(const LayoutObject&, const gfx::RectF&);
-  static PhysicalRect VisualRectInAncestorSpace(
-      const LayoutObject&,
-      const LayoutBoxModelObject& ancestor,
-      VisualRectFlags = kDefaultVisualRectFlags);
   static bool MapToVisualRectInAncestorSpace(
       const LayoutObject&,
       const LayoutBoxModelObject* ancestor,

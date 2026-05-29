@@ -26,6 +26,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(LayoutSVGRootTest);
 
 TEST_P(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
     <svg id='root' style='border: 10px solid red; width: 200px; height:
     100px; overflow: visible' viewBox='0 0 200 100'>
        <rect id='rect' x='80' y='80' width='100' height='100'/>
@@ -36,7 +37,7 @@ TEST_P(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   const auto& svg_rect =
       *To<LayoutSVGShape>(GetLayoutObjectByElementId("rect"));
 
-  auto rect = SVGLayoutSupport::VisualRectInAncestorSpace(svg_rect, root);
+  auto rect = VisualRectInDocument(svg_rect);
   // (80, 80, 100, 100) added by root's content rect offset from border rect,
   // not clipped.
   EXPECT_EQ(PhysicalRect(90, 90, 100, 100), rect);
@@ -52,6 +53,7 @@ TEST_P(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
 
 TEST_P(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
   SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
     <svg id='root' style='width: 100px; will-change: transform; height:
     100px; overflow: visible; position: absolute;'>
        <rect id='rect' x='0' y='0' width='100' height='100'/>
@@ -71,6 +73,7 @@ TEST_P(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
 
 TEST_P(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
     <svg id='root' style='border: 10px solid red; width: 200px; height:
     100px; overflow: hidden' viewBox='0 0 200 100'>
        <rect id='rect' x='80' y='80' width='100' height='100'/>
@@ -81,7 +84,7 @@ TEST_P(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   const auto& svg_rect =
       *To<LayoutSVGShape>(GetLayoutObjectByElementId("rect"));
 
-  auto rect = SVGLayoutSupport::VisualRectInAncestorSpace(svg_rect, root);
+  auto rect = VisualRectInDocument(svg_rect);
   EXPECT_EQ(PhysicalRect(90, 90, 100, 20), rect);
 
   auto root_visual_rect =
@@ -165,12 +168,11 @@ TEST_P(LayoutSVGRootTest, VisualRectMappingWithReferenceFilter) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("root"));
   const auto& rect = *GetLayoutObjectByElementId("rect");
 
-  auto visual_rect = SVGLayoutSupport::VisualRectInAncestorSpace(rect, root);
+  auto visual_rect = VisualRectInDocument(rect);
 
-  EXPECT_EQ(PhysicalRect(50, 50, 110, 110), visual_rect);
+  EXPECT_EQ(PhysicalRect(58, 58, 110, 110), visual_rect);
 }
 
 }  // namespace blink

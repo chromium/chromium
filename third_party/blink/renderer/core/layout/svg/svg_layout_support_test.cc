@@ -50,14 +50,9 @@ TEST_F(SVGLayoutSupportTest, VisualRectInAncestorSpaceContainerWithFilter) {
   LayoutObject* target = GetLayoutObjectByElementId("target");
   ASSERT_TRUE(target);
 
-  LayoutBoxModelObject* svg_root =
-      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("svg"));
-  ASSERT_TRUE(svg_root);
+  PhysicalRect result_rect = VisualRectInDocument(*target);
 
-  PhysicalRect result_rect =
-      SVGLayoutSupport::VisualRectInAncestorSpace(*target, *svg_root);
-
-  EXPECT_EQ(result_rect, PhysicalRect(0, 0, 220, 220));
+  EXPECT_EQ(result_rect, PhysicalRect(8, 8, 220, 220));
 }
 
 }  // namespace blink

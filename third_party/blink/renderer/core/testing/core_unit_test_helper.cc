@@ -199,8 +199,11 @@ PhysicalRect VisualRectInDocument(const LayoutObject& object,
     return PhysicalRect();
   }
   if (object.IsSVG() || IsA<LayoutSVGInline>(object)) {
-    return SVGLayoutSupport::VisualRectInAncestorSpace(object, *object.View(),
-                                                       flags);
+    PhysicalRect rect;
+    SVGLayoutSupport::MapToVisualRectInAncestorSpace(
+        object, object.View(), object.VisualRectInLocalSVGCoordinates(), rect,
+        flags);
+    return rect;
   }
   if (const auto* layout_inline = DynamicTo<LayoutInline>(object)) {
     PhysicalRect rect = layout_inline->VisualOverflowRect();
