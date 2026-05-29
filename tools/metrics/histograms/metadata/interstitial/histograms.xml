@@ -65,6 +65,8 @@ chromium-metrics-reviews@google.com.
       summary="scam detection verdict 4"/>
 </variants>
 
+<!-- LINT.IfChange(SecurityInterstitialSBWithSourceType) -->
+
 <variants name="SecurityInterstitialSBWithSourceType">
   <variant name=".from_android_safebrowsing"
       summary="Interstitial for a resource classified as unsafe by the
@@ -79,6 +81,9 @@ chromium-metrics-reviews@google.com.
       summary="Interstitial for a resource classified as unsafe by the Safe
                Browsing database version 4 via either
                {Local,Remote}SafeBrowsingDatabaseManager."/>
+  <variant name=".from_glic_counter_abuse"
+      summary="Interstitial for a resource classified as unsafe by the Safe
+               Browsing server-reported Counter Abuse signal for Glic."/>
   <variant name=".from_hash_prefix_real_time_check_v5"
       summary="Interstitial for a resource classified as unsafe by the Safe
                Browsing hash-prefix real-time API version 5."/>
@@ -86,6 +91,8 @@ chromium-metrics-reviews@google.com.
       summary="Interstitial for a resource classified as unsafe by the Safe
                Browsing URL real-time API."/>
 </variants>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/utils.cc:GetExtraMetricsSuffix) -->
 
 <histogram name="interstitial.captive_portal"
     enum="CaptivePortalBlockingPageEvent" expires_after="2027-01-18">

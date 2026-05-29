@@ -15,13 +15,15 @@ namespace safe_browsing::unsafe_resource_util {
 content::NavigationEntry* GetNavigationEntryForResource(
     const security_interstitials::UnsafeResource& resource) {
   return GetNavigationEntryForLocator(
-      resource.rfh_locator, resource.navigation_id, resource.threat_type);
+      resource.rfh_locator, resource.navigation_id, resource.threat_type,
+      resource.threat_source);
 }
 
 content::NavigationEntry* GetNavigationEntryForLocator(
     const security_interstitials::UnsafeResourceLocator& rfh_locator,
     const std::optional<int64_t>& navigation_id,
-    safe_browsing::SBThreatType threat_type) {
+    safe_browsing::SBThreatType threat_type,
+    safe_browsing::ThreatSource threat_source) {
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
   if (!web_contents) {
@@ -30,7 +32,7 @@ content::NavigationEntry* GetNavigationEntryForLocator(
   // If a safebrowsing hit occurs during main frame navigation, the navigation
   // will not be committed, and the pending navigation entry refers to the hit.
   if (AsyncCheckTracker::IsMainPageLoadPending(rfh_locator, navigation_id,
-                                               threat_type)) {
+                                               threat_type, threat_source)) {
     return web_contents->GetController().GetPendingEntry();
   }
   // If a safebrowsing hit occurs on a subresource load, or on a main frame

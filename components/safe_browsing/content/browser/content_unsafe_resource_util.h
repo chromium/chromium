@@ -31,7 +31,8 @@ content::NavigationEntry* GetNavigationEntryForResource(
 content::NavigationEntry* GetNavigationEntryForLocator(
     const security_interstitials::UnsafeResourceLocator& resource,
     const std::optional<int64_t>& navigation_id,
-    safe_browsing::SBThreatType threat_type);
+    safe_browsing::SBThreatType threat_type,
+    safe_browsing::ThreatSource threat_source);
 
 // Returns the WebContents associated with the given |resource| based on the
 // frame or document for which it was created. If that frame/document no longer

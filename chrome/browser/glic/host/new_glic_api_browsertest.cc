@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -146,6 +147,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithDefaultTabContextEnabled",
       "NewGlicApiTestWithWebActuationSettingDisabled",
       "NewGlicApiTestWithWebActuationSettingEnabled",
+      "NewGlicApiTestWithProcessCounterAbuseVerdictDisabled",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithSkills",
 #endif
@@ -229,6 +231,7 @@ class NewGlicApiTest : public GlicApiBrowserTest,
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlic, {}},
+         {features::kGlicProcessCounterAbuseVerdict, {}},
          {features::kGlicWebContentsWarming,
           {// Effectively disable warming in this test, as it can make
            // understanding logs difficult. Note that disabling this feature
@@ -435,6 +438,25 @@ class NewGlicApiTestWithWebActuationSettingDisabled : public NewGlicApiTest {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebActuationSettingDisabled,
                        testWebActuationSettingIsUndefinedWhenFeatureDisabled) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestWithProcessCounterAbuseVerdictDisabled
+    : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithProcessCounterAbuseVerdictDisabled() {
+    feature_list_.InitAndDisableFeature(
+        features::kGlicProcessCounterAbuseVerdict);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    NewGlicApiTestWithProcessCounterAbuseVerdictDisabled,
+    testProcessCounterAbuseVerdictIsUndefinedWhenFeatureDisabled) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -863,6 +885,19 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
             GetTestUrl("page.html"));
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testProcessCounterAbuseVerdict) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+
+  // Wait for the Safe Browsing interstitial to appear.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return chrome_browser_interstitials::IsShowingInterstitial(active_contents);
+  }));
 }
 
 // TODO(harringtond): Flaky on windows.
@@ -1608,6 +1643,11 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithProcessCounterAbuseVerdictDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
 // Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
@@ -1634,6 +1674,8 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithWebActuationSettingDisabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithWebActuationSettingEnabled);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithProcessCounterAbuseVerdictDisabled);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 #endif

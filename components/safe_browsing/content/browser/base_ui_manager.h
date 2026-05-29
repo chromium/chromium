@@ -101,7 +101,8 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       const GURL& url,
       const security_interstitials::UnsafeResourceLocator& rfh_locator,
       const std::optional<int64_t>& navigation_id,
-      safe_browsing::SBThreatType threat_type);
+      safe_browsing::SBThreatType threat_type,
+      safe_browsing::ThreatSource threat_source);
 
   // Checks if we already displayed or are displaying an interstitial
   // for the top-level site |url| or any URLs in the redirect chain of |entry|

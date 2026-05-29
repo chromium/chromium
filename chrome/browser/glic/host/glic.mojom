@@ -479,6 +479,29 @@ struct UserProfileInfo {
 };
 
 // @generate glic_api
+// Safe Browsing Threat Type.
+[Stable, Extensible]
+enum SbThreatType {
+  // Default value.
+  [Default] kUnspecified = 0,
+  kSocialEngineering = 1,
+  kMalware = 2,
+  kUnwantedSoftware = 3,
+};
+
+// The result from checking a page with Safe Browsing.
+struct SafeBrowsingVerdictResult {
+  string url;
+  SbThreatType threat_type;
+  bool show_interstitial;
+};
+
+// The safety signals for determining user treatments and enforcements.
+struct CounterAbuseVerdict {
+  SafeBrowsingVerdictResult? sb_verdict_result;
+};
+
+// @generate glic_api
 // The platform glic is running on.
 enum Platform {
   kUnknown = 0,
@@ -565,6 +588,8 @@ struct WebClientInitialState {
   bool enable_skills;
   // Whether glic API getTabFaviconById is enabled.
   bool enable_get_tab_favicon_by_id;
+  // Whether the processCounterAbuseVerdict API is enabled.
+  bool enable_process_counter_abuse_verdict;
 };
 
 // @generate glic_api
@@ -1376,6 +1401,9 @@ interface WebClientHandler {
   // Reports that the web client encountered a transient error. These errors may
   // be presented to the user, but may not prevent further use of Glic.
   ReportClientTransientError(mojo_base.mojom.AbslStatusCode status_code);
+
+  // Processes the counter-abuse verdict from the server.
+  ProcessCounterAbuseVerdict(int32 tab_id, CounterAbuseVerdict? verdict);
 
   // Called when the opt-in CTA is shown.
   OnOptinImpression();

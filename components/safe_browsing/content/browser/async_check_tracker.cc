@@ -37,14 +37,15 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(AsyncCheckTracker);
 bool AsyncCheckTracker::IsMainPageResourceLoadPending(
     const security_interstitials::UnsafeResource& resource) {
   return IsMainPageLoadPending(resource.rfh_locator, resource.navigation_id,
-                               resource.threat_type);
+                               resource.threat_type, resource.threat_source);
 }
 
 // static
 bool AsyncCheckTracker::IsMainPageLoadPending(
     const security_interstitials::UnsafeResourceLocator& rfh_locator,
     const std::optional<int64_t>& navigation_id,
-    safe_browsing::SBThreatType threat_type) {
+    safe_browsing::SBThreatType threat_type,
+    safe_browsing::ThreatSource threat_source) {
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
   if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
@@ -55,7 +56,8 @@ bool AsyncCheckTracker::IsMainPageLoadPending(
     return AsyncCheckTracker::FromWebContents(web_contents)
         ->IsNavigationPending(navigation_id.value());
   }
-  return UnsafeResource::IsMainPageLoadPendingWithSyncCheck(threat_type);
+  return UnsafeResource::IsMainPageLoadPendingWithSyncCheck(threat_type,
+                                                            threat_source);
 }
 
 // static

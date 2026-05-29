@@ -2261,9 +2261,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           CreateForRenderFrameToken(
               primary_main_frame_id.child_id.value(),
               primary_main_frame->GetFrameToken().value());
-      if (!ui_manager_->IsAllowlisted(resource.url, resource.rfh_locator,
-                                      resource.navigation_id,
-                                      resource.threat_type)) {
+      if (!ui_manager_->IsAllowlisted(
+              resource.url, resource.rfh_locator, resource.navigation_id,
+              resource.threat_type, resource.threat_source)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.
         web_contents()->GetController().DiscardNonCommittedEntries();

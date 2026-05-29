@@ -26,6 +26,8 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
       return CSBRR::ANDROID_SAFEBROWSING;
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       return CSBRR::CLIENT_SIDE_DETECTION;
+    case safe_browsing::ThreatSource::GLIC_COUNTER_ABUSE:
+      return CSBRR::GLIC;
     case safe_browsing::ThreatSource::UNKNOWN:
       return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;
   }

@@ -34,7 +34,14 @@ UnsafeResource::~UnsafeResource() = default;
 
 // static
 bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
-    safe_browsing::SBThreatType threat_type) {
+    safe_browsing::SBThreatType threat_type,
+    safe_browsing::ThreatSource threat_source) {
+  // GLIC counter abuse warnings are triggered asynchronously by the Glic API
+  // after the main frame navigation has committed, so the page load is
+  // never considered pending at the time the warning is processed.
+  if (threat_source == safe_browsing::ThreatSource::GLIC_COUNTER_ABUSE) {
+    return false;
+  }
   using enum safe_browsing::SBThreatType;
   switch (threat_type) {
     // Client-side phishing detection interstitials never block the main

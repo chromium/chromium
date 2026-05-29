@@ -64,7 +64,8 @@ class AsyncCheckTracker
   static bool IsMainPageLoadPending(
       const security_interstitials::UnsafeResourceLocator& rfh_locator,
       const std::optional<int64_t>& navigation_id,
-      safe_browsing::SBThreatType threat_type);
+      safe_browsing::SBThreatType threat_type,
+      safe_browsing::ThreatSource threat_source);
 
   // Returns the timestamp when the navigation associated with `resource` is
   // committed. Returns nullopt if the navigation has not committed.

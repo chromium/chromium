@@ -67,7 +67,8 @@ struct UnsafeResource {
   // Note: If async check is enabled, please call
   // AsyncCheckTracker::IsMainPageLoadPending instead.
   static bool IsMainPageLoadPendingWithSyncCheck(
-      safe_browsing::SBThreatType threat_type);
+      safe_browsing::SBThreatType threat_type,
+      safe_browsing::ThreatSource threat_source);
 
   // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,

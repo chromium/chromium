@@ -1940,6 +1940,8 @@ message ClientSafeBrowsingReportRequest {
     ANDROID_SAFEBROWSING = 8;
     // Client-side phishing.
     CLIENT_SIDE_DETECTION = 9;
+    // Glic Counter Abuse.
+    GLIC = 10;
   }
 
   // The information propagated from the client about various environment

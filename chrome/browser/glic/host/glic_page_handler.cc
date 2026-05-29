@@ -75,6 +75,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
@@ -105,6 +106,8 @@
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -118,6 +121,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -694,6 +698,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kSkillsEnabled);
     state->enable_get_tab_favicon_by_id =
         base::FeatureList::IsEnabled(features::kGlicGetTabFaviconById);
+    state->enable_process_counter_abuse_verdict =
+        base::FeatureList::IsEnabled(features::kGlicProcessCounterAbuseVerdict);
 
     std::move(callback).Run(std::move(state));
   }
@@ -1235,6 +1241,76 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetAuthController().OnClientTransientError(status_code);
     base::UmaHistogramSparse("Glic.Api.Client.TransientError",
                              static_cast<int>(status_code));
+  }
+
+  void ProcessCounterAbuseVerdict(
+      int32_t tab_id,
+      mojom::CounterAbuseVerdictPtr verdict) override {
+    if (!base::FeatureList::IsEnabled(
+            features::kGlicProcessCounterAbuseVerdict)) {
+      return;
+    }
+    if (!verdict || !verdict->sb_verdict_result) {
+      return;
+    }
+    if (!verdict->sb_verdict_result->show_interstitial) {
+      return;
+    }
+
+    tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
+    if (!tab) {
+      return;
+    }
+    content::WebContents* contents = tab->GetContents();
+    if (!contents) {
+      return;
+    }
+    GURL active_url = contents->GetVisibleURL();
+    if (GURL(verdict->sb_verdict_result->url) != active_url) {
+      return;
+    }
+    if (!g_browser_process->safe_browsing_service()) {
+      return;
+    }
+    safe_browsing::BaseUIManager* ui_manager =
+        g_browser_process->safe_browsing_service()->ui_manager().get();
+    if (ui_manager) {
+      security_interstitials::UnsafeResource resource;
+      resource.url = GURL(verdict->sb_verdict_result->url);
+      resource.original_url = GURL(verdict->sb_verdict_result->url);
+      resource.threat_source = safe_browsing::ThreatSource::GLIC_COUNTER_ABUSE;
+
+      switch (verdict->sb_verdict_result->threat_type) {
+        case mojom::SbThreatType::kSocialEngineering:
+          resource.threat_type =
+              safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+          break;
+        case mojom::SbThreatType::kMalware:
+          resource.threat_type =
+              safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
+          break;
+        case mojom::SbThreatType::kUnwantedSoftware:
+          resource.threat_type =
+              safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
+          break;
+        default:
+          // Avoid showing a blocking page with a safe threat type.
+          return;
+      }
+
+      content::RenderFrameHost* primary_main_frame =
+          contents->GetPrimaryMainFrame();
+      if (primary_main_frame) {
+        const content::GlobalRenderFrameHostId primary_main_frame_id =
+            primary_main_frame->GetGlobalId();
+        resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
+            CreateForRenderFrameToken(
+                primary_main_frame_id.child_id.value(),
+                primary_main_frame->GetFrameToken().value());
+      }
+
+      ui_manager->DisplayBlockingPage(resource);
+    }
   }
 
   void OnOptinImpression() override {

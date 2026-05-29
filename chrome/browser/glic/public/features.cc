@@ -189,4 +189,6 @@ BASE_FEATURE(kGlicShowForSignedOut,
 BASE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicProcessCounterAbuseVerdict,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

@@ -150,6 +150,7 @@ bool ErrorIsRetriable(int net_error, int http_error) {
          (http_error == kUnsetHttpResponseCode || http_error == net::HTTP_OK);
 }
 
+// LINT.IfChange(GetExtraMetricsSuffix)
 std::string_view GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource) {
   switch (unsafe_resource.threat_source) {
@@ -165,11 +166,14 @@ std::string_view GetExtraMetricsSuffix(
       return "from_android_safebrowsing_real_time";
     case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING:
       return "from_android_safebrowsing";
+    case safe_browsing::ThreatSource::GLIC_COUNTER_ABUSE:
+      return "from_glic_counter_abuse";
     case safe_browsing::ThreatSource::UNKNOWN:
       break;
   }
   NOTREACHED();
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/interstitial/histograms.xml:SecurityInterstitialSBWithSourceType)
 
 std::string_view GetExtraExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource) {

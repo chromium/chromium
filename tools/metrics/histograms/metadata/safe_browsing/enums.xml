@@ -678,6 +678,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS"/>
   <int value="15" label="ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS"/>
   <int value="16" label="DOWNLOAD_DEEP_SCAN"/>
+  <int value="17" label="GLIC_COUNTER_ABUSE_INTERSTITIAL_BYPASS"/>
 </enum>
 
 <enum name="SBThreatType">

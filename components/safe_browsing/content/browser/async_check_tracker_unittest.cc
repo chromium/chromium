@@ -263,13 +263,15 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
       AsyncCheckTracker::FromWebContents(web_contents());
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, handle.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
 
   tracker->DidFinishNavigation(&handle);
   // The navigation is not committed.
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, handle.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
       /*sample=*/0,
@@ -279,7 +281,8 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
   tracker->DidFinishNavigation(&handle);
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, handle.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
   histograms.ExpectBucketCount(
       "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
       /*sample=*/1,
@@ -292,7 +295,8 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
       main_rfh()->GetFrameTreeNodeId().value());
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, /*navigation_id=*/std::nullopt,
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
 
   // If there is no navigation id associated with the resource, whether the
   // main page load is pending is determined by
@@ -300,7 +304,25 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator,
       /*navigation_id=*/std::nullopt,
-      SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
+}
+
+TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_GlicThreatSource) {
+  content::MockNavigationHandle handle(web_contents());
+  auto rfh_locator = UnsafeResourceLocator::CreateForFrameTreeNodeId(
+      main_rfh()->GetFrameTreeNodeId().value());
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
+      rfh_locator, /*navigation_id=*/std::nullopt,
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
+
+  // If the threat source is Glic, then the page has already loaded because
+  // this API is only triggered after main frame navigation is committed.
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
+      rfh_locator,
+      /*navigation_id=*/std::nullopt, SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::GLIC_COUNTER_ABUSE));
 }
 
 TEST_F(AsyncCheckTrackerTest,
@@ -318,7 +340,8 @@ TEST_F(AsyncCheckTrackerTest,
   }
   for (int64_t id : old_navigation_ids) {
     EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
-        rfh_locator, id, SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+        rfh_locator, id, SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+        safe_browsing::ThreatSource::UNKNOWN));
   }
 
   task_environment()->FastForwardBy(base::Seconds(180));
@@ -326,7 +349,8 @@ TEST_F(AsyncCheckTrackerTest,
   CallDidFinishNavigation(recent_handle1, /*has_committed=*/true);
   for (int64_t id : old_navigation_ids) {
     EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
-        rfh_locator, id, SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+        rfh_locator, id, SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+        safe_browsing::ThreatSource::UNKNOWN));
   }
 
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -336,16 +360,19 @@ TEST_F(AsyncCheckTrackerTest,
   // true.
   for (int64_t id : old_navigation_ids) {
     EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
-        rfh_locator, id, SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+        rfh_locator, id, SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+        safe_browsing::ThreatSource::UNKNOWN));
   }
 
   // The recent timestamps should not be cleaned up.
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, recent_handle1.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, recent_handle2.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
 }
 
 TEST_F(
@@ -360,7 +387,8 @@ TEST_F(
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, handle.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
 
   task_environment()->FastForwardBy(base::Seconds(181));
   content::MockNavigationHandle recent_handle(url_, main_rfh());
@@ -369,7 +397,8 @@ TEST_F(
   // timestamps has not reached the threshold.
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, handle.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
 
   for (int i = 0; i < kLocalNavigationTimestampsSizeThreshold - 1; i++) {
     content::MockNavigationHandle new_handle(url_, main_rfh());
@@ -379,7 +408,8 @@ TEST_F(
   // is cleaned up.
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
       rfh_locator, handle.GetNavigationId(),
-      SBThreatType::SB_THREAT_TYPE_URL_PHISHING));
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::ThreatSource::UNKNOWN));
 }
 
 TEST_F(AsyncCheckTrackerTest, IsPlatformEligibleForSyncCheckerCheckAllowlist) {

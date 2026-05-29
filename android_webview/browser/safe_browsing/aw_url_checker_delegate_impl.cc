@@ -215,9 +215,9 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
           SecurityInterstitialTabHelper::FromWebContents(web_contents);
-  bool is_allowlisted =
-      ui_manager->IsAllowlisted(resource.url, resource.rfh_locator,
-                                resource.navigation_id, resource.threat_type);
+  bool is_allowlisted = ui_manager->IsAllowlisted(
+      resource.url, resource.rfh_locator, resource.navigation_id,
+      resource.threat_type, resource.threat_source);
   if (is_allowlisted && security_interstitial_tab_helper &&
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user

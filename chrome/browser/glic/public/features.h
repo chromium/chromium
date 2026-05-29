@@ -109,6 +109,8 @@ BASE_DECLARE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling);
 BASE_DECLARE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling);
 
 BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
+
+BASE_DECLARE_FEATURE(kGlicProcessCounterAbuseVerdict);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

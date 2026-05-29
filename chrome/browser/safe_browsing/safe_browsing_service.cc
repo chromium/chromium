@@ -1014,7 +1014,8 @@ bool SafeBrowsingServiceImpl::IsURLAllowlisted(
           primary_main_frame->GetFrameToken().value());
   return ui_manager_->IsAllowlisted(url, rfh_locator,
                                     /*navigation_id=*/std::nullopt,
-                                    SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+                                    SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+                                    safe_browsing::ThreatSource::UNKNOWN);
 }
 
 void SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport(

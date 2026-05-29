@@ -21,7 +21,7 @@ import './sections/skills.js';
 import './sections/stress.js';
 
 import type {OpenSettingsOptions} from '/glic/glic_api/glic_api.js';
-import {SettingsPageField, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {SbThreatType, SettingsPageField, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -130,6 +130,20 @@ $.detachpanelbn.addEventListener('click', () => {
 });
 $.refreshbn.addEventListener('click', () => {
   location.reload();
+});
+$.processCounterAbuseVerdictTestEngageBtn.addEventListener('click', () => {
+  const tabId = client.getFocusedTabId();
+  if (!tabId) {
+    logMessage('Cannot process verdict: No focused tab');
+    return;
+  }
+  getBrowser()!.processCounterAbuseVerdict!(tabId, {
+    sbVerdictResult: {
+      url: 'https://www.google.com',
+      threatType: SbThreatType.UNSPECIFIED,
+      showInterstitial: true,
+    },
+  });
 });
 $.navigateWebviewUrl.addEventListener('keyup', ({key}) => {
   if (key === 'Enter') {

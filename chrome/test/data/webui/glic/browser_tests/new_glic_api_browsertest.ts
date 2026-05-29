@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {AdditionalContext, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SbThreatType, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -433,6 +433,30 @@ class ApiTests extends ApiTestFixtureBase {
 
     // After next navigation in focused tab occurs.
     await this.advanceToNextStep();
+  }
+
+  async testProcessCounterAbuseVerdict() {
+    assertDefined(this.host.processCounterAbuseVerdict);
+    assertDefined(this.host.getFocusedTabStateV2);
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabData = checkDefined(focus.hasFocus?.tabData);
+    const url = tabData.url;
+
+    const verdict: CounterAbuseVerdict = {
+      sbVerdictResult: {
+        url: url,
+        threatType: SbThreatType.SOCIAL_ENGINEERING,
+        showInterstitial: true,
+      },
+    };
+    this.host.processCounterAbuseVerdict(tabData.tabId, verdict);
+
+    await this.advanceToNextStep();
+  }
+
+  async testProcessCounterAbuseVerdictIsUndefinedWhenFeatureDisabled() {
+    assertTrue(this.host.processCounterAbuseVerdict === undefined);
   }
 }
 

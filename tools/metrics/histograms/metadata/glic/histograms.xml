@@ -82,6 +82,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PauseActorTask"/>
   <variant name="PerformActions"/>
   <variant name="PinTabs"/>
+  <variant name="ProcessCounterAbuseVerdict"/>
   <variant name="RecordSkillsWebClientEvent"/>
   <variant name="RefreshSignInCookies"/>
   <variant name="RegisterConversation"/>

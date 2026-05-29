@@ -175,6 +175,12 @@ export function enumToClient(
   val: mojomGlic.RegisterConversationErrorReason | null):
     glicApi.RegisterConversationErrorReason | undefined;
 export function enumToClient(
+  val: mojomGlic.SbThreatType):
+    glicApi.SbThreatType;
+export function enumToClient(
+  val: mojomGlic.SbThreatType | null):
+    glicApi.SbThreatType | undefined;
+export function enumToClient(
   val: mojomGlic.ScreenshotCompressionQuality):
     glicApi.ScreenshotCompressionQuality;
 export function enumToClient(
@@ -418,6 +424,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.RegisterConversationErrorReason | undefined):
     mojomGlic.RegisterConversationErrorReason | null;
+export function enumFromClient(
+  val: glicApi.SbThreatType):
+    mojomGlic.SbThreatType;
+export function enumFromClient(
+  val: glicApi.SbThreatType | undefined):
+    mojomGlic.SbThreatType | null;
 export function enumFromClient(
   val: glicApi.ScreenshotCompressionQuality):
     mojomGlic.ScreenshotCompressionQuality;

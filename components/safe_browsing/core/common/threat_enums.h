@@ -26,6 +26,9 @@ enum class ThreatSource {
   ANDROID_SAFEBROWSING_REAL_TIME,
   // From GmsCore SafeBrowsing API. Android only. Protocol v4 only.
   ANDROID_SAFEBROWSING,
+  // Triggered by Glic web client when server reports a dangerous Counter
+  // Abuse verdict.
+  GLIC_COUNTER_ABUSE,
 };
 
 // What subtype that expands more into details on what threat category

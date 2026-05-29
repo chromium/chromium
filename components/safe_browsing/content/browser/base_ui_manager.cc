@@ -289,14 +289,15 @@ bool BaseUIManager::IsAllowlisted(
     const GURL& url,
     const security_interstitials::UnsafeResourceLocator& rfh_locator,
     const std::optional<int64_t>& navigation_id,
-    safe_browsing::SBThreatType threat_type) {
+    safe_browsing::SBThreatType threat_type,
+    safe_browsing::ThreatSource threat_source) {
   // If the warning is not bypassable, it won't be allowlisted.
   if (!IsWarningBypassable(threat_type)) {
     return false;
   }
 
   NavigationEntry* entry = unsafe_resource_util::GetNavigationEntryForLocator(
-      rfh_locator, navigation_id, threat_type);
+      rfh_locator, navigation_id, threat_type, threat_source);
 
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
@@ -409,7 +410,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // Check if the user has already ignored a SB warning for the same WebContents
   // and top-level domain.
   if (IsAllowlisted(resource.url, resource.rfh_locator, resource.navigation_id,
-                    resource.threat_type)) {
+                    resource.threat_type, resource.threat_source)) {
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
                               false /* showed_interstitial */,
                               false /* has_post_commit_interstitial_skipped */);
@@ -483,7 +484,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
   if (load_post_commit_error_page) {
     DCHECK(!IsAllowlisted(resource.url, resource.rfh_locator,
-                          resource.navigation_id, resource.threat_type));
+                          resource.navigation_id, resource.threat_type,
+                          resource.threat_source));
 
     security_interstitials::SecurityInterstitialTabHelper* helper =
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(

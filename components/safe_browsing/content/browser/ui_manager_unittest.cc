@@ -261,13 +261,14 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
                 primary_main_frame->GetGlobalId().child_id.value(),
                 primary_main_frame->GetFrameToken().value()),
         /*navigation_id=*/std::nullopt,
-        SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+        SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+        safe_browsing::ThreatSource::UNKNOWN);
   }
 
   bool IsAllowlisted(security_interstitials::UnsafeResource resource) {
-    return ui_manager_->IsAllowlisted(resource.url, resource.rfh_locator,
-                                      resource.navigation_id,
-                                      resource.threat_type);
+    return ui_manager_->IsAllowlisted(
+        resource.url, resource.rfh_locator, resource.navigation_id,
+        resource.threat_type, resource.threat_source);
   }
 
   void AddToAllowlist(security_interstitials::UnsafeResource resource,

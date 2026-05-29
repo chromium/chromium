@@ -1143,6 +1143,11 @@ export declare interface GlicBrowserHost {
    *     https://abseil.io/docs/cpp/guides/status-codes.
    */
   reportClientTransientError?(abslStatus: number): void;
+
+  /**
+   * Notifies the host of a counter-abuse verdict received from the server.
+   */
+  processCounterAbuseVerdict?(tabId: string, verdict: CounterAbuseVerdict): void;
 }
 
 /** Information about a conversation. */
@@ -1162,6 +1167,22 @@ export declare interface ConversationInfo {
   clientData?: string;
   /** Optional turn ID to open this conversation at. */
   turnId?: string;
+}
+
+/**
+ * The type of counter abuse verdict that was received.
+ */
+export declare interface SafeBrowsingVerdict {
+  url: string;
+  threatType: SbThreatType;
+  showInterstitial: boolean;
+}
+
+/**
+ * The type of counter abuse verdict that was received.
+ */
+export declare interface CounterAbuseVerdict {
+  sbVerdictResult: SafeBrowsingVerdict;
 }
 
 /** Fields of interest from the system settings page. */
@@ -2703,6 +2724,17 @@ export enum CaptureScreenshotErrorReason {
   SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
   // User declined screen capture dialog before taking a screenshot.
   USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Safe Browsing Threat Type.
+export enum SbThreatType {
+  // Default value.
+  UNSPECIFIED = 0,
+  SOCIAL_ENGINEERING = 1,
+  MALWARE = 2,
+  UNWANTED_SOFTWARE = 3,
 }
 
 ///////////////////////////////////////////////

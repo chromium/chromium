@@ -67,7 +67,8 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
             SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   }
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      UnsafeResource::IsMainPageLoadPendingWithSyncCheck(resource.threat_type),
+      UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
+          resource.threat_type, resource.threat_source),
       /*is_extended_reporting_opt_in_allowed=*/false,
       /*is_off_the_record=*/false,
       /*is_extended_reporting=*/false,
@@ -122,7 +123,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                                   client),
       is_main_page_load_blocked_(
           UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
-              resource.threat_type)),
+              resource.threat_type,
+              resource.threat_source)),
       error_ui_(std::make_unique<SafeBrowsingLoudErrorUI>(
           resource.url,
           GetUnsafeResourceInterstitialReason(resource),
