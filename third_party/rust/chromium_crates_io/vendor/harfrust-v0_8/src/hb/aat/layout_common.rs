@@ -2,6 +2,7 @@ use super::layout::DELETED_GLYPH;
 use super::map::RangeFlags;
 use crate::hb::buffer::{hb_buffer_t, HB_BUFFER_SCRATCH_FLAG_SHAPER0};
 use crate::hb::face::hb_font_t;
+use crate::hb::face::Scale;
 use crate::hb::hb_mask_t;
 use crate::hb::ot_layout_gsubgpos::MappingCache;
 use crate::hb::ot_shape_plan::hb_ot_shape_plan_t;
@@ -37,6 +38,7 @@ pub(crate) fn get_class<T: bytemuck::AnyBitPattern + FixedSize>(
 pub struct AatApplyContext<'a> {
     pub plan: &'a hb_ot_shape_plan_t,
     pub face: &'a hb_font_t<'a>,
+    pub scale: Scale,
     pub buffer: &'a mut hb_buffer_t,
     pub has_glyph_classes: bool,
     pub range_flags: Option<&'a [RangeFlags]>,
@@ -54,11 +56,13 @@ impl<'a> AatApplyContext<'a> {
     pub fn new(
         plan: &'a hb_ot_shape_plan_t,
         face: &'a hb_font_t<'a>,
+        scale: Scale,
         buffer: &'a mut hb_buffer_t,
     ) -> Self {
         Self {
             plan,
             face,
+            scale,
             buffer,
             has_glyph_classes: face.ot_tables.has_glyph_classes(),
             range_flags: None,
@@ -70,6 +74,16 @@ impl<'a> AatApplyContext<'a> {
             machine_class_cache: None,
             start_end_safe_to_break: 0,
         }
+    }
+
+    #[inline(always)]
+    pub(crate) fn scale_x(&self, value: i32) -> i32 {
+        self.scale.scale_x(value)
+    }
+
+    #[inline(always)]
+    pub(crate) fn scale_y(&self, value: i32) -> i32 {
+        self.scale.scale_y(value)
     }
 
     pub(crate) fn reverse_buffer(&mut self) {

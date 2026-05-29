@@ -1,5 +1,6 @@
 use super::aat::map::*;
 use super::buffer::*;
+use super::font_funcs::{AdvanceWidthBatch, FontFuncsDispatch};
 use super::ot_layout::*;
 use super::ot_layout_gpos_table::GPOS;
 use super::ot_map::*;
@@ -102,7 +103,6 @@ impl<'a> hb_ot_shape_planner_t<'a> {
         ];
 
         let empty = F_NONE;
-
         self.ot_map.is_simple = true;
 
         self.ot_map.enable_feature(hb_tag_t::new(b"rvrn"), empty, 1);
@@ -313,7 +313,7 @@ impl<'a> hb_ot_shape_planner_t<'a> {
 }
 
 // hb_ot_shape_context_t: <https://github.com/harfbuzz/harfbuzz/blob/22ea52f42fa4fc168be91ef4e56aee3affda6e28/src/hb-ot-shape.cc#L450>
-pub(crate) struct OtShapeContext<'a> {
+pub(crate) struct OtShapeContext<'a, 'u> {
     pub plan: &'a hb_ot_shape_plan_t,
     pub face: &'a hb_font_t<'a>,
     pub buffer: &'a mut hb_buffer_t,
@@ -321,9 +321,18 @@ pub(crate) struct OtShapeContext<'a> {
     // Transient stuff
     pub target_direction: Direction,
     pub point_size: Option<f32>,
+    pub font_funcs: &'a mut FontFuncsDispatch<'a, 'u>,
 }
 
-impl OtShapeContext<'_> {
+impl OtShapeContext<'_, '_> {
+    fn glyph_h_advances(&mut self) {
+        if self.buffer.len == 0 {
+            return;
+        }
+        let batched_advances = AdvanceWidthBatch::new(self.buffer);
+        self.font_funcs.populate_advance_widths(batched_advances);
+    }
+
     // hb_ot_shape_internal: <https://github.com/harfbuzz/harfbuzz/blob/22ea52f42fa4fc168be91ef4e56aee3affda6e28/src/hb-ot-shape.cc#L1171>
     pub(crate) fn shape_internal(&mut self) {
         self.buffer.allocate_unicode_vars();
@@ -337,7 +346,7 @@ impl OtShapeContext<'_> {
         ensure_native_direction(self.buffer);
 
         if let Some(func) = self.plan.shaper.preprocess_text {
-            func(self.plan, self.face, self.buffer);
+            func(self.plan, self.font_funcs, self.buffer);
         }
 
         self.substitute_pre();
@@ -371,10 +380,10 @@ impl OtShapeContext<'_> {
         }
 
         deal_with_variation_selectors(self.buffer);
-        hide_default_ignorables(self.buffer, self.face);
+        hide_default_ignorables(self.buffer, self.font_funcs);
 
         if let Some(func) = self.plan.shaper.postprocess_glyphs {
-            func(self.plan, self.face, self.buffer);
+            func(self.plan, self.font_funcs, self.buffer);
         }
     }
 
@@ -385,7 +394,12 @@ impl OtShapeContext<'_> {
         self.buffer
             .allocate_var(GlyphInfo::NORMALIZER_GLYPH_INDEX_VAR);
 
-        ot_shape_normalize::_hb_ot_shape_normalize(self.plan, self.buffer, self.face);
+        ot_shape_normalize::_hb_ot_shape_normalize(
+            self.plan,
+            self.buffer,
+            self.face,
+            self.font_funcs,
+        );
 
         self.setup_masks();
 
@@ -417,7 +431,7 @@ impl OtShapeContext<'_> {
             self.buffer.update_digest();
         } else {
             self.buffer.update_digest();
-            ot_layout_gsub_table::substitute(self.plan, self.face, self.buffer);
+            ot_layout_gsub_table::substitute(self.plan, self.face, self.font_funcs, self.buffer);
         }
     }
 
@@ -440,21 +454,27 @@ impl OtShapeContext<'_> {
         let len = self.buffer.len;
 
         if self.buffer.direction.is_horizontal() {
-            self.face.glyph_h_advances(self.buffer);
+            self.glyph_h_advances();
         } else {
             for (info, pos) in self.buffer.info[..len]
                 .iter()
                 .zip(&mut self.buffer.pos[..len])
             {
                 let glyph = info.as_glyph();
-                pos.y_advance = self.face.glyph_v_advance(glyph);
-                pos.x_offset -= self.face.glyph_h_origin(glyph);
-                pos.y_offset -= self.face.glyph_v_origin(glyph);
+                pos.y_advance = self.font_funcs.advance_height(glyph);
+                let (x, y) = self.font_funcs.vertical_origin(glyph);
+                pos.x_offset -= x;
+                pos.y_offset -= y;
             }
         }
 
         if self.buffer.scratch_flags & HB_BUFFER_SCRATCH_FLAG_HAS_SPACE_FALLBACK != 0 {
-            ot_shape_fallback::_hb_ot_shape_fallback_spaces(self.plan, self.face, self.buffer);
+            ot_shape_fallback::_hb_ot_shape_fallback_spaces(
+                self.plan,
+                self.face,
+                self.buffer,
+                self.font_funcs,
+            );
         }
     }
 
@@ -500,6 +520,7 @@ impl OtShapeContext<'_> {
                 self.face,
                 self.buffer,
                 adjust_offsets_when_zeroing,
+                self.font_funcs,
             );
         }
     }
@@ -510,18 +531,24 @@ impl OtShapeContext<'_> {
         let face = self.face;
         let buffer = &mut *self.buffer;
         if plan.apply_gpos {
-            ot_layout_gpos_table::position(plan, face, buffer);
+            ot_layout_gpos_table::position(plan, face, self.font_funcs, buffer);
         } else if plan.apply_kerx {
-            aat::layout::position(plan, face, buffer);
+            aat::layout::position(plan, face, *self.font_funcs.scale(), buffer);
         }
         if plan.apply_kern {
-            kerning::hb_ot_layout_kern(plan, face, buffer);
+            kerning::hb_ot_layout_kern(plan, face, *self.font_funcs.scale(), buffer);
         } else if plan.apply_fallback_kern {
             ot_shape_fallback::_hb_ot_shape_fallback_kern(plan, face, buffer);
         }
 
         if plan.apply_trak {
-            aat::layout::track(plan, face, self.point_size, buffer);
+            aat::layout::track(
+                plan,
+                face,
+                *self.font_funcs.scale(),
+                self.point_size,
+                buffer,
+            );
         }
     }
 
@@ -536,7 +563,7 @@ impl OtShapeContext<'_> {
         self.setup_masks_fraction();
 
         if let Some(func) = self.plan.shaper.setup_masks {
-            func(self.plan, self.face, self.buffer);
+            func(self.plan, self.font_funcs, self.buffer);
         }
 
         for feature in self.features {
@@ -712,19 +739,24 @@ impl OtShapeContext<'_> {
 
     // hb_insert_dotted_circle: <https://github.com/harfbuzz/harfbuzz/blob/22ea52f42fa4fc168be91ef4e56aee3affda6e28/src/hb-ot-shape.cc#L549>
     fn insert_dotted_circle(&mut self) {
-        let buffer = &mut *self.buffer;
-        if !buffer
-            .flags
-            .contains(BufferFlags::DO_NOT_INSERT_DOTTED_CIRCLE)
-            && buffer.flags.contains(BufferFlags::BEGINNING_OF_TEXT)
-            && buffer.context_len[0] == 0
-            && buffer.info[0].is_unicode_mark()
-            && self.face.has_glyph(0x25CC)
-        {
+        let should_insert = {
+            let buffer = &*self.buffer;
+            !buffer
+                .flags
+                .contains(BufferFlags::DO_NOT_INSERT_DOTTED_CIRCLE)
+                && buffer.flags.contains(BufferFlags::BEGINNING_OF_TEXT)
+                && buffer.context_len[0] == 0
+                && buffer.info[0].is_unicode_mark()
+        };
+
+        if should_insert && self.font_funcs.nominal_glyph(0x25CC).is_some() {
+            let mask = self.buffer.cur(0).mask;
+            let cluster = self.buffer.cur(0).cluster;
+            let buffer = &mut *self.buffer;
             let mut info = GlyphInfo {
                 glyph_id: 0x25CC,
-                mask: buffer.cur(0).mask,
-                cluster: buffer.cur(0).cluster,
+                mask,
+                cluster,
                 ..GlyphInfo::default()
             };
 
@@ -744,7 +776,7 @@ impl OtShapeContext<'_> {
 
             for info in &mut self.buffer.info[..len] {
                 if let Some(c) = info.as_codepoint().mirrored() {
-                    if self.face.has_glyph(c) {
+                    if self.font_funcs.nominal_glyph(c).is_some() {
                         info.glyph_id = c;
                         continue;
                     }
@@ -756,7 +788,7 @@ impl OtShapeContext<'_> {
         if self.target_direction.is_vertical() && !self.plan.has_vert {
             for info in &mut self.buffer.info[..len] {
                 if let Some(c) = info.as_codepoint().vertical() {
-                    if self.face.has_glyph(c) {
+                    if self.font_funcs.nominal_glyph(c).is_some() {
                         info.glyph_id = c;
                     }
                 }
@@ -930,7 +962,7 @@ fn zero_mark_widths_by_gdef(buffer: &mut hb_buffer_t, adjust_offsets: bool) {
     }
 }
 
-fn hide_default_ignorables(buffer: &mut hb_buffer_t, face: &hb_font_t) {
+fn hide_default_ignorables(buffer: &mut hb_buffer_t, font_funcs: &mut FontFuncsDispatch<'_, '_>) {
     if buffer.scratch_flags & HB_BUFFER_SCRATCH_FLAG_HAS_DEFAULT_IGNORABLES != 0
         && !buffer
             .flags
@@ -942,7 +974,7 @@ fn hide_default_ignorables(buffer: &mut hb_buffer_t, face: &hb_font_t) {
         {
             if let Some(invisible) = buffer
                 .invisible
-                .or_else(|| face.get_nominal_glyph(u32::from(' ')))
+                .or_else(|| font_funcs.nominal_glyph(u32::from(' ')))
             {
                 let len = buffer.len;
                 for info in &mut buffer.info[..len] {

@@ -1,4 +1,5 @@
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_map::*;
 use super::ot_shape::*;
 use super::ot_shape_normalize::*;
@@ -6,7 +7,7 @@ use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::ot_shaper::*;
 use super::ot_shaper_indic::{ot_category_t, ot_position_t};
 use super::ot_shaper_syllabic::*;
-use super::{hb_font_t, hb_tag_t, GlyphInfo};
+use super::{hb_tag_t, GlyphInfo};
 use crate::hb::ot_shaper_indic::ot_category_t::OT_VPre;
 
 pub const MYANMAR_SHAPER: hb_ot_shaper_t = hb_ot_shaper_t {
@@ -115,7 +116,11 @@ fn collect_features(planner: &mut hb_ot_shape_planner_t) {
     }
 }
 
-fn setup_syllables(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) -> bool {
+fn setup_syllables(
+    _: &hb_ot_shape_plan_t,
+    _: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) -> bool {
     buffer.allocate_var(GlyphInfo::SYLLABLE_VAR);
 
     super::ot_shaper_myanmar_machine::find_syllables_myanmar(buffer);
@@ -131,7 +136,11 @@ fn setup_syllables(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer
     false
 }
 
-fn reorder_myanmar(_: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buffer_t) -> bool {
+fn reorder_myanmar(
+    _: &hb_ot_shape_plan_t,
+    face: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) -> bool {
     use super::ot_shaper_myanmar_machine::SyllableType;
 
     let mut ret = false;
@@ -321,7 +330,7 @@ fn initial_reordering_consonant_syllable(start: usize, end: usize, buffer: &mut 
     }
 }
 
-fn setup_masks(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn setup_masks(_: &hb_ot_shape_plan_t, _: &mut FontFuncsDispatch, buffer: &mut hb_buffer_t) {
     buffer.allocate_var(GlyphInfo::MYANMAR_CATEGORY_VAR);
     buffer.allocate_var(GlyphInfo::MYANMAR_POSITION_VAR);
 

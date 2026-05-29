@@ -4,10 +4,9 @@ use core::ops::Range;
 
 use read_fonts::types::GlyphId;
 
-use crate::hb::unicode::Codepoint;
-
 use super::algs::*;
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_layout::*;
 use super::ot_layout_gsubgpos::WouldApplyContext;
 use super::ot_map::*;
@@ -16,6 +15,7 @@ use super::ot_shape_normalize::*;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::ot_shaper::*;
 use super::ot_shaper_syllabic::*;
+use super::unicode::Codepoint;
 use super::unicode::{hb_gc, CharExt};
 use super::{hb_font_t, hb_mask_t, hb_tag_t, script, GlyphInfo, Script};
 
@@ -576,7 +576,7 @@ fn override_features(planner: &mut hb_ot_shape_planner_t) {
     planner.ot_map.add_gsub_pause(Some(syllabic_clear_var)); // Don't need syllables anymore.
 }
 
-fn preprocess_text(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn preprocess_text(_: &hb_ot_shape_plan_t, _: &mut FontFuncsDispatch, buffer: &mut hb_buffer_t) {
     super::ot_shaper_vowel_constraints::preprocess_text_vowel_constraints(buffer);
 }
 
@@ -608,7 +608,7 @@ fn compose(_: &hb_ot_shape_normalize_context_t, a: Codepoint, b: Codepoint) -> O
     crate::hb::unicode::compose(a, b)
 }
 
-fn setup_masks(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn setup_masks(_: &hb_ot_shape_plan_t, _: &mut FontFuncsDispatch, buffer: &mut hb_buffer_t) {
     buffer.allocate_var(GlyphInfo::INDIC_CATEGORY_VAR);
     buffer.allocate_var(GlyphInfo::INDIC_POSITION_VAR);
 
@@ -619,7 +619,11 @@ fn setup_masks(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) 
     }
 }
 
-fn setup_syllables(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) -> bool {
+fn setup_syllables(
+    _: &hb_ot_shape_plan_t,
+    _: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) -> bool {
     buffer.allocate_var(GlyphInfo::SYLLABLE_VAR);
 
     super::ot_shaper_indic_machine::find_syllables_indic(buffer);
@@ -637,7 +641,7 @@ fn setup_syllables(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer
 
 fn initial_reordering(
     plan: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
+    font_funcs: &mut FontFuncsDispatch,
     buffer: &mut hb_buffer_t,
 ) -> bool {
     use super::ot_shaper_indic_machine::SyllableType;
@@ -646,9 +650,9 @@ fn initial_reordering(
 
     let indic_plan = plan.data::<IndicShapePlan>();
 
-    update_consonant_positions(plan, indic_plan, face, buffer);
+    update_consonant_positions(plan, indic_plan, font_funcs, buffer);
     if insert_dotted_circles(
-        face,
+        font_funcs,
         buffer,
         SyllableType::BrokenCluster as u8,
         ot_category_t::OT_DOTTEDCIRCLE,
@@ -661,7 +665,7 @@ fn initial_reordering(
     let mut start = 0;
     let mut end = buffer.next_syllable(0);
     while start < buffer.len {
-        initial_reordering_syllable(plan, indic_plan, face, start, end, buffer);
+        initial_reordering_syllable(plan, indic_plan, font_funcs, start, end, buffer);
         start = end;
         end = buffer.next_syllable(start);
     }
@@ -672,15 +676,16 @@ fn initial_reordering(
 fn update_consonant_positions(
     plan: &hb_ot_shape_plan_t,
     indic_plan: &IndicShapePlan,
-    face: &hb_font_t,
+    font_funcs: &mut FontFuncsDispatch,
     buffer: &mut hb_buffer_t,
 ) {
     let mut virama_glyph = None;
     if indic_plan.config.virama != 0 {
-        virama_glyph = face.get_nominal_glyph(indic_plan.config.virama);
+        virama_glyph = font_funcs.nominal_glyph(indic_plan.config.virama);
     }
 
     if let Some(virama) = virama_glyph {
+        let face = font_funcs.font();
         for info in buffer.info_slice_mut() {
             if info.indic_position() == ot_position_t::POS_BASE_C {
                 let consonant = info.as_glyph();
@@ -755,7 +760,7 @@ fn consonant_position_from_face(
 fn initial_reordering_syllable(
     plan: &hb_ot_shape_plan_t,
     indic_plan: &IndicShapePlan,
-    face: &hb_font_t,
+    font_funcs: &mut FontFuncsDispatch,
     start: usize,
     end: usize,
     buffer: &mut hb_buffer_t,
@@ -775,11 +780,11 @@ fn initial_reordering_syllable(
     match syllable_type {
         // We made the vowels look like consonants.  So let's call the consonant logic!
         SyllableType::VowelSyllable | SyllableType::ConsonantSyllable => {
-            initial_reordering_consonant_syllable(plan, indic_plan, face, start, end, buffer);
+            initial_reordering_consonant_syllable(plan, indic_plan, font_funcs, start, end, buffer);
         }
         // We already inserted dotted-circles, so just call the standalone_cluster.
         SyllableType::BrokenCluster | SyllableType::StandaloneCluster => {
-            initial_reordering_standalone_cluster(plan, indic_plan, face, start, end, buffer);
+            initial_reordering_standalone_cluster(plan, indic_plan, font_funcs, start, end, buffer);
         }
         SyllableType::SymbolCluster | SyllableType::NonIndicCluster => {}
     }
@@ -790,11 +795,12 @@ fn initial_reordering_syllable(
 fn initial_reordering_consonant_syllable(
     plan: &hb_ot_shape_plan_t,
     indic_plan: &IndicShapePlan,
-    face: &hb_font_t,
+    font_funcs: &mut FontFuncsDispatch,
     start: usize,
     end: usize,
     buffer: &mut hb_buffer_t,
 ) {
+    let face = font_funcs.font();
     // https://github.com/harfbuzz/harfbuzz/issues/435#issuecomment-335560167
     // For compatibility with legacy usage in Kannada,
     // Ra+h+ZWJ must behave like Ra+ZWJ+h...
@@ -1313,7 +1319,7 @@ fn initial_reordering_consonant_syllable(
 fn initial_reordering_standalone_cluster(
     plan: &hb_ot_shape_plan_t,
     indic_plan: &IndicShapePlan,
-    face: &hb_font_t,
+    face: &mut FontFuncsDispatch,
     start: usize,
     end: usize,
     buffer: &mut hb_buffer_t,
@@ -1323,7 +1329,11 @@ fn initial_reordering_standalone_cluster(
     initial_reordering_consonant_syllable(plan, indic_plan, face, start, end, buffer);
 }
 
-fn final_reordering(plan: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buffer_t) -> bool {
+fn final_reordering(
+    plan: &hb_ot_shape_plan_t,
+    face: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) -> bool {
     if buffer.is_empty() {
         return false;
     }
@@ -1340,7 +1350,7 @@ fn final_reordering(plan: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb
 
 fn final_reordering_impl(
     plan: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
+    face: &mut FontFuncsDispatch,
     start: usize,
     end: usize,
     buffer: &mut hb_buffer_t,
@@ -1356,7 +1366,7 @@ fn final_reordering_impl(
     // We don't call load_virama_glyph(), since we know it's already loaded.
     let mut virama_glyph = None;
     if indic_plan.config.virama != 0 {
-        if let Some(g) = face.get_nominal_glyph(indic_plan.config.virama) {
+        if let Some(g) = face.nominal_glyph(indic_plan.config.virama) {
             virama_glyph = Some(g.to_u32());
         }
     }

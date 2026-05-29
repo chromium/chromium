@@ -7,11 +7,12 @@ use read_fonts::tables::trak::TrackTableEntry;
 use read_fonts::types::{BigEndian, Fixed};
 use read_fonts::FontData;
 
-use crate::hb::{buffer::hb_buffer_t, hb_font_t, ot_shape_plan::hb_ot_shape_plan_t};
+use crate::hb::{buffer::hb_buffer_t, face::Scale, hb_font_t, ot_shape_plan::hb_ot_shape_plan_t};
 
 pub fn apply(
     _plan: &hb_ot_shape_plan_t,
     face: &hb_font_t,
+    scale: Scale,
     point_size: Option<f32>,
     buffer: &mut hb_buffer_t,
 ) -> Option<()> {
@@ -26,9 +27,9 @@ pub fn apply(
     }
 
     let advance_to_add = if buffer.direction.is_horizontal() {
-        trak.get_h_tracking(ptem, 0.0)
+        scale.scale_x(trak.get_h_tracking(ptem, 0.0))
     } else {
-        trak.get_v_tracking(ptem, 0.0)
+        scale.scale_y(trak.get_v_tracking(ptem, 0.0))
     };
 
     foreach_grapheme!(buffer, start, end, {

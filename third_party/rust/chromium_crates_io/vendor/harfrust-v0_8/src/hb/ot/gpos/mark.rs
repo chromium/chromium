@@ -30,14 +30,16 @@ impl MarkArrayExt for MarkArray<'_> {
 
         let (base_x, base_y) = ctx.face.ot_tables.resolve_anchor(base_anchor);
         let (mark_x, mark_y) = ctx.face.ot_tables.resolve_anchor(mark_anchor);
+        let x_offset = ctx.scale_x(base_x - mark_x);
+        let y_offset = ctx.scale_y(base_y - mark_y);
 
         ctx.buffer
             .unsafe_to_break(Some(glyph_pos), Some(ctx.buffer.idx + 1));
 
         let idx = ctx.buffer.idx;
         let pos = ctx.buffer.cur_pos_mut();
-        pos.x_offset = base_x - mark_x;
-        pos.y_offset = base_y - mark_y;
+        pos.x_offset = x_offset;
+        pos.y_offset = y_offset;
         pos.set_attach_type(attach_type::MARK);
         pos.set_attach_chain((glyph_pos as isize - idx as isize) as i16);
 

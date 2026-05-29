@@ -40,6 +40,10 @@ impl Apply for CursivePosFormat1<'_> {
 
         let (exit_x, exit_y) = ctx.face.ot_tables.resolve_anchor(&exit_prev);
         let (entry_x, entry_y) = ctx.face.ot_tables.resolve_anchor(&entry_this);
+        let exit_x = ctx.scale_x(exit_x);
+        let exit_y = ctx.scale_y(exit_y);
+        let entry_x = ctx.scale_x(entry_x);
+        let entry_y = ctx.scale_y(entry_y);
 
         let direction = ctx.buffer.direction;
         let j = ctx.buffer.idx;

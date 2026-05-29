@@ -3,6 +3,7 @@
 use super::buffer::GlyphInfo;
 use super::buffer::{hb_buffer_t, GlyphPropsFlags};
 use super::cache::hb_cache_t;
+use super::face::Scale;
 use super::hb_font_t;
 use super::hb_mask_t;
 use super::ot_layout::*;
@@ -853,6 +854,7 @@ pub mod OT {
     pub struct hb_ot_apply_context_t<'a> {
         pub table_index: TableIndex,
         pub face: &'a hb_font_t<'a>,
+        pub scale: Scale,
         pub buffer: &'a mut hb_buffer_t,
         lookup_mask: hb_mask_t,
         pub per_syllable: bool,
@@ -876,11 +878,13 @@ pub mod OT {
         pub fn new(
             table_index: TableIndex,
             face: &'a hb_font_t<'a>,
+            scale: Scale,
             buffer: &'a mut hb_buffer_t,
         ) -> Self {
             Self {
                 table_index,
                 face,
+                scale,
                 buffer,
                 lookup_mask: 1,
                 per_syllable: false,
@@ -899,6 +903,16 @@ pub mod OT {
                 match_positions_len: 0,
                 match_positions: MatchPositions::from_elem(0, 1),
             }
+        }
+
+        #[inline(always)]
+        pub fn scale_x(&self, value: i32) -> i32 {
+            self.scale.scale_x(value)
+        }
+
+        #[inline(always)]
+        pub fn scale_y(&self, value: i32) -> i32 {
+            self.scale.scale_y(value)
         }
 
         pub fn random_number(&mut self) -> u32 {

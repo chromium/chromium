@@ -1,10 +1,11 @@
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
-use super::{hb_font_t, GlyphInfo};
+use super::GlyphInfo;
 use crate::BufferFlags;
 
 pub fn insert_dotted_circles(
-    face: &hb_font_t,
+    font_funcs: &mut FontFuncsDispatch,
     buffer: &mut hb_buffer_t,
     broken_syllable_type: u8,
     dottedcircle_category: u8,
@@ -22,7 +23,7 @@ pub fn insert_dotted_circles(
         return false;
     }
 
-    let dottedcircle_glyph = match face.get_nominal_glyph(0x25CC) {
+    let dottedcircle_glyph = match font_funcs.nominal_glyph(0x25CC) {
         Some(g) => g.to_u32(),
         None => return false,
     };
@@ -74,7 +75,7 @@ pub fn insert_dotted_circles(
 
 pub(crate) fn syllabic_clear_var(
     _: &hb_ot_shape_plan_t,
-    _: &hb_font_t,
+    _: &mut FontFuncsDispatch,
     buffer: &mut hb_buffer_t,
 ) -> bool {
     for info in &mut buffer.info {

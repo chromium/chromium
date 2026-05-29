@@ -1,10 +1,12 @@
 use crate::hb::unicode::Codepoint;
 
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::hb_font_t;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::ot_shaper::{ComposeFn, DecomposeFn, MAX_COMBINING_MARKS};
 use super::unicode::{hb_unicode_funcs_t, CharExt};
+use read_fonts::types::GlyphId;
 
 impl GlyphInfo {
     declare_buffer_var!(
@@ -17,12 +19,29 @@ impl GlyphInfo {
     );
 }
 
-pub struct hb_ot_shape_normalize_context_t<'a> {
+pub struct hb_ot_shape_normalize_context_t<'a, 'x, 'u> {
     pub plan: &'a hb_ot_shape_plan_t,
-    pub buffer: &'a mut hb_buffer_t,
-    pub face: &'a hb_font_t<'a>,
+    pub buffer: &'x mut hb_buffer_t,
+    pub font_funcs: &'x mut FontFuncsDispatch<'a, 'u>,
     pub decompose: DecomposeFn,
     pub compose: ComposeFn,
+}
+
+impl hb_ot_shape_normalize_context_t<'_, '_, '_> {
+    fn nominal_glyph(&mut self, codepoint: u32) -> Option<GlyphId> {
+        self.font_funcs.nominal_glyph(codepoint)
+    }
+
+    fn variant_glyph(&mut self, codepoint: u32, selector: u32) -> Option<GlyphId> {
+        self.font_funcs.variant_glyph(codepoint, selector)
+    }
+
+    fn set_current_glyph(&mut self) {
+        let info = self.buffer.cur_mut(0);
+        if let Some(glyph_id) = self.font_funcs.nominal_glyph(info.glyph_id) {
+            info.set_normalizer_glyph_index(u32::from(glyph_id));
+        }
+    }
 }
 
 pub type hb_ot_shape_normalization_mode_t = i32;
@@ -88,12 +107,6 @@ fn compose_unicode(
     super::unicode::compose(a, b)
 }
 
-fn set_glyph(info: &mut GlyphInfo, font: &hb_font_t) {
-    if let Some(glyph_id) = font.get_nominal_glyph(info.glyph_id) {
-        info.set_normalizer_glyph_index(u32::from(glyph_id));
-    }
-}
-
 fn output_char(buffer: &mut hb_buffer_t, unichar: u32, glyph: u32) {
     // This is very confusing indeed.
     buffer.cur_mut(0).set_normalizer_glyph_index(glyph);
@@ -119,9 +132,9 @@ fn decompose(ctx: &mut hb_ot_shape_normalize_context_t, shortest: bool, ab: Code
         return 0;
     };
 
-    let a_glyph = ctx.face.get_nominal_glyph(a);
+    let a_glyph = ctx.nominal_glyph(a);
     let b_glyph = if b != 0 {
-        match ctx.face.get_nominal_glyph(b) {
+        match ctx.nominal_glyph(b) {
             Some(glyph_id) => Some(glyph_id),
             None => return 0,
         }
@@ -164,7 +177,7 @@ fn decompose(ctx: &mut hb_ot_shape_normalize_context_t, shortest: bool, ab: Code
 
 fn decompose_current_character(ctx: &mut hb_ot_shape_normalize_context_t, shortest: bool) {
     let u = ctx.buffer.cur(0).as_codepoint();
-    let glyph = ctx.face.get_nominal_glyph(u);
+    let glyph = ctx.nominal_glyph(u);
 
     if let Some(glyph) = glyph {
         if shortest {
@@ -186,7 +199,7 @@ fn decompose_current_character(ctx: &mut hb_ot_shape_normalize_context_t, shorte
     if ctx.buffer.cur(0).is_unicode_space() {
         let space_type = u.space_fallback();
         if space_type != hb_unicode_funcs_t::NOT_SPACE {
-            let space_glyph = ctx.face.get_nominal_glyph(0x0020).or(ctx.buffer.invisible);
+            let space_glyph = ctx.nominal_glyph(0x0020).or(ctx.buffer.invisible);
 
             if let Some(space_glyph) = space_glyph {
                 ctx.buffer
@@ -202,7 +215,7 @@ fn decompose_current_character(ctx: &mut hb_ot_shape_normalize_context_t, shorte
     // U+2011 is the only sensible character that is a no-break version of another character
     // and not a space.  The space ones are handled already.  Handle this lone one.
     if u == 0x2011 {
-        if let Some(other_glyph) = ctx.face.get_nominal_glyph(0x2010) {
+        if let Some(other_glyph) = ctx.nominal_glyph(0x2010) {
             next_char(ctx.buffer, u32::from(other_glyph));
             return;
         }
@@ -217,51 +230,47 @@ fn handle_variation_selector_cluster(
     end: usize,
     _: bool,
 ) {
-    let face = ctx.face;
-
     // Currently if there's a variation-selector we give-up on normalization, it's just too hard.
-    let buffer = &mut *ctx.buffer;
-    while buffer.idx < end - 1 && buffer.successful {
-        if buffer.cur(1).as_codepoint().is_variation_selector() {
-            if let Some(glyph_id) = face.get_nominal_variant_glyph(
-                buffer.cur(0).as_codepoint(),
-                buffer.cur(1).as_codepoint(),
-            ) {
-                buffer
+    while ctx.buffer.idx < end - 1 && ctx.buffer.successful {
+        if ctx.buffer.cur(1).as_codepoint().is_variation_selector() {
+            let base = ctx.buffer.cur(0).as_codepoint();
+            let selector = ctx.buffer.cur(1).as_codepoint();
+            if let Some(glyph_id) = ctx.variant_glyph(base, selector) {
+                ctx.buffer
                     .cur_mut(0)
                     .set_normalizer_glyph_index(u32::from(glyph_id));
-                let unicode = buffer.cur(0).glyph_id;
-                buffer.replace_glyphs(2, 1, &[unicode]);
+                let unicode = ctx.buffer.cur(0).glyph_id;
+                ctx.buffer.replace_glyphs(2, 1, &[unicode]);
             } else {
                 // Just pass on the two characters separately, let GSUB do its magic.
-                set_glyph(buffer.cur_mut(0), face);
-                buffer.next_glyph();
+                ctx.set_current_glyph();
+                ctx.buffer.next_glyph();
 
-                buffer.scratch_flags |= HB_BUFFER_SCRATCH_FLAG_HAS_VARIATION_SELECTOR_FALLBACK;
+                ctx.buffer.scratch_flags |= HB_BUFFER_SCRATCH_FLAG_HAS_VARIATION_SELECTOR_FALLBACK;
 
-                buffer.cur_mut(0).set_variation_selector(true);
+                ctx.buffer.cur_mut(0).set_variation_selector(true);
 
-                if buffer.not_found_variation_selector.is_some() {
-                    buffer.cur_mut(0).clear_default_ignorable();
+                if ctx.buffer.not_found_variation_selector.is_some() {
+                    ctx.buffer.cur_mut(0).clear_default_ignorable();
                 }
 
-                set_glyph(buffer.cur_mut(0), face);
-                buffer.next_glyph();
+                ctx.set_current_glyph();
+                ctx.buffer.next_glyph();
             }
 
             // Skip any further variation selectors.
-            while buffer.idx < end && buffer.cur(0).as_codepoint().is_variation_selector() {
-                set_glyph(buffer.cur_mut(0), face);
-                buffer.next_glyph();
+            while ctx.buffer.idx < end && ctx.buffer.cur(0).as_codepoint().is_variation_selector() {
+                ctx.set_current_glyph();
+                ctx.buffer.next_glyph();
             }
         } else {
-            set_glyph(buffer.cur_mut(0), face);
-            buffer.next_glyph();
+            ctx.set_current_glyph();
+            ctx.buffer.next_glyph();
         }
     }
 
     if ctx.buffer.idx < end {
-        set_glyph(ctx.buffer.cur_mut(0), face);
+        ctx.set_current_glyph();
         ctx.buffer.next_glyph();
     }
 }
@@ -291,10 +300,11 @@ fn compare_combining_class(pa: &GlyphInfo, pb: &GlyphInfo) -> bool {
     a > b
 }
 
-pub fn _hb_ot_shape_normalize(
-    plan: &hb_ot_shape_plan_t,
-    buffer: &mut hb_buffer_t,
-    face: &hb_font_t,
+pub fn _hb_ot_shape_normalize<'a, 'x>(
+    plan: &'a hb_ot_shape_plan_t,
+    buffer: &'x mut hb_buffer_t,
+    _face: &'a hb_font_t<'a>,
+    font_funcs: &'x mut FontFuncsDispatch<'a, '_>,
 ) {
     if buffer.is_empty() {
         return;
@@ -316,7 +326,7 @@ pub fn _hb_ot_shape_normalize(
     let mut ctx = hb_ot_shape_normalize_context_t {
         plan,
         buffer,
-        face,
+        font_funcs,
         decompose: plan.shaper.decompose.unwrap_or(decompose_unicode),
         compose: plan.shaper.compose.unwrap_or(compose_unicode),
     };
@@ -354,11 +364,13 @@ pub fn _hb_ot_shape_normalize(
                 let len = end - ctx.buffer.idx;
                 let mut done = 0;
                 while done < len {
-                    let cur = ctx.buffer.cur_mut(done);
-                    cur.set_normalizer_glyph_index(match face.get_nominal_glyph(cur.glyph_id) {
+                    let codepoint = ctx.buffer.cur(done).glyph_id;
+                    let glyph_id = match ctx.nominal_glyph(codepoint) {
                         Some(glyph_id) => u32::from(glyph_id),
                         None => break,
-                    });
+                    };
+                    let cur = ctx.buffer.cur_mut(done);
+                    cur.set_normalizer_glyph_index(glyph_id);
                     done += 1;
                 }
                 ctx.buffer.next_glyphs(done);
@@ -463,7 +475,7 @@ pub fn _hb_ot_shape_normalize(
                 let a = ctx.buffer.out_info()[starter].as_codepoint();
                 let b = cur.as_codepoint();
                 if let Some(composed) = (ctx.compose)(&ctx, a, b) {
-                    if let Some(glyph_id) = face.get_nominal_glyph(composed) {
+                    if let Some(glyph_id) = ctx.nominal_glyph(composed) {
                         // Copy to out-ctx.buffer.
                         ctx.buffer.next_glyph();
                         if !ctx.buffer.successful {

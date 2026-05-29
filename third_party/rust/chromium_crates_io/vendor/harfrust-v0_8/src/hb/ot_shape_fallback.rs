@@ -1,10 +1,19 @@
 use read_fonts::types::GlyphId;
 
 use super::buffer::{hb_buffer_t, GlyphPosition};
-use super::face::hb_glyph_extents_t;
+use super::face::GlyphExtents;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::unicode::*;
 use super::{hb_font_t, Direction};
+
+struct FallbackShapeContext<'a, 'x, 'u> {
+    plan: &'a hb_ot_shape_plan_t,
+    face: &'a hb_font_t<'a>,
+    buffer: &'x mut hb_buffer_t,
+    adjust_offsets_when_zeroing: bool,
+    font_funcs: &'x mut FontFuncsDispatch<'a, 'u>,
+}
 
 fn recategorize_combining_class(u: u32, mut class: u8) -> u8 {
     use modified_combining_class as mcc;
@@ -123,20 +132,19 @@ fn zero_mark_advances(
 }
 
 fn position_mark(
-    _: &hb_ot_shape_plan_t,
     face: &hb_font_t,
     direction: Direction,
+    font_funcs: &mut FontFuncsDispatch<'_, '_>,
     glyph: GlyphId,
     pos: &mut GlyphPosition,
-    base_extents: &mut hb_glyph_extents_t,
+    base_extents: &mut GlyphExtents,
     combining_class: u8,
 ) {
-    let mut mark_extents = hb_glyph_extents_t::default();
-    if !face.glyph_extents(glyph, &mut mark_extents) {
+    let Some(mark_extents) = font_funcs.extents(glyph) else {
         return;
-    }
+    };
 
-    let y_gap = face.units_per_em as i32 / 16;
+    let y_gap = font_funcs.scale().scale_y(face.units_per_em as i32 / 16);
     pos.x_offset = 0;
     pos.y_offset = 0;
 
@@ -246,26 +254,19 @@ fn position_mark(
     }
 }
 
-fn position_around_base(
-    plan: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
-    buffer: &mut hb_buffer_t,
-    base: usize,
-    end: usize,
-    adjust_offsets_when_zeroing: bool,
-) {
+fn position_around_base(ctx: &mut FallbackShapeContext, base: usize, end: usize) {
     let mut horizontal_dir = Direction::Invalid;
-    buffer.unsafe_to_break(Some(base), Some(end));
+    let face = ctx.face;
+    ctx.buffer.unsafe_to_break(Some(base), Some(end));
 
-    let base_info = &buffer.info[base];
-    let base_pos = &buffer.pos[base];
+    let base_info = ctx.buffer.info[base];
+    let base_pos = ctx.buffer.pos[base];
     let base_glyph = base_info.as_glyph();
 
-    let mut base_extents = hb_glyph_extents_t::default();
-    if !face.glyph_extents(base_glyph, &mut base_extents) {
-        zero_mark_advances(buffer, base + 1, end, adjust_offsets_when_zeroing);
+    let Some(mut base_extents) = ctx.font_funcs.extents(base_glyph) else {
+        zero_mark_advances(ctx.buffer, base + 1, end, ctx.adjust_offsets_when_zeroing);
         return;
-    }
+    };
 
     base_extents.y_bearing += base_pos.y_offset;
     base_extents.x_bearing = 0;
@@ -273,14 +274,14 @@ fn position_around_base(
     // Use horizontal advance for horizontal positioning.
     // Generally a better idea. Also works for zero-ink glyphs. See:
     // https://github.com/harfbuzz/harfbuzz/issues/1532
-    base_extents.width = face.glyph_h_advance(base_glyph);
+    base_extents.width = ctx.font_funcs.advance_width(base_glyph);
 
     let lig_id = base_info.lig_id() as u32;
     let num_lig_components = base_info.lig_num_comps() as i32;
 
     let mut x_offset = 0;
     let mut y_offset = 0;
-    if buffer.direction.is_forward() {
+    if ctx.buffer.direction.is_forward() {
         x_offset -= base_pos.x_advance;
         y_offset -= base_pos.y_advance;
     }
@@ -289,10 +290,12 @@ fn position_around_base(
     let mut last_combining_class: u8 = 255;
     let mut component_extents = base_extents;
     let mut cluster_extents = base_extents;
+    let direction = ctx.buffer.direction;
+    let font_funcs = &mut *ctx.font_funcs;
 
-    for (info, pos) in buffer.info[base + 1..end]
+    for (info, pos) in ctx.buffer.info[base + 1..end]
         .iter()
-        .zip(&mut buffer.pos[base + 1..end])
+        .zip(&mut ctx.buffer.pos[base + 1..end])
     {
         if info.modified_combining_class() != 0 {
             if num_lig_components > 1 {
@@ -311,10 +314,11 @@ fn position_around_base(
                     component_extents = base_extents;
 
                     if horizontal_dir == Direction::Invalid {
-                        horizontal_dir = if plan.direction.is_horizontal() {
-                            plan.direction
+                        horizontal_dir = if ctx.plan.direction.is_horizontal() {
+                            ctx.plan.direction
                         } else {
-                            plan.script
+                            ctx.plan
+                                .script
                                 .and_then(Direction::from_script)
                                 .unwrap_or(Direction::LeftToRight)
                         };
@@ -338,9 +342,9 @@ fn position_around_base(
             }
 
             position_mark(
-                plan,
                 face,
-                buffer.direction,
+                direction,
+                font_funcs,
                 info.as_glyph(),
                 pos,
                 &mut cluster_extents,
@@ -352,7 +356,7 @@ fn position_around_base(
             pos.x_offset += x_offset;
             pos.y_offset += y_offset;
         } else {
-            if buffer.direction.is_forward() {
+            if direction.is_forward() {
                 x_offset -= pos.x_advance;
                 y_offset -= pos.y_advance;
             } else {
@@ -363,29 +367,22 @@ fn position_around_base(
     }
 }
 
-fn position_cluster_impl(
-    plan: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
-    buffer: &mut hb_buffer_t,
-    start: usize,
-    end: usize,
-    adjust_offsets_when_zeroing: bool,
-) {
+fn position_cluster_impl(ctx: &mut FallbackShapeContext, start: usize, end: usize) {
     // Find the base glyph
     let mut i = start;
     while i < end {
-        if !buffer.info[i].is_unicode_mark() {
+        if !ctx.buffer.info[i].is_unicode_mark() {
             // Find mark glyphs
             let mut j = i + 1;
             while j < end
-                && (buffer.info[j].is_hidden()
-                    || buffer.info[j].is_default_ignorable()
-                    || buffer.info[j].is_unicode_mark())
+                && (ctx.buffer.info[j].is_hidden()
+                    || ctx.buffer.info[j].is_default_ignorable()
+                    || ctx.buffer.info[j].is_unicode_mark())
             {
                 j += 1;
             }
 
-            position_around_base(plan, face, buffer, i, j, adjust_offsets_when_zeroing);
+            position_around_base(ctx, i, j);
             i = j - 1;
         }
         i += 1;
@@ -393,57 +390,62 @@ fn position_cluster_impl(
 }
 
 #[inline(always)]
-fn position_cluster(
-    plan: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
-    buffer: &mut hb_buffer_t,
-    start: usize,
-    end: usize,
-    adjust_offsets_when_zeroing: bool,
-) {
+fn position_cluster(ctx: &mut FallbackShapeContext, start: usize, end: usize) {
     if end - start < 2 {
         return;
     }
 
-    position_cluster_impl(plan, face, buffer, start, end, adjust_offsets_when_zeroing);
+    position_cluster_impl(ctx, start, end);
 }
 
-pub fn position_marks(
-    plan: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
-    buffer: &mut hb_buffer_t,
+pub fn position_marks<'a, 'x>(
+    plan: &'a hb_ot_shape_plan_t,
+    face: &'a hb_font_t<'a>,
+    buffer: &'x mut hb_buffer_t,
     adjust_offsets_when_zeroing: bool,
+    font_funcs: &'x mut FontFuncsDispatch<'a, '_>,
 ) {
-    buffer.assert_gsubgpos_vars();
+    let mut ctx = FallbackShapeContext {
+        plan,
+        face,
+        buffer,
+        adjust_offsets_when_zeroing,
+        font_funcs,
+    };
+
+    ctx.buffer.assert_gsubgpos_vars();
 
     let mut start = 0;
-    let len = buffer.len;
+    let len = ctx.buffer.len;
     for i in 1..len {
-        if !buffer.info[i].is_unicode_mark()
-            && !buffer.info[i].is_hidden()
-            && !buffer.info[i].is_default_ignorable()
+        if !ctx.buffer.info[i].is_unicode_mark()
+            && !ctx.buffer.info[i].is_hidden()
+            && !ctx.buffer.info[i].is_default_ignorable()
         {
-            position_cluster(plan, face, buffer, start, i, adjust_offsets_when_zeroing);
+            position_cluster(&mut ctx, start, i);
             start = i;
         }
     }
 
-    position_cluster(plan, face, buffer, start, len, adjust_offsets_when_zeroing);
+    position_cluster(&mut ctx, start, len);
 }
 
 pub fn _hb_ot_shape_fallback_kern(_: &hb_ot_shape_plan_t, _: &hb_font_t, _: &mut hb_buffer_t) {
     // STUB: this is deprecated in HarfBuzz
 }
 
-pub fn _hb_ot_shape_fallback_spaces(
-    _: &hb_ot_shape_plan_t,
-    face: &hb_font_t,
-    buffer: &mut hb_buffer_t,
+pub fn _hb_ot_shape_fallback_spaces<'a, 'x>(
+    plan: &'a hb_ot_shape_plan_t,
+    face: &'a hb_font_t<'a>,
+    buffer: &'x mut hb_buffer_t,
+    font_funcs: &'x mut FontFuncsDispatch<'a, '_>,
 ) {
     use super::unicode::hb_unicode_funcs_t as t;
 
+    let _ = plan;
     let len = buffer.len;
     let horizontal = buffer.direction.is_horizontal();
+    let scale = *font_funcs.scale();
     for (info, pos) in buffer.info[..len].iter().zip(&mut buffer.pos[..len]) {
         if info.is_unicode_space() && !info.ligated() {
             let space_type = info.unicode_space_fallback_type();
@@ -458,28 +460,28 @@ pub fn _hb_ot_shape_fallback_spaces(
                     let length =
                         (face.units_per_em as i32 + (space_type as i32) / 2) / space_type as i32;
                     if horizontal {
-                        pos.x_advance = length;
+                        pos.x_advance = scale.scale_x(length);
                     } else {
-                        pos.y_advance = -length;
+                        pos.y_advance = -scale.scale_y(length);
                     }
                 }
 
                 t::SPACE_4_EM_18 => {
                     let length = ((face.units_per_em as i64) * 4 / 18) as i32;
                     if horizontal {
-                        pos.x_advance = length;
+                        pos.x_advance = scale.scale_x(length);
                     } else {
-                        pos.y_advance = -length;
+                        pos.y_advance = -scale.scale_y(length);
                     }
                 }
 
                 t::SPACE_FIGURE => {
                     for u in '0'..='9' {
-                        if let Some(glyph) = face.get_nominal_glyph(u as u32) {
+                        if let Some(glyph) = font_funcs.nominal_glyph(u as u32) {
                             if horizontal {
-                                pos.x_advance = face.glyph_h_advance(glyph);
+                                pos.x_advance = font_funcs.advance_width(glyph);
                             } else {
-                                pos.y_advance = face.glyph_v_advance(glyph);
+                                pos.y_advance = font_funcs.advance_height(glyph);
                             }
                             break;
                         }
@@ -487,15 +489,15 @@ pub fn _hb_ot_shape_fallback_spaces(
                 }
 
                 t::SPACE_PUNCTUATION => {
-                    let punct = face
-                        .get_nominal_glyph('.' as u32)
-                        .or_else(|| face.get_nominal_glyph(',' as u32));
+                    let punct = font_funcs
+                        .nominal_glyph('.' as u32)
+                        .or_else(|| font_funcs.nominal_glyph(',' as u32));
 
                     if let Some(glyph) = punct {
                         if horizontal {
-                            pos.x_advance = face.glyph_h_advance(glyph);
+                            pos.x_advance = font_funcs.advance_width(glyph);
                         } else {
-                            pos.y_advance = face.glyph_v_advance(glyph);
+                            pos.y_advance = font_funcs.advance_height(glyph);
                         }
                     }
                 }

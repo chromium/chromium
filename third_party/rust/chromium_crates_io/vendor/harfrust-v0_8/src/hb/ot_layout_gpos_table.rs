@@ -1,11 +1,17 @@
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::hb_font_t;
 use super::ot_layout::*;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use crate::Direction;
 
-pub fn position(plan: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buffer_t) {
-    apply_layout_table(plan, face, buffer, face.ot_tables.gpos.as_ref());
+pub fn position(
+    plan: &hb_ot_shape_plan_t,
+    face: &hb_font_t,
+    font_funcs: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) {
+    apply_layout_table(plan, face, font_funcs, buffer, face.ot_tables.gpos.as_ref());
 }
 
 pub mod attach_type {

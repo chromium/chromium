@@ -1,14 +1,13 @@
-use alloc::boxed::Box;
-use core::any::Any;
-
-use crate::hb::unicode::Codepoint;
-
 use super::buffer::*;
 use super::common::TagExt;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_shape::*;
 use super::ot_shape_normalize::*;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
-use super::{hb_font_t, hb_tag_t, script, Direction, Script};
+use super::unicode::Codepoint;
+use super::{hb_tag_t, script, Direction, Script};
+use alloc::boxed::Box;
+use core::any::Any;
 
 impl GlyphInfo {
     declare_buffer_var!(
@@ -73,11 +72,12 @@ pub struct hb_ot_shaper_t {
 
     /// Called during `shape()`.
     /// Shapers can use to modify text before shaping starts.
-    pub preprocess_text: Option<fn(&hb_ot_shape_plan_t, &hb_font_t, &mut hb_buffer_t)>,
+    pub preprocess_text: Option<fn(&hb_ot_shape_plan_t, &mut FontFuncsDispatch, &mut hb_buffer_t)>,
 
     /// Called during `shape()`.
     /// Shapers can use to modify text before shaping starts.
-    pub postprocess_glyphs: Option<fn(&hb_ot_shape_plan_t, &hb_font_t, &mut hb_buffer_t)>,
+    pub postprocess_glyphs:
+        Option<fn(&hb_ot_shape_plan_t, &mut FontFuncsDispatch, &mut hb_buffer_t)>,
 
     /// How to normalize.
     pub normalization_preference: hb_ot_shape_normalization_mode_t,
@@ -91,7 +91,7 @@ pub struct hb_ot_shaper_t {
     /// Called during `shape()`.
     /// Shapers should use map to get feature masks and set on buffer.
     /// Shapers may NOT modify characters.
-    pub setup_masks: Option<fn(&hb_ot_shape_plan_t, &hb_font_t, &mut hb_buffer_t)>,
+    pub setup_masks: Option<fn(&hb_ot_shape_plan_t, &mut FontFuncsDispatch, &mut hb_buffer_t)>,
 
     /// If not `None`, then must match found GPOS script tag for
     /// GPOS to be applied.  Otherwise, fallback positioning will be used.

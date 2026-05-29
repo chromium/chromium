@@ -13,11 +13,10 @@ pub type cache_t = hb_cache_t<21, 19, 256, 32>;
 pub struct Charmap<'a> {
     subtable: Option<(SelectedCmapSubtable, CmapSubtable<'a>)>,
     vs_subtable: Option<Cmap14<'a>>,
-    cache: &'a cache_t,
 }
 
 impl<'a> Charmap<'a> {
-    pub fn new(font: &FontRef<'a>, table_ranges: &TableRanges, cache: &'a cache_t) -> Self {
+    pub fn new(font: &FontRef<'a>, table_ranges: &TableRanges) -> Self {
         if let Some(cmap) = table_ranges.cmap.resolve_table::<Cmap>(font) {
             let data = cmap.offset_data();
             let records = cmap.encoding_records();
@@ -35,18 +34,16 @@ impl<'a> Charmap<'a> {
             Self {
                 subtable,
                 vs_subtable,
-                cache,
             }
         } else {
             Self {
                 subtable: None,
                 vs_subtable: None,
-                cache,
             }
         }
     }
 
-    fn map_impl(&self, mut c: u32) -> Option<GlyphId> {
+    pub fn map(&self, mut c: u32) -> Option<GlyphId> {
         let subtable = self.subtable.as_ref()?;
         if subtable.0.is_mac_roman && c > 0x7F {
             c = unicode_to_macroman(c);
@@ -82,18 +79,6 @@ impl<'a> Charmap<'a> {
             return self.map(0xF000 + c);
         }
         result
-    }
-
-    #[inline(always)]
-    pub fn map(&self, c: u32) -> Option<GlyphId> {
-        if let Some(gid) = self.cache.get(c) {
-            return Some(GlyphId::new(gid));
-        }
-        let gid = self.map_impl(c);
-        if let Some(gid) = gid {
-            self.cache.set(c, gid.to_u32());
-        }
-        gid
     }
 
     pub fn map_variant(&self, c: u32, vs: u32) -> Option<GlyphId> {

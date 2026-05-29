@@ -4,6 +4,7 @@ use core::ops::Range;
 
 use super::buffer::{glyph_flag, hb_buffer_t};
 use super::common::TagExt;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_layout::TableIndex;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::{hb_font_t, hb_mask_t, hb_tag_t, tag, Language, Script};
@@ -69,7 +70,7 @@ pub struct StageMap {
 
 // Pause functions return true if new glyph indices might have been added to the buffer.
 // This is used to update buffer digest.
-pub type pause_func_t = fn(&hb_ot_shape_plan_t, &hb_font_t, &mut hb_buffer_t) -> bool;
+pub type pause_func_t = fn(&hb_ot_shape_plan_t, &mut FontFuncsDispatch, &mut hb_buffer_t) -> bool;
 
 impl hb_ot_map_t {
     pub const MAX_BITS: u32 = 8;

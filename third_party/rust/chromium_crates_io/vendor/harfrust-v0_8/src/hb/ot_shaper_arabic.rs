@@ -1,15 +1,15 @@
-use crate::Direction;
-use alloc::boxed::Box;
-
 use super::algs::*;
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_map::*;
 use super::ot_shape::*;
 use super::ot_shape_normalize::HB_OT_SHAPE_NORMALIZATION_MODE_AUTO;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::ot_shaper::*;
 use super::unicode::*;
-use super::{hb_font_t, hb_mask_t, hb_tag_t, script, GlyphInfo, Script};
+use super::{hb_mask_t, hb_tag_t, script, GlyphInfo, Script};
+use crate::Direction;
+use alloc::boxed::Box;
 
 const HB_BUFFER_SCRATCH_FLAG_ARABIC_HAS_STCH: hb_buffer_scratch_flags_t =
     HB_BUFFER_SCRATCH_FLAG_SHAPER0;
@@ -179,7 +179,11 @@ impl GlyphInfo {
     );
 }
 
-fn deallocate_buffer_var(_: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) -> bool {
+fn deallocate_buffer_var(
+    _: &hb_ot_shape_plan_t,
+    _: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) -> bool {
     buffer.deallocate_var(GlyphInfo::ARABIC_SHAPING_ACTION_VAR);
 
     false
@@ -387,7 +391,11 @@ fn mongolian_variation_selectors(buffer: &mut hb_buffer_t) {
     }
 }
 
-fn setup_masks_arabic_plan(plan: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn setup_masks_arabic_plan(
+    plan: &hb_ot_shape_plan_t,
+    _: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) {
     buffer.allocate_var(GlyphInfo::ARABIC_SHAPING_ACTION_VAR);
 
     let arabic_plan = plan.data::<arabic_shape_plan_t>();
@@ -409,7 +417,11 @@ pub fn setup_masks_inner(
     }
 }
 
-fn arabic_fallback_shape(_: &hb_ot_shape_plan_t, _: &hb_font_t, _: &mut hb_buffer_t) -> bool {
+fn arabic_fallback_shape(
+    _: &hb_ot_shape_plan_t,
+    _: &mut FontFuncsDispatch,
+    _: &mut hb_buffer_t,
+) -> bool {
     false
 }
 
@@ -418,7 +430,11 @@ fn arabic_fallback_shape(_: &hb_ot_shape_plan_t, _: &hb_font_t, _: &mut hb_buffe
 // https://docs.microsoft.com/en-us/typography/script-development/syriac
 // We implement this in a generic way, such that the Arabic subtending
 // marks can use it as well.
-fn record_stch(plan: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_t) -> bool {
+fn record_stch(
+    plan: &hb_ot_shape_plan_t,
+    _: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) -> bool {
     let arabic_plan = plan.data::<arabic_shape_plan_t>();
     if !arabic_plan.has_stch {
         return false;
@@ -452,7 +468,7 @@ fn record_stch(plan: &hb_ot_shape_plan_t, _: &hb_font_t, buffer: &mut hb_buffer_
     false
 }
 
-fn apply_stch(face: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn apply_stch(face: &mut FontFuncsDispatch, buffer: &mut hb_buffer_t) {
     if buffer.scratch_flags & HB_BUFFER_SCRATCH_FLAG_ARABIC_HAS_STCH == 0 {
         return;
     }
@@ -498,7 +514,7 @@ fn apply_stch(face: &hb_font_t, buffer: &mut hb_buffer_t) {
             let end = i;
             while i != 0 && arabic_action_t::is_stch(buffer.info[i - 1].arabic_shaping_action()) {
                 i -= 1;
-                let width = face.glyph_h_advance(buffer.info[i].as_glyph());
+                let width = face.advance_width(buffer.info[i].as_glyph());
 
                 if buffer.info[i].arabic_shaping_action() == arabic_action_t::STRETCHING_FIXED {
                     w_fixed += width;
@@ -547,7 +563,7 @@ fn apply_stch(face: &hb_font_t, buffer: &mut hb_buffer_t) {
                 buffer.unsafe_to_break(Some(context), Some(end));
                 let mut x_offset = w_remaining / 2;
                 for k in (start + 1..=end).rev() {
-                    let width = face.glyph_h_advance(buffer.info[k - 1].as_glyph());
+                    let width = face.advance_width(buffer.info[k - 1].as_glyph());
 
                     let mut repeat = 1;
                     if buffer.info[k - 1].arabic_shaping_action()
@@ -602,7 +618,11 @@ fn apply_stch(face: &hb_font_t, buffer: &mut hb_buffer_t) {
     }
 }
 
-fn postprocess_glyphs_arabic(_: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn postprocess_glyphs_arabic(
+    _: &hb_ot_shape_plan_t,
+    face: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) {
     apply_stch(face, buffer);
 }
 

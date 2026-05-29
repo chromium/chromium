@@ -1,10 +1,11 @@
 use super::buffer::*;
+use super::font_funcs::FontFuncsDispatch;
 use super::ot_layout::*;
 use super::ot_shape_normalize::HB_OT_SHAPE_NORMALIZATION_MODE_AUTO;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::ot_shaper::*;
+use super::script;
 use super::unicode::GeneralCategory;
-use super::{hb_font_t, script};
 
 pub const THAI_SHAPER: hb_ot_shaper_t = hb_ot_shaper_t {
     collect_features: None,
@@ -131,7 +132,7 @@ static RD_MAPPINGS: &[PuaMapping] = &[
     PuaMapping::new(0x0000, 0x0000, 0x0000),
 ];
 
-fn pua_shape(u: u32, action: Action, face: &hb_font_t) -> u32 {
+fn pua_shape(u: u32, action: Action, face: &mut FontFuncsDispatch) -> u32 {
     let mappings = match action {
         Action::NOP => return u,
         Action::SD => SD_MAPPINGS,
@@ -142,11 +143,11 @@ fn pua_shape(u: u32, action: Action, face: &hb_font_t) -> u32 {
 
     for m in mappings {
         if m.u as u32 == u {
-            if face.get_nominal_glyph(m.win_pua as u32).is_some() {
+            if face.nominal_glyph(m.win_pua as u32).is_some() {
                 return m.win_pua as u32;
             }
 
-            if face.get_nominal_glyph(m.mac_pua as u32).is_some() {
+            if face.nominal_glyph(m.mac_pua as u32).is_some() {
                 return m.mac_pua as u32;
             }
 
@@ -270,7 +271,7 @@ static BELOW_STATE_MACHINE: &[[BSME; 3]] = &[
     ],
 ];
 
-fn do_pua_shaping(face: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn do_pua_shaping(face: &mut FontFuncsDispatch, buffer: &mut hb_buffer_t) {
     let mut above_state = ABOVE_START_STATE[Consonant::NotConsonant as usize];
     let mut below_state = BELOW_START_STATE[Consonant::NotConsonant as usize];
     let mut base = 0;
@@ -308,7 +309,11 @@ fn do_pua_shaping(face: &hb_font_t, buffer: &mut hb_buffer_t) {
 }
 
 // TODO: more tests
-fn preprocess_text(plan: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buffer_t) {
+fn preprocess_text(
+    plan: &hb_ot_shape_plan_t,
+    face: &mut FontFuncsDispatch,
+    buffer: &mut hb_buffer_t,
+) {
     // This function implements the shaping logic documented here:
     //
     //   https://linux.thai.net/~thep/th-otf/shaping.html

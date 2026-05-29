@@ -11,6 +11,7 @@ use read_fonts::{
 use super::aat::layout_common::{AatApplyContext, ClassCache, START_OF_TEXT};
 use super::aat::layout_kerx_table::SimpleKerning;
 use super::buffer::*;
+use super::face::Scale;
 use super::ot_layout::TableIndex;
 use super::ot_layout_common::lookup_flags;
 use super::ot_layout_gpos_table::attach_type;
@@ -33,9 +34,10 @@ pub(crate) fn get_class(machine: &aat::StateTable, glyph_id: GlyphId, cache: &Cl
 pub fn hb_ot_layout_kern(
     plan: &hb_ot_shape_plan_t,
     face: &hb_font_t,
+    scale: Scale,
     buffer: &mut hb_buffer_t,
 ) -> Option<()> {
-    let mut c = AatApplyContext::new(plan, face, buffer);
+    let mut c = AatApplyContext::new(plan, face, scale, buffer);
 
     let (kern, subtable_caches) = c.face.aat_tables.kern.as_ref()?;
 
@@ -120,6 +122,7 @@ pub fn hb_ot_layout_kern(
 
 fn machine_kern<F>(
     face: &hb_font_t,
+    scale: Scale,
     buffer: &mut hb_buffer_t,
     kern_mask: hb_mask_t,
     cross_stream: bool,
@@ -128,13 +131,13 @@ fn machine_kern<F>(
     F: Fn(u32, u32) -> i32,
 {
     buffer.unsafe_to_concat(None, None);
-    let mut ctx = hb_ot_apply_context_t::new(TableIndex::GPOS, face, buffer);
+    let mut ctx = hb_ot_apply_context_t::new(TableIndex::GPOS, face, scale, buffer);
     ctx.set_lookup_mask(kern_mask);
     ctx.lookup_props = u32::from(lookup_flags::IGNORE_MARKS);
     ctx.update_matchers();
 
     let horizontal = ctx.buffer.direction.is_horizontal();
-
+    let use_x_scale = horizontal ^ cross_stream;
     let mut i = 0;
     let mut iter = skipping_iterator_t::new(&mut ctx, false);
     while i < iter.buffer.len {
@@ -155,7 +158,11 @@ fn machine_kern<F>(
 
         let info = &iter.buffer.info;
         let kern = get_kerning(info[i].glyph_id, info[j].glyph_id);
-
+        let kern = if use_x_scale {
+            scale.scale_x(kern)
+        } else {
+            scale.scale_y(kern)
+        };
         let pos = &mut iter.buffer.pos;
         if kern != 0 {
             if horizontal {
@@ -199,6 +206,7 @@ fn apply_simple_kerning<T: SimpleKerning>(
 
     machine_kern(
         c.face,
+        c.scale,
         c.buffer,
         c.plan.kern_mask,
         is_cross_stream,
@@ -417,6 +425,8 @@ fn state_machine_transition(
     is_cross_stream: bool,
     driver: &mut StateMachineDriver,
 ) {
+    let scale = c.scale;
+    let use_x_scale = c.buffer.direction.is_horizontal() ^ is_cross_stream;
     let buffer = &mut *c.buffer;
     let kern_mask = c.plan.kern_mask;
 
@@ -455,6 +465,11 @@ fn state_machine_transition(
             // "The end of the list is marked by an odd value..."
             last = v & 1 != 0;
             v &= !1;
+            let scaled_v = if use_x_scale {
+                scale.scale_x(v)
+            } else {
+                scale.scale_y(v)
+            };
 
             // Testing shows that CoreText only applies kern (cross-stream or not)
             // if none has been applied by previous subtables. That is, it does
@@ -473,12 +488,12 @@ fn state_machine_transition(
                         pos.set_attach_chain(0);
                         pos.y_offset = 0;
                     } else if pos.attach_type() != 0 {
-                        pos.y_offset += v;
+                        pos.y_offset += scaled_v;
                         has_gpos_attachment = true;
                     }
                 } else if glyph_mask & kern_mask != 0 {
-                    pos.x_advance += v;
-                    pos.x_offset += v;
+                    pos.x_advance += scaled_v;
+                    pos.x_offset += scaled_v;
                 }
             } else {
                 if is_cross_stream {
@@ -488,13 +503,13 @@ fn state_machine_transition(
                         pos.set_attach_chain(0);
                         pos.x_offset = 0;
                     } else if pos.attach_type() != 0 {
-                        pos.x_offset += v;
+                        pos.x_offset += scaled_v;
                         has_gpos_attachment = true;
                     }
                 } else if glyph_mask & kern_mask != 0 {
                     if pos.y_offset == 0 {
-                        pos.y_advance += v;
-                        pos.y_offset += v;
+                        pos.y_advance += scaled_v;
+                        pos.y_offset += scaled_v;
                     }
                 }
             }

@@ -194,13 +194,15 @@ impl SimpleKerning for Subtable6<'_> {
 }
 
 fn apply_simple_kerning<T: SimpleKerning>(c: &mut AatApplyContext, subtable: &Subtable, kind: &T) {
-    let mut ctx = hb_ot_apply_context_t::new(TableIndex::GPOS, c.face, c.buffer);
+    let scale = c.scale;
+    let mut ctx = hb_ot_apply_context_t::new(TableIndex::GPOS, c.face, c.scale, c.buffer);
     ctx.set_lookup_mask(c.plan.kern_mask);
     ctx.lookup_props = u32::from(lookup_flags::IGNORE_MARKS);
     ctx.update_matchers();
 
     let horizontal = ctx.buffer.direction.is_horizontal();
     let cross_stream = subtable.is_cross_stream();
+    let use_x_scale = horizontal ^ cross_stream;
 
     let first_set = c.first_set.as_ref().unwrap();
     let second_set = c.second_set.as_ref().unwrap();
@@ -231,6 +233,11 @@ fn apply_simple_kerning<T: SimpleKerning>(c: &mut AatApplyContext, subtable: &Su
             0
         } else {
             kind.simple_kerning(a, b).unwrap_or(0)
+        };
+        let kern = if use_x_scale {
+            scale.scale_x(kern)
+        } else {
+            scale.scale_y(kern)
         };
 
         let pos = &mut iter.buffer.pos;
@@ -531,6 +538,7 @@ impl StateTableDriver<Subtable1<'_>, BigEndian<u16>> for Driver1 {
             // "Each pops one glyph from the kerning stack and applies the kerning value to it.
             // The end of the list is marked by an odd value...
             let mut last = false;
+            let use_x_scale = c.buffer.direction.is_horizontal() ^ has_cross_stream;
             while !last && self.depth != 0 {
                 self.depth -= 1;
                 let idx = self.stack[self.depth];
@@ -543,7 +551,11 @@ impl StateTableDriver<Subtable1<'_>, BigEndian<u16>> for Driver1 {
                 // "The end of the list is marked by an odd value..."
                 last = v & 1 != 0;
                 v &= !1;
-
+                let scaled_v = if use_x_scale {
+                    c.scale_x(v)
+                } else {
+                    c.scale_y(v)
+                };
                 // Testing shows that CoreText only applies kern (cross-stream or not)
                 // if none has been applied by previous subtables. That is, it does
                 // NOT seem to accumulate as otherwise implied by specs.
@@ -561,12 +573,12 @@ impl StateTableDriver<Subtable1<'_>, BigEndian<u16>> for Driver1 {
                             pos.set_attach_chain(0);
                             pos.y_offset = 0;
                         } else if pos.attach_type() != 0 {
-                            pos.y_offset += v;
+                            pos.y_offset += scaled_v;
                             has_gpos_attachment = true;
                         }
                     } else if glyph_mask & c.plan.kern_mask != 0 {
-                        pos.x_advance += v;
-                        pos.x_offset += v;
+                        pos.x_advance += scaled_v;
+                        pos.x_offset += scaled_v;
                     }
                 } else {
                     if has_cross_stream {
@@ -576,13 +588,13 @@ impl StateTableDriver<Subtable1<'_>, BigEndian<u16>> for Driver1 {
                             pos.set_attach_chain(0);
                             pos.x_offset = 0;
                         } else if pos.attach_type() != 0 {
-                            pos.x_offset += v;
+                            pos.x_offset += scaled_v;
                             has_gpos_attachment = true;
                         }
                     } else if glyph_mask & c.plan.kern_mask != 0 {
                         if pos.y_offset == 0 {
-                            pos.y_advance += v;
-                            pos.y_offset += v;
+                            pos.y_advance += scaled_v;
+                            pos.y_offset += scaled_v;
                         }
                     }
                 }
@@ -634,9 +646,13 @@ impl StateTableDriver<Subtable4<'_>, BigEndian<u16>> for Driver4<'_> {
                         .map(|point| (point.x(), point.y()))
                         .unwrap_or_default();
 
+                    let x_offset =
+                        c.scale_x(i32::from(mark_anchor.0)) - c.scale_x(i32::from(curr_anchor.0));
+                    let y_offset =
+                        c.scale_y(i32::from(mark_anchor.1)) - c.scale_y(i32::from(curr_anchor.1));
                     let pos = c.buffer.cur_pos_mut();
-                    pos.x_offset = i32::from(mark_anchor.0 - curr_anchor.0);
-                    pos.y_offset = i32::from(mark_anchor.1 - curr_anchor.1);
+                    pos.x_offset = x_offset;
+                    pos.y_offset = y_offset;
                 }
                 (_, Subtable4Actions::ControlPointCoords(coords)) => {
                     let action_idx = entry.action_index() as usize * 4;
@@ -644,9 +660,11 @@ impl StateTableDriver<Subtable4<'_>, BigEndian<u16>> for Driver4<'_> {
                     let mark_y = coords.get(action_idx + 1)?.get() as i32;
                     let curr_x = coords.get(action_idx + 2)?.get() as i32;
                     let curr_y = coords.get(action_idx + 3)?.get() as i32;
+                    let x_offset = c.scale_x(mark_x) - c.scale_x(curr_x);
+                    let y_offset = c.scale_y(mark_y) - c.scale_y(curr_y);
                     let pos = c.buffer.cur_pos_mut();
-                    pos.x_offset = mark_x - curr_x;
-                    pos.y_offset = mark_y - curr_y;
+                    pos.x_offset = x_offset;
+                    pos.y_offset = y_offset;
                 }
                 _ => {}
             }

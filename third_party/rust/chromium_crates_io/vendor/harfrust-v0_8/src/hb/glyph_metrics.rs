@@ -1,5 +1,7 @@
-use crate::hb::buffer::hb_buffer_t;
-use crate::{hb::tables::TableRanges, Tag};
+use crate::{
+    hb::{face::Scale, tables::TableRanges},
+    GlyphInfo, GlyphPosition, Tag,
+};
 use read_fonts::{
     tables::{
         glyf::Glyf,
@@ -111,8 +113,14 @@ impl<'a> GlyphMetrics<'a> {
         Some(advance)
     }
 
-    pub fn populate_advance_widths(&self, buf: &mut hb_buffer_t, coords: &[F2Dot14]) {
-        for (info, pos) in buf.info.iter().zip(buf.pos.iter_mut()) {
+    pub(crate) fn populate_advance_widths(
+        &self,
+        infos: &[GlyphInfo],
+        pos: &mut [GlyphPosition],
+        coords: &[F2Dot14],
+        scale: Scale,
+    ) {
+        for (info, pos) in infos.iter().zip(pos.iter_mut()) {
             pos.x_advance = self
                 .h_metrics
                 .get(info.glyph_id as usize)
@@ -123,19 +131,22 @@ impl<'a> GlyphMetrics<'a> {
         }
         if !coords.is_empty() {
             if let Some(hvar) = self.hvar.as_ref() {
-                for (info, pos) in buf.info.iter().zip(buf.pos.iter_mut()) {
+                for (info, pos) in infos.iter().zip(pos.iter_mut()) {
                     pos.x_advance += hvar
                         .advance_width_delta(info.as_glyph(), coords)
                         .unwrap_or_default()
                         .to_i32();
                 }
             } else {
-                for (info, pos) in buf.info.iter().zip(buf.pos.iter_mut()) {
+                for (info, pos) in infos.iter().zip(pos.iter_mut()) {
                     if let Some(deltas) = self.phantom_deltas(info.as_glyph(), coords) {
                         pos.x_advance += deltas[1].x.to_i32() - deltas[0].x.to_i32();
                     }
                 }
             }
+        }
+        for pos in pos.iter_mut() {
+            pos.x_advance = scale.scale_x(pos.x_advance);
         }
     }
 

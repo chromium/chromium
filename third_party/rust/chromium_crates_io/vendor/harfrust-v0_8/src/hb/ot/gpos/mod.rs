@@ -19,6 +19,7 @@ fn apply_value(
     mut offset: usize,
     format: ValueFormat,
 ) -> Option<bool> {
+    let scale = ctx.scale;
     let pos = &mut ctx.buffer.pos[idx];
     let is_horizontal = ctx.buffer.direction.is_horizontal();
     let mut worked = false;
@@ -31,21 +32,21 @@ fn apply_value(
         }};
     }
     if format.contains(ValueFormat::X_PLACEMENT) {
-        pos.x_offset += read_value!();
+        pos.x_offset += scale.scale_x(read_value!());
     }
     if format.contains(ValueFormat::Y_PLACEMENT) {
-        pos.y_offset += read_value!();
+        pos.y_offset += scale.scale_y(read_value!());
     }
     if format.contains(ValueFormat::X_ADVANCE) {
         if is_horizontal {
-            pos.x_advance += read_value!();
+            pos.x_advance += scale.scale_x(read_value!());
         } else {
             offset += 2;
         }
     }
     if format.contains(ValueFormat::Y_ADVANCE) {
         if !is_horizontal {
-            pos.y_advance -= read_value!();
+            pos.y_advance -= scale.scale_y(read_value!());
         } else {
             offset += 2;
         }
@@ -79,21 +80,21 @@ fn apply_value(
             }};
         }
         if format.contains(ValueFormat::X_PLACEMENT_DEVICE) {
-            pos.x_offset += read_delta!();
+            pos.x_offset += scale.scale_x(read_delta!());
         }
         if format.contains(ValueFormat::Y_PLACEMENT_DEVICE) {
-            pos.y_offset += read_delta!();
+            pos.y_offset += scale.scale_y(read_delta!());
         }
         if format.contains(ValueFormat::X_ADVANCE_DEVICE) {
             if is_horizontal {
-                pos.x_advance += read_delta!();
+                pos.x_advance += scale.scale_x(read_delta!());
             } else {
                 offset += 2;
             }
         }
         if format.contains(ValueFormat::Y_ADVANCE_DEVICE) {
             if !is_horizontal {
-                pos.y_advance -= read_delta!();
+                pos.y_advance -= scale.scale_y(read_delta!());
             } else {
                 offset += 2;
             }

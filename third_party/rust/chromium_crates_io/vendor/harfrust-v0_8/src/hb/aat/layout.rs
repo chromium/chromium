@@ -4,7 +4,8 @@ use super::map;
 use super::{layout_kerx_table, layout_morx_table, layout_trak_table};
 use crate::hb::aat::layout_common::{AatApplyContext, HB_BUFFER_SCRATCH_FLAG_AAT_HAS_DELETED};
 use crate::hb::{
-    buffer::hb_buffer_t, hb_font_t, hb_tag_t, ot_shape_plan::hb_ot_shape_plan_t, GlyphInfo,
+    buffer::hb_buffer_t, face::Scale, hb_font_t, hb_tag_t, ot_shape_plan::hb_ot_shape_plan_t,
+    GlyphInfo,
 };
 use crate::Feature;
 
@@ -514,7 +515,7 @@ pub fn substitute(
         builder.compile(face, &mut aat_map);
     }
 
-    let mut c = AatApplyContext::new(plan, face, buffer);
+    let mut c = AatApplyContext::new(plan, face, Scale::default(), buffer);
     layout_morx_table::apply(
         &mut c,
         if features.is_empty() {
@@ -543,8 +544,13 @@ pub fn remove_deleted_glyphs(buffer: &mut hb_buffer_t) {
 ///
 /// See <https://github.com/harfbuzz/harfbuzz/blob/2c22a65f0cb99544c36580b9703a43b5dc97a9e1/src/hb-aat-layout.cc#L363>
 #[doc(alias = "hb_aat_layout_position")]
-pub fn position(plan: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buffer_t) {
-    let mut c = AatApplyContext::new(plan, face, buffer);
+pub fn position(
+    plan: &hb_ot_shape_plan_t,
+    face: &hb_font_t,
+    scale: Scale,
+    buffer: &mut hb_buffer_t,
+) {
+    let mut c = AatApplyContext::new(plan, face, scale, buffer);
     layout_kerx_table::apply(&mut c);
 }
 
@@ -555,8 +561,9 @@ pub fn position(plan: &hb_ot_shape_plan_t, face: &hb_font_t, buffer: &mut hb_buf
 pub fn track(
     plan: &hb_ot_shape_plan_t,
     face: &hb_font_t,
+    scale: Scale,
     point_size: Option<f32>,
     buffer: &mut hb_buffer_t,
 ) {
-    layout_trak_table::apply(plan, face, point_size, buffer);
+    layout_trak_table::apply(plan, face, scale, point_size, buffer);
 }

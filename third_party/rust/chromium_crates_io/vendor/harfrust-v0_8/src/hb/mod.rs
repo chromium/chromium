@@ -28,6 +28,7 @@ mod cache;
 mod charmap;
 pub mod common;
 pub mod face;
+mod font_funcs;
 mod glyph_metrics;
 mod glyph_names;
 mod kerning;

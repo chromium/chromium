@@ -29,6 +29,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/charmap.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/common.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/face.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/font_funcs.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/glyph_metrics.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/glyph_names.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_8/src/hb/kerning.rs",
@@ -93,7 +94,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "harfrust"
   cargo_pkg_description = "A complete HarfBuzz shaping algorithm port to Rust."
   cargo_pkg_repository = "https://github.com/harfbuzz/harfrust"
-  cargo_pkg_version = "0.8.0"
+  cargo_pkg_version = "0.8.1"
 
   allow_unsafe = false
 
