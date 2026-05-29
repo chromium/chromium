@@ -332,5 +332,123 @@ class AvdInstallCreateUninstallTest(unittest.TestCase):
     mock_rmtree.assert_not_called()
 
 
+# pylint: disable=protected-access
+class AvdProcessRawSystemImageTest(unittest.TestCase):
+
+  _CONFIG_RAW_SYS_IMG = """
+  emulator_package {
+    package_name: "emulator"
+    version: "1.0"
+  }
+  avd_package {
+    package_name: "avd"
+    version: "1.0"
+  }
+  raw_system_image_package {
+    package_name: "raw_system_image"
+    version: "1.0"
+  }
+  """
+
+  @patch('os.walk')
+  @patch('pylib.local.emulator.avd.AvdConfig._InstallCipdPackages')
+  def testProcessRawSystemImageAlreadyProcessed(self, mock_install_cipd,
+                                                mock_walk):
+    with patch('builtins.open', mock_open(read_data=self._CONFIG_RAW_SYS_IMG)):
+      avd_config = avd.AvdConfig('/path/to/creation.textpb')
+
+    # Simulate that package.xml already exists under system-images
+    mock_walk.return_value = [('/path/to/system-images', [], ['package.xml'])]
+
+    avd_config._ProcessRawSystemImage()
+
+    mock_install_cipd.assert_not_called()
+
+  @patch('shutil.move')
+  @patch('os.makedirs')
+  @patch('shutil.rmtree')
+  @patch('os.path.exists')
+  @patch('pylib.local.emulator.ini.load')
+  @patch('zipfile.ZipFile')
+  @patch('tempfile.TemporaryDirectory')
+  @patch('glob.glob')
+  @patch('os.walk')
+  @patch('pylib.local.emulator.avd.AvdConfig._InstallCipdPackages')
+  def testProcessRawSystemImageSuccessful(self, mock_install_cipd, mock_walk,
+                                          mock_glob, mock_tempdir,
+                                          _mock_zipfile, mock_ini_load,
+                                          mock_exists, mock_rmtree,
+                                          mock_makedirs, mock_move):
+    with patch('builtins.open', mock_open(read_data=self._CONFIG_RAW_SYS_IMG)):
+      avd_config = avd.AvdConfig('/path/to/creation.textpb')
+
+    # 1. First walk (check if already processed) returns empty (no package.xml)
+    # 2. Second walk (locate source.properties) inside temp_dir returns
+    #    source.properties
+    mock_walk.side_effect = [
+        [('/path/to/system-images', [], [])],  # check processed
+        [('/temp-dir/some-sub-dir', [], ['source.properties'])
+         ]  # locate source.properties
+    ]
+
+    mock_glob.return_value = [
+        '/path/to/raw_system_image/sdk-repo-linux-system-images-123.zip'
+    ]
+
+    # Mock TemporaryDirectory context manager
+    mock_tempdir.return_value.__enter__.return_value = '/temp-dir'
+
+    # Mock ini.load
+    mock_ini_load.return_value = {
+        'AndroidVersion.ApiLevel': '33',
+        'AndroidVersion.CodeName': '',
+        'Pkg.Revision': '2',
+        'Pkg.Desc': 'Intel x86 Atom System Image',
+        'SystemImage.TagId': 'google_apis',
+        'SystemImage.TagDisplay': 'Google APIs',
+        'SystemImage.Abi': 'x86_64'
+    }
+
+    expected_system_image_path = os.path.join(avd_config.emulator_sdk_root,
+                                              'system-images', 'android-33',
+                                              'google_apis', 'x86_64')
+
+    # Mock exists check for system_image_path (True) but parent_dir (False)
+    # And return True for platforms/platform-tools directory checks to avoid
+    # calling makedirs there.
+    def mock_exists_se(path):
+      if path == expected_system_image_path:
+        return True
+      if 'platforms' in path or 'platform-tools' in path:
+        return True
+      return False
+
+    mock_exists.side_effect = mock_exists_se
+
+    # Mock open for reading package.xml.template and writing package.xml
+    template_content = "Template ${package_path} ${api_level} ${tag_id} ${abi}"
+    mock_open_obj = mock_open()
+    mock_open_obj.side_effect = [
+        # Read source.properties
+        mock_open(read_data="").return_value,
+        # Read package.xml.template
+        mock_open(read_data=template_content).return_value,
+        # Write package.xml
+        mock_open_obj.return_value,
+    ]
+
+    with patch('builtins.open', mock_open_obj):
+      avd_config._ProcessRawSystemImage()
+
+    mock_install_cipd.assert_called_once_with(
+        [avd_config._config.raw_system_image_package])
+    mock_rmtree.assert_called_once()
+    mock_makedirs.assert_called_once()
+    mock_move.assert_called_once_with(
+        '/temp-dir/some-sub-dir',
+        os.path.join(avd_config.emulator_sdk_root, 'system-images',
+                     'android-33', 'google_apis', 'x86_64'))
+
+
 if __name__ == "__main__":
   unittest.main()

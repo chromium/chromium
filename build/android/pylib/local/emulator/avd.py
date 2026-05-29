@@ -11,6 +11,7 @@ import os
 import shutil
 import socket
 import stat
+import string
 import subprocess
 import tempfile
 import threading
@@ -192,9 +193,56 @@ def _ProcessSourceProps(source_prop_path):
   Returns:
     Package path as string, i.e. "system-images;<version>;<tag_id>;<abi>"
   """
-  # TODO(https://crbug.com/513266525): Add the implementation
-  assert source_prop_path
-  return ''
+  # Read and parse the source.properties file
+  logging.info('Reading source.properties file.')
+  source_props = {}
+  with open(source_prop_path, 'r') as f:
+    source_props = ini.load(f)
+
+  # These props are mandatory to form a valid image path.
+  api_level = source_props['AndroidVersion.ApiLevel']
+  tag_id = source_props['SystemImage.TagId']
+  abi = source_props['SystemImage.Abi']
+
+  # Rest props that need to be present in the package.xml.
+  codename = source_props.get('AndroidVersion.CodeName', '')
+  revision = source_props.get('Pkg.Revision', '1')
+  display_name = source_props.get('Pkg.Desc', '')
+  tag_display = source_props.get('SystemImage.TagDisplay', '')
+  abis = source_props.get('SystemImage.Abis', abi)
+
+  # package path mapping format: system-images;<version>;<tag_id>;<abi>
+  logging.info('Got codename %r, api_level %r', codename, api_level)
+  version_str = f'android-{codename if codename else api_level}'
+  package_path = f'system-images;{version_str};{tag_id};{abi}'
+  logging.info('Got package path %r', package_path)
+
+  # Load package.xml.template and generate package.xml
+  logging.info('Generating package.xml file.')
+  with open(os.path.join(os.path.dirname(__file__), 'package.xml.template'),
+            'r') as f:
+    template_content = f.read()
+  template = string.Template(template_content)
+  mappings = {
+      'package_path': package_path,
+      'api_level': api_level,
+      'codename': codename,
+      'tag_id': tag_id,
+      'tag_display': tag_display,
+      'abi': abi,
+      'abis': abis,
+      'revision': revision,
+      'display_name': display_name,
+  }
+  package_xml_content = template.safe_substitute(mappings)
+  # Write package.xml to the same directory where "source.properties" is.
+  package_xml_path = os.path.join(os.path.dirname(source_prop_path),
+                                  'package.xml')
+  with open(package_xml_path, 'w') as f:
+    f.write(package_xml_content)
+
+  return package_path
+
 
 class _AvdManagerAgent:
   """Private utility for interacting with avdmanager."""
