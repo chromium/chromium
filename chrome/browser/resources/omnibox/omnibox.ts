@@ -352,16 +352,15 @@ class ExportDelegate {
     const loadTimeDataKeys = ['cl', 'command_line', 'executable_path',
       'language', 'official', 'os_type', 'profile_path', 'useragent',
       'version', 'version_processor_variation', 'version_modifier'];
-    return Object.fromEntries(
-        loadTimeDataKeys.map(key => {
-          let valueOrError;
-          try {
-            valueOrError = loadTimeData.getValue(key);
-          } catch (e) {
-            valueOrError = (e as Error).toString();
-          }
-          return [key, valueOrError];
-        }));
+    return Object.fromEntries(loadTimeDataKeys.map(key => {
+      let valueOrError: string = '';
+      try {
+        valueOrError = loadTimeData.getString(key);
+      } catch (e) {
+        valueOrError = (e as Error).toString();
+      }
+      return [key, valueOrError];
+    }));
   }
 }
 

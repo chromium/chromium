@@ -39,7 +39,7 @@ interface TimezoneListItem {
 
 function getTimezoneItems(): TimezoneListItem[] {
   const currentTimezoneId = loadTimeData.getString('currentTimezoneId');
-  const timezoneList = loadTimeData.getValue('timezoneList') as TimezoneList;
+  const timezoneList = loadTimeData.getValue<TimezoneList>('timezoneList');
   return timezoneList.map(
       tz => ({id: tz[0], name: tz[1], selected: tz[0] === currentTimezoneId}));
 }

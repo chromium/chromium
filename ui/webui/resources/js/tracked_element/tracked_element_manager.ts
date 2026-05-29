@@ -592,7 +592,7 @@ export class TrackedElementManager {
 
     // Special handling for <cr-tabs>
     if (element.tagName === 'CR-TABS') {
-      (element as any).selected = index;
+      (element as unknown as {selected: number}).selected = index;
       return {success: true};
     }
 

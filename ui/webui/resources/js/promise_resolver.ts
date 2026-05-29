@@ -18,7 +18,7 @@
 
 export class PromiseResolver<T> {
   private resolve_: (arg: T) => void = () => {};
-  private reject_: (arg: any) => void = () => {};
+  private reject_: (arg: unknown) => void = () => {};
   private isFulfilled_: boolean = false;
   private promise_: Promise<T>;
 
@@ -28,7 +28,7 @@ export class PromiseResolver<T> {
         resolve(resolution);
         this.isFulfilled_ = true;
       };
-      this.reject_ = (reason: any) => {
+      this.reject_ = (reason: unknown) => {
         reject(reason);
         this.isFulfilled_ = true;
       };
@@ -48,7 +48,7 @@ export class PromiseResolver<T> {
     return this.resolve_;
   }
 
-  get reject(): ((arg?: any) => void) {
+  get reject(): ((arg?: unknown) => void) {
     return this.reject_;
   }
 }

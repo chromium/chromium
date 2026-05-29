@@ -47,7 +47,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     return getHtml.bind(this)();
   }
 
-  static override get properties(): any {
+  static override get properties() {
     return {
       //========================================================================
       // Public properties

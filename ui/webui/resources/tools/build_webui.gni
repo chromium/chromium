@@ -623,9 +623,6 @@ template("build_webui") {
         # check by default.
         "//chrome/browser/resources/print_preview",
         "//chrome/browser/resources/tab_search",
-        "//chrome/browser/resources/tab_strip",
-        "//ui/webui/resources/cr_components/composebox",
-        "//ui/webui/resources/cr_components/searchbox",
         "//ui/webui/resources/cr_elements",
         "//ui/webui/resources/js",
       ]

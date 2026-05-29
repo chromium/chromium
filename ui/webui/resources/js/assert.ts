@@ -17,7 +17,7 @@ export function assert<T>(value: T, message?: string): asserts value {
 }
 
 export function assertInstanceof<T>(
-    value: unknown, type: {new (...args: any): T},
+    value: unknown, type: {new (...args: any[]): T},
     message?: string): asserts value is T {
   if (value instanceof type) {
     return;

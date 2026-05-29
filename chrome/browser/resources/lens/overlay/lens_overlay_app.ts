@@ -303,8 +303,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the contextual searchbox should be auto-focused when the overlay is
   // first opened.
   private autoFocusSearchbox: boolean =
-      loadTimeData.getValue('autoFocusSearchbox') &&
-      !loadTimeData.getValue('enablePrivacyNotice');
+      loadTimeData.getBoolean('autoFocusSearchbox') &&
+      !loadTimeData.getBoolean('enablePrivacyNotice');
   declare private toastMessage: string;
   declare private enableCloseButtonTweaks: boolean;
   declare private enableVisualSelectionUpdates: boolean;

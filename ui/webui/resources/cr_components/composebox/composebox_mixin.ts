@@ -2059,8 +2059,8 @@ export const ComposeboxEmbedderMixin =
           ]);
 
           this.tabSuggestions = [
-            ...tabs.filter((tab: any) => selectedTabIdsSet.has(tab.tabId)),
-            ...tabs.filter((tab: any) => !selectedTabIdsSet.has(tab.tabId)),
+            ...tabs.filter(tab => selectedTabIdsSet.has(tab.tabId)),
+            ...tabs.filter(tab => !selectedTabIdsSet.has(tab.tabId)),
           ];
 
           if (this.inputState) {

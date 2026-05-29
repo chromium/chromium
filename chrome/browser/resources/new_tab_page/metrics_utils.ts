@@ -29,7 +29,8 @@ export function recordDuration(metricName: string, durationMs: number) {
  */
 export function recordLoadDuration(metricName: string, msSinceEpoch: number) {
   recordDuration(
-      metricName, msSinceEpoch - loadTimeData.getValue('navigationStartTime'));
+      metricName,
+      msSinceEpoch - loadTimeData.getValue<number>('navigationStartTime'));
 }
 
 /**

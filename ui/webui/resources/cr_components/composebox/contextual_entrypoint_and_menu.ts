@@ -43,7 +43,7 @@ export class ContextualEntrypointAndMenuElement extends
   }
 
   override render() {
-    return getHtml.bind(this as any)();
+    return getHtml.bind(this)();
   }
 
   static override get properties() {

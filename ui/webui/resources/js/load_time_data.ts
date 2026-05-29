@@ -54,7 +54,7 @@ class LoadTimeData {
    * @param id The key that identifies the desired value.
    * @return The corresponding value.
    */
-  getValue(id: string): any {
+  getValue<T>(id: string): T {
     assert(this.data_, 'No data. Did you remember to include strings.js?');
     const value = this.data_[id];
     assert(typeof value !== 'undefined', 'Could not find value for ' + id);
