@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 
 namespace autofill {
@@ -44,7 +45,12 @@ class WebState;
 @property(nonatomic, weak) id<PaymentsScanSaveAndFillOfferBottomSheetConsumer>
     consumer;
 
+// Performs all operations that should happen when the scan card suggestion is
+// accepted before dismissal.
 - (void)didAcceptScanCardSuggestion;
+
+// Returns a block to be executed after the bottom sheet is dismissed.
+- (ProceduralBlock)postDismissBlock;
 
 - (void)didCancelScanCardSuggestion;
 

@@ -59,30 +59,37 @@
     base::UmaHistogramTimes("IOS.ScanCardBottomSheet.TimeToSelection",
                             _viewDidAppearTimer->Elapsed());
   }
+}
 
-  if (!_provider) {
-    return;
-  }
+- (ProceduralBlock)postDismissBlock {
+  __weak id<FormInputSuggestionsProvider> weakProvider = _provider;
+  autofill::FormActivityParams params = _params;
+  return ^{
+    if (!weakProvider) {
+      return;
+    }
 
-  // Create a form suggestion containing and set the suggestion type as
-  // `kSaveAndFillCreditCardEntry` value so that the provider can identify it.
-  FormSuggestion* suggestion = [FormSuggestion
-              suggestionWithValue:nil
-                       minorValue:nil
-               displayDescription:nil
-                             icon:nil
-                             type:autofill::SuggestionType::
-                                      kSaveAndFillCreditCardEntry
-                          payload:autofill::Suggestion::AutofillProfilePayload(
-                                      autofill::Suggestion::Guid(""))
-      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
-                   requiresReauth:NO
-       acceptanceA11yAnnouncement:nil];
+    // Create a form suggestion containing and set the suggestion type as
+    // `kSaveAndFillCreditCardEntry` value so that the provider can identify it.
+    FormSuggestion* suggestion = [FormSuggestion
+                suggestionWithValue:nil
+                         minorValue:nil
+                 displayDescription:nil
+                               icon:nil
+                               type:autofill::SuggestionType::
+                                        kSaveAndFillCreditCardEntry
+                            payload:autofill::Suggestion::
+                                        AutofillProfilePayload(
+                                            autofill::Suggestion::Guid(""))
+        fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                     requiresReauth:NO
+         acceptanceA11yAnnouncement:nil];
 
-  [_provider didSelectSuggestion:suggestion
-                         atIndex:0
-                          params:_params
-                      completion:nil];
+    [weakProvider didSelectSuggestion:suggestion
+                              atIndex:0
+                               params:params
+                           completion:nil];
+  };
 }
 
 - (void)didCancelScanCardSuggestion {

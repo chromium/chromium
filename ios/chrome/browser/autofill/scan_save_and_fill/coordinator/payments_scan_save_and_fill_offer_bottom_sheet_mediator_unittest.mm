@@ -78,10 +78,9 @@ class PaymentsScanSaveAndFillOfferBottomSheetMediatorTest
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
 };
 
-// Tests that `didAccpetScanCardSuggestion` successfully forwards the scan card
+// Tests that `postDismissBlock` successfully forwards the scan card
 // suggestion to the cross provider.
-TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
-       DidAccpetScanCardSuggestion) {
+TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest, PostDismissBlock) {
   // Initialize the mediator before configuring its properties.
   CreateMediator();
 
@@ -100,7 +99,9 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
                    params:dummy_params
                completion:nil];
 
-  [mediator_ didAcceptScanCardSuggestion];
+  ProceduralBlock block = [mediator_ postDismissBlock];
+  EXPECT_NE(nil, block);
+  block();
 
   EXPECT_OCMOCK_VERIFY(providerMock);
 }
