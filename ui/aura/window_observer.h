@@ -20,7 +20,8 @@ namespace aura {
 class Window;
 
 // Window lifetime and safely: A WindowObserver implementation should not delete
-// the observing window, except for OnWindowVisibilityChanged.
+// the observing window, except for OnWindowVisibilityChanged. Such an attempt
+// to delete the window will result in CHECK failure.
 class AURA_EXPORT WindowObserver : public base::CheckedObserver {
  public:
   struct HierarchyChangeParams {
