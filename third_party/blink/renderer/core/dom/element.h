@@ -408,7 +408,21 @@ class CORE_EXPORT Element : public ContainerNode {
   Element* GetElementAttributeResolvingReferenceTarget(
       const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
+  // GetAttrAssociatedElements returns the result of the 'get the
+  // attr-associated elements' algorithm [1]. It returns null if and only if the
+  // IDL attribute's explicitly set elements [2] is null and the content
+  // attribute is not set. GetAttrAssociatedElementsResolvingReferenceTarget
+  // returns null under the same conditions. It returns the result of resolving
+  // the reference target [3] on each member of the result of
+  // GetAttrAssociatedElements, discarding the values for which resolving the
+  // reference target returns null.
+  // [1] https://html.spec.whatwg.org/#attr-associated-elements
+  // [2] https://html.spec.whatwg.org/#explicitly-set-attr-elements
+  // [3] https://github.com/whatwg/html/pull/10995
   GCedHeapVector<Member<Element>>* GetAttrAssociatedElements(
+      const QualifiedName& name) const;
+  GCedHeapVector<Member<Element>>*
+  GetAttrAssociatedElementsResolvingReferenceTarget(
       const QualifiedName& name) const;
 
   // If treescope_element is connected, then we will search treescope_element's

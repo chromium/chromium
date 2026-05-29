@@ -1499,13 +1499,6 @@ Element* Element::GetElementAttribute(const QualifiedName& name) const {
     element = getElementByIdIncludingDisconnected(*this, id);
   }
 
-  // Don't return the element if it has an invalid reference target.
-  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
-          GetExecutionContext()) &&
-      element && !element->GetShadowReferenceTargetOrSelf(name)) {
-    return nullptr;
-  }
-
   return element;
 }
 
@@ -1532,14 +1525,8 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       // 3.1. If attrElement is not a descendant of any of element's
       // shadow-including ancestors, then continue.
       if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attr_element)) {
-        // 3.NEW. Resolve the referenceTarget of attr_element
-        Element* reference_target =
-            attr_element->GetShadowReferenceTargetOrSelf(name);
-
         // 3.2. Append attrElement to elements.
-        if (reference_target) {
-          result_elements->push_back(reference_target);
-        }
+        result_elements->push_back(attr_element);
       }
     }
   } else {
@@ -1579,18 +1566,31 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       Element* candidate =
           getElementByIdIncludingDisconnected(*this, AtomicString(id));
       if (candidate) {
-        // 4.3.NEW. Resolve the referenceTarget of the candidate element
-        candidate = candidate->GetShadowReferenceTargetOrSelf(attr);
-
         // 4.3.2. Append candidate to elements.
-        if (candidate) {
-          result_elements->push_back(candidate);
-        }
+        result_elements->push_back(candidate);
       }
     }
   }
   // 5. Return elements.
   return result_elements;
+}
+
+GCedHeapVector<Member<Element>>*
+Element::GetAttrAssociatedElementsResolvingReferenceTarget(
+    const QualifiedName& name) const {
+  GCedHeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
+  if (!elements) {
+    return nullptr;
+  }
+  GCedHeapVector<Member<Element>>* resolved =
+      MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
+  resolved->reserve(elements->size());
+  for (const auto& element : *elements) {
+    if (Element* target = element->GetShadowReferenceTargetOrSelf(name)) {
+      resolved->push_back(target);
+    }
+  }
+  return resolved;
 }
 
 FrozenArray<Element>* Element::GetElementArrayAttribute(
@@ -1599,18 +1599,6 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
 
   // 1. Let elements be this's attr-associated elements.
   GCedHeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
-
-  // Due to reference target it's possible that attr-associated elements could
-  // be in non-ancestor shadow trees. We don't want to leak references into
-  // those scopes, so retarget the elements.
-  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
-          GetExecutionContext()) &&
-      elements) {
-    std::transform(elements->begin(), elements->end(), elements->begin(),
-                   [this](Element* element) {
-                     return &this->GetTreeScope().Retarget(*element);
-                   });
-  }
 
   CachedAttrAssociatedElementsMap* cached_attr_associated_elements_map =
       GetDocument().GetCachedAttrAssociatedElementsMap(this);
@@ -6871,7 +6859,10 @@ void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
 GCedHeapVector<Member<Element>>* Element::ElementsFromAttributeOrInternals(
     const QualifiedName& attribute) const {
   GCedHeapVector<Member<Element>>* attr_associated_elements =
-      GetAttrAssociatedElements(attribute);
+      GetAttrAssociatedElementsResolvingReferenceTarget(attribute);
+  // `attr_associated_elements` will be non-null (but potentially empty) if
+  // this element either has the content attribute given by `attribute` set,
+  // or the corresponding IDL attribute explicitly set.
   if (attr_associated_elements) {
     if (attr_associated_elements->empty()) {
       return nullptr;
