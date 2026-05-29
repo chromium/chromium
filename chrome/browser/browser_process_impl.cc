@@ -823,10 +823,6 @@ void RequestProxyResolvingSocketFactory(
 
 }  // namespace
 
-void BrowserProcessImpl::FlushLocalStateAndReply(base::OnceClosure reply) {
-  local_state_->CommitPendingWrite(std::move(reply));
-}
-
 void BrowserProcessImpl::EndSession() {
   // Mark all the profiles as clean.
   ProfileManager* pm = profile_manager();

@@ -323,13 +323,6 @@ void TestingBrowserProcess::Init() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
-  // This could be implemented the same way as in BrowserProcessImpl but it's
-  // not currently expected to be used by TestingBrowserProcess users so we
-  // don't bother.
-  NOTREACHED();
-}
-
 void TestingBrowserProcess::EndSession() {}
 
 metrics_services_manager::MetricsServicesManager*

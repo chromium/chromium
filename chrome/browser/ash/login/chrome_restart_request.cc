@@ -338,7 +338,7 @@ void ChromeRestartRequest::Start() {
 
   // XXX: normally this call must not be needed, however RestartJob
   // just kills us so settings may be lost. See http://crosbug.com/13102
-  g_browser_process->FlushLocalStateAndReply(base::BindOnce(
+  g_browser_process->local_state()->CommitPendingWrite(base::BindOnce(
       &ChromeRestartRequest::RestartJob, weak_ptr_factory_.GetWeakPtr()));
   timer_.Start(FROM_HERE, base::Seconds(3), this,
                &ChromeRestartRequest::RestartJob);

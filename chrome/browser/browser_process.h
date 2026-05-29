@@ -160,10 +160,6 @@ class BrowserProcess {
   // shutdown.
   virtual void EndSession() = 0;
 
-  // Ensures |local_state()| was flushed to disk and then posts |reply| back on
-  // the current sequence.
-  virtual void FlushLocalStateAndReply(base::OnceClosure reply) = 0;
-
   // Gets the manager for the various metrics-related services, constructing it
   // if necessary.
   virtual metrics_services_manager::MetricsServicesManager*
