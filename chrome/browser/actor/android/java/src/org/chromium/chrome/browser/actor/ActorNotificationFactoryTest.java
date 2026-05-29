@@ -264,7 +264,7 @@ public class ActorNotificationFactoryTest {
     }
 
     @Test
-    public void testBuildNotification_Interrupted() {
+    public void testBuildNotification_Stopped() {
         // Use an unhandled state to trigger the fallback
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(
@@ -276,23 +276,23 @@ public class ActorNotificationFactoryTest {
         ShadowNotification shadowNotification = shadowOf(notification);
 
         assertEquals(
-                "Content title should match interrupted status for fallback",
-                mContext.getString(R.string.actor_notification_title_task_interrupted),
+                "Content title should match stopped status for fallback",
+                mContext.getString(R.string.actor_notification_title_task_stopped),
                 shadowNotification.getContentTitle());
         assertEquals(
-                "Content text should match interrupted template",
-                mContext.getString(R.string.actor_notification_body_interrupted, TASK_TITLE),
+                "Content text should match stopped template",
+                mContext.getString(R.string.actor_notification_body_stopped, TASK_TITLE),
                 shadowNotification.getContentText());
         assertEquals(
                 "Big text should match content text",
-                mContext.getString(R.string.actor_notification_body_interrupted, TASK_TITLE),
+                mContext.getString(R.string.actor_notification_body_stopped, TASK_TITLE),
                 notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertFalse(
                 "Notification should not be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         assertNotNull("Content intent should be set", notification.contentIntent);
         assertSmallIcon(notification);
-        assertNoActions(notification);
+        assertAction(notification);
     }
 
     @Test
@@ -326,11 +326,5 @@ public class ActorNotificationFactoryTest {
                 "Action icon should be ic_chrome",
                 R.drawable.ic_chrome,
                 notification.actions[0].getIcon().getResId());
-    }
-
-    private void assertNoActions(Notification notification) {
-        assertTrue(
-                "Should have no actions",
-                notification.actions == null || notification.actions.length == 0);
     }
 }

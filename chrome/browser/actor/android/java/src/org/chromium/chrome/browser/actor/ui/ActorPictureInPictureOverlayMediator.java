@@ -39,7 +39,7 @@ class ActorPictureInPictureOverlayMediator {
 
             case ActorTaskState.CANCELLED:
             case ActorTaskState.FAILED:
-                status = mContext.getString(R.string.actor_notification_title_task_interrupted);
+                status = mContext.getString(R.string.actor_notification_title_task_stopped);
                 break;
             case ActorTaskState.FINISHED:
                 status = mContext.getString(R.string.actor_pip_complete_status);

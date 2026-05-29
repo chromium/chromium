@@ -92,8 +92,8 @@
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_PAUSED" desc="Notification title when a task has been paused by the user or the actor." formatter_data="android_java">
    Task paused
   </message>
-  <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_INTERRUPTED" desc="Notification title when a task has been interrupted." formatter_data="android_java">
-   Task interrupted
+  <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_STOPPED" desc="Notification title when a task has been stopped." formatter_data="android_java">
+   Task stopped
   </message>
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_COMPLETE" desc="Notification title when a task has finished successfully." formatter_data="android_java">
    Task complete
@@ -113,8 +113,8 @@
   <message name="IDS_ACTOR_NOTIFICATION_BODY_COMPLETE" desc="Notification body text when the actor has completed a task." formatter_data="android_java">
     <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>: Gemini completed your task, you can view it in Chrome.
   </message>
-  <message name="IDS_ACTOR_NOTIFICATION_BODY_INTERRUPTED" desc="Notification body text when the actor has task is stopped not by user." formatter_data="android_java">
-    <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>: Gemini stopped your task. Return to Chrome to review it.
+  <message name="IDS_ACTOR_NOTIFICATION_BODY_STOPPED" desc="Notification body text when a task is stopped." formatter_data="android_java">
+    <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>: Gemini stopped working on this task.
   </message>
 
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_WILL_STOP_TASK" desc="Notification title when the actor will stop the task soon." formatter_data="android_java">

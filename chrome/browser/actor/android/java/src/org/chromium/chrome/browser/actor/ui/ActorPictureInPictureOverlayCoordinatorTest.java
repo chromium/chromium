@@ -95,7 +95,7 @@ public class ActorPictureInPictureOverlayCoordinatorTest {
 
         TextView statusTextView = mParentView.findViewById(R.id.pip_status);
         String expectedStatus =
-                mActivity.getString(R.string.actor_notification_title_task_interrupted);
+                mActivity.getString(R.string.actor_notification_title_task_stopped);
         assertEquals(expectedStatus, statusTextView.getText().toString());
     }
 
