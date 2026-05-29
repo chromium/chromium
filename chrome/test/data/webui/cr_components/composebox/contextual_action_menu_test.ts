@@ -890,30 +890,20 @@ suite('ContextualActionMenu', () => {
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
   });
 
-  // TODO(crbug.com/512920161): Reenable this test.
-  test.skip(
+  test(
       'navigates up and down between Share Tabs and other menu items',
       async () => {
         loadTimeData.overrideValues({
           contextManagementInComposeboxEnabled: true,
+          composeboxSmartTabSharingVisible: true,
         });
 
         actionMenu.remove();
         actionMenu =
             document.createElement('cr-composebox-contextual-action-menu');
 
-        // Populate data to ensure both Share Tabs and Image Upload exist.
-        actionMenu.tabSuggestions = [
-          {
-            tabId: 1,
-            title: 'Tab 1',
-            url: {url: 'https://example.com'},
-            lastActiveTime: {internalValue: 0n},
-            showInCurrentTabChip: false,
-            showInPreviousTabChip: false,
-            lastActive: {internalValue: 0n},
-          } as any,
-        ];
+        actionMenu.smartTabSharingActive = true;
+        actionMenu.tabSuggestions = [];
         actionMenu.inputState =
             new MockInputState({
               allowedInputTypes: [InputType.kBrowserTab, InputType.kLensImage],
@@ -923,32 +913,28 @@ suite('ContextualActionMenu', () => {
 
         actionMenu.showAt(actionMenu);
         await actionMenu.updateComplete;
-        await new Promise(resolve => setTimeout(resolve, 50));
 
-        const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+        (actionMenu as any).onWindowBlur_ = () => {};
+
+        const trigger = $$(actionMenu, '#smartTabSharingItem') as HTMLElement;
         const imageUpload = $$(actionMenu, '#imageUpload') as HTMLElement;
 
-        // Manually move focus to the Share Tabs button.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         trigger.focus();
         assertEquals(trigger, actionMenu.shadowRoot.activeElement);
 
-        // Simulate an ArrowDown key press with full properties expected by
-        // <cr-action-menu>.
         trigger.dispatchEvent(new KeyboardEvent('keydown', {
           key: 'ArrowDown',
           code: 'ArrowDown',
-          keyCode: 40,  // Chromium action menu strictly requires keyCode 40 for
-                        // ArrowDown.
+          keyCode: 40,
           bubbles: true,
           composed: true,
           cancelable: true,
         } as any));
 
-        // Wait for the menu's internal focus manager to react.
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await microtasksFinished();
 
-        // Assert focus successfully skipped the hidden flyout and landed
-        // directly on Image Upload.
         assertEquals(imageUpload, actionMenu.shadowRoot.activeElement);
       });
 
