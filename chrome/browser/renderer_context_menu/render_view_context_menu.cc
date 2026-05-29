@@ -1904,13 +1904,11 @@ void RenderViewContextMenu::AppendLinkItems() {
       // Opening a link in split view should also go through the same
       // constraints as opening a link in a new tab since a split view tab is a
       // new tab that is then joined with the current active tab.
-      BrowserWindowInterface* const browser = GetBrowser();
-      if (browser &&
-          browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+      if (IsNormalBrowser()) {
         tabs::TabInterface* tab =
             tabs::TabInterface::MaybeGetFromContents(GetWebContents());
         auto [string_id, icon] = GetOpenLinkInSplitStringAndIcon(
-            tab, browser->GetBrowserForMigrationOnly());
+            tab, GetBrowser()->GetBrowserForMigrationOnly());
 
         if (tabs::kSplitViewHorizontalDirectAccess.Get() &&
             !(tab && tab->IsSplit())) {
@@ -2252,27 +2250,24 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 }
 
 void RenderViewContextMenu::AppendGlicShareImageItem() {
-  const BrowserWindowInterface* browser = GetBrowser();
-  const bool is_normal_browser =
-      browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
-  if (glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) &&
-      !IsGlicWindow(this, browser_context_) && is_normal_browser) {
-    tabs::TabInterface* tab =
-        tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
-    // Ensure we're in a tab for these items.
-    if (tab) {
-      menu_model_.AddItemWithIcon(
-          IDC_CONTENT_CONTEXT_GLICSHAREIMAGE,
-          l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_GLICSHAREIMAGE),
-          ui::ImageModel::FromVectorIcon(
-              glic::GlicVectorIconManager::GetVectorIcon(
-                  IDR_GLIC_BUTTON_VECTOR_ICON),
-              ui::kColorMenuIcon, kTabMenuIconSize));
-      menu_model_.SetElementIdentifierAt(
-          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE)
-              .value(),
-          kGlicShareImageMenuItem);
-    }
+  if (!CanAppendGlicShareImageItem()) {
+    return;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
+  // Ensure we're in a tab for these items.
+  if (tab) {
+    menu_model_.AddItemWithIcon(
+        IDC_CONTENT_CONTEXT_GLICSHAREIMAGE,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_GLICSHAREIMAGE),
+        ui::ImageModel::FromVectorIcon(
+            glic::GlicVectorIconManager::GetVectorIcon(
+                IDR_GLIC_BUTTON_VECTOR_ICON),
+            ui::kColorMenuIcon, kTabMenuIconSize));
+    menu_model_.SetElementIdentifierAt(
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE)
+            .value(),
+        kGlicShareImageMenuItem);
   }
 }
 
@@ -2726,9 +2721,7 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
   }
 
   // Show Read Anything option if it's not already open in the side panel.
-  if (GetBrowser() &&
-      GetBrowser()->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
-      !IsReadAnythingEntryShowing(GetBrowser())) {
+  if (IsNormalBrowser() && !IsReadAnythingEntryShowing(GetBrowser())) {
     std::u16string label;
     const std::u16string printable_selection_text = PrintableSelectionText();
     if (is_menu_simplification_enabled && !printable_selection_text.empty()) {
@@ -5291,12 +5284,17 @@ void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
 
 void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
   // Append an item for opening Glic
-  if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
-    if (content_type_->SupportsGroup(
-            ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
-        CanAppendGlicShareImageItem()) {
-      return;
-    }
+  if (!IsNormalBrowser()) {
+    return;
+  }
+  if (content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
+      CanAppendGlicShareImageItem()) {
+    return;
+  }
+
+  if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile()) &&
+      !IsGlicWindow(this, browser_context_)) {
     std::string arm = features::kGlicContextMenuArm.Get();
     bool show_summarize_page = (arm == "arm2");
     menu_model_.AddItemWithStringIdAndIcon(
@@ -5482,6 +5480,11 @@ BrowserWindowInterface* RenderViewContextMenu::GetBrowser() const {
       embedder_web_contents_);
 }
 
+bool RenderViewContextMenu::IsNormalBrowser() const {
+  const BrowserWindowInterface* browser = GetBrowser();
+  return browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+}
+
 ToastController* RenderViewContextMenu::GetToastController() const {
   // If the context menu is opened in a normal tab, get the browser directly.
   BrowserWindowInterface* browser = GetBrowser();
@@ -5647,6 +5650,10 @@ bool RenderViewContextMenu::CanAppendRegionSearchItem() const {
 }
 
 bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
+  if (!IsNormalBrowser()) {
+    return false;
+  }
+
   if (!glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) ||
       IsGlicWindow(this, browser_context_)) {
     return false;
