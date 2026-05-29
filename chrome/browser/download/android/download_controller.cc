@@ -455,7 +455,9 @@ void DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
   // For generic filetype warnings, fall back to the DangerousDownloadDialog.
   // TODO(crbug.com/397407934): Consider implementing matching UX for
   // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE to replace DangerousDownloadDialog.
-  if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE) {
+  if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED) {
     OnDangerousDownload(item);
   }
 }

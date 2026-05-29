@@ -153,10 +153,8 @@ public class DownloadUtils {
         // show warning UI for. In the future, this may or may not expand to other danger types.
         // Note that this is a stricter subset of danger types than we count as
         // {@link OfflineItem#isDangerous}.
-        boolean dangerTypeShouldDisplayAsDangerous =
-                dangerType == DownloadDangerType.DANGEROUS_CONTENT
-                        || dangerType == DownloadDangerType.POTENTIALLY_UNWANTED;
-        return dangerTypeShouldDisplayAsDangerous && state != OfflineItemState.CANCELLED;
+        return dangerType == DownloadDangerType.DANGEROUS_CONTENT
+                && state != OfflineItemState.CANCELLED;
     }
 
     /** Returns whether a download is blocked due to sensitive content. */
