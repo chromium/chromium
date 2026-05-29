@@ -424,6 +424,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       return;
     }
     this.lensButtonDisabled_ = false;
+    this.fire('update-tooltip-visibility');
   }
 
   protected onSuggestionsResultChanged_(e: CustomEvent<AutocompleteResult>) {

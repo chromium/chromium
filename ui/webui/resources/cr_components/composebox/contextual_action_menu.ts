@@ -439,7 +439,7 @@ export class ContextualActionMenuElement extends
   }
 
   protected deleteTabContext_(uuid: UnguessableToken) {
-    this.fire('delete-tab-context', {uuid: uuid});
+    this.fire('delete-tab-context', {uuid: uuid, fromUserAction: true});
   }
 
   protected addTabContext_(tabInfo: TabInfo) {

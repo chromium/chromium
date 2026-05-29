@@ -419,6 +419,9 @@ export const ComposeboxEmbedderMixin =
             }
           }
 
+          if (changedPrivateProperties.has('files')) {
+            this.dispatchEvent(new CustomEvent('on-context-files-changed'));
+          }
           if (changedPrivateProperties.has('smartComposeInlineHint')) {
             if (this.smartComposeInlineHint) {
               // TODO(crbug.com/452619068): Investigate why screenreader is

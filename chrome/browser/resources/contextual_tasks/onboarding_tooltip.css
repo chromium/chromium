@@ -29,6 +29,12 @@ cr-tooltip::part(tooltip) {
   position: relative;
 }
 
+:host([is-coins-enabled]) cr-tooltip {
+  max-width: none;
+  padding-inline-start: 36px;
+  margin-top: -5px;
+}
+
 /* Add a caret to the tooltip. */
 cr-tooltip::part(tooltip)::after {
   content: '';
