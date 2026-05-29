@@ -18377,21 +18377,6 @@
             ]
         }
     ],
-    "PdfOutOfProcessIframe": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfOopif"
-                    ]
-                }
-            ]
-        }
-    ],
     "PdfSaveToDriveSurvey": [
         {
             "platforms": [
