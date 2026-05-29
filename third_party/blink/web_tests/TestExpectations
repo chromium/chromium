@@ -9498,5 +9498,15 @@ crbug.com/515670908 [ Release Win11-arm64 ] inspector-protocol/layout-fonts/lang
 crbug.com/515194597 [ Release Win11-arm64 ] virtual/text-antialias/font-fallback.html [ Failure Pass ]
 crbug.com/513985436 [ Release Win11-arm64 ] virtual/text-antialias/selection/khmer-selection.html [ Failure Pass ]
 
+
 # TODO(crbug.com/493947412): Failing on all platforms (Linux/Mac/Win). Re-enable once extension WPT infra is implemented.
 crbug.com/493947412 external/wpt/web-extensions/browser.runtime.extension.html [ Failure ]
+
+# WebMCP: Since getTools() without arguments strictly returns same-origin tools,
+# the following cross-origin WPT tests that do not specify fromOrigins now fail.
+crbug.com/485810761 external/wpt/webmcp/imperative/executeTool-caller-navigate-abort.https.html [ Failure ]
+crbug.com/485810761 external/wpt/webmcp/imperative/executeTool-target-detachment.https.html [ Failure ]
+crbug.com/485810761 external/wpt/webmcp/imperative/exposedTo-cross-origin-child.https.html [ Failure ]
+crbug.com/485810761 external/wpt/webmcp/imperative/exposedTo-multiple-children.https.html [ Failure ]
+crbug.com/485810761 external/wpt/webmcp/imperative/exposedTo-window-open.https.html [ Failure ]
+crbug.com/485810761 external/wpt/webmcp/imperative/unregister-during-executeTool.https.html [ Failure ]

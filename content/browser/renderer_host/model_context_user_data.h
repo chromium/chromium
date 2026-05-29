@@ -131,7 +131,8 @@ class CONTENT_EXPORT ModelContextUserData
       mojo::PendingRemote<blink::mojom::ModelContext> model_context) override;
   void RegisterScriptTool(blink::mojom::ScriptToolPtr tool) override;
   void UnregisterScriptTool(const std::string& name) override;
-  void GetScriptTools(GetScriptToolsCallback callback) override;
+  void GetScriptTools(const std::vector<url::Origin>& from_origins,
+                      GetScriptToolsCallback callback) override;
   void ExecuteRemoteScriptTool(
       const blink::FrameToken& tool_owner_frame_token,
       const url::Origin& expected_target_origin,

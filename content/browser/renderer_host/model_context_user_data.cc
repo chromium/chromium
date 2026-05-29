@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/model_context_user_data.h"
 
+#include <algorithm>
+
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -31,6 +33,16 @@ bool IsScriptToolVisibleToOrigin(
     }
   }
   return false;
+}
+
+bool IsScriptToolRequestedByOrigin(
+    const url::Origin& tool_owner_origin,
+    const url::Origin& caller_origin,
+    const std::vector<url::Origin>& from_origins) {
+  if (tool_owner_origin.IsSameOriginWith(caller_origin)) {
+    return true;
+  }
+  return std::ranges::contains(from_origins, tool_owner_origin);
 }
 
 bool IsWebMCPEnabled(RenderFrameHost& rfh) {
@@ -174,7 +186,9 @@ void ModelContextUserData::UnregisterScriptTool(const std::string& name) {
   NotifyToolChange(exposed_origins);
 }
 
-void ModelContextUserData::GetScriptTools(GetScriptToolsCallback callback) {
+void ModelContextUserData::GetScriptTools(
+    const std::vector<url::Origin>& from_origins,
+    GetScriptToolsCallback callback) {
   if (!IsWebMCPEnabled(render_frame_host())) {
     bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
                                     bad_message::RFHI_WEBMCP_NOT_ENABLED);
@@ -206,9 +220,12 @@ void ModelContextUserData::GetScriptTools(GetScriptToolsCallback callback) {
     }
 
     const auto& local_tools = data->script_tools();
+    const url::Origin& tool_owner_origin = rfh->GetLastCommittedOrigin();
     for (const auto& t : local_tools) {
-      if (IsScriptToolVisibleToOrigin(rfh->GetLastCommittedOrigin(),
-                                      t->exposed_origins, caller_origin)) {
+      if (IsScriptToolVisibleToOrigin(tool_owner_origin, t->exposed_origins,
+                                      caller_origin) &&
+          IsScriptToolRequestedByOrigin(tool_owner_origin, caller_origin,
+                                        from_origins)) {
         blink::mojom::ScriptToolPtr cloned_tool = t.Clone();
         // Find the frame (it could be local or remote) that the caller can use
         // to reference the `Window` hosting the tool.
