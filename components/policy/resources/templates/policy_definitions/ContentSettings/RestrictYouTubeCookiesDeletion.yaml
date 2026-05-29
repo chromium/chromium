@@ -1,0 +1,32 @@
+caption: Restrict YouTube cookies deletion
+default: false
+desc: |-
+  Prevents the manual deletion of YouTube cookies.
+
+  This policy is intended to prevent users from accessing unauthorized YouTube after manually clearing their YouTube cookies from the site settings page.
+
+  Setting the policy to Enabled prevents YouTube cookies from being manually deleted.
+
+  Setting the policy to Disabled or not set allows YouTube cookies to be deleted normally.
+
+  Note: This policy only prevents manual deletion from the site settings UI. It does not prevent automated deletion by the <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME">ClearBrowsingDataOnExitList</ph> or <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME">BrowsingDataLifetime</ph> policies. Furthermore, if the <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME">AllowDeletingBrowserHistory</ph> policy is enabled, users can still clear all their cookies via the Clear Browsing Data dialog.
+
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Restrict YouTube cookies deletion
+  value: true
+- caption: Do not restrict YouTube cookies deletion
+  value: false
+owners:
+- file://components/policy/OWNERS
+- poromov@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:150-
+- chrome_os:150-
+tags: []
+type: main

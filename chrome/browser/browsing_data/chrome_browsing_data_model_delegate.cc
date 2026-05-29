@@ -231,11 +231,8 @@ ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
 bool ChromeBrowsingDataModelDelegate::IsCookieDeletionDisabled(
     const GURL& url) {
   CHECK(profile_);
-  if (profile_->IsChild()) {
-    auto* client = permissions::PermissionsClient::Get();
-    return client->IsCookieDeletionDisabled(profile_, url);
-  }
-  return false;
+  auto* client = permissions::PermissionsClient::Get();
+  return client->IsCookieDeletionDisabled(profile_, url);
 }
 
 base::WeakPtr<BrowsingDataModel::Delegate>

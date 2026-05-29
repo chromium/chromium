@@ -44,6 +44,10 @@ inline constexpr char kPreinstalledApps[] = "default_apps";
 inline constexpr char kSafeBrowsingForTrustedSourcesEnabled[] =
     "safebrowsing_for_trusted_sources_enabled";
 
+// Restrict YouTube cookies deletion.
+inline constexpr char kRestrictYouTubeCookiesDeletion[] =
+    "restrict_youtube_cookies_deletion";
+
 // Disables screenshot accelerators and extension APIs.
 // This setting resides both in profile prefs and local state. Accelerator
 // handling code reads local state, while extension APIs use profile pref.

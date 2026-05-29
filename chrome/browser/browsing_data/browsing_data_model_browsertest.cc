@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,6 +43,10 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/performance_manager/public/features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
@@ -90,6 +95,7 @@ namespace {
 constexpr char kTestHost[] = "a.test";
 constexpr char kTestHost2[] = "b.test";
 constexpr char kTestHost3[] = "c.test";
+constexpr char kYouTubeHost[] = "youtube.com";
 
 // FedCM constants
 constexpr char kAccountId[] = "carl21334213";
@@ -524,6 +530,14 @@ class BrowsingDataModelBrowserTest
 
   ~BrowsingDataModelBrowserTest() override = default;
 
+  void SetUpInProcessBrowserTestFixture() override {
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
   void SetUpOnMainThread() override {
     PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
         ->SetAllPrivacySandboxAllowedForTesting();
@@ -534,7 +548,8 @@ class BrowsingDataModelBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetCertHostnames({kTestHost, kTestHost2, kTestHost3});
+    https_server_->SetCertHostnames(
+        {kTestHost, kTestHost2, kTestHost3, kYouTubeHost});
     https_server_->AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     network::test::RegisterTrustTokenTestHandlers(https_test_server(),
@@ -608,7 +623,7 @@ class BrowsingDataModelBrowserTest
 
   network::test::TrustTokenRequestHandler request_handler_;
 
- private:
+ protected:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   privacy_sandbox::PrivacySandboxAttestationsMixin
       privacy_sandbox_attestations_mixin_{&mixin_host_};
@@ -616,6 +631,7 @@ class BrowsingDataModelBrowserTest
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdpTestServer> idp_server_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
@@ -1681,6 +1697,67 @@ IN_PROC_BROWSER_TEST_F(
         {{BrowsingDataModel::StorageType::kSharedDictionary},
          /*storage_size=*/0,
          /*cookie_count=*/0}}});
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       RestrictYouTubeCookiesDeletion) {
+  policy::PolicyMap policies;
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::SetEnterpriseUsersDefaults(&policies);
+#endif
+  policies.Set(policy::key::kRestrictYouTubeCookiesDeletion,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(kYouTubeHost,
+                                             "/browsing_data/site_data.html")));
+
+  SetDataForType("Cookie", web_contents());
+
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+
+  ASSERT_EQ(browsing_data_model->size(), 1u);
+
+  // Attempt to remove cookie entry. It should NOT be removed due to the policy.
+  RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kYouTubeHost);
+
+  browsing_data_model = BuildBrowsingDataModel();
+  ASSERT_EQ(browsing_data_model->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       RestrictYouTubeCookiesDeletion_Disabled) {
+  policy::PolicyMap policies;
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::SetEnterpriseUsersDefaults(&policies);
+#endif
+  policies.Set(policy::key::kRestrictYouTubeCookiesDeletion,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(kYouTubeHost,
+                                             "/browsing_data/site_data.html")));
+
+  SetDataForType("Cookie", web_contents());
+
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+
+  ASSERT_EQ(browsing_data_model->size(), 1u);
+
+  // Attempt to remove cookie entry. It should be removed because the policy is
+  // false.
+  RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kYouTubeHost);
+
+  browsing_data_model = BuildBrowsingDataModel();
+  ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {

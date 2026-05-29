@@ -16,11 +16,14 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -274,6 +277,35 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterIncognitoUser) {
   EXPECT_FALSE(
       delegate()->IsCookieDeletionDisabled(GURL("http://youtube.com")));
   EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterPolicyEnabled) {
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kRestrictYouTubeCookiesDeletion, base::Value(true));
+
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://google.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://example.com")));
+  EXPECT_TRUE(delegate()->IsCookieDeletionDisabled(GURL("http://youtube.com")));
+  EXPECT_TRUE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest,
+       CookieDeletionFilterPolicyDisabledForChildUser) {
+  profile_->SetIsSupervisedProfile(true);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kRestrictYouTubeCookiesDeletion, base::Value(false));
+
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://google.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://example.com")));
+  // For a child user, deletion is always disabled, even if the policy is false.
+  EXPECT_TRUE(delegate()->IsCookieDeletionDisabled(GURL("http://youtube.com")));
+  EXPECT_TRUE(
       delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
 }
 

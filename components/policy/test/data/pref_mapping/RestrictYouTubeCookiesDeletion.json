@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "restrict_youtube_cookies_deletion",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

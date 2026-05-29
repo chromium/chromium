@@ -1715,6 +1715,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   QuietNotificationPermissionUiState::RegisterProfilePrefs(registry);
   regional_capabilities::prefs::RegisterProfilePrefs(registry);
   RegisterBrowserUserPrefs(registry);
+  registry->RegisterBooleanPref(prefs::kRestrictYouTubeCookiesDeletion, false);
   RegisterGeminiSettingsPrefs(registry);
   RegisterPrefersDefaultScrollbarStylesPrefs(registry);
   RegisterSafetyHubProfilePrefs(registry);
