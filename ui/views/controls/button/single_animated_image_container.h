@@ -22,6 +22,36 @@ namespace views {
 class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
                                                   gfx::AnimationDelegate {
  public:
+  // Specifies the direction of the animation.
+  enum class AnimationDirection {
+    // Play animation in forward direction 0.0 -> 1.0
+    kForward,
+    // Play animation in reverse direction 1.0 -> 0.0
+    kBackward,
+  };
+
+  // Specifies the end behavior of the animation.
+  enum class AnimationEndBehavior {
+    // Pauses the state at the end of animation and shows
+    // images corresponding to the last frame.
+    kPause,
+    // Resets the state of the animation and reverts back
+    // to showing the image corresponding to the button state.
+    kReset,
+  };
+
+  // Defines the animation that should be played.
+  struct AnimationDefinition {
+    int resource_id;
+    SkColor color;
+  };
+
+  // Defines the configuration of the animation to play.
+  struct AnimationConfig {
+    AnimationDirection direction;
+    AnimationEndBehavior end_behavior;
+  };
+
   SingleAnimatedImageContainer(
       LabelButton* button,
       base::TimeDelta animation_duration = base::Milliseconds(250));
@@ -30,48 +60,34 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
       delete;
   ~SingleAnimatedImageContainer() override;
 
-  // Sets parameters to display ImageModel objects generated from the
-  // lottie resource, with the given `color`.
-  // TODO(crbug.com/517231960): Use SkottieColorMap to set the colors
-  // when making the lottie animation.
-  void SetAnimatedImage(int lottie_resource_id, SkColor color);
-  void ClearAnimatedImage();
+  // Play the animation based on the provided definition and the configuration.
+  void PlayAnimation(AnimationDefinition definition,
+                     AnimationConfig config = AnimationConfig());
 
-  // Play the animation from start to the end.
-  // Animation is considered to be finished on end if `reset_on_completion`
-  // is true. Otherwise, the animation is considered to still be running
-  // until the animation rewinds to the start position by calling
-  // `HideAnimation` or `ResetAnimation` is called. While the
-  // animation is running, image updates not coming from the
-  // animation will be ignored.
-  void ShowAnimation(bool reset_on_completion = false);
-
-  // Rewind the animation, and on completion set the image model
-  // according to the button's current state. If `start_from_end`
-  // is true, then we rewind the animation starting from the end
-  // of the animation
-  void HideAnimation();
-
-  // Stops the animation and resets it to the start position.
+  // Stops the animation and resets it back to using static images.
   void ResetAnimation();
 
-  const lottie::Animation* animated_image() const {
-    return animated_image_.get();
-  }
+  void ClearAnimatedImages();
 
   // LabelButtonImageContainer:
   void UpdateImage(const LabelButton* button) override;
 
  private:
+  void AddAnimatedImage(int resource_id);
+
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  struct AnimationState {
+    AnimationDefinition definition;
+    AnimationEndBehavior end_behavior;
+  };
+
   raw_ptr<LabelButton> button_;
   gfx::SlideAnimation slide_animation_;
-  std::unique_ptr<lottie::Animation> animated_image_;
-  SkColor color_;
-  bool reset_on_completion_ = false;
+  std::optional<AnimationState> playing_animation_;
+  base::flat_map<int, std::unique_ptr<lottie::Animation>> animated_images_;
 };
 
 }  // namespace views

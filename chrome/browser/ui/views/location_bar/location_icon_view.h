@@ -120,8 +120,8 @@ class LocationIconView : public IconLabelBubbleView {
   // - the current page has a special scheme (chrome://, extension, file://).
   bool GetShowText() const;
 
-  // For animating the page info icon when the bubble shows and closes.
-  void MaybeAnimateIcon(bool show);
+  // For animating the page info icon when the bubble opens and closes.
+  void MaybeAnimateIcon(bool open);
 
   const views::InkDrop* get_ink_drop_for_testing();
 

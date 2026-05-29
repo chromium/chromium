@@ -69,44 +69,61 @@ SingleAnimatedImageContainer::SingleAnimatedImageContainer(
 
 SingleAnimatedImageContainer::~SingleAnimatedImageContainer() = default;
 
-void SingleAnimatedImageContainer::SetAnimatedImage(int lottie_resource_id,
-                                                    SkColor color) {
+void SingleAnimatedImageContainer::AddAnimatedImage(int resource_id) {
+  if (animated_images_.contains(resource_id)) {
+    return;
+  }
   std::optional<std::vector<uint8_t>> lottie_bytes =
-      ui::ResourceBundle::GetSharedInstance().GetLottieData(lottie_resource_id);
+      ui::ResourceBundle::GetSharedInstance().GetLottieData(resource_id);
   CHECK(lottie_bytes.has_value());
   scoped_refptr<cc::SkottieWrapper> skottie =
       cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
-  animated_image_ = std::make_unique<lottie::Animation>(skottie);
-  color_ = color;
+  animated_images_.emplace(resource_id,
+                           std::make_unique<lottie::Animation>(skottie));
 }
 
-void SingleAnimatedImageContainer::ClearAnimatedImage() {
-  animated_image_.reset();
+void SingleAnimatedImageContainer::ClearAnimatedImages() {
+  ResetAnimation();
+  animated_images_.clear();
 }
 
 void SingleAnimatedImageContainer::UpdateImage(const LabelButton* button) {
-  if (slide_animation_.GetCurrentValue() == 0.0f) {
+  // In order to update back to static image, we shouldn't be animating.
+  if (!slide_animation_.is_animating() &&
+      slide_animation_.GetCurrentValue() == 0.0f) {
     SingleImageContainer::UpdateImage(button);
   }
 }
 
-void SingleAnimatedImageContainer::ShowAnimation(bool reset_on_completion) {
-  slide_animation_.Reset(0.0f);
-  slide_animation_.Show();
-  reset_on_completion_ = reset_on_completion;
-}
-
-void SingleAnimatedImageContainer::HideAnimation() {
-  slide_animation_.Reset(1.0f);
-  slide_animation_.Hide();
+void SingleAnimatedImageContainer::PlayAnimation(AnimationDefinition definition,
+                                                 AnimationConfig config) {
+  if (config.direction == AnimationDirection::kForward) {
+    slide_animation_.Reset(0.0f);
+    AddAnimatedImage(definition.resource_id);
+    playing_animation_ =
+        std::make_optional<AnimationState>({definition, config.end_behavior});
+    slide_animation_.Show();
+  } else {
+    CHECK(config.direction == AnimationDirection::kBackward);
+    CHECK(config.end_behavior == AnimationEndBehavior::kReset);
+    slide_animation_.Reset(1.0f);
+    AddAnimatedImage(definition.resource_id);
+    playing_animation_ =
+        std::make_optional<AnimationState>({definition, config.end_behavior});
+    slide_animation_.Hide();
+  }
 }
 
 void SingleAnimatedImageContainer::ResetAnimation() {
-  slide_animation_.Reset(0.0f);
+  if (slide_animation_.GetCurrentValue() != 0.0f) {
+    slide_animation_.Reset(0.0f);
+  }
 }
 
 void SingleAnimatedImageContainer::AnimationProgressed(
     const gfx::Animation* animation) {
+  CHECK(playing_animation_);
+
   ImageView* image_view = static_cast<ImageView*>(GetView());
   if (!image_view) {
     return;
@@ -115,21 +132,23 @@ void SingleAnimatedImageContainer::AnimationProgressed(
 
   ui::ImageModel model = ui::ImageModel::FromImageSkia(
       gfx::CanvasImageSource::MakeImageSkia<LottieIconSource>(
-          animated_image_.get(), slide_animation_.GetCurrentValue(),
-          size.width(), color_));
+          animated_images_[playing_animation_->definition.resource_id].get(),
+          slide_animation_.GetCurrentValue(), size.width(),
+          playing_animation_->definition.color));
 
   image_view->SetImage(model);
 }
 
 void SingleAnimatedImageContainer::AnimationEnded(
     const gfx::Animation* animation) {
-  if (slide_animation_.GetCurrentValue() == 0.0f) {
-    UpdateImage(button_);
-  } else if (reset_on_completion_) {
+  CHECK(playing_animation_);
+
+  if (playing_animation_->end_behavior == AnimationEndBehavior::kReset) {
     ResetAnimation();
     UpdateImage(button_);
-    reset_on_completion_ = false;
   }
+
+  playing_animation_.reset();
 }
 
 }  // namespace views

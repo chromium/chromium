@@ -127,11 +127,17 @@ AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
 }
 
 void BrowserAppMenuButton::OnMenuClosed() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (features::IsToolbarGlowUpEnabled()) {
-    views::SingleAnimatedImageContainer* image_container =
-        animated_image_container();
-    image_container->HideAnimation();
+    views::SingleAnimatedImageContainer::AnimationConfig config{
+        .direction =
+            views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+        .end_behavior =
+            views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+    animated_image_container()->PlayAnimation(
+        {IDR_CHROME_TO_DOTS_LOTTIE, GetForegroundColor(GetState())}, config);
   }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AppMenuButton::OnMenuClosed();
 }
 
@@ -273,15 +279,17 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  views::SingleAnimatedImageContainer* image_container =
-      animated_image_container();
-  if (features::IsToolbarGlowUpEnabled()) {
-    if (!image_container->animated_image()) {
-      image_container->SetAnimatedImage(IDR_APP_MENU_BUTTON_HOVER_LOTTIE,
-                                        GetForegroundColor(GetState()));
-    }
-    image_container->ShowAnimation();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsToolbarGlowUpEnabled() && !IsMenuShowing()) {
+    views::SingleAnimatedImageContainer::AnimationConfig config{
+        .direction =
+            views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+        .end_behavior =
+            views::SingleAnimatedImageContainer::AnimationEndBehavior::kPause};
+    animated_image_container()->PlayAnimation(
+        {IDR_DOTS_TO_CHROME_LOTTIE, GetForegroundColor(GetState())}, config);
   }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   ShowMenu(event.IsKeyEvent() ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
                                  views::MenuRunner::INVOKED_FROM_KEYBOARD)

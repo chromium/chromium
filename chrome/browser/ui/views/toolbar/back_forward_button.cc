@@ -151,20 +151,18 @@ bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
   // for the forward arrow animation instead of using `reflect_vertical`
   // to reflect the back arrow animation. For now, only play the animation
   // for the back arrow.
-  const bool play_animations = features::IsToolbarGlowUpEnabled() &&
-                               !ui::TouchUiController::Get()->touch_ui() &&
-                               direction_ == Direction::kBack;
+  const bool play_animation = features::IsToolbarGlowUpEnabled() &&
+                              !ui::TouchUiController::Get()->touch_ui() &&
+                              direction_ == Direction::kBack;
 
-  if (play_animations) {
-    views::SingleAnimatedImageContainer* image_container =
-        animated_image_container();
-
-    if (!image_container->animated_image()) {
-      image_container->SetAnimatedImage(IDR_BACK_ARROW_LOTTIE,
-                                        GetForegroundColor(GetState()));
-    }
-
-    image_container->ShowAnimation(/*reset_on_completion=*/true);
+  if (play_animation) {
+    views::SingleAnimatedImageContainer::AnimationConfig config{
+        .direction =
+            views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+        .end_behavior =
+            views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+    animated_image_container()->PlayAnimation(
+        {IDR_BACK_ARROW_LOTTIE, GetForegroundColor(GetState())}, config);
   }
 
   return ToolbarButton::OnMousePressed(event);

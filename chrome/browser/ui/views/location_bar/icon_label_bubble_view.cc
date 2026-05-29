@@ -537,7 +537,6 @@ void IconLabelBubbleView::OnThemeChanged() {
 
   UpdateLabelColors();
   UpdateBackground();
-  animated_image_container()->ClearAnimatedImage();
 }
 
 bool IconLabelBubbleView::IsTriggerableEvent(const ui::Event& event) {

@@ -151,18 +151,18 @@ void StarView::OnActiveStateChanged() {
     return;
   }
 
-  views::SingleAnimatedImageContainer* image_container =
-      animated_image_container();
-
-  if (!image_container->animated_image()) {
-    image_container->SetAnimatedImage(IDR_UNSTAR_TO_STAR_LOTTIE,
-                                      GetForegroundColor());
-  }
+  views::SingleAnimatedImageContainer::AnimationConfig config{
+      .direction =
+          views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+      .end_behavior =
+          views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
 
   if (GetActive()) {
-    image_container->ShowAnimation(/*reset_on_completion=*/true);
+    animated_image_container()->PlayAnimation(
+        {IDR_UNSTAR_TO_STAR_LOTTIE, GetForegroundColor()}, config);
   } else {
-    image_container->HideAnimation();
+    animated_image_container()->PlayAnimation(
+        {IDR_STAR_TO_UNSTAR_LOTTIE, GetForegroundColor()}, config);
   }
 }
 

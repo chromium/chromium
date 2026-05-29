@@ -441,8 +441,6 @@ void ToolbarButton::OnThemeChanged() {
 
   // Call this after UpdateIcon() to properly reset images.
   LabelButton::OnThemeChanged();
-
-  animated_image_container()->ClearAnimatedImage();
 }
 
 gfx::Rect ToolbarButton::GetAnchorBoundsInScreen() const {

@@ -206,30 +206,33 @@ bool LocationIconView::GetShowText() const {
       delegate_->IsEditingOrEmpty());
 }
 
-void LocationIconView::MaybeAnimateIcon(bool show) {
+void LocationIconView::MaybeAnimateIcon(bool open) {
   if (features::IsToolbarGlowUpEnabled()) {
     ui::ImageModel icon = delegate_->GetLocationIcon(
         base::DoNothingAs<void(const gfx::Image&)>());
 
     const bool is_page_info_icon =
         icon.IsVectorIcon() &&
-        icon.GetVectorIcon().vector_icon() == &omnibox::kPageInfoIcon;
+        icon.GetVectorIcon().vector_icon() ==
+            (features::IsRoundedIconsEnabled()
+                 ? &omnibox::kPageInfoIcon
+                 : &omnibox::kSecurePageInfoChromeRefreshOldIcon);
 
     if (!is_page_info_icon) {
       return;
     }
 
-    views::SingleAnimatedImageContainer* image_container =
-        animated_image_container();
-    if (!image_container->animated_image()) {
-      image_container->SetAnimatedImage(IDR_PAGE_INFO_OPEN_LOTTIE,
-                                        GetForegroundColor());
-    }
-    if (show) {
-      image_container->ShowAnimation();
-    } else {
-      image_container->HideAnimation();
-    }
+    views::SingleAnimatedImageContainer::AnimationConfig config{
+        .direction =
+            views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+        .end_behavior = open ? views::SingleAnimatedImageContainer::
+                                   AnimationEndBehavior::kPause
+                             : views::SingleAnimatedImageContainer::
+                                   AnimationEndBehavior::kReset};
+    animated_image_container()->PlayAnimation(
+        {open ? IDR_PAGE_INFO_OPEN_LOTTIE : IDR_PAGE_INFO_CLOSE_LOTTIE,
+         GetForegroundColor()},
+        config);
   }
 }
 

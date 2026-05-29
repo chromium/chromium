@@ -230,27 +230,33 @@ void ReloadButton::SetVisibleMode(Mode mode) {
   const bool play_animation = features::IsToolbarGlowUpEnabled() &&
                               visible_mode_ != mode &&
                               !ui::TouchUiController::Get()->touch_ui();
-  if (play_animation) {
-    views::SingleAnimatedImageContainer* image_container =
-        animated_image_container();
-
-    if (!image_container->animated_image()) {
-      image_container->SetAnimatedImage(IDR_RELOAD_TO_STOP_LOTTIE,
-                                        GetForegroundColor(GetState()));
-    }
-    if (mode == Mode::kStop) {
-      image_container->ShowAnimation(/*reset_on_completion=*/true);
-    } else {
-      image_container->HideAnimation();
-    }
-  }
 
   visible_mode_ = mode;
   switch (mode) {
     case Mode::kReload:
+      if (play_animation) {
+        views::SingleAnimatedImageContainer::AnimationConfig config{
+            .direction = views::SingleAnimatedImageContainer::
+                AnimationDirection::kForward,
+            .end_behavior = views::SingleAnimatedImageContainer::
+                AnimationEndBehavior::kReset};
+        animated_image_container()->PlayAnimation(
+            {IDR_STOP_TO_RELOAD_LOTTIE, GetForegroundColor(GetState())},
+            config);
+      }
       SetVectorIcons(*reload_icon_, *reload_touch_icon_);
       break;
     case Mode::kStop:
+      if (play_animation) {
+        views::SingleAnimatedImageContainer::AnimationConfig config{
+            .direction = views::SingleAnimatedImageContainer::
+                AnimationDirection::kForward,
+            .end_behavior = views::SingleAnimatedImageContainer::
+                AnimationEndBehavior::kPause};
+        animated_image_container()->PlayAnimation(
+            {IDR_RELOAD_TO_STOP_LOTTIE, GetForegroundColor(GetState())},
+            config);
+      }
       SetVectorIcons(*stop_icon_, *stop_touch_icon_);
       break;
   }
