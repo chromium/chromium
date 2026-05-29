@@ -770,6 +770,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/517959931")
     public void test_ariaModal() {
         performAriaTest("aria-modal.html");
     }
