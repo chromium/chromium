@@ -616,6 +616,25 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_TRUE(success_future.Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeDoesNotWaitForFreCompletion_TrustFirstInline) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.fre_override = mojom::FreOverride::kTrustFirstInline;
+  options.on_success = success_future.GetCallback();
+  options.target = Target(tab);
+
+  coordinator().Invoke(std::move(options));
+
+  // The invocation should complete successfully without waiting for FRE
+  // completion (which remains not started). We still need to Wait() for the
+  // async Mojo operations to complete.
+  EXPECT_TRUE(success_future.Wait());
+}
+
 class GlicInvokeDefaultToLastActiveBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeDefaultToLastActiveBrowserTest() {
