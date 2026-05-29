@@ -2528,6 +2528,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     @Override
     public boolean toggleGlic(boolean preventClose, @GlicInvocationSource int invocationSource) {
+        Profile profile =
+                mTabModelSelectorSupplier.asNonNull().get().getCurrentModel().getProfile();
+        if (profile == null || !GlicEnabling.isEnabledForProfile(profile)) {
+            return false;
+        }
         // TODO(crbug.com/489548570): Remove this entry point into SidePanelDevFeature.
         if (mSidePanelDevFeature != null) {
             mSidePanelDevFeature.toggle();
@@ -2538,10 +2543,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager.setSheetExpanded(true);
             return true;
         }
-
-        Profile profile =
-                mTabModelSelectorSupplier.asNonNull().get().getCurrentModel().getProfile();
-        assert profile != null;
 
         return GlicKeyedServiceHandler.toggleGlic(
                 profile, mChromeAndroidTaskSupplier.get(), preventClose, invocationSource);

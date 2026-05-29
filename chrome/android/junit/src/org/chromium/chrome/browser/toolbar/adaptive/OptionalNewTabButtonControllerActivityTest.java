@@ -31,6 +31,9 @@ import org.chromium.chrome.browser.ChromeRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -71,6 +74,10 @@ public class OptionalNewTabButtonControllerActivityTest {
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+
+        GlicKeyedService glicKeyedService = Mockito.mock(GlicKeyedService.class);
+        GlicKeyedServiceFactory.setForTesting(glicKeyedService);
+        GlicEnabling.setEnabledForTesting(false);
 
         // Avoid leaking state from the previous test.
         AdaptiveToolbarStatePredictor.setToolbarStateForTesting(

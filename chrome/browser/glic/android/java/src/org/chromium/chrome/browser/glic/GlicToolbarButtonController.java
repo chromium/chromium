@@ -184,6 +184,9 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         }
 
         assumeNonNull(tab);
+        assert AdaptiveToolbarFeatures.isGlicEnabledForProfile(
+                        tab.getProfile().getOriginalProfile())
+                : "Glic get() called when Glic is not eligible/enabled for profile";
         if (tab.isOffTheRecord()) {
             mButtonData.setButtonSpec(new ButtonSpec.Builder(mDefaultSpec).build());
             return buttonData;
@@ -237,14 +240,17 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
+        Tab tab = mActiveTabSupplier.get();
+        assert tab != null
+                        && AdaptiveToolbarFeatures.isGlicEnabledForProfile(
+                                tab.getProfile().getOriginalProfile())
+                : "Glic click invoked when Glic is not eligible/enabled for profile";
         mStateController.setPersistDoneState(false);
 
         if (mTaskMenuCoordinator != null && mTaskMenuCoordinator.isShowing()) {
             mTaskMenuCoordinator.dismiss();
             return;
         }
-
-        Tab tab = mActiveTabSupplier.get();
         if (tab != null && tab.isOffTheRecord()) {
             if (mActivity instanceof SnackbarManager.SnackbarManageable) {
                 SnackbarManager snackbarManager =

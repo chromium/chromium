@@ -141,8 +141,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             controller.addButtonVariant(AdaptiveToolbarButtonVariant.TAB_GROUPING, tabGrouping);
         }
 
-        if (!BottomBarConfigUtils.isBottomBarEnabled(mActivity)
-                && AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+        if (!BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
             mGlicButtonController =
                     new GlicToolbarButtonController(
                             mActivity,

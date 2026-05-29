@@ -54,6 +54,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -90,6 +92,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock private Profile mProfile;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private Tab mTab;
+    @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private Configuration mConfiguration;
 
     private ButtonDataImpl mButtonData;
@@ -103,6 +106,7 @@ public class AdaptiveToolbarButtonControllerTest {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         ButtonSpec buttonSpec =
                 new ButtonSpec.Builder(null, "", false)
                         .setOnClickListener(mock(View.OnClickListener.class))

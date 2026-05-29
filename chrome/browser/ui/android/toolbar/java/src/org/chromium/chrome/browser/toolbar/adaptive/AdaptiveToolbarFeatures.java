@@ -176,13 +176,6 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.sCpaTabGroupingButton.isEnabled();
     }
 
-    /** Returns whether Glic is enabled by flags in the context of the adaptive toolbar. */
-    public static boolean isGlicActionEnabled() {
-        // TODO(crbug.com/500410559): Remove side panel check and instead check if tab strip is
-        // hidden after launch.
-        return ChromeFeatureList.sGlic.isEnabled() && !AndroidSidePanelEnabledFn.isEnabled();
-    }
-
     /**
      * Returns whether Glic is enabled for the given profile in the context of the adaptive toolbar.
      */

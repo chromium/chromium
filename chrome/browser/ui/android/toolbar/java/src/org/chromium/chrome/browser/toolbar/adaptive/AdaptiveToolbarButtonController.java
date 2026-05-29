@@ -32,6 +32,8 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,7 +66,8 @@ public class AdaptiveToolbarButtonController
         implements ButtonDataProvider,
                 ButtonDataObserver,
                 SharedPreferences.OnSharedPreferenceChangeListener,
-                ConfigurationChangedObserver {
+                ConfigurationChangedObserver,
+                GlicKeyedService.AllowedChangedObserver {
 
     private final Context mContext;
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
@@ -103,6 +106,7 @@ public class AdaptiveToolbarButtonController
             AdaptiveToolbarButtonVariant.UNKNOWN;
     private @Nullable CurrentTabObserver mPageLoadMetricsRecorder;
     private @Nullable NullableObservableSupplier<Tab> mTabSupplier;
+    private @Nullable GlicKeyedService mGlicKeyedService;
 
     /**
      * Constructs the {@link AdaptiveToolbarButtonController}.
@@ -255,6 +259,10 @@ public class AdaptiveToolbarButtonController
         mToolbarContainer.removeOnLayoutChangeListener(mLayoutChangeListener);
         mLifecycleDispatcher.unregister(this);
 
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.removeAllowedChangedObserver(this);
+        }
+
         if (mPageLoadMetricsRecorder != null) {
             mPageLoadMetricsRecorder.destroy();
             mPageLoadMetricsRecorder = null;
@@ -362,7 +370,9 @@ public class AdaptiveToolbarButtonController
 
         // If the dynamic button is no longer available, switch to the session button variant.
         if (!canShowHint
-                && (mButtonData.getButtonSpec() == null || mButtonData.getButtonSpec().getButtonVariant() != mSessionButtonVariant)) {
+                && (mButtonData.getButtonSpec() == null
+                        || mButtonData.getButtonSpec().getButtonVariant()
+                                != mSessionButtonVariant)) {
             setSingleProvider(mSessionButtonVariant);
             notifyObservers(true);
         }
@@ -371,11 +381,16 @@ public class AdaptiveToolbarButtonController
     @VisibleForTesting
     void setProfile(Profile profile) {
         assert mAdaptiveToolbarStatePredictor == null;
-        profile = profile.getOriginalProfile();
+        Profile originalProfile = profile.getOriginalProfile();
         mAdaptiveToolbarStatePredictor =
                 new AdaptiveToolbarStatePredictor(
-                        mContext, profile, mAndroidPermissionDelegate, mToolbarBehavior);
+                        mContext, originalProfile, mAndroidPermissionDelegate, mToolbarBehavior);
         ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        mGlicKeyedService = GlicKeyedServiceFactory.getForProfile(originalProfile);
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.addAllowedChangedObserver(this);
+        }
 
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return;
         mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
@@ -389,6 +404,13 @@ public class AdaptiveToolbarButtonController
         // Clearing mOriginalButtonSpec forces a refresh of mButtonData on the next get()
         mOriginalButtonSpec = null;
         notifyObservers(mButtonData.canShow());
+    }
+
+    @Override
+    public void onAllowedStateChanged() {
+        if (mAdaptiveToolbarStatePredictor != null) {
+            mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
+        }
     }
 
     private void notifyObservers(boolean canShowHint) {
