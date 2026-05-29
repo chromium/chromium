@@ -60,6 +60,10 @@
 #include "components/user_manager/user_type.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
+
 namespace glic {
 
 // Feature flag kGlicCountryFiltering controls whether country filtering is
@@ -279,6 +283,9 @@ void RecordFeatureDisabledReasonsWith(
   if (!enablement.system_requirement_met) {
     record_reason(FeatureDisabledReason::kSystemRequirementNotMet);
   }
+  if (!enablement.os_version_supported) {
+    record_reason(FeatureDisabledReason::kOsVersionNotSupported);
+  }
 }
 
 }  // namespace
@@ -391,6 +398,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   result.allowed_by_locale_filter = global_enabling.IsLocaleEnabled();
   result.system_requirement_met = global_enabling.IsSystemRequirementMet();
   result.fre_is_consented = HasConsentedForProfile(profile);
+  result.os_version_supported = global_enabling.IsOsVersionSupported();
 
   bool global_criteria_met = global_enabling.IsEnabledByGlobalCriteria();
   if (!global_criteria_met) {
@@ -542,6 +550,24 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
   return supported_system_requirements;
 }
 
+bool GlicGlobalEnabling::IsOsVersionSupported() const {
+  static const bool supported_os_version = [] {
+#if BUILDFLAG(IS_ANDROID)
+    // Glic requires Foreground Services (FGS) to run, which has strict
+    // requirements starting from Android S (see b/515767943).
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      return false;
+    }
+    return true;
+#else
+    return true;
+#endif
+  }();
+
+  return supported_os_version;
+}
+
 bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {
   if (g_bypass_enablement_checks_for_testing) {
     return true;
@@ -552,7 +578,7 @@ bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {
                     locale_enablement_.value_or(true) &&
                     country_enablement_.value_or(true);
 
-  return is_enabled && IsSystemRequirementMet();
+  return is_enabled && IsOsVersionSupported() && IsSystemRequirementMet();
 }
 
 // static

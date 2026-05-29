@@ -25,6 +25,7 @@
 #include "content/public/test/test_navigation_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -91,6 +92,14 @@ class ActorUtilBrowserTest : public PlatformBrowserTest {
 // Tests that HasActorTaskPreventingNewWebContents returns true when a task is
 // acting and the current action doesn't allow opening new web contents.
 IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, PreventsNewWebContents) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/517620369): Decouple test from Glic eligibility criteria.
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
+    GTEST_SKIP() << "Actor requires Android S+ to run";
+  }
+#endif
+
   TaskId task_id = actor_keyed_service()->CreateTask(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   // Navigate to an initial page first.

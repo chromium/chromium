@@ -50,6 +50,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -177,6 +178,16 @@ class GlicBrowserTestMixin : public T {
     // builds.
     command_line->AppendSwitch(switches::kForceDesktopAndroid);
 #endif
+  }
+
+  void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Glic requires Android S+ to run";
+    }
+#endif
+    T::SetUp();
   }
 
   void SetUpOnMainThread() override {

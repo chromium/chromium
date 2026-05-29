@@ -53,6 +53,10 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
+
 using base::test::FeatureRef;
 
 namespace glic {
@@ -86,6 +90,12 @@ class TestDelegate : public GlicGlobalEnabling::Delegate {
 class GlicEnablingTest : public testing::Test {
  public:
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Glic requires Android S+";
+    }
+#endif
     // Note: We're not creating GlobalFeatures in this unit test because
     // GlicBackgroundModeManager fails to be constructed without additional
     // setup.
@@ -447,6 +457,12 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   ~GlicEnablingProfileEligibilityTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Glic requires Android S+";
+    }
+#endif
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
@@ -520,6 +536,9 @@ class GlicEnablingProfileReadyStateTestBase
 
   void SetUp() override {
     GlicEnablingProfileEligibilityTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
 
     // Make sure we have a primary account so we don't fail the "capable" check.
     auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
@@ -573,6 +592,12 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   }
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Glic requires Android S+";
+    }
+#endif
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
@@ -803,6 +828,9 @@ class GlicEnablingGatedFeatureTest
   void SetUpFeature(const base::Feature& feature,
                     const base::FeatureParam<bool>& onboarding_param) {
     GlicEnablingProfileReadyStateTestBase::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -892,6 +920,9 @@ class GlicEnablingContextMenuTest
  public:
   void SetUp() override {
     GlicEnablingProfileReadyStateTestBase::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
