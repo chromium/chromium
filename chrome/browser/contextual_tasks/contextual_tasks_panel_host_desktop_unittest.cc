@@ -60,7 +60,7 @@ class ContextualTasksPanelHostDesktopTest : public testing::Test {
         std::make_unique<SidePanelRegistry>(browser_window_.get());
 
     panel_host_ = std::make_unique<ContextualTasksPanelHostDesktop>(
-        browser_window_.get(), &mock_side_panel_ui_);
+        browser_window_.get());
   }
 
   void TearDown() override {

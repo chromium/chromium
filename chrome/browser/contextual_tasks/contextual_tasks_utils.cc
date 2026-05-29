@@ -249,8 +249,7 @@ std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
     return std::make_unique<ContextualTasksPanelHostAndroid>(browser_window);
   }
 #else
-  return std::make_unique<ContextualTasksPanelHostDesktop>(
-      browser_window, browser_window->GetFeatures().side_panel_ui());
+  return std::make_unique<ContextualTasksPanelHostDesktop>(browser_window);
 #endif
 }
 

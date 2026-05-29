@@ -34,8 +34,8 @@ class ContextualTasksPanelHostDesktop : public ContextualTasksPanelHost,
  public:
   // For testing only. Use static ContextualTasksPanelHost::Create to get an
   // instance rather than explicitly constructing.
-  ContextualTasksPanelHostDesktop(BrowserWindowInterface* browser_window,
-                                  SidePanelUI* side_panel_ui);
+  explicit ContextualTasksPanelHostDesktop(
+      BrowserWindowInterface* browser_window);
 
   // Disallow copy/assign.
   ContextualTasksPanelHostDesktop(const ContextualTasksPanelHostDesktop&) =
@@ -80,9 +80,6 @@ class ContextualTasksPanelHostDesktop : public ContextualTasksPanelHost,
 
   // Browser window of the current panel.
   const raw_ptr<BrowserWindowInterface> browser_window_;
-
-  // Used to show, close, and query the state of the side panel.
-  const raw_ptr<SidePanelUI> side_panel_ui_;
 
   // WebView of the current panel.
   base::WeakPtr<ContextualTasksWebView> web_view_ = nullptr;
