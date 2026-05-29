@@ -35,6 +35,7 @@ class GlicExperimentalOptInPageHandler
   // mojom::ExperimentalOptInPageHandler:
   void Accept() override;
   void Reject() override;
+  void OnWebviewLoaded() override;
   void SyncCookies(SyncCookiesCallback callback) override;
   void ValidateAndOpenLinkInNewTab(const GURL& url) override;
 

@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -87,6 +89,7 @@ class GlicFreControllerTest : public testing::Test {
 
 TEST_F(GlicFreControllerTest, AcceptFre) {
   base::UserActionTester tester;
+  base::HistogramTester histogram_tester;
   // TODO: Without this line, there's a sequence check error in
   // shell_integration::DefaultWebClientWorker::OnCheckIsDefaultComplete.
   // Likely a problem with the test environment configuration.
@@ -98,10 +101,13 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
       prefs::FreStatus::kCompleted);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Accept.FlowSource",
+                                      OptInFlow::kGlicFre, 1);
 }
 
 TEST_F(GlicFreControllerTest, RejectFre) {
   base::UserActionTester tester;
+  base::HistogramTester histogram_tester;
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
   glic_fre_controller().RejectFre();
@@ -110,6 +116,8 @@ TEST_F(GlicFreControllerTest, RejectFre) {
       prefs::FreStatus::kNotStarted);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  histogram_tester.ExpectUniqueSample("Glic.Fre.NoThanks.FlowSource",
+                                      OptInFlow::kGlicFre, 1);
 }
 
 TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {

@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -73,10 +74,10 @@ void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
       other_handler->OnAcceptedByOtherInstance();
     }
   }
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+  auto* service = GlicKeyedService::Get(profile_);
+  service->metrics()->OnOptInAccepted(OptInFlow::kGlicFre);
   // Update FRE related preferences.
-  GlicKeyedService::Get(profile_)->enabling().SetCompletedFre(
-      prefs::FreStatus::kCompleted);
+  service->enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
 
 #if !BUILDFLAG(IS_ANDROID)
   GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
@@ -84,7 +85,8 @@ void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
 }
 
 void GlicFreController::RejectFre() {
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.NoThanks"));
+  GlicKeyedService::Get(profile_)->metrics()->OnOptInRejected(
+      OptInFlow::kGlicFre);
 }
 
 void GlicFreController::PrepareForClient(

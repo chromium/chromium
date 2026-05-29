@@ -92,12 +92,15 @@ class GlicGlobalEnabling {
   std::optional<bool> country_enablement_;
 };
 
+// LINT.IfChange(RequiredExperimentalOptIn)
 enum class RequiredExperimentalOptIn {
-  kGlic,
-  kActuation,
-  kExperimental,
-  kNotNeeded,
+  kGlic = 0,
+  kActuation = 1,
+  kExperimental = 2,
+  kNotNeeded = 3,
+  kMaxValue = kNotNeeded,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequiredExperimentalOptIn)
 
 // This class provides a central location for checking if Glic is enabled. It
 // allows for future expansion to include other ways the feature may be disabled

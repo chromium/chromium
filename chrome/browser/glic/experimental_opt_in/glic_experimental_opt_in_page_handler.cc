@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -62,11 +63,27 @@ void GlicExperimentalOptInPageHandler::Accept() {
       break;
   }
 
+  RecordExperimentalOptInAccepted(required_state_);
+  if (required_state_ == RequiredExperimentalOptIn::kGlic) {
+    service->metrics()->OnOptInAccepted(OptInFlow::kExperimentalTriggering);
+  }
   service->opt_in_controller().CloseDialog(true);
 }
 
 void GlicExperimentalOptInPageHandler::Reject() {
-  GetGlicService()->opt_in_controller().CloseDialog(false);
+  auto* service = GetGlicService();
+  RecordExperimentalOptInRejected(required_state_);
+  if (required_state_ == RequiredExperimentalOptIn::kGlic) {
+    service->metrics()->OnOptInRejected(OptInFlow::kExperimentalTriggering);
+  }
+  service->opt_in_controller().CloseDialog(false);
+}
+
+void GlicExperimentalOptInPageHandler::OnWebviewLoaded() {
+  if (required_state_ == RequiredExperimentalOptIn::kGlic) {
+    GetGlicService()->metrics()->OnOptInImpression(
+        OptInFlow::kExperimentalTriggering);
+  }
 }
 
 void GlicExperimentalOptInPageHandler::SyncCookies(

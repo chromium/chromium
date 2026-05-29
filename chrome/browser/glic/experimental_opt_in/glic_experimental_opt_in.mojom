@@ -14,6 +14,9 @@ interface ExperimentalOptInPageHandler {
   // Rejects the experimental opt-in.
   Reject();
 
+  // Called when the webview successfully completes its content load.
+  OnWebviewLoaded();
+
   // Sync necessary cookies to the webview partition. Returns true if cookies
   // were synced successfully, false otherwise. When false is returned, it's not
   // appropriate to show the webview.

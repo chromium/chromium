@@ -82,6 +82,7 @@ async function init() {
     }
     offlinePanel.hidden = true;
     webview.hidden = false;
+    handler.onWebviewLoaded();
   });
 
   webview.addEventListener('loadabort', ((e: Event) => {

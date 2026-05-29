@@ -15032,6 +15032,87 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.ExperimentalTriggering.OptIn.Actuation.Accepted">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Actuation Opt-In is required and the Glic Experimental Opt-In
+    dialog is accepted.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Actuation.NoThanks">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Actuation Opt-In is required and the Glic Experimental Opt-In
+    dialog is rejected.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Actuation.Shown">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Actuation Opt-In is required and the Glic Experimental Opt-In
+    dialog is shown.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Experimental.Accepted">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Experimental Triggering Opt-In is required and the Glic
+    Experimental Opt-In dialog is accepted.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Experimental.NoThanks">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Experimental Triggering Opt-In is required and the Glic
+    Experimental Opt-In dialog is rejected.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Experimental.Shown">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Experimental Triggering Opt-In is required and the Glic
+    Experimental Opt-In dialog is shown.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Glic.Accepted">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Glic FRE is required and the Glic Experimental Opt-In dialog is
+    accepted.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Glic.NoThanks">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Glic FRE is required and the Glic Experimental Opt-In dialog is
+    rejected.
+  </description>
+</action>
+
+<action name="Glic.ExperimentalTriggering.OptIn.Glic.Shown">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <description>
+    Logged when Glic FRE is required and the Glic Experimental Opt-In dialog is
+    shown.
+  </description>
+</action>
+
 <action name="Glic.FocusHotKey">
   <owner>andreaxg@google.com</owner>
   <owner>erikchen@chromium.org</owner>
@@ -15117,6 +15198,14 @@ should be able to be added at any place in this file.
   <description>
     User closed the disabled by admin panel in the FRE by clicking the
     confirmation button.
+  </description>
+</action>
+
+<action name="Glic.Fre.Dismissed">
+  <owner>perrier@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Logged when an onboarding opt-in dialog or flow is implicitly dismissed.
   </description>
 </action>
 

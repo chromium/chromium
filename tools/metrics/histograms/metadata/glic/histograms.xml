@@ -486,6 +486,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ExperimentalTriggering.OptIn.Accepted.Version"
+    enum="GlicRequiredExperimentalOptIn" expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the version of Glic Experimental Opt-In dialog accepted by the user
+    (Glic FRE, Actuation, or Experimental Triggering). Recorded when the user
+    clicks the Accept button.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ExperimentalTriggering.OptIn.NoThanks.Version"
+    enum="GlicRequiredExperimentalOptIn" expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the version of Glic Experimental Opt-In dialog declined (No Thanks)
+    by the user (Glic FRE, Actuation, or Experimental Triggering). Recorded when
+    the user clicks the Reject/No Thanks button.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ExperimentalTriggering.OptIn.Shown.Version"
+    enum="GlicRequiredExperimentalOptIn" expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the version of Glic Experimental Opt-In dialog shown to the user
+    (Glic FRE, Actuation, or Experimental Triggering). Recorded when the dialog
+    is successfully shown.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ExperimentalTriggering.OptInDialog.ShowDuration"
     units="ms" expires_after="2027-05-19">
   <owner>sauski@google.com</owner>
@@ -533,6 +566,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.Accept.FlowSource" enum="GlicOptInFlowSource"
+    expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    Records the onboarding flow source where the user accepted Glic opt-in.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.Accept.InvocationSource" enum="GlicInvocationSource"
     expires_after="2026-10-04">
   <owner>erikchen@chromium.org</owner>
@@ -541,6 +583,15 @@ chromium-metrics-reviews@google.com.
     Records the invocation source used to trigger the opening of the glic panel
     that led to the user accepting the Trust-First Onboarding. Recorded when the
     user accepts the Trust-First Onboarding.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.Dismissed.FlowSource" enum="GlicOptInFlowSource"
+    expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    Records the onboarding flow source where the user dismissed Glic opt-in.
   </summary>
 </histogram>
 
@@ -585,6 +636,25 @@ chromium-metrics-reviews@google.com.
     Records the time elapsed between the FRE being fully loaded (the Ready
     state) and the user explicitly clicking the No thanks button. This is logged
     when the user rejects the FRE.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.NoThanks.FlowSource" enum="GlicOptInFlowSource"
+    expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    Records the onboarding flow source where the user explicitly rejected Glic
+    opt-in.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.Shown.FlowSource" enum="GlicOptInFlowSource"
+    expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    Records the onboarding flow source where the user was shown the Glic opt-in.
   </summary>
 </histogram>
 
@@ -1696,6 +1766,13 @@ chromium-metrics-reviews@google.com.
     <variant name="GlicWebContinuityFeatureEnabled"
         summary="Web continuity is enabled and available"/>
   </token>
+</histogram>
+
+<histogram name="Glic.Onboarding.OptInImpression.FlowSource"
+    enum="GlicOptInFlowSource" expires_after="2027-05-18">
+  <owner>sauski@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>Records the onboarding flow source shown to the user.</summary>
 </histogram>
 
 <histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"

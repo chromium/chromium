@@ -183,6 +183,8 @@ void GlicInstanceMetrics::MaybeRecordOptInImpression() {
   }
   base::RecordAction(
       base::UserMetricsAction("Glic.Onboarding.OptInImpression"));
+  base::UmaHistogramEnumeration("Glic.Onboarding.OptInImpression.FlowSource",
+                                OptInFlow::kGlicFre);
   is_opt_in_pending_ = false;
 }
 

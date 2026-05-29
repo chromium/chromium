@@ -156,7 +156,14 @@ enum class GlicTabPinnedForSharingResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTabPinnedForSharingResult)
 
-class GlicEnabling;
+// LINT.IfChange(GlicOptInFlowSource)
+enum class OptInFlow {
+  kGlicFre = 0,
+  kExperimentalTriggering = 1,
+  kMaxValue = kExperimentalTriggering,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicOptInFlowSource)
+
 class GlicSharingManager;
 
 namespace internal {
@@ -208,6 +215,16 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnInstanceClosed();
   // Called when the user clicks Accept in the FRE.
   void OnFreAccepted();
+  // Called when an opt-in dialog or onboarding flow is shown.
+  void OnOptInShown(OptInFlow flow);
+  // Called when an opt-in dialog or onboarding flow finishes loading content.
+  void OnOptInImpression(OptInFlow flow);
+  // Called when an opt-in dialog or onboarding flow is accepted.
+  void OnOptInAccepted(OptInFlow flow);
+  // Called when an opt-in dialog or onboarding flow is implicitly dismissed.
+  void OnOptInDismissed(OptInFlow flow);
+  // Called when an opt-in dialog or onboarding flow is explicitly rejected.
+  void OnOptInRejected(OptInFlow flow);
   // Called when the glic window starts to open.
   void OnGlicWindowStartedOpening(bool attached,
                                   mojom::InvocationSource source);

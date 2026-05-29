@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_metrics.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -90,9 +91,13 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
       source, kGlicExperimentalOptInResources,
       IDR_GLIC_EXPERIMENTAL_OPT_IN_EXPERIMENTAL_OPT_IN_HTML);
 
-  required_state_ = GlicKeyedServiceFactory::GetGlicKeyedService(profile)
-                        ->enabling()
-                        .GetRequiredExperimentalOptIn();
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  required_state_ = service->enabling().GetRequiredExperimentalOptIn();
+  RecordExperimentalOptInShown(required_state_);
+  if (required_state_ == RequiredExperimentalOptIn::kGlic) {
+    service->metrics()->OnOptInShown(OptInFlow::kExperimentalTriggering);
+  }
 
   if (required_state_ == RequiredExperimentalOptIn::kNotNeeded) {
     // It's theoretically possible that between the decision by the controller
@@ -100,7 +105,6 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
     // executes, opt-in is no longer required (e.g. changing toggle in a
     // different tab). That case should be very rare, and we can fallback to the
     // experimental opt-in.
-    // TODO(b/511184397): Add metrics for how often this happens.
     required_state_ = RequiredExperimentalOptIn::kExperimental;
   }
 

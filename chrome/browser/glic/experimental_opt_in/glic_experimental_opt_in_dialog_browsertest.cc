@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback_helpers.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -450,6 +451,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabDraggedToAnotherWindow) {
                                                   true);
 }
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   // Set required state to Glic.
   service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
   ASSERT_FALSE(service()->enabling().HasConsented());
@@ -461,6 +465,17 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
 
   content::WebContents* guest_contents = WaitForGuestContents();
   ASSERT_TRUE(guest_contents);
+
+  // Verify Shown metrics
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Glic.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Shown.Version",
+      RequiredExperimentalOptIn::kGlic, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Shown.FlowSource",
+                                      OptInFlow::kExperimentalTriggering, 1);
 
   // Change location hash to #continue to simulate user accepting the opt-in.
   ASSERT_TRUE(
@@ -476,9 +491,23 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
   EXPECT_TRUE(service()->enabling().HasConsented());
   EXPECT_TRUE(service()->enabling().GetUserEnabledActuationOnWeb());
   EXPECT_TRUE(service()->enabling().GetExperimentalTriggeringEnabled());
+
+  // Verify Accept metrics
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Accept"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Glic.Accepted"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Accepted.Version",
+      RequiredExperimentalOptIn::kGlic, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Accept.FlowSource",
+                                      OptInFlow::kExperimentalTriggering, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
   ASSERT_FALSE(service()->enabling().HasConsented());
 
@@ -489,6 +518,17 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
 
   content::WebContents* guest_contents = WaitForGuestContents();
   ASSERT_TRUE(guest_contents);
+
+  // Verify Shown metrics
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Glic.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Shown.Version",
+      RequiredExperimentalOptIn::kGlic, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Shown.FlowSource",
+                                      OptInFlow::kExperimentalTriggering, 1);
 
   // Change location hash to #noThanks.
   ASSERT_TRUE(
@@ -501,9 +541,53 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
 
   // Verify Glic is still not consented.
   EXPECT_FALSE(service()->enabling().HasConsented());
+
+  // Verify Reject metrics
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.NoThanks"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Glic.NoThanks"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.NoThanks.Version",
+      RequiredExperimentalOptIn::kGlic, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Fre.NoThanks.FlowSource",
+                                      OptInFlow::kExperimentalTriggering, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       GlicOptInImpressionMetricRecordedOnLoad) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
+  ASSERT_FALSE(service()->enabling().HasConsented());
+
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "Glic.Onboarding.OptInImpression.FlowSource");
+
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
+  ASSERT_TRUE(widget);
+
+  content::WebContents* guest_contents = WaitForGuestContents();
+  ASSERT_TRUE(guest_contents);
+
+  waiter.Wait();
+
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Glic.Onboarding.OptInImpression"), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Onboarding.OptInImpression.FlowSource",
+      OptInFlow::kExperimentalTriggering, 1);
+
+  service()->opt_in_controller().CloseDialog(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInActuation) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   // Set required state to Actuation (Glic complete, Actuation incomplete).
   service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kCompleted);
   service()->enabling().SetUserEnabledActuationOnWeb(false);
@@ -516,6 +600,14 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInActuation) {
 
   content::WebContents* guest_contents = WaitForGuestContents();
   ASSERT_TRUE(guest_contents);
+
+  // Verify Shown metrics
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Actuation.Shown"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Shown.Version",
+      RequiredExperimentalOptIn::kActuation, 1);
 
   // Accept opt-in.
   ASSERT_TRUE(
@@ -530,9 +622,20 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInActuation) {
   EXPECT_TRUE(service()->enabling().HasConsented());
   EXPECT_TRUE(service()->enabling().GetUserEnabledActuationOnWeb());
   EXPECT_TRUE(service()->enabling().GetExperimentalTriggeringEnabled());
+
+  // Verify Accept metrics
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Actuation.Accepted"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Accepted.Version",
+      RequiredExperimentalOptIn::kActuation, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   // Set Glic complete, Actuation complete, but Experimental Triggering
   // incomplete.
   service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kCompleted);
@@ -547,6 +650,14 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
   content::WebContents* guest_contents = WaitForGuestContents();
   ASSERT_TRUE(guest_contents);
 
+  // Verify Shown metrics
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Experimental.Shown"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Shown.Version",
+      RequiredExperimentalOptIn::kExperimental, 1);
+
   // Accept opt-in.
   ASSERT_TRUE(
       content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
@@ -560,6 +671,14 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
   EXPECT_TRUE(service()->enabling().HasConsented());
   EXPECT_TRUE(service()->enabling().GetUserEnabledActuationOnWeb());
   EXPECT_TRUE(service()->enabling().GetExperimentalTriggeringEnabled());
+
+  // Verify Accept metrics
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Experimental.Accepted"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.OptIn.Accepted.Version",
+      RequiredExperimentalOptIn::kExperimental, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, MultipleOptInRequests) {
@@ -648,6 +767,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, SyncsCookiesToWebview) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
+  base::UserActionTester tester;
   Profile* profile = browser()->profile();
 
   // Invalidate primary account credentials so that prod GlicCookieSynchronizer
@@ -673,13 +793,21 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
   ASSERT_TRUE(dialog_contents);
   EXPECT_TRUE(content::WaitForLoadStop(dialog_contents));
 
-  // Because cookie sync fails, the webview src is never set.
+  // Shown metrics for experimental modal are recorded synchronously on WebUI
+  // creation.
+  EXPECT_EQ(tester.GetActionCount(
+                "Glic.ExperimentalTriggering.OptIn.Experimental.Shown"),
+            1);
+
+  // Because cookie sync fails, the webview src is never set. EvalJs
+  // synchronously verifies JS execution completed without setting src.
+  // Therefore, no guest webview loads, ensuring 0 impressions non-racily.
   EXPECT_EQ(false,
             content::EvalJs(
                 dialog_contents,
                 "!!document.querySelector('webview')?.hasAttribute('src')"));
-
   EXPECT_EQ(0u, GetGuestViewManager()->num_guests_created());
+  EXPECT_EQ(tester.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
 
   service_ptr->opt_in_controller().CloseDialog(false);
 }

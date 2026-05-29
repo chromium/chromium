@@ -303,7 +303,7 @@ void GlicMetrics::RecordGlicProfilePreferences() {
 
 void GlicMetrics::OnTrustFirstOnboardingAccept() {
   OnFreAccepted();
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+  OnOptInAccepted(OptInFlow::kGlicFre);
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept.Onboarding"));
   base::UmaHistogramEnumeration("Glic.Fre.Accept.InvocationSource",
                                 invocation_source_);
@@ -322,7 +322,7 @@ void GlicMetrics::OnInstanceOpened() {
   }
 
   if (!enabling_->HasConsented()) {
-    base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+    OnOptInShown(OptInFlow::kGlicFre);
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
     base::UmaHistogramEnumeration("Glic.Fre.Shown.InvocationSource",
                                   invocation_source_);
@@ -335,6 +335,7 @@ void GlicMetrics::OnInstanceClosed() {
     return;
   }
 
+  OnOptInDismissed(OptInFlow::kGlicFre);
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Dismissed.Onboarding"));
   base::UmaHistogramEnumeration("Glic.Fre.Dismissed.InvocationSource",
                                 invocation_source_);
@@ -347,6 +348,33 @@ void GlicMetrics::OnFreAccepted() {
   // Store the current time in a instance variable.
   fre_accepted_time_ = base::TimeTicks::Now();
   onboarding_invocation_source_ = invocation_source_;
+}
+
+void GlicMetrics::OnOptInShown(OptInFlow flow) {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+  base::UmaHistogramEnumeration("Glic.Fre.Shown.FlowSource", flow);
+}
+
+void GlicMetrics::OnOptInImpression(OptInFlow flow) {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Onboarding.OptInImpression"));
+  base::UmaHistogramEnumeration("Glic.Onboarding.OptInImpression.FlowSource",
+                                flow);
+}
+
+void GlicMetrics::OnOptInAccepted(OptInFlow flow) {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+  base::UmaHistogramEnumeration("Glic.Fre.Accept.FlowSource", flow);
+}
+
+void GlicMetrics::OnOptInDismissed(OptInFlow flow) {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Dismissed"));
+  base::UmaHistogramEnumeration("Glic.Fre.Dismissed.FlowSource", flow);
+}
+
+void GlicMetrics::OnOptInRejected(OptInFlow flow) {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.NoThanks"));
+  base::UmaHistogramEnumeration("Glic.Fre.NoThanks.FlowSource", flow);
 }
 
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {

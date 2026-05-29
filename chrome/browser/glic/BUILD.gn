@@ -471,6 +471,8 @@ source_set("impl") {
       "experimental_opt_in/glic_experimental_opt_in_controller.h",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.h",
+      "experimental_opt_in/glic_experimental_opt_in_metrics.cc",
+      "experimental_opt_in/glic_experimental_opt_in_metrics.h",
       "experimental_opt_in/glic_experimental_opt_in_page_handler.cc",
       "experimental_opt_in/glic_experimental_opt_in_page_handler.h",
       "experimental_opt_in/glic_experimental_opt_in_ui.cc",
