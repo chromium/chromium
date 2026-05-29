@@ -182,6 +182,26 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testDestroy_RemovesSupplierObserver() {
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        mCoordinator.destroy();
+
+        TabModel newTabModel = mock(TabModel.class);
+        when(newTabModel.getProfile()).thenReturn(mProfile);
+        when(newTabModel.isTabModelRestored()).thenReturn(true);
+        Tab newTab = prepareMockTab(789);
+        when(newTabModel.getRepresentativeTabList()).thenReturn(List.of(newTab));
+
+        mCurrentTabModelSupplier.set(newTabModel);
+        assertEquals(0, adapter.getModelList().size());
+    }
+
+    @Test
+    @SmallTest
     public void testAdapterInterceptionAndSpanLookup() {
         mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
         TabListRecyclerView recycler =
@@ -347,5 +367,27 @@ public class VerticalTabListCoordinatorUnitTest {
         clickListener.run(null, 456, null);
 
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabModelSwap_ResetsTabs() {
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        TabModel newTabModel = mock(TabModel.class);
+        when(newTabModel.getProfile()).thenReturn(mProfile);
+        when(newTabModel.isTabModelRestored()).thenReturn(true);
+        Tab newTab = prepareMockTab(789);
+        when(newTabModel.getRepresentativeTabList()).thenReturn(List.of(newTab));
+        when(newTabModel.iterator()).thenReturn(List.of(newTab).iterator());
+        when(newTabModel.getTabById(789)).thenReturn(newTab);
+
+        mCurrentTabModelSupplier.set(newTabModel);
+
+        assertEquals(1, adapter.getModelList().size());
+        assertEquals(789, adapter.getModelList().get(0).model.get(TabProperties.TAB_ID));
     }
 }

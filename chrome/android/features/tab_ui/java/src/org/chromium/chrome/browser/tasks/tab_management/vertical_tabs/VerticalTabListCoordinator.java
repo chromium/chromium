@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -46,12 +49,12 @@ public class VerticalTabListCoordinator {
     private final ViewGroup mContainerView;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabListModel mModelList;
-    private @Nullable TabListMediator mMediator;
-    private @Nullable TabModelSelector mTabModelSelector;
-    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
+    private final TabListMediator mMediator;
+    private final TabModelSelector mTabModelSelector;
+    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver;
 
-    private class VerticalTabListClickHandler
-            implements TabListMediator.TabListItemOnClickListenerProvider {
+    private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
                 new TabActionListener() {
                     @Override
@@ -79,12 +82,9 @@ public class VerticalTabListCoordinator {
 
         @Override
         public void onTabSelecting(int tabId, boolean fromActionButton) {
-            TabModelSelector selector = mTabModelSelector;
-            if (selector != null) {
-                // TODO(crbug.com/509226293): Coordinate tab selection with smooth side panel
-                // dismissal or collapse animations when running on narrow screens.
-                TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
-            }
+            // TODO(crbug.com/509226293): Coordinate tab selection with smooth side panel
+            // dismissal or collapse animations when running on narrow screens.
+            TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
         }
 
         @Override
@@ -213,31 +213,19 @@ public class VerticalTabListCoordinator {
 
         mMediator.initWithNative(profile.getOriginalProfile());
 
-        // TODO(crbug.com/509226293): Refactor to eliminate the need for full list resets
-        //  during tab additions, closures, and merges.
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
-                    public void onChange() {
-                        TabModelSelector selector = mTabModelSelector;
-                        if (selector != null && selector.isTabStateInitialized()) {
-                            resetWithListOfTabs(selector.getCurrentModel());
-                        }
-                    }
-
-                    @Override
                     public void onTabStateInitialized() {
-                        TabModelSelector selector = mTabModelSelector;
-                        if (selector != null) {
-                            resetWithListOfTabs(selector.getCurrentModel());
-                        }
+                        resetWithListOfTabs(mTabModelSelector.getCurrentModel());
                     }
                 };
         tabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        if (tabModelSelector.isTabStateInitialized()) {
-            resetWithListOfTabs(tabModelSelector.getCurrentModel());
-        }
+        mCurrentTabModelObserver = this::onCurrentTabModelChanged;
+        tabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndCallIfNonNull(mCurrentTabModelObserver);
     }
 
     /** Returns the root ViewGroup container representing the Left Rail sidebar. */
@@ -246,28 +234,13 @@ public class VerticalTabListCoordinator {
     }
 
     public void destroy() {
-        if (mMediator != null) {
-            mMediator.destroy();
-            mMediator = null;
-        }
-        if (mTabModelSelector != null && mTabModelSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-            mTabModelSelectorObserver = null;
-        }
-        mTabModelSelector = null;
+        mMediator.destroy();
+        mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
 
         if (mTabListFaviconProvider != null) {
             mTabListFaviconProvider.destroy();
         }
-    }
-
-    private void resetWithListOfTabs(@Nullable TabModel tabModel) {
-        if (mMediator == null || tabModel == null) return;
-
-        mMediator.resetWithListOfTabs(
-                tabModel.getRepresentativeTabList(),
-                /* tabGroupSyncIds */ null,
-                /* quickMode */ false);
     }
 
     /**
@@ -275,10 +248,24 @@ public class VerticalTabListCoordinator {
      *
      * @param tabId the ID of the representative tab representing the tab group.
      */
+    @VisibleForTesting
     void toggleTabGroupExpansion(int tabId) {
-        if (mMediator != null) {
-            mMediator.toggleTabGroupExpansion(tabId);
+        mMediator.toggleTabGroupExpansion(tabId);
+    }
+
+    private void onCurrentTabModelChanged(TabModel tabModel) {
+        if (mTabModelSelector.isTabStateInitialized()) {
+            resetWithListOfTabs(tabModel);
         }
+    }
+
+    private void resetWithListOfTabs(@Nullable TabModel tabModel) {
+        if (tabModel == null) return;
+
+        mMediator.resetWithListOfTabs(
+                tabModel.getRepresentativeTabList(),
+                /* tabGroupSyncIds */ null,
+                /* quickMode */ false);
     }
 
     private GridLayoutManager createGridLayoutManager(
