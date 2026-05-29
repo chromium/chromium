@@ -163,6 +163,8 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA01A);
   static constexpr HRESULT kErrorCouldWriteTokenDacl =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA01B);
+  static constexpr HRESULT kErrorCouldNotResumeThread =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA01C);
 
   // Success codes.
   static constexpr HRESULT kSuccessShouldReencrypt =

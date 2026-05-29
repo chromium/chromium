@@ -4846,6 +4846,8 @@ Called by update_net_error_codes.py.-->
       label="elevation_service::Elevator::kErrorCouldObtainTokenSecurityDescriptor"/>
   <int value="-2147180517"
       label="elevation_service::Elevator::kErrorCouldWriteTokenDacl"/>
+  <int value="-2147180516"
+      label="elevation_service::Elevator::kErrorCouldNotResumeThread"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174395"
       label="MSPR_E_PRO_HEADER_BYTES_NOT_SET (0x8004B805)"/>

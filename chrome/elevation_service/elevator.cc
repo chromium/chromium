@@ -395,7 +395,7 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
   std::wstring writeable_command_line(
       trusted_command_line->GetCommandLineString());
 
-  DWORD creation_flags = CREATE_UNICODE_ENVIRONMENT;
+  DWORD creation_flags = CREATE_UNICODE_ENVIRONMENT | CREATE_SUSPENDED;
   if (startup_information.has_extended_startup_info()) {
     creation_flags |= EXTENDED_STARTUPINFO_PRESENT;
   }
@@ -427,8 +427,33 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
   }
   base::win::ScopedProcessInformation process_info(temp_process_info);
 
-  HANDLE duplicate_proc_handle = nullptr;
+  // At this point, the process is launched. Any failures from this point on
+  // should terminate the process.
+  absl::Cleanup maybe_terminate = [&process_info, &success] {
+    if (!success) {
+      // Hold the last error, so it does not get overwritten by the call to
+      // TerminateProcess - this ensures that whatever last error was present
+      // from the previously failing API call is returned to the caller.
+      const auto gle = ::GetLastError();
+      ::TerminateProcess(process_info.process_handle(), gle);
+      ::SetLastError(gle);
+    }
+  };
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  {
+    HRESULT post_launch_status = PostLaunch(process_info);
+    if (FAILED(post_launch_status)) {
+      return post_launch_status;
+    }
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  if (::ResumeThread(process_info.thread_handle()) == static_cast<DWORD>(-1)) {
+    return kErrorCouldNotResumeThread;
+  }
+
+  HANDLE duplicate_proc_handle = nullptr;
   if (!::DuplicateHandle(
           /*hSourceProcessHandle=*/::GetCurrentProcess(),
           /*hSourceHandle=*/process_info.process_handle(),
