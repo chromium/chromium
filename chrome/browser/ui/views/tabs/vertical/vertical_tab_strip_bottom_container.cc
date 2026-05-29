@@ -34,7 +34,7 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
   auto new_tab_button = std::make_unique<shared::NewTabButton>(
       browser_,
       GetLayoutConstant(LayoutConstant::kVerticalTabStripNewTabButtonSize),
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripNewTabButtonIconSize));
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripButtonIconSize));
   new_tab_button->set_context_menu_controller(this);
 
   new_tab_button_pressed_subscription_ =
