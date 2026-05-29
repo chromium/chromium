@@ -22,6 +22,18 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:visibility="visible">
 
+        <!-- Empty Placeholder View (renders behind web_ui_container) -->
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/empty_placeholder_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:drawablePadding="@dimen/tab_bottom_sheet_placeholder_drawable_padding"
+            android:padding="@dimen/tab_bottom_sheet_placeholder_padding"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:visibility="gone" />
+
         <!-- Web UI Container -->
         <org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer
             android:id="@+id/web_ui_container"

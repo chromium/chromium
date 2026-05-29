@@ -14,11 +14,11 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 import java.util.List;
 
@@ -45,6 +45,15 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
             Profile profile) {
         super(contentView, fullHeightRatio, backgroundColor);
         mProfile = profile;
+    }
+
+    @Override
+    protected boolean setupPlaceholder(TextViewWithCompoundDrawables placeholder) {
+        placeholder.setText(R.string.glic_inactive_view_card_text);
+        placeholder.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0, R.drawable.ic_spark_filled_24dp, 0, 0);
+        placeholder.setVisibility(View.VISIBLE);
+        return true;
     }
 
     @Override

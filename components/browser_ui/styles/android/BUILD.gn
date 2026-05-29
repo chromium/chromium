@@ -238,6 +238,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_shield_24dp.xml",
     "java/res/drawable/ic_skip_next_white_24dp.xml",
     "java/res/drawable/ic_skip_previous_white_24dp.xml",
+    "java/res/drawable/ic_spark_filled_24dp.xml",
     "java/res/drawable/ic_speed_24dp.xml",
     "java/res/drawable/ic_star_24dp.xml",
     "java/res/drawable/ic_star_filled_24dp.xml",

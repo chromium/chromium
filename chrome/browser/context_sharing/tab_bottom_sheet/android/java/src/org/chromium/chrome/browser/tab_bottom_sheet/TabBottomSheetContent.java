@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /** The bottom sheet content for the tab bottom sheet. */
 @NullMarked
@@ -47,6 +48,22 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
         View view = mContentView.findViewById(R.id.actor_control_container);
         View peekContainer = NullUtil.assertNonNull(view);
         peekContainer.setBackgroundColor(mBackgroundColor);
+
+        TextViewWithCompoundDrawables placeholder =
+                NullUtil.assertNonNull(mContentView.findViewById(R.id.empty_placeholder_container));
+        if (setupPlaceholder(placeholder)) {
+            placeholder.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Sets up the visual properties of the inactive state placeholder.
+     *
+     * @param placeholder The empty placeholder text view with compound drawables support.
+     * @return true if the placeholder should be visible, false otherwise.
+     */
+    protected boolean setupPlaceholder(TextViewWithCompoundDrawables placeholder) {
+        return false;
     }
 
     @Override
@@ -175,5 +192,10 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     @Override
     public boolean shouldRestoreStateOnUnsuppress() {
         return false;
+    }
+
+    public @Nullable TextViewWithCompoundDrawables getPlaceholderViewForTesting() {
+        return (TextViewWithCompoundDrawables)
+                mContentView.findViewById(R.id.empty_placeholder_container);
     }
 }

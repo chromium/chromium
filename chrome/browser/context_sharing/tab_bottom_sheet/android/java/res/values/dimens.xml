@@ -8,6 +8,8 @@ found in the LICENSE file.
     <!-- Tab Bottom Sheet -->
     <dimen name="tab_bottom_sheet_resizing_view_icon_size">32dp</dimen>
     <dimen name="tab_bottom_sheet_resizing_view_text_margin_top">20dp</dimen>
+    <dimen name="tab_bottom_sheet_placeholder_padding">24dp</dimen>
+    <dimen name="tab_bottom_sheet_placeholder_drawable_padding">16dp</dimen>
 
     <!-- The total visible height requested by TabBottomSheet at peek state, counting the
          contents of the peek view plus the space consumed by the drag handle bar frame.

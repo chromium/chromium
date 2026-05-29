@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -148,5 +149,17 @@ public class GlicBottomSheetContentUnitTest {
         when(mActorKeyedService.getActiveTasks())
                 .thenReturn(Arrays.asList(finishedTask, passiveTask, activeTask));
         assertFalse(mContent.canBeSuppressed(mNextContent));
+    }
+
+    @Test
+    public void testConstructor_ConfiguresPlaceholderCorrectly() {
+        TextViewWithCompoundDrawables placeholder = mContent.getPlaceholderViewForTesting();
+        assertNotNull(placeholder);
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
+        assertEquals(
+                mContext.getString(R.string.glic_inactive_view_card_text),
+                placeholder.getText().toString());
+        // Top compound drawable (index 1) must be set.
+        assertNotNull(placeholder.getCompoundDrawablesRelative()[1]);
     }
 }
