@@ -482,6 +482,67 @@ suite('ComposeboxTest', () => {
       });
 
   test(
+      'moves only actively selected tabs to restored tabs on submit',
+      async () => {
+        // Selected Tab (ID: 100) checked by the user.
+        const tokenTab = 'test-token-tab' as unknown as UnguessableToken;
+        const selectedTabId = 100;
+        const mockTabFile = new ComposeboxFile(
+            tokenTab, 'Selected Tab', 'tab', InputType.kBrowserTab, {
+              isDeletable: true,
+              tabId: selectedTabId,
+              url: 'https://google.com',
+            });
+
+        // Unselected Tab (ID: 200) exists in the menu but not checked.
+        const unselectedTabId = 200;
+
+        // Add the selected tab to the active files and added tabs maps.
+        composebox.files = new Map([[tokenTab, mockTabFile]]);
+        composebox.addedTabsIds = new Map([[selectedTabId, tokenTab]]);
+
+        // Mock the tab suggestions list from the backend with two tabs.
+        composebox.tabSuggestions = [
+          {
+            tabId: selectedTabId,
+            title: 'Selected Tab',
+            url: 'https://google.com',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          },
+          {
+            tabId: unselectedTabId,
+            title: 'Unselected Tab',
+            url: 'https://google.com/unselected',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          },
+        ];
+
+        // Assume a previously restored tab already exists.
+        composebox.restoredTabIds = [99];
+        await composebox.updateComplete;
+
+        composebox.submitCleanup();
+
+        // Verify: The selected Tab 100 is promoted to restored state, and the
+        // existing 99 is not overwritten.
+        assertTrue(composebox.restoredTabIds.includes(selectedTabId));
+        assertTrue(composebox.restoredTabIds.includes(99));
+
+        // Verify: The unselected Tab 200 must not be added to the restored
+        // state.
+        assertFalse(composebox.restoredTabIds.includes(unselectedTabId));
+
+        // Verify: The selected Tab 100 must be completely removed from the
+        // current active selection.
+        assertFalse(composebox.addedTabsIds.has(selectedTabId));
+        assertFalse(composebox.files.has(tokenTab));
+      });
+
+  test(
       'voice permission changed updates search-animated-glow' +
           'class and hides audio-wave',
       async () => {

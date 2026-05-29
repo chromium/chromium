@@ -1618,6 +1618,22 @@ export const ComposeboxEmbedderMixin =
           this.clearAutocompleteMatches();
           this.resetSmartComposeStats();
           this.animationState = GlowAnimationState.SUBMITTING;
+          if (this.addedTabsIds && this.addedTabsIds.size > 0) {
+            const activeTabsArray = Array.from(this.addedTabsIds.keys());
+            this.restoredTabIds =
+                [...new Set([...this.restoredTabIds, ...activeTabsArray])];
+
+            for (const tabId of activeTabsArray) {
+              const token = this.addedTabsIds.get(tabId);
+              if (token) {
+                this.files.delete(token);
+                this.addedTabsIds.delete(tabId);
+              }
+            }
+
+            this.files = new Map(this.files);
+            this.addedTabsIds = new Map(this.addedTabsIds);
+          }
           // Standard behavior: clear inputs if flag is enabled
           if (this.clearAllInputsWhenSubmittingQuery) {
             this.clearAllInputs(/* querySubmitted= */ true,
