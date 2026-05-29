@@ -525,6 +525,58 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   EXPECT_TRUE(service()->IsSyncFeatureActive());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(
+    SyncServiceImplTest,
+    DisabledByPolicyBeforeInit_DisablesOsTypesWhenFlagEnabledAndNoSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithoutSyncConsent();
+
+  InitializeService();
+  base::RunLoop().RunUntilIdle();
+
+  // Sync was disabled due to the policy.
+  ASSERT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
+            service()->GetDisableReasons());
+
+  // It should NOT set SyncFeatureDisabledViaDashboard.
+  EXPECT_FALSE(
+      service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
+
+  // But it should disable OS types.
+  EXPECT_FALSE(service()->GetUserSettings()->IsSyncAllOsTypesEnabled());
+  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedOsTypes().empty());
+}
+
+TEST_F(SyncServiceImplTest,
+       DisabledByPolicyBeforeInit_DoesNotDisableOsTypesWithSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithSyncConsent();
+
+  InitializeService();
+  base::RunLoop().RunUntilIdle();
+
+  // Sync was disabled due to the policy.
+  ASSERT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
+            service()->GetDisableReasons());
+
+  // It should set SyncFeatureDisabledViaDashboard.
+  EXPECT_TRUE(
+      service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
+
+  // But it should NOT disable OS types.
+  EXPECT_TRUE(service()->GetUserSettings()->IsSyncAllOsTypesEnabled());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Verify that disable by enterprise policy works even after the backend has
 // been initialized.
 TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {

@@ -89,6 +89,33 @@ TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {
   ExpectNotificationShown(false);
 }
 
+TEST_F(SyncErrorNotifierTest,
+       NotificationShownWhenSyncFeatureDisabledViaDashboard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  service_.GetUserSettings()->SetSyncFeatureDisabledViaDashboard();
+  service_.SetInitialSyncFeatureSetupComplete(true);
+
+  error_notifier_->OnStateChanged(&service_);
+  ExpectNotificationShown(true);
+}
+
+TEST_F(SyncErrorNotifierTest,
+       NoNotificationWhenSyncFeatureDisabledViaDashboardWithoutFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  service_.GetUserSettings()->SetSyncFeatureDisabledViaDashboard();
+  service_.SetInitialSyncFeatureSetupComplete(true);
+
+  error_notifier_->OnStateChanged(&service_);
+  ExpectNotificationShown(false);
+}
+
 TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
   service_.GetUserSettings()->SetPassphraseRequired();
   service_.SetInitialSyncFeatureSetupComplete(true);

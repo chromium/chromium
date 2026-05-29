@@ -85,6 +85,15 @@ void OSSyncHandler::OnSyncShutdown(syncer::SyncService* service) {
 }
 
 void OSSyncHandler::HandleDidNavigateToOsSyncPage(const base::ListValue& args) {
+  syncer::SyncService* service = GetSyncService();
+  if (service && !service->HasSyncConsent() &&
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+    // For signed-in non-syncing users, clearing this flag acts solely to
+    // dismiss the system/sync error notification without other side effects.
+    // Since the dashboard reset previously disabled all individual OS types,
+    // the user must still manually re-enable the toggles they want to sync.
+    service->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
+  }
   HandleOsSyncPrefsDispatch(args);
 }
 

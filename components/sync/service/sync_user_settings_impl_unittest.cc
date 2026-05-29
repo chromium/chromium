@@ -750,6 +750,61 @@ TEST_F(SyncUserSettingsImplTest, SyncFeatureDisabledViaDashboard) {
   EXPECT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
 }
 
+TEST_F(
+    SyncUserSettingsImplTest,
+    SetSyncFeatureDisabledViaDashboardDisablesOsTypesWhenFlagEnabledAndNotSyncing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  // Ensure OS types are enabled by default.
+  ASSERT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+
+  sync_user_settings->SetSyncFeatureDisabledViaDashboard();
+
+  EXPECT_FALSE(sync_user_settings->IsSyncAllOsTypesEnabled());
+  EXPECT_TRUE(sync_user_settings->GetSelectedOsTypes().empty());
+}
+
+TEST_F(SyncUserSettingsImplTest,
+       SetSyncFeatureDisabledViaDashboardDoesNotDisableOsTypesWithSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  // Ensure OS types are enabled by default.
+  ASSERT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+
+  sync_user_settings->SetSyncFeatureDisabledViaDashboard();
+
+  EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+}
+
+TEST_F(
+    SyncUserSettingsImplTest,
+    SetSyncFeatureDisabledViaDashboardDoesNotDisableOsTypesWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  // Ensure OS types are enabled by default.
+  ASSERT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+
+  sync_user_settings->SetSyncFeatureDisabledViaDashboard();
+
+  EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+}
+
 TEST_F(SyncUserSettingsImplTest,
        PreferredDataTypesWhileSyncFeatureDisabledViaDashboard) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =

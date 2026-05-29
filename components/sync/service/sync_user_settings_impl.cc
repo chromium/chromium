@@ -210,6 +210,11 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
 #if BUILDFLAG(IS_CHROMEOS)
 void SyncUserSettingsImpl::SetSyncFeatureDisabledViaDashboard() {
   prefs_->SetSyncFeatureDisabledViaDashboard();
+  if (delegate_->GetSyncAccountStateForPrefs() ==
+          SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent &&
+      IsReplaceSyncPromosWithSignInPromosEnabled()) {
+    SetSelectedOsTypes(/*sync_all_os_types=*/false, UserSelectableOsTypeSet());
+  }
 }
 
 void SyncUserSettingsImpl::ClearSyncFeatureDisabledViaDashboard() {

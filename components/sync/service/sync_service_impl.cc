@@ -351,12 +351,19 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY)) {
     StopAndClear(ResetEngineReason::kEnterprisePolicy);
 #if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
-    // removed, for historic reasons. It is unclear if this behavior is
-    // optional, because it is indistinguishable from the
-    // sync-reset-via-dashboard case. It can be resolved by invoking
-    // ClearSyncFeatureDisabledViaDashboard().
-    user_settings_->SetSyncFeatureDisabledViaDashboard();
+    // Disable OS data types to avoid automatic local data upload upon policy
+    // removal, as OS data types do not support dual storage with UNO.
+    if (!HasSyncConsent() && IsReplaceSyncPromosWithSignInPromosEnabled()) {
+      user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                         UserSelectableOsTypeSet());
+    } else {
+      // On ChromeOS Ash, sync-the-feature stays disabled even after the policy
+      // is removed, for historic reasons. It is unclear if this behavior is
+      // optional, because it is indistinguishable from the
+      // sync-reset-via-dashboard case. It can be resolved by invoking
+      // ClearSyncFeatureDisabledViaDashboard().
+      user_settings_->SetSyncFeatureDisabledViaDashboard();
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN)) {
     // On ChromeOS-Ash, signout is not possible, so it's not necessary to handle
@@ -1894,12 +1901,19 @@ void SyncServiceImpl::OnSyncClientDisabledByPolicyChanged() {
   if (user_settings_->IsSyncClientDisabledByPolicy()) {
     StopAndClear(ResetEngineReason::kEnterprisePolicy);
 #if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
-    // removed, for historic reasons. It is unclear if this behavior is
-    // optional, because it is indistinguishable from the
-    // sync-reset-via-dashboard case. It can be resolved by invoking
-    // ClearSyncFeatureDisabledViaDashboard().
-    user_settings_->SetSyncFeatureDisabledViaDashboard();
+    // Disable OS data types to avoid automatic local data upload upon policy
+    // removal, as OS data types do not support dual storage with UNO.
+    if (!HasSyncConsent() && IsReplaceSyncPromosWithSignInPromosEnabled()) {
+      user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                         UserSelectableOsTypeSet());
+    } else {
+      // On ChromeOS Ash, sync-the-feature stays disabled even after the policy
+      // is removed, for historic reasons. It is unclear if this behavior is
+      // optional, because it is indistinguishable from the
+      // sync-reset-via-dashboard case. It can be resolved by invoking
+      // ClearSyncFeatureDisabledViaDashboard().
+      user_settings_->SetSyncFeatureDisabledViaDashboard();
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   } else {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.

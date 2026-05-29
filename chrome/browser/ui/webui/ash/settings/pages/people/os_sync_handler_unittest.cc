@@ -11,6 +11,7 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -19,9 +20,11 @@
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync/test/test_sync_user_settings.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -125,12 +128,13 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-        "test@gmail.com", signin::ConsentLevel::kSync);
+        "test@gmail.com", primary_account_consent_level_);
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildTestSyncService)));
     user_settings_ = sync_service_->GetUserSettings();
+    sync_service_->SetSignedIn(primary_account_consent_level_);
 
     auto handler = std::make_unique<OSSyncHandler>(profile());
     handler_ = handler.get();
@@ -186,6 +190,8 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
   TestWebUIProvider test_web_ui_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_web_ui_factory_;
   raw_ptr<OSSyncHandler, DanglingUntriaged> handler_;
+  signin::ConsentLevel primary_account_consent_level_ =
+      signin::ConsentLevel::kSync;
 
  private:
   MockNewWindowDelegate new_window_delegate_;
@@ -324,6 +330,57 @@ TEST_F(OsSyncHandlerTest, OpenBrowserSyncSettings) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::ListValue empty_args;
   web_ui_->HandleReceivedMessage("OpenBrowserSyncSettings", empty_args);
+}
+
+class OsSyncHandlerTestWithoutSyncConsent : public OsSyncHandlerTest {
+ protected:
+  OsSyncHandlerTestWithoutSyncConsent() {
+    primary_account_consent_level_ = signin::ConsentLevel::kSignin;
+  }
+};
+
+TEST_F(
+    OsSyncHandlerTestWithoutSyncConsent,
+    NavigateToPageClearsSyncFeatureDisabledViaDashboardWhenFlagEnabledAndNoSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  static_cast<syncer::TestSyncUserSettings*>(user_settings_)
+      ->SetSyncFeatureDisabledViaDashboard();
+  ASSERT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
+
+  handler_->HandleDidNavigateToOsSyncPage(base::ListValue());
+  EXPECT_FALSE(user_settings_->IsSyncFeatureDisabledViaDashboard());
+}
+
+TEST_F(
+    OsSyncHandlerTest,
+    NavigateToPageDoesNotClearSyncFeatureDisabledViaDashboardWithSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  // ConsentLevel::kSync is set by default in SetUp().
+  static_cast<syncer::TestSyncUserSettings*>(user_settings_)
+      ->SetSyncFeatureDisabledViaDashboard();
+  ASSERT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
+
+  handler_->HandleDidNavigateToOsSyncPage(base::ListValue());
+  EXPECT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
+}
+
+TEST_F(
+    OsSyncHandlerTestWithoutSyncConsent,
+    NavigateToPageDoesNotClearSyncFeatureDisabledViaDashboardWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  static_cast<syncer::TestSyncUserSettings*>(user_settings_)
+      ->SetSyncFeatureDisabledViaDashboard();
+  ASSERT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
+
+  handler_->HandleDidNavigateToOsSyncPage(base::ListValue());
+  EXPECT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
 }
 
 }  // namespace

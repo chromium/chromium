@@ -15107,6 +15107,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
 
       <if expr="is_chromeos">
+        <message name="IDS_SYNC_DASHBOARD_DISABLED_BUBBLE_VIEW_TITLE" desc="Title in the notification shown when sync has been reset from the Google Dashboard.">
+          ChromeOS data no longer synced
+        </message>
+        <message name="IDS_SYNC_DASHBOARD_DISABLED_BUBBLE_VIEW_MESSAGE" desc="Message in the notification shown when sync has been reset from the Google Dashboard.">
+          To get your apps, settings, and Wi-Fi networks on all your devices, turn on sync in your ChromeOS settings
+        </message>
         <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
           To start sync, enter your passphrase
         </message>

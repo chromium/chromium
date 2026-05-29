@@ -105,7 +105,9 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
+  if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard() &&
+      (service->HasSyncConsent() ||
+       !syncer::IsReplaceSyncPromosWithSignInPromosEnabled())) {
     return {SyncStatusMessageType::kSyncError,
             IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
             IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,

@@ -782,7 +782,8 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue& args) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Mark Sync as requested by the user, in case it was reset via dashboard.
-  if (service) {
+  if (service && (service->HasSyncConsent() ||
+                  !syncer::IsReplaceSyncPromosWithSignInPromosEnabled())) {
     service->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
