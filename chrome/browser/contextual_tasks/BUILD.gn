@@ -484,6 +484,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "contextual_tasks_composebox_handler_browsertest.cc",
       "contextual_tasks_context_service_browsertest.cc",
       "contextual_tasks_page_handler_browsertest.cc",
       "contextual_tasks_ui_browsertest.cc",
@@ -516,10 +517,14 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/contextual_search:test_support",
       "//components/contextual_tasks/public:feature_list",
       "//components/contextual_tasks/public:test_support",
+      "//components/omnibox/common:features",
       "//components/optimization_guide/core:test_support",
       "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:test_support",
@@ -528,6 +533,7 @@ if (!is_android) {
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
+      "//components/tabs:test_support",
       "//content/test:test_support",
       "//google_apis",
       "//testing/gmock",
@@ -566,7 +572,6 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
-      "contextual_tasks_composebox_handler_unittest.cc",
       "contextual_tasks_panel_host_desktop_unittest.cc",
       "contextual_tasks_web_contents_user_data_unittest.cc",
     ]

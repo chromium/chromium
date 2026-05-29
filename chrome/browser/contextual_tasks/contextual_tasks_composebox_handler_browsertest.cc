@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -21,6 +22,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
@@ -36,8 +39,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -48,6 +50,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -55,6 +58,9 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -71,49 +77,78 @@
 class BrowserWindowInterface;
 class TemplateURLService;
 
-class LocalContextualSearchboxHandlerTestHarness
-    : public BrowserWithTestWindowTest {
+class LocalContextualSearchboxHandlerTestHarness : public InProcessBrowserTest {
  public:
-  LocalContextualSearchboxHandlerTestHarness()
-      : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_)),
-        get_variations_ids_provider_(
-            variations::VariationsIdsProvider::Mode::kUseSignedInState) {}
+  LocalContextualSearchboxHandlerTestHarness() = default;
   ~LocalContextualSearchboxHandlerTestHarness() override = default;
 
-  void TearDown() override {
-    web_contents_ = nullptr;
-    BrowserWithTestWindowTest::TearDown();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    tabs::TabInterface* active_tab = AddTab(GURL(url::kAboutBlankURL));
+    web_contents_ = active_tab->GetContents();
+
+    template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
   }
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL(url::kAboutBlankURL));
-    web_contents_ =
-        TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  void TearDownOnMainThread() override {
+    // Safely reset pointers inside controllers to avoid dangling references
+    for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
+      tabs::TabInterface* tab =
+          tabs::TabLookupFromWebContents::FromWebContents(
+              browser()->tab_strip_model()->GetWebContentsAt(i))
+              ->model();
+      if (tab && tab->GetTabFeatures()) {
+        tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+            nullptr);
+      }
+    }
+    mock_tab_controller_ = nullptr;
+    web_contents_ = nullptr;
+    template_url_service_ = nullptr;
+    tab_features_override_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
-  network::TestURLLoaderFactory url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   contextual_search::FakeVariationsClient fake_variations_client_;
-  variations::test::ScopedVariationsIdsProvider get_variations_ids_provider_;
+  raw_ptr<tabs::TabFeatures> tab_features_override_ = nullptr;
+
+  // Mock controller kept by Setup/AddTab to set expectations
+  raw_ptr<MockTabContextualizationController> mock_tab_controller_ = nullptr;
 
   // Helper methods to access protected members
   content::WebContents* web_contents() { return web_contents_; }
-  TestingProfile* profile() { return GetProfile(); }
+  Profile* profile() { return browser()->profile(); }
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() {
-    return test_shared_loader_factory_;
+    return profile()
+        ->GetDefaultStoragePartition()
+        ->GetURLLoaderFactoryForBrowserProcess();
   }
-  TemplateURLService* template_url_service() {
-    return template_url_service_.get();
-  }
+  TemplateURLService* template_url_service() { return template_url_service_; }
   contextual_search::FakeVariationsClient* fake_variations_client() {
     return &fake_variations_client_;
+  }
+
+  tabs::TabInterface* AddTab(const GURL& url) {
+    chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_LINK);
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver navigation_observer(contents);
+    navigation_observer.Wait();
+
+    tabs::TabInterface* tab =
+        tabs::TabLookupFromWebContents::FromWebContents(contents)->model();
+    tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(nullptr);
+    auto mock_tab_controller =
+        std::make_unique<MockTabContextualizationController>(tab);
+    mock_tab_controller_ = mock_tab_controller.get();
+    tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+        std::move(mock_tab_controller));
+
+    return tab;
   }
 };
 
@@ -250,7 +285,15 @@ class MockLensSearchController : public LensSearchController {
 class ContextualTasksComposeboxHandlerTest
     : public LocalContextualSearchboxHandlerTestHarness {
  public:
-  ContextualTasksComposeboxHandlerTest() = default;
+  ContextualTasksComposeboxHandlerTest()
+      : ContextualTasksComposeboxHandlerTest(
+            std::map<std::string, std::string>()) {}
+
+  explicit ContextualTasksComposeboxHandlerTest(
+      const std::map<std::string, std::string>& parameters) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        contextual_tasks::kContextualTasks, parameters);
+  }
   ~ContextualTasksComposeboxHandlerTest() override = default;
 
   void SimulateUploadStatusChanged(
@@ -289,22 +332,7 @@ class ContextualTasksComposeboxHandlerTest
     return model;
   }
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(contextual_tasks::kContextualTasks);
-
-    // Install override before AddTab is called in base SetUp.
-    lens_controller_override_ =
-        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-            base::BindLambdaForTesting(
-                [this](tabs::TabInterface& tab)
-                    -> std::unique_ptr<LensSearchController> {
-                  auto mock = std::make_unique<
-                      testing::NiceMock<MockLensSearchController>>(&tab);
-                  this->mock_lens_controller_ = mock.get();
-                  return mock;
-                }));
-
-    LocalContextualSearchboxHandlerTestHarness::SetUp();
+  void SetUpMockUI() {
     web_ui_.set_web_contents(web_contents());
     webui::SetTabInterface(web_contents(), nullptr);
     webui::SetBrowserWindowInterface(web_contents(), browser());
@@ -376,7 +404,9 @@ class ContextualTasksComposeboxHandlerTest
         testing::NiceMock<contextual_tasks::MockContextualTasksService>>();
     mock_contextual_tasks_service_ptr_ =
         mock_contextual_tasks_service_owner_.get();
+  }
 
+  void SetUpHandler() {
     mojo::PendingRemote<composebox::mojom::Page> page_remote;
     page_receiver_ = page_remote.InitWithNewPipeAndPassReceiver();
 
@@ -418,26 +448,31 @@ class ContextualTasksComposeboxHandlerTest
                                                error_type);
             });
 
-    // Setup MockTabContextualizationController
-    tabs::TabInterface* active_tab =
-        TabListInterface::From(browser())->GetActiveTab();
-    // Clear existing controller to avoid UserData collision
-    active_tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
-        nullptr);
-
-    auto mock_tab_controller =
-        std::make_unique<MockTabContextualizationController>(active_tab);
-    mock_tab_controller_ = mock_tab_controller.get();
-    active_tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
-        std::move(mock_tab_controller));
-
     ASSERT_TRUE(mock_lens_controller_);
+  }
+
+  void SetUpOnMainThread() override {
+    // Install override before AddTab is called in base SetUpOnMainThread.
+    lens_controller_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindLambdaForTesting(
+                [this](tabs::TabInterface& tab)
+                    -> std::unique_ptr<LensSearchController> {
+                  auto mock = std::make_unique<
+                      testing::NiceMock<MockLensSearchController>>(&tab);
+                  this->mock_lens_controller_ = mock.get();
+                  return mock;
+                }));
+
+    LocalContextualSearchboxHandlerTestHarness::SetUpOnMainThread();
+    SetUpMockUI();
+    SetUpHandler();
   }
 
   std::unique_ptr<contextual_tasks::MockContextualTasksService>
       mock_contextual_tasks_service_owner_;
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     // Manually verify and clear expectations to avoid issues during teardown
     // when the tab is closed and CloseLensSync is called again with kTabClosed.
     testing::Mock::VerifyAndClearExpectations(mock_lens_controller_);
@@ -453,7 +488,7 @@ class ContextualTasksComposeboxHandlerTest
     session_handle_.reset();
     service_.reset();
     mock_ui_.reset();
-    LocalContextualSearchboxHandlerTestHarness::TearDown();
+    LocalContextualSearchboxHandlerTestHarness::TearDownOnMainThread();
   }
 
  protected:
@@ -472,7 +507,6 @@ class ContextualTasksComposeboxHandlerTest
   raw_ptr<contextual_tasks::MockContextualTasksService>
       mock_contextual_tasks_service_ptr_ = nullptr;
 
-  raw_ptr<MockTabContextualizationController> mock_tab_controller_ = nullptr;
   raw_ptr<MockLensSearchController> mock_lens_controller_ = nullptr;
 
   testing::NiceMock<MockSearchboxPage> mock_searchbox_page_;
@@ -486,13 +520,52 @@ class ContextualTasksComposeboxHandlerTest
       contextual_search::ContextualSearchContextController>>
       controller_weak_factory_;
 
- private:
   base::test::ScopedFeatureList feature_list_;
   ui::UserDataFactory::ScopedOverride lens_controller_override_;
   mojo::PendingReceiver<composebox::mojom::Page> page_receiver_;
 };
 
-TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
+class ContextualTasksComposeboxHandlerTestWithAutoSuggestionDisabled
+    : public ContextualTasksComposeboxHandlerTest {
+ public:
+  ContextualTasksComposeboxHandlerTestWithAutoSuggestionDisabled()
+      : ContextualTasksComposeboxHandlerTest(
+            {{"ContextualTasksTabAutoSuggestionChipEnabled", "false"}}) {}
+  ~ContextualTasksComposeboxHandlerTestWithAutoSuggestionDisabled() override =
+      default;
+};
+
+class ContextualTasksComposeboxHandlerTestWithContextManagementEnabled
+    : public ContextualTasksComposeboxHandlerTest {
+ public:
+  ContextualTasksComposeboxHandlerTestWithContextManagementEnabled() {
+    feature_list_context_management_.InitAndEnableFeature(
+        omnibox::kContextManagementInComposebox);
+  }
+  ~ContextualTasksComposeboxHandlerTestWithContextManagementEnabled() override =
+      default;
+
+  void SetUpOnMainThread() override {
+    lens_controller_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindLambdaForTesting(
+                [this](tabs::TabInterface& tab)
+                    -> std::unique_ptr<LensSearchController> {
+                  auto mock = std::make_unique<
+                      testing::NiceMock<MockLensSearchController>>(&tab);
+                  this->mock_lens_controller_ = mock.get();
+                  return mock;
+                }));
+
+    LocalContextualSearchboxHandlerTestHarness::SetUpOnMainThread();
+    SetUpMockUI();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_context_management_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL in SubmitQuery!";
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
@@ -507,7 +580,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
   EXPECT_EQ(session_handle_->previous_query(), "test query");
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, CloseLensOverlayFromWebUI) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CloseLensOverlayFromWebUI) {
   EXPECT_CALL(*mock_lens_controller_,
               CloseLensAsync(lens::LensOverlayDismissalSource::
                                  kContextualTasksImageUploadsDisabled));
@@ -517,7 +591,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, CloseLensOverlayFromWebUI) {
           kContextualTasksImageUploadsDisabled);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, CreateAndSendQueryMessage) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage) {
   std::string kQuery = "direct query";
   EXPECT_CALL(*mock_ui_, GetTaskId())
       .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
@@ -533,8 +608,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, CreateAndSendQueryMessage) {
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_WithOverlayToken) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_WithOverlayToken) {
   std::string kQuery = "direct query";
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
 
@@ -558,8 +633,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_NoOverlayToken) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_NoOverlayToken) {
   std::string kQuery = "direct query";
 
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -580,8 +655,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_RecontextualizeExpiredTab) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_RecontextualizeExpiredTab) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "recontextualize query";
@@ -674,8 +749,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_RecontextualizeContentChanged) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    CreateAndSendQueryMessage_RecontextualizeContentChanged) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "recontextualize query";
@@ -774,8 +850,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_NoRecontextualizationIfUnchanged) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    CreateAndSendQueryMessage_NoRecontextualizationIfUnchanged) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "valid tab query";
@@ -874,8 +951,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_ActiveTabNotInContext) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_ActiveTabNotInContext) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "query with unrelated active tab";
@@ -928,8 +1005,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_ActiveTabUrlMismatch) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_ActiveTabUrlMismatch) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "query with url mismatch";
@@ -990,7 +1067,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 // crbug.com/488112121: This test covers the temporary behavior of disabling
 // tools when the aegc=1 URL parameter is present. Remove this test when the
 // temporary workaround in ContextualTasksComposeboxHandler is removed.
-TEST_F(ContextualTasksComposeboxHandlerTest, AegcParameterDisablesTools) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       AegcParameterDisablesTools) {
   omnibox::SearchboxConfig config;
   config.add_input_type_configs()->set_input_type(
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
@@ -1027,8 +1105,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AegcParameterDisablesTools) {
       testing::UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_FILE));
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_RecontextualizeScreenshotChanged_SkBitmap) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    CreateAndSendQueryMessage_RecontextualizeScreenshotChanged_SkBitmap) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "recontextualize query";
@@ -1131,7 +1210,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(
+IN_PROC_BROWSER_TEST_F(
     ContextualTasksComposeboxHandlerTest,
     CreateAndSendQueryMessage_NoRecontextualizationIfScreenshotUnchanged_SkBitmap) {
   // Test case for no recontextualization.
@@ -1225,7 +1304,8 @@ TEST_F(
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, OnAutocompleteAccept) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       OnAutocompleteAccept) {
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
@@ -1238,7 +1318,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, OnAutocompleteAccept) {
       false, u"test query", match, match);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, HandleLensButtonClick) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       HandleLensButtonClick) {
   EXPECT_CALL(
       *mock_lens_controller_,
       OpenLensOverlay(
@@ -1246,8 +1327,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, HandleLensButtonClick) {
   handler_->HandleLensButtonClick();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       OnAutocompleteAccept_ExtractsQuery) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       OnAutocompleteAccept_ExtractsQuery) {
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce([](std::unique_ptr<
                     contextual_search::ContextualSearchContextController::
@@ -1265,8 +1346,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       false, u"extracted query", match, match);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       OnAutocompleteAccept_NoQueryParam) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       OnAutocompleteAccept_NoQueryParam) {
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce([](std::unique_ptr<
                     contextual_search::ContextualSearchContextController::
@@ -1292,7 +1373,8 @@ class ContextualTasksComposeboxHandlerToolModeTest
     : public ContextualTasksComposeboxHandlerTest,
       public ::testing::WithParamInterface<ToolModeTestParam> {};
 
-TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksComposeboxHandlerToolModeTest,
+                       SetsToolModeFlags) {
   const auto& param = GetParam();
 
   handler_->SetActiveToolMode(param.tool_mode);
@@ -1319,7 +1401,8 @@ INSTANTIATE_TEST_SUITE_P(
         ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN},
         ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD}));
 
-TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       AddTabContext_Delayed) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "delayed tab query";
@@ -1366,6 +1449,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   });
 
   handler_->AddTabContext(tab_id, /*delay_upload=*/true, callback.Get());
+  std::vector<int32_t> selected_tab_ids = handler_->GetSelectedTabIds();
+  EXPECT_THAT(selected_tab_ids, testing::Contains(tab_id));
   ASSERT_TRUE(token_opt.has_value());
   base::UnguessableToken token = token_opt.value();
   ASSERT_FALSE(token.is_empty());
@@ -1433,7 +1518,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   ASSERT_EQ(handler_->GetNumTabsDelayed(), 0);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       DeleteContext_Delayed) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "delete context query";
@@ -1510,21 +1596,21 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, RestoreTabIds) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kContextManagementInComposebox);
-
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    RestoreTabIds) {
   std::vector<int32_t> restored_tab_ids = {1, 2};
   EXPECT_CALL(*mock_ui_, GetRestoredTabIds())
       .WillOnce(testing::Return(restored_tab_ids));
   EXPECT_CALL(mock_searchbox_page_, SetRestoredTabIds(restored_tab_ids))
       .Times(1);
 
-  handler_->InitializeInputStateModel();
+  SetUpHandler();
+  searchbox_page_receiver_.FlushForTesting();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, GetSelectedTabIds) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       GetSelectedTabIds) {
   int32_t tab_id = 15;
   base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
       callback;
@@ -1534,7 +1620,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, GetSelectedTabIds) {
   EXPECT_THAT(selected_tab_ids, testing::Contains(tab_id));
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_WaitsForUpload) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_WaitsForUpload) {
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
@@ -1624,8 +1711,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_WaitsForUpload) {
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_ImageReplacedThenOtherTerminalStates) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_ImageReplacedThenOtherTerminalStates) {
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
@@ -1771,8 +1858,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_ThenDeleteToTriggerFullSubmit) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_ThenDeleteToTriggerFullSubmit) {
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
@@ -1865,8 +1952,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_EQ(handler_->GetNumTabsDelayed(), 0);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_AfterDeleteLastUploadingFile) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_AfterDeleteLastUploadingFile) {
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
@@ -1952,8 +2039,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_WaitsForDelayedUpload) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_WaitsForDelayedUpload) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is null.";
   std::string kQuery = "recontextualize query";
@@ -2069,7 +2156,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_Immediately) {
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
@@ -2150,8 +2238,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_WaitsForFilesAndDelayedTabs) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_WaitsForFilesAndDelayedTabs) {
   // Set up tabs and functions that return them.
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
@@ -2316,8 +2404,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_EQ(handler_->GetNumTabsDelayed(), 0);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       AddDeleteAdd_DelayedAndRegular_Submit) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       AddDeleteAdd_DelayedAndRegular_Submit) {
   // Set up task and tabs, and mock related functions.
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
@@ -2504,8 +2592,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_WithVisualSelection) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_WithVisualSelection) {
   std::string kQuery = "overlay query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
@@ -2546,8 +2634,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_WithVisualSelection_AndUpload) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    CreateAndSendQueryMessage_WithVisualSelection_AndUpload) {
   std::string kQuery = "overlay query with upload";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
@@ -2635,8 +2724,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_WithVisualSelection_AndUploadedTokens) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    CreateAndSendQueryMessage_WithVisualSelection_AndUploadedTokens) {
   std::string kQuery = "overlay query with tokens";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
@@ -2692,8 +2782,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_NoVisualSelection) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_NoVisualSelection) {
   std::string kQuery = "normal query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   // Token that exists but should not be used.
@@ -2747,7 +2837,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       ClearFiles_Delayed) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "clear files query";
@@ -2816,8 +2907,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       ClearFiles_BlockAutoSuggestedTabs) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       ClearFiles_BlockAutoSuggestedTabs) {
   GURL url("https://example.com");
   auto create_tab_info = [&]() {
     auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
@@ -2860,16 +2951,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_FALSE(mock_ui_->IsActiveTabContextSuggestionShowing());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       UpdateSuggestedTabContext_ForceAllowWhenUploadedViaLens) {
-  // 1. Explicitly disable the auto suggestion chip feature param.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasks,
-      {{"ContextualTasksTabAutoSuggestionChipEnabled", "false"}});
-
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithAutoSuggestionDisabled,
+    UpdateSuggestedTabContext_ForceAllowWhenUploadedViaLens) {
   GURL url("https://example.com");
-  AddTab(browser(), url);
+  AddTab(url);
   auto create_tab_info = [&]() {
     auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
     info->url = url;
@@ -2900,16 +2986,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_TRUE(mock_ui_->IsActiveTabContextSuggestionShowing());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       UpdateSuggestedTabContext_NoForceAllowWhenVisualQuery) {
-  // 1. Explicitly disable the auto suggestion chip feature param.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasks,
-      {{"ContextualTasksTabAutoSuggestionChipEnabled", "false"}});
-
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithAutoSuggestionDisabled,
+    UpdateSuggestedTabContext_NoForceAllowWhenVisualQuery) {
   GURL url("https://example.com");
-  AddTab(browser(), url);
+  AddTab(url);
   auto create_tab_info = [&]() {
     auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
     info->url = url;
@@ -2938,7 +3019,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   searchbox_page_receiver_.FlushForTesting();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       UpdateSuggestedTabContext) {
   GURL url("https://example.com");
   auto create_tab_info = [&]() {
     auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
@@ -2962,7 +3044,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
   EXPECT_TRUE(mock_ui_->IsActiveTabContextSuggestionShowing());
   // 2. Blocklist the URL by dismissing an automatic chip.
   // We need to navigate the active tab to the URL being blocklisted.
-  AddTab(browser(), url);
+  AddTab(url);
 
   handler_->DeleteContext(base::UnguessableToken::Create(),
                           /*from_automatic_chip=*/true);
@@ -3013,7 +3095,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
   EXPECT_TRUE(mock_ui_->IsActiveTabContextSuggestionShowing());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       AddFileContext_NullSessionHandle) {
   // Create a handler with a callback that returns nullptr for session handle.
   mojo::PendingRemote<composebox::mojom::Page> page_remote;
   mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
@@ -3055,8 +3138,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
             contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       OnContextUploadStatusChanged_LensOverlayToken_Ignored) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       OnContextUploadStatusChanged_LensOverlayToken_Ignored) {
   base::UnguessableToken lens_token = base::UnguessableToken::Create();
 
   EXPECT_CALL(*mock_lens_controller_->mock_router(),
@@ -3081,7 +3164,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       ActiveModelIsPassed) {
   // 1. Arrange: Setup a mock callback to simulate ContextualTasksUI returning a
   // model. We explicitly set a distinct state (MODEL_MODE_GEMINI_PRO) to verify
   // it gets passed correctly.
@@ -3120,7 +3204,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, SuggestInputsCallbackWorks) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SuggestInputsCallbackWorks) {
   auto mock_session =
       std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
 
@@ -3148,8 +3233,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SuggestInputsCallbackWorks) {
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
       std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-      std::move(searchbox_page_remote),
-      mock_get_session_callback,
+      std::move(searchbox_page_remote), mock_get_session_callback,
       base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
                           base::Unretained(mock_ui_.get())),
       base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
@@ -3163,8 +3247,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SuggestInputsCallbackWorks) {
   ASSERT_TRUE(result.has_value());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       OnLensThumbnailCreated_TriggersUploadStatusChanges) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       OnLensThumbnailCreated_TriggersUploadStatusChanges) {
   // Setup: mock the overlay token.
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
   EXPECT_CALL(*mock_lens_controller_->mock_router(),
@@ -3219,8 +3303,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_NE(successful_uploads[1], first_token);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_WaitsForRecontextualization) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_WaitsForRecontextualization) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "stashed query";
@@ -3330,8 +3414,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       Recontextualization_TabInvalidatedGracefullyCompletes) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       Recontextualization_TabInvalidatedGracefullyCompletes) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "invalid tab query";
@@ -3410,8 +3494,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       SubmitQuery_WaitsForModalityChipUpload) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SubmitQuery_WaitsForModalityChipUpload) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
       .WillRepeatedly(
@@ -3482,7 +3566,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_EQ(handler_->GetNumContextUploading(), 0);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest, MultiFilesSelected) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       MultiFilesSelected) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -3524,8 +3610,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, MultiFilesSelected) {
   EXPECT_EQ(handler_->GetNumContextUploading(), 2);
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       UpdateStateFromUrl_SoftNavigation) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       UpdateStateFromUrl_SoftNavigation) {
   // Arrange: Setup local config with Canvas tool and its url params.
   omnibox::SearchboxConfig config;
   auto* canvas_config = config.add_tool_configs();
