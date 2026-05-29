@@ -439,6 +439,9 @@ def run_performance_test(video_file: str, driver: webdriver, args):
         for metric in common.METRICS:
             record(metric)
 
+        original_video = f"/usr/local/cipd/videostack_videos_30s/{video_file}"
+        common.calculate_psnr_ssim(video_file, output_file, original_video)
+
         logging.warning('Video analysis result of %s: %s', video_file, results)
     finally:
         if driver and casting and args.receiver:

@@ -416,6 +416,10 @@ def run_performance_test(video_file: str, driver: webdriver, args,
     for metric in common.METRICS:
         record(metric)
 
+    common.calculate_psnr_ssim(video_file,
+                               camera_params.video_file,
+                               original_video)
+
     # Explicitly log the results to the console.
     logging.warning('Video analysis result of %s: %s', video_file, results)
 

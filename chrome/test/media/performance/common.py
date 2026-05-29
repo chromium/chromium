@@ -917,6 +917,73 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     return driver, cb_platform, actual_version
 
 
+def calculate_psnr_ssim(video_file: str,
+                        recorded_path: str,
+                        original_path: str):
+    """Calculates PSNR and SSIM via FFmpeg and records them."""
+    import re
+
+    logging.info("Calculating PSNR and SSIM via FFmpeg...")
+
+    # PSNR command to compare the recorded video against the original reference.
+    # Args:
+    # - '-i': Input files (recorded_path, original_path).
+    # - '-lavfi': Libavfilter graph.
+    # - '[0:v][1:v]scale2ref[rec][orig]': Scale the recorded video (0:v) to
+    #   match the reference video (1:v) resolution.
+    # - '[rec][orig]psnr': Calculate PSNR on the scaled videos.
+    # - '-f null -': Force null output (don't save a file, just output stats).
+    psnr_cmd = [
+        'ffmpeg', '-i', recorded_path, '-i', original_path,
+        '-lavfi', '[0:v][1:v]scale2ref[rec][orig];[rec][orig]psnr',
+        '-f', 'null', '-'
+    ]
+    try:
+        psnr_result = subprocess.run(psnr_cmd,
+                                     capture_output=True,
+                                     text=True,
+                                     timeout=120)
+        psnr_match = re.search(r'average:(\d+\.\d+|inf)',
+                               psnr_result.stderr)
+        if psnr_match:
+            val = psnr_match.group(1)
+            psnr_val = 100.0 if val == 'inf' else float(val)
+            measures.average(video_file, 'video_perf',
+                                    'psnr').record(psnr_val)
+            logging.info("PSNR: %s", val)
+        else:
+            logging.warning(
+                "Failed to parse PSNR from FFmpeg output. Stderr: %s",
+                psnr_result.stderr)
+    except Exception as e:
+        logging.error("Failed to calculate PSNR: %s", e)
+
+    # SSIM command. Arguments are identical to PSNR above, but calculates
+    # Structural Similarity (SSIM) instead.
+    ssim_cmd = [
+        'ffmpeg', '-i', recorded_path, '-i', original_path,
+        '-lavfi', '[0:v][1:v]scale2ref[rec][orig];[rec][orig]ssim',
+        '-f', 'null', '-'
+    ]
+    try:
+        ssim_result = subprocess.run(ssim_cmd,
+                                     capture_output=True,
+                                     text=True,
+                                     timeout=120)
+        ssim_match = re.search(r'All:(\d+\.\d+)', ssim_result.stderr)
+        if ssim_match:
+            ssim_val = float(ssim_match.group(1))
+            measures.average(video_file, 'video_perf',
+                                    'ssim').record(ssim_val)
+            logging.info("SSIM: %f", ssim_val)
+        else:
+            logging.warning(
+                "Failed to parse SSIM from FFmpeg output. Stderr: %s",
+                ssim_result.stderr)
+    except Exception as e:
+        logging.error("Failed to calculate SSIM: %s", e)
+
+
 def finalize_results(chrome_version=None):
     """Dumps metrics and uploads to ResultDB if available."""
     if chrome_version:
