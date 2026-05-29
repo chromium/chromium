@@ -289,14 +289,15 @@ if (sanitizer_coverage_flags == "") {
   } else if (use_fuzzing_engine) {
     sanitizer_coverage_flags = "trace-pc-guard"
     if (use_centipede) {
-      # Centipede's minimal flags are listed in //third_party/fuzztest/src/centipede/clang-flags.txt.
-      # But, for users like Chromium using an up-to-date clang, we can also
-      # enable extra optional types of coverage which may make Centipede more
-      # effective. This list is not currently documented and has been derived
-      # from discussion with centipede creators (though one is warned about at
+      # Centipede's minimal flags are listed in
+      # //third_party/fuzztest/src/centipede/clang-flags.txt. But, for users
+      # like Chromium using an up-to-date clang, we can also enable extra
+      # optional types of coverage which may make Centipede more effective. This
+      # list is not currently documented and has been derived from discussion
+      # with centipede creators (though one is warned about at
       # https://github.com/google/centipede/blob/main/centipede_callbacks.cc#L68)
-      sanitizer_coverage_flags = sanitizer_coverage_flags +
-                                 ",pc-table,trace-cmp,control-flow"
+      sanitizer_coverage_flags =
+          sanitizer_coverage_flags + ",pc-table,trace-cmp,control-flow"
     }
   } else if (use_sanitizer_coverage) {
     sanitizer_coverage_flags = "trace-pc-guard,indirect-calls"
