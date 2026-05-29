@@ -34,14 +34,6 @@ BASE_FEATURE(kPrintWithPostScriptType42Fonts,
 
 // When using GDI printing, avoid rasterization if possible.
 BASE_FEATURE(kPrintWithReducedRasterization, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use XPS for printing instead of GDI.
-BASE_FEATURE(kUseXpsForPrinting, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use XPS for printing instead of GDI for printing PDF documents. This is
-// independent of `kUseXpsForPrinting`; can use XPS for PDFs even if still using
-// GDI for modifiable content.
-BASE_FEATURE(kUseXpsForPrintingFromPdf, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

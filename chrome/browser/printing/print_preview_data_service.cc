@@ -13,10 +13,6 @@
 #include "printing/print_job_constants.h"
 #include "printing/printing_utils.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/printing/xps_features.h"
-#endif
-
 // PrintPreviewDataStore stores data for preview workflow and preview printing
 // workflow.
 //
@@ -78,21 +74,6 @@ class PrintPreviewDataStore {
 
 #if DCHECK_IS_ON()
   bool IsValidData(int index, base::span<const uint8_t> data) const {
-#if BUILDFLAG(IS_WIN)
-    // Do not have access here whether this print document is from a modifiable
-    // source or not, so next best restriction is if some kind of XPS data
-    // generation is to be expected.
-    if (index == printing::COMPLETE_PREVIEW_DOCUMENT_INDEX &&
-        printing::IsXpsPrintCapabilityRequired()) {
-      // A valid Windows document could be PDF or XPS.
-      printing::DocumentDataType data_type =
-          printing::DetermineDocumentDataType(data);
-      return data_type == printing::DocumentDataType::kPdf ||
-             data_type == printing::DocumentDataType::kXps;
-    }
-#endif
-
-    // Non-Windows and all individual pages are only ever supposed to be PDF.
     return printing::LooksLikePdf(data);
   }
 #endif  // DCHECK_IS_ON()

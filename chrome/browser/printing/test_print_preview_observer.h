@@ -43,8 +43,8 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count() const { return rendered_page_count_; }
 
 #if BUILDFLAG(IS_WIN)
-  std::optional<DocumentDataType> last_document_composite_data_type() const {
-    return last_document_composite_data_type_;
+  bool did_composite_pdf_document() const {
+    return did_composite_pdf_document_;
   }
 #endif
 
@@ -67,7 +67,7 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count_ = 0;
 
 #if BUILDFLAG(IS_WIN)
-  std::optional<DocumentDataType> last_document_composite_data_type_;
+  bool did_composite_pdf_document_ = false;
 #endif
 
   const bool wait_for_loaded_;

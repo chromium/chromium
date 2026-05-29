@@ -25,7 +25,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/printing/print_compositor_util.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -66,10 +65,6 @@
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/printing/xps_features.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -298,17 +293,11 @@ void PrintViewManagerBase::PrintDocument(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  const bool source_is_pdf =
-      !print_job_->document()->settings().is_modifiable();
-  if (!ShouldPrintUsingXps(source_is_pdf)) {
-    // Print using GDI, which first requires conversion to EMF.
-    print_job_->StartConversionToNativeFormat(
-        print_data, page_size, content_area, offsets,
-        web_contents()->GetLastCommittedURL());
-    return;
-  }
-#endif
-
+  // Print using GDI, which first requires conversion to EMF.
+  print_job_->StartConversionToNativeFormat(
+      print_data, page_size, content_area, offsets,
+      web_contents()->GetLastCommittedURL());
+#else
   std::unique_ptr<MetafileSkia> metafile = std::make_unique<MetafileSkia>();
   CHECK(metafile->InitFromData(*print_data));
 
@@ -316,6 +305,7 @@ void PrintViewManagerBase::PrintDocument(
   PrintedDocument* document = print_job_->document();
   document->SetDocument(std::move(metafile));
   ShouldQuitFromInnerMessageLoop();
+#endif
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -623,7 +613,7 @@ void PrintViewManagerBase::DidPrintDocument(
     client->CompositeDocument(
         params->document_cookie, GetCurrentTargetFrame(), content,
         ui::AXTreeUpdate(), mojom::GenerateDocumentOutline::kNone,
-        GetCompositorDocumentType(),
+        mojom::PrintCompositor::DocumentType::kPDF,
         base::BindOnce(&PrintViewManagerBase::OnComposeDocumentDone,
                        weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
                        params->page_size, params->content_area,

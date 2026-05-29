@@ -121,9 +121,6 @@ enum SkiaDocumentType {
   kPDF,
   // MultiPictureDocument type
   kMSKP,
-  // XPS document type.
-  [EnableIf=is_win]
-  kXPS,
 };
 
 // Metafile data type encapsulated by a player.

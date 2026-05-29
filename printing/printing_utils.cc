@@ -29,8 +29,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "printing/printing_features.h"
 #endif
 
 namespace printing {
@@ -159,22 +157,6 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc) {
   }
 
   return printable_area_device_units;
-}
-
-DocumentDataType DetermineDocumentDataType(base::span<const uint8_t> data) {
-  if (LooksLikePdf(data)) {
-    return DocumentDataType::kPdf;
-  }
-  if (LooksLikeXps(data)) {
-    return DocumentDataType::kXps;
-  }
-  return DocumentDataType::kUnknown;
-}
-
-bool LooksLikeXps(base::span<const uint8_t> maybe_xps_data) {
-  constexpr auto kXpsStartsWith = base::span_from_cstring("PK\x03\x04");
-  return maybe_xps_data.size() >= 2000u &&
-         maybe_xps_data.first(kXpsStartsWith.size()) == kXpsStartsWith;
 }
 #endif  // BUILDFLAG(IS_WIN)
 

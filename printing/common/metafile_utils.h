@@ -50,10 +50,6 @@ sk_sp<SkDocument> MakePdfDocument(
     mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream);
 
-#if BUILDFLAG(IS_WIN)
-sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream);
-#endif
-
 SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
                                  TypefaceSerializationContext* typeface_ctx,
                                  ImageSerializationContext* image_ctx);

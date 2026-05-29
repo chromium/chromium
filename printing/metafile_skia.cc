@@ -209,11 +209,6 @@ bool MetafileSkia::FinishDocument() {
       doc = MakePdfDocument(printing::GetAgent(), title_, accessibility_tree_,
                             generate_document_outline_, &stream);
       break;
-#if BUILDFLAG(IS_WIN)
-    case mojom::SkiaDocumentType::kXPS:
-      doc = MakeXpsDocument(&stream);
-      break;
-#endif
     case mojom::SkiaDocumentType::kMSKP:
       SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
                                                data_->typeface_content_info,

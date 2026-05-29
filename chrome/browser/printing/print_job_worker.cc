@@ -36,7 +36,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/printing/xps_features.h"
 #include "printing/printed_page_win.h"
 #endif
 
@@ -163,30 +162,24 @@ void PrintJobWorker::PostWaitForPage() {
 void PrintJobWorker::OnNewPage() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (!document_)
+  if (!document_) {
     return;
+  }
 
-  bool do_spool_document = true;
 #if BUILDFLAG(IS_WIN)
-  const bool source_is_pdf =
-      !print_job_->document()->settings().is_modifiable();
-  if (!ShouldPrintUsingXps(source_is_pdf)) {
-    // Using the Windows GDI print API.
-    if (!OnNewPageHelperGdi())
-      return;
-
-    do_spool_document = false;
+  // Using the Windows GDI print API.
+  if (!OnNewPageHelperGdi()) {
+    return;
+  }
+#else
+  if (!document_->HasDocument()) {
+    PostWaitForPage();
+    return;
+  }
+  if (!SpoolDocument()) {
+    return;
   }
 #endif  // BUILDFLAG(IS_WIN)
-
-  if (do_spool_document) {
-    if (!document_->HasDocument()) {
-      PostWaitForPage();
-      return;
-    }
-    if (!SpoolDocument())
-      return;
-  }
 
   OnDocumentDone();
   // Don't touch `this` anymore since the instance could be destroyed.

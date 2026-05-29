@@ -9,7 +9,6 @@ import("//printing/buildflags/buildflags.gni")
 if (enable_printing) {
   source_set("printing") {
     public = [
-      "print_compositor_util.h",
       "print_error_dialog.h",
       "print_job.h",
       "print_job_manager.h",
@@ -45,10 +44,7 @@ if (enable_printing) {
     ]
 
     if (is_win) {
-      public += [
-        "pdf_to_emf_converter.h",
-        "xps_features.h",
-      ]
+      public += [ "pdf_to_emf_converter.h" ]
     }
 
     if (is_chromeos) {
@@ -115,7 +111,6 @@ if (enable_printing) {
 
   source_set("impl") {
     sources = [
-      "print_compositor_util.cc",
       "print_error_dialog.cc",
       "print_job.cc",
       "print_job_manager.cc",
@@ -166,7 +161,6 @@ if (enable_printing) {
       sources += [
         "pdf_to_emf_converter.cc",
         "printer_manager_dialog_win.cc",
-        "xps_features.cc",
       ]
       deps += [
         "//chrome/browser:primitives",

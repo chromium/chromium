@@ -9436,16 +9436,6 @@
     "expiry_milestone": 154
   },
   {
-    "name": "use-xps-for-printing",
-    "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "use-xps-for-printing-from-pdf",
-    "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "user-media-element",
     "owners": [ "ravjit@chromium.org", "tungnh@chromium.org" ],
     "expiry_milestone": 160

@@ -6652,16 +6652,6 @@ inline constexpr char kPrintWithReducedRasterizationName[] =
 inline constexpr char kPrintWithReducedRasterizationDescription[] =
     "When using GDI printing, avoid rasterization if possible.";
 
-inline constexpr char kUseXpsForPrintingName[] = "Use XPS for printing";
-inline constexpr char kUseXpsForPrintingDescription[] =
-    "When enabled, use XPS printing API instead of the GDI print API.";
-
-inline constexpr char kUseXpsForPrintingFromPdfName[] =
-    "Use XPS for printing from PDF";
-inline constexpr char kUseXpsForPrintingFromPdfDescription[] =
-    "When enabled, use XPS printing API instead of the GDI print API when "
-    "printing PDF documents.";
-
 // Mac -------------------------------------------------------------------------
 
 inline constexpr char kMacAccessibilityAPIMigrationName[] =

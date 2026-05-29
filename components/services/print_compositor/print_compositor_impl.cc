@@ -61,11 +61,6 @@ sk_sp<SkDocument> MakeDocument(
     mojom::GenerateDocumentOutline generate_document_outline,
     mojom::PrintCompositor::DocumentType document_type,
     SkWStream& stream) {
-#if BUILDFLAG(IS_WIN)
-  if (document_type == mojom::PrintCompositor::DocumentType::kXPS) {
-    return MakeXpsDocument(&stream);
-  }
-#endif
   CHECK_EQ(document_type, mojom::PrintCompositor::DocumentType::kPDF);
   return MakePdfDocument(
       creator, title,
