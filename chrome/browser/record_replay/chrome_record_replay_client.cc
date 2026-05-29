@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/record_replay/task_parameters_extractor_factory.h"
+#include "chrome/browser/record_replay/task_service_factory.h"
 #include "chrome/browser/record_replay/task_store_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -21,6 +22,7 @@
 #include "components/record_replay/core/browser/task_discovery_service.h"
 #include "components/record_replay/core/browser/task_discovery_service_impl.h"
 #include "components/record_replay/core/browser/task_parameters_extractor.h"
+#include "components/record_replay/core/browser/task_service.h"
 #include "components/record_replay/core/browser/task_store.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
 #include "components/record_replay/core/common/record_replay_features.h"
@@ -129,6 +131,13 @@ void ChromeRecordReplayClient::DidFinishNavigation(
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
     return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
+  if (auto* task_service =
+          record_replay::TaskServiceFactory::GetForProfile(profile)) {
+    task_service->OnURLVisited(navigation_handle->GetURL());
   }
 
   task_discovery_service_->ShouldOfferTask(
