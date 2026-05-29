@@ -256,8 +256,8 @@
     <message name="IDS_SETTINGS_SHOW_HOME_BUTTON" desc="Label for the checkbox which enables or disables showing the home button in the toolbar.">
       Show home button
     </message>
-    <message name="IDS_SETTINGS_CTRL_TAB_MRU" desc="Label for the checkbox which enables or disables switching between the two most recently used tabs with Ctrl-Tab.">
-      Switch between two most recently used tabs with Ctrl-tab
+    <message name="IDS_SETTINGS_CTRL_TAB_MRU" desc="Label for the checkbox which enables or disables switching between the two most recently used tabs with Ctrl+Tab.">
+      Switch between two most recently used tabs with Ctrl+Tab
     </message>
     <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
       Show bookmarks bar
