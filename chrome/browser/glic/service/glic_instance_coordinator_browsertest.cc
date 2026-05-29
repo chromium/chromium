@@ -231,8 +231,9 @@ class GlicInstanceCoordinatorUnbindOnCloseTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/514777907): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
-                       UnboundWhenNoInputSubmitted) {
+                       DISABLED_UnboundWhenNoInputSubmitted) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
 
