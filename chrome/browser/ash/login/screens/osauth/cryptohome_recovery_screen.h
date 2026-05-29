@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -19,6 +20,8 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_performer.h"
+
+class PrefService;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -42,8 +45,10 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
+  // `local_state` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   CryptohomeRecoveryScreen(
+      PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       base::WeakPtr<CryptohomeRecoveryScreenView> view,
       const ScreenExitCallback& exit_callback);
@@ -80,6 +85,7 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   void OnRefreshFactorsConfiguration(std::unique_ptr<UserContext> user_context,
                                      std::optional<AuthenticationError> error);
 
+  const raw_ref<PrefService> local_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
 

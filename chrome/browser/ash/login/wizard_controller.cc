@@ -980,7 +980,7 @@ WizardController::CreateScreens() {
           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<CryptohomeRecoveryScreen>(
-      shared_url_loader_factory_,
+      &local_state_.get(), shared_url_loader_factory_,
       oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
                           weak_factory_.GetWeakPtr())));

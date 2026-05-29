@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -65,11 +64,13 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
 }
 
 CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
+    PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     base::WeakPtr<CryptohomeRecoveryScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(CryptohomeRecoveryScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
@@ -141,9 +142,8 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       } else {
         LOG(WARNING) << "Reauth proof token is not present";
         was_reauth_proof_token_missing_ = true;
-        // TODO(crbug.com/404133029): Avoid using g_browser_process here.
-        RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()),
-                           account_id, ReauthReason::kCryptohomeRecovery);
+        RecordReauthReason(local_state_.get(), account_id,
+                           ReauthReason::kCryptohomeRecovery);
         view_->ShowReauthNotification();
         return;
       }
