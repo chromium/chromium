@@ -162,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   auto result = WaitForGlicOpen();
   EXPECT_OK(result);
   auto* instance = result.value();
-  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::VISIBLE);
+  EXPECT_OK(
+      WaitForWebUiContentsVisibility(instance, content::Visibility::VISIBLE));
 }
 
 // ClearPrimaryAccount is not supported on ChromeOS.
