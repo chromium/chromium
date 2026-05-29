@@ -42,26 +42,9 @@ enum SyncUiSteps {
   LOADING = 'loading',
 }
 
-
-/**
- * Available user actions.
- */
-enum UserAction {
-  CONTINUE = 'continue',
-  SYNC_EVERYTHING = 'sync-everything',
-  SYNC_CUSTOM = 'sync-custom',
-}
+const USER_ACTION_CONTINUE = 'continue';
 
 
-/**
- *  A set of flags of sync options for ChromeOS OOBE.
- */
-interface OsSyncItems {
-  osApps: boolean;
-  osPreferences: boolean;
-  osWifiConfigurations: boolean;
-  osWallpaper: boolean;
-}
 
 const SyncConsentScreenElementBase =
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
@@ -77,14 +60,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      /**
-       * OS Sync options status.
-       */
-      osSyncItemsStatus: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Indicates whether user is minor mode user (e.g. under age of 18).
        */
@@ -117,7 +92,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
     };
   }
 
-  osSyncItemsStatus: OsSyncItems;
   private isMinorMode: boolean;
   private optInButtonTextKey: string;
   private consentDescription: string[];
@@ -128,12 +102,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
     super();
 
     this.isMinorMode = false;
-    this.osSyncItemsStatus = {
-      osApps: true,
-      osPreferences: true,
-      osWifiConfigurations: true,
-      osWallpaper: true,
-    };
   }
 
   override get EXTERNAL_API(): string[] {
@@ -161,16 +129,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.i18nUpdateLocale();
   }
 
-
-  /**
-   * Wallpaper sync is a special case; its implementation relies upon
-   * OS Settings to be synced. Thus, the wallpaper label and toggle are
-   * only enabled when the Settings sync toggle is on.
-   */
-  private onSettingsSyncedChanged(): void {
-    this.set(
-        'osSyncItemsStatus.osWallpaper', this.osSyncItemsStatus.osPreferences);
-  }
 
   /**
    * Reacts to changes in loadTimeData.
@@ -207,7 +165,7 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
       checkedBox = reviewSettingsBox.checked;
     }
     this.userActed([
-      UserAction.CONTINUE,
+      USER_ACTION_CONTINUE,
       optedIn,
       checkedBox,
       this.getConsentDescription(),

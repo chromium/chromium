@@ -51,7 +51,7 @@ class SyncConsentScreen : public BaseScreen,
 
   enum ConsentGiven { CONSENT_NOT_GIVEN, CONSENT_GIVEN };
 
-  enum class Result { NEXT, DECLINE, NOT_APPLICABLE };
+  enum class Result { NEXT, NOT_APPLICABLE };
 
   static std::string GetResultString(Result result);
 
@@ -123,9 +123,6 @@ class SyncConsentScreen : public BaseScreen,
                      const bool review_sync,
                      const base::ListValue& consent_description_list,
                      const std::string& consent_confirmation);
-
-  void OnLacrosContinue(const base::ListValue& consent_description_list,
-                        const std::string& consent_confirmation);
 
   void RecordAllConsents(const bool opted_in,
                          const base::ListValue& consent_description_list,
