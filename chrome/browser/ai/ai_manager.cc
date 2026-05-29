@@ -1383,6 +1383,10 @@ void AIManager::CreateRewriter(
 void AIManager::CanCreateClassifier(
     blink::mojom::AIClassifierCreateOptionsPtr options,
     CanCreateClassifierCallback callback) {
+  if (!base::FeatureList::IsEnabled(blink::features::kAIClassifierAPI)) {
+    receivers_.ReportBadMessage("Feature not enabled");
+    return;
+  }
   // TODO(crbug.com/499365168): Enforce permissions policy and
   // CheckAndFixLanguages.
   if (auto pref_blocked_result = GetPrefBlockedResult()) {
@@ -1396,6 +1400,10 @@ void AIManager::CanCreateClassifier(
 void AIManager::CreateClassifier(
     mojo::PendingRemote<blink::mojom::AIManagerCreateClassifierClient> client,
     blink::mojom::AIClassifierCreateOptionsPtr options) {
+  if (!base::FeatureList::IsEnabled(blink::features::kAIClassifierAPI)) {
+    receivers_.ReportBadMessage("Feature not enabled");
+    return;
+  }
   // TODO(crbug.com/499365168): Enforce permissions policy and
   // CheckAndFixLanguages.
   if (IsBlocked()) {

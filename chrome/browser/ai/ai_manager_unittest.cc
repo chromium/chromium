@@ -57,6 +57,12 @@ std::vector<blink::mojom::AILanguageCodePtr> MakeLanguageCodeVector(
 }
 
 class AIManagerTest : public AITestUtils::AITestBase {
+ public:
+  AIManagerTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAIClassifierAPI);
+  }
+
  protected:
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
       override {
@@ -66,6 +72,9 @@ class AIManagerTest : public AITestUtils::AITestBase {
                            MODEL_EXECUTION_FEATURE_PROMPT_API);
     return config;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that involve invalid on-device model file paths should not crash when

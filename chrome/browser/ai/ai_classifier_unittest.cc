@@ -30,6 +30,7 @@
 #include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_classifier.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
@@ -94,6 +95,12 @@ blink::mojom::AIClassifierCreateOptionsPtr GetDefaultOptions() {
 }
 
 class AIClassifierTest : public AITestUtils::AITestBase {
+ public:
+  AIClassifierTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAIClassifierAPI);
+  }
+
  protected:
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
       override {
@@ -144,6 +151,9 @@ class AIClassifierTest : public AITestUtils::AITestBase {
     auto result = classifier_client.result().Take();
     EXPECT_TRUE(result.has_value());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AIClassifierTest, Classify) {
