@@ -86,3 +86,6 @@ virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/*
 
 #webui browser is mostly implemented in `//chrome` layer.
 virtual/webui-browser/*
+
+# Extension APIs can reach into the `//chrome` layer.
+external/wpt/web-extensions/*
