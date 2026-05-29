@@ -3649,6 +3649,7 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
 void BrowserView::ReparentTopContainerForStartOfImmersive() {
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
+  top_container()->SetProperty(views::kViewDoesNotLayOutChildren, false);
 
   ReparentTabStripAndWebAppViewsToTopContainer(
       TabStripAndWebAppViewsReparentedState::kImmersiveMode);
@@ -3677,6 +3678,7 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
       TabStripAndWebAppViewsReparentedState::kImmersiveMode);
 
   EnsureFocusOrder();
+  top_container()->SetProperty(views::kViewDoesNotLayOutChildren, true);
 }
 
 void BrowserView::ReparentTabStripAndWebAppViewsToTopContainer(
