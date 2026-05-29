@@ -65,11 +65,22 @@ class TokenBindingHelper {
   static constexpr Error kNoErrorForMetrics = static_cast<Error>(0);
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingGenerateAssertionResult)
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SaveBindingKeyResult)
+  enum class SaveBindingKeyResult {
+    kSuccess = 0,
+    kRefreshTokenNotFound = 1,
+    kMaxValue = kRefreshTokenNotFound,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingUpgradeSaveBindingKeyResult)
+
   using GenerateAssertionCallback = base::OnceCallback<void(std::string)>;
-  using SaveBindingKeyCallback =
-      base::RepeatingCallback<bool(const CoreAccountId& account_id,
-                                   std::string_view refresh_token,
-                                   std::vector<uint8_t> wrapped_binding_key)>;
+  using SaveBindingKeyCallback = base::RepeatingCallback<SaveBindingKeyResult(
+      const CoreAccountId& account_id,
+      std::string_view refresh_token,
+      std::vector<uint8_t> wrapped_binding_key)>;
 
   explicit TokenBindingHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service);

@@ -565,7 +565,9 @@ TEST_F(TokenBindingHelperTest, OnAllCredentialsLoadedReusesExistingKey) {
 class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
  public:
   TokenBindingHelperUpgradeTest() {
-    ON_CALL(mock_save_callback_, Run).WillByDefault(Return(true));
+    ON_CALL(mock_save_callback_, Run)
+        .WillByDefault(
+            Return(TokenBindingHelper::SaveBindingKeyResult::kSuccess));
     helper().SetSaveBindingKeyCallback(mock_save_callback_.Get());
   }
 
@@ -599,7 +601,7 @@ TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   EXPECT_CALL(mock_save_callback(),
               Run(account_id, std::string_view("test_token"), testing::_))
-      .WillOnce(Return(true));
+      .WillOnce(Return(TokenBindingHelper::SaveBindingKeyResult::kSuccess));
 
   StartUpgrade(account_id);
   RunBackgroundTasks();
@@ -618,6 +620,9 @@ TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   histogram_tester().ExpectUniqueSample(
       "Signin.TokenBinding.UpgradeResult",
       signin::OAuth2UpgradeTokenFlowResult::kSuccess, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeSaveBindingKeyResult",
+      TokenBindingHelper::SaveBindingKeyResult::kSuccess, 1);
 }
 
 TEST_F(TokenBindingHelperUpgradeTest,
@@ -625,7 +630,8 @@ TEST_F(TokenBindingHelperUpgradeTest,
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   EXPECT_CALL(mock_save_callback(),
               Run(account_id, std::string_view("test_token"), _))
-      .WillOnce(Return(false));
+      .WillOnce(Return(
+          TokenBindingHelper::SaveBindingKeyResult::kRefreshTokenNotFound));
 
   StartUpgrade(account_id);
   RunBackgroundTasks();
@@ -636,6 +642,9 @@ TEST_F(TokenBindingHelperUpgradeTest,
       "Signin.TokenBinding.UpgradeResult",
       signin::OAuth2UpgradeTokenFlowResult::kFailedToSaveBindingKey, 1);
   histogram_tester().ExpectTotalCount("Signin.TokenBinding.UpgradeDuration", 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeSaveBindingKeyResult",
+      TokenBindingHelper::SaveBindingKeyResult::kRefreshTokenNotFound, 1);
 }
 
 TEST_F(TokenBindingHelperUpgradeTest,

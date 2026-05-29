@@ -2798,6 +2798,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        UpdateRefreshTokenBindingKey) {
+  base::HistogramTester histogram_tester;
   testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
       mock_unexportable_key_service;
   oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
@@ -2815,8 +2816,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       oauth2_service_delegate_->GetWrappedBindingKey(account_id).empty());
 
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
-  EXPECT_TRUE(oauth2_service_delegate_->UpdateRefreshTokenBindingKey(
-      account_id, "refresh_token", kFakeWrappedBindingKey));
+  EXPECT_EQ(oauth2_service_delegate_->UpdateRefreshTokenBindingKey(
+                account_id, "refresh_token", kFakeWrappedBindingKey),
+            TokenBindingHelper::SaveBindingKeyResult::kSuccess);
 
   // Verify in memory state.
   EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
@@ -2832,6 +2834,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        UpdateRefreshTokenBindingKeyRevoked) {
+  base::HistogramTester histogram_tester;
   testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
       mock_unexportable_key_service;
   oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
@@ -2849,8 +2852,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   oauth2_service_delegate_->RevokeCredentials(account_id);
 
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
-  EXPECT_FALSE(oauth2_service_delegate_->UpdateRefreshTokenBindingKey(
-      account_id, "refresh_token", kFakeWrappedBindingKey));
+  EXPECT_EQ(oauth2_service_delegate_->UpdateRefreshTokenBindingKey(
+                account_id, "refresh_token", kFakeWrappedBindingKey),
+            TokenBindingHelper::SaveBindingKeyResult::kRefreshTokenNotFound);
 
   EXPECT_TRUE(
       oauth2_service_delegate_->GetWrappedBindingKey(account_id).empty());

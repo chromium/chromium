@@ -336,6 +336,12 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithUpgradeEligibility) {
                                         kTimeToLive.InSeconds(),
                                         /*is_encrypted=*/false, "challenge");
   VerifyUnboundFetchAuthErrorHistograms(GoogleServiceAuthError::NONE);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeEligibility", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample("Signin.TokenBinding.UpgradeRequested",
+                                        /*sample=*/true,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Success) {
@@ -349,6 +355,12 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Success) {
                                         /*is_encrypted=*/false);
   VerifyBoundFetchAuthErrorHistograms(GoogleServiceAuthError::NONE,
                                       kChallengeSentinelHistogramSuffix);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeEligibility", /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample("Signin.TokenBinding.UpgradeRequested",
+                                        /*sample=*/false,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithSignedAssertion) {

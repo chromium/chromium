@@ -313,8 +313,12 @@ void TokenBindingHelper::OnUpgradeRegistrationTokenGenerated(
   }
 
   CHECK(save_binding_key_callback_);
-  if (!save_binding_key_callback_.Run(account_id, upgrade_flow->refresh_token(),
-                                      std::move(result->wrapped_binding_key))) {
+  SaveBindingKeyResult save_key_result =
+      save_binding_key_callback_.Run(account_id, upgrade_flow->refresh_token(),
+                                     std::move(result->wrapped_binding_key));
+  base::UmaHistogramEnumeration(
+      "Signin.TokenBinding.UpgradeSaveBindingKeyResult", save_key_result);
+  if (save_key_result != SaveBindingKeyResult::kSuccess) {
     upgrade_flow->AbortWithError(
         signin::OAuth2UpgradeTokenFlowResult::kFailedToSaveBindingKey);
     return;

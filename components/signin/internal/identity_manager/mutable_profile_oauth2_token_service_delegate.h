@@ -21,6 +21,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#include "components/signin/internal/identity_manager/token_binding_helper.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -34,7 +35,6 @@
 
 class SigninClient;
 class TokenWebData;
-class TokenBindingHelper;
 
 // This enum is used to know if an account is known by the client has a valid
 // refresh token or not.
@@ -149,9 +149,10 @@ class MutableProfileOAuth2TokenServiceDelegate
       TokenBindingHelper::GenerateAssertionCallback callback) override;
   void AddBindingKeyToService(
       base::span<const uint8_t> wrapped_binding_key) override;
-  bool UpdateRefreshTokenBindingKey(const CoreAccountId& account_id,
-                                    std::string_view refresh_token,
-                                    std::vector<uint8_t> wrapped_binding_key);
+  TokenBindingHelper::SaveBindingKeyResult UpdateRefreshTokenBindingKey(
+      const CoreAccountId& account_id,
+      std::string_view refresh_token,
+      std::vector<uint8_t> wrapped_binding_key);
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;

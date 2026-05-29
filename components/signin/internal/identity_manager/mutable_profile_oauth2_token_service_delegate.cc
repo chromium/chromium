@@ -555,7 +555,8 @@ void MutableProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(
   }
 }
 
-bool MutableProfileOAuth2TokenServiceDelegate::UpdateRefreshTokenBindingKey(
+TokenBindingHelper::SaveBindingKeyResult
+MutableProfileOAuth2TokenServiceDelegate::UpdateRefreshTokenBindingKey(
     const CoreAccountId& account_id,
     std::string_view refresh_token,
     std::vector<uint8_t> wrapped_binding_key) {
@@ -563,7 +564,7 @@ bool MutableProfileOAuth2TokenServiceDelegate::UpdateRefreshTokenBindingKey(
   auto iter = refresh_tokens_.find(account_id);
   if (iter == refresh_tokens_.end() ||
       iter->second.refresh_token.value() != refresh_token) {
-    return false;
+    return TokenBindingHelper::SaveBindingKeyResult::kRefreshTokenNotFound;
   }
 
   CHECK(token_binding_helper_);
@@ -575,7 +576,7 @@ bool MutableProfileOAuth2TokenServiceDelegate::UpdateRefreshTokenBindingKey(
   // successfully before resuming the upgrade flow.
   PersistCredentials(account_id, iter->second.refresh_token.value(),
                      token_binding_info);
-  return true;
+  return TokenBindingHelper::SaveBindingKeyResult::kSuccess;
 }
 
 std::vector<CoreAccountId>

@@ -3970,6 +3970,17 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.TokenBinding.UpgradeEligibility" enum="Boolean"
+    expires_after="2026-11-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether token binding upgrade eligibility flag is enabled when
+    starting an access token request. Recorded when an access token request is
+    started. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.TokenBinding.UpgradeHttpResult"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-11-15">
   <owner>alexilin@chromium.org</owner>
@@ -3980,6 +3991,17 @@ kept as long as profile signout is possible -->
     session refresh token encounters a server challenge during access token
     minting, Chrome initiates this opportunistic upgrade. Recorded immediately
     upon the completion of the upgrade API network call.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenBinding.UpgradeRequested" enum="Boolean"
+    expires_after="2026-11-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether a token binding upgrade was requested by the server upon
+    successful completion of an access token request. Recorded when processing a
+    successful access token response. Desktop only.
   </summary>
 </histogram>
 
@@ -3994,6 +4016,17 @@ kept as long as profile signout is possible -->
     unbound session refresh token encounters a server challenge during access
     token minting, Chrome initiates this opportunistic upgrade. Recorded upon
     the final completion or abortion of the token upgrade attempt.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenBinding.UpgradeSaveBindingKeyResult"
+    enum="TokenBindingUpgradeSaveBindingKeyResult" expires_after="2026-11-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of attempting to save a refresh token binding key in
+    memory and persist it. Recorded upon receiving the wrapped binding key from
+    the opportunistic upgrade token flow. Desktop only.
   </summary>
 </histogram>
 

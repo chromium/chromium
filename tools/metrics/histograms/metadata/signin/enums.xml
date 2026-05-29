@@ -1651,6 +1651,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//google_apis/gaia/token_binding_response_encryption_error.h:TokenBindingResponseEncryptionError) -->
 
+<!-- LINT.IfChange(TokenBindingUpgradeSaveBindingKeyResult) -->
+
+<enum name="TokenBindingUpgradeSaveBindingKeyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Refresh token not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/token_binding_helper.h:SaveBindingKeyResult) -->
+
 <!-- LINT.IfChange(WebSigninLoadingDialogStatus) -->
 
 <enum name="WebSigninLoadingDialogStatus">
