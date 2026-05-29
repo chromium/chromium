@@ -62,8 +62,6 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/language.symbolset/language.cr.svg",
     "Assets.xcassets/laptopcomputer_and_phone.symbolset/Contents.json",
     "Assets.xcassets/laptopcomputer_and_phone.symbolset/laptopcomputer.and.phone.cr.svg",
-    "Assets.xcassets/legacy_incognito.symbolset/Contents.json",
-    "Assets.xcassets/legacy_incognito.symbolset/legacy_incognito.cr.svg",
     "Assets.xcassets/line_downtrend.symbolset/Contents.json",
     "Assets.xcassets/line_downtrend.symbolset/line.downtrend.cr.svg",
     "Assets.xcassets/line_three_spark.symbolset/Contents.json",

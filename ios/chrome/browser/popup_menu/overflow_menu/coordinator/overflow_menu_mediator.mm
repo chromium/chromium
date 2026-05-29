@@ -598,9 +598,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
                               actionType:overflow_menu::ActionType::
                                              NewIncognitoTab
-                              symbolName:IsChromeNextIaEnabled()
-                                             ? kIncognitoSymbol
-                                             : kLegacyIncognitoSymbol
+                              symbolName:kIncognitoSymbol
                             systemSymbol:NO
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuNewIncognitoTabId

@@ -654,9 +654,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
         configurationWithPointSize:kIncognitoImageSize
                             weight:UIImageSymbolWeightBold
                              scale:UIImageSymbolScaleMedium];
-    _incognitoImageView.image = CustomSymbolWithConfiguration(
-        IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-        configuration);
+    _incognitoImageView.image =
+        CustomSymbolWithConfiguration(kIncognitoSymbol, configuration);
     _incognitoImageView.tintColor = self.colorScheme.fontColor;
   }
 

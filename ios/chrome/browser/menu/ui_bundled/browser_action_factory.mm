@@ -91,9 +91,8 @@
 }
 
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block {
-  UIImage* image = CustomSymbolWithPointSize(
-      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-      kSymbolActionPointSize);
+  UIImage* image =
+      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
   ProceduralBlock completionBlock =
       [self recordMobileWebContextMenuOpenTabActionWithBlock:block];
 
@@ -198,15 +197,13 @@
 }
 
 - (UIAction*)actionToOpenNewIncognitoTabWithBlock:(ProceduralBlock)block {
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
-                image:CustomSymbolWithPointSize(IsChromeNextIaEnabled()
-                                                    ? kIncognitoSymbol
-                                                    : kLegacyIncognitoSymbol,
-                                                kSymbolActionPointSize)
-                 type:MenuActionType::OpenNewIncognitoTab
-                block:block];
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
+                      image:CustomSymbolWithPointSize(kIncognitoSymbol,
+                                                      kSymbolActionPointSize)
+                       type:MenuActionType::OpenNewIncognitoTab
+                      block:block];
   if (IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs())) {
     action.attributes = UIMenuElementAttributesDisabled;
   }
@@ -349,22 +346,20 @@
 - (UIAction*)actionToStartNewIncognitoSearch {
   id<SceneCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
-                image:CustomSymbolWithPointSize(IsChromeNextIaEnabled()
-                                                    ? kIncognitoSymbol
-                                                    : kLegacyIncognitoSymbol,
-                                                kSymbolActionPointSize)
-                 type:MenuActionType::StartNewIncognitoSearch
-                block:^{
-                  OpenNewTabCommand* command =
-                      [OpenNewTabCommand commandWithIncognito:YES];
-                  command.shouldFocusOmnibox = YES;
-                  [UIView performWithoutAnimation:^{
-                    [handler openURLInNewTab:command];
-                  }];
-                }];
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
+                      image:CustomSymbolWithPointSize(kIncognitoSymbol,
+                                                      kSymbolActionPointSize)
+                       type:MenuActionType::StartNewIncognitoSearch
+                      block:^{
+                        OpenNewTabCommand* command =
+                            [OpenNewTabCommand commandWithIncognito:YES];
+                        command.shouldFocusOmnibox = YES;
+                        [UIView performWithoutAnimation:^{
+                          [handler openURLInNewTab:command];
+                        }];
+                      }];
 
   if (IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs())) {
     action.attributes = UIMenuElementAttributesDisabled;

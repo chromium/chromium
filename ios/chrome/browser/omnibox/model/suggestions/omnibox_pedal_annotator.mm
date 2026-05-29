@@ -183,9 +183,7 @@ const CGFloat kSymbolSize = 18;
                      action:action];
     }
     case OmniboxPedalId::LAUNCH_INCOGNITO: {
-      UIImage* image = CustomSymbolWithPointSize(
-          IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-          kSymbolSize);
+      UIImage* image = CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolSize);
       auto completion = ^{
         [sceneHandler openURLInNewTab:[OpenNewTabCommand incognitoTabCommand]];
       };

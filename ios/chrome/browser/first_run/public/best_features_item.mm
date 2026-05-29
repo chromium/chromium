@@ -7,7 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -170,10 +169,7 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
       case BestFeaturesItemType::kLockedIncognitoTabs:
       case BestFeaturesItemType::kIncognitoBrowsing:
         return SymbolWithPalette(
-            CustomSymbolWithConfiguration(IsChromeNextIaEnabled()
-                                              ? kIncognitoSymbol
-                                              : kLegacyIncognitoSymbol,
-                                          configuration),
+            CustomSymbolWithConfiguration(kIncognitoSymbol, configuration),
             @[ [UIColor whiteColor] ]);
       case BestFeaturesItemType::kSaveAndAutofillPasswords:
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:

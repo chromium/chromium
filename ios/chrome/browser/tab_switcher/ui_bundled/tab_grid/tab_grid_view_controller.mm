@@ -2107,9 +2107,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (command.action == @selector(keyCommand_select1)) {
     newTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID);
-    command.image = CustomSymbolWithConfiguration(
-        IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-        nil);
+    command.image = CustomSymbolWithConfiguration(kIncognitoSymbol, nil);
   }
   if (command.action == @selector(keyCommand_select2)) {
     newTitle = l10n_util::GetNSStringWithFixup(

@@ -33,7 +33,6 @@ NSString* const kPrivacySymbol = @"checkerboard_shield";
 NSString* const kSafetyCheckSymbol = @"checkermark_shield";
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
-NSString* const kLegacyIncognitoSymbol = @"legacy_incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
 NSString* const kEnterpriseSigninBannerSymbol = @"enterprise_signin_banner";

@@ -74,9 +74,8 @@ const CGFloat kContentOptimalWidth = 327;
     AddSameConstraints(self, blurBackgroundView);
 
     CGFloat imageSize = IsIOSSoftLockEnabled() ? 50 : 28;
-    UIImage* incognitoLogo = CustomSymbolWithPointSize(
-        IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-        imageSize);
+    UIImage* incognitoLogo =
+        CustomSymbolWithPointSize(kIncognitoSymbol, imageSize);
     _logoView = [[UIImageView alloc] initWithImage:incognitoLogo];
     _logoView.tintColor = UIColor.whiteColor;
     _logoView.translatesAutoresizingMaskIntoConstraints = NO;

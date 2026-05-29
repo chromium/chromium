@@ -497,10 +497,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
                                                        ->GetVirtualURL()]) {
       title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
       image = SymbolWithPalette(
-          CustomSymbolWithPointSize(IsChromeNextIaEnabled()
-                                        ? kIncognitoSymbol
-                                        : kLegacyIncognitoSymbol,
-                                    kInfobarSymbolPointSize),
+          CustomSymbolWithPointSize(kIncognitoSymbol, kInfobarSymbolPointSize),
           @[ UIColor.whiteColor ]);
     } else {
       title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());

@@ -172,8 +172,7 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
                         SmallIncognitoPalette());
   button = [self createButtonForType:kBadgeTypeIncognito image:image];
   button.fullScreenImage = CustomSymbolTemplateWithPointSize(
-      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-      kSymbolIncognitoFullScreenPointSize);
+      kIncognitoSymbol, kSymbolIncognitoFullScreenPointSize);
 
   button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   button.accessibilityTraits &= ~UIAccessibilityTraitButton;

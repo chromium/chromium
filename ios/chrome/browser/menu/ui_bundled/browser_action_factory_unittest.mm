@@ -138,9 +138,8 @@ TEST_F(BrowserActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = CustomSymbolWithPointSize(
-      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE);
 
@@ -262,9 +261,8 @@ TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = CustomSymbolWithPointSize(
-      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 
@@ -367,9 +365,8 @@ TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = CustomSymbolWithPointSize(
-      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
-      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH);
 

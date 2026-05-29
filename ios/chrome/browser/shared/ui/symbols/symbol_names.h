@@ -44,7 +44,6 @@ extern NSString* const kPrivacySymbol;
 extern NSString* const kSafetyCheckSymbol;
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
-extern NSString* const kLegacyIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kPasswordManagerSymbol;
