@@ -23,6 +23,7 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
   }
 
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
     DCHECK(!ScriptForbiddenScope::IsScriptForbidden());
 #if DCHECK_IS_ON()
     DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
