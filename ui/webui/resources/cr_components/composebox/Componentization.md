@@ -55,7 +55,7 @@ Please update `NtpComposeboxElement` in
 
 Please update `OmniboxComposeboxElement` in
 `chrome/browser/resources/omnibox_popup/omnibox_composebox.ts` in addition to
-`composebox.ts`.
+`composebox.ts`, and then add `ryanakiyama@` to the cc list.
 
 ______________________________________________________________________
 
