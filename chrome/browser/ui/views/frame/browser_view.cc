@@ -3032,23 +3032,6 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   return ShowTranslateBubbleResult::kSuccess;
 }
 
-void BrowserView::StartPartialTranslate(const std::string& source_language,
-                                        const std::string& target_language,
-                                        const std::u16string& text_selection) {
-  // Show the Translate icon and enabled the associated command to show the
-  // Translate UI.
-  ChromeTranslateClient::FromWebContents(GetActiveWebContents())
-      ->GetTranslateManager()
-      ->GetLanguageState()
-      ->SetTranslateEnabled(true);
-
-  CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
-      .StartPartialTranslate(
-          GetActiveWebContents(),
-          toolbar_button_provider()->GetBubbleAnchor(kActionShowTranslate),
-          kTranslatePageActionElementId, source_language, target_language,
-          text_selection);
-}
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
 #if !BUILDFLAG(IS_CHROMEOS)

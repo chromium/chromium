@@ -368,10 +368,6 @@ class BrowserWindow : public ui::BaseWindow {
       translate::TranslateErrors error_type,
       bool is_user_gesture) = 0;
 
-  // Shows the Partial Translate bubble.
-  virtual void StartPartialTranslate(const std::string& source_language,
-                                     const std::string& target_language,
-                                     const std::u16string& text_selection) = 0;
 
   // Returns the DownloadBubbleUIController. Returns null if Download Bubble
   // UI is not enabled, or if the download toolbar button does not exist.

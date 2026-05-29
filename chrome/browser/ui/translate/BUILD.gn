@@ -18,6 +18,8 @@ source_set("translate") {
     "translate_bubble_model.h",
     "translate_bubble_model_impl.cc",
     "translate_bubble_model_impl.h",
+    "translate_controller.cc",
+    "translate_controller.h",
     "translate_language_list_model.h",
   ]
 
@@ -28,9 +30,11 @@ source_set("translate") {
   public_deps = [
     "//base",
     "//chrome/browser/translate",
+    "//chrome/browser/ui/browser_window",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//ui/base",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = [ "//components/language_detection/core" ]

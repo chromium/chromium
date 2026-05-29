@@ -10,14 +10,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/touch_to_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_language_list.h"
@@ -54,9 +59,12 @@ DEFINE_USER_DATA(TranslateBubbleController);
 TranslateBubbleController::TranslateBubbleController(
     BrowserWindowInterface* browser_window,
     actions::ActionItem* root_action_item)
-    : action_item_(GetTranslateActionItem(root_action_item)),
+    : browser_window_(browser_window),
+      action_item_(GetTranslateActionItem(root_action_item)),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
-                                *this) {}
+                                *this),
+      scoped_translate_controller_(browser_window->GetUnownedUserDataHost(),
+                                   *this) {}
 
 TranslateBubbleController::~TranslateBubbleController() = default;
 
@@ -135,12 +143,40 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
 }
 
 void TranslateBubbleController::StartPartialTranslate(
-    content::WebContents* web_contents,
-    views::BubbleAnchor anchor,
-    std::optional<ui::ElementIdentifier> highlighted_element,
     const std::string& source_language,
     const std::string& target_language,
     const std::u16string& text_selection) {
+  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+  if (!active_tab) {
+    return;
+  }
+  content::WebContents* web_contents = active_tab->GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  // Show the Translate icon and enabled the associated command to show the
+  // Translate UI.
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  if (client) {
+    client->GetTranslateManager()->GetLanguageState()->SetTranslateEnabled(
+        true);
+  }
+
+  views::BubbleAnchor anchor;
+  std::optional<ui::ElementIdentifier> highlighted_element;
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_window_);
+  if (browser_view) {
+    anchor = browser_view->toolbar_button_provider()->GetBubbleAnchor(
+        kActionShowTranslate);
+    highlighted_element = kTranslatePageActionElementId;
+  } else if (anchor_view_for_testing_) {
+    anchor = views::BubbleAnchor(anchor_view_for_testing_);
+  }
+
   CreatePartialTranslateBubble(web_contents, anchor, highlighted_element,
                                PartialTranslateBubbleModel::VIEW_STATE_WAITING,
                                source_language, target_language, text_selection,
@@ -313,6 +349,11 @@ void TranslateBubbleController::SetPartialTranslateBubbleModelFactory(
     base::RepeatingCallback<std::unique_ptr<PartialTranslateBubbleModel>()>
         callback) {
   partial_model_factory_callback_ = std::move(callback);
+}
+
+void TranslateBubbleController::SetAnchorViewForTesting(
+    views::View* anchor_view) {
+  anchor_view_for_testing_ = anchor_view;
 }
 
 base::OnceClosure

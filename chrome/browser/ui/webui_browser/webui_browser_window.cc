@@ -865,12 +865,6 @@ ShowTranslateBubbleResult WebUIBrowserWindow::ShowTranslateBubble(
   return ShowTranslateBubbleResult::kBrowserWindowNotValid;
 }
 
-void WebUIBrowserWindow::StartPartialTranslate(
-    const std::string& source_language,
-    const std::string& target_language,
-    const std::u16string& text_selection) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
 
 DownloadBubbleUIController*
 WebUIBrowserWindow::GetDownloadBubbleUIController() {

@@ -127,9 +127,7 @@ class WebUIBrowserWindow : public BrowserWindow,
       const std::string& target_language,
       translate::TranslateErrors error_type,
       bool is_user_gesture) override;
-  void StartPartialTranslate(const std::string& source_language,
-                             const std::string& target_language,
-                             const std::u16string& text_selection) override;
+
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,

@@ -131,6 +131,7 @@
 #include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/browser/ui/translate/translate_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -5253,13 +5254,13 @@ void RenderViewContextMenu::ExecPartialTranslate() {
     chrome_translate_client->GetTranslateLanguages(
         embedder_web_contents_, &source_language, &target_language,
         /*for_display=*/false);
-    Browser* browser =
-        GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
+    BrowserWindowInterface* browser = GetBrowser();
     if (browser) {
-      // TODO(crbug.com/514729745): Remove StartPartialTranslate in
-      // favor of a BrowserWindowInterface service.
-      browser->window()->StartPartialTranslate(source_language, target_language,
-                                               params_.selection_text);
+      TranslateController* controller = TranslateController::From(browser);
+      if (controller) {
+        controller->StartPartialTranslate(source_language, target_language,
+                                          params_.selection_text);
+      }
     }
   }
 }
