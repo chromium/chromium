@@ -74,13 +74,6 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate,
     return false;
   }
 
-  // TODO(b/328117814): this works as long as other embedders within the
-  // renderer process are not using new wrappers. We will need to come up
-  // with a friend-or-foe identification when we switch gin to new wrappers.
-  if (WrapperTypeInfo::HasLegacyInternalFieldsSet(object)) {
-    return false;
-  }
-
   const WrapperTypeInfo* untrusted_wrapper_type_info =
       ToWrapperTypeInfo(object);
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);

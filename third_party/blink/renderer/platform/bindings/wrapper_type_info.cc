@@ -12,9 +12,9 @@
 namespace blink {
 
 static_assert(offsetof(struct WrapperTypeInfo, type_id) ==
-                  offsetof(struct gin::DeprecatedWrapperInfo, embedder),
-              "offset of WrapperTypeInfo.ginEmbedder must be the same as "
-              "gin::DeprecatedWrapperInfo.embedder");
+                  offsetof(struct gin::WrapperInfo, type_id),
+              "offset of WrapperTypeInfo.type_id must be the same as "
+              "gin::WrapperInfo.type_id");
 
 v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
     v8::Isolate* isolate,
@@ -54,8 +54,6 @@ const WrapperTypeInfo* ToWrapperTypeInfo(const ScriptWrappable* wrappable) {
 const WrapperTypeInfo* ToWrapperTypeInfo(v8::Local<v8::Object> wrapper) {
   const v8::Object::Wrappable* wrappable =
       ToAnyWrappable(v8::Isolate::GetCurrent(), wrapper);
-  // It's either us or legacy embedders
-  DCHECK(!wrappable || !WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
   if (!wrappable) {
     return nullptr;
   }

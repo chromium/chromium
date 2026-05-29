@@ -105,7 +105,6 @@ inline void V8DOMWrapper::SetNativeInfo(
     v8::Local<v8::Object> wrapper,
     ScriptWrappable* wrappable) {
   DCHECK(wrappable);
-  DCHECK(!WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
   v8::Object::Wrap(isolate, wrapper, wrappable,
                    ToWrapperTypeInfo(wrappable)->this_tag);
 }
@@ -122,7 +121,6 @@ inline void V8DOMWrapper::SetNativeInfoForGlobal(v8::Isolate* isolate,
                                                  v8::Local<v8::Object> wrapper,
                                                  ScriptWrappable* wrappable) {
   DCHECK(wrappable);
-  DCHECK(!WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
   const WrapperTypeInfo* wrapper_type_info = ToWrapperTypeInfo(wrappable);
   v8::Object::WrapGlobal(isolate, wrapper, wrappable,
                          wrapper_type_info->this_tag);

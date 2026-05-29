@@ -23,13 +23,9 @@ enum GinEmbedder : uint16_t {
 };
 
 enum EmbedderDataTag : uint16_t {
-  // kDeprecatedData is used for data that is already not used anymore but still
-  // exists for legacy reasons, e.g. in the implementation of
-  // gin::DeprecatedWrappable.
-  kDeprecatedData,
   // kDefaultTag can be used by embedders that don't use V8 type tagging, e.g.
   // because they have their own type tagging system, like PDFium.
-  kDefaultEmbedderDataTag = kDeprecatedData,
+  kDefaultEmbedderDataTag,
   kBlinkScriptState,
   kGinPerContextData,
 };

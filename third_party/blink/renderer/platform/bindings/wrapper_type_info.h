@@ -188,15 +188,6 @@ struct PLATFORM_EXPORT WrapperTypeInfo final
         interface_template, bindings::V8InterfaceBridgeBase::FeatureSelector());
   }
 
-  static bool HasLegacyInternalFieldsSet(v8::Local<v8::Object> object) {
-    for (int i = 0, n = object->InternalFieldCount(); i < n; ++i) {
-      if (object->GetAlignedPointerFromInternalField(i, gin::kDeprecatedData)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   bindings::V8InterfaceBridgeBase::InstallInterfaceTemplateFuncType
       install_interface_template_func;
   bindings::V8InterfaceBridgeBase::InstallContextDependentPropertiesFuncType

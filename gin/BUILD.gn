@@ -79,7 +79,6 @@ component("gin") {
     "weak_cell.h",
     "wrappable.cc",
     "wrappable.h",
-    "wrapper_info.cc",
   ]
 
   if (use_partition_alloc) {
