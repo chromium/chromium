@@ -447,6 +447,42 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::HIDDEN);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
+                       PreventUafOnReentrantUnbind) {
+  // Disable the keep side panel open on new tabs setting to prevent a new
+  // GlicInstance from being created automatically when we create tab2 below.
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
+
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  // Create a new tab to push tab1 into the background, transitioning its
+  // side panel coordinator state to kBackgrounded.
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(tab2);
+
+  // Wait until T1 transitions to kBackgrounded.
+  ASSERT_OK(WaitForSidePanelState(
+      tab1, GlicSidePanelCoordinator::State::kBackgrounded));
+
+  // Verify the active instance is still the one bound to tab1.
+  EXPECT_EQ(GetInstanceForTab(tab1), instance);
+
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  // Manually trigger UnbindEmbedder on tab1. Since it is backgrounded,
+  // CloseInternal() will hide it synchronously and recursively trigger
+  // DidCloseFor() -> UnbindEmbedder() in a re-entrant frame, deleting
+  // the instance. The outer frame will safely return early via the
+  // base::WeakPtr guard.
+  instance->UnbindEmbedder(EmbedderKey(tab1));
+
+  // Verify that the instance was successfully deleted and no UAF occurred.
+  EXPECT_FALSE(weak_instance);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 0u);
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        CreateConversationForTabs) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();

@@ -735,7 +735,11 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   }
 
   if (auto* entry = GetEmbedderEntry(key)) {
+    base::WeakPtr<GlicInstanceImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
     CloseInternal(key, *entry, {.suppress_animations = true});
+    if (!weak_this) {
+      return;
+    }
   }
 
   // Deactivate if this was the active embedder. This ensures predictable state
@@ -1522,8 +1526,12 @@ void GlicInstanceImpl::CloseAllEmbedders() {
   for (auto& [key, entry] : embedders_) {
     keys.push_back(key);
   }
+  base::WeakPtr<GlicInstanceImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
   for (const auto& key : keys) {
     Close(key);
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
