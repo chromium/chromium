@@ -266,7 +266,10 @@ bool MimeHandlerStreamManager::IsExtensionFrameTreeNodeId(
     content::FrameTreeNodeId frame_tree_node_id) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
   return stream_info &&
-         frame_tree_node_id == stream_info->extension_host_frame_tree_node_id();
+         frame_tree_node_id ==
+             stream_info->extension_host_frame_tree_node_id() &&
+         embedder_host->GetLastCommittedURL().EqualsIgnoringRef(
+             stream_info->stream()->original_url());
 }
 
 bool MimeHandlerStreamManager::DidExtensionFrameFinishNavigation(
@@ -300,7 +303,9 @@ bool MimeHandlerStreamManager::IsContentFrameTreeNodeId(
     content::FrameTreeNodeId frame_tree_node_id) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
   return stream_info &&
-         frame_tree_node_id == stream_info->content_host_frame_tree_node_id();
+         frame_tree_node_id == stream_info->content_host_frame_tree_node_id() &&
+         embedder_host->GetLastCommittedURL().EqualsIgnoringRef(
+             stream_info->stream()->original_url());
 }
 
 bool MimeHandlerStreamManager::DidContentFrameFinishNavigation(

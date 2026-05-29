@@ -2283,9 +2283,6 @@ TEST_F(ChromeContentBrowserClientOopifPdfTest,
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
-constexpr char kMimeHandlerViewerUrl[] =
-    "chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/viewer.html";
-
 class ChromeContentBrowserClientMimeHandlerFilePickerTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -2293,6 +2290,10 @@ class ChromeContentBrowserClientMimeHandlerFilePickerTest
   ~ChromeContentBrowserClientMimeHandlerFilePickerTest() override = default;
 
  protected:
+  static constexpr char kMimeHandlerViewerUrl[] =
+      "chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/viewer.html";
+  static constexpr char kOriginalUrl[] = "https://original_url1";
+
   content::RenderFrameHost* CreateChild(content::RenderFrameHost* parent,
                                         const std::string& name) {
     auto* parent_tester = content::RenderFrameHostTester::For(parent);
@@ -2333,7 +2334,7 @@ class ChromeContentBrowserClientMimeHandlerFilePickerTest
 // file picker.
 TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
        FullPageMimeHandlerExtensionFrameAllowed) {
-  NavigateAndCommit(GURL("https://example.test/document"));
+  NavigateAndCommit(GURL(kOriginalUrl));
   content::RenderFrameHost* extension_host =
       CreateMimeHandlerExtensionHost(main_rfh(), GURL(kMimeHandlerViewerUrl));
 
@@ -2351,7 +2352,7 @@ TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
   content::RenderFrameHost* embedder_host =
       CreateChild(main_rfh(), "embedded-mime-handler");
   embedder_host = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://embedder.test/file.foo"), embedder_host);
+      GURL(kOriginalUrl), embedder_host);
   content::RenderFrameHost* extension_host = CreateMimeHandlerExtensionHost(
       embedder_host, GURL(kMimeHandlerViewerUrl));
 
@@ -2366,7 +2367,7 @@ TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
 // extension origin, is allowed to show a file picker.
 TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
        DescendantOfMimeHandlerExtensionFrameAllowed) {
-  NavigateAndCommit(GURL("https://example.test/document"));
+  NavigateAndCommit(GURL(kOriginalUrl));
   content::RenderFrameHost* extension_host =
       CreateMimeHandlerExtensionHost(main_rfh(), GURL(kMimeHandlerViewerUrl));
   content::RenderFrameHost* descendant =
@@ -2400,7 +2401,7 @@ TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
 // extension host's committed origin is denied a file picker.
 TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
        MimeHandlerExtensionFrameWithMismatchedOriginDenied) {
-  NavigateAndCommit(GURL("https://example.test/document"));
+  NavigateAndCommit(GURL(kOriginalUrl));
   content::RenderFrameHost* extension_host =
       CreateMimeHandlerExtensionHost(main_rfh(), GURL(kMimeHandlerViewerUrl));
 

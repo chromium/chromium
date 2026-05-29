@@ -1264,4 +1264,90 @@ TEST_F(MimeHandlerStreamManagerTest,
   EXPECT_FALSE(manager->GetTopLevelHandlerExtensionId().has_value());
 }
 
+// MimeHandlerStreamManager host privilege status should be correctly revoked
+// during a pushState URL path spoofing same-document navigation.
+TEST_F(MimeHandlerStreamManagerTest, HostPrivilegeBypassWithPushState) {
+  const GURL pdf_url(kOriginalUrl1);
+
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  content_host = NavigateAndCommit(content_host, pdf_url);
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+
+  content::OverrideLastCommittedOrigin(
+      extension_host,
+      url::Origin::Create(GURL(
+          "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html")));
+
+  // Initially, both extension and content frames should have host privileges.
+  EXPECT_TRUE(manager->IsExtensionHost(extension_host));
+  EXPECT_TRUE(manager->IsContentHost(content_host));
+
+  // Simulate pushState URL spoofing on the embedder host.
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://original_url1/spoofed"), embedder_host);
+  simulator->CommitSameDocument();
+
+  // Spoofed URL path must revoke the privileges.
+  EXPECT_FALSE(manager->IsExtensionHost(extension_host));
+  EXPECT_FALSE(manager->IsContentHost(content_host));
+}
+
+// MimeHandlerStreamManager should continue to identify the extension and
+// content frames during same-document fragment/hash navigations on the
+// embedder host (e.g., scrolling).
+TEST_F(MimeHandlerStreamManagerTest, AllowsFragmentNavigation) {
+  const GURL pdf_url(kOriginalUrl1);
+
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  content_host = NavigateAndCommit(content_host, pdf_url);
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+
+  content::OverrideLastCommittedOrigin(
+      extension_host,
+      url::Origin::Create(GURL(
+          "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html")));
+
+  EXPECT_TRUE(manager->IsExtensionHost(extension_host));
+  EXPECT_TRUE(manager->IsContentHost(content_host));
+
+  // Simulate a fragment/hash navigation on the embedder host (e.g. scrolling
+  // updates hash).
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://original_url1#page=2"), embedder_host);
+  simulator->CommitSameDocument();
+
+  EXPECT_TRUE(manager->IsExtensionHost(extension_host));
+  EXPECT_TRUE(manager->IsContentHost(content_host));
+}
+
 }  // namespace extensions::mime_handler
