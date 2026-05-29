@@ -75,11 +75,14 @@ public class EducationalTipCardProviderSignalHandler {
                 inputContext.addEntry(
                         "support_customized_ntp_theme",
                         ProcessedValue.fromBoolean(actionDelegate.supportCustomizedNtpTheme()));
+                boolean isBottomSheetDisabled =
+                        !ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue();
+                boolean hasThemeTipBottomSheetBeenShown =
+                        NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference();
                 inputContext.addEntry(
                         "has_theme_tip_bottom_sheet_been_shown",
                         ProcessedValue.fromBoolean(
-                                NtpCustomizationUtils
-                                        .isThemeTipBottomSheetShownFromSharedPreference()));
+                                isBottomSheetDisabled || hasThemeTipBottomSheetBeenShown));
                 return inputContext;
             case ModuleType.HISTORY_SYNC_PROMO:
                 inputContext.addEntry(
