@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/android/jni_bytebuffer.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -186,13 +187,13 @@ ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
 
   callback_->OnMoreData(delay, tick_clock_->NowTicks(), {}, audio_bus_.get());
 
-  int16_t* native_bus = reinterpret_cast<int16_t*>(native_buffer.data());
-  audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(audio_bus_->frames(),
-                                                         native_bus);
+  const size_t total_bytes =
+      audio_bus_->frames() * audio_bus_->channels() * sizeof(int16_t);
+  base::span<uint8_t> target_buffer = native_buffer.first(total_bytes);
+  audio_bus_->ToInterleavedBytes<SignedInt16SampleTypeTraits>(target_buffer);
 
   return Java_AudioTrackOutputStream_createAudioBufferInfo(
-      env, j_audio_output_stream_, audio_bus_->frames(),
-      sizeof(*native_bus) * audio_bus_->channels() * audio_bus_->frames());
+      env, j_audio_output_stream_, audio_bus_->frames(), total_bytes);
 }
 
 void AudioTrackOutputStream::OnError(JNIEnv* env) {

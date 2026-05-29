@@ -400,8 +400,8 @@ void NdkAudioEncoder::FeedInput(const AudioBus* audio_bus) {
 
   // MediaCodec uses signed 16bit PCM encoding by default.
   // Configuring the encoder to use float PCM did not work in tests.
-  audio_bus->ToInterleaved<SignedInt16SampleTypeTraits>(
-      audio_bus->frames(), reinterpret_cast<int16_t*>(mc_input_buffer.data()));
+  base::span<uint8_t> target_buffer = mc_input_buffer.first(total_bytes);
+  audio_bus->ToInterleavedBytes<SignedInt16SampleTypeTraits>(target_buffer);
 
   CHECK_EQ(audio_bus->frames(), kAacFramesPerBuffer);
   const auto timestamp_us =
