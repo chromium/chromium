@@ -15,7 +15,7 @@ import './icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
@@ -104,7 +104,15 @@ export class ToolbarAppElement extends AppElementBase {
     return getCss();
   }
 
+  /**
+   * Returns the Lit element template. To prevent premature paint holding
+   * resolution (FCP) during startup, we return `nothing` until the initial
+   * navigation controls state has been received from the browser.
+   */
   override render() {
+    if (!this.isInitialized_) {
+      return nothing;
+    }
     return getHtml.bind(this)();
   }
 
@@ -118,6 +126,7 @@ export class ToolbarAppElement extends AppElementBase {
       isBackForwardButtonEnabled_: {type: Boolean},
       isPinnedToolbarActionsEnabled_: {type: Boolean},
       isAvatarButtonEnabled_: {type: Boolean},
+      isInitialized_: {type: Boolean},
     };
   }
 
@@ -135,6 +144,12 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enablePinnedToolbarActions');
   protected accessor isAvatarButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableAvatarButton');
+  /**
+   * Tracks whether the element has received its first navigation state
+   * update from the browser and completed its initial visual render.
+   */
+  protected accessor isInitialized_: boolean =
+      !loadTimeData.getBoolean('initialWebUISurfaceSyncEnabled');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
       // While this will be overwritten anyways, this matches the default value
@@ -212,6 +227,10 @@ export class ToolbarAppElement extends AppElementBase {
       NavigationControlsStateListenerHandle =
           INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
   private iconTable_: IconTable;
+  private isPageInitialized_: boolean = false;
+  private initializeSessionId_: number = 0;
+  private dragOverListener_ = (e: DragEvent) => this.onDragOver_(e);
+  private dropListener_ = (e: DragEvent) => this.onDrop_(e);
 
   constructor() {
     super();
@@ -235,8 +254,10 @@ export class ToolbarAppElement extends AppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addEventListener('dragover', this.onDragOver_.bind(this));
-    this.addEventListener('drop', this.onDrop_.bind(this));
+    const sessionId = ++this.initializeSessionId_;
+
+    this.addEventListener('dragover', this.dragOverListener_);
+    this.addEventListener('drop', this.dropListener_);
 
     // Initial setup of CSS variables
     this.style.setProperty(
@@ -256,9 +277,32 @@ export class ToolbarAppElement extends AppElementBase {
               // so the new icons are available for rendering of child widgets.
               this.iconTable_.applyUpdates(iconUpdates);
               this.navigationControlsState_ = state;
+
+              // Defer notifying the browser that the page is ready until after
+              // the first Mojo-populated update has completed its render cycle.
+              if (!this.isInitialized_) {
+                this.isInitialized_ = true;
+                this.updateComplete.then(() => {
+                  this.initializePage_(sessionId);
+                });
+              }
             });
 
     this.metricsRecorder_.startObserving();
+    if (this.isInitialized_) {
+      this.updateComplete.then(() => {
+        this.initializePage_(sessionId);
+      });
+    }
+  }
+
+  private initializePage_(sessionId: number) {
+    if (sessionId !== this.initializeSessionId_ || !this.isConnected ||
+        this.isPageInitialized_) {
+      return;
+    }
+    this.isPageInitialized_ = true;
+
     for (const {selector, id} of TRACKED_ELEMENTS) {
       const el = this.shadowRoot.querySelector<HTMLElement>(selector);
       if (el) {
@@ -270,6 +314,19 @@ export class ToolbarAppElement extends AppElementBase {
         this.registerHelpBubble(id, el);
       }
     }
+
+    const waitSelectors =
+        ['#back', '#forward', '#reload', '#split-tabs', '#home', '#avatar'];
+    const promises =
+        waitSelectors.map(s => this.shadowRoot.querySelector<CrLitElement>(s))
+            .filter(el => !!el)
+            .map(el => el.updateComplete);
+    Promise.all(promises).then(() => {
+      if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
+        return;
+      }
+      this.browserProxy_.toolbarUIHandler.onPageInitialized();
+    });
   }
 
   /**
@@ -279,22 +336,31 @@ export class ToolbarAppElement extends AppElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    this.removeEventListener('dragover', this.dragOverListener_);
+    this.removeEventListener('drop', this.dropListener_);
+
     this.browserProxy_.removeNavigationStateListener(
         this.navigationStateListenerHandle_);
 
+    this.isInitialized_ =
+        !loadTimeData.getBoolean('initialWebUISurfaceSyncEnabled');
+    this.initializeSessionId_++;
+
     this.metricsRecorder_.stopObserving();
-    for (const {selector, id} of TRACKED_ELEMENTS) {
-      const el = this.shadowRoot.querySelector<HTMLElement>(selector);
-      if (el) {
-        this.trackedElementManager_.stopTracking(el);
-        this.unregisterHelpBubble(id);
+    if (this.isPageInitialized_) {
+      for (const {selector, id} of TRACKED_ELEMENTS) {
+        const el = this.shadowRoot.querySelector<HTMLElement>(selector);
+        if (el) {
+          this.trackedElementManager_.stopTracking(el);
+          this.unregisterHelpBubble(id);
+        }
       }
+      this.isPageInitialized_ = false;
     }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-
     const entry = performance.getEntriesByType('navigation')[0] as
         PerformanceNavigationTiming;
     if (entry) {
@@ -302,17 +368,6 @@ export class ToolbarAppElement extends AppElementBase {
           'InitialWebUI.Toolbar.ParseFinishedToFirstUpdate',
           Math.round(performance.now() - entry.domInteractive));
     }
-
-    const waitSelectors =
-        ['#back', '#forward', '#reload', '#split-tabs', '#home', '#avatar'];
-    const promises =
-        waitSelectors.map(s => this.shadowRoot.querySelector<CrLitElement>(s))
-            .filter(el => !!el)
-            .map(el => el.updateComplete);
-
-    Promise.all(promises).then(() => {
-      this.browserProxy_.toolbarUIHandler.onPageInitialized();
-    });
   }
 
   protected onDragOver_(e: DragEvent) {
