@@ -1062,6 +1062,10 @@ class CONTENT_EXPORT WebContentsImpl
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
+  void OnStartDragging(
+      DropData* drop_data,
+      const GlobalRenderFrameHostToken& source_rfh_token) override;
+  void OnDragSourceEnded() override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void DidCancelNavigationBeforeStart(
       NavigationHandle* navigation_handle) override;
@@ -2805,6 +2809,11 @@ class CONTENT_EXPORT WebContentsImpl
 #if BUILDFLAG(IS_ANDROID)
   bool supports_forward_transition_animation_ = true;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  void SetDragSource(const DragId& drag_id,
+                     const GlobalRenderFrameHostToken& source_rfh_token);
+
+  std::optional<DragId> active_drag_id_;
 
   const UniqueToken web_contents_token_;
   const base::trace_event::TrackRegistration<perfetto::NamedTrack>

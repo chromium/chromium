@@ -16,6 +16,7 @@
 #include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/common/drop_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -60,6 +61,7 @@ class RenderWidgetHostViewBase;
 class RenderViewHostDelegateView;
 class TextInputManager;
 class VisibleTimeRequestTrigger;
+class WebContents;
 enum class KeyboardEventProcessingResult;
 
 //
@@ -322,6 +324,14 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the object that tracks the start of content to visible events for
   // the WebContents.
   virtual VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() = 0;
+
+  // Notifies the delegate that a drag has started.
+  virtual void OnStartDragging(
+      DropData* drop_data,
+      const GlobalRenderFrameHostToken& source_rfh_token) {}
+
+  // Notifies the delegate that a drag source has ended.
+  virtual void OnDragSourceEnded() {}
 
   // Returns the delegated ink point renderer associated with this WebContents
   // for dispatching delegated ink points to viz. This also attempts to setup

@@ -2062,6 +2062,9 @@ void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
 }
 
 void RenderWidgetHostImpl::DragSourceSystemDragEnded() {
+  if (delegate_) {
+    delegate_->OnDragSourceEnded();
+  }
   // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (!blink_frame_widget_) {
     return;
@@ -2914,6 +2917,9 @@ void RenderWidgetHostImpl::StartDragging(
     const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {
   DropData drop_data = DragDataToDropData(*drag_data);
+  if (delegate_) {
+    delegate_->OnStartDragging(&drop_data, source_rfh.GetGlobalFrameToken());
+  }
   DropData filtered_data(drop_data);
   RenderProcessHost* process = GetProcess();
   ChildProcessSecurityPolicyImpl* policy =
