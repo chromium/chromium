@@ -297,6 +297,7 @@ BASE_DECLARE_FEATURE(kUseAppTaskForCustomTabActivation);
 BASE_DECLARE_FEATURE(kUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kUseWebUiNtpAndroid);
+BASE_DECLARE_FEATURE(kUserFeedbackAllowedPolicy);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
 BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
 BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
