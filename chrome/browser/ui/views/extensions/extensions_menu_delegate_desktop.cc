@@ -337,10 +337,15 @@ void ExtensionsMenuDelegateDesktop::OnActionIconUpdated(
     return;
   }
 
-  // Update the icon for the extension's site permission page
+  // Update the site permissions page if it can be shown for the updated action,
+  // otherwise go back to the main page.
   // TODO(crbug.com/431902556): consider updating only the icon and not the
   // whole site permissions page.
-  UpdateSitePermissionsPage(site_permissions_page);
+  if (menu_model_->CanShowSitePermissionsPage(action_id)) {
+    UpdateSitePermissionsPage(site_permissions_page);
+  } else {
+    OpenMainPage();
+  }
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionsInitialized() {

@@ -83,8 +83,7 @@ ExtensionsMenuMainPageView*
 ExtensionsMenuSitePermissionsPageViewInteractiveUITest::main_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
-  DCHECK(menu_delegate);
-  return menu_delegate->GetMainPageViewForTesting();
+  return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
@@ -92,8 +91,8 @@ ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     site_permissions_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
-  DCHECK(menu_delegate);
-  return menu_delegate->GetSitePermissionsPageForTesting();
+  return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
+                       : nullptr;
 }
 
 void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::ShowUi(
@@ -154,4 +153,32 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuSitePermissionsPageViewInteractiveUITest,
   EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
   EXPECT_TRUE(IsMainPageOpened());
   EXPECT_TRUE(DidInjectScript(web_contents));
+}
+
+// Tests that opening a new tab while the site permissions page is open doesn't
+// crash the browser.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuSitePermissionsPageViewInteractiveUITest,
+                       NavigateToNewTabWhileSitePermissionsPageOpened) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto extension =
+      LoadTestExtension("extensions/blocked_actions/content_scripts");
+
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open an extension's site permissions page.
+  ShowUi(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+  EXPECT_FALSE(IsMainPageOpened());
+
+  // Open a new tab. This should change the active tab and trigger
+  // OnPageNavigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://newtab"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Verify that the site permissions page is no longer opened.
+  EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
 }

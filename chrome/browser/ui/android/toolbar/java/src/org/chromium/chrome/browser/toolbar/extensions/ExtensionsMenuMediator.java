@@ -545,6 +545,11 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void updateSitePermissionsPage(String extensionId) {
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 mMenuBridge.getExtensionSitePermissionsState(extensionId);
+        if (sitePermissionsState == null) {
+            mMainPageModel.set(
+                    ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+            return;
+        }
 
         mSitePermissionsPageModel.set(
                 SitePermissionsPageProperties.EXTENSION_NAME, sitePermissionsState.extensionName);

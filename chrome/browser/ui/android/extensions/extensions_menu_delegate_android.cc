@@ -99,6 +99,9 @@ ScopedJavaLocalRef<jobject>
 ExtensionsMenuDelegateAndroid::GetExtensionSitePermissionsState(
     JNIEnv* env,
     const std::string& extension_id) {
+  if (!menu_model_->CanShowSitePermissionsPage(extension_id)) {
+    return nullptr;
+  }
   ExtensionsMenuViewModel::ExtensionSitePermissionsState state =
       menu_model_->GetExtensionSitePermissionsState(extension_id,
                                                     kActionIconSize);
