@@ -294,16 +294,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
   }
 
   if (is_new_browser) {
-    // By opening a new window we've already performed part of a "disposition",
-    // the only remaining thing for Navigate() to do is navigate the new window.
-    return WindowOpenDisposition::CURRENT_TAB;
-    // TODO(crbug.com/40762104): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
-    // The window has no tabs so it doesn't make sense to open the "current"
-    // tab. We use it anyway because it happens to work.
-    // If NEW_FOREGROUND_TAB is used the the WindowCanOpenTabs() check fails
-    // when `launch_url` is out of scope for web app windows causing it to
-    // open another separate browser window. It should be updated to check the
-    // extended scope.
+    return WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 
   // If launch handler is routing to an existing client, we want to use the
