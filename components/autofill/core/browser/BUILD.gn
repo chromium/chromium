@@ -1751,6 +1751,7 @@ source_set("unit_tests") {
     "single_field_fillers/payments/merchant_promo_code_manager_unittest.cc",
     "single_field_fillers/single_field_fill_router_unittest.cc",
     "strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host_unittest.cc",
+    "strike_databases/email_verification_strike_database_unittest.cc",
     "strike_databases/payments/virtual_card_enrollment_strike_database_unittest.cc",
     "studies/autofill_ablation_study_unittest.cc",
     "studies/autofill_experiments_unittest.cc",
