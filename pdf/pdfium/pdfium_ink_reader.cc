@@ -316,6 +316,17 @@ std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(  // IN-TEST
   return CreateInkMeshFromPolyline(polyline);
 }
 
+ReadInkTextResult::ReadInkTextResult(InkTextBox textbox,
+                                     std::vector<FPDF_PAGEOBJECT> text_objects)
+    : textbox(std::move(textbox)), text_objects(std::move(text_objects)) {}
+
+ReadInkTextResult::ReadInkTextResult(ReadInkTextResult&&) noexcept = default;
+
+ReadInkTextResult& ReadInkTextResult::operator=(ReadInkTextResult&&) noexcept =
+    default;
+
+ReadInkTextResult::~ReadInkTextResult() = default;
+
 bool PageContainsInkTextAnnotation(FPDF_PAGE page) {
   if (!page) {
     return false;
@@ -330,8 +341,13 @@ bool PageContainsInkTextAnnotation(FPDF_PAGE page) {
   return false;
 }
 
-std::vector<InkTextBox> ReadInkTextAnnotationsFromPage(FPDF_PAGE page) {
-  std::vector<InkTextBox> results;
+std::vector<ReadInkTextResult> ReadInkTextAnnotationsFromPage(FPDF_PAGE page) {
+  struct TextboxData {
+    std::optional<InkTextBoxAttributes> attributes;
+    std::vector<FPDF_PAGEOBJECT> page_objects;
+  };
+
+  std::vector<ReadInkTextResult> results;
   if (!page) {
     return results;
   }
@@ -339,8 +355,8 @@ std::vector<InkTextBox> ReadInkTextAnnotationsFromPage(FPDF_PAGE page) {
   // Collect invalid textbox IDs to ignore them.
   std::set<int> invalid_ids;
 
-  // Maps textbox IDs to their successfully extracted textboxes attributes.
-  std::map<int, InkTextBoxAttributes> ids_to_attributes;
+  // Maps textbox IDs to their loading data.
+  std::map<int, TextboxData> ids_to_data;
 
   const int page_object_count = FPDFPage_CountObjects(page);
   for (int i = 0; i < page_object_count; ++i) {
@@ -375,24 +391,29 @@ std::vector<InkTextBox> ReadInkTextAnnotationsFromPage(FPDF_PAGE page) {
       continue;
     }
 
+    auto& data = ids_to_data[textbox_id];
+    data.page_objects.push_back(page_object);
+
     // Extract attributes from the mark. Only the first text object should have
     // the attributes. Subsequent text objects in the same textbox should not.
     std::optional<InkTextBoxAttributes> attributes =
         ExtractAttributesFromMark(page_object, mark);
     if (attributes.has_value()) {
-      if (ids_to_attributes.contains(textbox_id)) {
+      if (data.attributes.has_value()) {
         // Already extracted attributes. Multiple objects have attribute
         // metadata.
         invalid_ids.insert(textbox_id);
       } else {
-        ids_to_attributes.emplace(textbox_id, std::move(attributes.value()));
+        data.attributes = std::move(attributes.value());
       }
     }
   }
 
-  for (auto& [textbox_id, attributes] : ids_to_attributes) {
-    if (!invalid_ids.contains(textbox_id)) {
-      results.emplace_back(textbox_id, std::move(attributes));
+  for (auto& [textbox_id, data] : ids_to_data) {
+    if (data.attributes.has_value() && !invalid_ids.contains(textbox_id)) {
+      results.emplace_back(
+          InkTextBox(textbox_id, std::move(data.attributes.value())),
+          std::move(data.page_objects));
     }
   }
 

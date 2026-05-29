@@ -5512,19 +5512,24 @@ DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf() {
   DocumentInkTextBoxesMap document_textboxes;
   for (size_t i = 0; i < pages_.size(); ++i) {
     PDFiumPage* page = pages_[i].get();
-    std::vector<InkTextBox> page_textboxes =
+    std::vector<ReadInkTextResult> page_results =
         ReadInkTextAnnotationsFromPage(page->GetPage());
-    if (page_textboxes.empty()) {
+    if (page_results.empty()) {
       continue;
     }
+
+    std::vector<InkTextBox> page_textboxes;
+    page_textboxes.reserve(page_results.size());
 
     // Note that the textbox IDs in the PDF are ONLY used for grouping multiple
     // text objects belonging to the same textbox in the PDF on a per-page
     // basis (and not for global tracking). Generating globally unique IDs
     // prevents collisions across all pages.
-    for (const auto& textbox : page_textboxes) {
-      existing_textbox_ids_.insert(textbox.id);
+    for (auto& result : page_results) {
+      existing_textbox_ids_.insert(result.textbox.id);
+      page_textboxes.push_back(std::move(result.textbox));
     }
+
     document_textboxes[i] = std::move(page_textboxes);
   }
 
