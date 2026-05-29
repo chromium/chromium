@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -701,7 +700,7 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
   // stub image (gray avatar).
   std::unique_ptr<user_manager::UserImage> user_image;
   if (downloaded_profile_image_.isNull()) {
-    user_image = base::WrapUnique(new user_manager::UserImage);
+    user_image = std::make_unique<user_manager::UserImage>();
   } else {
     user_image = user_manager::UserImage::CreateAndEncode(
         downloaded_profile_image_, user_manager::UserImage::ChooseImageFormat(

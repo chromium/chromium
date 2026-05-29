@@ -441,8 +441,7 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
   bool send_ping_immediately = ping_delay < 0;
   base::TimeDelta delay =
       base::Seconds(abs(ping_delay)) - params.time_since_oobe_completion;
-  rlz::RLZTracker::SetRlzDelegate(
-      base::WrapUnique(new ChromeRLZTrackerDelegate));
+  rlz::RLZTracker::SetRlzDelegate(std::make_unique<ChromeRLZTrackerDelegate>());
   rlz::RLZTracker::InitRlzDelayed(
       user_manager::UserManager::Get()->IsCurrentUserNew(),
       send_ping_immediately, delay,

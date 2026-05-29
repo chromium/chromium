@@ -13,7 +13,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -136,7 +135,7 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
     search_tab_helper->ipc_router_for_testing().set_delegate_for_testing(
         mock_delegate());
     search_tab_helper->ipc_router_for_testing().set_policy_for_testing(
-        base::WrapUnique(new MockSearchIPCRouterPolicy));
+        std::make_unique<MockSearchIPCRouterPolicy>());
     auto factory =
         std::make_unique<NiceMock<MockEmbeddedSearchClientFactory>>();
     ON_CALL(*factory, GetEmbeddedSearchClient())
