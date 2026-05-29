@@ -5791,10 +5791,6 @@
       status: "stable",
     },
     {
-      name: "SvgPartitionSVGDocumentResourcesInMemoryCache",
-      status: "stable",
-    },
-    {
       name: "SvgPathLengthCssProperty",
       status: "experimental",
     },

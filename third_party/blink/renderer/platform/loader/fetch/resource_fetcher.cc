@@ -223,14 +223,7 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
   return IsMainThread() &&
          params.GetResourceRequest().HttpMethod() == http_names::kGET &&
          params.Options().data_buffering_policy != kDoNotBufferData &&
-         !IsRawResource(*resource) &&
-         // Always create a new resource for SVG resource documents since they
-         // are tied to the requesting document. There's a document-scoped cache
-         // in-front of the ResourceFetcher that will handle reuse (see
-         // SVGResourceDocumentContent::Fetch()).
-         (resource->GetType() != ResourceType::kSVGDocument ||
-          RuntimeEnabledFeatures::
-              SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled());
+         !IsRawResource(*resource);
 }
 
 bool ShouldResourceBeKeptStrongReferenceByType(
@@ -3055,12 +3048,9 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url,
 String ResourceFetcher::GetCacheIdentifier(ResourceType type,
                                            const KURL& url,
                                            bool skip_service_worker) const {
-  // For SVG resource documents, use the SVG-specific cache identifier when the
-  // feature is enabled and a cache identifier is available from the fetch
-  // context.
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
-      type == ResourceType::kSVGDocument) {
+  // For SVG resource documents, use the SVG-specific cache identifier from
+  // the fetch context.
+  if (type == ResourceType::kSVGDocument) {
     String svg_cache_identifier = context_->GetSVGCacheIdentifier();
     DCHECK(!svg_cache_identifier.empty());
     return svg_cache_identifier;

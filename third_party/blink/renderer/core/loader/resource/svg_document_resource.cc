@@ -72,13 +72,10 @@ SVGDocumentResource::SVGDocumentResource(
       content_(content) {}
 
 bool SVGDocumentResource::CanUseCacheValidator() const {
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-    // Disallow revalidation while the content is still pending. This is
-    // sub-optimal because it will trigger a new load of the same resource.
-    if (!content_->IsLoaded()) {
-      return false;
-    }
+  // Disallow revalidation while the content is still pending. This is
+  // sub-optimal because it will trigger a new load of the same resource.
+  if (!content_->IsLoaded()) {
+    return false;
   }
   return TextResource::CanUseCacheValidator();
 }
@@ -101,9 +98,7 @@ void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
   }
 
   bool notify_observers = true;
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
-      HasSuccessfulRevalidation()) {
+  if (HasSuccessfulRevalidation()) {
     content_->UpdateStatus(GetStatus());
     notify_observers = content_->IsLoaded();
   } else if (!enforce_integrity || PassedIntegrityChecks()) {

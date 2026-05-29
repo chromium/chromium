@@ -540,18 +540,8 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
 
 SVGDocumentResourceTracker& Page::GetSVGDocumentResourceTracker() {
   if (!svg_document_resource_tracker_) {
-    if (RuntimeEnabledFeatures::
-            SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-      svg_document_resource_tracker_ =
-          SVGResourceSchedulerRegistry::GetTracker(GetAgentGroupScheduler());
-
-    } else {
-      svg_document_resource_tracker_ =
-          MakeGarbageCollected<SVGDocumentResourceTracker>(
-              GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner(),
-              SVGDocumentResourceTracker::MakeCacheIdentifier(
-                  String(BrowsingContextGroupToken().ToString())));
-    }
+    svg_document_resource_tracker_ =
+        SVGResourceSchedulerRegistry::GetTracker(GetAgentGroupScheduler());
   }
   return *svg_document_resource_tracker_;
 }
@@ -1401,10 +1391,6 @@ void Page::WillBeDestroyed() {
     prev->next_related_page_ = next;
     prev_related_page_ = nullptr;
     next_related_page_ = nullptr;
-  }
-
-  if (svg_document_resource_tracker_) {
-    svg_document_resource_tracker_->WillBeDestroyed();
   }
 
   if (scrolling_coordinator_)

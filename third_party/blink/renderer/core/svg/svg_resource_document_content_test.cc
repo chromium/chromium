@@ -99,17 +99,10 @@ TEST_F(SVGResourceDocumentContentSimTest, LoadCompleteAfterDispose) {
   svg_resource.Complete("<svg xmlns='http://www.w3.org/2000/svg'></svg>");
 
   // The cache reference is gone.
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-    EXPECT_FALSE(GetDocument()
-                     .GetPage()
-                     ->GetSVGDocumentResourceTracker()
-                     .HasContentForTesting(content));
-  } else {
-    EXPECT_EQ(GetDocument().GetPage()->GetSVGDocumentResourceTracker().Get(
-                  SVGDocumentResourceTracker::MakeCacheKey(params)),
-              nullptr);
-  }
+  EXPECT_FALSE(GetDocument()
+                   .GetPage()
+                   ->GetSVGDocumentResourceTracker()
+                   .HasContentForTesting(content));
 
   EXPECT_FALSE(content->IsLoading());
   EXPECT_TRUE(content->IsLoaded());
@@ -281,32 +274,16 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
   auto& cache = GetPage().GetSVGDocumentResourceTracker();
 
   // Both document contents should be in the cache.
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-    EXPECT_TRUE(cache.HasContentForTesting(content1));
-    EXPECT_TRUE(cache.HasContentForTesting(content2));
-  } else {
-    EXPECT_NE(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params1)),
-              nullptr);
-    EXPECT_NE(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params2)),
-              nullptr);
-  }
+  EXPECT_TRUE(cache.HasContentForTesting(content1));
+  EXPECT_TRUE(cache.HasContentForTesting(content2));
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   FastForwardUntilNoTasksRemain();
 
   // Only content2 (from params2) should be in the cache.
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-    EXPECT_FALSE(cache.HasContentForTesting(content1));
-    EXPECT_TRUE(cache.HasContentForTesting(content2));
-  } else {
-    EXPECT_EQ(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params1)),
-              nullptr);
-    EXPECT_NE(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params2)),
-              nullptr);
-  }
+  EXPECT_FALSE(cache.HasContentForTesting(content1));
+  EXPECT_TRUE(cache.HasContentForTesting(content2));
 
   content2->RemoveObserver(observer);
 
@@ -315,16 +292,8 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
   FastForwardUntilNoTasksRemain();
 
   // Neither of the document contents should be in the cache.
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-    EXPECT_FALSE(cache.HasContentForTesting(content1));
-    EXPECT_FALSE(cache.HasContentForTesting(content2));
-  } else {
-    EXPECT_EQ(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params1)),
-              nullptr);
-    EXPECT_EQ(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params2)),
-              nullptr);
-  }
+  EXPECT_FALSE(cache.HasContentForTesting(content1));
+  EXPECT_FALSE(cache.HasContentForTesting(content2));
 }
 
 TEST_F(SVGResourceDocumentContentTest, SecondLoadOfResourceInError) {

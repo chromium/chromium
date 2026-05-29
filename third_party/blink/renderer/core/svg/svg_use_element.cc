@@ -638,9 +638,7 @@ void SVGUseElement::ResourceNotifyFinished(
   // This can happen when a resource revalidation causes all observing <use>
   // elements to be notified, but we only want to rebuild the shadow tree when
   // this element has initiated the resource fetch.
-  if (RuntimeEnabledFeatures::
-          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
-      !notification_pending_) {
+  if (!notification_pending_) {
     return;
   }
   auto load_event_delayer = std::move(resource_load_event_delayer_);
