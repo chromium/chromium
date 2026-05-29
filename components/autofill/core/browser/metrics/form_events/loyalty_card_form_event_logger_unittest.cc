@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -662,6 +663,63 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
 
   VerifyInteractedWithFormUkmMetric();
 }
+
+#if !BUILDFLAG(IS_IOS)
+// Tests that acceptance metric for EMAIL_OR_LOYALTY_MEMBERSHIP_ID field is
+// reported when an email suggestion is selected.
+TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
+       EmailAndLoyaltyCardsMetric_EmailSuggestionSelected) {
+  test_api(valuables_data_manager())
+      .SetLoyaltyCards({test::CreateLoyaltyCard()});
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://www.domain.example/"));
+
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
+                                    {.role = PASSWORD}}});
+  SeeForm(form_data);
+  autofill_manager().OnAskForValuesToFillTest(
+      form_data, form_data.fields()[0].global_id());
+
+  ASSERT_FALSE(external_delegate().suggestions().empty());
+  EXPECT_EQ(external_delegate().suggestions().front().type,
+            SuggestionType::kAddressEntry);
+
+  base::HistogramTester histogram_tester;
+
+  external_delegate().DidAcceptSuggestion(
+      external_delegate().suggestions().front(), {});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",
+      AutofillEmailOrLoyaltyCardAcceptanceMetricValue::kEmailSelected, 1);
+}
+
+// Tests that acceptance metric for EMAIL_OR_LOYALTY_MEMBERSHIP_ID field is
+// reported when a loyalty card suggestion is selected.
+TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
+       EmailAndLoyaltyCardsMetric_LoyaltyCardSuggestionSelected) {
+  test_api(valuables_data_manager())
+      .SetLoyaltyCards({test::CreateLoyaltyCard()});
+
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
+                                    {.role = PASSWORD}}});
+  SeeForm(form_data);
+  autofill_manager().OnAskForValuesToFillTest(
+      form_data, form_data.fields()[0].global_id());
+  base::HistogramTester histogram_tester;
+
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
+                 SuggestionType::kLoyaltyCardEntry),
+      {});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",
+      AutofillEmailOrLoyaltyCardAcceptanceMetricValue::kLoyaltyCardSelected, 1);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Parameterized AffiliationTypeKeyMetricsEditTest that edits a field depending
 // on the parameter. This is used to test the correctness metric, which depends
