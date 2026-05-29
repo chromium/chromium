@@ -9,16 +9,20 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace record_replay {
 
 class TaskDefinition;
 class TaskParameter;
+class TaskStore;
+class TaskObservation;
 
 // Predicts parameter values for a provided task definition.
 class TaskParameterValuesPredictor {
  public:
-  TaskParameterValuesPredictor();
+  explicit TaskParameterValuesPredictor(TaskStore* task_store);
   TaskParameterValuesPredictor(const TaskParameterValuesPredictor&) = delete;
   TaskParameterValuesPredictor& operator=(const TaskParameterValuesPredictor&) =
       delete;
@@ -29,6 +33,15 @@ class TaskParameterValuesPredictor {
       const TaskDefinition& task_definition,
       base::OnceCallback<void(std::optional<std::vector<TaskParameter>>)>
           completion_callback);
+
+ private:
+  void OnObservationsRetrieved(
+      base::OnceCallback<void(std::optional<std::vector<TaskParameter>>)>
+          completion_callback,
+      std::vector<TaskObservation> observations);
+
+  raw_ptr<TaskStore> task_store_;
+  base::WeakPtrFactory<TaskParameterValuesPredictor> weak_ptr_factory_{this};
 };
 
 }  // namespace record_replay
