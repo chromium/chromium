@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_parse_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
@@ -2286,8 +2287,8 @@ TEST_F(DocumentTest, ParseHTMLSanitizerException) {
 
   {
     DummyExceptionStateForTesting exception_state;
-    SetHTMLUnsafeOptions* options =
-        MakeGarbageCollected<SetHTMLUnsafeOptions>();
+    ParseHTMLUnsafeOptions* options =
+        MakeGarbageCollected<ParseHTMLUnsafeOptions>();
     options->setSanitizer(
         MakeGarbageCollected<
             V8UnionSanitizerOrSanitizerConfigOrSanitizerPresets>(config));

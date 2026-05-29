@@ -17,6 +17,7 @@ class Element;
 class ExceptionState;
 class FragmentParserConfig;
 class FragmentParserOptions;
+class ParseHTMLUnsafeOptions;
 class SetHTMLOptions;
 class SetHTMLUnsafeOptions;
 class String;
@@ -68,6 +69,7 @@ class CORE_EXPORT FragmentParserOptions {
   FragmentParserOptions& operator=(const FragmentParserOptions&) = default;
   explicit FragmentParserOptions(TrustedParserOptions* options);
   explicit FragmentParserOptions(SetHTMLUnsafeOptions* options);
+  explicit FragmentParserOptions(ParseHTMLUnsafeOptions* options);
   explicit FragmentParserOptions(SetHTMLOptions* options);
 
   static FragmentParserOptions From(

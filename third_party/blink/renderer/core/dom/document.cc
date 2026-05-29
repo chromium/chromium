@@ -10206,7 +10206,7 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
 // static
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const V8UnionStringOrTrustedHTML* html,
-                                    SetHTMLUnsafeOptions* options,
+                                    ParseHTMLUnsafeOptions* options,
                                     ExceptionState& exception_state) {
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());

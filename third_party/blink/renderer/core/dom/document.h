@@ -232,6 +232,7 @@ class MenuSafeTriangle;
 class NodeIterator;
 class NthIndexCache;
 class Page;
+class ParseHTMLUnsafeOptions;
 class PendingAnimations;
 class PendingLinkPreload;
 class ProcessingInstruction;
@@ -257,7 +258,6 @@ class SecurityOrigin;
 class SelectorQueryCache;
 class SerializedScriptValue;
 class SetHTMLOptions;
-class SetHTMLUnsafeOptions;
 class Settings;
 class SlotAssignmentEngine;
 class StreamingSanitizer;
@@ -2256,7 +2256,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // should be merged.
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const V8UnionStringOrTrustedHTML* html,
-                                   SetHTMLUnsafeOptions* options,
+                                   ParseHTMLUnsafeOptions* options,
                                    ExceptionState& exception_state);
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const V8UnionStringOrTrustedHTML* html,

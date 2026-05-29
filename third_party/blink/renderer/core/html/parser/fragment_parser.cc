@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_parse_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -173,6 +174,9 @@ FragmentParserOptions::FragmentParserOptions(SetHTMLUnsafeOptions* options)
                        ? RunScripts::kRunScripts
                        : RunScripts::kDontRunScripts),
       sanitizer_init_(options->sanitizer()) {}
+
+FragmentParserOptions::FragmentParserOptions(ParseHTMLUnsafeOptions* options)
+    : sanitizer_init_(options->sanitizer()) {}
 
 FragmentParserOptions::FragmentParserOptions(SetHTMLOptions* options)
     : sanitizer_init_(options->sanitizer()) {}
