@@ -194,7 +194,10 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
-    public void onAddAccountCanceled() {}
+    public void onAddAccountCanceled() {
+        assertNonNull(mSigninCoordinator);
+        mSigninCoordinator.onAddAccountCanceled();
+    }
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
@@ -274,6 +277,12 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
             return;
         }
         showChildView(ChildView.HISTORY_SYNC);
+    }
+
+    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
+    @Override
+    public void abortFlow() {
+        mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
     }
 
     @Override

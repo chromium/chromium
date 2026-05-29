@@ -862,6 +862,28 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    public void testWithSelectedAccountEmail_nonExistingAccount_cancelAddAccount() {
+        mSigninTestRule.setAddAccountFlowResult(null);
+        FullscreenSigninAndHistorySyncConfig config =
+                getDefaultConfigBuilder()
+                        .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
+                        .build();
+
+        // launchActivity() helper is not used as this test starts the add account flow immediately.
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
+                        ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        mActivity = mActivityTestRule.launchActivity(intent);
+
+        // Brought directly to the add account flow.
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
     public void testSwitchAccount_signIn() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);

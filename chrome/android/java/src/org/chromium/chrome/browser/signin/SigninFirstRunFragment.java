@@ -232,6 +232,12 @@ public class SigninFirstRunFragment extends Fragment
         }
     }
 
+    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
+    @Override
+    public void abortFlow() {
+        exitFirstRun();
+    }
+
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public void recordUserSignInHistograms(@AccountConsistencyPromoAction int promoAction) {

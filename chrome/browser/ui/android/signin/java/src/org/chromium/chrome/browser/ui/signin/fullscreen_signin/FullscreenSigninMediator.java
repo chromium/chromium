@@ -450,6 +450,13 @@ public class FullscreenSigninMediator
         if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }
 
+    void onAddAccountCanceled() {
+        if (mConfig.selectedAccountEmail == null) {
+            return;
+        }
+        mDelegate.abortFlow();
+    }
+
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {

@@ -59,6 +59,9 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
         /** Called when the interaction with the page is over and the next page should be shown. */
         void advanceToNextPage();
 
+        /** Aborts the sign-in flow. */
+        void abortFlow();
+
         /** Called to display the device lock page */
         void displayDeviceLockPage(CoreAccountId selectedAccountId);
 
@@ -217,6 +220,10 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
 
     public void onAccountAdded(String accountName) {
         mMediator.onAccountAdded(accountName);
+    }
+
+    public void onAddAccountCanceled() {
+        mMediator.onAddAccountCanceled();
     }
 
     /** Continue the sign-in process with the currently selected account. */
