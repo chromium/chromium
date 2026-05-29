@@ -498,11 +498,15 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
   CHECK_NE(intercept_state_, InterceptState::kFinished);
 
   LocalDOMWindow* window = DomWindow();
-  if (signal_->aborted() || !window) {
+  if (!window) {
     return;
   }
 
   delayed_load_start_task_handle_.Cancel();
+
+  if (signal_->aborted()) {
+    return;
+  }
 
   CHECK_EQ(this, window->navigation()->ongoing_navigate_event_);
   window->navigation()->ongoing_navigate_event_ = nullptr;

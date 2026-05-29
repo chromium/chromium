@@ -8232,6 +8232,44 @@ IN_PROC_BROWSER_TEST_F(
                   ));
 }
 
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       NavigationApiInterceptedPushStateAbortStopsLoading) {
+  GURL main_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  std::unique_ptr<ShouldShowLoadingUIDelegate> delegate =
+      std::make_unique<ShouldShowLoadingUIDelegate>();
+  web_contents()->SetDelegate(delegate.get());
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+      window.onunhandledrejection = e => e.preventDefault();
+      navigation.addEventListener('navigate', event => {
+        event.intercept({
+          precommitHandler() {
+            return new Promise((resolve, reject) => {
+              const timer = setTimeout(resolve, 1000);
+              event.signal.addEventListener('abort', () => {
+                clearTimeout(timer);
+                reject(event.signal.reason);
+              });
+            });
+          },
+        });
+      }, {once: true});
+
+      history.pushState(null, null, '?p=1');
+      setTimeout(() => history.pushState(null, null, '?p=2'), 100);
+      new Promise(resolve => setTimeout(resolve, 200));
+  )"));
+
+  EXPECT_FALSE(web_contents()->IsLoading());
+  EXPECT_EQ(main_url.Resolve("/title1.html?p=2"),
+            web_contents()->GetLastCommittedURL());
+  ASSERT_FALSE(delegate->is_loading_values().empty());
+  EXPECT_FALSE(delegate->is_loading_values().back());
+  EXPECT_FALSE(delegate->did_show_loading_ui_values().back());
+}
+
 // Ensure that navigating with a frame tree of A(B(A)) results in the right
 // number of beforeunload messages sent.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
