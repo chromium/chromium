@@ -153,19 +153,14 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
           std::move(anchor.value()), &GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
-      const SendTabToSelfPromoBubbleView::PromoType promo_type =
-          GetSharingAccountInfo().IsEmpty()
-              ? SendTabToSelfPromoBubbleView::PromoType::kSignInPromo
-              : SendTabToSelfPromoBubbleView::PromoType::
-                    kAccountAwareSignInPromo;
-      bubble_view = std::make_unique<SendTabToSelfPromoBubbleView>(
-          std::move(anchor.value()), &GetWebContents(), promo_type);
+      bubble_view = std::make_unique<SendTabToSelfSignInPromoBubbleView>(
+          std::move(anchor.value()), &GetWebContents(),
+          /*is_account_aware=*/!GetSharingAccountInfo().IsEmpty());
       break;
     }
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
-      bubble_view = std::make_unique<SendTabToSelfPromoBubbleView>(
-          std::move(anchor.value()), &GetWebContents(),
-          SendTabToSelfPromoBubbleView::PromoType::kNoTargetDevice);
+      bubble_view = std::make_unique<SendTabToSelfNoTargetDeviceBubbleView>(
+          std::move(anchor.value()), &GetWebContents());
       break;
   }
   send_tab_to_self_bubble_view_ = bubble_view.get();

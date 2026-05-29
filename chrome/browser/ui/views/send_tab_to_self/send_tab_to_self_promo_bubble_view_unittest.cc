@@ -61,11 +61,20 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
                                std::move(controller));
   }
 
-  void CreateBubble(SendTabToSelfPromoBubbleView::PromoType promo_type) {
-    bubble_ = new SendTabToSelfPromoBubbleView(
+  void CreateSignInPromoBubble(bool is_account_aware) {
+    auto* bubble = new SendTabToSelfSignInPromoBubbleView(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
-        web_contents_.get(), promo_type);
-    views::BubbleDialogDelegateView::CreateBubble(bubble_);
+        web_contents_.get(), is_account_aware);
+    views::BubbleDialogDelegateView::CreateBubble(bubble);
+    bubble_ = bubble;
+  }
+
+  void CreateNoTargetDeviceBubble() {
+    auto* bubble = new SendTabToSelfNoTargetDeviceBubbleView(
+        views::BubbleAnchor(anchor_widget_->GetContentsView()),
+        web_contents_.get());
+    views::BubbleDialogDelegateView::CreateBubble(bubble);
+    bubble_ = bubble;
   }
 
   void TearDown() override {
@@ -83,7 +92,7 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<SendTabToSelfPromoBubbleView> bubble_ = nullptr;
+  raw_ptr<SendTabToSelfBubbleView> bubble_ = nullptr;
   // Owned by WebContents.
   raw_ptr<StubSendTabToSelfBubbleController> controller_;
 };
@@ -92,7 +101,7 @@ TEST_F(SendTabToSelfPromoBubbleViewTest,
        InitLayout_EnhancedUiEnabled_LoadsModernizedDesign) {
   feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
 
-  CreateBubble(SendTabToSelfPromoBubbleView::PromoType::kSignInPromo);
+  CreateSignInPromoBubble(/*is_account_aware=*/false);
 
   // Title should match modernized title strictly.
   EXPECT_EQ(
@@ -113,7 +122,7 @@ TEST_F(SendTabToSelfPromoBubbleViewTest,
        InitLayout_EnhancedUiDisabled_LoadsLegacyDesign) {
   feature_list_.InitAndDisableFeature(kSendTabToSelfEnhancedDesktopUI);
 
-  CreateBubble(SendTabToSelfPromoBubbleView::PromoType::kSignInPromo);
+  CreateSignInPromoBubble(/*is_account_aware=*/false);
 
   // Title should match legacy title strictly.
   EXPECT_EQ(bubble_->GetWindowTitle(),
@@ -133,7 +142,7 @@ TEST_F(SendTabToSelfPromoBubbleViewTest,
        InitLayout_NoTargetDevices_LoadsDeviceActivityDesign) {
   feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
 
-  CreateBubble(SendTabToSelfPromoBubbleView::PromoType::kNoTargetDevice);
+  CreateNoTargetDeviceBubble();
 
   // Ok button should not be visible.
   EXPECT_FALSE(bubble_->GetOkButton());
