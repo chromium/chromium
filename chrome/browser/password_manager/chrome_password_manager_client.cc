@@ -1586,6 +1586,11 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
     const std::u16string& password_value) {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+          rfh, form_data.url(),
+          BadMessageReason::CPMD_BAD_ORIGIN_PRESAVE_GENERATED_PASSWORD)) {
+    return;
+  }
   if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
     return;
   }
@@ -1615,6 +1620,11 @@ void ChromePasswordManagerClient::PasswordNoLongerGenerated(
     const autofill::FormData& form_data) {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+          rfh, form_data.url(),
+          BadMessageReason::CPMD_BAD_ORIGIN_PASSWORD_NO_LONGER_GENERATED)) {
+    return;
+  }
   if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
     return;
   }
