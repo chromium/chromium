@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -104,6 +106,11 @@ constexpr CGFloat kButtonImageSize = 23;
   }
   _inTabGroup = inTabGroup;
   [self updateTabGridButtonAppearance];
+}
+
+- (NSString*)accessibilityLabel {
+  return l10n_util::GetNSString(self.inTabGroup ? IDS_IOS_TOOLBAR_SHOW_TAB_GROUP
+                                                : IDS_IOS_TOOLBAR_SHOW_TABS);
 }
 
 #pragma mark - UIView

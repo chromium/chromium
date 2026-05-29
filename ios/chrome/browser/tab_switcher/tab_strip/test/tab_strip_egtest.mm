@@ -28,13 +28,17 @@
                  @"Wrong number of opened tabs");
 
   // Open a second tab.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabButton()]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(@"TabStripNewTabButtonAccessibilityIdentifier")]
       performAction:grey_tap()];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
                  @"Wrong number of opened tabs");
 
   // Open a third tab.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabButton()]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(@"TabStripNewTabButtonAccessibilityIdentifier")]
       performAction:grey_tap()];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 3,
                  @"Wrong number of opened tabs");

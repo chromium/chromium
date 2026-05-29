@@ -1607,14 +1607,6 @@ class TestResponseProvider {
 // Tests that the translate badge is shown before, during and after turning off
 // Reader mode if badge support is enabled.
 - (void)testTranslateBadgeWithReaderModeBadgeSupport {
-  // TODO(crbug.com/517095176): Re-enable this test when the unified badge
-  // expansion layout under Chrome Next is fixed.
-  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Multiple badges are collapsed into the Page Action Menu "
-        @"on compact iPhones under Chrome Next.");
-  }
-
   // Set up server with a French page.
   GURL URL = self.testServer->GetURL(kFrenchPageDistillablePath);
 
@@ -1634,11 +1626,15 @@ class TestResponseProvider {
   GREYAssertTrue([self selectTranslateButton],
                  @"Could not tap on Translate banner action button");
 
+  id<GREYMatcher> translateAcceptedAccessibilityIdentifier =
+      grey_allOf(grey_accessibilityID(
+                     kBadgeButtonTranslateAcceptedAccessibilityIdentifier),
+                 grey_sufficientlyVisible(), nil);
+
   // Check that the translate badge is visible and accepted.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(
-              kBadgeButtonTranslateAcceptedAccessibilityIdentifier)
+          translateAcceptedAccessibilityIdentifier
                                   timeout:kWaitForUIElement3xTimeout];
 
   // Open Reader Mode.
@@ -1654,8 +1650,7 @@ class TestResponseProvider {
   // Check that the translate badge is visible and accepted.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(
-              kBadgeButtonTranslateAcceptedAccessibilityIdentifier)
+          translateAcceptedAccessibilityIdentifier
                                   timeout:kWaitForUIElement3xTimeout];
 
   // Close Reader Mode.
@@ -1669,8 +1664,7 @@ class TestResponseProvider {
   // Check that the translate badge is visible and accepted.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(
-              kBadgeButtonTranslateAcceptedAccessibilityIdentifier)
+          translateAcceptedAccessibilityIdentifier
                                   timeout:kWaitForUIElement3xTimeout];
 }
 

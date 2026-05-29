@@ -46,7 +46,7 @@ namespace {
 id<GREYMatcher> SaveEllipsisButton() {
   return grey_allOf(
       grey_accessibilityID(kDownloadManagerSaveEllipsisAccessibilityIdentifier),
-      grey_enabled(), nil);
+      grey_enabled(), grey_sufficientlyVisible(), nil);
 }
 
 // Matcher for "DOWNLOAD" button when one destination is available for
@@ -731,9 +731,16 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   // Check that the "Drive" button is presented and tap it.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
-  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kDownloadManagerSaveEllipsisAccessibilityIdentifier),
+                     grey_enabled(), nil)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kDownloadManagerSaveEllipsisAccessibilityIdentifier),
+                     grey_enabled(), nil)] performAction:grey_tap()];
 
   // Wait for the account picker to appear, select "Drive" and tap "Save".
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];

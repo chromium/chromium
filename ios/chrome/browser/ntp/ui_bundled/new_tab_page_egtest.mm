@@ -388,6 +388,9 @@ enum class QuickActionsVisibility {
 // Verifies opening a new tab by long pressing the tab grid view and selecting
 // "New Tab" with the correct policy's New Tab Page Location URL.
 - (void)testNewTabByLongPressTabGridViewWithNTPLocation {
+  if ([ChromeEarlGrey isChromeNextEnabled] && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"The button doesn't exist with Next.");
+  }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL expectedURL = self.testServer->GetURL(kPageURL);
 

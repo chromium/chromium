@@ -110,6 +110,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
                                               defaultImage:NO];
   button.visibilityMask = ToolbarButtonVisibility::kWideLayout;
   button.accessibilityIdentifier = kToolbarReloadButtonIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_RELOAD);
   return button;
 }
 
@@ -118,6 +119,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
                                               defaultImage:YES];
   button.visibilityMask = ToolbarButtonVisibility::kWideLayout;
   button.accessibilityIdentifier = kToolbarStopButtonIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_STOP);
   return button;
 }
 
@@ -161,6 +163,8 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
 #endif
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarAssistantButtonIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI);
   return button;
 }
 

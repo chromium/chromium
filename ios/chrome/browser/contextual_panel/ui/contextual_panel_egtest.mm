@@ -299,13 +299,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Test that the Contextual Panel entrypoint's large chip can be dismissed via
 // swipe.
 - (void)testContextualPanelEntrypointLargeChipDismissable {
-  // TODO(crbug.com/517095176): Re-enable this test when the unified badge
-  // expansion layout under Chrome Next is fixed.
-  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Large chip entrypoint is not present on compact "
-                           @"iPhones under Chrome Next.");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   // Wait for large chip entrypoint to appear.
@@ -313,17 +306,18 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   NSString* entryPointLabel = [ChromeEarlGrey isAskGeminiChipEnabled]
                                   ? kLocationBarBadgeLabelIdentifier
                                   : @"ContextualPanelEntrypointLabelAXID";
+  id<GREYMatcher> entryPointMatcher = grey_allOf(
+      grey_accessibilityID(entryPointLabel), grey_sufficientlyVisible(), nil);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
-                                                       entryPointLabel)];
+      waitForSufficientlyVisibleElementWithMatcher:entryPointMatcher];
 
   // Side swipe on the entrypoint.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(entryPointLabel)]
+  [[EarlGrey selectElementWithMatcher:entryPointMatcher]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
 
   // Check that the entrypoint is now back to default size.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(entryPointLabel)]
+  [[EarlGrey selectElementWithMatcher:entryPointMatcher]
       assertWithMatcher:grey_notVisible()];
 }
 

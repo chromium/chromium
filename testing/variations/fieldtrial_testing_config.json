@@ -4981,9 +4981,6 @@
             "platforms": [
                 "ios"
             ],
-            "form_factors": [
-                "phone"
-            ],
             "experiments": [
                 {
                     "name": "Enabled",

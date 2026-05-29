@@ -717,8 +717,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)openNewTabButton {
   if (IsChromeNextIaEnabled()) {
-    return grey_allOf(grey_accessibilityID(kAppBarNewTabButtonIdentifier),
-                      grey_sufficientlyVisible(), nil);
+    id<GREYMatcher> appBarNewTabButton =
+        grey_allOf(grey_accessibilityID(kAppBarNewTabButtonIdentifier),
+                   grey_sufficientlyVisible(), nil);
+    id<GREYMatcher> tabStripNewTabButton =
+        grey_accessibilityID(@"TabStripNewTabButtonAccessibilityIdentifier");
+    return grey_anyOf(appBarNewTabButton, tabStripNewTabButton, nil);
   }
   return grey_allOf(
       [ChromeMatchersAppInterface
