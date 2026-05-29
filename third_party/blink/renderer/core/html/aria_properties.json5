@@ -664,7 +664,6 @@
         "spinbutton"
       ]
     },
-    {name: "aria-virtualcontent", type: "string"},
   ],
   roles: [
     {

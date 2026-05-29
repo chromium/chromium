@@ -1938,12 +1938,6 @@ data/accessibility/aria/aria-valuetext-expected-blink.txt
 data/accessibility/aria/aria-valuetext-expected-mac.txt
 data/accessibility/aria/aria-valuetext-expected-win.txt
 data/accessibility/aria/aria-valuetext.html
-data/accessibility/aria/aria-virtualcontent-expected-android-assist-data.txt
-data/accessibility/aria/aria-virtualcontent-expected-android-external.txt
-data/accessibility/aria/aria-virtualcontent-expected-android.txt
-data/accessibility/aria/aria-virtualcontent-expected-blink.txt
-data/accessibility/aria/aria-virtualcontent-expected-uia-win.txt
-data/accessibility/aria/aria-virtualcontent.html
 data/accessibility/aria/aria1.1-combobox-expected-android.txt
 data/accessibility/aria/aria1.1-combobox-expected-auralinux.txt
 data/accessibility/aria/aria1.1-combobox-expected-blink.txt

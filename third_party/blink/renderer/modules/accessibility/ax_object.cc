@@ -2378,11 +2378,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kKeyShortcuts,
         AriaAttribute(html_names::kAriaKeyshortcutsAttr));
-    if (RuntimeEnabledFeatures::AccessibilityAriaVirtualContentEnabled()) {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kVirtualContent,
-          AriaAttribute(html_names::kAriaVirtualcontentAttr));
-    }
 
     if (IsAriaAttributeTrue(html_names::kAriaBusyAttr)) {
       node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);

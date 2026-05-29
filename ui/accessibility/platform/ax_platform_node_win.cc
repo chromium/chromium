@@ -5840,14 +5840,6 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
         result->vt = VT_BSTR;
         result->bstrVal =
             SysAllocString(base::NumberToWString(-GetUniqueId()).c_str());
-      } else if (features::IsAccessibilityAriaVirtualContentEnabled() &&
-                 property_id == UiaRegistrarWin::GetInstance()
-                                    .GetVirtualContentPropertyId()) {
-        if (HasStringAttribute(ax::mojom::StringAttribute::kVirtualContent)) {
-          V_VT(result) = VT_BSTR;
-          GetStringAttributeAsBstr(ax::mojom::StringAttribute::kVirtualContent,
-                                   &V_BSTR(result));
-        }
       } else if (features::IsUiaMathMlSupportEnabled() &&
                  property_id ==
                      UiaRegistrarWin::GetInstance().GetMathMLPropertyId()) {

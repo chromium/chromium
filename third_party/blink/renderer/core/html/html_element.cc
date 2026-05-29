@@ -795,8 +795,6 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        kNoEvent, nullptr},
       {html_names::kAriaValuetextAttr, WebFeature::kARIAValueTextAttribute,
        kNoEvent, nullptr},
-      {html_names::kAriaVirtualcontentAttr,
-       WebFeature::kARIAVirtualcontentAttribute, kNoEvent, nullptr},
       // End ARIA attributes.
 
       {html_names::kAutocapitalizeAttr, WebFeature::kAutocapitalizeAttribute,

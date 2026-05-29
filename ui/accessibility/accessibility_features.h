@@ -102,9 +102,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();
 
 
-// Recognize "aria-virtualcontent" as a valid aria property.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityAriaVirtualContent);
-AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
 
 // Expose <summary>" as a heading instead of a button.
 // Two reasons to try this:

@@ -163,8 +163,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   // in the next list.
   const RuntimeFeatureToChromiumFeatureMap<void (*)(bool)>
       blinkFeatureToBaseFeatureMapping[] = {
-          {wf::EnableAccessibilityAriaVirtualContent,
-           raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
           {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
            raw_ref(features::kUseAXPositionForDocumentMarkers)},
 #if BUILDFLAG(IS_ANDROID)

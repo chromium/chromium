@@ -71,8 +71,7 @@ TEST(AXUtilitiesTest, TestIsAriaStringAttribute) {
         attr == &html_names::kAriaPlaceholderAttr ||
         attr == &html_names::kAriaRoledescriptionAttr ||
         attr == &html_names::kAriaRowindextextAttr ||
-        attr == &html_names::kAriaValuetextAttr ||
-        attr == &html_names::kAriaVirtualcontentAttr) {
+        attr == &html_names::kAriaValuetextAttr) {
       EXPECT_TRUE(IsAriaStringAttribute(*attr));
     } else {
       EXPECT_FALSE(IsAriaStringAttribute(*attr));

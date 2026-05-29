@@ -49,7 +49,6 @@ interface mixin AriaAttributes {
     [CEReactions, MeasureAs="WebDXFeature::kAriaAttributeReflection", Reflect=aria_valuemin] attribute DOMString? ariaValueMin;
     [CEReactions, MeasureAs="WebDXFeature::kAriaAttributeReflection", Reflect=aria_valuenow] attribute DOMString? ariaValueNow;
     [CEReactions, MeasureAs="WebDXFeature::kAriaAttributeReflection", Reflect=aria_valuetext] attribute DOMString? ariaValueText;
-    [RuntimeEnabled=AccessibilityAriaVirtualContent, CEReactions, MeasureAs="WebDXFeature::kAriaAttributeReflection", Reflect=aria_virtualcontent] attribute DOMString? ariaVirtualContent;
 };
 
 Element includes AriaAttributes;

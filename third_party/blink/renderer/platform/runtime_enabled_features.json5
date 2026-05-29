@@ -229,12 +229,7 @@
       name: "AcceleratedSmallCanvases",
       status: "stable",
     },
-    {
-      name: "AccessibilityAriaVirtualContent",
-      public: true,
-      status: "experimental",
-      base_feature: "none",
-    },
+
     {
       name: "AccessibilityCustomElementRoleNone",
       public: true,

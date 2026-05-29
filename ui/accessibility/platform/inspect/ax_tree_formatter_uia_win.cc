@@ -446,13 +446,6 @@ void AXTreeFormatterUia::AddDefaultFilters(
                     AXPropertyFilter::DENY);
   // UIA_WindowPatternId
   AddPropertyFilter(property_filters, "Window.IsModal=*");
-
-  // Custom properties.
-  AddPropertyFilter(
-      property_filters,
-      GetPropertyName(
-          UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId()) +
-          "=*");
 }
 
 base::DictValue AXTreeFormatterUia::BuildTree(
@@ -1155,9 +1148,6 @@ void AXTreeFormatterUia::BuildCacheRequests() {
 }
 
 void AXTreeFormatterUia::BuildCustomPropertiesMap() {
-  GetCustomPropertiesMap().insert(
-      {UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
-       "VirtualContent"});
   GetCustomPropertiesMap().insert(
       {UiaRegistrarWin::GetInstance().GetMathMLPropertyId(), "MathML"});
 }

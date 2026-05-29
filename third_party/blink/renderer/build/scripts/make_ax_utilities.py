@@ -115,11 +115,7 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
         attributes_by_type: Dict[str, AttributeTypeInfo] = {}
 
         for attr in self.aria_reader.attributes():
-            # Skip aria-virtualcontent: This is not in the ARIA specification,
-            # nor has a recent draft entry for the ARIA specification been
-            # located for this proposed attribute.
-            if attr["name"] == "aria-virtualcontent":
-                continue
+
 
             # Use same logic as `make_qualified_names.py` so that any generated
             # functions which include ARIA attributes use the correct qualified

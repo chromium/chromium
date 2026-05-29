@@ -1190,12 +1190,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_ariaVirtualcontent() {
-        performAriaTest("aria-virtualcontent.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_dpubRoles() {
         performAriaTest("dpub-roles.html");
     }

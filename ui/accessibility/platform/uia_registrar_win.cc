@@ -33,16 +33,6 @@ UiaRegistrarWin::UiaRegistrarWin() {
   registrar->RegisterProperty(&unique_id_property_info,
                               &unique_id_property_id_);
 
-  if (features::IsAccessibilityAriaVirtualContentEnabled()) {
-    // Register the custom UIA property that represents the value for the
-    // 'aria-virtualcontent' attribute.
-    UIAutomationPropertyInfo virtual_content_property_info = {
-        kUiaPropertyVirtualContentGuid, L"VirtualContent",
-        UIAutomationType_String};
-    registrar->RegisterProperty(&virtual_content_property_info,
-                                &virtual_content_property_id_);
-  }
-
   if (features::IsUiaMathMlSupportEnabled()) {
     // Register the custom UIA property that provides MathML markup for
     // math elements. This GUID matches Microsoft Word's implementation for
@@ -63,12 +53,6 @@ EVENTID UiaRegistrarWin::GetTestCompleteEventId() const {
 // UIA custom properties.
 PROPERTYID UiaRegistrarWin::GetUniqueIdPropertyId() const {
   return unique_id_property_id_;
-}
-
-PROPERTYID UiaRegistrarWin::GetVirtualContentPropertyId() const {
-  if (!features::IsAccessibilityAriaVirtualContentEnabled())
-    return 0;
-  return virtual_content_property_id_;
 }
 
 PROPERTYID UiaRegistrarWin::GetMathMLPropertyId() const {
