@@ -173,11 +173,16 @@
   [_snackbarView
       dismissAnimated:animated
            completion:^() {
-             [weakGeminiHandler
-                 updateFloatyVisibilityIfEligibleAnimated:NO
-                                               fromSource:
-                                                   gemini::FloatyUpdateSource::
-                                                       Snackbar];
+             if ([weakGeminiHandler
+                     respondsToSelector:@selector
+                     (updateFloatyVisibilityIfEligibleAnimated:fromSource:)]) {
+               [weakGeminiHandler
+                   updateFloatyVisibilityIfEligibleAnimated:NO
+                                                 fromSource:
+                                                     gemini::
+                                                         FloatyUpdateSource::
+                                                             Snackbar];
+             }
            }];
   [_overlay_window deactivateOverlay:_snackbarView];
   _snackbarView.delegate = nil;
