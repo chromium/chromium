@@ -439,15 +439,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
 
-  [self removeAllFakeboxButtonsFromStack];
-  [self removeLeadingView];
-
-  [self addFakeboxButtonsToStack];
-
-  if (self.fakeOmniboxContainer) {
-    [self addLeadingViewToSearchField:self.fakeOmniboxContainer];
-    [self setFakeboxColorsWithProgress:_lastAnimationPercent];
-  }
+  [self refreshFakeboxContent];
 }
 
 - (void)setupSubviews {
@@ -1466,11 +1458,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)setAIMAllowed:(BOOL)allowed {
+  if (_isAIMAllowed == allowed) {
+    return;
+  }
   _isAIMAllowed = allowed;
+  [self refreshFakeboxContent];
 }
 
 - (void)setFuseboxEligible:(BOOL)eligible {
+  if (_fuseboxEligible == eligible) {
+    return;
+  }
   _fuseboxEligible = eligible;
+  [self refreshFakeboxContent];
 }
 
 #pragma mark - Setters
@@ -1570,6 +1570,23 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
             forControlEvents:UIControlEventTouchUpInside];
 
   self.toolsMenuButton = toolsMenuButton;
+}
+
+// Refreshes the content of the fakebox.
+- (void)refreshFakeboxContent {
+  if (!self.fakeOmniboxContainer) {
+    return;
+  }
+
+  [self removeAllFakeboxButtonsFromStack];
+  [self removeLeadingView];
+
+  [self addFakeboxButtonsToStack];
+
+  if (self.fakeOmniboxContainer) {
+    [self addLeadingViewToSearchField:self.fakeOmniboxContainer];
+    [self setFakeboxColorsWithProgress:_lastAnimationPercent];
+  }
 }
 
 // Handles the creation of the plus button.
