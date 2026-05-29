@@ -104,6 +104,10 @@ namespace {
 BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, throttles resize IPCs on Mac to prevent jank during window
+// resize.
+BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -963,8 +967,11 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   // and for web platform APIs that expose screen and window info and events.
   // RenderWidgetHostImpl will query BrowserCompositorMac for the dimensions
   // to send to the renderer, so BrowserCompositorMac must be updated first.
-  if (dip_size_changed || any_display_changed)
-    host()->NotifyScreenInfoChanged();
+  if (dip_size_changed || any_display_changed) {
+    host()->NotifyScreenInfoChanged(
+        /*ignore_ack=*/any_display_changed ||
+        !base::FeatureList::IsEnabled(kThrottleResizeIpc));
+  }
 }
 
 viz::ScopedSurfaceIdAllocator
