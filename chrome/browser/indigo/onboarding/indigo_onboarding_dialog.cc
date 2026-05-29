@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -163,6 +164,12 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
       },
       tab.GetWeakPtr()));
 
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      web_view->GetWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      web_view->GetWebContents())
+      ->SetDelegate(this);
+
   OnboardingDialogTracker::CreateForWebContents(web_view->GetWebContents(),
                                                 weak_ptr_factory_.GetWeakPtr());
 
@@ -190,7 +197,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   auto* tab_dialog_manager = tab.GetTabFeatures()->tab_dialog_manager();
   widget_ = tab_dialog_manager->CreateTabScopedDialog(delegate_.get());
   widget_->MakeCloseSynchronous(base::BindOnce(
-      &IndigoOnboardingDialog::OnWidgetClosed, base::Unretained(this)));
+      &IndigoOnboardingDialog::OnWidgetClosed, weak_ptr_factory_.GetWeakPtr()));
 
   // Request rounded corners. See WebUIBubbleDialogView and
   // SearchEngineChoiceDialogView for similar examples.
@@ -204,7 +211,15 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   tab_dialog_manager->ShowDialog(widget_.get(), std::move(params));
 }
 
-IndigoOnboardingDialog::~IndigoOnboardingDialog() = default;
+IndigoOnboardingDialog::~IndigoOnboardingDialog() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (widget_) {
+    ShutdownWebModalManager();
+  }
+  if (std::unique_ptr<views::Widget> widget = std::move(widget_)) {
+    widget.reset();
+  }
+}
 
 void IndigoOnboardingDialog::Close() {
   if (widget_) {
@@ -217,18 +232,84 @@ void IndigoOnboardingDialog::OnViewPreferredSizeChanged(
   tab_->GetTabFeatures()->tab_dialog_manager()->UpdateModalDialogBounds();
 }
 
+void IndigoOnboardingDialog::OnViewBoundsChanged(views::View* observed_view) {
+  for (auto& observer : modal_dialog_host_observers_) {
+    observer.OnPositionRequiresUpdate();
+  }
+}
+
 void IndigoOnboardingDialog::OnWidgetClosed(
     views::Widget::ClosedReason reason) {
+  ShutdownWebModalManager();
+
   // Stop observing the view before it is destroyed by the widget.
   view_observation_.Reset();
 
   // As recommended in the comment on `views::Widget::MakeCloseSynchronous`,
   // destroy the widget here.
-  widget_.reset();
+  std::unique_ptr<views::Widget> widget = std::move(widget_);
+  widget.reset();
 
   if (close_callback_) {
     std::move(close_callback_).Run(onboarding_result_);
   }
+}
+
+void IndigoOnboardingDialog::ShutdownWebModalManager() {
+  for (auto& observer : modal_dialog_host_observers_) {
+    observer.OnHostDestroying();
+  }
+  views::WebView* web_view = GetWebView();
+  if (web_view) {
+    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+        web_view->GetWebContents());
+    if (manager) {
+      manager->SetDelegate(nullptr);
+    }
+  }
+}
+
+web_modal::WebContentsModalDialogHost*
+IndigoOnboardingDialog::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return this;
+}
+
+gfx::NativeView IndigoOnboardingDialog::GetHostView() const {
+  views::WebView* web_view = GetWebView();
+  return web_view ? web_view->GetWebContents()->GetNativeView()
+                  : gfx::NativeView();
+}
+
+gfx::Point IndigoOnboardingDialog::GetDialogPosition(const gfx::Size& size) {
+  const views::WebView* web_view = GetWebView();
+  if (!web_view) {
+    return gfx::Point();
+  }
+  return gfx::Rect(web_view->size() - size).CenterPoint();
+}
+
+views::WebView* IndigoOnboardingDialog::GetWebView() const {
+  CHECK(delegate_);
+  return static_cast<views::WebView*>(delegate_->GetContentsView());
+}
+
+bool IndigoOnboardingDialog::ShouldConstrainDialogBoundsByHost() {
+  return false;
+}
+
+void IndigoOnboardingDialog::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.AddObserver(observer);
+}
+
+void IndigoOnboardingDialog::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.RemoveObserver(observer);
+}
+
+gfx::Size IndigoOnboardingDialog::GetMaximumDialogSize() {
+  return kMaxSize;
 }
 
 // static
