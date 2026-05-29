@@ -129,6 +129,10 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
         return;
       }
     }
+
+    controller()->client()->FocusWebContents();
+    controller()->edit_model()->SetCaretVisibility(false);
+
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);
   }

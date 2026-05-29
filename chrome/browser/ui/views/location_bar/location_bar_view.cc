@@ -712,6 +712,11 @@ void LocationBarView::FocusLocation(bool is_user_initiated,
 
 void LocationBarView::Revert() {
   omnibox_view_->RevertAll();
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2) &&
+      !in_popup_state_transition_) {
+    GetOmniboxController()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
+  }
 }
 
 OmniboxView* LocationBarView::GetOmniboxView() {

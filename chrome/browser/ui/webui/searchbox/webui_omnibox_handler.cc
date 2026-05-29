@@ -313,6 +313,17 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   return mojom_match;
 }
 
+void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
+  if (focused) {
+    edit_model()->OnSetFocus(false);
+  } else {
+    edit_model()->OnWillKillFocus();
+    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
+      edit_model()->OnKillFocus();
+    }
+  }
+}
+
 // TODO(crbug.com/469098088): Use something other than
 //   `AutocompleteController::Observer::OnStart()` to reduce the IPC overhead
 //   due to the fact that `AutocompleteController::Start()` gets invoked on
