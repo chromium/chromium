@@ -715,11 +715,6 @@ void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
 bool Shell::AddStatusTrayIcon(const TrayIconConfiguration& configuration,
                               int64_t display_id,
                               base::RepeatingClosure callback) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSupportCustomIconsInStatusArea)) {
-    return false;
-  }
-
   aura::Window* root_window = GetRootWindowForDisplayId(display_id);
   auto* status_area = StatusAreaWidget::ForWindow(root_window);
   return status_area->AddTrayIcon(configuration, std::move(callback));
@@ -727,11 +722,6 @@ bool Shell::AddStatusTrayIcon(const TrayIconConfiguration& configuration,
 
 bool Shell::UpdateStatusTrayIcon(const TrayIconConfiguration& configuration,
                                  int64_t display_id) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSupportCustomIconsInStatusArea)) {
-    return false;
-  }
-
   aura::Window* root_window = GetRootWindowForDisplayId(display_id);
   auto* status_area = StatusAreaWidget::ForWindow(root_window);
   return status_area->UpdateTrayIcon(configuration);
@@ -739,11 +729,6 @@ bool Shell::UpdateStatusTrayIcon(const TrayIconConfiguration& configuration,
 
 bool Shell::RemoveStatusTrayIcon(const TrayIconConfiguration& configuration,
                                  int64_t display_id) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSupportCustomIconsInStatusArea)) {
-    return false;
-  }
-
   aura::Window* root_window = GetRootWindowForDisplayId(display_id);
   auto* status_area = StatusAreaWidget::ForWindow(root_window);
   return status_area->RemoveTrayIcon(configuration);

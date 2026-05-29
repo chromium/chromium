@@ -26,9 +26,6 @@ BASE_FEATURE(kCachedLocationProvider, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables cloud game features.
 BASE_FEATURE(kCloudGamingDevice, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Chrome to add custom icons into status tray.
-BASE_FEATURE(kSupportCustomIconsInStatusArea, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables MPS to push payload to chrome devices.
 BASE_FEATURE(kAlmanacLauncherPayload, base::FEATURE_DISABLED_BY_DEFAULT);
 

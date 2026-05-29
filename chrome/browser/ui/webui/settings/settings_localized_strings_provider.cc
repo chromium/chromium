@@ -939,17 +939,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddLocalizedString(
-      "glicOsWidgetToggle",
-      base::FeatureList::IsEnabled(features::kGlicShowStatusTrayIcon)
-          ? IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE
-          : IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SHORTCUTS_ONLY);
-#else
   html_source->AddLocalizedString("glicOsWidgetToggle",
                                   IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE);
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
   html_source->AddLocalizedString(
       "glicDefaultTabAccessWhenOn2",
       glic::GlicEnabling::EnablementForProfile(profile).EligibleForLive()

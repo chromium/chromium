@@ -535,10 +535,6 @@ BASE_FEATURE(kGlicURLConfig, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicGuestURL{
     &kGlicURLConfig, "glic-guest-url", "https://gemini.google.com/glic"};
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kGlicShowStatusTrayIcon, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE_PARAM(std::string,
                    kGlicUserStatusUrl,
                    &kGlicUserStatusCheck,

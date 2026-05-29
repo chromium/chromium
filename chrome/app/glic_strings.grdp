@@ -141,9 +141,6 @@
   <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Show Gemini at the top of the browser
   </message>
-  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SHORTCUTS_ONLY" desc="Name of the toggle that controls whether gemini keyboard shortcuts are enabled.">
-    Turn on Gemini keyboard shortcut
-  </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting.">
     Keyboard shortcut
   </message>

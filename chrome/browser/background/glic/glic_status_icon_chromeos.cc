@@ -20,9 +20,6 @@ namespace {}
 GlicStatusIconChromeOS::GlicStatusIconChromeOS(GlicController* controller,
                                                StatusTray* status_tray)
     : GlicStatusIcon(controller, status_tray) {
-  if (!base::FeatureList::IsEnabled(features::kGlicShowStatusTrayIcon)) {
-    return;
-  }
   native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
