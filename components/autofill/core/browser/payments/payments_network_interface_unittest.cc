@@ -1076,12 +1076,13 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUploadAccountFromSyncTest) {
       secondary_account_info);
 
   StartUploading();
-  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
 
   // Issue a token for the secondary account.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       secondary_account_info.account_id, "secondary_account_token",
       AutofillClock::Now() + base::Days(10));
+
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
 
   // Verify the auth header.
   EXPECT_THAT(

@@ -53,6 +53,9 @@ class PaymentsRequest {
 
   // Invokes the appropriate callback in the delegate based on what type of
   // request this is.
+  // Note: In `PaymentsNetworkInterfaceBase`, the request object is destroyed
+  // immediately after this method returns. Callers must not rely on the
+  // request object or any of its members staying alive after this call.
   virtual void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) = 0;
 
