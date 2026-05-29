@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.app.Activity;
+import android.content.ComponentCallbacks;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -18,7 +20,8 @@ import org.chromium.ui.widget.RectProvider;
 
 /** A RectProvider that dynamically tracks the Activity's bottom bounds. */
 @NullMarked
-class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChangeListener {
+class BottomSheetRectProvider extends RectProvider
+        implements View.OnLayoutChangeListener, ComponentCallbacks {
     private final Activity mActivity;
     private final View mAnchorView;
 
@@ -30,6 +33,7 @@ class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChang
         mActivity = activity;
         mAnchorView = anchorView;
         mAnchorView.addOnLayoutChangeListener(this);
+        mActivity.registerComponentCallbacks(this);
 
         updateRect();
     }
@@ -37,6 +41,7 @@ class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChang
     /** Destroy this object. */
     public void destroy() {
         mAnchorView.removeOnLayoutChangeListener(this);
+        mActivity.unregisterComponentCallbacks(this);
     }
 
     /**
@@ -88,4 +93,14 @@ class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChang
             int oldBottom) {
         PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateRect);
     }
+
+    // ComponentCallbacks implementation.
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateRect();
+    }
+
+    @Override
+    public void onLowMemory() {}
 }

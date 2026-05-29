@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -21,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -85,8 +88,27 @@ public class BottomSheetRectProviderUnitTest {
         // Trigger updateRect via layout change.
         mProvider.onLayoutChange(mAnchorView, 0, 0, 800, 1000, 0, 0, 0, 0);
         ShadowLooper.idleMainLooper();
-        Rect r = mProvider.getRect();
+        assertRectIsCenteredAndConstrained(mProvider.getRect());
+    }
 
+    @Test
+    public void testOnConfigurationChanged_updatesRect() {
+        Rect initialRect = new Rect(mProvider.getRect());
+
+        // Change qualifiers to a wide screen.
+        RuntimeEnvironment.setQualifiers("w1000dp-h800dp");
+
+        // Trigger configuration change.
+        mProvider.onConfigurationChanged(new Configuration());
+
+        assertRectIsCenteredAndConstrained(mProvider.getRect());
+        assertNotEquals(
+                "Rect should be updated to reflect new dimensions",
+                initialRect,
+                mProvider.getRect());
+    }
+
+    private void assertRectIsCenteredAndConstrained(Rect rect) {
         int expectedMaxWidthPx =
                 mActivity
                         .getResources()
@@ -95,10 +117,10 @@ public class BottomSheetRectProviderUnitTest {
                 WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
         var bounds = windowMetrics.getBounds();
 
-        assertEquals("Width should be constrained to max width", expectedMaxWidthPx, r.width());
+        assertEquals("Width should be constrained to max width", expectedMaxWidthPx, rect.width());
         int centerX = bounds.width() / 2;
         int halfWidth = expectedMaxWidthPx / 2;
-        assertEquals("Left should be centered", centerX - halfWidth, r.left);
-        assertEquals("Right should be centered", centerX + halfWidth, r.right);
+        assertEquals("Left should be centered", centerX - halfWidth, rect.left);
+        assertEquals("Right should be centered", centerX + halfWidth, rect.right);
     }
 }
