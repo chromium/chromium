@@ -8291,6 +8291,11 @@ be describing additional metrics about the same event.
   <summary>
     Metrics recorded when the user interacts with or dismisses a v2 cue.
   </summary>
+  <metric name="ProactiveCueInteraction" enum="ContextualCueingInteraction">
+    <summary>
+      Records user interaction or non-interaction with the cue.
+    </summary>
+  </metric>
   <metric name="ProactiveCueShownDurationMs">
     <summary>
       Duration in milliseconds between showing the cue and user interaction or
