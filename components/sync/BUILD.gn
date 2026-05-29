@@ -246,6 +246,7 @@ source_set("unit_tests") {
     "nigori/nigori_storage_impl_unittest.cc",
     "nigori/nigori_sync_bridge_impl_unittest.cc",
     "nigori/nigori_unittest.cc",
+    "nigori/sync_encryption_handler_observer_list_unittest.cc",
     "protocol/collaboration_metadata_unittest.cc",
     "protocol/entity_data_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",

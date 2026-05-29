@@ -23,6 +23,7 @@
 #include "components/sync/nigori/nigori_storage.h"
 #include "components/sync/nigori/pending_local_nigori_commit.h"
 #include "components/sync/nigori/required_passphrase_verifier_impl.h"
+#include "components/sync/nigori/sync_encryption_handler_observer_list.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -282,94 +283,10 @@ std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
 
 }  // namespace
 
-class NigoriSyncBridgeImpl::BroadcastingObserver
-    : public SyncEncryptionHandler::Observer {
- public:
-  BroadcastingObserver() = default;
-
-  BroadcastingObserver(const BroadcastingObserver&) = delete;
-  BroadcastingObserver& operator=(const BroadcastingObserver&) = delete;
-
-  ~BroadcastingObserver() override = default;
-
-  void AddObserver(SyncEncryptionHandler::Observer* observer) {
-    observers_.AddObserver(observer);
-  }
-
-  void RemoveObserver(SyncEncryptionHandler::Observer* observer) {
-    observers_.RemoveObserver(observer);
-  }
-
-  // SyncEncryptionHandler::Observer implementation.
-  void OnPassphraseRequired(
-      std::unique_ptr<RequiredPassphraseVerifier> verifier) override {
-    for (Observer& observer : observers_) {
-      observer.OnPassphraseRequired(verifier->Clone());
-    }
-  }
-
-  void OnPassphraseAccepted(
-      const CustomPassphraseBootstrapToken& bootstrap_token) override {
-    for (Observer& observer : observers_) {
-      observer.OnPassphraseAccepted(bootstrap_token);
-    }
-  }
-
-  void OnTrustedVaultKeyRequired() override {
-    for (Observer& observer : observers_) {
-      observer.OnTrustedVaultKeyRequired();
-    }
-  }
-
-  void OnTrustedVaultKeyAccepted() override {
-    for (Observer& observer : observers_) {
-      observer.OnTrustedVaultKeyAccepted();
-    }
-  }
-
-  void OnKeystoreKeysRequired() override {
-    for (Observer& observer : observers_) {
-      observer.OnKeystoreKeysRequired();
-    }
-  }
-
-  void OnKeystoreKeysAccepted() override {
-    for (Observer& observer : observers_) {
-      observer.OnKeystoreKeysAccepted();
-    }
-  }
-
-  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
-                               bool encrypt_everything) override {
-    for (Observer& observer : observers_) {
-      observer.OnEncryptedTypesChanged(encrypted_types, encrypt_everything);
-    }
-  }
-
-  void OnCryptographerStateChanged(Cryptographer* cryptographer,
-                                   bool has_pending_keys) override {
-    for (Observer& observer : observers_) {
-      observer.OnCryptographerStateChanged(cryptographer, has_pending_keys);
-    }
-  }
-
-  void OnPassphraseTypeChanged(PassphraseType type,
-                               base::Time passphrase_time) override {
-    for (Observer& observer : observers_) {
-      observer.OnPassphraseTypeChanged(type, passphrase_time);
-    }
-  }
-
- private:
-  base::ObserverList<SyncEncryptionHandler::Observer> observers_;
-};
-
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     std::unique_ptr<NigoriLocalChangeProcessor> processor,
     std::unique_ptr<NigoriStorage> storage)
-    : processor_(std::move(processor)),
-      storage_(std::move(storage)),
-      broadcasting_observer_(std::make_unique<BroadcastingObserver>()) {
+    : processor_(std::move(processor)), storage_(std::move(storage)) {
   std::optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
   if (!deserialized_data || !IsValidLocalData(*deserialized_data)) {
@@ -422,12 +339,12 @@ NigoriSyncBridgeImpl::~NigoriSyncBridgeImpl() {
 
 void NigoriSyncBridgeImpl::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  broadcasting_observer_->AddObserver(observer);
+  observer_list_.AddObserver(observer);
 }
 
 void NigoriSyncBridgeImpl::RemoveObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  broadcasting_observer_->RemoveObserver(observer);
+  observer_list_.RemoveObserver(observer);
 }
 
 void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
@@ -435,9 +352,9 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   // We need to expose whole bridge state through notifications, because it
   // can be different from default due to restoring from the file or
   // completeness of first sync cycle (which happens before Init() call).
-  broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
-                                                  state_.encrypt_everything);
-  broadcasting_observer_->OnCryptographerStateChanged(
+  observer_list_.NotifyEncryptedTypesChanged(state_.GetEncryptedTypes(),
+                                             state_.encrypt_everything);
+  observer_list_.NotifyCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
 
   MaybeNotifyOfPendingKeys();
@@ -447,8 +364,8 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
     // shouldn't expose it.
     PassphraseType enum_passphrase_type =
         *ProtoPassphraseInt32ToEnum(state_.passphrase_type);
-    broadcasting_observer_->OnPassphraseTypeChanged(
-        enum_passphrase_type, GetExplicitPassphraseTime());
+    observer_list_.NotifyPassphraseTypeChanged(enum_passphrase_type,
+                                               GetExplicitPassphraseTime());
     UMA_HISTOGRAM_ENUMERATION("Sync.PassphraseType", enum_passphrase_type);
   }
   if (state_.passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE) {
@@ -551,12 +468,12 @@ void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKeyBag(
   }
 
   storage_->StoreData(SerializeAsNigoriLocalData());
-  broadcasting_observer_->OnCryptographerStateChanged(
+  observer_list_.NotifyCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::FromProto(
           state_.cryptographer->ExportDefaultKey());
-  broadcasting_observer_->OnPassphraseAccepted(token);
+  observer_list_.NotifyPassphraseAccepted(token);
 }
 
 void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
@@ -589,9 +506,9 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
       state_.cryptographer->GetDefaultEncryptionKeyName();
 
   storage_->StoreData(SerializeAsNigoriLocalData());
-  broadcasting_observer_->OnCryptographerStateChanged(
+  observer_list_.NotifyCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
-  broadcasting_observer_->OnTrustedVaultKeyAccepted();
+  observer_list_.NotifyTrustedVaultKeyAccepted();
 }
 
 base::Time NigoriSyncBridgeImpl::GetKeystoreMigrationTime() {
@@ -652,9 +569,9 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     }
 
     if (!state_.pending_keys.has_value()) {
-      broadcasting_observer_->OnCryptographerStateChanged(
+      observer_list_.NotifyCryptographerStateChanged(
           state_.cryptographer.get(), state_.pending_keys.has_value());
-      broadcasting_observer_->OnKeystoreKeysAccepted();
+      observer_list_.NotifyKeystoreKeysAccepted();
     }
   }
 
@@ -714,10 +631,9 @@ std::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
 
   if (!pending_local_commit_queue_.empty() && !processor_->IsEntityUnsynced()) {
     // Successfully committed first element in queue.
-    bool success = pending_local_commit_queue_.front()->TryApply(&state_);
+    bool success = pending_local_commit_queue_.front()->TryApply(state_);
     DCHECK(success);
-    pending_local_commit_queue_.front()->OnSuccess(
-        state_, broadcasting_observer_.get());
+    pending_local_commit_queue_.front()->OnSuccess(state_, observer_list_);
     pending_local_commit_queue_.pop_front();
 
     // Advance until the next applicable local change if any and call Put().
@@ -813,17 +729,17 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   }
 
   if (passphrase_type_changed) {
-    broadcasting_observer_->OnPassphraseTypeChanged(
+    observer_list_.NotifyPassphraseTypeChanged(
         *ProtoPassphraseInt32ToEnum(state_.passphrase_type),
         GetExplicitPassphraseTime());
   }
 
   if (encrypted_types_before_update != state_.GetEncryptedTypes()) {
-    broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
-                                                    state_.encrypt_everything);
+    observer_list_.NotifyEncryptedTypesChanged(state_.GetEncryptedTypes(),
+                                               state_.encrypt_everything);
   }
 
-  broadcasting_observer_->OnCryptographerStateChanged(
+  observer_list_.NotifyCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
 
   if (!state_.pending_keys.has_value() && had_pending_keys_before_update) {
@@ -833,7 +749,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     // have been notified instead of OnKeystoreKeysRequired(). Instead of trying
     // to distinguish the two cases here too, this codepath issues
     // OnKeystoreKeysAccepted() in all cases for simplicity.
-    broadcasting_observer_->OnKeystoreKeysAccepted();
+    observer_list_.NotifyKeystoreKeysAccepted();
   }
 
   MaybeNotifyOfPendingKeys();
@@ -987,11 +903,9 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   state_.cross_user_sharing_public_key = std::nullopt;
   state_.cross_user_sharing_key_pair_version = std::nullopt;
 
-  broadcasting_observer_->OnCryptographerStateChanged(
-      state_.cryptographer.get(),
-      /*has_pending_keys=*/false);
-  broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
-                                                  false);
+  observer_list_.NotifyCryptographerStateChanged(state_.cryptographer.get(),
+                                                 /*has_pending_keys=*/false);
+  observer_list_.NotifyEncryptedTypesChanged(state_.GetEncryptedTypes(), false);
 }
 
 const CryptographerImpl& NigoriSyncBridgeImpl::GetCryptographerImplForTesting()
@@ -1053,9 +967,8 @@ void NigoriSyncBridgeImpl::MaybeNotifyOfPendingKeys() const {
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
-      broadcasting_observer_->OnPassphraseRequired(
-          std::make_unique<RequiredPassphraseVerifierImpl>(
-              GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
+      observer_list_.NotifyPassphraseRequired(RequiredPassphraseVerifierImpl(
+          GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
       break;
     case NigoriSpecifics::KEYSTORE_PASSPHRASE:
       if (state_.pending_keystore_decryptor_token.has_value() &&
@@ -1063,15 +976,14 @@ void NigoriSyncBridgeImpl::MaybeNotifyOfPendingKeys() const {
               state_.pending_keystore_decryptor_token->key_name()) {
         // Half-migrated keystore state: the user may enter the implicit
         // passphrase.
-        broadcasting_observer_->OnPassphraseRequired(
-            std::make_unique<RequiredPassphraseVerifierImpl>(
-                GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
+        observer_list_.NotifyPassphraseRequired(RequiredPassphraseVerifierImpl(
+            GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
       } else {
-        broadcasting_observer_->OnKeystoreKeysRequired();
+        observer_list_.NotifyKeystoreKeysRequired();
       }
       break;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
-      broadcasting_observer_->OnTrustedVaultKeyRequired();
+      observer_list_.NotifyTrustedVaultKeyRequired();
       break;
   }
 }
@@ -1116,7 +1028,7 @@ void NigoriSyncBridgeImpl::QueuePendingLocalCommit(
 void NigoriSyncBridgeImpl::PutNextApplicablePendingLocalCommit() {
   while (!pending_local_commit_queue_.empty()) {
     NigoriState tmp_state = state_.Clone();
-    bool success = pending_local_commit_queue_.front()->TryApply(&tmp_state);
+    bool success = pending_local_commit_queue_.front()->TryApply(tmp_state);
     if (success) {
       // This particular commit applies cleanly.
       processor_->Put(GetDataForCommit());
@@ -1124,8 +1036,7 @@ void NigoriSyncBridgeImpl::PutNextApplicablePendingLocalCommit() {
     }
 
     // The local change failed to apply.
-    pending_local_commit_queue_.front()->OnFailure(
-        broadcasting_observer_.get());
+    pending_local_commit_queue_.front()->OnFailure(observer_list_);
     pending_local_commit_queue_.pop_front();
   }
 }
@@ -1153,7 +1064,7 @@ std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataImpl(
   NigoriState state_to_report = state_.Clone();
   if (!pending_local_commit_queue_.empty()) {
     bool success =
-        pending_local_commit_queue_.front()->TryApply(&state_to_report);
+        pending_local_commit_queue_.front()->TryApply(state_to_report);
     if (is_for_commit) {
       CHECK(success, base::NotFatalUntil::M149);
     } else if (!success) {

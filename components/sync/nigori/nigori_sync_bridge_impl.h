@@ -21,6 +21,7 @@
 #include "components/sync/nigori/nigori_local_change_processor.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/nigori/sync_encryption_handler_observer_list.h"
 
 namespace sync_pb {
 class NigoriLocalData;
@@ -161,10 +162,9 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   std::list<std::unique_ptr<PendingLocalNigoriCommit>>
       pending_local_commit_queue_;
 
-  // Observer that owns the list of actual observers, and broadcasts
-  // notifications to all observers in the list.
-  class BroadcastingObserver;
-  const std::unique_ptr<BroadcastingObserver> broadcasting_observer_;
+  // Observer list wrapper that broadcasts Sync encryption status updates to
+  // registered observers.
+  SyncEncryptionHandlerObserverList observer_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
