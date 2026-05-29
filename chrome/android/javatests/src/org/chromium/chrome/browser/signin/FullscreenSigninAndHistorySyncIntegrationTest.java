@@ -56,7 +56,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisableLeakChecks;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -837,8 +836,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/512202548")
     @MediumTest
+    // TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testWithSelectedAccountEmail_nonExistingAccount() {
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         FullscreenSigninAndHistorySyncConfig config =
@@ -862,6 +864,10 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testWithSelectedAccountEmail_nonExistingAccount_cancelAddAccount() {
         mSigninTestRule.setAddAccountFlowResult(null);
         FullscreenSigninAndHistorySyncConfig config =
