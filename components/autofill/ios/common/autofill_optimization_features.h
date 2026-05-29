@@ -16,6 +16,11 @@ namespace autofill::features {
 // single loop instead of chaining array methods.
 BASE_DECLARE_FEATURE(kAutofillOptimizationFormSearchIos);
 
+// Optimizes form mutation tracking by using a diffing strategy based on
+// live HTMLCollections and tracking disconnected elements, avoiding expensive
+// subtree crawls and DOM-wrapper allocations.
+BASE_DECLARE_FEATURE(kAutofillTrackFormMutationsOptimizationIos);
+
 }  // namespace autofill::features
 
 #endif  // COMPONENTS_AUTOFILL_IOS_COMMON_AUTOFILL_OPTIMIZATION_FEATURES_H_

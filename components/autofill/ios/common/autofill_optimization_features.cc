@@ -9,4 +9,7 @@ namespace autofill::features {
 BASE_FEATURE(kAutofillOptimizationFormSearchIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillTrackFormMutationsOptimizationIos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace autofill::features

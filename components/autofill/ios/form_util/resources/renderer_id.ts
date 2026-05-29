@@ -21,9 +21,15 @@ declare interface IndexableElement extends Element {
  * Since the autofill API is exclusive to the isolated content world,
  * checking for its registration ensures this map is only created there.
  */
-if (typeof document.__gCrElementMap === 'undefined' &&
-    gCrWeb.hasRegisteredApi('autofill')) {
-  document.__gCrElementMap = new Map();
+export function getElementMap(): Map<any, any>|null {
+  if (typeof document.__gCrElementMap === 'undefined') {
+    if (gCrWeb.hasRegisteredApi('autofill')) {
+      document.__gCrElementMap = new Map();
+    } else {
+      return null;
+    }
+  }
+  return document.__gCrElementMap;
 }
 
 /**
@@ -49,7 +55,10 @@ export function setUniqueIDIfNeeded(element: IndexableElement): void {
       //  the DOM copy when running in the page content world.
       element.setAttribute(UNIQUE_ID_ATTRIBUTE, elementID.toString());
 
-      document.__gCrElementMap.set(elementID, new WeakRef(element));
+      const elementMap = getElementMap();
+      if (elementMap) {
+        elementMap.set(elementID, new WeakRef(element));
+      }
     }
   } catch (e) {
   }
@@ -61,7 +70,8 @@ export function setUniqueIDIfNeeded(element: IndexableElement): void {
  */
 export function getElementByUniqueID(id: number): Element|null {
   try {
-    return document.__gCrElementMap.get(id).deref();
+    const elementMap = getElementMap();
+    return elementMap ? elementMap.get(id).deref() : null;
   } catch (e) {
     return null;
   }

@@ -22,6 +22,7 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/autofill_optimization_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
@@ -429,8 +430,12 @@ TEST_F(FormActivityTabHelperTest, AddCustomElement) {
 
 // Test fixture verifying the behavior of FormActivityTabHelper when handling
 // form mutation events.
-class FormMutationTest : public FormActivityTabHelperTest {
+class FormMutationTest : public base::test::WithFeatureOverride,
+                         public FormActivityTabHelperTest {
  public:
+  FormMutationTest()
+      : base::test::WithFeatureOverride(
+            autofill::features::kAutofillTrackFormMutationsOptimizationIos) {}
   void SetUp() override { FormActivityTabHelperTest::SetUp(); }
 
  protected:
@@ -508,7 +513,7 @@ class FormMutationTest : public FormActivityTabHelperTest {
 };
 
 // Tests that observer is called on form removal.
-TEST_F(FormMutationTest, PasswordFormRemovalRegistered) {
+TEST_P(FormMutationTest, PasswordFormRemovalRegistered) {
   LoadHtmlForMutationTest(
       @"<form name=\"form1\" id=\"form1\">"
        "<input type=\"text\" name=\"username\" id=\"id1\">"
@@ -526,26 +531,45 @@ TEST_F(FormMutationTest, PasswordFormRemovalRegistered) {
               ElementsAre(FormRendererId(1)));
   EXPECT_THAT(form_removal_params.value().removed_unowned_fields, IsEmpty());
 
-  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
-                                       /*sample=*/0,
-                                       /*expected_bucket_count=*/1);
-  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
-                                       /*sample=*/1,
-                                       /*expected_bucket_count=*/1);
-  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
-                                       /*sample=*/100,
-                                       /*expected_bucket_count=*/1);
+  if (IsParamFeatureEnabled()) {
+    // Wait for the second event (form_changed) to be received.
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return observer_->form_activity_info() != nullptr;
+    }));
+    ValidateParamsAfterFormChangedEvent(
+        observer_->form_activity_info()->form_activity);
 
-  // Validate that only one removal event is received.
-  ASSERT_FALSE(WaitUntilConditionOrTimeout(
-      base::Milliseconds(kTrackFormMutationsDelayInMs * 2), ^bool {
-        return observer_->number_of_events_received() > 1;
-      }));
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                         /*sample=*/0,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                         /*sample=*/2,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
+                                         /*sample=*/100,
+                                         /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                         /*sample=*/0,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                         /*sample=*/1,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
+                                         /*sample=*/100,
+                                         /*expected_bucket_count=*/1);
+
+    // Validate that only one removal event is received.
+    ASSERT_FALSE(WaitUntilConditionOrTimeout(
+        base::Milliseconds(kTrackFormMutationsDelayInMs * 2), ^bool {
+          return observer_->number_of_events_received() > 1;
+        }));
+  }
 }
 
 // Tests that removing non-password form triggers
 // 'form_removed" event.
-TEST_F(FormMutationTest, RemoveNonPasswordForm) {
+TEST_P(FormMutationTest, RemoveNonPasswordForm) {
   // Load html with one form.
   LoadHtmlForMutationTest(@"<form id='form1'>"
                            "<input type='text'>"
@@ -562,7 +586,7 @@ TEST_F(FormMutationTest, RemoveNonPasswordForm) {
 
 // Tests that removing multiple forms triggers
 // 'form_removed" event.
-TEST_F(FormMutationTest, RemoveMultipleForms) {
+TEST_P(FormMutationTest, RemoveMultipleForms) {
   // Load html with multiple forms.
   LoadHtmlForMutationTest(@"<div id='div'>"
                            "<form id='form1'>"
@@ -593,7 +617,7 @@ TEST_F(FormMutationTest, RemoveMultipleForms) {
 
 // Tests that removing unowned password fields triggers 'password_form_removed"
 // event.
-TEST_F(FormMutationTest, RemoveFormlessPasswordFields) {
+TEST_P(FormMutationTest, RemoveFormlessPasswordFields) {
   LoadHtmlForMutationTest(
       @"<body><div>"
        "<input type=\"password\" name=\"password\" id=\"pw\">"
@@ -631,7 +655,7 @@ TEST_F(FormMutationTest, RemoveFormlessPasswordFields) {
 
 // Tests that removing multiple forms and formless fields triggers
 // 'form_removed" event.
-TEST_F(FormMutationTest, RemoveMultipleFormsAndFormlessFields) {
+TEST_P(FormMutationTest, RemoveMultipleFormsAndFormlessFields) {
   // Load html with multiple forms and formless fields.
   LoadHtmlForMutationTest(@"<div id='div'>"
                            "<form id='form1'>"
@@ -666,7 +690,7 @@ TEST_F(FormMutationTest, RemoveMultipleFormsAndFormlessFields) {
 // Tests that removing a form control element and adding a new one in the same
 // mutations batch is notified with a message for each mutation, sent
 // back-to-back.
-TEST_F(FormMutationTest, RemovedAndAddedFormsRegistered) {
+TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
   // Basic HTML page in which we add a HTML form.
   NSString* const html = @"<html><body><form id=\"form1\">"
                           "<input type=\"password\"></form></body></html>";
@@ -725,7 +749,7 @@ TEST_F(FormMutationTest, RemovedAndAddedFormsRegistered) {
 
 // Tests that messages that were batched and dropped are correctly recorded as
 // such.
-TEST_F(FormMutationTest, RemovedAndAddedFormsRegistered_WithDroppedMessages) {
+TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered_WithDroppedMessages) {
   // Basic HTML page with 2 password forms and one formless password form.
   NSString* const html = @"<html><body><form id=\"form1\">"
                           "<input type=\"password\"></form>"
@@ -764,27 +788,50 @@ TEST_F(FormMutationTest, RemovedAndAddedFormsRegistered_WithDroppedMessages) {
            observer_->form_activity_info() != nullptr;
   }));
 
-  EXPECT_THAT(observer_->form_removal_info()->form_removal_params.removed_forms,
-              ElementsAre(FormRendererId(1)));
-  EXPECT_THAT(observer_->form_removal_info()
-                  ->form_removal_params.removed_unowned_fields,
-              IsEmpty());
-  ValidateParamsAfterFormChangedEvent(
-      observer_->form_activity_info()->form_activity);
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillTrackFormMutationsOptimizationIos)) {
+    EXPECT_THAT(
+        observer_->form_removal_info()->form_removal_params.removed_forms,
+        UnorderedElementsAre(FormRendererId(1), FormRendererId(3)));
+    EXPECT_THAT(observer_->form_removal_info()
+                    ->form_removal_params.removed_unowned_fields,
+                ElementsAre(FieldRendererId(5)));
+    ValidateParamsAfterFormChangedEvent(
+        observer_->form_activity_info()->form_activity);
 
-  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
-                                       /*sample=*/4,
-                                       /*expected_bucket_count=*/1);
-  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
-                                       /*sample=*/2,
-                                       /*expected_bucket_count=*/1);
-  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
-                                       /*sample=*/33,
-                                       /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                         /*sample=*/0,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                         /*sample=*/2,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
+                                         /*sample=*/100,
+                                         /*expected_bucket_count=*/1);
+  } else {
+    EXPECT_THAT(
+        observer_->form_removal_info()->form_removal_params.removed_forms,
+        ElementsAre(FormRendererId(1)));
+    EXPECT_THAT(observer_->form_removal_info()
+                    ->form_removal_params.removed_unowned_fields,
+                IsEmpty());
+    ValidateParamsAfterFormChangedEvent(
+        observer_->form_activity_info()->form_activity);
+
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                         /*sample=*/4,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                         /*sample=*/2,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
+                                         /*sample=*/33,
+                                         /*expected_bucket_count=*/1);
+  }
 }
 
 // Tests that removing input fields triggers the right events.
-TEST_F(FormMutationTest, RemoveFormlessFields) {
+TEST_P(FormMutationTest, RemoveFormlessFields) {
   LoadHtmlForMutationTest(@"<body><div id='div'>"
                            "<input type='password' id='password'/>"
                            "<input type='text' id='text'/>"
@@ -825,7 +872,7 @@ TEST_F(FormMutationTest, RemoveFormlessFields) {
 }
 
 // Tests that a new form triggers form_changed event.
-TEST_F(FormMutationTest, AddForm) {
+TEST_P(FormMutationTest, AddForm) {
   LoadHtmlForMutationTest(@"<body></body>");
 
   web::WebFrame* main_frame = WaitForMainFrame();
@@ -842,6 +889,46 @@ TEST_F(FormMutationTest, AddForm) {
 
   ValidateParamsAfterFormChangedEvent(info->form_activity);
 }
+
+// Tests that mutations happening in separate event loop tasks before the
+// scheduling delay elapses are throttled and recorded as dropped.
+TEST_P(FormMutationTest, OptimizedFormMutations_ThrottledAcrossTicks) {
+  LoadHtmlForMutationTest(@"<body></body>");
+
+  WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  // 1. Trigger the first mutation task.
+  ExecuteJavaScript(@"var form1 = document.createElement('form');"
+                    @"document.body.appendChild(form1);");
+
+  // 2. Trigger the second mutation task immediately, without waiting for
+  // background tasks or timers to settle.
+  ExecuteJavaScript(@"var form2 = document.createElement('form');"
+                    @"document.body.appendChild(form2);");
+
+  // 3. Wait for the native side to receive the single permitted event.
+  TestFormActivityObserver* block_observer = observer_.get();
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return block_observer->form_activity_info() != nullptr;
+  }));
+
+  // Allow any other potential scheduled messages to clear.
+  base::test::ios::SpinRunLoopWithMinDelay(
+      base::Milliseconds(kTrackFormMutationsDelayInMs * 2));
+
+  // Confirm only 1 event was received by the observer (the second was dropped).
+  EXPECT_EQ(observer_->number_of_events_received(), 1);
+
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                       /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                       /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormMutationTest);
 
 // Test fixture verifying the behavior of FormActivityTabHelper when handling
 // mutations involving form control elements.

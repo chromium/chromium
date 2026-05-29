@@ -336,6 +336,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/common:autofill_optimization_features",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
     "//ios/web/public/js_messaging:web_view_js_utils",
