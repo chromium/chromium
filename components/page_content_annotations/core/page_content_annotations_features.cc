@@ -128,7 +128,7 @@ BASE_FEATURE(kAnnotatedPageContentNonSalientFiltering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnnotatedPageContentPDFTextExtraction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<size_t> kMaxPDFTextExtractionByteSizeParam{
     &kAnnotatedPageContentPDFTextExtraction, "max_text_byte_size",

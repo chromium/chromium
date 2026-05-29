@@ -23,7 +23,7 @@ constexpr auto enabled_by_default_desktop_only =
 
 BASE_FEATURE(kPassageEmbedder, enabled_by_default_desktop_only);
 
-BASE_FEATURE(kPDFEmbeddingsGeneration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPDFEmbeddingsGeneration, enabled_by_default_desktop_only);
 
 const base::FeatureParam<int> kUserInitiatedPriorityNumThreads(
     &kPassageEmbedder,
