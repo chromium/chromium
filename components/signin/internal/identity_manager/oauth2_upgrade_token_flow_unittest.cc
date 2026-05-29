@@ -69,14 +69,13 @@ TEST_F(OAuth2UpgradeTokenFlowTest, RequestConfig) {
             GaiaUrls::GetInstance()->oauth2_upgrade_token_url());
   EXPECT_EQ(pending[0].request.method, "POST");
 
-  EXPECT_THAT(pending[0].request.headers.GetHeader("Authorization"),
-              Optional(std::string("Bearer test_token")));
+  EXPECT_FALSE(pending[0].request.headers.HasHeader("Authorization"));
   EXPECT_THAT(network::GetUploadData(pending[0].request),
               base::test::IsJson(R"({
-                "device_id": "test_device_id",
+                "deviceId": "test_device_id",
                 "token": "test_token",
-                "token_binding_registration_jwt": "token_binding_assertion",
-                "upgrade_type": "BIND_TO_KEY"
+                "tokenBindingRegistrationJwt": "token_binding_assertion",
+                "upgradeType": "BIND_TO_KEY"
               })"));
 }
 
@@ -93,8 +92,8 @@ TEST_F(OAuth2UpgradeTokenFlowTest, RequestConfigDarkLaunchNoDeviceId) {
   EXPECT_THAT(network::GetUploadData(pending[0].request),
               base::test::IsJson(R"({
                 "token": "test_token",
-                "token_binding_registration_jwt": "token_binding_assertion",
-                "upgrade_type": "DARK_LAUNCH_BIND_TO_KEY"
+                "tokenBindingRegistrationJwt": "token_binding_assertion",
+                "upgradeType": "DARK_LAUNCH_BIND_TO_KEY"
               })"));
 }
 

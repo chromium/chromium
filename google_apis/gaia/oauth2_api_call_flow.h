@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
   // Methods to help create the API request.
   virtual GURL CreateApiCallUrl() = 0;
   virtual net::HttpRequestHeaders CreateApiCallHeaders();
+  // If the returned string is not empty, it will be added to the request
+  // headers as the "Authorization" header value.
   virtual std::string CreateAuthorizationHeaderValue(
       const std::string& access_token);
   virtual std::string CreateApiCallBody() = 0;

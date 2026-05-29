@@ -64,7 +64,8 @@ class OAuth2UpgradeTokenFlow : public OAuth2ApiCallFlow {
                              std::optional<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
-  // TODO(crbug.com/514242898): Remove the "Authorization" header.
+  std::string CreateAuthorizationHeaderValue(
+      const std::string& access_token) override;
 
  private:
   void ProcessResult(OAuth2UpgradeTokenFlowResult result,

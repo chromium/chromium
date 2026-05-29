@@ -566,7 +566,7 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::DictValue& dict) {
       token_binding_response->FindDict(kDirectedResponseKey);
 
   const std::string* challenge =
-      dict.FindStringByDottedPath("bound_token_upgrade_info.challenge");
+      dict.FindStringByDottedPath("boundTokenUpgradeInfo.challenge");
   if (challenge) {
     result.bound_token_upgrade_challenge = *challenge;
   }

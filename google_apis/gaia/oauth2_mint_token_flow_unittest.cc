@@ -789,7 +789,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseBoundTokenUpgradeInfo) {
         "issueAdvice": "Auto",
         "expiresIn": "3600",
         "grantedScopes": "http://scope1 http://scope2",
-        "bound_token_upgrade_info": {
+        "boundTokenUpgradeInfo": {
           "challenge": "test_challenge"
         }
        })";

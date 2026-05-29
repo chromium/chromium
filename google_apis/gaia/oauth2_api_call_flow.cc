@@ -103,8 +103,10 @@ std::unique_ptr<network::SimpleURLLoader> OAuth2ApiCallFlow::CreateURLLoader(
   request->method = request_type;
   request->credentials_mode = GetCredentialsMode();
   request->headers = CreateApiCallHeaders();
-  request->headers.SetHeader("Authorization",
-                             CreateAuthorizationHeaderValue(access_token));
+  std::string authorization = CreateAuthorizationHeaderValue(access_token);
+  if (!authorization.empty()) {
+    request->headers.SetHeader("Authorization", authorization);
+  }
 
   std::unique_ptr<network::SimpleURLLoader> result =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);

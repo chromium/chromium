@@ -75,10 +75,10 @@ std::string OAuth2UpgradeTokenFlow::CreateApiCallBody() {
   auto dict =
       base::DictValue()
           .Set("token", refresh_token_)
-          .Set("upgrade_type", UpgradeTypeToString(upgrade_type_))
-          .Set("token_binding_registration_jwt", binding_registration_token_);
+          .Set("upgradeType", UpgradeTypeToString(upgrade_type_))
+          .Set("tokenBindingRegistrationJwt", binding_registration_token_);
   if (!device_id_.empty()) {
-    dict.Set("device_id", device_id_);
+    dict.Set("deviceId", device_id_);
   }
 
   return base::WriteJson(dict).value_or("");
@@ -170,6 +170,12 @@ OAuth2UpgradeTokenFlow::GetNetworkTrafficAnnotationTag() {
           }
         }
       })");
+}
+
+std::string OAuth2UpgradeTokenFlow::CreateAuthorizationHeaderValue(
+    const std::string& access_token) {
+  // This flow doesn't use the Authorization header.
+  return "";
 }
 
 }  // namespace signin
