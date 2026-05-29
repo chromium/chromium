@@ -2105,8 +2105,9 @@ class PrintFencedFrameBrowserTest : public PrintBrowserTest {
   content::RenderFrameHost* CreateFencedFrame(
       content::RenderFrameHost* fenced_frame_parent,
       const GURL& url) {
-    if (fenced_frame_helper_)
+    if (fenced_frame_helper_) {
       return fenced_frame_helper_->CreateFencedFrame(fenced_frame_parent, url);
+    }
 
     // FencedFrameTestHelper only supports the MPArch version of fenced frames.
     // So need to maually create a fenced frame for the ShadowDOM version.
@@ -2120,12 +2121,10 @@ class PrintFencedFrameBrowserTest : public PrintBrowserTest {
                        content::JsReplace(kAddFencedFrameScript, url)));
     EXPECT_TRUE(navigation.WaitForNavigationFinished());
 
-    content::RenderFrameHost* new_frame = ChildFrameAt(fenced_frame_parent, 0);
-
-    return new_frame;
+    return ChildFrameAt(fenced_frame_parent, 0);
   }
 
-  void RunPrintTest(const std::string& print_command) {
+  void RunScriptedPrintTest(const std::string& print_command) {
     // Navigate to an initial page.
     const GURL url(https_server_.GetURL("/empty.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2157,9 +2156,9 @@ class PrintFencedFrameBrowserTest : public PrintBrowserTest {
       )";
     const std::string test_script =
         base::StringPrintf(kAddListenersScript, print_command.c_str());
-
     EXPECT_EQ("beforeprint: false, afterprint: false",
               content::EvalJs(fenced_frame_host, test_script));
+
     ASSERT_TRUE(console_observer.Wait());
     ASSERT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(
@@ -2167,18 +2166,41 @@ class PrintFencedFrameBrowserTest : public PrintBrowserTest {
         console_observer.GetMessageAt(0));
   }
 
+  void RunPrintTest() {
+    // Navigate to an initial page.
+    const GURL url(https_server_.GetURL("/empty.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    // Load a fenced frame.
+    GURL fenced_frame_url = https_server_.GetURL("/fenced_frames/title1.html");
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHost* fenced_frame_host = CreateFencedFrame(
+        web_contents->GetPrimaryMainFrame(), fenced_frame_url);
+    ASSERT_TRUE(fenced_frame_host);
+
+    // `PrintViewManager` should refuse to print.
+    auto* print_view_manager = PrintViewManager::FromWebContents(web_contents);
+    ASSERT_TRUE(print_view_manager);
+    EXPECT_FALSE(print_view_manager->PrintPreviewNow(fenced_frame_host,
+                                                     /*has_selection=*/false));
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, ScriptedPrint) {
-  RunPrintTest("window.print();");
+  RunScriptedPrintTest("window.print();");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, DocumentExecCommand) {
-  RunPrintTest("document.execCommand('print');");
+  RunScriptedPrintTest("document.execCommand('print');");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, BrowserPrint) {
+  RunPrintTest();
 }
 
 #if BUILDFLAG(IS_WIN)
