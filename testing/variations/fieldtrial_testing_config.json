@@ -9019,6 +9019,24 @@
             ]
         }
     ],
+    "DisablePerProfileMetrics": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260320",
+                    "enable_features": [
+                        "PerProfileMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableSplitHostCacheByNetworkAnonymizationKey": [
         {
             "platforms": [
