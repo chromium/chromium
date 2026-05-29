@@ -6,6 +6,7 @@ import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextType, ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -681,160 +682,6 @@ suite('NewTabPageComposeboxTest', () => {
         testProxy.metrics.count(
             metricName, ContextualSearchInputStateDeletionType.TOOL));
   });
-
-  test('ShowContextMenuDescription', async () => {
-    loadTimeData.overrideValues({
-      composeboxShowContextMenuDescription: false,
-    });
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    let entrypoint = $$(testProxy.element, '#contextEntrypoint');
-    assertTrue(!!entrypoint);
-    assertFalse(entrypoint.hasAttribute('show-context-menu-description'));
-
-    testProxy.element.remove();
-
-    loadTimeData.overrideValues({
-      composeboxShowContextMenuDescription: true,
-    });
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    entrypoint = $$(testProxy.element, '#contextEntrypoint');
-    assertTrue(!!entrypoint);
-    assertTrue(entrypoint.hasAttribute('show-context-menu-description'));
-  });
-
-  test('metrics are recorded for ToolMode clicks', async () => {
-    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    const composebox = testProxy.element;
-    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
-    assertTrue(!!entrypointAndMenu);
-
-    const metricName =
-        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
-
-    // Act: DeepSearch
-    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {toolMode: ToolMode.kDeepSearch},
-    }));
-    assertEquals(
-        1, testProxy.metrics.count(metricName, ContextType.DEEP_RESEARCH));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.DeepResearch`, 0));
-
-    // Act: ImageGen
-    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {toolMode: ToolMode.kImageGen},
-    }));
-    assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE_GEN));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.ImageGen`, 0));
-
-    // Act: Canvas
-    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {toolMode: ToolMode.kCanvas},
-    }));
-    assertEquals(1, testProxy.metrics.count(metricName, ContextType.CANVAS));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.Canvas`, 0));
-  });
-
-  test('metrics are recorded for ModelMode clicks', async () => {
-    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    const composebox = testProxy.element;
-    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
-    assertTrue(!!entrypointAndMenu);
-
-    const metricName =
-        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
-
-    // Act: Auto
-    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
-      detail: {model: ModelMode.kGeminiProAutoroute},
-    }));
-    assertEquals(
-        1, testProxy.metrics.count(metricName, ContextType.AUTO_MODEL));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.AutoModel`, 0));
-
-    // Act: Thinking
-    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
-      detail: {model: ModelMode.kGeminiPro},
-    }));
-    assertEquals(
-        1, testProxy.metrics.count(metricName, ContextType.THINKING_MODEL));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.ThinkingModel`, 0));
-
-    // Act: Regular
-    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
-      detail: {model: ModelMode.kGeminiRegular},
-    }));
-    assertEquals(
-        1, testProxy.metrics.count(metricName, ContextType.REGULAR_MODEL));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.RegularModel`, 0));
-
-    // Act: ProNoGenUi
-    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
-      detail: {model: ModelMode.kGeminiProNoGenUi},
-    }));
-    assertEquals(
-        1,
-        testProxy.metrics.count(metricName, ContextType.PRO_NO_GEN_UI_MODEL));
-    assertEquals(
-        1, testProxy.metrics.count(`${metricName}.ProNoGenUiModel`, 0));
-  });
-
-  test('metrics are recorded for file uploads', async () => {
-    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    const composebox = testProxy.element;
-    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
-    assertTrue(!!entrypointAndMenu);
-
-    const metricName =
-        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
-
-    // Act: Upload an image file from the context menu
-    entrypointAndMenu.dispatchEvent(new CustomEvent('open-image-upload'));
-    assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.Image`, 0));
-
-    // Act: Upload a regular file
-    entrypointAndMenu.dispatchEvent(new CustomEvent('open-file-upload'));
-    assertEquals(1, testProxy.metrics.count(metricName, ContextType.FILE));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.File`, 0));
-  });
-
-  test('metrics are recorded for tab additions', async () => {
-    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    const composebox = testProxy.element;
-    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
-    assertTrue(!!entrypointAndMenu);
-
-    const metricName =
-        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
-
-    entrypointAndMenu.dispatchEvent(new CustomEvent('add-tab-context', {
-      detail: {
-        id: 1,
-        title: 'Title',
-        url: {url: 'http://test.com'},
-        delayUpload: false,
-        origin: 0,
-      },
-    }));
-    assertEquals(1, testProxy.metrics.count(metricName, ContextType.TAB));
-    assertEquals(1, testProxy.metrics.count(`${metricName}.Tab`, 0));
-  });
 });
 
 // =========================================================================
@@ -848,6 +695,162 @@ suite('NewTabPageComposeboxTest', () => {
       loadTimeData.overrideValues({
         useNtpComposeboxFork: useForked,
       });
+    });
+
+    test('ShowContextMenuDescription', async () => {
+      loadTimeData.overrideValues({
+        composeboxShowContextMenuDescription: false,
+      });
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      let entrypoint = $$(testProxy.element, '#contextEntrypoint');
+      assertTrue(!!entrypoint);
+      assertFalse(entrypoint.hasAttribute('show-context-menu-description'));
+
+      testProxy.element.remove();
+
+      loadTimeData.overrideValues({
+        composeboxShowContextMenuDescription: true,
+      });
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      entrypoint = $$(testProxy.element, '#contextEntrypoint');
+      assertTrue(!!entrypoint);
+      assertTrue(entrypoint.hasAttribute('show-context-menu-description'));
+    });
+
+    test('metrics are recorded for ToolMode clicks', async () => {
+      loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      const composebox = testProxy.element;
+      const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+      assertTrue(!!entrypointAndMenu);
+
+      const metricName =
+          'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+      // Act: DeepSearch
+      entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+        detail: {toolMode: ToolMode.kDeepSearch},
+      }));
+      assertEquals(
+          1, testProxy.metrics.count(metricName, ContextType.DEEP_RESEARCH));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.DeepResearch`, 0));
+
+      // Act: ImageGen
+      entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+        detail: {toolMode: ToolMode.kImageGen},
+      }));
+      assertEquals(
+          1, testProxy.metrics.count(metricName, ContextType.IMAGE_GEN));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.ImageGen`, 0));
+
+      // Act: Canvas
+      entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+        detail: {toolMode: ToolMode.kCanvas},
+      }));
+      assertEquals(1, testProxy.metrics.count(metricName, ContextType.CANVAS));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.Canvas`, 0));
+    });
+
+    test('metrics are recorded for ModelMode clicks', async () => {
+      loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      const composebox = testProxy.element;
+      const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+      assertTrue(!!entrypointAndMenu);
+
+      const metricName =
+          'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+      // Act: Auto
+      entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+        detail: {model: ModelMode.kGeminiProAutoroute},
+      }));
+      assertEquals(
+          1, testProxy.metrics.count(metricName, ContextType.AUTO_MODEL));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.AutoModel`, 0));
+
+      // Act: Thinking
+      entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+        detail: {model: ModelMode.kGeminiPro},
+      }));
+      assertEquals(
+          1, testProxy.metrics.count(metricName, ContextType.THINKING_MODEL));
+      assertEquals(
+          1, testProxy.metrics.count(`${metricName}.ThinkingModel`, 0));
+
+      // Act: Regular
+      entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+        detail: {model: ModelMode.kGeminiRegular},
+      }));
+      assertEquals(
+          1, testProxy.metrics.count(metricName, ContextType.REGULAR_MODEL));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.RegularModel`, 0));
+
+      // Act: ProNoGenUi
+      entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+        detail: {model: ModelMode.kGeminiProNoGenUi},
+      }));
+      assertEquals(
+          1,
+          testProxy.metrics.count(metricName, ContextType.PRO_NO_GEN_UI_MODEL));
+      assertEquals(
+          1, testProxy.metrics.count(`${metricName}.ProNoGenUiModel`, 0));
+    });
+
+    test('metrics are recorded for file uploads', async () => {
+      loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      const composebox = testProxy.element;
+      const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+      assertTrue(!!entrypointAndMenu);
+
+      const metricName =
+          'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+      // Act: Upload an image file from the context menu
+      entrypointAndMenu.dispatchEvent(new CustomEvent('open-image-upload'));
+      assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.Image`, 0));
+
+      // Act: Upload a regular file
+      entrypointAndMenu.dispatchEvent(new CustomEvent('open-file-upload'));
+      assertEquals(1, testProxy.metrics.count(metricName, ContextType.FILE));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.File`, 0));
+    });
+
+    test('metrics are recorded for tab additions', async () => {
+      loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      const composebox = testProxy.element;
+      const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+      assertTrue(!!entrypointAndMenu);
+
+      const metricName =
+          'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+      entrypointAndMenu.dispatchEvent(new CustomEvent('add-tab-context', {
+        detail: {
+          id: 1,
+          title: 'Title',
+          url: {url: 'http://test.com'},
+          delayUpload: false,
+          origin: 0,
+        },
+      }));
+      assertEquals(1, testProxy.metrics.count(metricName, ContextType.TAB));
+      assertEquals(1, testProxy.metrics.count(`${metricName}.Tab`, 0));
     });
 
     test('session abandoned on cancel button click', async () => {
@@ -1413,6 +1416,25 @@ suite('NewTabPageComposeboxTest', () => {
           assertEquals(
               testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
         });
+
+    test('ShareComposeboxMountPreservesAutoReposition', async () => {
+      createComposeboxElement(testProxy);
+      await testProxy.element.updateComplete;
+
+      const entrypointAndMenu =
+          testProxy.element.shadowRoot
+              .querySelector<ContextualEntrypointAndMenuElement>(
+                  'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      await entrypointAndMenu.updateComplete;
+      assertFalse(entrypointAndMenu.disableAutoReposition);
+
+      const contextualActionMenu = entrypointAndMenu.$.menu;
+      await contextualActionMenu.updateComplete;
+      const crActionMenu = contextualActionMenu.$.menu;
+      assertTrue(crActionMenu.autoReposition);
+      assertTrue(crActionMenu.hasAttribute('auto-reposition'));
+    });
   });
 });
 

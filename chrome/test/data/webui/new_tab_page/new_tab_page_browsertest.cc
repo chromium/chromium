@@ -161,7 +161,21 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteVoiceSearch) {
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
   RunTest("new_tab_page/composebox/composebox_context_menu_test.js",
-          "mocha.run()");
+          "runMochaSuite('NewTabPageComposeboxContextMenuTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenuV2ForkTrue) {
+  RunTest("new_tab_page/composebox/composebox_context_menu_test.js",
+          "runMochaSuite('NewTabPageComposeboxContextMenuTestV2 "
+          "\\\\(useNtpComposeboxFork = "
+          "true\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenuV2ForkFalse) {
+  RunTest("new_tab_page/composebox/composebox_context_menu_test.js",
+          "runMochaSuite('NewTabPageComposeboxContextMenuTestV2 "
+          "\\\\(useNtpComposeboxFork = "
+          "false\\\\)')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadFileTest) {
