@@ -2325,7 +2325,9 @@ public class RootUiCoordinator
                         mTabModelSelectorSupplier.asNonNull().get(),
                         mWindowAndroid,
                         mActionModeControllerCallback,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mActivity.findViewById(R.id.secondary_ui_container),
+                        mBrowserControlsManager);
 
         mFindToolbarObserver =
                 new FindToolbarObserver() {

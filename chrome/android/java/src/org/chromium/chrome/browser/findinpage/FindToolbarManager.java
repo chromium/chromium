@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.findinpage;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
@@ -29,27 +31,36 @@ public class FindToolbarManager implements SideUiObserver {
     private final ActionMode.Callback mCallback;
     private final ObserverList<FindToolbarObserver> mObservers;
     private final BackPressManager mBackPressManager;
+    private final FrameLayout mSecondaryUiContainer;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /**
      * Creates an instance of a {@link FindToolbarManager}.
+     *
      * @param findToolbarStub The {@link ViewStub} where for the find toolbar.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
      * @param windowAndroid The {@link WindowAndroid} for the containing activity.
-     * @param callback The ActionMode.Callback that will be used when selection occurs on the
-     *         {@link FindToolbar}.
+     * @param callback The ActionMode.Callback that will be used when selection occurs on the {@link
+     *     FindToolbar}.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
+     * @param secondaryUiContainer The {@link FrameLayout} that will hold the {@link FindResultBar}.
+     * @param browserControlsStateProvider Provider for browser controls state.
      */
     public FindToolbarManager(
             ViewStub findToolbarStub,
             TabModelSelector tabModelSelector,
             WindowAndroid windowAndroid,
             ActionMode.Callback callback,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            FrameLayout secondaryUiContainer,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mFindToolbarStub = findToolbarStub;
         mTabModelSelector = tabModelSelector;
         mWindowAndroid = windowAndroid;
         mCallback = callback;
         mBackPressManager = backPressManager;
+        mSecondaryUiContainer = secondaryUiContainer;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mObservers = new ObserverList<>();
     }
 
@@ -94,6 +105,8 @@ public class FindToolbarManager implements SideUiObserver {
             mFindToolbar.setTabModelSelector(mTabModelSelector);
             mFindToolbar.setWindowAndroid(mWindowAndroid);
             mFindToolbar.setActionModeCallbackForTextEdit(mCallback);
+            mFindToolbar.setSecondaryUiContainer(mSecondaryUiContainer);
+            mFindToolbar.setBrowserControlsStateProvider(mBrowserControlsStateProvider);
             mFindToolbar.setObserver(
                     new FindToolbarObserver() {
                         @Override
