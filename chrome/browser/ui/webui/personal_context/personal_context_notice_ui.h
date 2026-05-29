@@ -27,7 +27,7 @@ class PersonalContextNoticeUIConfig
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   bool ShouldAutoResizeHost() override;
 };
-// WebUIController for chrome://accessibility-annotator-info
+// WebUIController for chrome://personal-context-notice
 class PersonalContextNoticeUI : public TopChromeWebUIController {
  public:
   explicit PersonalContextNoticeUI(content::WebUI* web_ui);
@@ -35,7 +35,7 @@ class PersonalContextNoticeUI : public TopChromeWebUIController {
   PersonalContextNoticeUI& operator=(const PersonalContextNoticeUI&) = delete;
   ~PersonalContextNoticeUI() override;
   static constexpr std::string_view GetWebUIName() {
-    return "AccessibilityAnnotatorInfo";
+    return "PersonalContextNotice";
   }
   void BindInterface(
       mojo::PendingReceiver<personal_context::notice::mojom::PageHandler>

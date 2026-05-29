@@ -67,7 +67,7 @@ export class PersonalContextNoticeElement extends
 
   protected onGotItClick_() {
     PersonalContextNoticeBrowserProxy.getInstance()
-        .handler.onInfoAcknowledged();
+        .handler.onNoticeAcknowledged();
   }
 }
 

@@ -343,7 +343,6 @@ chromium-metrics-reviews@google.com.
   <variant name=""/>
   <variant name=".access-code-cast"/>
   <variant name=".accessibility"/>
-  <variant name=".accessibility-annotator-info"/>
   <variant name=".accessory-update"/>
   <variant name=".account-manager-error"/>
   <variant name=".account-migration-welcome"/>
@@ -490,6 +489,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".password-manager"/>
   <variant name=".password-manager-internals"/>
   <variant name=".personal-context-internals"/>
+  <variant name=".personal-context-notice"/>
   <variant name=".personalization"/>
   <variant name=".policy"/>
   <variant name=".power"/>
@@ -579,7 +579,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="WebUIName">
   <variant name=""/>
-  <variant name=".AccessibilityAnnotatorInfo"/>
   <variant name=".BookmarksSidePanel"/>
   <variant name=".CommentsSidePanel"/>
   <variant name=".Compose"/>
@@ -599,6 +598,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".NewTabFooter"/>
   <variant name=".OmniboxPopup"/>
   <variant name=".PerformanceSidePanel"/>
+  <variant name=".PersonalContextNotice"/>
   <variant name=".ReadAnythingUntrusted"/>
   <variant name=".ReadingList"/>
   <variant name=".ReloadButtonUI"/>

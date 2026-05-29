@@ -38,10 +38,10 @@ namespace {
 constexpr char kClickButtonScriptTemplate[] = R"(
   new Promise((resolve) => {
     const interval = setInterval(() => {
-      const annotatorInfo =
+      const contextNotice =
           document.querySelector('personal-context-notice');
-      if (annotatorInfo && annotatorInfo.shadowRoot) {
-        const button = annotatorInfo.shadowRoot.querySelector('%s');
+      if (contextNotice && contextNotice.shadowRoot) {
+        const button = contextNotice.shadowRoot.querySelector('%s');
         if (button) {
           clearInterval(interval);
           resolve(true);
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
       std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
-      GURL("chrome://accessibility-annotator-info/"));
+      GURL("chrome://personal-context-notice/"));
   navigation_observer.StartWatchingNewWebContents();
 
   histogram_tester.ExpectTotalCount(histogram_name, 0);
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
       std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
-      GURL("chrome://accessibility-annotator-info/"));
+      GURL("chrome://personal-context-notice/"));
   navigation_observer.StartWatchingNewWebContents();
 
   controller->ShowDialog(web_contents, base::DoNothing());
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
       std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
-      GURL("chrome://accessibility-annotator-info/"));
+      GURL("chrome://personal-context-notice/"));
   navigation_observer.StartWatchingNewWebContents();
 
   controller->ShowDialog(web_contents, base::DoNothing());
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
       std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
-      GURL("chrome://accessibility-annotator-info/"));
+      GURL("chrome://personal-context-notice/"));
   navigation_observer.StartWatchingNewWebContents();
 
   controller->ShowDialog(web_contents, base::DoNothing());
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
       std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
-      GURL("chrome://accessibility-annotator-info/"));
+      GURL("chrome://personal-context-notice/"));
   navigation_observer.StartWatchingNewWebContents();
 
   controller->ShowDialog(web_contents, base::DoNothing());

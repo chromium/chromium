@@ -9,7 +9,7 @@
 class PersonalContextNoticeTest : public WebUIMochaBrowserTest {
  protected:
   PersonalContextNoticeTest() {
-    set_test_loader_host("accessibility-annotator-info");
+    set_test_loader_host("personal-context-notice");
   }
 };
 

@@ -23,7 +23,7 @@ namespace personal_context::notice {
 
 PersonalContextNoticeUIConfig::PersonalContextNoticeUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  "accessibility-annotator-info") {}
+                                  "personal-context-notice") {}
 
 bool PersonalContextNoticeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -37,30 +37,29 @@ bool PersonalContextNoticeUIConfig::ShouldAutoResizeHost() {
 PersonalContextNoticeUI::PersonalContextNoticeUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      "accessibility-annotator-info");
+      web_ui->GetWebContents()->GetBrowserContext(), "personal-context-notice");
 
   webui::SetupWebUIDataSource(
       source, kPersonalContextNoticeResources,
       IDR_PERSONAL_CONTEXT_NOTICE_PERSONAL_CONTEXT_NOTICE_HTML);
-  source->AddLocalizedString("accessibilityAnnotatorInfoTitle",
+  source->AddLocalizedString("personalContextNoticeTitle",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_TITLE);
   source->AddLocalizedString(
-      "accessibilityAnnotatorInfoDescription",
+      "personalContextNoticeDescription",
       IDS_ACCESSIBILITY_ANNOTATOR_INFO_DESCRIPTION_DESKTOP);
-  source->AddLocalizedString("accessibilityAnnotatorInfoCard1",
+  source->AddLocalizedString("personalContextNoticeCard1",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_1_DESKTOP);
-  source->AddLocalizedString("accessibilityAnnotatorInfoCard2",
+  source->AddLocalizedString("personalContextNoticeCard2",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_2_DESKTOP);
   source->AddLocalizedString(
-      "accessibilityAnnotatorInfoLearnMore",
+      "personalContextNoticeLearnMore",
       IDS_ACCESSIBILITY_ANNOTATOR_INFO_LEARN_MORE_DESKTOP);
-  source->AddLocalizedString("accessibilityAnnotatorInfoPrimaryButton",
+  source->AddLocalizedString("personalContextNoticePrimaryButton",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_PRIMARY_BUTTON);
-  source->AddLocalizedString("accessibilityAnnotatorInfoSecondaryButton",
+  source->AddLocalizedString("personalContextNoticeSecondaryButton",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_SECONDARY_BUTTON);
   source->AddString(
-      "accessibilityAnnotatorTriggerText",
+      "personalContextTriggerText",
       accessibility_annotator::kAccessibilityAnnotatorTriggerText);
 }
 

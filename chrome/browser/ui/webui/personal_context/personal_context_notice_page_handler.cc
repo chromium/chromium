@@ -39,7 +39,7 @@ PersonalContextNoticePageHandler::~PersonalContextNoticePageHandler() {
   if (callback_) {
     // If the callback hasn't run, the user dismissed the dialog without
     // acknowledging it (e.g., by clicking outside or pressing Esc).
-    OnInfoDismissed();
+    OnNoticeDismissed();
   }
 }
 
@@ -76,7 +76,7 @@ void PersonalContextNoticePageHandler::GetAccountInfo(
   std::move(callback).Run(std::move(account_info_mojom));
 }
 
-void PersonalContextNoticePageHandler::OnInfoAcknowledged() {
+void PersonalContextNoticePageHandler::OnNoticeAcknowledged() {
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 NoticeShowRequestResult::kAccepted);
 
@@ -85,7 +85,7 @@ void PersonalContextNoticePageHandler::OnInfoAcknowledged() {
   }
 }
 
-void PersonalContextNoticePageHandler::OnInfoDismissed() {
+void PersonalContextNoticePageHandler::OnNoticeDismissed() {
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 NoticeShowRequestResult::kDismissed);
 

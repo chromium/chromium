@@ -19,10 +19,10 @@ export function getHtml(this: PersonalContextNoticeElement) {
       <!-- TODO(crbug.com/488321731): Add illustration here. -->
     </div>
   </div>
-  <h1 class="title">$i18n{accessibilityAnnotatorInfoTitle}</h1>
+  <h1 class="title">$i18n{personalContextNoticeTitle}</h1>
   <div class="description">
     <p>
-      $i18n{accessibilityAnnotatorInfoDescription}
+      $i18n{personalContextNoticeDescription}
     </p>
     <div class="features-container">
       <div class="feature-item">
@@ -30,13 +30,13 @@ export function getHtml(this: PersonalContextNoticeElement) {
           <img src="keyboard.svg" alt="">
         </div>
         <div class="feature-text" id="triggerCard">
-          ${this.i18n('accessibilityAnnotatorInfoCard1')
+          ${this.i18n('personalContextNoticeCard1')
             .split('$1')
             .map((text, i, arr) => html`
               ${text}${
                 i < arr.length - 1 ?
                   html`<span class="pill">
-                    ${this.i18n('accessibilityAnnotatorTriggerText')}
+                    ${this.i18n('personalContextTriggerText')}
                   </span>` :
                   ''
               }`)}
@@ -47,22 +47,22 @@ export function getHtml(this: PersonalContextNoticeElement) {
           <div class="g-icon"></div>
         </div>
         <div class="feature-text">
-          $i18n{accessibilityAnnotatorInfoCard2}
+          $i18n{personalContextNoticeCard2}
         </div>
       </div>
     </div>
     <p class="footer-text" id="learnMore" @click="${this.onLearnMoreClick_}"
-      .innerHTML="${this.i18nAdvanced('accessibilityAnnotatorInfoLearnMore')}">
+      .innerHTML="${this.i18nAdvanced('personalContextNoticeLearnMore')}">
     </p>
   </div>
 
   <div class="actions">
     <cr-button id="manageSettings" class="tonal-button"
       @click="${this.onManageSettingsClick_}">
-      $i18n{accessibilityAnnotatorInfoSecondaryButton}
+      $i18n{personalContextNoticeSecondaryButton}
     </cr-button>
     <cr-button id="gotIt" class="action-button" @click="${this.onGotItClick_}">
-      $i18n{accessibilityAnnotatorInfoPrimaryButton}
+      $i18n{personalContextNoticePrimaryButton}
     </cr-button>
   </div>
 </div>

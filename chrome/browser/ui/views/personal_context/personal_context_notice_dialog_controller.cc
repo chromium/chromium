@@ -49,7 +49,7 @@ void PersonalContextNoticeDialogController::ShowDialog(
 
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<PersonalContextNoticeUI>>(
-          GURL("chrome://accessibility-annotator-info/"),
+          GURL("chrome://personal-context-notice/"),
           Profile::FromBrowserContext(browser_context_),
           0, /* task_manager_string_id */
           /*esc_closes_ui=*/true,

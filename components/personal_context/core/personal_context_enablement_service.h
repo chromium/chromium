@@ -39,7 +39,7 @@ class PersonalContextEnablementService : public KeyedService {
 
   // Sync getter for the current enablement state. Checks whether the profile
   // is enabled to use Personal Context. Includes feature check, eligibility
-  // check, info acknowledgement OR setup completion.
+  // check, notice acknowledgement OR setup completion.
   virtual PersonalContextEnablementState GetEnablementState() = 0;
 };
 

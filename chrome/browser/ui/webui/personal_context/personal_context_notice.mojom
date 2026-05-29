@@ -9,16 +9,16 @@ struct AccountInfo {
 };
 
 // Implemented in the browser process and called by the WebUI.
-// Handles requests from the Accessibility Annotator info dialog.
+// Handles requests from the Personal Context notice dialog.
 interface PageHandler {
   // Returns account information.
   GetAccountInfo() => (AccountInfo? info);
 
-  // Called when the user acknowledges the info dialog.
-  OnInfoAcknowledged();
+  // Called when the user acknowledges the notice dialog.
+  OnNoticeAcknowledged();
 
-  // Called when the user dismisses the info dialog.
-  OnInfoDismissed();
+  // Called when the user dismisses the notice dialog.
+  OnNoticeDismissed();
 
   // Called when the user clicks the "Manage Settings" button.
   OnManageSettingsClicked();

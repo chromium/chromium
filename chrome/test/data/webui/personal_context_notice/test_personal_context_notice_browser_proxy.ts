@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PersonalContextNoticeBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
-import type {AccountInfo, PageHandlerInterface} from 'chrome://accessibility-annotator-info/personal_context_notice.mojom-webui.js';
+import type {PersonalContextNoticeBrowserProxy} from 'chrome://personal-context-notice/browser_proxy.js';
+import type {AccountInfo, PageHandlerInterface} from 'chrome://personal-context-notice/personal_context_notice.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class TestPersonalContextNoticePageHandler extends TestBrowserProxy implements
@@ -13,8 +13,8 @@ class TestPersonalContextNoticePageHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'getAccountInfo',
-      'onInfoAcknowledged',
-      'onInfoDismissed',
+      'onNoticeAcknowledged',
+      'onNoticeDismissed',
       'onManageSettingsClicked',
       'onLearnMoreClicked',
       'showUi',
@@ -26,12 +26,12 @@ class TestPersonalContextNoticePageHandler extends TestBrowserProxy implements
     return Promise.resolve({info: this.accountInfo_});
   }
 
-  onInfoAcknowledged() {
-    this.methodCalled('onInfoAcknowledged');
+  onNoticeAcknowledged() {
+    this.methodCalled('onNoticeAcknowledged');
   }
 
-  onInfoDismissed() {
-    this.methodCalled('onInfoDismissed');
+  onNoticeDismissed() {
+    this.methodCalled('onNoticeDismissed');
   }
 
   onManageSettingsClicked() {

@@ -35,8 +35,8 @@ class PersonalContextNoticePageHandler
 
   // personal_context::notice::mojom::PageHandler:
   void GetAccountInfo(GetAccountInfoCallback callback) override;
-  void OnInfoAcknowledged() override;
-  void OnInfoDismissed() override;
+  void OnNoticeAcknowledged() override;
+  void OnNoticeDismissed() override;
   void OnManageSettingsClicked() override;
   void OnLearnMoreClicked() override;
   void ShowUi() override;

@@ -122,13 +122,13 @@ TEST_F(PersonalContextNoticePageHandlerTest, GetAccountInfoSignedOut) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(PersonalContextNoticePageHandlerTest, OnInfoAcknowledged) {
+TEST_F(PersonalContextNoticePageHandlerTest, OnNoticeAcknowledged) {
   // Check callback was not run yet.
   EXPECT_FALSE(result_.has_value());
   histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
 
   // User clicks "Acknowledge" on the dialog.
-  handler_->OnInfoAcknowledged();
+  handler_->OnNoticeAcknowledged();
 
   // Check callback returned kAccepted and corresponding metrics were recorded.
   EXPECT_TRUE(result_.has_value());
@@ -138,15 +138,15 @@ TEST_F(PersonalContextNoticePageHandlerTest, OnInfoAcknowledged) {
 }
 
 // TODO(crbug.com/506117669): If no UI element for dismissal is added: delete
-// this test and simplify the name of `OnInfoDismissedOnFrameworkClosure` test.
-// Otherwise: use this test and drop this todo.
-TEST_F(PersonalContextNoticePageHandlerTest, OnInfoDismissedByExplicitCall) {
+// this test and simplify the name of `OnNoticeDismissedOnFrameworkClosure`
+// test. Otherwise: use this test and drop this todo.
+TEST_F(PersonalContextNoticePageHandlerTest, OnNoticeDismissedByExplicitCall) {
   // Check callback was not run yet.
   EXPECT_FALSE(result_.has_value());
   histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
 
   // User closes the dialog using the dialog UI.
-  handler_->OnInfoDismissed();
+  handler_->OnNoticeDismissed();
 
   // Check callback returned kDismissed and corresponding metrics were recorded.
   EXPECT_TRUE(result_.has_value());
@@ -156,7 +156,7 @@ TEST_F(PersonalContextNoticePageHandlerTest, OnInfoDismissedByExplicitCall) {
 }
 
 TEST_F(PersonalContextNoticePageHandlerTest,
-       OnInfoDismissedOnFrameworkClosure) {
+       OnNoticeDismissedOnFrameworkClosure) {
   // Check callback was not run yet.
   EXPECT_FALSE(result_.has_value());
   histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://accessibility-annotator-info/personal_context_notice.js';
+import 'chrome://personal-context-notice/personal_context_notice.js';
 
-import {PersonalContextNoticeBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
-import type {PersonalContextNoticeElement} from 'chrome://accessibility-annotator-info/personal_context_notice.js';
+import {PersonalContextNoticeBrowserProxy} from 'chrome://personal-context-notice/browser_proxy.js';
+import type {PersonalContextNoticeElement} from 'chrome://personal-context-notice/personal_context_notice.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPersonalContextNoticeBrowserProxy} from './test_personal_context_notice_browser_proxy.js';
 
-suite('AccessibilityAnnotatorInfoTest', function() {
+suite('PersonalContextNoticeTest', function() {
   let personalContextNoticeElement: PersonalContextNoticeElement;
   let browserProxy: TestPersonalContextNoticeBrowserProxy;
 
@@ -43,8 +43,8 @@ suite('AccessibilityAnnotatorInfoTest', function() {
             '#gotIt');
     assertTrue(!!gotItButton);
     gotItButton.click();
-    await browserProxy.handler.whenCalled('onInfoAcknowledged');
-    assertEquals(1, browserProxy.handler.getCallCount('onInfoAcknowledged'));
+    await browserProxy.handler.whenCalled('onNoticeAcknowledged');
+    assertEquals(1, browserProxy.handler.getCallCount('onNoticeAcknowledged'));
   });
 
   test('RendersAccountInfo', async function() {
@@ -107,9 +107,8 @@ suite('AccessibilityAnnotatorInfoTest', function() {
 
     // Assert the constructed string is correct.
     const textWithPlaceholder =
-        loadTimeData.getString('accessibilityAnnotatorInfoCard1');
-    const placeholder =
-        loadTimeData.getString('accessibilityAnnotatorTriggerText');
+        loadTimeData.getString('personalContextNoticeCard1');
+    const placeholder = loadTimeData.getString('personalContextTriggerText');
     const expectedText = textWithPlaceholder.replace('$1', placeholder);
     const actualText =
         (triggerCard.textContent || '').replace(/\s+/g, ' ').trim();
