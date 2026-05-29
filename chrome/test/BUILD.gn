@@ -8387,6 +8387,7 @@ test("unit_tests") {
     # !is_android
     sources += [
       "../browser/apps/intent_helper/intent_chip_display_prefs_unittest.cc",
+      "../browser/autofill/personal_context_access_manager_factory_unittest.cc",
       "../browser/autofill/ui/autofill_image_fetcher_impl_unittest.cc",
       "../browser/browser_commands_unittest.cc",
       "../browser/component_updater/captcha_provider_component_installer_unittest.cc",
@@ -8928,6 +8929,7 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
       "//chrome/browser/omnibox:unit_tests",
       "//chrome/browser/page_content_annotations",
+      "//chrome/browser/personal_context",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/profile_resetter:fake_profile_resetter",
       "//chrome/browser/profile_resetter:unit_tests",

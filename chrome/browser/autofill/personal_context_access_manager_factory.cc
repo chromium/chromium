@@ -4,8 +4,12 @@
 
 #include "chrome/browser/autofill/personal_context_access_manager_factory.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/personal_context/core/personal_context_service.h"
 
 namespace autofill {
 
@@ -31,7 +35,7 @@ PersonalContextAccessManagerFactory::PersonalContextAccessManagerFactory()
               // Off-the-record profiles will default to
               // ProfileSelection::kNone.
               .Build()) {
-  // TODO(crbug.com/516721244): Add dependencies.
+  DependsOn(PersonalContextServiceFactory::GetInstance());
 }
 
 PersonalContextAccessManagerFactory::~PersonalContextAccessManagerFactory() =
@@ -40,10 +44,20 @@ PersonalContextAccessManagerFactory::~PersonalContextAccessManagerFactory() =
 std::unique_ptr<KeyedService>
 PersonalContextAccessManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(crbug.com/516721244): Add feature check and fetch dependencies using
-  // other factories here before making the manager.
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAmbientAutofill)) {
+    return nullptr;
+  }
 
-  return std::make_unique<autofill::PersonalContextAccessManagerImpl>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  personal_context::PersonalContextService* personal_context_service =
+      PersonalContextServiceFactory::GetForProfile(profile);
+  if (!personal_context_service) {
+    return nullptr;
+  }
+
+  return std::make_unique<autofill::PersonalContextAccessManagerImpl>(
+      personal_context_service);
 }
 
 }  // namespace autofill
