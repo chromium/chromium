@@ -5,8 +5,9 @@
 // Defines some types shared across files in host/.
 
 import {ScrollToErrorReason} from '../../glic_api/glic_api.js';
-import type {HostRequestTypes, RequestResponseType} from '../../glic_api_impl/request_types.js';
+import type {HostRequestTypes} from '../../glic_api_impl/request_types.js';
 import {ErrorWithReasonImpl} from '../../glic_api_impl/request_types.js';
+import type {ResponsePayload} from '../transport/messaging.js';
 
 // Is a request type allowed in the background?
 type IsBackgroundRequest<T extends keyof HostRequestTypes> =
@@ -42,7 +43,7 @@ export type HostBackgroundResponse<R> = HostBackgroundResponseThrows|
 type HostBackgroundResponseMap = {
   [RequestName in keyof HostRequestTypes as
        IsBackgroundRequest<RequestName> extends true ? never : RequestName]:
-      HostBackgroundResponse<RequestResponseType<RequestName>>;
+      HostBackgroundResponse<ResponsePayload<HostRequestTypes, RequestName>>;
 };
 
 // How to respond to each requests received in the background. One entry for

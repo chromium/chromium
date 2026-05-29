@@ -16,11 +16,11 @@ import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, Count
 import {CaptureScreenshotErrorReason, ClientCapabilities, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
-import type {RgbaImage, TabContextResultPrivate, TransferableException, WebClientHost, WebClientInitialStatePrivate} from '../request_types.js';
+import type {ActorClient, ActorHost, GlicException, RgbaImage, TabContextResultPrivate, WebClient, WebClientHost, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationType} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {MessageHandlerInterface} from '../transport/messaging.js';
-import type {PostMessageRequestSender} from '../transport/post_message_transport.js';
+import type {PendingReceiver, PendingRemote, PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, counterAbuseVerdictFromClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
@@ -45,8 +45,9 @@ export class HostMessageHandler implements
   // Reminder: Don't add more state here! See `HostMessageHandler`'s comment.
 
   constructor(
-      private handler: WebClientHandlerInterface, private sender: GatedSender,
-      private embedder: ApiHostEmbedder, private host: GlicApiHost) {}
+      private handler: WebClientHandlerInterface,
+      private sender: GatedSender<WebClient>, private embedder: ApiHostEmbedder,
+      private host: GlicApiHost) {}
 
   destroy() {
     if (this.receiver) {
@@ -57,8 +58,11 @@ export class HostMessageHandler implements
 
   async glicBrowserWebClientCreated(
       request: {clientCapabilities: ClientCapabilities[]},
-      extras: ResponseExtras):
-      Promise<{initialState: WebClientInitialStatePrivate}> {
+      extras: ResponseExtras): Promise<{
+    initialState: WebClientInitialStatePrivate,
+    actorRemote?: PendingRemote<ActorHost>,
+    actorReceiver?: PendingReceiver<ActorClient>,
+  }> {
     if (this.receiver) {
       throw new Error('web client already created');
     }
@@ -80,7 +84,7 @@ export class HostMessageHandler implements
         this.receiver.$.bindNewPipeAndPassRemote());
     webClientImpl.markCreated();
     conversionSettings.platform = enumToClient(initialState.platform);
-    this.host.setInitialState(initialState);
+    const actorPipes = this.host.setInitialState(initialState);
     const chromeVersion = initialState.chromeVersion.components;
     const hostCapabilities = initialState.hostCapabilities;
     this.host.setInstanceIsActive(initialState.instanceIsActive);
@@ -118,11 +122,13 @@ export class HostMessageHandler implements
             loadTimeData.getBoolean('sendResponsesForAllRequests'),
         hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
       }),
+      actorRemote: actorPipes.actorRemote,
+      actorReceiver: actorPipes.actorReceiver,
     };
   }
 
   glicBrowserWebClientInitialized(
-      request: {success: boolean, exception?: TransferableException}) {
+      request: {success: boolean, exception?: GlicException}) {
     // The webview may have been re-shown by webui, having previously been
     // opened by the browser. In that case, show the guest frame again.
 
@@ -626,6 +632,7 @@ export class HostMessageHandler implements
     if (errorReason !== null) {
       throw new ErrorWithReasonImpl('scrollTo', enumToClient(errorReason));
     }
+    return;
   }
 
   glicBrowserSetSyntheticExperimentState(request: {
@@ -803,8 +810,9 @@ export class HostMessageHandler implements
 export class CaptureRegionObserverImpl implements CaptureRegionObserver {
   receiver?: CaptureRegionObserverReceiver;
   constructor(
-      private sender: GatedSender, private handler: WebClientHandlerInterface,
-      public observationId: number, private params?: CaptureRegionParams) {
+      private sender: GatedSender<WebClient>,
+      private handler: WebClientHandlerInterface, public observationId: number,
+      private params?: CaptureRegionParams) {
     this.connectToSource();
   }
 
@@ -876,7 +884,7 @@ export class TabDataHandlerSet {
   handlersByObservation: Map<number, TabDataHandlerImpl> = new Map();
 
   constructor(
-      private sender: PostMessageRequestSender,
+      public sender: PostMessageRemote<WebClient>,
       private webClientHandler: WebClientHandlerInterface) {}
   create(tabId: number, observationId: number): void {
     const handler = new TabDataHandlerImpl(
@@ -898,8 +906,8 @@ class TabDataHandlerImpl implements TabDataHandlerInterface {
 
   constructor(
       tabId: number, handler: WebClientHandlerInterface,
-      private sender: PostMessageRequestSender, handlerSet: TabDataHandlerSet,
-      public readonly observationId: number) {
+      private sender: PostMessageRemote<WebClient>,
+      handlerSet: TabDataHandlerSet, public readonly observationId: number) {
     this.receiver = new TabDataHandlerReceiver(this);
     this.receiver.onConnectionError.addListener(() => {
       handlerSet.remove(this.observationId);
@@ -933,7 +941,7 @@ export class TabFaviconHandlerSet {
   handlersByObservation: Map<number, TabFaviconHandlerImpl> = new Map();
 
   constructor(
-      private sender: PostMessageRequestSender,
+      public sender: PostMessageRemote<WebClient>,
       private webClientHandler: WebClientHandlerInterface) {}
   create(tabId: number, observationId: number): void {
     const handler = new TabFaviconHandlerImpl(
@@ -955,7 +963,7 @@ class TabFaviconHandlerImpl implements TabFaviconHandlerInterface {
 
   constructor(
       tabId: number, handler: WebClientHandlerInterface,
-      private sender: PostMessageRequestSender,
+      private sender: PostMessageRemote<WebClient>,
       handlerSet: TabFaviconHandlerSet, public readonly observationId: number) {
     this.receiver = new TabFaviconHandlerReceiver(this);
     this.receiver.onConnectionError.addListener(() => {
@@ -995,7 +1003,8 @@ class TabFaviconHandlerImpl implements TabFaviconHandlerInterface {
 export class PinCandidatesObserverImpl implements PinCandidatesObserver {
   receiver?: PinCandidatesObserverReceiver;
   constructor(
-      private sender: GatedSender, private handler: WebClientHandlerInterface,
+      private sender: GatedSender<WebClient>,
+      private handler: WebClientHandlerInterface,
       private options: GetPinCandidatesOptions, public observationId: number) {
     this.connectToSource();
   }

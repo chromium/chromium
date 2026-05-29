@@ -110,6 +110,7 @@ if (!is_android) {
       "unit_tests/glic_api_host_test.ts",
       "unit_tests/glic_api_client_test.ts",
       "unit_tests/observable_test.ts",
+      "unit_tests/post_message_transport_test.ts",
       "unit_tests/test_helpers.ts",
       "unit_tests/webview_test.ts",
     ]

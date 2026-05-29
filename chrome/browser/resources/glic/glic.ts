@@ -13,8 +13,9 @@ export type {ObservableSetByTabIdDelegate} from './glic_api_impl/client/glic_api
 export {IdGenerator, ObservableSetByTabId} from './glic_api_impl/client/glic_api_client.js';
 export {GatedSender} from './glic_api_impl/host/gated_sender.js';
 export type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
-export type {RequestMessage} from './glic_api_impl/transport/post_message_transport.js';
-export {PostMessageRequestSender, PostMessageRouter, Queue} from './glic_api_impl/transport/post_message_transport.js';
+export type {WebClientHost} from './glic_api_impl/request_types.js';
+export type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageReceiver, PostMessageRemote, PostMessageSender, RequestMessage} from './glic_api_impl/transport/post_message_transport.js';
+export {createBidirectionalPostMessageTransport, ON_PIPE_CLOSED, PostMessageReceiverImpl, PostMessageRemoteImpl, PostMessageRequestReceiver, PostMessageRequestSender, PostMessageRouterImpl, Queue} from './glic_api_impl/transport/post_message_transport.js';
 export {ObservableValue, Subject} from './observable.js';
 export type {PageType, WebviewDelegate} from './webview.js';
 export {matcherForOrigin, urlMatchesAllowedOrigin, urlMatchesApiAllowedOrigin, WebviewController, WebviewPersistentState} from './webview.js';

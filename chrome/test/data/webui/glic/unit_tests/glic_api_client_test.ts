@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ObservableSetByTabIdDelegate, PostMessageRequestSender, RequestMessage} from 'chrome://glic/glic.js';
-import {IdGenerator, ObservableSetByTabId, PostMessageRouter} from 'chrome://glic/glic.js';
+import type {ObservableSetByTabIdDelegate, PostMessageRemote, RequestMessage, WebClientHost} from 'chrome://glic/glic.js';
+import {IdGenerator, ObservableSetByTabId, PostMessageRouterImpl} from 'chrome://glic/glic.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 class StubSender {
   sentMessages: RequestMessage[] = [];
-
   postMessage(message: any, _targetOrigin: string, _transfer?: Transferable[]):
       void {
     this.sentMessages.push(message);
@@ -16,7 +15,7 @@ class StubSender {
 }
 
 interface TestEnvironment {
-  sender: PostMessageRequestSender;
+  sender: PostMessageRemote<WebClientHost>;
   delegate: TestDelegate;
   idGenerator: IdGenerator;
   obs: ObservableSetByTabId<string>;
@@ -31,13 +30,13 @@ class TestDelegate implements ObservableSetByTabIdDelegate {
   readonly unsubscribeDelay = 1;
   observations: CurrentSubscription[] = [];
   subscribe(
-      _sender: PostMessageRequestSender, observationId: number,
+      _sender: PostMessageRemote<any>, observationId: number,
       tabId: string): void {
     this.observations.push({observationId, tabId});
   }
 
   unsubscribe(
-      _sender: PostMessageRequestSender, observationId: number,
+      _sender: PostMessageRemote<any>, observationId: number,
       tabId: string): void {
     this.observations = this.observations.filter((sub) => {
       return sub.observationId !== observationId || sub.tabId !== tabId;
@@ -52,9 +51,9 @@ function sleep(timeout: number): Promise<void> {
 suite('ObservableSetByTabId', () => {
   function createEnvironment(): TestEnvironment {
     const stubSender = new StubSender();
-    const router =
-        new PostMessageRouter('origin', 'senderId', stubSender, 'logPrefix');
-    const sender = router.sender!;
+    const router = new PostMessageRouterImpl(
+        'origin', 'senderId', stubSender, 'logPrefix', false);
+    const sender = router.newPipeWithRemote<WebClientHost>().remote;
     const delegate = new TestDelegate();
     const idGenerator = new IdGenerator();
     const obs = new ObservableSetByTabId<string>(delegate, sender, idGenerator);
@@ -125,7 +124,6 @@ suite('ObservableSetByTabId', () => {
     assertEquals(
         env.delegate.observations.length, 1,
         'just one observation after second subscribe');
-
     sub2.unsubscribe();
 
     await sleep(env.delegate.unsubscribeDelay + 1);
@@ -182,7 +180,6 @@ suite('ObservableSetByTabId', () => {
     assertEquals(
         env.delegate.observations.length, 1,
         'Second sub should not trigger duplicate delegate call');
-
     // First unsubscribes
     sub1.unsubscribe();
     await sleep(env.delegate.unsubscribeDelay + 1);
@@ -204,7 +201,6 @@ suite('ObservableSetByTabId', () => {
       'requesting a tab after completeObservable yields a new observable',
       async () => {
         const env = createEnvironment();
-
         const obs1 = env.obs.getObservableByTabId('foo');
         // Subscribe to force observation generation
         const sub1 = obs1.subscribe(() => {});
@@ -228,18 +224,14 @@ suite('ObservableSetByTabId', () => {
 
   test('two different tabs can be observed independently', async () => {
     const env = createEnvironment();
-
     const obsA = env.obs.getObservableByTabId('tabA');
     const obsB = env.obs.getObservableByTabId('tabB');
     assertNotEquals(obsA, obsB, 'Should get different observers');
-
     const subA = obsA.subscribe(() => {});
     const subB = obsB.subscribe(() => {});
-
     assertEquals(
         env.delegate.observations.length, 2,
         'Should have 2 independent delegate observations');
-
     subA.unsubscribe();
     await sleep(env.delegate.unsubscribeDelay + 1);
     await sleep(0);

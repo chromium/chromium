@@ -7,6 +7,7 @@
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import type {ActorClientInterface, ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, ExperimentalTriggeringUpdatesHandlerRemote, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import {enumToClient} from '../enum_conversions.js';
+import type {ActorClient, WebClient} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
@@ -16,7 +17,7 @@ import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {PanelOpenState} from './types.js';
 
 export class WebClientImpl implements WebClientInterface {
-  private sender: GatedSender;
+  private sender: GatedSender<WebClient>;
   private clientCreated = Promise.withResolvers<void>();
 
   constructor(private host: GlicApiHost, private embedder: ApiHostEmbedder) {
@@ -315,11 +316,7 @@ export class WebClientImpl implements WebClientInterface {
 }
 
 export class ActorClientImpl implements ActorClientInterface {
-  private sender: GatedSender;
-
-  constructor(private host: GlicApiHost) {
-    this.sender = this.host.sender;
-  }
+  constructor(private sender: GatedSender<ActorClient>) {}
 
   notifyActorTaskStateChanged(taskId: number, state: ActorTaskStateMojo): void {
     const clientState = enumToClient(state);

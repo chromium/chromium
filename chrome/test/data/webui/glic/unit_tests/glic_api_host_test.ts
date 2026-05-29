@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GatedSender, PostMessageRequestSender, PostMessageRouter, Queue} from 'chrome://glic/glic.js';
+import {GatedSender, ObservableValue, PostMessageRequestSender, PostMessageRouterImpl, Queue} from 'chrome://glic/glic.js';
 import type {RequestMessage} from 'chrome://glic/glic.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -16,6 +16,19 @@ class StubSender {
     this.sentMessages.push(message);
   }
 }
+
+interface DemoInterface {
+  requestType: {
+    request: {field: string},
+    backgroundAllowed: true,
+  };
+  requestType2: {
+    request: {field: string},
+    backgroundAllowed: true,
+  };
+}
+
+
 suite('Queue', () => {
   test('Push and popFront in order', () => {
     const q = new Queue<number>();
@@ -73,19 +86,22 @@ suite('GlicApiHost', () => {
 
   function createSenders() {
     const stubSender = new StubSender();
-    const router =
-        new PostMessageRouter('origin', 'senderid', stubSender, 'logPrefix');
-    const gatedSender = new GatedSender(new PostMessageRequestSender(router));
-    return {stubSender, gatedSender};
+    const router = new PostMessageRouterImpl(
+        'origin', 'senderid', stubSender, 'logPrefix', true);
+    new PostMessageRequestSender(router);
+    const shouldGate = ObservableValue.withValue(true);
+    const gatedSender = new GatedSender<DemoInterface>(
+        router.newPipeWithRemote<DemoInterface>().remote, shouldGate);
+    return {stubSender, gatedSender, shouldGate};
   }
 
   test('GatedSender.sendWhenActive queues message', () => {
-    const {stubSender, gatedSender} = createSenders();
+    const {stubSender, gatedSender, shouldGate} = createSenders();
 
-    gatedSender.sendWhenActive('requestType' as any, {field: 'hi'});
+    gatedSender.sendWhenActive('requestType', {field: 'hi'});
     assertEquals(0, stubSender.sentMessages.length);
 
-    gatedSender.setGating(false);
+    shouldGate.assignAndSignal(false);
     assertEquals(1, stubSender.sentMessages.length);
     assertEquals(
         'hi',
@@ -93,9 +109,9 @@ suite('GlicApiHost', () => {
   });
 
   test('GatedSender.sendWhenActive while ungated', () => {
-    const {stubSender, gatedSender} = createSenders();
-    gatedSender.setGating(false);
-    gatedSender.sendWhenActive('requestType' as any, {field: 'hi'});
+    const {stubSender, gatedSender, shouldGate} = createSenders();
+    shouldGate.assignAndSignal(false);
+    gatedSender.sendWhenActive('requestType', {field: 'hi'});
     assertEquals(1, stubSender.sentMessages.length);
     assertEquals(
         'hi',
@@ -103,9 +119,9 @@ suite('GlicApiHost', () => {
   });
 
   test('GatedSender.sendIfActiveOrDrop while ungated', () => {
-    const {stubSender, gatedSender} = createSenders();
-    gatedSender.setGating(false);
-    gatedSender.sendIfActiveOrDrop('requestType' as any, {field: 'hi'});
+    const {stubSender, gatedSender, shouldGate} = createSenders();
+    shouldGate.assignAndSignal(false);
+    gatedSender.sendIfActiveOrDrop('requestType', {field: 'hi'});
 
     assertEquals(1, stubSender.sentMessages.length);
     assertEquals(
@@ -114,27 +130,23 @@ suite('GlicApiHost', () => {
   });
 
   test('GatedSender.sendIfActiveOrDrop while gated', () => {
-    const {stubSender, gatedSender} = createSenders();
-    gatedSender.sendIfActiveOrDrop('requestType' as any, {field: 'hi'});
-    gatedSender.setGating(false);
+    const {stubSender, gatedSender, shouldGate} = createSenders();
+    gatedSender.sendIfActiveOrDrop('requestType', {field: 'hi'});
+    shouldGate.assignAndSignal(false);
 
     assertEquals(0, stubSender.sentMessages.length);
   });
 
   test('GatedSender.sendLatestWhenActive while gated', () => {
-    const {stubSender, gatedSender} = createSenders();
-    gatedSender.sendLatestWhenActive(
-        'requestType' as any, {field: 'A'}, [], 'key');
+    const {stubSender, gatedSender, shouldGate} = createSenders();
+    gatedSender.sendLatestWhenActive('requestType', {field: 'A'}, [], 'key');
     // Same request type, same key: should replace 'A'.
-    gatedSender.sendLatestWhenActive(
-        'requestType' as any, {field: 'B'}, [], 'key');
+    gatedSender.sendLatestWhenActive('requestType', {field: 'B'}, [], 'key');
     // Different request type: should enqueue.
-    gatedSender.sendLatestWhenActive(
-        'requestType2' as any, {field: 'C'}, [], 'key');
+    gatedSender.sendLatestWhenActive('requestType2', {field: 'C'}, [], 'key');
     // Different request key: should enqueue.
-    gatedSender.sendLatestWhenActive(
-        'requestType2' as any, {field: 'D'}, [], 'key2');
-    gatedSender.setGating(false);
+    gatedSender.sendLatestWhenActive('requestType2', {field: 'D'}, [], 'key2');
+    shouldGate.assignAndSignal(false);
 
     assertEquals(3, stubSender.sentMessages.length);
     assertEquals(
@@ -146,15 +158,13 @@ suite('GlicApiHost', () => {
   });
 
   test('GatedSender sends queued messages in order', () => {
-    const {stubSender, gatedSender} = createSenders();
+    const {stubSender, gatedSender, shouldGate} = createSenders();
+    gatedSender.sendLatestWhenActive('requestType', {field: 'A'}, [], 'key');
+    gatedSender.sendLatestWhenActive('requestType', {field: 'B'}, [], 'key2');
+    gatedSender.sendWhenActive('requestType', {field: 'C'});
     gatedSender.sendLatestWhenActive(
-        'requestType' as any, {field: 'A'}, [], 'key');
-    gatedSender.sendLatestWhenActive(
-        'requestType' as any, {field: 'B'}, [], 'key2');
-    gatedSender.sendWhenActive('requestType' as any, {field: 'C'});
-    gatedSender.sendLatestWhenActive(
-        'requestType' as any, {field: 'D'}, [], 'key2');  // Replaces B.
-    gatedSender.setGating(false);
+        'requestType', {field: 'D'}, [], 'key2');  // Replaces B.
+    shouldGate.assignAndSignal(false);
 
     assertEquals(3, stubSender.sentMessages.length);
     assertEquals(
@@ -166,28 +176,27 @@ suite('GlicApiHost', () => {
   });
 
   test('GatedSender toggle gating doesnt send messages more than once', () => {
-    const {stubSender, gatedSender} = createSenders();
-    gatedSender.sendLatestWhenActive(
-        'requestType' as any, {field: 'A'}, [], 'key');
-    gatedSender.sendWhenActive('requestType' as any, {field: 'C'});
-    gatedSender.setGating(false);
-    gatedSender.setGating(true);
-    gatedSender.setGating(false);
+    const {stubSender, gatedSender, shouldGate} = createSenders();
+    gatedSender.sendLatestWhenActive('requestType', {field: 'A'}, [], 'key');
+    gatedSender.sendWhenActive('requestType', {field: 'C'});
+    shouldGate.assignAndSignal(false);
+    shouldGate.assignAndSignal(true);
+    shouldGate.assignAndSignal(false);
 
     assertEquals(2, stubSender.sentMessages.length);
   });
 
   test('PostMessageRequestSender limits in-flight requests', async () => {
     const stubSender = new StubSender();
-    const router =
-        new PostMessageRouter('origin', 'senderid', stubSender, 'logPrefix');
+    const router = new PostMessageRouterImpl(
+        'origin', 'senderid', stubSender, 'logPrefix', true);
     const sender = new PostMessageRequestSender(router);
     sender.setMaxInFlightRequests(2);
 
     // Send 3 requests.
-    const p1 = sender.requestWithResponse('type' as any, {});
-    const p2 = sender.requestWithResponse('type' as any, {});
-    const p3 = sender.requestWithResponse('type' as any, {});
+    const p1 = sender.requestWithResponse(0, 'type' as any, {});
+    const p2 = sender.requestWithResponse(0, 'type' as any, {});
+    const p3 = sender.requestWithResponse(0, 'type' as any, {});
 
     // Only 2 should be sent immediately.
     assertEquals(2, stubSender.sentMessages.length);
@@ -245,17 +254,17 @@ suite('GlicApiHost', () => {
       'requestNoResponse is upgraded to requestWithResponse when queueing',
       () => {
         const stubSender = new StubSender();
-        const router = new PostMessageRouter(
-            'origin', 'senderid', stubSender, 'logPrefix');
+        const router = new PostMessageRouterImpl(
+            'origin', 'senderid', stubSender, 'logPrefix', true);
         const sender = new PostMessageRequestSender(router);
         sender.setMaxInFlightRequests(1);
 
         // Fill the in-flight slot.
-        sender.requestWithResponse('type' as any, {});
+        sender.requestWithResponse(0, 'type' as any, {});
         assertEquals(1, stubSender.sentMessages.length);
 
         // Call requestNoResponse.
-        sender.requestNoResponse('typeNoRes' as any, {});
+        sender.requestNoResponse(0, 'typeNoRes' as any, {});
 
         // It should be queued, so not sent yet.
         assertEquals(1, stubSender.sentMessages.length);
@@ -282,12 +291,12 @@ suite('GlicApiHost', () => {
 
   test('sendResponsesForAllRequests forces requestId on all messages', () => {
     const stubSender = new StubSender();
-    const router =
-        new PostMessageRouter('origin', 'senderid', stubSender, 'logPrefix');
+    const router = new PostMessageRouterImpl(
+        'origin', 'senderid', stubSender, 'logPrefix', true);
     const sender = new PostMessageRequestSender(router);
     sender.sendResponsesForAllRequests = true;
 
-    sender.requestNoResponse('typeNoRes' as any, {});
+    sender.requestNoResponse(0, 'typeNoRes' as any, {});
 
     assertEquals(1, stubSender.sentMessages.length);
     // Should have requestId even though it's "no response" because the mode is

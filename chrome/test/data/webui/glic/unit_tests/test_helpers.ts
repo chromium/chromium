@@ -4,6 +4,7 @@
 
 import type {ApiHostEmbedder, BrowserProxy, PageHandlerInterface, PageType, WebviewDelegate} from 'chrome://glic/glic.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * Configures loadTimeData with default values for tests.
@@ -49,5 +50,42 @@ export class FakeApiHostEmbedder implements ApiHostEmbedder {
   webClientWarmed() {}
   getZoom(): Promise<number> {
     return Promise.resolve(1.0);
+  }
+}
+
+export function assertDeepEquals(a: unknown, b: unknown): void {
+  assertEquals(JSON.stringify(a), JSON.stringify(b));
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function assertRejects<T>(
+    promise: Promise<T>,
+    options?: {withErrorMessage?: string}): Promise<string|undefined> {
+  return promise.then(
+      () => {
+        // The promise should have been rejected.
+        throw new Error('Promise not rejected.');
+      },
+      (e) => {
+        const errorMessage = (e as Error).message;
+        if (options?.withErrorMessage !== undefined) {
+          assertEquals(options.withErrorMessage, errorMessage);
+        }
+        return errorMessage;
+      });
+}
+
+export async function waitUntilEqual<T>(
+    getter: () => T, value: T, maxMs: number = 1000): Promise<void> {
+  const startTime = performance.now();
+  while (getter() !== value) {
+    if (performance.now() - startTime > maxMs) {
+      throw new Error(
+          'Timed out waiting for ' + JSON.stringify(value) + ' to be returned');
+    }
+    await sleep(10);
   }
 }

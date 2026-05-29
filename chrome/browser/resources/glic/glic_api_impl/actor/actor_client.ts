@@ -8,10 +8,10 @@ import type {ActorTaskState, GlicBrowserHostJournal, Journal, NavigationConfirma
 import type {GlicBrowserHostImpl} from '../client/glic_api_client.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
 import type {MessageHandlerInterface} from '../transport/messaging.js';
-import type {PostMessageRequestSender} from '../transport/post_message_transport.js';
+import type {PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {ConfirmationRequestErrorReason, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './actor_types.js';
-import type {ActorClient, CredentialPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
+import type {ActorClient, ActorHost, CredentialPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
 
 export class ActorWebClientMessageHandler implements
     MessageHandlerInterface<ActorClient> {
@@ -190,7 +190,7 @@ export class ActorWebClientMessageHandler implements
 
 
 export class GlicBrowserHostJournalImpl implements GlicBrowserHostJournal {
-  constructor(private sender: PostMessageRequestSender) {}
+  constructor(public sender: PostMessageRemote<ActorHost>) {}
 
   beginAsyncEvent(
       asyncEventId: number, taskId: number, event: string,
