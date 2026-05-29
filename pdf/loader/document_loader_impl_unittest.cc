@@ -194,8 +194,7 @@ class TestClient : public DocumentLoader::Client {
 
   // DocumentLoader::Client overrides:
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override {
-    return std::unique_ptr<URLLoaderWrapper>(
-        new TestURLLoader(partial_loader_data()));
+    return std::make_unique<TestURLLoader>(partial_loader_data());
   }
   void OnPendingRequestComplete() override {}
   void OnNewDataReceived() override {}
@@ -203,8 +202,7 @@ class TestClient : public DocumentLoader::Client {
   void OnDocumentCanceled() override {}
 
   std::unique_ptr<URLLoaderWrapper> CreateFullPageLoader() {
-    return std::unique_ptr<URLLoaderWrapper>(
-        new TestURLLoader(full_page_loader_data()));
+    return std::make_unique<TestURLLoader>(full_page_loader_data());
   }
 
   TestURLLoader::LoaderData* full_page_loader_data() {
