@@ -1335,6 +1335,11 @@ DOMException* AuthenticatorStatusToDOMException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "No immediate discoverable credentials are found.");
+    case AuthenticatorStatus::CROSS_DEVICE_FALLBACK:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError,
+          "crossDeviceFallbackUrl: The authenticator processed the fallback "
+          "URL.");
   }
   return nullptr;
 }

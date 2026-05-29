@@ -492,6 +492,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Timeout Occurred"/>
   <int value="14" label="Other Failure"/>
   <int value="15" label="Blocked by actor task"/>
+  <int value="16" label="Cross Device Fallback"/>
 </enum>
 
 <!-- LINT.IfChange(WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent) -->

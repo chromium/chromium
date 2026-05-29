@@ -104,6 +104,9 @@ GetAssertionStatus ConvertDeviceResponseCodeToGetAssertionStatus(
     case CtapDeviceResponseCode::kCtap2ErrInvalidCredential:
       return GetAssertionStatus::kAuthenticatorResponseInvalid;
 
+    case CtapDeviceResponseCode::kCtap2ErrFallbackUrlProcessed:
+      return GetAssertionStatus::kCrossDeviceFallback;
+
     // For all other errors, the authenticator will be dropped, and other
     // authenticators may continue.
     default:

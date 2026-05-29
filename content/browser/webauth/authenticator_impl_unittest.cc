@@ -10687,4 +10687,26 @@ TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_FlagDisabled) {
             "crossDeviceFallbackUrl extension sent but feature disabled");
 }
 
+TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_Processed) {
+  base::test::ScopedFeatureList feature_list(
+      device::kWebAuthnCrossDeviceFallbackUrl);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.override_response_map
+      [device::CtapRequestCommand::kAuthenticatorGetAssertion] = std::make_pair(
+      device::CtapDeviceResponseCode::kCtap2ErrFallbackUrlProcessed,
+      std::nullopt);
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->transport =
+      device::FidoTransportProtocol::kHybrid;
+
+  auto options = GetTestGetCredentialOptions();
+  options->public_key->extensions->cross_device_fallback_url =
+      GURL("https://a.google.com/fallback");
+
+  GetAssertionResult result = AuthenticatorGetCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::CROSS_DEVICE_FALLBACK);
+}
+
 }  // namespace content

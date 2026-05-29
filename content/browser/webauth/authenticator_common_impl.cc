@@ -2657,6 +2657,11 @@ void AuthenticatorCommonImpl::OnSignResponse(
               kEnclaveCancel,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
+    case device::GetAssertionStatus::kCrossDeviceFallback:
+      req_state_->request_outcome = GetAssertionOutcome::kCrossDeviceFallback;
+      CompleteGetAssertionRequest(
+          blink::mojom::AuthenticatorStatus::CROSS_DEVICE_FALLBACK);
+      return;
     case device::GetAssertionStatus::kSuccess:
       break;
   }

@@ -30,6 +30,7 @@ enum class GetAssertionOutcome {
   kUiTimeout = 13,
   kOtherFailure = 14,
   kBlockedByEmbedder = 15,
+  kCrossDeviceFallback = 16,
 };
 
 // MakeCredentialOutcome corresponds to metrics enum

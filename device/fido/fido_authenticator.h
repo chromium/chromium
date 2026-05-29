@@ -62,6 +62,7 @@ enum class GetAssertionStatus {
   kICloudKeychainNoCredentials,
   kEnclaveError,
   kEnclaveCancel,
+  kCrossDeviceFallback,
 };
 
 enum class MakeCredentialStatus {

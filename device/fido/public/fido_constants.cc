@@ -144,8 +144,8 @@ std::string CtapDeviceResponseCodeName(CtapDeviceResponseCode code) {
       return "kCtap2ErrOther";
     case CtapDeviceResponseCode::kCtap2ErrSpecLast:
       return "kCtap2ErrSpecLast";
-    case CtapDeviceResponseCode::kCtap2ErrExtensionFirst:
-      return "kCtap2ErrExtensionFirst";
+    case CtapDeviceResponseCode::kCtap2ErrFallbackUrlProcessed:
+      return "kCtap2ErrFallbackUrlProcessed";
     case CtapDeviceResponseCode::kCtap2ErrExtensionLast:
       return "kCtap2ErrExtensionLast";
     case CtapDeviceResponseCode::kCtap2ErrVendorFirst:

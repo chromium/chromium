@@ -133,6 +133,7 @@ enum class CtapDeviceResponseCode : uint8_t {
   kCtap2ErrOther = 0x7F,
   kCtap2ErrSpecLast = 0xDF,
   kCtap2ErrExtensionFirst = 0xE0,
+  kCtap2ErrFallbackUrlProcessed = 0xE0,
   kCtap2ErrExtensionLast = 0xEF,
   kCtap2ErrVendorFirst = 0xF0,
   kCtap2ErrVendorLast = 0xFF

@@ -59,6 +59,8 @@ enum AuthenticatorStatus {
   // credentials are found for a `get()` request.
   IMMEDIATE_NOT_FOUND,
 
+  CROSS_DEVICE_FALLBACK,
+
   UNKNOWN_ERROR,
 };
 
