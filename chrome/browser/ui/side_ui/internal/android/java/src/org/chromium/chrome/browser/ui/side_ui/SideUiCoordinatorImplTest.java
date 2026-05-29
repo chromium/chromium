@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_ui.TestSideUiContainer.TEST_ANCHOR_SIDE;
 import static org.chromium.chrome.browser.ui.side_ui.TestSideUiContainer.TEST_SIDE_UI_WIDTH;
 
@@ -54,7 +55,7 @@ import org.chromium.ui.base.ViewUtils;
 
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(qualifiers = "w1920dp-h1080dp-mdpi")
+@Config(qualifiers = "w1920dp-h1080dp-mdpi" /* windowWidth = 1920dp; 1920dp = 1920px (mdpi) */)
 public class SideUiCoordinatorImplTest {
     /** Window size in this test; it must match {@code @Config}. */
     private static final Size WINDOW_SIZE_PX = new Size(1920, 1080);
@@ -233,8 +234,7 @@ public class SideUiCoordinatorImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify SideUiContainer#determineContainerWidth() is invoked with correct parameters.
-        int minWebContentsWidthPx =
-                ViewUtils.dpToPx(mTestActivity, SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP);
+        int minWebContentsWidthPx = ViewUtils.dpToPx(mTestActivity, MIN_WEB_CONTENTS_WIDTH_DP);
         assertEquals(Integer.valueOf(width), mSideUiContainer.mLastRequestedWidth);
         assertEquals(
                 Integer.valueOf(WINDOW_SIZE_PX.getWidth() - minWebContentsWidthPx),
@@ -323,6 +323,7 @@ public class SideUiCoordinatorImplTest {
     public void
             testOnConfigurationChanged_WindowBecomesTooNarrowThenWideEnough_CloseAndReopenSideUi() {
         mCoordinator.registerSideUiContainer(mSideUiContainer);
+        mSideUiContainer.mMinWidthDp = 200;
 
         // Open a side UI.
         mCoordinator.requestUpdateContainer(
@@ -332,7 +333,10 @@ public class SideUiCoordinatorImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Simulate a configuration change that the window becomes too narrow.
-        RuntimeEnvironment.setQualifiers("w400dp-h1080dp-mdpi");
+        int minWindowWidthDpForVisibleSideUi =
+                MIN_WEB_CONTENTS_WIDTH_DP + mSideUiContainer.getMinWidthDp();
+        RuntimeEnvironment.setQualifiers(
+                "w" + (minWindowWidthDpForVisibleSideUi - 1) + "dp-h1080dp-mdpi");
         mCoordinator.onConfigurationChanged(new Configuration());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -340,7 +344,8 @@ public class SideUiCoordinatorImplTest {
         assertEquals(0, getSideUiContainerViewWidth());
 
         // Simulate another configuration change that the window becomes wide enough again.
-        RuntimeEnvironment.setQualifiers("w1920dp-h1080dp-mdpi");
+        RuntimeEnvironment.setQualifiers(
+                "w" + minWindowWidthDpForVisibleSideUi + "dp-h1080dp-mdpi");
         mCoordinator.onConfigurationChanged(new Configuration());
         RobolectricUtil.runAllBackgroundAndUi();
 

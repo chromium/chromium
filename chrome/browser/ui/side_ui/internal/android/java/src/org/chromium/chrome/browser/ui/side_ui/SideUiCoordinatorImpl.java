@@ -238,9 +238,12 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         // be closed/re-opened/resized, based on their priority.
         //
         // TODO(crbug.com/478338737): Update to account for multiple side containers.
+        // TODO(crbug.com/515164601): Use SideUiContainer#determineContainerWidth() to decide
+        // whether each SideUi should be shown.
         @Px int windowWidth = getWindowWidth();
         @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
-        boolean canShowSideUi = (windowWidth - minWebContentsWidth > 0);
+        @Px int minSideUiWidth = ViewUtils.dpToPx(mParentActivity, sideUiContainer.getMinWidthDp());
+        boolean canShowSideUi = (windowWidth - minWebContentsWidth - minSideUiWidth >= 0);
 
         // 2.1. Check if we need to close side UI.
         if (currentSideUiWidth != 0 && !canShowSideUi) {

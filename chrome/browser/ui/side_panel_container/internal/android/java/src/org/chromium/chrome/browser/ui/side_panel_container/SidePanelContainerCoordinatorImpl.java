@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerP
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.Locale;
+
 /** Implementation of {@link SidePanelContainerCoordinator}. */
 @NullMarked
 final class SidePanelContainerCoordinatorImpl
@@ -230,20 +232,26 @@ final class SidePanelContainerCoordinatorImpl
             return NARROW_SIDE_PANEL_WIDTH_DP;
         }
 
-        // 3. If we can't use the fixed, smaller width, just fill the available space.
-        if (availableWidthDp > 0) {
+        // 3. If we can't use the fixed, smaller width, but the available space is more than the
+        // minimum width, we'll fill the available space.
+        if (availableWidthDp >= MIN_SIDE_PANEL_WIDTH_DP) {
             return availableWidthDp;
         }
 
         // 4. Special logic for tests.
         //
-        // As of May 1, 2026, there were side panel browser tests running on _phone_ bots, where
-        // there may not be enough space for SIDE_PANEL_MIN_WIDTH_DP. So we just give side panel
-        // half the available width to make the tests happy.
-        // TODO(crbug.com/510044610): Stop running side panel browser tests on _phone_ bots,
-        // then delete this logic.
+        // As of May 1, 2026, there were side panel tests running on small-screen bots categorized
+        // as tablets, where there may not be enough space for MIN_SIDE_PANEL_WIDTH_DP. So we just
+        // give side panel half the available width to make the tests happy.
+        // TODO(crbug.com/510044610): Only run side panel tests on large-screen bots, then delete
+        //  this logic.
         if (BuildConfig.IS_FOR_TEST) {
-            log(TAG, "availableWidth <= 0; returning half the window width");
+            log(
+                    TAG,
+                    String.format(
+                            Locale.US,
+                            "availableWidth < %d dp ; returning half the window width",
+                            MIN_SIDE_PANEL_WIDTH_DP));
             return windowWidthDp / 2;
         }
 

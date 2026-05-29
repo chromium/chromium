@@ -34,6 +34,9 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Width to be returned by {@link #determineContainerWidth}, if not null. */
     public @Nullable @Px Integer mDeterminedWidth;
 
+    /** Width to be returned by {@link #getMinWidthDp()}. */
+    public int mMinWidthDp;
+
     private final SideUiCoordinator mSideUiCoordinator;
     private final View mSideUiContainerView;
     private final @AnchorSide int mAnchorSide;
@@ -76,7 +79,7 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     @Override
     public int getMinWidthDp() {
-        return 0;
+        return mMinWidthDp;
     }
 
     @Override
