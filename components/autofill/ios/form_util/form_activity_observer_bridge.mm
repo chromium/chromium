@@ -16,8 +16,9 @@ FormActivityObserverBridge::FormActivityObserverBridge(
 }
 
 FormActivityObserverBridge::~FormActivityObserverBridge() {
-  FormActivityTabHelper::GetOrCreateForWebState(web_state_)
-      ->RemoveObserver(this);
+  if (auto* helper = FormActivityTabHelper::FromWebState(web_state_)) {
+    helper->RemoveObserver(this);
+  }
 }
 
 void FormActivityObserverBridge::FormActivityRegistered(
