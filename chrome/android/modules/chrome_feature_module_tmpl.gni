@@ -147,9 +147,9 @@ template("chrome_feature_module") {
       shared_libraries = _shared_libraries
     }
 
-    # Adds unwind table asset to the chrome apk for the given library target. This
-    # is not part of generic apk assets target since it depends on the main shared
-    # library of the apk, to extract unwind tables.
+    # Adds unwind table asset to the chrome apk for the given library target.
+    # This is not part of generic apk assets target since it depends on the main
+    # shared library of the apk, to extract unwind tables.
     asset_deps = []
     if (defined(_module_desc.include_unwind_assets) &&
         _module_desc.include_unwind_assets) {
