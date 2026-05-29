@@ -5977,12 +5977,27 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_TAB_SWITCHER_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page. The 'open tabs' button name should match TC 3108541343994525384">
         To open tabs and visit different pages at the same time, tap the open tabs button
       </message>
-      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_GLIC" desc="IPH message for the GLIC button in the bottom bar.">
-        Ask AI questions as you browse
+
+      <!-- Bottom bar IPH strings. -->
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_GLIC" desc="The in-product-help message for the GLIC button in the bottom bar.">
+        Ask Gemini to help with your tabs and tasks
       </message>
-      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_NEW_TAB" desc="IPH message for the New Tab button in the bottom bar.">
-        Create new tabs
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_NEW_TAB" desc="The in-product-help message for the New Tab button in the bottom bar.">
+        Open a new tab
       </message>
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_DIALOG_TITLE" desc="Title for the in-product help dialog introducing Gemini in the bottom bar.">
+        Introducing Gemini in Chrome
+      </message>
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_DIALOG_DESCRIPTION" desc="Description for the bottom bar Gemini introduction dialog.">
+        Some tools have moved to give you easy access to Gemini while you browse
+      </message>
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_TRIGGER_IPH" desc="Text on the button that triggers the in-product-help sequence.">
+        Show me
+      </message>
+      <message name="IDS_IPH_ANDROID_BOTTOM_BAR_DIALOG_ACK" desc="Button text to acknowledge bottom bar changes and dismiss the dialog.">
+        Got it
+      </message>
+
       <message name="IDS_IPH_ANDROID_TAB_DECLUTTER_TEXT_WITH_TAB_GROUPS" desc="The in-product-help text for the android tab declutter feature.">
         Review your inactive tabs and groups here
       </message>
@@ -6715,6 +6730,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_TITLE_EXPLICIT_SIGNIN" desc="Header for sign in sheet. Sheet is shown to prompt user to sign in to a website using an account from one of several identity providers.">
         Sign in to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>
+      </message>
+
+      <!-- Settings Bottom Bar strings -->
+      <message name="IDS_SETTINGS_SHOW_GEMINI_IN_BOTTOM_BAR_TITLE" desc="Title for the settings toggle to show or hide Gemini in the bottom bar. [CHAR_LIMIT=32]">
+        Show Gemini in the bottom toolbar
+      </message>
+      <message name="IDS_SETTINGS_SHOW_GEMINI_IN_BOTTOM_BAR_SUMMARY" desc="Summary description for the settings toggle to show Gemini in the bottom bar.">
+        Quickly open Gemini when you need it
       </message>
 
       <!-- HTTPS-First Mode settings strings -->
