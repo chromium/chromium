@@ -32,6 +32,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -3277,6 +3278,37 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, NavigationMetrics) {
 
   tester.ExpectUniqueSample(kPerPageMetric, 3, 1);
 }
+
+// Popups may be rendered as native OS-level widgets on Android and Apple OSs.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       HiddenAndEmptyBoundsPopupsAreIgnored) {
+  LoadPage(https_server()->GetURL("/open_popup.html"));
+
+  content::ShowPopupWidgetWaiter new_popup_waiter(
+      web_contents(), web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('select_input').showPicker();"));
+  new_popup_waiter.Wait();
+
+  // Verify initially that the popup is detected since it's showing.
+  LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
+
+  // Manipulate the popup views to simulate it being hidden.
+  std::vector<content::RenderWidgetHostView*> popup_widgets =
+      web_contents()->GetPopupWidgets();
+  ASSERT_EQ(popup_widgets.size(), 1);
+  content::RenderWidgetHostView* popup_view = popup_widgets[0];
+  ASSERT_TRUE(popup_view);
+
+  // Hide the popup and verify it is no longer verified/allowed as a popup.
+  popup_view->Hide();
+
+  LoadData(GetActionableAIPageContentOptions());
+  EXPECT_FALSE(page_content().has_popup_window());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 
 }  // namespace
 
