@@ -17,9 +17,9 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           class="ai-mode-button"
           part="entrypoint-button"
           @click="${this.onEntrypointClick_}"
-          title="${this.getTooltip_()}"
+          title="${this.i18n('addContextTitle')}"
           ?disabled="${this.uploadButtonDisabled}" noink
-          aria-label="${this.getTooltip_()}">
+          aria-label="${this.i18n('addContextTitle')}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
             @animationend="${this.onIconAnimationend_}"></cr-icon>
         <span id="description"
@@ -29,7 +29,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         </span>
         ${this.smartTabSharingActive ? html`
           <cr-icon class="sts-active-coin" icon="composebox:shareTabs"
-              title="${this.getTooltip_()}"></cr-icon>
+              title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
         ` : this.tabFaviconChipsToCoinsEnabled_ &&
           this.getTabs_().length > 0 ? html`
           <composebox-favicon-group .tabs="${this.getTabs_()}"
@@ -44,14 +44,14 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           class="ai-mode-button pill-button"
           part="entrypoint-button"
           @click="${this.onEntrypointClick_}"
-          title="${this.getTooltip_()}"
+          title="${this.i18n('addContextTitle')}"
           ?disabled="${this.uploadButtonDisabled}" noink
-          aria-label="${this.getTooltip_()}">
+          aria-label="${this.i18n('addContextTitle')}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
             @animationend="${this.onIconAnimationend_}"></cr-icon>
         ${this.smartTabSharingActive ? html`
           <cr-icon class="sts-active-coin" icon="composebox:shareTabs"
-              title="${this.getTooltip_()}"></cr-icon>
+              title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
         ` : html`
           <composebox-favicon-group .tabs="${this.getTabs_()}"
           title="${this.i18n('sharingTabsWithGoogle')}">
@@ -64,9 +64,9 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           part="context-menu-entrypoint-icon entrypoint-button"
           iron-icon="cr:add"
           @click="${this.onEntrypointClick_}"
-          title="${this.getTooltip_()}"
+          title="${this.i18n('addContextTitle')}"
           ?disabled="${this.uploadButtonDisabled}" noink
-          aria-label="${this.getTooltip_()}"
+          aria-label="${this.i18n('addContextTitle')}"
           @animationend="${this.onIconAnimationend_}">
       </cr-icon-button>
     `}

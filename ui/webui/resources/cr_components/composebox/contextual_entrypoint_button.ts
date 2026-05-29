@@ -105,12 +105,6 @@ export class ContextualEntrypointButtonElement extends
     return this.sharedTabs.concat(this.restoredTabs || []);
   }
 
-  protected getTooltip_(): string {
-    return this.smartTabSharingActive ?
-        this.i18n('stsMegaplusShareRelevantOpenTabs') :
-        this.i18n('addContextTitle');
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(

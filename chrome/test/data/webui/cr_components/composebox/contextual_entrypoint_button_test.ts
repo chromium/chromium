@@ -276,6 +276,9 @@ suite('ContextualEntrypointButton', () => {
 
       const entrypoint = $$(entrypointButton, '#entrypoint');
       assertTrue(!!entrypoint);
+      assertEquals(
+          entrypointButton.i18n('addContextTitle'),
+          entrypoint.getAttribute('title'));
 
       // Main icon remains "+"
       const icon = $$(entrypointButton, '#entrypointIcon');
@@ -286,6 +289,9 @@ suite('ContextualEntrypointButton', () => {
       const coinIcon = $$(entrypointButton, '.sts-active-coin');
       assertTrue(!!coinIcon);
       assertEquals('composebox:shareTabs', coinIcon.getAttribute('icon'));
+      assertEquals(
+          entrypointButton.i18n('stsMegaplusShareRelevantOpenTabs'),
+          coinIcon.getAttribute('title'));
 
       // Favicon group is NOT shown
       const faviconGroup = $$(entrypointButton, 'composebox-favicon-group');
@@ -303,6 +309,9 @@ suite('ContextualEntrypointButton', () => {
       assertTrue(!!entrypoint);
       assertTrue(
           entrypoint.classList.contains('pill-button'));  // Pill button layout
+      assertEquals(
+          entrypointButton.i18n('addContextTitle'),
+          entrypoint.getAttribute('title'));
 
       // Main icon remains "+"
       const icon = $$(entrypointButton, '#entrypointIcon');
@@ -314,6 +323,9 @@ suite('ContextualEntrypointButton', () => {
       const coinIcon = $$(entrypointButton, '.sts-active-coin');
       assertTrue(!!coinIcon);
       assertEquals('composebox:shareTabs', coinIcon.getAttribute('icon'));
+      assertEquals(
+          entrypointButton.i18n('stsMegaplusShareRelevantOpenTabs'),
+          coinIcon.getAttribute('title'));
     });
 
     test(
