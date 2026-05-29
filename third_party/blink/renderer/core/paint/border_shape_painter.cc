@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -140,27 +141,60 @@ Path BorderShapePainter::OuterPathWithOffset(
     const PhysicalRect& outer_reference_rect,
     float offset) {
   CHECK(style.HasBorderShape());
-  Path outer_path = OuterPath(style, outer_reference_rect);
 
-  if (offset == 0) {
-    return outer_path;
+  Path base_path = OuterPathWithoutStroke(style, outer_reference_rect);
+  float total_offset = offset;
+
+  // Add half the border thickness to reach the outer edge of the border
+  if (!style.BorderShape()->HasSeparateInnerShape()) {
+    DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
+    total_offset += derived_stroke.thickness / 2.0f;
   }
 
+  if (total_offset == 0) {
+    return base_path;
+  }
+
+  const SkPath& sk_base = base_path.GetSkPath();
+
+  // Ovals
+  SkRect oval_bounds;
+  if (sk_base.isOval(&oval_bounds)) {
+    SkRect outset_bounds = oval_bounds.makeOutset(total_offset, total_offset);
+    if (outset_bounds.width() > 0 && outset_bounds.height() > 0) {
+      return SkPath::Oval(outset_bounds);
+    }
+    return Path();
+  }
+
+  // RRects
+  SkRRect rrect;
+  if (sk_base.isRRect(&rrect)) {
+    SkRRect outset_rrect;
+    rrect.outset(total_offset, total_offset, &outset_rrect);
+    if (outset_rrect.rect().width() > 0 && outset_rrect.rect().height() > 0) {
+      return SkPath::RRect(outset_rrect);
+    }
+    return Path();
+  }
+
+  // Anything else
   StrokeData stroke_data =
-      GetStrokeData(*style.BorderShape(), std::abs(offset) * 2);
-  Path stroke_path = outer_path.StrokePath(stroke_data, AffineTransform());
+      GetStrokeData(*style.BorderShape(), std::abs(total_offset) * 2);
+  Path stroke_path = base_path.StrokePath(stroke_data, AffineTransform());
 
   SkOpBuilder builder;
-  builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-  if (offset > 0) {
-    // Expand: union the path with its stroke
+  builder.add(sk_base, SkPathOp::kUnion_SkPathOp);
+
+  if (total_offset > 0) {
+    // Expand: union the path with its combined stroke
     builder.add(stroke_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
   } else {
     // Contract: intersect the path with inverted stroke
     builder.add(stroke_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
   }
   SkPath result;
-  return builder.resolve(&result) ? Path(result) : outer_path;
+  return builder.resolve(&result) ? Path(result) : base_path;
 }
 
 // Shared implementation for Paint() and PaintBorderArea().
@@ -252,17 +286,6 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
     return false;
   }
 
-  // Calculate the offset from the outer_path to the center of the outline
-  // stroke.
-  //
-  // OuterPathWithOffset already starts from the expanded OuterPath, which
-  // represents the outer edge of the border. Therefore, we only need to
-  // add outline_offset and half of the outline_width.
-  const float center_offset = static_cast<float>(outline_offset) +
-                              static_cast<float>(outline_width) / 2.0f;
-  Path center_path =
-      OuterPathWithOffset(style, outer_reference_rect, center_offset);
-
   const Color outline_color =
       style.VisitedDependentColor(GetCSSPropertyOutlineColor());
   const AutoDarkMode auto_dark_mode(
@@ -272,47 +295,40 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
 
   EBorderStyle outline_style = style.OutlineStyle();
 
-  // For solid outline, stroke the center path with the outline width.
+  auto fill_outline_band = [&](float outer_extent, float inner_extent) {
+    const Path outer_path =
+        OuterPathWithOffset(style, outer_reference_rect, outer_extent);
+    const Path inner_path =
+        OuterPathWithOffset(style, outer_reference_rect, inner_extent);
+    SkPathBuilder builder(SkPathFillType::kEvenOdd);
+    builder.addPath(outer_path.GetSkPath());
+    builder.addPath(inner_path.GetSkPath());
+    SkPath sk_result = builder.detach();
+    context.FillPath(Path(sk_result), auto_dark_mode);
+  };
+
+  // Draw solid outline as a filled region: OuterBound - InnerBound
   if (outline_style == EBorderStyle::kSolid) {
-    StrokeData stroke_data =
-        GetStrokeData(*style.BorderShape(), static_cast<float>(outline_width));
-    context.SetStrokeColor(outline_color);
-    context.SetStroke(stroke_data);
-    context.StrokePath(center_path, auto_dark_mode);
+    context.SetFillColor(outline_color);
+    fill_outline_band(outline_offset + outline_width, outline_offset);
     return true;
-  } else if (outline_style == EBorderStyle::kDouble) {
-    // For double outline, draw two strokes.
+  }
+
+  if (outline_style == EBorderStyle::kDouble) {
+    context.SetFillColor(outline_color);
     const float stroke_width =
         std::round(static_cast<float>(outline_width) / 3.0f);
+
     if (stroke_width < 1) {
-      // Fall back to solid if too thin.
-      StrokeData stroke_data = GetStrokeData(*style.BorderShape(),
-                                             static_cast<float>(outline_width));
-      context.SetStrokeColor(outline_color);
-      context.SetStroke(stroke_data);
-      context.StrokePath(center_path, auto_dark_mode);
-      return true;
+      // Fall back to solid logic if too thin
+      fill_outline_band(outline_offset + outline_width, outline_offset);
+    } else {
+      // Outer Band
+      fill_outline_band(outline_offset + outline_width,
+                        outline_offset + outline_width - stroke_width);
+      // Inner Band
+      fill_outline_band(outline_offset + stroke_width, outline_offset);
     }
-
-    // Outer stroke
-    const float outer_offset = center_offset +
-                               static_cast<float>(outline_width) / 2.0f -
-                               stroke_width / 2.0f;
-    Path outer_stroke_path =
-        OuterPathWithOffset(style, outer_reference_rect, outer_offset);
-    StrokeData outer_stroke_data =
-        GetStrokeData(*style.BorderShape(), stroke_width);
-    context.SetStrokeColor(outline_color);
-    context.SetStroke(outer_stroke_data);
-    context.StrokePath(outer_stroke_path, auto_dark_mode);
-
-    // Inner stroke
-    const float inner_offset = center_offset -
-                               static_cast<float>(outline_width) / 2.0f +
-                               stroke_width / 2.0f;
-    Path inner_stroke_path =
-        OuterPathWithOffset(style, outer_reference_rect, inner_offset);
-    context.StrokePath(inner_stroke_path, auto_dark_mode);
     return true;
   }
 
