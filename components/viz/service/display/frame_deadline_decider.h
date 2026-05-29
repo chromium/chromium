@@ -18,8 +18,21 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   FrameDeadlineDecider(const FrameDeadlineDecider&) = delete;
   FrameDeadlineDecider& operator=(const FrameDeadlineDecider&) = delete;
 
-  // Returns the selected deadline. Stub always returns preferred.
-  PossibleDeadline SelectDeadline(const PossibleDeadlines& possible_deadlines);
+  // Returns the index of the selected deadline. Locks to preferred on first
+  // frame, and matches it on subsequent frames in the sequence.
+  size_t SelectDeadline(const PossibleDeadlines& possible_deadlines);
+
+  // Called when the display scheduler goes idle or invisible, to reset sequence
+  // state.
+  void OnGoIdle();
+
+ private:
+  size_t FindClosestDeadlineByPresentation(
+      const PossibleDeadlines& possible_deadlines) const;
+
+  bool in_frame_sequence_ = false;
+  base::TimeDelta curr_sequence_present_delta_;
+  size_t curr_sequence_deadline_index_ = 0;
 };
 
 }  // namespace viz
