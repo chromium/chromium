@@ -68,7 +68,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+content/public/browser",
     "+content/public/test",

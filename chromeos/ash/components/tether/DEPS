@@ -12,7 +12,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*unittest\.cc": [
+  ".*unittest\\.cc": [
     "+chromeos/ash/services/device_sync",
     "+components/sync_preferences/testing_pref_service_syncable.h",
   ]

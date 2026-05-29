@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "nonclosable_app_ui_utils\.cc": [
+  "nonclosable_app_ui_utils\\.cc": [
     "+ui/base",
 
     # TODO(crbug.com/402346171): Components should not have dependencies to

@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "video.*\.(h|cc)": [
+  "video.*\\.(h|cc)": [
     "+media/base",
     "+media/video",
   ],

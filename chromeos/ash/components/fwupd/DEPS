@@ -12,7 +12,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.cc|fake.*": [
+  ".*test\\.cc|fake.*": [
     "+ash/system/firmware_update",
     "+services/network/test",
     "+ui/message_center",

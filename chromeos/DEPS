@@ -28,11 +28,11 @@ specific_include_rules = {
     "+mojo/core/embedder",
   ],
 
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+services/network/test",
   ],
 
-  ".*test_suite\.cc": [
+  ".*test_suite\\.cc": [
     "+ui/base",
   ],
 }
