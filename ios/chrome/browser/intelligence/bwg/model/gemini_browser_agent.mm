@@ -1329,12 +1329,18 @@ void GeminiBrowserAgent::FullscreenViewportInsetRangeChanged(
 #pragma mark - FullscreenBrowserAgentObserver
 
 void GeminiBrowserAgent::WillUpdateState(FullscreenBrowserAgent* agent) {
+  if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
+    return;
+  }
   ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
                                                 GetFloatyProgress());
 }
 
 void GeminiBrowserAgent::DidUpdateObscuredInsetRange(
     FullscreenBrowserAgent* agent) {
+  if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
+    return;
+  }
   ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
                                                 GetFloatyProgress());
 }
