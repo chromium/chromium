@@ -13,6 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
 
 namespace content {
 class WebContents;
@@ -54,7 +57,8 @@ class GlicInstanceCoordinatorMetrics {
     GetRecentlyActiveConversations(size_t limit) = 0;
   };
 
-  explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider);
+  explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider,
+                                          PrefService* pref_service);
   ~GlicInstanceCoordinatorMetrics();
 
   // Starts periodic recording of memory metrics.
@@ -96,6 +100,8 @@ class GlicInstanceCoordinatorMetrics {
   // suffix.
   void RecordMemoryFootprint(std::string_view suffix);
 
+  void OnPinningPrefChanged();
+
   const raw_ptr<DataProvider> data_provider_;
 
   // Tracks the start time of a "Concurrent Visibility" period, which is a
@@ -109,6 +115,9 @@ class GlicInstanceCoordinatorMetrics {
   std::optional<std::string> active_conversation_id_;
 
   base::RepeatingTimer memory_metrics_timer_;
+
+  PrefChangeRegistrar pref_registrar_;
+  bool is_pinned_ = false;
 };
 
 }  // namespace glic
