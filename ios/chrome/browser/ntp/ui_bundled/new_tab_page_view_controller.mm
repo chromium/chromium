@@ -761,7 +761,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)restoreScrollPosition:(CGFloat)scrollPosition {
   [self.view layoutIfNeeded];
-  if (scrollPosition > -[self heightAboveFeed]) {
+  if (scrollPosition != -CGFLOAT_MAX) {
     [self setSavedContentOffset:scrollPosition];
   } else {
     // Remove this if NTPs are ever scoped back to the WebState.

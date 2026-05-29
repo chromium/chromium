@@ -201,11 +201,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.additional_args.push_back(
       std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
 
-  // TODO(crbug.com/517130372): Remove when fixed with FullscreenRefactoring.
-  if ([self isRunningTest:@selector(testPositionRestoredWithShiftingOffset)]) {
-    config.features_disabled.push_back(kFullscreenRefactoring);
-  }
-
   if ([self isRunningTest:@selector(testPositionRestoredWithShiftingOffset)] ||
       [self
           isRunningTest:@selector(testPositionRestoredWithoutShiftingOffset)]) {
