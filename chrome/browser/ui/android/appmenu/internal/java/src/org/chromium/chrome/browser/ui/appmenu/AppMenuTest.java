@@ -234,6 +234,7 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/517914573")
     @DisableIf.Build(
             sdk_is_greater_than = VERSION_CODES.VANILLA_ICE_CREAM,
             message = "crbug.com/435724248")
