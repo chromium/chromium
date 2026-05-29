@@ -77,7 +77,7 @@ SkColor GetToolbarInkDropBaseColor(const views::View* host_view) {
                         : gfx::kPlaceholderColor;
 }
 
-void ConfigureInkDropForToolbar(
+void ConfigureInkDrop(
     views::Button* host,
     std::unique_ptr<views::HighlightPathGenerator> highlight_generator) {
   host->SetHasInkDropActionOnClick(true);

@@ -114,7 +114,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
       tab_strip_model_(tab_strip_model),
       trigger_menu_on_long_press_(trigger_menu_on_long_press),
       highlight_color_animation_(this) {
-  ConfigureInkDropForToolbar(
+  ConfigureInkDrop(
       this, std::make_unique<ToolbarButtonHighlightPathGenerator>(this));
 
   set_context_menu_controller(this);

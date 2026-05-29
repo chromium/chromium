@@ -41,7 +41,7 @@ class TopContainerButtonActionViewInterface
 
 TopContainerButton::TopContainerButton() {
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
-  ConfigureInkDropForToolbar(this);
+  ConfigureInkDrop(this);
 }
 
 void TopContainerButton::UpdateIcon(const ui::ImageModel& icon_image) {

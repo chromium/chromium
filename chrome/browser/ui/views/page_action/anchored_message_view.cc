@@ -260,7 +260,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   menu_button_ = top_row_->AddChildView(std::make_unique<views::MenuButton>(
       base::BindRepeating(&AnchoredMessageBubbleView::MenuButtonPressed,
                           base::Unretained(this))));
-  ConfigureInkDropForToolbar(menu_button_);
+  ConfigureInkDrop(menu_button_);
   menu_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ANCHORED_MESSAGE_MENU_TOOLTIP));
   menu_button_->SetImageModel(

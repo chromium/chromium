@@ -58,7 +58,7 @@ ToolbarActionView::ToolbarActionView(ToolbarActionViewModel* view_model,
                                      base::Unretained(this))),
       view_model_(view_model),
       delegate_(delegate) {
-  ConfigureInkDropForToolbar(this);
+  ConfigureInkDrop(this);
   SetHideInkDropWhenShowingContextMenu(false);
   SetShowInkDropWhenHotTracked(true);
   SetID(VIEW_ID_BROWSER_ACTION);

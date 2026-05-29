@@ -57,7 +57,7 @@ BookmarkMenuButtonBase::BookmarkMenuButtonBase(
     IsDraggingCallback is_dragging_callback,
     std::u16string_view title)
     : MenuButton(PressedCallback(), title) {
-  ConfigureInkDropForToolbar(this);
+  ConfigureInkDrop(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   views::InstallPillHighlightPathGenerator(this);

@@ -146,7 +146,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
             weak_this->OnMoreButtonStateChanged();
           },
           weak_ptr_factory_.GetWeakPtr()));
-  ConfigureInkDropForToolbar(more_button_);
+  ConfigureInkDrop(more_button_);
 
   // Paint the more button to a layer so we can adjust its opacity during the
   // hover animation

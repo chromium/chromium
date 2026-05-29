@@ -49,9 +49,10 @@ class ToolbarInkDropUtilTest : public ChromeViewsTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Basic test to check for various inkdrop properties for toolbar buttons.
-TEST_F(ToolbarInkDropUtilTest, ConfigureInkDropForToolbarTest) {
-  ConfigureInkDropForToolbar(button_host_.get());
+// Basic test to check for various inkdrop properties configured by
+// ConfigureInkDrop().
+TEST_F(ToolbarInkDropUtilTest, ConfigureInkDropTest) {
+  ConfigureInkDrop(button_host_.get());
   EXPECT_EQ(views::InkDrop::Get(button_host_.get())->GetLayerRegion(),
             views::LayerRegion::kAbove);
   std::unique_ptr<views::InkDropHighlight> highlight =

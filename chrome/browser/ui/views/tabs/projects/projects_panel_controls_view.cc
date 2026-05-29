@@ -51,7 +51,7 @@ ProjectsPanelControlsView::ProjectsPanelControlsView(
                                 kProjectsPanelButtonElementId);
   UpdateTooltipText();
 
-  ConfigureInkDropForToolbar(projects_button_);
+  ConfigureInkDrop(projects_button_);
 
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelControlsViewElementId);

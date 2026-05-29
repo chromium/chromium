@@ -364,7 +364,7 @@ ProjectsPanelView::ProjectsPanelView(
     threads_activity_menu_button_->SetProperty(
         views::kElementIdentifierKey,
         kProjectsPanelThreadsActivityButtonElementId);
-    ConfigureInkDropForToolbar(threads_activity_menu_button_);
+    ConfigureInkDrop(threads_activity_menu_button_);
 
     views::ScrollView* threads_scroll_view =
         threads_container_->AddChildView(std::make_unique<views::ScrollView>(

@@ -58,7 +58,7 @@ const base::FeatureParam<int> kPrefetchStartDelayOnMouseHoverByMilliseconds{
 BookmarkButtonBase::BookmarkButtonBase(PressedCallback callback,
                                        std::u16string_view title)
     : LabelButton(std::move(callback), title) {
-  ConfigureInkDropForToolbar(this);
+  ConfigureInkDrop(this);
 
   SetImageLabelSpacing(
       GetLayoutConstant(LayoutConstant::kBookmarkBarButtonImageLabelPadding));

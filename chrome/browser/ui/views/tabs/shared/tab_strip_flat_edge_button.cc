@@ -68,7 +68,7 @@ class TabStripFlatEdgeButtonActionViewInterface
 }  // namespace
 
 TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
-  ConfigureInkDropForToolbar(
+  ConfigureInkDrop(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 gfx::Insets(), GetButtonCornerRadii()));
   ConfigureToolbarInkdropForRefresh2023(

@@ -84,7 +84,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
           pinned_toolbar_actions::GetElementIdentifierForAction(action_id)) {
     SetProperty(views::kElementIdentifierKey, element_id);
   }
-  ConfigureInkDropForToolbar(this);
+  ConfigureInkDrop(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   // Pinned action toolbar buttons have right margin and no left margin.
   SetProperty(
