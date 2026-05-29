@@ -3749,6 +3749,9 @@ double CSSMathExpressionOperation::EvaluateOperator(
       CHECK_EQ(operands.size(), 3u);
       double progress_value =
           (operands[0] - operands[1]) / (operands[2] - operands[1]);
+      if (std::isnan(progress_value)) {
+        return NAN;
+      }
       return std::clamp(progress_value, 0., 1.);
     }
     case CSSMathOperator::kCalcSize: {

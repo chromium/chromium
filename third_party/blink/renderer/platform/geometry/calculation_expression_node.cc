@@ -413,6 +413,9 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       float from_px = operand_pixels[1];
       float to_px = operand_pixels[2];
       float progress_value = (progress_px - from_px) / (to_px - from_px);
+      if (std::isnan(progress_value)) {
+        return MakeGarbageCollected<CalculationExpressionNumberNode>(NAN);
+      }
       float progress = std::clamp(progress_value, 0.f, 1.f);
       return MakeGarbageCollected<CalculationExpressionNumberNode>(progress);
     }
@@ -613,6 +616,9 @@ float CalculationExpressionOperationNode::Evaluate(
       float from = children_[1]->Evaluate(max_value, input);
       float to = children_[2]->Evaluate(max_value, input);
       float progress_value = (progress - from) / (to - from);
+      if (std::isnan(progress_value)) {
+        return NAN;
+      }
       return std::clamp(progress_value, 0.f, 1.f);
     }
     case CalculationOperator::kPow: {
