@@ -158,10 +158,10 @@ void StarView::OnActiveStateChanged() {
           views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
 
   if (GetActive()) {
-    animated_image_container()->PlayAnimation(
+    animated_image_container().PlayAnimation(
         {IDR_UNSTAR_TO_STAR_LOTTIE, GetForegroundColor()}, config);
   } else {
-    animated_image_container()->PlayAnimation(
+    animated_image_container().PlayAnimation(
         {IDR_STAR_TO_UNSTAR_LOTTIE, GetForegroundColor()}, config);
   }
 }

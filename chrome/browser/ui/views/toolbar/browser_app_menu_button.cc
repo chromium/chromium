@@ -134,7 +134,7 @@ void BrowserAppMenuButton::OnMenuClosed() {
             views::SingleAnimatedImageContainer::AnimationDirection::kForward,
         .end_behavior =
             views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
-    animated_image_container()->PlayAnimation(
+    animated_image_container().PlayAnimation(
         {IDR_CHROME_TO_DOTS_LOTTIE, GetForegroundColor(GetState())}, config);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -286,7 +286,7 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
             views::SingleAnimatedImageContainer::AnimationDirection::kForward,
         .end_behavior =
             views::SingleAnimatedImageContainer::AnimationEndBehavior::kPause};
-    animated_image_container()->PlayAnimation(
+    animated_image_container().PlayAnimation(
         {IDR_DOTS_TO_CHROME_LOTTIE, GetForegroundColor(GetState())}, config);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

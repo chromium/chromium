@@ -161,7 +161,7 @@ bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
             views::SingleAnimatedImageContainer::AnimationDirection::kForward,
         .end_behavior =
             views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
-    animated_image_container()->PlayAnimation(
+    animated_image_container().PlayAnimation(
         {IDR_BACK_ARROW_LOTTIE, GetForegroundColor(GetState())}, config);
   }
 

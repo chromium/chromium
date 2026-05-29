@@ -229,7 +229,7 @@ void LocationIconView::MaybeAnimateIcon(bool open) {
                                    AnimationEndBehavior::kPause
                              : views::SingleAnimatedImageContainer::
                                    AnimationEndBehavior::kReset};
-    animated_image_container()->PlayAnimation(
+    animated_image_container().PlayAnimation(
         {open ? IDR_PAGE_INFO_OPEN_LOTTIE : IDR_PAGE_INFO_CLOSE_LOTTIE,
          GetForegroundColor()},
         config);
@@ -302,7 +302,7 @@ void LocationIconView::UpdateIcon() {
 
   // UpdateIcon() calls are for icon updates not related to the page info
   // animation, so we stop the page info animation if it is playing.
-  animated_image_container()->ResetAnimation();
+  animated_image_container().ResetAnimation();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const bool is_super_g =

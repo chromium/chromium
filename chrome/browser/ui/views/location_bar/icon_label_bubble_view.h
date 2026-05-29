@@ -134,8 +134,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   }
   views::View* GetImageContainerView() { return image_container_view(); }
 
-  views::SingleAnimatedImageContainer* animated_image_container() {
-    return static_cast<views::SingleAnimatedImageContainer*>(image_container());
+  views::SingleAnimatedImageContainer& animated_image_container() {
+    CHECK(image_container());
+    return *static_cast<views::SingleAnimatedImageContainer*>(
+        image_container());
   }
 
   // Exposed for testing.

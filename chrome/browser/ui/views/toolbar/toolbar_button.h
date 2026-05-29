@@ -260,8 +260,10 @@ class ToolbarButton : public views::LabelButton,
   // well.
   void SetText(std::u16string_view text) override;
 
-  views::SingleAnimatedImageContainer* animated_image_container() {
-    return static_cast<views::SingleAnimatedImageContainer*>(image_container());
+  views::SingleAnimatedImageContainer& animated_image_container() {
+    CHECK(image_container());
+    return *static_cast<views::SingleAnimatedImageContainer*>(
+        image_container());
   }
 
  private:

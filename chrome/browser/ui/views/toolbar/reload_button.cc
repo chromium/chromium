@@ -240,7 +240,7 @@ void ReloadButton::SetVisibleMode(Mode mode) {
                 AnimationDirection::kForward,
             .end_behavior = views::SingleAnimatedImageContainer::
                 AnimationEndBehavior::kReset};
-        animated_image_container()->PlayAnimation(
+        animated_image_container().PlayAnimation(
             {IDR_STOP_TO_RELOAD_LOTTIE, GetForegroundColor(GetState())},
             config);
       }
@@ -253,7 +253,7 @@ void ReloadButton::SetVisibleMode(Mode mode) {
                 AnimationDirection::kForward,
             .end_behavior = views::SingleAnimatedImageContainer::
                 AnimationEndBehavior::kPause};
-        animated_image_container()->PlayAnimation(
+        animated_image_container().PlayAnimation(
             {IDR_RELOAD_TO_STOP_LOTTIE, GetForegroundColor(GetState())},
             config);
       }
