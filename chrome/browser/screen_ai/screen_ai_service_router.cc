@@ -144,6 +144,10 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
   component_ready_observer_.Reset();
 }
 
+void ScreenAIServiceRouter::OnScreenAIInstallStateDestroying() {
+  component_ready_observer_.Reset();
+}
+
 void ScreenAIServiceRouter::BindScreenAIAnnotator(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver) {
   // Ensure handler exists.

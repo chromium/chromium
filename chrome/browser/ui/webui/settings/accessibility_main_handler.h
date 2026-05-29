@@ -35,6 +35,7 @@ class AccessibilityMainHandler
   // screen_ai::ScreenAIInstallState::Observer:
   void DownloadProgressChanged(double progress) override;
   void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
+  void OnScreenAIInstallStateDestroying() override;
 
  private:
   void HandleGetScreenReaderState(const base::ListValue& args);

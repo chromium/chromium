@@ -81,6 +81,10 @@ void AccessibilityMainHandler::StateChanged(
   FireWebUIListener("screen-ai-state-changed", state_value);
 }
 
+void AccessibilityMainHandler::OnScreenAIInstallStateDestroying() {
+  component_ready_observer_.Reset();
+}
+
 void AccessibilityMainHandler::HandleGetScreenAIInstallState(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());

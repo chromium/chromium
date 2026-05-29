@@ -161,6 +161,10 @@ void AXMainNodeAnnotatorController::StateChanged(
   }
 }
 
+void AXMainNodeAnnotatorController::OnScreenAIInstallStateDestroying() {
+  component_ready_observer_.Reset();
+}
+
 void AXMainNodeAnnotatorController::Activate() {
   activated_ = true;
   OnActivationChanged();

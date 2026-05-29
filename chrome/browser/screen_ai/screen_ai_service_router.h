@@ -49,6 +49,7 @@ class ScreenAIServiceRouter : public KeyedService,
 
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;
+  void OnScreenAIInstallStateDestroying() override;
 
   // Returns true if the connection for `service` is bound.
   bool IsConnectionBoundForTesting(Service service);

@@ -44,6 +44,7 @@ class AXMainNodeAnnotatorController : public KeyedService,
 
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;
+  void OnScreenAIInstallStateDestroying() override;
 
   void Activate();
 

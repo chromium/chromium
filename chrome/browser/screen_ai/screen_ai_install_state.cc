@@ -84,6 +84,9 @@ ScreenAIInstallState::ScreenAIInstallState() {
 }
 
 ScreenAIInstallState::~ScreenAIInstallState() {
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.OnScreenAIInstallStateDestroying();
+  }
   CHECK_NE(g_instance, nullptr);
   g_instance = nullptr;
 }

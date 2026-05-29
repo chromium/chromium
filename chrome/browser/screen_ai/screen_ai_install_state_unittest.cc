@@ -36,13 +36,15 @@ namespace screen_ai {
 class ScreenAIInstallStateTest : public testing::Test,
                                  ScreenAIInstallState::Observer {
  public:
-  ScreenAIInstallStateTest() = default;
+  ScreenAIInstallStateTest() {
+    test_install_state_ = std::make_unique<TestScreenAIInstallState>();
+  }
 
   void StartObservation() {
     component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
   }
 
-  void DownloadComponent() { test_install_state_.DownloadComponentInternal(); }
+  void DownloadComponent() { test_install_state_->DownloadComponentInternal(); }
 
   void StateChanged(ScreenAIInstallState::State state) override {
     if (state == ScreenAIInstallState::State::kDownloaded) {
@@ -50,10 +52,20 @@ class ScreenAIInstallStateTest : public testing::Test,
     }
   }
 
+  void OnScreenAIInstallStateDestroying() override {
+    component_downloaded_observer_.Reset();
+  }
+
   bool ComponentDownloadedReceived() { return component_downloaded_received_; }
 
+  bool IsObserving() const {
+    return component_downloaded_observer_.IsObserving();
+  }
+
+  void DestroyInstallState() { test_install_state_.reset(); }
+
  private:
-  TestScreenAIInstallState test_install_state_;
+  std::unique_ptr<TestScreenAIInstallState> test_install_state_;
 
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           ScreenAIInstallState::Observer>
@@ -78,6 +90,13 @@ TEST_F(ScreenAIInstallStateTest, ObservationAfterFailure) {
       screen_ai::ScreenAIInstallState::State::kDownloadFailed);
   StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
+}
+
+TEST_F(ScreenAIInstallStateTest, DestroyStateBeforeObserver) {
+  StartObservation();
+  EXPECT_TRUE(IsObserving());
+  DestroyInstallState();
+  EXPECT_FALSE(IsObserving());
 }
 
 }  // namespace screen_ai

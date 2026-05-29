@@ -34,6 +34,7 @@ class ScreenAIInstallState {
    public:
     virtual void StateChanged(State state) {}
     virtual void DownloadProgressChanged(double progress) {}
+    virtual void OnScreenAIInstallStateDestroying() {}
   };
 
   ScreenAIInstallState();
