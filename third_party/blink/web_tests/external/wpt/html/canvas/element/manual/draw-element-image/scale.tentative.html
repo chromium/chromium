@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <link rel="help" href="https://github.com/WICG/html-in-canvas" />
 <link rel="match" href="scale-ref.html" />
-<link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
-<script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+<link rel="stylesheet" href="/html/canvas/resources/draw-element-image-styles.css" />
+<script src="/html/canvas/resources/color-grid-component.js"></script>
 <script src="/common/reftest-wait.js"></script>
 
 <style>
@@ -57,7 +57,7 @@
 </canvas>
 
 <script type="module">
-  import { resizeToPixelGrid, computeScaledDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
+  import { resizeToPixelGrid, computeScaledDestinationSize } from "/html/canvas/resources/draw-element-image-utils.js";
 
   Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
     await resizeToPixelGrid(cvs);
