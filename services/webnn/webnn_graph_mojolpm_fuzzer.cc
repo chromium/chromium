@@ -327,7 +327,11 @@ DEFINE_TEXT_PROTO_FUZZER(
 }  // namespace
 
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
-  CHECK(base::CommandLine::Init(*argc, *argv));
+  // Avoid crashing if CommandLine is already initialized, which can happen on
+  // Android.
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    CHECK(base::CommandLine::Init(*argc, *argv));
+  }
   static base::NoDestructor<InitGlobals> globals;
   init_globals = globals.get();
   return 0;
