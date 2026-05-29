@@ -30,7 +30,7 @@ found in the LICENSE file.
         android:layout_width="@dimen/extensions_menu_header_button_size"
         android:layout_height="@dimen/extensions_menu_header_button_size"
         android:src="@drawable/ic_close"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/default_icon_background_selector"
         android:contentDescription="@string/close"
         android:scaleType="center"/>
 

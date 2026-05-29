@@ -301,6 +301,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
 }
