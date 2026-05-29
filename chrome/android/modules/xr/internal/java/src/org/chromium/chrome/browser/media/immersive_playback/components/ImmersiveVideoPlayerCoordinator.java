@@ -138,10 +138,11 @@ public class ImmersiveVideoPlayerCoordinator {
         }
     }
 
-    /** Destroys the player panel. */
-    public void dismiss() {
+    /** Disposes the player panel. */
+    public void dispose() {
         if (mHolder != null) {
             mHolder.dispose();
+            mHolder = null;
         }
     }
 

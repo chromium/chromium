@@ -113,4 +113,16 @@ public class ImmersiveVideoFormatCoordinatorTest {
         verify(mHolder).setEntityEnabled(false);
         verify(mHolder).setParent(null);
     }
+
+    @Test
+    public void testDispose_DisposesHolder() {
+        mCoordinator.show(
+                mParentEntity,
+                new SizeF(1f, 1f),
+                ImmersiveStereoMode.MONO,
+                ImmersiveProjectionType.QUAD);
+        mCoordinator.dispose();
+
+        verify(mHolder).dispose();
+    }
 }

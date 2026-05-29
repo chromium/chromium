@@ -110,7 +110,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
                     if (mCoordinator != null) {
                         ThreadUtils.runOnUiThreadBlocking(
                                 () -> {
-                                    mCoordinator.destroy();
+                                    mCoordinator.dispose();
                                     ShadowLooper.idleMainLooper();
                                 });
                         mCoordinator = null;

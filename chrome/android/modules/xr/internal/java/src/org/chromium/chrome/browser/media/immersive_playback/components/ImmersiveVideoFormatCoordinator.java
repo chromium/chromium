@@ -122,13 +122,22 @@ public class ImmersiveVideoFormatCoordinator {
 
     /** Dismisses the format selection panel. */
     public void dismiss() {
-        if (mHolder != null && !mHolder.isDisposed()) {
+        if (mView != null) {
+            mView.setHoverListener(null);
+            mView.setVisibility(View.GONE);
+        }
+        if (mHolder != null) {
             mHolder.setEntityEnabled(false);
             mHolder.setParent(null);
         }
-        if (mView != null) {
-            mView.setVisibility(View.GONE);
-            mView.setHoverListener(null);
+    }
+
+    /** Disposes the format selection panel. */
+    public void dispose() {
+        dismiss();
+        if (mHolder != null) {
+            mHolder.dispose();
+            mHolder = null;
         }
     }
 

@@ -144,6 +144,15 @@ public class ImmersiveVideoControlCoordinator {
         }
     }
 
+    /** Disposes the control panel. */
+    public void dispose() {
+        dismiss();
+        if (mHolder != null) {
+            mHolder.dispose();
+            mHolder = null;
+        }
+    }
+
     /** Returns true if the control panel is currently showing, false otherwise. */
     public boolean isShowing() {
         return mHolder != null && mHolder.getParent() != null;

@@ -83,9 +83,9 @@ public class ImmersiveVideoPlayerCoordinatorTest {
     }
 
     @Test
-    public void testDismiss_DisposesHolder() {
+    public void testDispose_DisposesHolder() {
         mCoordinator.show();
-        mCoordinator.dismiss();
+        mCoordinator.dispose();
 
         verify(mHolder).dispose();
     }

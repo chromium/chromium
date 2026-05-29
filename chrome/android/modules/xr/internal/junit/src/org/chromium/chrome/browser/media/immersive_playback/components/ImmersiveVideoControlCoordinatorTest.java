@@ -113,4 +113,12 @@ public class ImmersiveVideoControlCoordinatorTest {
 
         verify(mHolder).setEntityPose(expectedTranslation, expectedRotation, XrSpace.PARENT);
     }
+
+    @Test
+    public void testDispose_DisposesHolder() {
+        mCoordinator.show(mParentEntity);
+        mCoordinator.dispose();
+
+        verify(mHolder).dispose();
+    }
 }

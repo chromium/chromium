@@ -94,12 +94,12 @@ public class ImmersiveVideoPlaybackCoordinator
         return mPlayerCoordinator.getCompositorView();
     }
 
-    /** Destroys the coordinator and its components. */
-    public void destroy() {
+    /** Disposes the coordinator and its components. */
+    public void dispose() {
         mAutoHideManager.stopTimer();
-        mControlCoordinator.dismiss();
-        mFormatCoordinator.dismiss();
-        mPlayerCoordinator.dismiss();
+        mControlCoordinator.dispose();
+        mFormatCoordinator.dispose();
+        mPlayerCoordinator.dispose();
     }
 
     /**

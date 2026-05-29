@@ -152,7 +152,7 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
     @Override
     protected void cleanup() {
         if (mPlaybackCoordinator != null) {
-            mPlaybackCoordinator.destroy();
+            mPlaybackCoordinator.dispose();
             mPlaybackCoordinator = null;
         }
         mPendingState.reset();
