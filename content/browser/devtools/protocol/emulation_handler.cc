@@ -194,6 +194,9 @@ Response EmulationHandler::Disable() {
   pressure_overrides_.clear();
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   ClearDevicePostureOverride();
+  if (geolocation_overridden_) {
+    ClearGeolocationOverride();
+  }
   return Response::Success();
 }
 
@@ -600,6 +603,7 @@ Response EmulationHandler::SetGeolocationOverride(
             /*error_message=*/"", /*error_technical=*/""));
   }
   geolocation_context->SetOverride(std::move(override_result));
+  geolocation_overridden_ = true;
   return Response::Success();
 }
 
@@ -609,6 +613,7 @@ Response EmulationHandler::ClearGeolocationOverride() {
 
   auto* geolocation_context = GetWebContents()->GetGeolocationContext();
   geolocation_context->ClearOverride();
+  geolocation_overridden_ = false;
   return Response::Success();
 }
 

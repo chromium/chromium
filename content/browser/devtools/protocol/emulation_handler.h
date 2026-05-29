@@ -220,6 +220,9 @@ class EmulationHandler : public DevToolsDomainHandler,
   // True when screen orientation lock emulation is enabled.
   bool screen_orientation_lock_emulation_enabled_ = false;
 
+  // True when SetGeolocationOverride() has been called.
+  bool geolocation_overridden_ = false;
+
   raw_ptr<RenderFrameHostImpl> host_;
 
   std::unique_ptr<Emulation::Frontend> frontend_;

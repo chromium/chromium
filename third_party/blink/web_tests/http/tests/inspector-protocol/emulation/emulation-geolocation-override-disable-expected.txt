@@ -1,0 +1,25 @@
+Tests that geolocation override is cleared on session disconnect.
+
+Get original geolocation data
+Geolocation data: {
+    code : 3
+    message : Timeout expired
+}
+
+Set required geolocation override fields
+Geolocation data: {
+    accuracy : 1.23
+    altitude : null
+    altitudeAccuracy : null
+    heading : null
+    latitude : 56.83
+    longitude : 60.63
+    speed : null
+}
+
+Disconnect session
+Geolocation data: {
+    code : 3
+    message : Timeout expired
+}
+
