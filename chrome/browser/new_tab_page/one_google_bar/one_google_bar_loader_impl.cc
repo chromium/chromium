@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -336,13 +337,16 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
   }
 
   for (const auto& param_pair : additional_query_params_) {
-    // Add the "async=" parameter. We can't use net::AppendQueryParameter for
-    // this because we need the ":" to remain unescaped.
+    // Escape to neutralize injection chars (e.g., '&', '='), then restore the
+    // ':' and ',' that the backend requires to stay literal in "async".
     if (param_pair.first == "async") {
-      std::string query = api_url.GetQuery() + "&async=" + param_pair.second;
-      if (query.at(0) == '&') {
-        query = query.substr(1);
-      }
+      std::string async_value =
+          base::EscapeQueryParamValue(param_pair.second, /*use_plus*/ true);
+      base::ReplaceSubstringsAfterOffset(&async_value, 0, "%2C", ",");
+      base::ReplaceSubstringsAfterOffset(&async_value, 0, "%3A", ":");
+      std::string query = api_url.GetQuery();
+      query = query.empty() ? "async=" + async_value
+                            : query + "&async=" + async_value;
       GURL::Replacements replacements;
       replacements.SetQueryStr(query);
       api_url = api_url.ReplaceComponents(replacements);
