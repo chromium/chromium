@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -32,7 +31,6 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/language/core/common/locale_util.h"
 #include "components/manta/manta_service.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -266,12 +264,6 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
          base::FeatureList::IsEnabled(features::kOrcaForManagedUsers);
 }
 
-bool IsSystemInEnglishLanguage() {
-  return g_browser_process != nullptr &&
-         language::ExtractBaseLanguage(
-             g_browser_process->GetApplicationLocale()) == "en";
-}
-
 EditorSwitch::EditorSwitch(Observer* observer,
                            Profile* profile,
                            EditorContext* context)
@@ -448,9 +440,7 @@ bool EditorSwitch::CanBeTriggered() const {
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          context_->is_selection_valid() &&
-         context_->selected_text_length() <= kTextLengthMaxLimit &&
-         (!base::FeatureList::IsEnabled(features::kOrcaOnlyInEnglishLocales) ||
-          IsSystemInEnglishLanguage());
+         context_->selected_text_length() <= kTextLengthMaxLimit;
 }
 
 chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {

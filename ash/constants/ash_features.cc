@@ -1500,9 +1500,6 @@ BASE_FEATURE(kOrcaServiceConnection, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables proto-based Orca service communication logic.
 BASE_FEATURE(kOrcaServiceProto, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Orca will only be available in English locales.
-BASE_FEATURE(kOrcaOnlyInEnglishLocales, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables Orca resizing support.
 BASE_FEATURE(kOrcaResizingSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 
