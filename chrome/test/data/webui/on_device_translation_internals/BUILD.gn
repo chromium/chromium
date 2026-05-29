@@ -11,7 +11,7 @@ build_webui_tests("build") {
 
   files = [
     "on_device_translation_internals_test.ts",
-    "test_on_device_translation_internals_browser_proxy.ts",
+    "fake_page_handler.ts",
   ]
 
   ts_path_mappings = [ "chrome://on-device-translation-internals/*|" + rebase_path(

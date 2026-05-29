@@ -7,9 +7,9 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './event_log.css.js';
 import {getHtml} from './event_log.html.js';
+import {browserProxyFactory} from './on_device_internals_page.mojom-webui.js';
 
 /**
  * Converts a mojo time to a JS time.
@@ -91,8 +91,9 @@ export class OnDeviceInternalsEventLogElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    BrowserProxy.getInstance().callbackRouter.onLogMessageAdded.addListener(
-        this.onLogMessageAdded_.bind(this));
+    browserProxyFactory.getInstance()
+        .callbackRouter.onLogMessageAdded.addListener(
+            this.onLogMessageAdded_.bind(this));
   }
 
   /**

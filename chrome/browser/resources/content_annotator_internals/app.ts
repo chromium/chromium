@@ -5,10 +5,9 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
+import {browserProxyFactory} from './accessibility_annotator_internals.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 
 export interface AnnotationEntry {
   visit_id: string;
@@ -44,7 +43,7 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   protected accessor logContent_: AnnotationEntry[] = [];
   protected accessor errorMessage_: string = '';
   protected accessor selectedVisitIds_: Set<string> = new Set();
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private browserProxy_ = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

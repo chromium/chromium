@@ -3,22 +3,26 @@
 // found in the LICENSE file.
 
 import 'chrome://on-device-translation-internals/app.js';
+
 import type {OnDeviceTranslationInternalsAppElement} from 'chrome://on-device-translation-internals/app.js';
-import {BrowserProxy} from 'chrome://on-device-translation-internals/browser_proxy.js';
-import {LanguagePackStatus} from 'chrome://on-device-translation-internals/on_device_translation_internals.mojom-webui.js';
+import {browserProxyFactory, LanguagePackStatus} from 'chrome://on-device-translation-internals/on_device_translation_internals.mojom-webui.js';
+import type {PageRemote} from 'chrome://on-device-translation-internals/on_device_translation_internals.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestOnDeviceTranslationInternalsBrowserProxy} from './test_on_device_translation_internals_browser_proxy.js';
+import {FakePageHandler} from './fake_page_handler.js';
 
 suite('OnDeviceTranslationInternalsTest', function() {
   let app: OnDeviceTranslationInternalsAppElement;
-  let testBrowserProxy: TestOnDeviceTranslationInternalsBrowserProxy;
+  let handler: FakePageHandler;
+  let page: PageRemote;
 
   setup(function() {
-    testBrowserProxy = new TestOnDeviceTranslationInternalsBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    handler = new FakePageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    page = remote;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('on-device-translation-internals-app');
@@ -40,7 +44,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   test('NonEmptyPackageTable', async function() {
     const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
-    testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
+    page.onLanguagePackStatus([
       {
         'name': 'en - es',
         'status': LanguagePackStatus.kNotInstalled,
@@ -87,7 +91,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   test('InstallPackage', async function() {
     const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
-    testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
+    page.onLanguagePackStatus([
       {
         'name': 'en - es',
         'status': LanguagePackStatus.kNotInstalled,
@@ -103,15 +107,13 @@ suite('OnDeviceTranslationInternalsTest', function() {
     assertEquals(2, buttons.length);
     assertEquals('Install', buttons[0]!.textContent);
     buttons[0]!.click();
-    assertEquals(
-        0, await testBrowserProxy.handler.whenCalled('installLanguagePackage'));
+    assertEquals(0, await handler.whenCalled('installLanguagePackage'));
 
-    testBrowserProxy.handler.resetResolver('installLanguagePackage');
+    handler.resetResolver('installLanguagePackage');
 
     assertEquals('Install', buttons[1]!.textContent);
     buttons[1]!.click();
-    assertEquals(
-        1, await testBrowserProxy.handler.whenCalled('installLanguagePackage'));
+    assertEquals(1, await handler.whenCalled('installLanguagePackage'));
   });
 
   // Test that the uninstall button triggers the uninstallLanguagePackage method
@@ -119,7 +121,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   test('UninstallPackage', async function() {
     const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
-    testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
+    page.onLanguagePackStatus([
       {
         'name': 'en - es',
         'status': LanguagePackStatus.kInstalling,
@@ -135,17 +137,13 @@ suite('OnDeviceTranslationInternalsTest', function() {
     assertEquals(2, buttons.length);
     assertEquals('Uninstall', buttons[0]!.textContent);
     buttons[0]!.click();
-    assertEquals(
-        0,
-        await testBrowserProxy.handler.whenCalled('uninstallLanguagePackage'));
+    assertEquals(0, await handler.whenCalled('uninstallLanguagePackage'));
 
-    testBrowserProxy.handler.resetResolver('uninstallLanguagePackage');
+    handler.resetResolver('uninstallLanguagePackage');
 
     assertEquals('Uninstall', buttons[1]!.textContent);
     buttons[1]!.click();
-    assertEquals(
-        1,
-        await testBrowserProxy.handler.whenCalled('uninstallLanguagePackage'));
+    assertEquals(1, await handler.whenCalled('uninstallLanguagePackage'));
   });
 
   // Test that the package table is updated when onLanguagePackStatus is
@@ -153,7 +151,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   test('UpdatePackageTable', async function() {
     const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
-    testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
+    page.onLanguagePackStatus([
       {
         'name': 'en - es',
         'status': LanguagePackStatus.kInstalled,
@@ -183,7 +181,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
       assertEquals('Install', buttons[1]!.textContent);
     }
 
-    testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
+    page.onLanguagePackStatus([
       {
         'name': 'en - es',
         'status': LanguagePackStatus.kInstalled,

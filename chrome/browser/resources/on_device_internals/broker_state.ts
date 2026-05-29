@@ -8,10 +8,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './broker_state.css.js';
 import {getHtml} from './broker_state.html.js';
-import {BrowserProxy} from './browser_proxy.js';
 import {ModelUnavailableReason} from './model_broker.mojom-webui.js';
-import {BrokerAssetState} from './model_broker_debug.mojom-webui.js';
+import {BrokerAssetState, ModelBrokerDebugRemote} from './model_broker_debug.mojom-webui.js';
 import type {BrokerStateInfo} from './model_broker_debug.mojom-webui.js';
+import {browserProxyFactory} from './on_device_internals_page.mojom-webui.js';
+import type {BrowserProxy} from './on_device_internals_page.mojom-webui.js';
 
 export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
   static get is() {
@@ -39,26 +40,29 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
     models: [],
   };
 
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private brokerDebug_ = new ModelBrokerDebugRemote();
 
   constructor() {
     super();
+    this.proxy_.handler.bindModelBrokerDebug(
+        this.brokerDebug_.$.bindNewPipeAndPassReceiver());
     this.getBrokerState_();
   }
 
   private async getBrokerState_() {
-    this.state_ = (await this.proxy_.brokerDebug.getStateInfo()).state;
+    this.state_ = (await this.brokerDebug_.getStateInfo()).state;
   }
 
   protected async onUninstallModelsClick_() {
-    await this.proxy_.brokerDebug.uninstallModels();
+    await this.brokerDebug_.uninstallModels();
     this.getBrokerState_();
   }
 
   protected async onUseCaseRequestedChange_(e: Event) {
     const useCase = (e.currentTarget as HTMLElement).dataset['useCase']!;
     const requested = (e.currentTarget as HTMLInputElement).checked;
-    await this.proxy_.brokerDebug.setUseCaseRequested(useCase, requested);
+    await this.brokerDebug_.setUseCaseRequested(useCase, requested);
     this.getBrokerState_();
   }
 

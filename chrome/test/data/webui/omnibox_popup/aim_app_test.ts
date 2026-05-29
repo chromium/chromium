@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import type {OmniboxAimAppElement, PageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {aimBrowserProxyFactory, OmniboxPopupAimPageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import type {OmniboxAimAppElement, OmniboxPopupAimPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -11,18 +11,6 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-class TestAimBrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
-  page: PageRemote;
-
-  constructor() {
-    this.callbackRouter = new PageCallbackRouter();
-    this.handler = TestMock.fromClass(PageHandlerRemote);
-    this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
-  }
-}
 
 function createDefaultInputState(): InputState {
   return {
@@ -47,13 +35,17 @@ function createDefaultInputState(): InputState {
 }
 
 suite('AimAppTest', function() {
-  let testProxy: TestAimBrowserProxy;
+  let handler: TestMock<OmniboxPopupAimPageHandlerRemote>&
+      OmniboxPopupAimPageHandlerRemote;
+  let page: OmniboxPopupAimPageRemote;
   let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestAimBrowserProxy();
-    BrowserProxy.setInstance(testProxy as unknown as BrowserProxy);
+    handler = TestMock.fromClass(OmniboxPopupAimPageHandlerRemote);
+    const {instance, remote} = aimBrowserProxyFactory.createForTest(handler);
+    aimBrowserProxyFactory.setInstance(instance);
+    page = remote;
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: false,
@@ -86,7 +78,7 @@ suite('AimAppTest', function() {
     assertTrue(!!app.$.composebox.input);
 
     // Close without preserving context (default is false).
-    testProxy.page.clearPopup();
+    page.clearPopup();
     await microtasksFinished();
     assertTrue(!app.$.composebox.input);
   });
@@ -104,8 +96,8 @@ suite('AimAppTest', function() {
     assertTrue(!!app.$.composebox.input);
 
     // Close with preserving context.
-    testProxy.page.setPreserveContextOnClose(true);
-    testProxy.page.clearPopup();
+    page.setPreserveContextOnClose(true);
+    page.clearPopup();
     await microtasksFinished();
     assertTrue(!!app.$.composebox.input);
   });
@@ -122,12 +114,12 @@ suite('AimAppTest', function() {
     });
 
     // Close with preserving context.
-    testProxy.page.setPreserveContextOnClose(true);
-    testProxy.page.clearPopup();
+    page.setPreserveContextOnClose(true);
+    page.clearPopup();
     await microtasksFinished();
 
     // Re-open (onPopupShown) should reset preserveContextOnClose to false.
-    testProxy.page.onPopupShown({
+    page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -135,7 +127,7 @@ suite('AimAppTest', function() {
     await microtasksFinished();
 
     // Close again, should clear input because it was reset to false.
-    testProxy.page.clearPopup();
+    page.clearPopup();
     await microtasksFinished();
     assertTrue(!app.$.composebox.input);
 
@@ -156,7 +148,7 @@ suite('AimAppTest', function() {
       glowAnimationPlayed = true;
     };
 
-    testProxy.page.onPopupShown({
+    page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -175,9 +167,9 @@ suite('AimAppTest', function() {
     };
 
     // Simulate preserving context.
-    testProxy.page.setPreserveContextOnClose(true);
+    page.setPreserveContextOnClose(true);
 
-    testProxy.page.onPopupShown({
+    page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -188,7 +180,7 @@ suite('AimAppTest', function() {
 
     // Reset for next show (implicit in onPopupShown).
     // If we show again, it SHOULD play.
-    testProxy.page.onPopupShown({
+    page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -209,7 +201,7 @@ suite('AimAppTest', function() {
           composed: true,
         }));
 
-    const result = await testProxy.handler.whenCalled('showContextMenu');
+    const result = await handler.whenCalled('showContextMenu');
     assertEquals(point.x, result.x);
     assertEquals(point.y, result.y);
   });
@@ -237,7 +229,7 @@ suite('AimAppTest', function() {
     assertTrue(contextButton.classList.contains('menu-open'));
 
     // Mojom callback clears class.
-    testProxy.page.onContextMenuClosed();
+    page.onContextMenuClosed();
     await microtasksFinished();
 
     assertFalse(contextButton.classList.contains('menu-open'));

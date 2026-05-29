@@ -8,9 +8,10 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './graph_dump.css.js';
 import {getHtml} from './graph_dump.html.js';
+import {browserProxyFactory} from './webnn_internals.mojom-webui.js';
+import type {BrowserProxy} from './webnn_internals.mojom-webui.js';
 
 export class WebnnInternalsGraphDumpElement extends CrLitElement {
   static get is() {
@@ -34,7 +35,7 @@ export class WebnnInternalsGraphDumpElement extends CrLitElement {
   private listenerIds: number[] = [];
   protected accessor recordGraphEnabled_: boolean = false;
 
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

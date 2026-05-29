@@ -30,7 +30,6 @@ build_webui("build") {
     "app.ts",
     "broker_state.html.ts",
     "broker_state.ts",
-    "browser_proxy.ts",
     "event_log.html.ts",
     "event_log.ts",
     "model_status.html.ts",

@@ -5,8 +5,7 @@
 import 'chrome://multistep-filter-internals/app.js';
 
 import type {MultistepFilterInternalsAppElement} from 'chrome://multistep-filter-internals/app.js';
-import {BrowserProxyImpl} from 'chrome://multistep-filter-internals/browser_proxy.js';
-import {PageCallbackRouter} from 'chrome://multistep-filter-internals/multistep_filter_internals.mojom-webui.js';
+import {browserProxyFactory} from 'chrome://multistep-filter-internals/multistep_filter_internals.mojom-webui.js';
 import type {LogEntry, PageHandlerInterface, PageRemote} from 'chrome://multistep-filter-internals/multistep_filter_internals.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -25,29 +24,21 @@ class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
   }
 }
 
-class TestMultistepFilterBrowserProxy {
-  callbackRouter: PageCallbackRouter = new PageCallbackRouter();
-  handler: TestPageHandler = new TestPageHandler();
-  pageRemote: PageRemote;
-
-  constructor() {
-    this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
-  }
-}
-
 suite('AppTest', function() {
   let app: MultistepFilterInternalsAppElement;
-  let browserProxy: TestMultistepFilterBrowserProxy;
+  let pageRemote: PageRemote;
 
   function fireLogEntryAdded(mojoLog: LogEntry) {
-    browserProxy.pageRemote.onLogEntryAdded(mojoLog);
-    return browserProxy.pageRemote.$.flushForTesting();
+    pageRemote.onLogEntryAdded(mojoLog);
+    return pageRemote.$.flushForTesting();
   }
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestMultistepFilterBrowserProxy();
-    BrowserProxyImpl.setInstance(browserProxy as unknown as BrowserProxyImpl);
+    const handler = new TestPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    pageRemote = remote;
 
     app = document.createElement('multistep-filter-internals-app');
     document.body.appendChild(app);

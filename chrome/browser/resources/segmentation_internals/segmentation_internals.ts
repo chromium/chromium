@@ -5,11 +5,11 @@
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
+import {browserProxyFactory} from './segmentation_internals.mojom-webui.js';
 import type {ClientInfo, SegmentInfo} from './segmentation_internals.mojom-webui.js';
-import {SegmentationInternalsBrowserProxy} from './segmentation_internals_browser_proxy.js';
 
-function getProxy(): SegmentationInternalsBrowserProxy {
-  return SegmentationInternalsBrowserProxy.getInstance();
+function getProxy() {
+  return browserProxyFactory.getInstance();
 }
 
 function addClientInfo(parent: HTMLElement, info: ClientInfo) {
@@ -41,7 +41,7 @@ function addSegmentInfoToParent(
     const btn = document.createElement('button');
     btn.innerHTML = getTrustedHTML`Execute model`;
     btn.addEventListener('click', () => {
-      getProxy().executeModel(info.segmentId);
+      getProxy().handler.executeModel(info.segmentId);
     });
     buttonDiv.appendChild(btn);
   }
@@ -56,14 +56,14 @@ function addSegmentInfoToParent(
   const overwriteBtn = document.createElement('button');
   overwriteBtn.innerHTML = getTrustedHTML`Overwrite`;
   overwriteBtn.addEventListener('click', () => {
-    getProxy().overwriteResult(
+    getProxy().handler.overwriteResult(
         info.segmentId, parseFloat(overwriteValue.value));
   });
   buttonDiv.appendChild(overwriteBtn);
   const setSelectionBtn = document.createElement('button');
   setSelectionBtn.innerHTML = getTrustedHTML`Set Selected`;
   setSelectionBtn.addEventListener('click', () => {
-    getProxy().setSelected(segmentationKey, info.segmentId);
+    getProxy().handler.setSelected(segmentationKey, info.segmentId);
   });
   buttonDiv.appendChild(setSelectionBtn);
   div.appendChild(buttonDiv);
@@ -89,13 +89,13 @@ function addSegmentInfoToParent(
 }
 
 function initialize() {
-  getProxy().getCallbackRouter().onServiceStatusChanged.addListener(
+  getProxy().callbackRouter.onServiceStatusChanged.addListener(
       (initialized: boolean, status: number) => {
         getRequiredElement('initialized').textContent = String(initialized);
         getRequiredElement('service-status').textContent = String(status);
       });
 
-  getProxy().getCallbackRouter().onClientInfoAvailable.addListener(
+  getProxy().callbackRouter.onClientInfoAvailable.addListener(
       (clientInfos: ClientInfo[]) => {
         const parent = getRequiredElement('client-container');
         // Remove all current children.
@@ -108,7 +108,7 @@ function initialize() {
         }
       });
 
-  getProxy().getServiceStatus();
+  getProxy().handler.getServiceStatus();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

@@ -6,10 +6,10 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './model_status.css.js';
 import {getHtml} from './model_status.html.js';
-import type {PageData} from './on_device_internals_page.mojom-webui.js';
+import {browserProxyFactory} from './on_device_internals_page.mojom-webui.js';
+import type {BrowserProxy, PageData} from './on_device_internals_page.mojom-webui.js';
 import {PerformanceClass} from './on_device_model.mojom-webui.js';
 
 export class OnDeviceInternalsModelStatusElement extends CrLitElement {
@@ -54,7 +54,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
   };
 
   protected accessor mayRestartBrowser_: boolean = false;
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   protected accessor loadProgress: number = 0;
   protected accessor loadMax: number = 100;
@@ -82,7 +82,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    BrowserProxy.getInstance()
+    browserProxyFactory.getInstance()
         .callbackRouter.onDownloadProgressUpdate.addListener(
             this.logProgress_.bind(this));
   }

@@ -18,9 +18,9 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 
 import {getCss} from './aim_app.css.js';
 import {getHtml} from './aim_app.html.js';
-import {BrowserProxy} from './aim_browser_proxy.js';
 import type {OmniboxComposeboxElement} from './omnibox_composebox.js';
-import type {PageCallbackRouter, PageHandlerInterface} from './omnibox_popup_aim.mojom-webui.js';
+import {browserProxyFactory} from './omnibox_popup_aim.mojom-webui.js';
+import type {BrowserProxy} from './omnibox_popup_aim.mojom-webui.js';
 
 export interface OmniboxAimAppElement {
   $: {
@@ -91,30 +91,31 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('webuiOmniboxSimplificationEnabled');
 
   private eventTracker_ = new EventTracker();
-  private pageHandler_: PageHandlerInterface;
-  private callbackRouter_: PageCallbackRouter;
+  private browserProxy_: BrowserProxy;
   private listenerIds_: number[] = [];
   private preserveContextOnClose_: boolean = false;
 
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
-    this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
+    this.browserProxy_ = browserProxyFactory.getInstance();
   }
 
   override connectedCallback() {
     super.connectedCallback();
 
     this.listenerIds_ = [
-      this.callbackRouter_.onPopupShown.addListener(
+      this.browserProxy_.callbackRouter.onPopupShown.addListener(
           this.onPopupShown_.bind(this)),
-      this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
-      this.callbackRouter_.focusInput.addListener(this.focusInput_.bind(this)),
-      this.callbackRouter_.clearPopup.addListener(this.clearPopup_.bind(this)),
-      this.callbackRouter_.setPreserveContextOnClose.addListener(
+      this.browserProxy_.callbackRouter.addContext.addListener(
+          this.addContext_.bind(this)),
+      this.browserProxy_.callbackRouter.focusInput.addListener(
+          this.focusInput_.bind(this)),
+      this.browserProxy_.callbackRouter.clearPopup.addListener(
+          this.clearPopup_.bind(this)),
+      this.browserProxy_.callbackRouter.setPreserveContextOnClose.addListener(
           this.setPreserveContextOnClose_.bind(this)),
-      this.callbackRouter_.onContextMenuClosed.addListener(
+      this.browserProxy_.callbackRouter.onContextMenuClosed.addListener(
           this.onContextMenuClosed_.bind(this)),
     ];
 
@@ -135,7 +136,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.eventTracker_.removeAll();
 
     for (const listenerId of this.listenerIds_) {
-      this.callbackRouter_.removeListener(listenerId);
+      this.browserProxy_.callbackRouter.removeListener(listenerId);
     }
     this.listenerIds_ = [];
   }
@@ -163,7 +164,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       contextButton.classList.add('menu-open');
     }
 
-    this.pageHandler_.showContextMenu(point);
+    this.browserProxy_.handler.showContextMenu(point);
   }
 
   private onContextMenuClosed_() {
@@ -194,7 +195,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     }
   }
   protected onCloseComposebox_() {
-    this.pageHandler_.requestClose();
+    this.browserProxy_.handler.requestClose();
   }
 
   protected setPreserveContextOnClose_(preserveContextOnClose: boolean) {

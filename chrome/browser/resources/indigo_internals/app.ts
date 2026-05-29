@@ -9,7 +9,7 @@ import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './indigo_internals.mojom-webui.js';
 import type {CombinedEligibility} from './indigo_internals.mojom-webui.js';
 import {LocalEligibility, OptimizationGuideStatus} from './indigo_internals.mojom-webui.js';
 
@@ -45,7 +45,7 @@ export class IndigoInternalsAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    const proxy = BrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
 
     proxy.handler.getLocalEligibility().then(
         ({status}: {status: LocalEligibility}) => {
@@ -71,7 +71,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
-        id => BrowserProxy.getInstance().callbackRouter.removeListener(id));
+        id => browserProxyFactory.getInstance().callbackRouter.removeListener(
+            id));
     this.listenerIds_ = [];
   }
 
@@ -157,8 +158,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
   }
 
   protected async onFetchCombinedClick_() {
-    const {status} =
-        await BrowserProxy.getInstance().handler.getCombinedEligibility();
+    const {status} = await browserProxyFactory.getInstance()
+                         .handler.getCombinedEligibility();
     this.combinedEligibility_ = status;
     this.lastUpdated_ = new Date().toLocaleTimeString();
   }

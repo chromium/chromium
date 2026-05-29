@@ -4,9 +4,10 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './info_page.css.js';
 import {getHtml} from './info_page.html.js';
+import {browserProxyFactory} from './webnn_internals.mojom-webui.js';
+import type {BrowserProxy} from './webnn_internals.mojom-webui.js';
 import type {WebNNExecutionProviderDetails} from './webnn_service_introspection.mojom-webui.js';
 
 export class WebnnInternalsInfoPageElement extends CrLitElement {
@@ -32,7 +33,7 @@ export class WebnnInternalsInfoPageElement extends CrLitElement {
       WebNNExecutionProviderDetails[] = [];
   private listenerIds_: number[] = [];
 
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

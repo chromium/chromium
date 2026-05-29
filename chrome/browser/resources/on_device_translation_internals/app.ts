@@ -6,7 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './app.html.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './on_device_translation_internals.mojom-webui.js';
 import type {LanguagePackInfo} from './on_device_translation_internals.mojom-webui.js';
 import {LanguagePackStatus} from './on_device_translation_internals.mojom-webui.js';
 
@@ -25,7 +25,7 @@ export class OnDeviceTranslationInternalsAppElement extends CrLitElement {
     };
   }
 
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_ = browserProxyFactory.getInstance();
   private onLanguagePackStatusListenerId_: number|null = null;
   protected accessor languagePackStatus_: LanguagePackInfo[] = [];
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {browserProxyFactory} from './segmentation_internals.mojom-webui.js';
 import type {ClientInfo, SegmentInfo} from './segmentation_internals.mojom-webui.js';
-import {SegmentationInternalsBrowserProxy} from './segmentation_internals_browser_proxy.js';
 
-function getProxy(): SegmentationInternalsBrowserProxy {
-  return SegmentationInternalsBrowserProxy.getInstance();
+function getProxy() {
+  return browserProxyFactory.getInstance();
 }
 
 // Checks the given URL for expected pattern, and allowed list of param.
@@ -87,7 +87,7 @@ function initialize() {
     openError();
   }, timeoutSec);
 
-  getProxy().getCallbackRouter().onClientInfoAvailable.addListener(
+  getProxy().callbackRouter.onClientInfoAvailable.addListener(
       (clientInfos: ClientInfo[]) => {
         for (let i = 0; i < clientInfos.length; ++i) {
           if (clientInfos[i]!.segmentationKey === 'metrics_clustering') {
@@ -98,7 +98,7 @@ function initialize() {
       });
 
   // OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING
-  getProxy().executeModel(50);
+  getProxy().handler.executeModel(50);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

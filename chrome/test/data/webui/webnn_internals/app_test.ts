@@ -5,17 +5,19 @@
 import 'chrome://webnn-internals/app.js';
 
 import type {WebnnInternalsAppElement} from 'chrome://webnn-internals/app.js';
-import {BrowserProxy} from 'chrome://webnn-internals/browser_proxy.js';
 import type {WebnnInternalsContextsViewerElement} from 'chrome://webnn-internals/contexts_viewer.js';
+import {browserProxyFactory} from 'chrome://webnn-internals/webnn_internals.mojom-webui.js';
+import type {PageRemote} from 'chrome://webnn-internals/webnn_internals.mojom-webui.js';
+import {PageHandlerRemote} from 'chrome://webnn-internals/webnn_internals.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestWebnnInternalsBrowserProxy} from './test_webnn_internals_browser_proxy.js';
-
 suite('WebnnInternalsUITest', function() {
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let page: PageRemote;
   let app: WebnnInternalsAppElement;
   let contextsTab: WebnnInternalsContextsViewerElement;
-  let testProxy: TestWebnnInternalsBrowserProxy;
   const testExecutionProviders = [
     {
       name: 'Test EP 1',
@@ -35,21 +37,23 @@ suite('WebnnInternalsUITest', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestWebnnInternalsBrowserProxy();
-    testProxy.handler.setResultFor(
-        'requestExistingContextsDetails', Promise.resolve({
-          contextsInfo: [],
-        }));
+    handler = TestMock.fromClass(PageHandlerRemote);
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    page = remote;
+
+    handler.setResultFor('requestExistingContextsDetails', Promise.resolve({
+      contextsInfo: [],
+    }));
     // <if expr="webnn_enable_graph_dump">
-    testProxy.handler.setResultFor('isGraphRecording', Promise.resolve({
+    handler.setResultFor('isGraphRecording', Promise.resolve({
       enabled: false,
     }));
     // </if>
-    testProxy.handler.setResultFor(
+    handler.setResultFor(
         'requestAvailableExecutionProvidersDetails', Promise.resolve({
           availableExecutionProviders: testExecutionProviders,
         }));
-    BrowserProxy.setInstance(testProxy);
     app = document.createElement('webnn-internals-app');
     document.body.appendChild(app);
     const viewer =
@@ -72,7 +76,7 @@ suite('WebnnInternalsUITest', function() {
 
   test('ShowActiveContexts', async function() {
     // Simulate the browser sending two active contexts.
-    testProxy.page.onUpdateExistingContextDetails([
+    page.onUpdateExistingContextDetails([
       {
         contextId: 1,
         contextBackend: 'Test Backend',
@@ -128,7 +132,7 @@ suite('WebnnInternalsUITest', function() {
 
   test('RemoveActiveContexts', async function() {
     // Simulate the browser removing all contexts.
-    testProxy.page.onUpdateExistingContextDetails([]);
+    page.onUpdateExistingContextDetails([]);
     await microtasksFinished();
     const gridContainer =
         contextsTab.shadowRoot.querySelector<HTMLElement>('.grid-container');
@@ -178,7 +182,7 @@ suite('WebnnInternalsUITest', function() {
 
   test('UpdateAvailableExecutionProvidersDetails', async function() {
     // Simulate updating the available execution providers details.
-    testProxy.page.onUpdateAvailableExecutionProvidersDetails([
+    page.onUpdateAvailableExecutionProvidersDetails([
       {
         name: 'Test EP 3',
         vendor: 'Vendor 3',
@@ -209,7 +213,7 @@ suite('WebnnInternalsUITest', function() {
 
   test('RemoveAllAvailableExecutionProvidersDetails', async function() {
     // Simulate that there are no EPs available.
-    testProxy.page.onUpdateAvailableExecutionProvidersDetails([]);
+    page.onUpdateAvailableExecutionProvidersDetails([]);
     await microtasksFinished();
     const infoTab = app.shadowRoot.querySelector('webnn-internals-info-page');
     assertTrue(!!infoTab);
@@ -235,7 +239,7 @@ suite('WebnnInternalsUITest', function() {
     assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
-    testProxy.page.onGraphRecordEnabledChanged(true);
+    page.onGraphRecordEnabledChanged(true);
     await microtasksFinished();
     assertTrue(toggle.checked);
   });

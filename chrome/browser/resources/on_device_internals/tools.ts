@@ -18,7 +18,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FilePath} from '//resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './on_device_internals_page.mojom-webui.js';
+import type {BrowserProxy} from './on_device_internals_page.mojom-webui.js';
 import {InputSource, LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
 import type {AudioData, Capabilities, InputPiece} from './on_device_model.mojom-webui.js';
 import {ModelPerformanceHint} from './on_device_model_service.mojom-webui.js';
@@ -162,7 +163,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   private accessor loadedPerformanceHint_: ModelPerformanceHint|null = null;
 
   private session_: SessionRemote|null = null;
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
       new StreamingResponderCallbackRouter();
   private sessionTemperature_: number = 0;

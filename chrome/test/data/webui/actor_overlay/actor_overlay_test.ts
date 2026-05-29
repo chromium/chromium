@@ -4,16 +4,15 @@
 
 import 'chrome://actor-overlay/app.js';
 
+import {browserProxyFactory} from 'chrome://actor-overlay/actor_overlay.mojom-webui.js';
 import type {ActorOverlayPageRemote} from 'chrome://actor-overlay/actor_overlay.mojom-webui.js';
 import type {ActorOverlayAppElement} from 'chrome://actor-overlay/app.js';
-import {ActorOverlayBrowserProxy} from 'chrome://actor-overlay/browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import type {TestActorOverlayPageHandler} from './test_browser_proxy.js';
-import {TestActorOverlayBrowserProxy} from './test_browser_proxy.js';
+import {TestActorOverlayPageHandler} from './test_page_handler.js';
 
 suite('Scrim', function() {
   let page: ActorOverlayAppElement;
@@ -24,10 +23,10 @@ suite('Scrim', function() {
     loadTimeData.overrideValues({
       isMagicCursorEnabled: false,
     });
-    const testBrowserProxy = new TestActorOverlayBrowserProxy();
-    ActorOverlayBrowserProxy.setInstance(testBrowserProxy);
-    testHandler = testBrowserProxy.handler;
-    testRemote = testBrowserProxy.remote;
+    testHandler = new TestActorOverlayPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
+    testRemote = remote;
   });
 
   setup(function() {
@@ -130,10 +129,10 @@ suite('BorderGlow', function() {
     loadTimeData.overrideValues({
       isMagicCursorEnabled: false,
     });
-    const testBrowserProxy = new TestActorOverlayBrowserProxy();
-    ActorOverlayBrowserProxy.setInstance(testBrowserProxy);
-    testHandler = testBrowserProxy.handler;
-    testRemote = testBrowserProxy.remote;
+    testHandler = new TestActorOverlayPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
+    testRemote = remote;
   });
 
   setup(async function() {
@@ -208,9 +207,10 @@ suite('MagicCursor', function() {
       magicCursorMinDurationMs: 50,
       magicCursorMaxDurationMs: 675,
     });
-    const testBrowserProxy = new TestActorOverlayBrowserProxy();
-    ActorOverlayBrowserProxy.setInstance(testBrowserProxy);
-    testRemote = testBrowserProxy.remote;
+    const handler = new TestActorOverlayPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    testRemote = remote;
   });
 
   setup(function() {

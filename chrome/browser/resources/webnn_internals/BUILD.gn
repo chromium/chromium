@@ -15,7 +15,6 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
-    "browser_proxy.ts",
     "contexts_viewer.ts",
     "contexts_viewer.html.ts",
     "info_page.ts",

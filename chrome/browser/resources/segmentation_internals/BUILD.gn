@@ -12,7 +12,6 @@ build_webui("build") {
   ]
   ts_files = [
     "segmentation_internals.ts",
-    "segmentation_internals_browser_proxy.ts",
     "segmentation_survey.ts",
   ]
   mojo_files_deps = [ "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings_ts__generator" ]

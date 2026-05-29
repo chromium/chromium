@@ -11,9 +11,9 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Point} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import type {Theme} from './actor_overlay.mojom-webui.js';
+import {browserProxyFactory} from './actor_overlay.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {ActorOverlayBrowserProxy} from './browser_proxy.js';
 
 export interface ActorOverlayAppElement {
   $: {magicCursor: HTMLDivElement};
@@ -71,7 +71,7 @@ export class ActorOverlayAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    const proxy = ActorOverlayBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     this.eventTracker_.add(this, 'pointerenter', () => {
       proxy.handler.onHoverStatusChanged(true);
     });
@@ -105,7 +105,7 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.eventTracker_.removeAll();
     this.removeEventListener('wheel', this.onWheelEvent_);
 
-    const proxy = ActorOverlayBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     this.listenerIds_.forEach(id => proxy.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
     if (this.loadingTimerId_) {

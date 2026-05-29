@@ -9,7 +9,7 @@ build_webui_tests("build") {
 
   files = [
     "actor_overlay_test.ts",
-    "test_browser_proxy.ts",
+    "test_page_handler.ts",
   ]
   ts_path_mappings =
       [ "chrome://actor-overlay/*|" +

@@ -12,7 +12,7 @@ import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webu
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {browserProxyFactory} from './multistep_filter_internals.mojom-webui.js';
 import type {LogEntry as LogEntryMojo} from './multistep_filter_internals.mojom-webui.js';
 
 
@@ -60,7 +60,7 @@ export class MultistepFilterInternalsAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     this.listenerIds_.push(proxy.callbackRouter.onLogEntryAdded.addListener(
         (mojoLog: LogEntryMojo) => {
           this.handleNewLog(this.convertMojoLog(mojoLog));
@@ -69,7 +69,7 @@ export class MultistepFilterInternalsAppElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     this.listenerIds_.forEach(id => proxy.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
   }
@@ -79,7 +79,7 @@ export class MultistepFilterInternalsAppElement extends CrLitElement {
   }
 
   private async initializeMojo() {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
 
     const response = await proxy.handler.getBufferedLogs();
     const bufferedLogs = (response.logs || []).map((mojoLog: LogEntryMojo) => {
