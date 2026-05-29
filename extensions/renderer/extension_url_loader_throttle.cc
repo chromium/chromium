@@ -40,7 +40,9 @@ void ExtensionURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     /*response_head=*/const network::mojom::URLResponseHead&,
     /*defer=*/bool*,
-    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+    /*to_be_removed_request_headers=*/std::vector<std::string>*,
+    /*modified_request_headers=*/net::HttpRequestHeaders*,
+    /*modified_cors_exempt_request_headers=*/net::HttpRequestHeaders*) {
   auto [lock, manager] = manager_access_->Get();
   if (manager &&
       manager->ShouldRejectRedirect(start_request_url_, *redirect_info)) {

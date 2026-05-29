@@ -28,7 +28,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -396,10 +395,12 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   bool CallWillRedirectRequest() {
     bool defer = false;
     net::RedirectInfo redirect_info;
-    network::HttpRequestHeadersUpdateParams headers_update_params;
+    std::vector<std::string> to_be_removed_headers;
+    net::HttpRequestHeaders modified_headers;
+    net::HttpRequestHeaders modified_cors_exempt_headers;
     throttle_->WillRedirectRequest(&redirect_info, *response_head_, &defer,
-                                   &headers_update_params);
-
+                                   &to_be_removed_headers, &modified_headers,
+                                   &modified_cors_exempt_headers);
     task_environment_.RunUntilIdle();
     return defer;
   }

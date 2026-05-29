@@ -23,11 +23,11 @@
 class GURL;
 
 namespace net {
+class HttpRequestHeaders;
 struct RedirectInfo;
 }
 
 namespace network {
-struct HttpRequestHeadersUpdateParams;
 struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 }  // namespace network
@@ -140,7 +140,9 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
       bool* defer,
-      network::HttpRequestHeadersUpdateParams* headers_update_params);
+      std::vector<std::string>* to_be_removed_request_headers,
+      net::HttpRequestHeaders* modified_request_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_request_headers);
 
   // Called when the response headers and meta data are available.
   virtual void WillProcessResponse(

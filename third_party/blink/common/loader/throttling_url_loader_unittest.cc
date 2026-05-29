@@ -242,7 +242,9 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
   using ThrottleRedirectCallback = base::OnceCallback<void(
       blink::URLLoaderThrottle::Delegate* delegate,
       bool* defer,
-      network::HttpRequestHeadersUpdateParams* headers_update_params)>;
+      std::vector<std::string>* removed_headers,
+      net::HttpRequestHeaders* modified_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_headers)>;
 
   using BeforeThrottleCallback = base::RepeatingCallback<void(
       URLLoaderThrottle::Delegate* delegate,
@@ -314,11 +316,14 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
       bool* defer,
-      network::HttpRequestHeadersUpdateParams* headers_update_params) override {
+      std::vector<std::string>* removed_headers,
+      net::HttpRequestHeaders* modified_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_headers) override {
     will_redirect_request_called_++;
     if (will_redirect_request_callback_) {
       std::move(will_redirect_request_callback_)
-          .Run(delegate_.get(), defer, headers_update_params);
+          .Run(delegate_.get(), defer, removed_headers, modified_headers,
+               modified_cors_exempt_headers);
     }
   }
 
@@ -582,8 +587,9 @@ TEST_F(ThrottlingURLLoaderTest, ModifyURLAndDeferRedirect) {
   base::RunLoop run_loop;
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [&](blink::URLLoaderThrottle::Delegate* /* delegate */, bool* defer,
-          network::
-              HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+          std::vector<std::string>* /* removed_headers */,
+          net::HttpRequestHeaders* /* modified_headers */,
+          net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         *defer = true;
         run_loop.Quit();
       }));
@@ -620,8 +626,9 @@ TEST_F(ThrottlingURLLoaderTest,
   bool called = false;
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [&](blink::URLLoaderThrottle::Delegate* /* delegate */, bool* defer,
-          network::
-              HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+          std::vector<std::string>* /* removed_headers */,
+          net::HttpRequestHeaders* /* modified_headers */,
+          net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         *defer = true;
         called = true;
       }));
@@ -644,7 +651,9 @@ TEST_F(ThrottlingURLLoaderTest,
 TEST_F(ThrottlingURLLoaderTest, CancelBeforeRedirect) {
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [](blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
-         network::HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+         std::vector<std::string>* /* removed_headers */,
+         net::HttpRequestHeaders* /* modified_headers */,
+         net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         delegate->CancelWithError(net::ERR_ACCESS_DENIED);
       }));
 
@@ -676,8 +685,9 @@ TEST_F(ThrottlingURLLoaderTest, DeleteBeforeRedirect) {
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [this, &run_loop](
           blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
-          network::
-              HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+          std::vector<std::string>* /* removed_headers */,
+          net::HttpRequestHeaders* /* modified_headers */,
+          net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         ResetLoader();
         run_loop.Quit();
       }));
@@ -750,8 +760,9 @@ TEST_F(ThrottlingURLLoaderTest, DeferBeforeRedirect) {
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [&run_loop1](
           blink::URLLoaderThrottle::Delegate* delegate, bool* defer,
-          network::
-              HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+          std::vector<std::string>* /* removed_headers */,
+          net::HttpRequestHeaders* /* modified_headers */,
+          net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         *defer = true;
         run_loop1.Quit();
       }));
@@ -799,14 +810,14 @@ TEST_F(ThrottlingURLLoaderTest, DeferBeforeRedirect) {
 TEST_F(ThrottlingURLLoaderTest, ModifyHeadersBeforeRedirect) {
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [](blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
-         network::HttpRequestHeadersUpdateParams* headers_update_params) {
-        headers_update_params->removed_headers.push_back("X-Test-Header-1");
-        headers_update_params->modified_headers.SetHeader("X-Test-Header-2",
-                                                          "Foo");
-        headers_update_params->modified_headers.SetHeader("X-Test-Header-3",
-                                                          "Throttle Value");
-        headers_update_params->modified_cors_exempt_headers.SetHeader(
-            "X-Test-Cors-Exempt-Header-1", "Bubble");
+         std::vector<std::string>* removed_headers,
+         net::HttpRequestHeaders* modified_headers,
+         net::HttpRequestHeaders* modified_cors_exempt_headers) {
+        removed_headers->push_back("X-Test-Header-1");
+        modified_headers->SetHeader("X-Test-Header-2", "Foo");
+        modified_headers->SetHeader("X-Test-Header-3", "Throttle Value");
+        modified_cors_exempt_headers->SetHeader("X-Test-Cors-Exempt-Header-1",
+                                                "Bubble");
       }));
 
   client_.set_on_received_redirect_callback(base::BindLambdaForTesting([&]() {
@@ -843,22 +854,23 @@ TEST_F(ThrottlingURLLoaderTest, MultipleThrottlesModifyHeadersBeforeRedirect) {
 
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [](blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
-         network::HttpRequestHeadersUpdateParams* headers_update_params) {
-        headers_update_params->removed_headers.push_back("X-Test-Header-0");
-        headers_update_params->removed_headers.push_back("X-Test-Header-1");
-        headers_update_params->modified_headers.SetHeader("X-Test-Header-3",
-                                                          "Foo");
-        headers_update_params->modified_headers.SetHeader("X-Test-Header-4",
-                                                          "Throttle1");
+         std::vector<std::string>* removed_headers,
+         net::HttpRequestHeaders* modified_headers,
+         net::HttpRequestHeaders* modified_cors_exempt_headers) {
+        removed_headers->push_back("X-Test-Header-0");
+        removed_headers->push_back("X-Test-Header-1");
+        modified_headers->SetHeader("X-Test-Header-3", "Foo");
+        modified_headers->SetHeader("X-Test-Header-4", "Throttle1");
       }));
 
   throttle2->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [](blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
-         network::HttpRequestHeadersUpdateParams* headers_update_params) {
-        headers_update_params->removed_headers.push_back("X-Test-Header-1");
-        headers_update_params->removed_headers.push_back("X-Test-Header-2");
-        headers_update_params->modified_headers.SetHeader("X-Test-Header-4",
-                                                          "Throttle2");
+         std::vector<std::string>* removed_headers,
+         net::HttpRequestHeaders* modified_headers,
+         net::HttpRequestHeaders* modified_cors_exempt_headers) {
+        removed_headers->push_back("X-Test-Header-1");
+        removed_headers->push_back("X-Test-Header-2");
+        modified_headers->SetHeader("X-Test-Header-4", "Throttle2");
       }));
 
   client_.set_on_received_redirect_callback(base::BindLambdaForTesting(
@@ -1072,7 +1084,9 @@ TEST_F(ThrottlingURLLoaderTest, ResumeNoOpIfNotDeferred) {
   throttle_->set_will_process_response_callback(std::move(resume_callback));
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [](blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
-         network::HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+         std::vector<std::string>* /* removed_headers */,
+         net::HttpRequestHeaders* /* modified_headers */,
+         net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         delegate->Resume();
         delegate->Resume();
       }));
@@ -1375,8 +1389,9 @@ TEST_F(ThrottlingURLLoaderTest,
   throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
       [&run_loop1](
           blink::URLLoaderThrottle::Delegate* delegate, bool* defer,
-          network::
-              HttpRequestHeadersUpdateParams* /* headers_update_params */) {
+          std::vector<std::string>* /* removed_headers */,
+          net::HttpRequestHeaders* /* modified_headers */,
+          net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
         *defer = true;
         run_loop1.Quit();
       }));

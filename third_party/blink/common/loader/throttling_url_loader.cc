@@ -711,8 +711,11 @@ void ThrottlingURLLoader::OnReceiveRedirect(
       network::HttpRequestHeadersUpdateParams headers_update_params;
       net::RedirectInfo redirect_info_copy = redirect_info;
       base::Time start = base::Time::Now();
-      throttle->WillRedirectRequest(&redirect_info_copy, *response_head,
-                                    &throttle_deferred, &headers_update_params);
+      throttle->WillRedirectRequest(
+          &redirect_info_copy, *response_head, &throttle_deferred,
+          &headers_update_params.removed_headers,
+          &headers_update_params.modified_headers,
+          &headers_update_params.modified_cors_exempt_headers);
 
       if (!weak_ptr)
         return;

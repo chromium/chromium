@@ -5,7 +5,6 @@
 #include "components/variations/net/omnibox_autofocus_url_loader_throttle.h"
 
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -41,14 +40,15 @@ void OmniboxAutofocusURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+    std::vector<std::string>* to_be_removed_headers,
+    net::HttpRequestHeaders* modified_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_headers) {
   // Note: No need to check the kReportOmniboxAutofocusHeader
   // feature state here, as this class is only instantiated when the feature is
   // enabled.
  #if BUILDFLAG(IS_ANDROID)
   if (!ShouldAppendHeader(redirect_info->new_url)) {
-    headers_update_params->removed_headers.push_back(
-        kOmniboxAutofocusHeaderName);
+    to_be_removed_headers->push_back(kOmniboxAutofocusHeaderName);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -14,7 +14,6 @@
 #include "build/buildflag.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -142,9 +141,12 @@ class GoogleURLLoaderThrottleTest
       net::RedirectInfo redirect_info;
       redirect_info.new_url = url;
       network::mojom::URLResponseHead response_head;
-      network::HttpRequestHeadersUpdateParams headers_update_params;
+      std::vector<std::string> to_be_removed_headers;
+      net::HttpRequestHeaders modified_headers;
+      net::HttpRequestHeaders modified_cors_exempt_headers;
       throttle()->WillRedirectRequest(&redirect_info, response_head, &defer,
-                                      &headers_update_params);
+                                      &to_be_removed_headers, &modified_headers,
+                                      &modified_cors_exempt_headers);
     }
     EXPECT_EQ(expect_defer, defer);
     EXPECT_EQ(expect_defer, bound_session_handler()->IsRequestBlocked());
@@ -431,9 +433,12 @@ TEST_F(GoogleURLLoaderThrottleTest, InterceptRequestWithSameOriginCredsMode) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = kTestGoogleURL;
   network::mojom::URLResponseHead response_head;
-  network::HttpRequestHeadersUpdateParams headers_update_params;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
   throttle()->WillRedirectRequest(&redirect_info, response_head, &defer,
-                                  &headers_update_params);
+                                  &to_be_removed_headers, &modified_headers,
+                                  &modified_cors_exempt_headers);
   EXPECT_TRUE(defer);
   EXPECT_TRUE(bound_session_handler()->IsRequestBlocked());
   UnblockRequestAndVerifyCallbackAction(
@@ -454,9 +459,12 @@ TEST_F(GoogleURLLoaderThrottleTest, NoInterceptRequestWithSendCookiesFalse) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = kTestGoogleURL;
   network::mojom::URLResponseHead response_head;
-  network::HttpRequestHeadersUpdateParams headers_update_params;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
   throttle()->WillRedirectRequest(&redirect_info, response_head, &defer,
-                                  &headers_update_params);
+                                  &to_be_removed_headers, &modified_headers,
+                                  &modified_cors_exempt_headers);
   EXPECT_FALSE(defer);
   EXPECT_FALSE(bound_session_handler()->IsRequestBlocked());
 }

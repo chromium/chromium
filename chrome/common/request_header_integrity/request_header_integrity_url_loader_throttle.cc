@@ -18,7 +18,6 @@
 #include "components/google/core/common/google_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/url_request/redirect_info.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -128,13 +127,13 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+    std::vector<std::string>* to_be_removed_request_headers,
+    net::HttpRequestHeaders* modified_request_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   if (google_util::IsGoogleAssociatedDomainUrl(redirect_info->new_url)) {
-    AddRequestIntegrityHeaders(
-        &headers_update_params->modified_cors_exempt_headers);
+    AddRequestIntegrityHeaders(modified_cors_exempt_request_headers);
   } else {
-    AddRequestIntegrityHeaderNamesToVector(
-        &headers_update_params->removed_headers);
+    AddRequestIntegrityHeaderNamesToVector(to_be_removed_request_headers);
   }
 }
 

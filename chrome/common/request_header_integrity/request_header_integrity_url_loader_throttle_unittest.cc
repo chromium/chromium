@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,16 +75,17 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, RedirectToNonGoogle) {
   redirect_info.new_url = GURL("https://www.somesite.com/");
   network::mojom::URLResponseHead response_head;
   bool defer = false;
-  network::HttpRequestHeadersUpdateParams headers_update_params;
-  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
-                                 &headers_update_params);
+  std::vector<std::string> to_be_removed_request_headers;
+  net::HttpRequestHeaders modified_request_headers;
+  net::HttpRequestHeaders modified_cors_exempt_request_headers;
+
+  throttle().WillRedirectRequest(
+      &redirect_info, response_head, &defer, &to_be_removed_request_headers,
+      &modified_request_headers, &modified_cors_exempt_request_headers);
   // Check size only as header macros are not guaranteed on unbranded builds.
-  EXPECT_EQ(4u, headers_update_params.removed_headers.size());
-  EXPECT_EQ(0u,
-            headers_update_params.modified_headers.GetHeaderVector().size());
-  EXPECT_EQ(0u,
-            headers_update_params.modified_cors_exempt_headers.GetHeaderVector()
-                .size());
+  EXPECT_EQ(4u, to_be_removed_request_headers.size());
+  EXPECT_EQ(0u, modified_request_headers.GetHeaderVector().size());
+  EXPECT_EQ(0u, modified_cors_exempt_request_headers.GetHeaderVector().size());
 }
 
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, RedirectToGoogle) {
@@ -93,16 +93,17 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, RedirectToGoogle) {
   redirect_info.new_url = GURL("https://www.google.com/");
   network::mojom::URLResponseHead response_head;
   bool defer = false;
-  network::HttpRequestHeadersUpdateParams headers_update_params;
-  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
-                                 &headers_update_params);
-  EXPECT_EQ(0u, headers_update_params.removed_headers.size());
-  EXPECT_EQ(0u,
-            headers_update_params.modified_headers.GetHeaderVector().size());
+  std::vector<std::string> to_be_removed_request_headers;
+  net::HttpRequestHeaders modified_request_headers;
+  net::HttpRequestHeaders modified_cors_exempt_request_headers;
+
+  throttle().WillRedirectRequest(
+      &redirect_info, response_head, &defer, &to_be_removed_request_headers,
+      &modified_request_headers, &modified_cors_exempt_request_headers);
+  EXPECT_EQ(0u, to_be_removed_request_headers.size());
+  EXPECT_EQ(0u, modified_request_headers.GetHeaderVector().size());
   // Check size only as header macros are not guaranteed on unbranded builds.
-  EXPECT_EQ(3u,
-            headers_update_params.modified_cors_exempt_headers.GetHeaderVector()
-                .size());
+  EXPECT_EQ(3u, modified_cors_exempt_request_headers.GetHeaderVector().size());
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -145,22 +146,22 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest,
   redirect_info.new_url = GURL("https://www.somesite.com/");
   network::mojom::URLResponseHead response_head;
   bool defer = false;
-  network::HttpRequestHeadersUpdateParams headers_update_params;
+  std::vector<std::string> to_be_removed_request_headers;
+  net::HttpRequestHeaders modified_request_headers;
+  net::HttpRequestHeaders modified_cors_exempt_request_headers;
 
-  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
-                                 &headers_update_params);
-  EXPECT_THAT(headers_update_params.removed_headers,
+  throttle().WillRedirectRequest(
+      &redirect_info, response_head, &defer, &to_be_removed_request_headers,
+      &modified_request_headers, &modified_cors_exempt_request_headers);
+  EXPECT_THAT(to_be_removed_request_headers,
               testing::UnorderedElementsAreArray({
                   CHANNEL_NAME_HEADER_NAME,
                   COPYRIGHT_HEADER_NAME,
                   LASTCHANGE_YEAR_HEADER_NAME,
                   VALIDATE_HEADER_NAME,
               }));
-  EXPECT_EQ(0u,
-            headers_update_params.modified_headers.GetHeaderVector().size());
-  EXPECT_EQ(0u,
-            headers_update_params.modified_cors_exempt_headers.GetHeaderVector()
-                .size());
+  EXPECT_EQ(0u, modified_request_headers.GetHeaderVector().size());
+  EXPECT_EQ(0u, modified_cors_exempt_request_headers.GetHeaderVector().size());
 }
 
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest,
@@ -175,24 +176,24 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest,
   redirect_info.new_url = GURL("https://www.google.com/");
   network::mojom::URLResponseHead response_head;
   bool defer = false;
-  network::HttpRequestHeadersUpdateParams headers_update_params;
+  std::vector<std::string> to_be_removed_request_headers;
+  net::HttpRequestHeaders modified_request_headers;
+  net::HttpRequestHeaders modified_cors_exempt_request_headers;
 
-  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
-                                 &headers_update_params);
-  EXPECT_EQ(0u, headers_update_params.removed_headers.size());
-  EXPECT_EQ(0u,
-            headers_update_params.modified_headers.GetHeaderVector().size());
-  EXPECT_EQ(4u,
-            headers_update_params.modified_cors_exempt_headers.GetHeaderVector()
-                .size());
-  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.HasHeader(
-      CHANNEL_NAME_HEADER_NAME));
-  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.HasHeader(
+  throttle().WillRedirectRequest(
+      &redirect_info, response_head, &defer, &to_be_removed_request_headers,
+      &modified_request_headers, &modified_cors_exempt_request_headers);
+  EXPECT_EQ(0u, to_be_removed_request_headers.size());
+  EXPECT_EQ(0u, modified_request_headers.GetHeaderVector().size());
+  EXPECT_EQ(4u, modified_cors_exempt_request_headers.GetHeaderVector().size());
+  EXPECT_TRUE(
+      modified_cors_exempt_request_headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
+  EXPECT_TRUE(modified_cors_exempt_request_headers.HasHeader(
       LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.HasHeader(
-      VALIDATE_HEADER_NAME));
-  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.HasHeader(
-      COPYRIGHT_HEADER_NAME));
+  EXPECT_TRUE(
+      modified_cors_exempt_request_headers.HasHeader(VALIDATE_HEADER_NAME));
+  EXPECT_TRUE(
+      modified_cors_exempt_request_headers.HasHeader(COPYRIGHT_HEADER_NAME));
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS) && \

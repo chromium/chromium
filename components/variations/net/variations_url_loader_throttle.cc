@@ -8,7 +8,6 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -76,12 +75,13 @@ void VariationsURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+    std::vector<std::string>* to_be_removed_headers,
+    net::HttpRequestHeaders* modified_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_headers) {
   // InIncognito::kNo is passed because this throttle is never created in
   // incognito mode.
   variations::RemoveVariationsHeaderIfNeeded(
-      *redirect_info, response_head, InIncognito::kNo,
-      &headers_update_params->removed_headers);
+      *redirect_info, response_head, InIncognito::kNo, to_be_removed_headers);
 }
 
 }  // namespace variations

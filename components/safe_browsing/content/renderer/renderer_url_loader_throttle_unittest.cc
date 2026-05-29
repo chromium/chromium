@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -197,10 +196,12 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("http://example.com/redirect");
   auto response_head = network::mojom::URLResponseHead::New();
-
-  network::HttpRequestHeadersUpdateParams headers_update_params;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
   throttle_->WillRedirectRequest(&redirect_info, *response_head, &defer,
-                                 &headers_update_params);
+                                 &to_be_removed_headers, &modified_headers,
+                                 &modified_cors_exempt_headers);
 
   // Destroy the reporter, simulating the URLLoaderThrottleProviderImpl being
   // destroyed. This should cause the pipe in the throttle to be closed.
