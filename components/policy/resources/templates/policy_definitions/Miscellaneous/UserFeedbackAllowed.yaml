@@ -10,6 +10,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- android
 items:
 - caption: Allow users to file feedback
   value: true
