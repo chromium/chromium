@@ -140,6 +140,9 @@
   <message name="IDS_PEEK_STATE_VIEW_BUTTON_LABEL" desc="Button text for the actor control button in the waiting state." formatter_data="android_java">
     View
   </message>
+  <message name="IDS_PEEK_STATE_CLOSE_BUTTON_DESCRIPTION" desc="The accessibility content description for the button that closes peek view." formatter_data="android_java">
+    Close Gemini in Chrome
+  </message>
   <message name="IDS_ACTOR_LEAVE_SITE_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to stop the actor task." formatter_data="android_java">
     Leave site?
   </message>

@@ -34,7 +34,7 @@ found in the LICENSE file.
         android:layout_centerVertical="true"
         android:src="@drawable/material_ic_close_24dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/close"
+        android:contentDescription="@string/peek_state_close_button_description"
         app:tint="@color/default_icon_color_tint_list" />
 
     <com.google.android.material.button.MaterialButton
