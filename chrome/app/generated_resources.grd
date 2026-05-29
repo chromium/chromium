@@ -14989,9 +14989,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
+      <!-- Default Browser messages -->
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL" desc="The label of the 'set as default' button on the default browser infobar.">
         Set as default
       </message>
+      <if expr="is_win">
+        <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_1" desc="Instruction step 1 of the default browser visual guided setter.">
+         Click <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Set Default<ph name="END_BOLD">&lt;/strong&gt;</ph> in your Windows settings.
+        </message>
+      </if>
 
       <if expr="is_win">
         <message name="IDS_RESTORE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for restoring the window.">

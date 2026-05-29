@@ -3,17 +3,39 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
 <!DOCTYPE html>
-<html lang="en">
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
   <meta name="color-scheme" content="light dark">
-  <title>Set Chrome as your default browser</title>
+  <title>$i18n{title}</title>
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="visual_guided_setter.css">
 </head>
 <body>
-  <visual-guided-setter-app></visual-guided-setter-app>
-  <script type="module" src="app.js"></script>
+  <div id="container" role="main">
+    <header id="header">
+      <img id="icon" src="chrome_logo.svg" alt="" aria-hidden="true">
+      <h1 id="header-title">$i18n{headerTitle}</h1>
+    </header>
+
+    <div id="content">
+      <div id="illustration-container" aria-hidden="true"></div>
+
+      <section id="instruction-container" aria-labelledby="content-title">
+        <h2 id="content-title">$i18n{contentTitle}</h2>
+        <p class="description">$i18n{contentDescription}</p>
+
+        <ol class="instructions">
+          <li>$i18nRaw{instructionStep1}</li>
+        </ol>
+
+        <div id="arrow-anchor" aria-hidden="true"></div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="visual_guided_setter.js"></script>
 </body>
 </html>

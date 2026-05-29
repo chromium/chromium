@@ -2,12 +2,161 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+html {
+  box-sizing: border-box;
   height: 100%;
+  margin: 0;
+  overflow: hidden !important;
+  padding: 0;
   width: 100%;
-  overflow: hidden;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  background-color: var(--color-sys-base-container);
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: 277px 217px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  overflow: hidden !important;
+  padding: 0;
   user-select: none;
+  width: 100%;
+}
+
+#container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  overflow-y: auto;
+  width: 100%;
+}
+
+#header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1365px;
+  padding-left: 38px;
+  padding-right: 38px;
+  padding-top: 100px;
+  width: 100%;
+}
+
+#icon {
+  height: 74px;
+  width: 74px;
+}
+
+h1 {
+  color: var(--color-sys-on-surface);
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 84px;
+  letter-spacing: -3.5px;
+  margin: 0;
+  text-align: center;
+}
+
+#content {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  gap: 80px;
+  justify-content: center;
+  max-width: 1280px;
+  padding: 80px;
+  width: 100%;
+}
+
+/* This is the strict coordinate box the C++ layer depends on */
+#illustration-container {
+  align-items: center;
+  background-color: #E8F0FE;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-shrink: 0;
+  height: 359px;
+  justify-content: center;
+  position: relative;
+  width: 600px;
+}
+
+#instruction-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 400px;
+  position: relative;
+}
+
+h2 {
+  color: var(--color-sys-on-surface);
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 44px;
+  margin: 0 0 12px 0;
+}
+
+.description {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 16px;
+  line-height: 26px;
+  margin-bottom: 24px;
+}
+
+.instructions {
+  color: var(--color-sys-on-surface);
+  font-size: 16px;
+  line-height: 26px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 12px;
+}
+
+strong {
+  font-weight: 600;
+}
+
+@media (max-width: 1150px) {
+  #content {
+    align-items: center;
+    flex-direction: column;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  #header {
+    padding-top: 40px;
+  }
+
+  #instruction-container {
+    align-items: center;
+    max-width: 672px;
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+
+  .instructions {
+    display: inline-block;
+    text-align: left;
+  }
 }

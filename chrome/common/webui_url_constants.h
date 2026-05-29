@@ -483,7 +483,7 @@ inline constexpr char kChromeUIWhatsNewURL[] = "chrome://whats-new/";
 
 #if BUILDFLAG(IS_WIN)
 inline constexpr char kChromeUIDefaultBrowserVisualGuidedSetterURL[] =
-    "chrome://default-browser";
+    "chrome://default-browser/";
 inline constexpr char kChromeUIDefaultBrowserVisualGuidedSetterHost[] =
     "default-browser";
 #endif
