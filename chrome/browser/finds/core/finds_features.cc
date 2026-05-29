@@ -55,4 +55,12 @@ constexpr base::FeatureParam<bool> kEnableThemeUrlVisitCountOptIn{
 constexpr base::FeatureParam<bool> kBlockModelExecution{
     &kChromeFinds, "block_model_execution", /*default_value=*/false};
 
+constexpr base::FeatureParam<bool> kEnableOmniboxRecentSearchSuggestionOptIn{
+    &kChromeFinds, "enable_omnibox_recent_search_suggestion_opt_in",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<int> kOmniboxRecentSearchSuggestionCountThreshold{
+    &kChromeFinds, "omnibox_recent_search_suggestion_count_threshold",
+    /*default_value=*/2};
+
 }  // namespace finds::features

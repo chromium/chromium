@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FINDS_CORE_FINDS_TAB_HELPER_H_
 #define CHROME_BROWSER_FINDS_CORE_FINDS_TAB_HELPER_H_
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@ class WebContents;
 class OptimizationGuideKeyedService;
 class TemplateURLService;
 class PrefService;
+struct OmniboxLog;
 
 namespace finds {
 
@@ -62,12 +64,23 @@ class FindsTabHelper : public content::WebContentsObserver,
   // Checks if the user has returned to the SRP enough from a backpress.
   void CheckSRPReturnCount(content::NavigationHandle* navigation_handle);
 
+  // Callback observed via OmniboxEventGlobalTracker when a URL is opened from
+  // the omnibox.
+  void OnURLOpenedFromOmnibox(OmniboxLog* log);
+
+  // Opt-in condition related variables
+  bool pending_omnibox_recent_search_suggestion_navigation_ = false;
+  bool is_recent_search_suggestion_opt_in_pending_ = false;
+  int srp_return_count_ = 0;
+  bool is_srp_return_opt_in_pending_ = false;
+
   raw_ptr<FindsService> finds_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<OptimizationGuideKeyedService> opt_guide_service_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
-  int srp_return_count_ = 0;
-  bool is_srp_return_opt_in_pending_ = false;
+
+  base::CallbackListSubscription omnibox_tracker_observation_;
+
   base::WeakPtrFactory<FindsTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

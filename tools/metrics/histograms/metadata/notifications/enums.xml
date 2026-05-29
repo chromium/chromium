@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
 <enum name="FindsOptInTriggerReason">
   <int value="0" label="Theme URL Visit Count"/>
   <int value="1" label="SRP Back Navigation Count"/>
+  <int value="2" label="Omnibox Recent Search Suggestion Count"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_metrics.h:FindsOptInTriggerReason) -->

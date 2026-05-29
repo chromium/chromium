@@ -1150,4 +1150,29 @@ TEST_F(FindsServiceTest, TestModelExecutionDisabledByParam) {
       FindsService::Result::Status::kModelExecutionDisabledByParam, 1);
 }
 
+TEST_F(FindsServiceTest,
+       RecordRecentSearchSuggestionClickAndCheckThresholdReached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      finds::features::kChromeFinds,
+      {{"omnibox_recent_search_suggestion_count_threshold", "3"}});
+
+  testing::NiceMock<MockFindsServiceObserver> observer;
+  service_->AddObserver(&observer);
+  EXPECT_FALSE(
+      service_->RecordRecentSearchSuggestionClickAndCheckThresholdReached());
+  EXPECT_FALSE(
+      service_->RecordRecentSearchSuggestionClickAndCheckThresholdReached());
+  EXPECT_TRUE(
+      service_->RecordRecentSearchSuggestionClickAndCheckThresholdReached());
+
+  EXPECT_CALL(observer, OnOptInCriteriaFulfilled()).Times(1);
+  service_->RecentSearchSuggestionCountForOptInReached();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.ChromeFinds.OptInCriteriaFulfilled.Reason",
+      FindsOptInTriggerReason::kOmniboxRecentSearchSuggestionCount, 1);
+  service_->RemoveObserver(&observer);
+}
+
 }  // namespace finds

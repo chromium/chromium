@@ -113,6 +113,13 @@ class FindsService : public KeyedService,
   // back navigations to trigger the opt in promo.
   void SRPBackNavigationCountForOptInReached();
 
+  // Records a successful recent search suggestion navigation and returns true
+  // if the threshold is met.
+  bool RecordRecentSearchSuggestionClickAndCheckThresholdReached();
+  // Notifies the service that the user has reached the required recent search
+  // suggestion navigations to trigger the opt-in promo.
+  void RecentSearchSuggestionCountForOptInReached();
+
   // Returns true if the Finds feature is allowed for the user based on
   // permissions and preferences.
   bool IsFindsFeatureAllowedForUser();
@@ -164,6 +171,7 @@ class FindsService : public KeyedService,
   base::flat_map<optimization_guide::proto::FindsMetadata::ThemeType, int>
       theme_url_visit_count_;
   bool theme_opt_in_criteria_fulfilled_ = false;
+  int omnibox_recent_search_suggestion_click_count_ = 0;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>

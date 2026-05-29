@@ -25,7 +25,8 @@ enum class FindsNotificationUserInteraction {
 enum class FindsOptInTriggerReason {
   kThemeUrlVisitCount = 0,
   kSrpBackNavigationCount = 1,
-  kMaxValue = kSrpBackNavigationCount,
+  kOmniboxRecentSearchSuggestionCount = 2,
+  kMaxValue = kOmniboxRecentSearchSuggestionCount,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:FindsOptInTriggerReason)
 

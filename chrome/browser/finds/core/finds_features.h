@@ -68,6 +68,15 @@ extern const base::FeatureParam<bool> kEnableThemeUrlVisitCountOptIn;
 // The feature flag param to block model execution.
 extern const base::FeatureParam<bool> kBlockModelExecution;
 
+// The feature flag param to enable the omnibox recent search suggestion opt-in
+// flow.
+extern const base::FeatureParam<bool> kEnableOmniboxRecentSearchSuggestionOptIn;
+
+// The number of times a user should click recent search suggestions in the
+// omnibox before triggering the opt-in promo.
+extern const base::FeatureParam<int>
+    kOmniboxRecentSearchSuggestionCountThreshold;
+
 }  // namespace finds::features
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_FEATURES_H_
