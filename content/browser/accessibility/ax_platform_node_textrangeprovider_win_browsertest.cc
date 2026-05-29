@@ -1144,6 +1144,81 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       CompareEndpointsAcrossHyperlinkBoundary) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div contenteditable="true" spellcheck="false">
+            I am <a href="https://example.com">ironman</a> two
+          </div>
+        </body>
+      </html>
+  )HTML");
+
+  ui::BrowserAccessibility* before_link_text_node =
+      FindNode(ax::mojom::Role::kStaticText, "I am ");
+  ASSERT_NE(nullptr, before_link_text_node);
+  ui::BrowserAccessibility* link_text_node =
+      FindNode(ax::mojom::Role::kStaticText, "ironman");
+  ASSERT_NE(nullptr, link_text_node);
+
+  ui::BrowserAccessibility::AXPosition before_link_position =
+      before_link_text_node->CreateTextPositionAt(0)
+          ->CreatePositionAtEndOfAnchor();
+  ui::BrowserAccessibility::AXPosition link_start_position =
+      link_text_node->CreateTextPositionAt(0);
+  ui::BrowserAccessibility::AXPosition link_after_first_character_position =
+      link_text_node->CreateTextPositionAt(1);
+  ui::BrowserAccessibility::AXPosition link_after_second_character_position =
+      link_text_node->CreateTextPositionAt(2);
+
+  ComPtr<ITextRangeProvider> before_link_range;
+  ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+      before_link_position->Clone(), before_link_position->Clone(),
+      &before_link_range);
+
+  ComPtr<ITextRangeProvider> link_start_range;
+  ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+      link_start_position->Clone(), link_start_position->Clone(),
+      &link_start_range);
+
+  ComPtr<ITextRangeProvider> link_after_first_character_range;
+  ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+      link_after_first_character_position->Clone(),
+      link_after_first_character_position->Clone(),
+      &link_after_first_character_range);
+
+  ComPtr<ITextRangeProvider> link_after_second_character_range;
+  ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+      link_after_second_character_position->Clone(),
+      link_after_second_character_position->Clone(),
+      &link_after_second_character_range);
+
+  auto compare_starts = [](ITextRangeProvider* left,
+                           ITextRangeProvider* right) {
+    int result = 0;
+    EXPECT_HRESULT_SUCCEEDED(
+        left->CompareEndpoints(TextPatternRangeEndpoint_Start, right,
+                               TextPatternRangeEndpoint_Start, &result));
+    return result;
+  };
+
+  // In UIA flat text: "I am ironman two"
+  //                    01234567...
+  // before_link (end of "I am ") and link_start (start of "ironman") are both
+  // at flat offset 5 — they represent the same insertion point.
+  EXPECT_EQ(0, compare_starts(before_link_range.Get(), link_start_range.Get()));
+
+  // link_after_first_character is at flat offset 6 (after 'i' in "ironman").
+  // This is the boundary that the original bug reported as comparing equal.
+  EXPECT_EQ(-1, compare_starts(before_link_range.Get(),
+                               link_after_first_character_range.Get()));
+  EXPECT_EQ(-1, compare_starts(link_after_first_character_range.Get(),
+                               link_after_second_character_range.Get()));
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        TextInputWithNewline) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>

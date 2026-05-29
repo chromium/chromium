@@ -1224,6 +1224,123 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderCompareEndpointsAcrossHyperlinkBoundary) {
+  // RootWebArea
+  // ├── StaticText "I am "
+  // │   └── InlineTextBox "I am "
+  // ├── Link
+  // │   └── StaticText "ironman"
+  // │       └── InlineTextBox "ironman"
+  // └── StaticText " two"
+  //     └── InlineTextBox " two"
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.child_ids = {2, 4, 7};
+
+  AXNodeData before_link_data;
+  before_link_data.id = 2;
+  before_link_data.role = ax::mojom::Role::kStaticText;
+  before_link_data.SetName("I am ");
+  before_link_data.child_ids = {3};
+
+  AXNodeData before_link_inline_data;
+  before_link_inline_data.id = 3;
+  before_link_inline_data.role = ax::mojom::Role::kInlineTextBox;
+  before_link_inline_data.SetName("I am ");
+
+  AXNodeData link_data;
+  link_data.id = 4;
+  link_data.role = ax::mojom::Role::kLink;
+  link_data.child_ids = {5};
+
+  AXNodeData link_text_data;
+  link_text_data.id = 5;
+  link_text_data.role = ax::mojom::Role::kStaticText;
+  link_text_data.SetName("ironman");
+  link_text_data.child_ids = {6};
+
+  AXNodeData link_inline_data;
+  link_inline_data.id = 6;
+  link_inline_data.role = ax::mojom::Role::kInlineTextBox;
+  link_inline_data.SetName("ironman");
+
+  AXNodeData after_link_data;
+  after_link_data.id = 7;
+  after_link_data.role = ax::mojom::Role::kStaticText;
+  after_link_data.SetName(" two");
+  after_link_data.child_ids = {8};
+
+  AXNodeData after_link_inline_data;
+  after_link_inline_data.id = 8;
+  after_link_inline_data.role = ax::mojom::Role::kInlineTextBox;
+  after_link_inline_data.SetName(" two");
+
+  AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.nodes = {
+      root_data,       before_link_data,      before_link_inline_data,
+      link_data,       link_text_data,        link_inline_data,
+      after_link_data, after_link_inline_data};
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  AXNode* before_link_text_node = root_node->children()[0];
+  AXNode* link_text_node = root_node->children()[1]->children()[0];
+
+  auto* before_link_owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(before_link_text_node));
+  auto* link_text_owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(link_text_node));
+
+  ComPtr<ITextRangeProvider> before_link_range;
+  CreateTextRangeProviderWin(
+      before_link_range, before_link_owner, before_link_text_node,
+      /*start_offset=*/5, ax::mojom::TextAffinity::kDownstream,
+      before_link_text_node, /*end_offset=*/5,
+      ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> link_start_range;
+  CreateTextRangeProviderWin(
+      link_start_range, link_text_owner, link_text_node,
+      /*start_offset=*/0, ax::mojom::TextAffinity::kDownstream, link_text_node,
+      /*end_offset=*/0, ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> link_after_first_character_range;
+  CreateTextRangeProviderWin(
+      link_after_first_character_range, link_text_owner, link_text_node,
+      /*start_offset=*/1, ax::mojom::TextAffinity::kDownstream, link_text_node,
+      /*end_offset=*/1, ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> link_after_second_character_range;
+  CreateTextRangeProviderWin(
+      link_after_second_character_range, link_text_owner, link_text_node,
+      /*start_offset=*/2, ax::mojom::TextAffinity::kDownstream, link_text_node,
+      /*end_offset=*/2, ax::mojom::TextAffinity::kDownstream);
+
+  auto compare_starts = [](ITextRangeProvider* left,
+                           ITextRangeProvider* right) {
+    int result = 0;
+    EXPECT_HRESULT_SUCCEEDED(
+        left->CompareEndpoints(TextPatternRangeEndpoint_Start, right,
+                               TextPatternRangeEndpoint_Start, &result));
+    return result;
+  };
+
+  // Cross-boundary: "I am " end (flat offset 5) vs after first char of
+  // "ironman" (flat offset 6) — must be strictly before. Without the
+  // embedded-object behavior override this incorrectly returned 0.
+  EXPECT_EQ(-1, compare_starts(before_link_range.Get(),
+                               link_after_first_character_range.Get()));
+
+  // Same-anchor: offsets 1 vs 2 inside "ironman".
+  EXPECT_EQ(-1, compare_starts(link_after_first_character_range.Get(),
+                               link_after_second_character_range.Get()));
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderExpandToEnclosingCharacter) {
   AXTreeUpdate update = BuildTextDocument({"some text", "more text"});
   Init(update);
