@@ -503,7 +503,7 @@ void Canvas2DResourceProviderSharedImage::WillDrawUnaccelerated() {
 }
 
 ScopedRasterTimer
-Canvas2DResourceProviderSharedImage::CreateScopedRasterTimerForCanvas2D() {
+Canvas2DResourceProviderSharedImage::CreateScopedRasterTimer() {
   return ScopedRasterTimer(IsAccelerated() ? RasterInterface() : nullptr, *this,
                            always_enable_raster_timers_for_testing_);
 }
@@ -1777,8 +1777,7 @@ void CanvasResourceProvider::RecordingCleared() {
   clear_frame_ = true;
 }
 
-MemoryManagedPaintCanvas&
-CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
+MemoryManagedPaintCanvas& CanvasResourceProvider::GetCanvasForTesting() {
   return recorder_->getRecordingCanvas();
 }
 
@@ -1821,7 +1820,7 @@ SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
-ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimerForCanvas2D() {
+ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
   return ScopedRasterTimer(nullptr, *this,
                            always_enable_raster_timers_for_testing_);
 }
@@ -1929,7 +1928,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
-  auto timer = CreateScopedRasterTimerForCanvas2D();
+  auto timer = CreateScopedRasterTimer();
   bool want_to_print = IsPrinting() || reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
   bool preserve_recording = want_to_print && clear_frame_;

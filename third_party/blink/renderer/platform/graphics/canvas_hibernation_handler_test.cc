@@ -193,8 +193,7 @@ void Draw(TestHibernationHandlerDelegate& delegate) {
     delegate.CreateResourceProvider();
   }
   CanvasResourceProvider* provider = delegate.GetResourceProvider();
-  provider->GetCanvasForCanvas2DForTesting().drawLine(0, 0, 2, 2,
-                                                      cc::PaintFlags());
+  provider->GetCanvasForTesting().drawLine(0, 0, 2, 2, cc::PaintFlags());
   provider->Flush(FlushReason::kOther);
 }
 

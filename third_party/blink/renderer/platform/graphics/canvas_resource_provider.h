@@ -129,7 +129,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   };
 #pragma GCC diagnostic pop
 
-  virtual Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() {
+  virtual Canvas2DResourceProviderSharedImage* AsSharedImageProvider() {
     return nullptr;
   }
 
@@ -140,9 +140,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
-  MemoryManagedPaintCanvas& GetCanvasForCanvas2DForTesting();
+  MemoryManagedPaintCanvas& GetCanvasForTesting();
   std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
-  virtual ScopedRasterTimer CreateScopedRasterTimerForCanvas2D();
+  virtual ScopedRasterTimer CreateScopedRasterTimer();
 
   virtual bool IsAccelerated() const = 0;
   virtual bool IsValid() const = 0;
@@ -421,7 +421,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool IsValid() const override;
-  Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
+  Canvas2DResourceProviderSharedImage* AsSharedImageProvider() final {
     return this;
   }
   scoped_refptr<StaticBitmapImage> Snapshot(
@@ -441,7 +441,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // token.
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
-  ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
+  ScopedRasterTimer CreateScopedRasterTimer() override;
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()

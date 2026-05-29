@@ -242,7 +242,7 @@ bool CanvasRenderingContext2D::IsComposited() const {
     return false;
   }
 
-  if (!resource_provider_->As2DSharedImageProvider()) {
+  if (!resource_provider_->AsSharedImageProvider()) {
     return false;
   }
 
@@ -736,7 +736,7 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
   }
 
   // Only CRPSI can produce CanvasResources.
-  auto* si_provider = resource_provider_->As2DSharedImageProvider();
+  auto* si_provider = resource_provider_->AsSharedImageProvider();
   if (!si_provider) {
     return nullptr;
   }
@@ -872,8 +872,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   // whether resource recycling is enabled based on page visibility.
   auto* resource_provider = GetResourceProvider();
   auto* resource_provider_si =
-      resource_provider ? resource_provider->As2DSharedImageProvider()
-                        : nullptr;
+      resource_provider ? resource_provider->AsSharedImageProvider() : nullptr;
   if (resource_provider_si) {
     resource_provider_si->SetResourceRecyclingEnabled(page_is_visible);
   }

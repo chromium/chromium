@@ -95,7 +95,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
   base::HistogramTester histograms;
 
   // Trigger a flush, which will capture a raster duration measurement.
-  provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kBlue);
+  provider->GetCanvasForTesting().clear(SkColors::kBlue);
   provider->ProduceCanvasResource(FlushReason::kOther);
   provider = nullptr;
 
@@ -125,7 +125,7 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   provider->AlwaysEnableRasterTimersForTesting(true);
 
   // Trigger a flush, which will capture a raster duration measurement.
-  provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kBlue);
+  provider->GetCanvasForTesting().clear(SkColors::kBlue);
   provider->ProduceCanvasResource(FlushReason::kOther);
 
   base::HistogramTester histograms;
