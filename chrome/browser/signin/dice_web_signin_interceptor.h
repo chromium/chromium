@@ -161,6 +161,9 @@ class DiceWebSigninInterceptor : public KeyedService,
     return state_->dice_signed_in_profile_creator_.get() != nullptr;
   }
 
+  std::vector<CoreAccountId>
+  dice_signed_in_profile_creator_accounts_for_testing() const;
+
   content::WebContents* web_contents() const {
     return state_->web_contents_.get();
   }

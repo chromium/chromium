@@ -400,7 +400,7 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
   // Unretained is fine because the profile creator is owned by this.
   dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile_, account_info_.account_id,
+          profile_, account_info_.account_id, std::vector<CoreAccountId>{},
           /*local_profile_name=*/std::u16string(),
           /*icon_index=*/std::nullopt, std::move(profile_created_callback));
 }

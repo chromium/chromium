@@ -365,7 +365,8 @@ void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
   CHECK(!profile_creator_);
   if (managed_profile_already_exists) {
     profile_creator_ = std::make_unique<DiceSignedInProfileCreator>(
-        source_profile_, account_info_.account_id, switch_to_entry->GetPath(),
+        source_profile_, account_info_.account_id, std::vector<CoreAccountId>{},
+        switch_to_entry->GetPath(),
         base::BindOnce(
             &ManagedProfileCreationController::OnNewSignedInProfileCreated,
             weak_ptr_factory_.GetWeakPtr(),
@@ -374,8 +375,8 @@ void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
     return;
   }
   profile_creator_ = std::make_unique<DiceSignedInProfileCreator>(
-      source_profile_, account_info_.account_id, profile_name,
-      profiles::GetPlaceholderAvatarIndex(),
+      source_profile_, account_info_.account_id, std::vector<CoreAccountId>{},
+      profile_name, profiles::GetPlaceholderAvatarIndex(),
       base::BindOnce(
           &ManagedProfileCreationController::OnNewSignedInProfileCreated,
           weak_ptr_factory_.GetWeakPtr(),

@@ -2404,6 +2404,9 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->OnDiceSigninSessionComplete(initiator_info.account_id,
                                              secondary_ids);
   EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_THAT(
+      interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
+      testing::UnorderedElementsAre(initiator_info.account_id));
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
 }
 
@@ -2458,5 +2461,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   // This should immediately trigger ProceedWithProfileCreation.
   std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_THAT(
+      interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
+      testing::UnorderedElementsAre(initiator_info.account_id));
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
 }
