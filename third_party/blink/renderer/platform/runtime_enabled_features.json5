@@ -4656,9 +4656,9 @@
     },
     {
       // When enabled, setting progress.max enforces a >0 constraint.
-      // This will be shipped in M146, and it can be removed in M148.
+      // This will be shipped in M150, and it can be removed in M152.
       name: "ProgressMaxIsPositive",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Propagate overscroll-behavior from the root element rather than the
