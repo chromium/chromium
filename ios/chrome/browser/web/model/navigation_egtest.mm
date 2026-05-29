@@ -141,13 +141,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
 @implementation NavigationTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
-  return config;
-}
-
 #pragma mark window.history.go operations
 
 // Tests reloading the current page via window.history.go() with no parameters.
@@ -304,12 +297,18 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
   [ChromeEarlGrey waitForWebStateVisibleURL:secondURL];
 
-  // Verify that the forward button is visible but not enabled.
-  id<GREYMatcher> disabledForwardButton =
-      grey_allOf(ForwardButton(),
-                 grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
-  [[EarlGrey selectElementWithMatcher:disabledForwardButton]
-      assertWithMatcher:grey_notNil()];
+  // Verify that the forward button is visible but not enabled (or hidden under
+  // Chrome Next IA).
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_notVisible()];
+  } else {
+    id<GREYMatcher> disabledForwardButton = grey_allOf(
+        ForwardButton(),
+        grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
+    [[EarlGrey selectElementWithMatcher:disabledForwardButton]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 // Test back-and-forward navigation from and to NTP.
@@ -326,6 +325,13 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
       assertWithMatcher:grey_notNil()];
 
   // Tap the forward button and verify test page is loaded.
+  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
+    // On compact iPhones under Chrome Next, toolbars are hidden on the NTP by
+    // default. We must scroll down the page to reveal the toolbar before we
+    // can tap the Forward button.
+    [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  }
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
