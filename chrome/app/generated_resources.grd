@@ -19388,17 +19388,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     Help improve spam protection by sharing notification content and the site's URL with Google. Content may be reviewed by humans.
   </message>
 
-     <!-- Merchant Trust IPH strings -->
-    <message name="IDS_MERCHANT_TRUST_IPH_TITLE" desc="Title of in product help to introduce merchant trust feature.">
-      See ratings for this store
-    </message>
-    <message name="IDS_MERCHANT_TRUST_IPH_BODY" desc="Content of in product help to introduce merchant trust feature.">
-      You can get a summary of what people are saying in their reviews
-    </message>
-    <message name="IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER" desc="Announcement to screen reader users when the merchant trust IPH is shown." is_accessibility_with_no_ui="true">
-      You can get a summary of what people are saying in their reviews
-    </message>
-
     <!-- Chrome Apps Deprecation -->
     <if expr="is_chromeos">
       <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_NOTIFICATION_MESSAGE" desc="Message of the notification displayed while launching a user-installed app.">

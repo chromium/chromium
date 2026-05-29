@@ -33,9 +33,6 @@ extern const base::FeatureParam<bool> kMerchantTrustEnabledWithSampleData;
 extern const char kMerchantTrustForceShowUIForTestingName[];
 extern const base::FeatureParam<bool> kMerchantTrustForceShowUIForTesting;
 
-extern const char kMerchantTrustEnableOmniboxChipName[];
-extern const base::FeatureParam<bool> kMerchantTrustEnableOmniboxChip;
-
 // Enables the merchant trust UI even when the shopper voice summary is missing.
 extern const char kMerchantTrustWithoutSummaryName[];
 extern const base::FeatureParam<bool> kMerchantTrustWithoutSummary;

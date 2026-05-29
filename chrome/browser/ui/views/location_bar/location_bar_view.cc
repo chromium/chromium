@@ -76,8 +76,6 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/merchant_trust_chip_button_controller.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
@@ -333,15 +331,6 @@ void LocationBarView::Init() {
       std::make_unique<LocationIconView>(omnibox_chip_font_list, this, this);
   location_icon_view->set_drag_controller(this);
   location_icon_view_ = AddChildView(std::move(location_icon_view));
-
-  if (page_info::IsMerchantTrustFeatureEnabled() &&
-      page_info::kMerchantTrustEnableOmniboxChip.Get()) {
-    merchant_trust_chip_ = AddChildView(std::make_unique<OmniboxChipButton>());
-    merchant_trust_chip_controller_ =
-        std::make_unique<MerchantTrustChipButtonController>(
-            merchant_trust_chip_, location_icon_view_,
-            MerchantTrustServiceFactory::GetForProfile(profile_));
-  }
 
   // Initialize the Omnibox view. browser_ can be nullptr on ChromeOS in the
   // case of simple_web_view_dialog. Or it can be nulltpr on ChromeOS and on
@@ -992,29 +981,6 @@ void LocationBarView::Layout(PassKey) {
     location_icon_view_->SetVisible(false);
   }
 
-  if (merchant_trust_chip_controller_) {
-    // The merchant chip is shown when:
-    // 1. there is data to be shown
-    // 2. no permission chips are shown
-    // 3. the omnibox is not in editing mode
-    // 4. location bar icon doesn't have extra text
-    const bool should_show_merchant_chip =
-        merchant_trust_chip_controller_->ShouldBeVisible() &&
-        !show_overriding_permission_chip && !IsEditingOrEmpty() &&
-        !location_icon_view_->GetShowText();
-
-    if (should_show_merchant_chip) {
-      // TODO(crbug.com/378854462): Use constant.
-      const int padding_before_chip = 2;
-      merchant_trust_chip_controller_->Show();
-      leading_decorations.AddDecoration(vertical_padding, location_height,
-                                        false, 0, padding_before_chip,
-                                        icon_left, merchant_trust_chip_);
-    } else {
-      merchant_trust_chip_controller_->Hide();
-    }
-  }
-
   auto add_trailing_decoration = [&](View* view, int intra_item_padding,
                                      int edge_padding) {
     if (view->GetVisible()) {
@@ -1219,10 +1185,6 @@ void LocationBarView::Update(WebContents* contents) {
   // So we can determine whether page actions should be hidden or not.
   RefreshPageActionContainerViewAndIconsVisibility(
       /*should_hide_page_actions=*/ShouldHidePageActionIcons());
-
-  if (merchant_trust_chip_controller_) {
-    merchant_trust_chip_controller_->UpdateWebContents(contents);
-  }
 
   OnChanged();  // NOTE: Triggers layout.
 

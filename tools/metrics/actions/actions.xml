@@ -643,7 +643,6 @@ should be able to be added at any place in this file.
   <variant name="_LowUserEngagementDetector"
       summary="For LowUserEngagementDetector feature."/>
   <variant name="_MediaDownload" summary="For MediaDownload feature."/>
-  <variant name="_MerchantTrust" summary="For MerchantTrust feature."/>
   <variant name="_MicToolbar" summary="In product help for toolbar mic."/>
   <variant name="_MostVisitedTilesCustomizationPin"
       summary="In product help for MVT Customization feature to pin a
@@ -25818,17 +25817,6 @@ should be able to be added at any place in this file.
   <owner>privacy-on-the-web@google.com</owner>
   <description>
     Triggered when user closes the merchant trust bubble. {MerchantTrust_Type}
-  </description>
-  <token key="MerchantTrust_Type" variants="MerchantTrust_Type"/>
-</action>
-
-<action
-    name="MerchantTrust.BubbleOpenedFromLocationBarChip{MerchantTrust_Type}">
-  <owner>tommasin@chromium.org</owner>
-  <owner>privacy-on-the-web@google.com</owner>
-  <description>
-    Triggered when user opens the merchant trust bubble from the location bar
-    chip. {MerchantTrust_Type}
   </description>
   <token key="MerchantTrust_Type" variants="MerchantTrust_Type"/>
 </action>

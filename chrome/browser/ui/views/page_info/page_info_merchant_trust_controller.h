@@ -28,7 +28,7 @@ class PageInfoMerchantTrustController : public content::WebContentsObserver {
       content::WebContents* web_contents);
   ~PageInfoMerchantTrustController() override;
 
-  void MerchantBubbleOpened(page_info::MerchantBubbleOpenReferrer referrer);
+  void MerchantBubbleOpened();
   void MerchantBubbleClosed();
 
  private:

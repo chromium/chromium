@@ -1093,8 +1093,7 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     if (name == "MerchantTrustSubpage") {
       PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
           PageInfoBubbleView::GetPageInfoBubbleForTesting());
-      bubble_view->OpenMerchantTrustPage(
-          page_info::MerchantBubbleOpenReferrer::kPageInfo);
+      bubble_view->OpenMerchantTrustPage();
     }
   }
 

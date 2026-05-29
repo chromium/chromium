@@ -42,8 +42,6 @@ std::string GetUserActionString(
       return "BubbleClosed";
     case page_info::MerchantTrustInteraction::kSidePanelClosed:
       return "SidePanelClosed";
-    case page_info::MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
-      return "BubbleOpenedFromLocationBarChip";
     case page_info::MerchantTrustInteraction::
         kSidePanelOpenedOnSameTabNavigation:
       return "SidePanelOpenedOnSameTabNavigation";
@@ -221,7 +219,6 @@ void MerchantTrustService::RecordMerchantTrustUkm(
           .Record(ukm::UkmRecorder::Get());
       break;
     case MerchantTrustInteraction::kBubbleOpenedFromPageInfo:
-    case MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
       ukm::builders::Shopping_MerchantTrust_BubbleOpened(source_id)
           .SetHasOccurred(true)
           .Record(ukm::UkmRecorder::Get());
@@ -250,7 +247,6 @@ void MerchantTrustService::RecordEngagementScore(
           engagement_score);
       break;
     case MerchantTrustInteraction::kBubbleOpenedFromPageInfo:
-    case MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
       UMA_HISTOGRAM_COUNTS_100(
           "Security.PageInfo.MerchantTrustEngagement.BubbleOpened",
           engagement_score);

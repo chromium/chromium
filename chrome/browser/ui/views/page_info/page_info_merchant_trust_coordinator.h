@@ -23,7 +23,7 @@ class PageInfoMerchantTrustCoordinator : public views::ViewObserver,
 
   std::unique_ptr<PageInfoMerchantTrustContentView> CreatePageContent();
 
-  void OnBubbleOpened(page_info::MerchantBubbleOpenReferrer referrer);
+  void OnBubbleOpened();
 
  private:
   // views::ViewObserver

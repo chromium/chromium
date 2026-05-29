@@ -260,10 +260,6 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
   if (specification->permission_page_type().has_value()) {
     bubble->OpenPermissionPage(specification->permission_page_type().value());
   }
-  if (specification->show_merchant_trust_page()) {
-    bubble->OpenMerchantTrustPage(
-        page_info::MerchantBubbleOpenReferrer::kLocationBarChip);
-  }
   return bubble;
 }
 
@@ -322,8 +318,7 @@ void PageInfoBubbleView::OpenCookiesPage() {
   AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
 }
 
-void PageInfoBubbleView::OpenMerchantTrustPage(
-    page_info::MerchantBubbleOpenReferrer referrer) {
+void PageInfoBubbleView::OpenMerchantTrustPage() {
   CHECK(merchant_trust_coordinator_);
   auto title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER);
   auto page_content = merchant_trust_coordinator_->CreatePageContent();
@@ -336,7 +331,7 @@ void PageInfoBubbleView::OpenMerchantTrustPage(
   page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(page_view));
   AnnouncePageOpened(title);
-  merchant_trust_coordinator_->OnBubbleOpened(referrer);
+  merchant_trust_coordinator_->OnBubbleOpened();
 }
 
 void PageInfoBubbleView::CloseBubble() {

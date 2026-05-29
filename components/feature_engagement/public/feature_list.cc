@@ -275,7 +275,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHLensOverlayTranslateButtonFeature,
     &kIPHLiveCaptionFeature,
     &kIPHMemorySaverModeFeature,
-    &kIPHMerchantTrustFeature,
     &kIPHPasswordManagerShortcutFeature,
     &kIPHPasswordSharingFeature,
     &kIPHPasswordsManagementBubbleAfterSaveFeature,

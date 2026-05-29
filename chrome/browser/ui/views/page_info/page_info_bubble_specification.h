@@ -52,10 +52,8 @@ class PageInfoBubbleSpecification {
     Builder& HideExtendedSiteInfo();
 
     // Opens a page in the page info bubble. Note: only one page can be shown at
-    // a time, so a permission page is mutually exclusive with the merchant
-    // trust page.
+    // a time.
     Builder& ShowPermissionPage(ContentSettingsType type);
-    Builder& ShowMerchantTrustPage();
 
     std::unique_ptr<PageInfoBubbleSpecification> Build();
 
@@ -78,7 +76,6 @@ class PageInfoBubbleSpecification {
   void AddPageInfoClosingCallback(PageInfoClosingCallback callback);
   void HideExtendedSiteInfo();
   void ShowPermissionPage(ContentSettingsType type);
-  void ShowMerchantTrustPage();
 
   views::BubbleAnchor anchor();
   gfx::NativeWindow parent_window();
@@ -89,7 +86,6 @@ class PageInfoBubbleSpecification {
   PageInfoClosingCallback page_info_closing_callback();
   bool show_extended_site_info();
   std::optional<ContentSettingsType> permission_page_type();
-  bool show_merchant_trust_page();
 
  private:
   views::BubbleAnchor anchor_;
@@ -101,7 +97,6 @@ class PageInfoBubbleSpecification {
   PageInfoClosingCallback page_info_closing_callback_;
   bool show_extended_site_info_ = true;
   std::optional<ContentSettingsType> permission_page_type_;
-  bool show_merchant_trust_page_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_SPECIFICATION_H_

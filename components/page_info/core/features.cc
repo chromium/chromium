@@ -50,10 +50,6 @@ const char kMerchantTrustForceShowUIForTestingName[] =
 const base::FeatureParam<bool> kMerchantTrustForceShowUIForTesting{
     &kMerchantTrust, kMerchantTrustForceShowUIForTestingName, false};
 
-const char kMerchantTrustEnableOmniboxChipName[] = "enable-omnibox-chip";
-const base::FeatureParam<bool> kMerchantTrustEnableOmniboxChip{
-    &kMerchantTrust, kMerchantTrustEnableOmniboxChipName, false};
-
 const char kMerchantTrustWithoutSummaryName[] = "enable-without-summary";
 const base::FeatureParam<bool> kMerchantTrustWithoutSummary{
     &kMerchantTrust, kMerchantTrustWithoutSummaryName, true};

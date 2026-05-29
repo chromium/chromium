@@ -39,7 +39,6 @@ void PageInfoMerchantTrustCoordinator::OnViewIsDeleting(
   controller_ = nullptr;
 }
 
-void PageInfoMerchantTrustCoordinator::OnBubbleOpened(
-    page_info::MerchantBubbleOpenReferrer referrer) {
-  controller_->MerchantBubbleOpened(referrer);
+void PageInfoMerchantTrustCoordinator::OnBubbleOpened() {
+  controller_->MerchantBubbleOpened();
 }

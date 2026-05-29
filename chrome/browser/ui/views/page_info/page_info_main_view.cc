@@ -751,8 +751,7 @@ PageInfoMainView::CreateMerchantTrustSubpageButton(
     page_info::MerchantData value) {
   auto button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
-                          base::Unretained(navigation_handler_),
-                          page_info::MerchantBubbleOpenReferrer::kPageInfo),
+                          base::Unretained(navigation_handler_)),
       PageInfoViewFactory::GetImageModel(
           features::IsRoundedIconsEnabled() ? vector_icons::kStorefrontIcon
                                             : vector_icons::kStorefrontOldIcon),

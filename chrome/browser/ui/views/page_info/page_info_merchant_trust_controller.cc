@@ -34,13 +34,9 @@ PageInfoMerchantTrustController::PageInfoMerchantTrustController(
 
 PageInfoMerchantTrustController::~PageInfoMerchantTrustController() = default;
 
-void PageInfoMerchantTrustController::MerchantBubbleOpened(
-    page_info::MerchantBubbleOpenReferrer referrer) {
+void PageInfoMerchantTrustController::MerchantBubbleOpened() {
   RecordInteraction(
-      referrer == page_info::MerchantBubbleOpenReferrer::kPageInfo
-          ? page_info::MerchantTrustInteraction::kBubbleOpenedFromPageInfo
-          : page_info::MerchantTrustInteraction::
-                kBubbleOpenedFromLocationBarChip);
+      page_info::MerchantTrustInteraction::kBubbleOpenedFromPageInfo);
 }
 
 void PageInfoMerchantTrustController::MerchantBubbleClosed() {

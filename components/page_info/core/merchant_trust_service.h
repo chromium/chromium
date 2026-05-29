@@ -45,7 +45,7 @@ enum class MerchantTrustInteraction {
   kSidePanelOpened = 2,
   kBubbleClosed = 3,
   kSidePanelClosed = 4,
-  kBubbleOpenedFromLocationBarChip = 5,
+  // kBubbleOpenedFromLocationBarChip = 5, // Deprecated: never launched.
   kSidePanelOpenedOnSameTabNavigation = 6,
   kSidePanelClosedOnSameTabNavigation = 7,
   kMaxValue = kSidePanelClosedOnSameTabNavigation

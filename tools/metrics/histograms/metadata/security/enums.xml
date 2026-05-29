@@ -294,7 +294,8 @@ chromium-metrics-reviews@google.com.
     The merchant trust side panel was closed.
   </int>
   <int value="5" label="kBubbleOpenedFromLocationBarChip">
-    The merchant trust bubble was opened from the location bar chip.
+    (Deprecated) The merchant trust bubble was opened from the location bar
+    chip.
   </int>
   <int value="6" label="kSidePanelOpenedOnSameTabNavigation">
     The merchant trust side panel remained open from a same tab navigation.

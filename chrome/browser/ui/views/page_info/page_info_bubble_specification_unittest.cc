@@ -32,7 +32,6 @@ TEST_F(PageInfoBubbleSpecificationTest, DefaultSpec) {
   EXPECT_FALSE(specification->page_info_closing_callback().is_null());
   EXPECT_TRUE(specification->show_extended_site_info());
   EXPECT_FALSE(specification->permission_page_type().has_value());
-  EXPECT_FALSE(specification->show_merchant_trust_page());
   specification.reset();
   anchor_view.reset();
 }
@@ -45,12 +44,4 @@ TEST_F(PageInfoBubbleSpecificationTest, InvalidSpec) {
                    nullptr, gfx::NativeWindow(), nullptr, test_url)
                    .Build(),
                "");
-
-  EXPECT_DEATH(
-      PageInfoBubbleSpecification::Builder(nullptr, gfx::NativeWindow(),
-                                           test_web_contents.get(), test_url)
-          .ShowPermissionPage(ContentSettingsType::NOTIFICATIONS)
-          .ShowMerchantTrustPage()
-          .Build(),
-      "");
 }
