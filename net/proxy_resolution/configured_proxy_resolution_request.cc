@@ -102,7 +102,7 @@ int ConfiguredProxyResolutionRequest::Start() {
           // multiple calls for the same host.
           auto result = service_->RequestHostResolution(
               dns_condition, weak_factory_.GetWeakPtr(),
-              network_anonymization_key_, net_log_, priority_);
+              network_anonymization_key_, target_network_, net_log_, priority_);
           if (result) {
             net_log_.AddEvent(
                 NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION, [&] {

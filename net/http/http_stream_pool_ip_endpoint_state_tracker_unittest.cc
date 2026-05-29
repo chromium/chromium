@@ -82,7 +82,8 @@ class HttpStreamPoolIPEndPointStateTrackerTest
     std::unique_ptr<HostResolver::ServiceEndpointRequest>
         service_endpoint_request = resolver_.CreateServiceEndpointRequest(
             HostResolver::Host(kDestination), NetworkAnonymizationKey(),
-            NetLogWithSource(), HostResolver::ResolveHostParameters());
+            handles::kInvalidNetworkHandle, NetLogWithSource(),
+            HostResolver::ResolveHostParameters());
     auto delegate =
         std::make_unique<FakeDelegate>(std::move(service_endpoint_request));
     return delegate;

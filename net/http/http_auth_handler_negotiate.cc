@@ -24,6 +24,7 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_filter.h"
 #include "net/http/http_auth_preferences.h"
+#include "net/http/http_request_info.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -227,6 +228,7 @@ int HttpAuthHandlerNegotiate::GenerateAuthTokenImpl(
   DCHECK(callback_.is_null());
   DCHECK(auth_token_ == nullptr);
   auth_token_ = auth_token;
+  target_network_ = request->target_network;
   if (already_called_) {
     DCHECK((!has_credentials_ && credentials == nullptr) ||
            (has_credentials_ && credentials->Equals(credentials_)));
@@ -351,8 +353,9 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalName() {
   // TODO(cbentzel): Add reverse DNS lookup for numeric addresses.
   HostResolver::ResolveHostParameters parameters;
   parameters.include_canonical_name = true;
-  resolve_host_request_ = resolver_->CreateRequest(
-      scheme_host_port_, network_anonymization_key_, net_log(), parameters);
+  resolve_host_request_ =
+      resolver_->CreateRequest(scheme_host_port_, network_anonymization_key_,
+                               target_network_, net_log(), parameters);
   return resolve_host_request_->Start(base::BindOnce(
       &HttpAuthHandlerNegotiate::OnIOComplete, base::Unretained(this)));
 }

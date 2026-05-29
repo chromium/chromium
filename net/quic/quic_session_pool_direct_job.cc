@@ -138,7 +138,7 @@ int QuicSessionPool::DirectJob::DoResolveHost() {
   parameters.secure_dns_policy = key_.session_key().secure_dns_policy();
   resolve_host_request_ = host_resolver_->CreateRequest(
       key_.destination(), key_.session_key().network_anonymization_key(),
-      net_log_, parameters);
+      key_.session_key().target_network(), net_log_, parameters);
   // Unretained is safe because |this| owns the request, ensuring cancellation
   // on destruction.
   return resolve_host_request_->Start(

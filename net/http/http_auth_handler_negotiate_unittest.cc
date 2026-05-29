@@ -360,6 +360,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   resolve_params.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
       resolver()->CreateRequest(scheme_host_port, NetworkAnonymizationKey(),
+                                handles::kInvalidNetworkHandle,
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback2;
   int result = host_request1->Start(callback2.callback());
@@ -369,6 +370,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   // succeeds, to make sure the right NetworkAnonymizationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
       resolver()->CreateRequest(scheme_host_port, network_anonymization_key(),
+                                handles::kInvalidNetworkHandle,
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback3;
   result = host_request2->Start(callback3.callback());
@@ -402,6 +404,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   resolve_params.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
       resolver()->CreateRequest(scheme_host_port, NetworkAnonymizationKey(),
+                                handles::kInvalidNetworkHandle,
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback2;
   int result = host_request1->Start(callback2.callback());
@@ -411,6 +414,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   // succeeds, to make sure the right NetworkAnonymizationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
       resolver()->CreateRequest(scheme_host_port, network_anonymization_key(),
+                                handles::kInvalidNetworkHandle,
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback3;
   result = host_request2->Start(callback3.callback());

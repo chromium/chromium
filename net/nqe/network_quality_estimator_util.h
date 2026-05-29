@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log_with_source.h"
 #include "url/scheme_host_port.h"
 
@@ -39,7 +40,8 @@ NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request,
 NET_EXPORT_PRIVATE bool IsPrivateHostForTesting(
     HostResolver* host_resolver,
     url::SchemeHostPort scheme_host_port,
-    const NetworkAnonymizationKey& network_anonymization_key);
+    const NetworkAnonymizationKey& network_anonymization_key,
+    handles::NetworkHandle target_network);
 
 }  // namespace nqe::internal
 

@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
@@ -40,6 +41,7 @@ ResolveHostRequest::ResolveHostRequest(
     net::HostResolver* resolver,
     mojom::HostResolverHostPtr host,
     const net::NetworkAnonymizationKey& network_anonymization_key,
+    net::handles::NetworkHandle target_network,
     const std::optional<net::HostResolver::ResolveHostParameters>&
         optional_parameters,
     net::NetLog* net_log) {
@@ -51,13 +53,13 @@ ResolveHostRequest::ResolveHostRequest(
     net::HostPortPair& host_port_pair = host->get_host_port_pair();
     TryToCanonicalizeHost(host_port_pair);
     internal_request_ = resolver->CreateRequest(
-        host_port_pair, network_anonymization_key,
+        host_port_pair, network_anonymization_key, target_network,
         net::NetLogWithSource::Make(
             net_log, net::NetLogSourceType::NETWORK_SERVICE_HOST_RESOLVER),
         optional_parameters);
   } else {
     internal_request_ = resolver->CreateRequest(
-        host->get_scheme_host_port(), network_anonymization_key,
+        host->get_scheme_host_port(), network_anonymization_key, target_network,
         net::NetLogWithSource::Make(
             net_log, net::NetLogSourceType::NETWORK_SERVICE_HOST_RESOLVER),
         optional_parameters);

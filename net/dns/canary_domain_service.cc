@@ -16,6 +16,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/public/dns_protocol.h"
@@ -135,8 +136,21 @@ void CanaryDomainService::ProbeSecureDnsDomain() {
       CanaryDomainCheckStatus::kStarted);
 
   pending_probe_request_ = host_resolver_->CreateRequest(
-      canary_domain_host_, NetworkAnonymizationKey::CreateTransient(), net_log_,
-      CreateResolveHostParameters());
+      canary_domain_host_, NetworkAnonymizationKey::CreateTransient(),
+      // CanaryDomainService is used to control whether to use SECURE_DNS, or
+      // bypass it, when the built-in resolver is being used, and in kAutomatic
+      // mode (see DnsClient::FallbackFromSecureTransactionPreferred).
+      // At the same time, only system resolver currently support targeting a
+      // specific network. This means that a CanaryDomainService's result does
+      // not affect hostname resolutions that are targeting a specific network:
+      // these request currently already never resolve via a built-in resolver's
+      // SECURE_DNS task.
+      // TODO(crbug.com/517832375): If the built-in resolver starts supporting
+      // targeting a specific network, this assumption will no longer be true
+      // and CanaryDomainService might need to become network-aware.
+      // For the time being, this is not a concern, so it's safe to always use
+      // the default network.
+      handles::kInvalidNetworkHandle, net_log_, CreateResolveHostParameters());
 
   int result = pending_probe_request_->Start(
       base::BindOnce(&CanaryDomainService::OnSecureDnsProbeComplete,

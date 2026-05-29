@@ -39,6 +39,9 @@ class NET_EXPORT HostResolverProc
   // in |address_family|. If successful returns OK and fills |addrlist| with
   // a list of socket addresses. Otherwise returns a network error code, and
   // fills |os_error| with a more specific error if it was non-NULL.
+  //
+  // TODO(crbug.com/517817412): Remove this and migrate all callers to the
+  // target network aware variant.
   virtual int Resolve(const std::string& host,
                       AddressFamily address_family,
                       HostResolverFlags host_resolver_flags,

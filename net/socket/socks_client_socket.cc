@@ -13,6 +13,7 @@
 #include "base/sys_byteorder.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
+#include "net/base/network_handle.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
@@ -289,7 +290,10 @@ int SOCKSClientSocket::DoResolveHost() {
   parameters.initial_priority = priority_;
   parameters.secure_dns_policy = secure_dns_policy_;
   resolve_host_request_ = host_resolver_->CreateRequest(
-      destination_, network_anonymization_key_, net_log_, parameters);
+      destination_, network_anonymization_key_,
+      // TODO(crbug.com/516746763): Support targeting a network for SOCKS
+      // proxies.
+      handles::kInvalidNetworkHandle, net_log_, parameters);
 
   return resolve_host_request_->Start(
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));
