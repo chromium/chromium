@@ -42,6 +42,11 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #else
@@ -344,6 +349,13 @@ bool IsMediaRequestFromGlic(content::BrowserContext* browser_context,
 }
 
 mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/512144892): Foldable is currently grouped with phone. We need
+  // transition between bottom sheet and side panel, to match tablet UI.
+  if (base::android::device_info::is_foldable()) {
+    return mojom::FormFactor::kPhone;
+  }
+#endif
   switch (form_factor) {
     case ui::DEVICE_FORM_FACTOR_DESKTOP:
       return mojom::FormFactor::kDesktop;
