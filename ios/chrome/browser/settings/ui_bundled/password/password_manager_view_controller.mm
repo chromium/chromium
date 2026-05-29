@@ -1059,6 +1059,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)setShouldShowPasswordManagerWidgetPromo:
     (BOOL)shouldShowPasswordManagerWidgetPromo {
+  if (_shouldShowPasswordManagerWidgetPromo ==
+      shouldShowPasswordManagerWidgetPromo) {
+    return;
+  }
   _shouldShowPasswordManagerWidgetPromo = shouldShowPasswordManagerWidgetPromo;
 
   // Reload data to display the promo. No need to reload before the view is
@@ -1074,6 +1078,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)setShouldShowTrustedVaultWidgetPromo:
     (BOOL)shouldShowTrustedVaultWidgetPromo {
+  if (_shouldShowTrustedVaultWidgetPromo == shouldShowTrustedVaultWidgetPromo) {
+    return;
+  }
   _shouldShowTrustedVaultWidgetPromo = shouldShowTrustedVaultWidgetPromo;
 
   // Reload data to display the promo. No need to reload before the view is
