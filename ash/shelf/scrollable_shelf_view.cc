@@ -5,6 +5,7 @@
 #include "ash/shelf/scrollable_shelf_view.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -368,15 +369,13 @@ void ScrollableShelfView::Init() {
       ScrollArrowView::kRight, GetShelf()->IsHorizontalAlignment(), shelf_view_,
       this));
 
-  focus_search_ = std::make_unique<ScrollableShelfFocusSearch>(this);
-
   GetShelf()->tooltip()->set_shelf_tooltip_delegate(this);
 
   set_context_menu_controller(this);
 
   // Initializes |shelf_view_| after scrollable shelf view's children are
   // initialized.
-  shelf_view_->Init(focus_search_.get());
+  shelf_view_->Init(std::make_unique<ScrollableShelfFocusSearch>(this));
 }
 
 void ScrollableShelfView::OnFocusRingActivationChanged(bool activated) {
@@ -410,7 +409,7 @@ void ScrollableShelfView::UpdateAccessiblePreviousAndNextFocus() {
 }
 
 views::FocusSearch* ScrollableShelfView::GetFocusSearch() {
-  return focus_search_.get();
+  return shelf_view_->GetFocusSearch();
 }
 
 views::FocusTraversable* ScrollableShelfView::GetFocusTraversableParent() {

@@ -523,8 +523,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   LayoutStrategy layout_strategy_before_main_axis_scrolling_ =
       kNotShowArrowButtons;
 
-  std::unique_ptr<views::FocusSearch> focus_search_;
-
   // The index of the first/last tappable app index.
   std::optional<size_t> first_tappable_app_index_ = std::nullopt;
   std::optional<size_t> last_tappable_app_index_ = std::nullopt;

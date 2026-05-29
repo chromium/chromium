@@ -369,7 +369,7 @@ int ShelfView::GetSizeOfAppButtons(int count, int button_size) {
   return button_size * count + button_spacing * std::max(0, count - 1);
 }
 
-void ShelfView::Init(views::FocusSearch* focus_search) {
+void ShelfView::Init(std::unique_ptr<views::FocusSearch> focus_search) {
   auto separator = std::make_unique<views::Separator>();
   separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator->SetPreferredLength(kSeparatorSize);
@@ -392,7 +392,7 @@ void ShelfView::Init(views::FocusSearch* focus_search) {
 
   fade_in_animation_delegate_ = std::make_unique<FadeInAnimationDelegate>(this);
 
-  focus_search_ = focus_search;
+  focus_search_ = std::move(focus_search);
 
   // We'll layout when our bounds change.
 }
@@ -794,7 +794,7 @@ bool ShelfView::IsShowingMenuForView(const views::View* view) const {
 // ShelfView, FocusTraversable implementation:
 
 views::FocusSearch* ShelfView::GetFocusSearch() {
-  return focus_search_;
+  return focus_search_.get();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

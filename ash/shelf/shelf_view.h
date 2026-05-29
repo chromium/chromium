@@ -127,7 +127,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   int GetSizeOfAppButtons(int count, int button_size);
 
   // Initializes shelf view elements.
-  void Init(views::FocusSearch* focus_search);
+  void Init(std::unique_ptr<views::FocusSearch> focus_search);
 
   // Returns true if we're showing a menu. Note the menu could be either the
   // context menu or the application select menu.
@@ -781,8 +781,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // be ScrollableShelfView.
   raw_ptr<ShelfButtonDelegate> shelf_button_delegate_ = nullptr;
 
-  // Owned by ScrollableShelfView.
-  raw_ptr<views::FocusSearch, DanglingUntriaged> focus_search_ = nullptr;
+  std::unique_ptr<views::FocusSearch> focus_search_;
 
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 
