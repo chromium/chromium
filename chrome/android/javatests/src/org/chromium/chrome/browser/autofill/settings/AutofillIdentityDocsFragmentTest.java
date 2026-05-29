@@ -1045,6 +1045,47 @@ public class AutofillIdentityDocsFragmentTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    public void testThirdPartyMode_cardVisibleToggleAndAddButtonsDisabled() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(
+                getPassportEntityType(),
+                Arrays.asList(TestUtils.buildGermanyPassportWithLabels("guid1")));
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
+
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference(
+                                    AutofillIdentityDocsFragment.PREF_OPT_IN_TOGGLE);
+                    assertNotNull(toggle);
+                    assertThat(toggle.isEnabled()).isFalse();
+                    assertThat(toggle.isChecked()).isFalse();
+
+                    PreferenceGroup group = (PreferenceGroup) fragment.findPreference("Passport");
+                    Preference addPassport = group.findPreference("Passport Add");
+                    assertThat(addPassport).isNotNull();
+                    assertThat(addPassport.isEnabled()).isFalse();
+
+                    Preference disabledSettingsCard =
+                            fragment.findPreference(AutofillAiDelegate.DISABLED_SETTINGS_INFO);
+                    assertThat(disabledSettingsCard.isVisible()).isTrue();
+                });
+    }
+
     private void setIdentityTogglePreference(boolean value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

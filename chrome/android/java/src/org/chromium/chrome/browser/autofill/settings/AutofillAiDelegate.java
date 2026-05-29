@@ -595,7 +595,7 @@ public class AutofillAiDelegate {
     private AutofillAiToggleState getToggleState(@EntityTypeName int entityTypeName) {
         EntityDataManager entityDataManager =
                 EntityDataManagerFactory.getForProfile(mFragment.getProfile());
-        if (entityDataManager == null) {
+        if (entityDataManager == null || disabledSettingsInThirdPartyMode(mFragment.getProfile())) {
             return AutofillAiToggleState.DISABLED;
         }
 
