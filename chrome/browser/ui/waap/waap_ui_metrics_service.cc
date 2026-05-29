@@ -97,7 +97,7 @@ void EmitReloadButtonHistogramWithTraceEvent(const char* event_name,
                                              base::TimeTicks start_ticks,
                                              base::TimeTicks end_ticks) {
   const base::TimeDelta duration = end_ticks - start_ticks;
-  TRACE_EVENT_BEGIN("waap", perfetto::StaticString(event_name),
+  TRACE_EVENT_BEGIN("waap", perfetto::DynamicString(event_name),
                     perfetto::Track(reinterpret_cast<uintptr_t>(event_name)),
                     start_ticks);
   TRACE_EVENT_END("waap",
