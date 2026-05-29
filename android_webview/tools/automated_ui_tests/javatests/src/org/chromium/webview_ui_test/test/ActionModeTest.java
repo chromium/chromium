@@ -56,11 +56,13 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.webview_ui_test.R;
@@ -69,7 +71,6 @@ import org.chromium.webview_ui_test.test.util.UseLayout;
 import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
 
 /** Tests for WebView ActionMode. */
-@DisabledTest(message = "https://crbug.com/947352")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ActionModeTest {
     private static final String TAG = "ActionModeTest";
@@ -102,6 +103,7 @@ public class ActionModeTest {
     }
 
     /** Test Copy and Paste */
+    @DisabledTest(message = "https://crbug.com/947352")
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
@@ -114,6 +116,7 @@ public class ActionModeTest {
     }
 
     /** Test Select All */
+    @DisabledTest(message = "https://crbug.com/947352")
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
@@ -131,6 +134,7 @@ public class ActionModeTest {
     @SmallTest
     @UseLayout("edittext_webview")
     public void testShare() {
+        Assume.assumeFalse("Share is not supported on Automotive", DeviceInfo.isAutomotive());
         Intents.init();
         intending(anyIntent())
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, new Intent()));
@@ -154,6 +158,7 @@ public class ActionModeTest {
     }
 
     /** Test Web Search */
+    @DisabledTest(message = "https://crbug.com/947352")
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
