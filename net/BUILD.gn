@@ -3275,6 +3275,7 @@ target(_test_target_type, "net_unittests") {
   }
 
   fuzztests = [
+    "CRLSetTest.ParseDoesNotCrash",
     "HpackHeaderTableFuzzTest.CanCallMethodSequence",
     "HostCacheTest.CheckHostCacheSerialization",
     "HttpNoVarySearchTest.AreEquivalentImplementationsMatch",
@@ -3389,6 +3390,7 @@ target(_test_target_type, "net_unittests") {
     "data/embedded_test_server/",
     "data/file_stream_unittest/",
     "data/filter_unittests/",
+    "data/fuzzer_data/",
     "data/gencerts/",
     "data/pac_file_fetcher_unittest/",
     "data/quic_http_response_cache_data/",
@@ -4120,17 +4122,6 @@ fuzzer_test("net_gzip_source_stream_fuzzer") {
     "//base",
     "//net",
   ]
-}
-
-fuzzer_test("net_crl_set_fuzzer") {
-  sources = [ "cert/crl_set_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    ":test_support",
-    "//base",
-    "//net",
-  ]
-  seed_corpus = "data/fuzzer_data/net_crl_set_fuzzer/"
 }
 
 fuzzer_test("net_spdy_headers_to_http_response_headers_fuzzer") {

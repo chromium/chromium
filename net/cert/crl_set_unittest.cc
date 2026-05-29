@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/cert/crl_set.h"
 
 #include <array>
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 #include "net/cert/asn1_util.h"
@@ -18,6 +19,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace net {
 
@@ -223,5 +225,44 @@ TEST(CRLSetTest, Expired) {
 
   EXPECT_TRUE(set->IsExpired());
 }
+
+// Helper to resolve the type mismatch between fuzztest::ReadFilesFromDirectory
+// (returns a vector of tuples) and the domain's WithSeeds (expects a vector of
+// strings).
+std::vector<std::string> GetCRLSetRawSeeds() {
+  std::vector<std::string> seeds;
+  // Unpack the tuple returned from ReadFilesFromDirectory to pass into
+  // WithSeeds
+  for (auto& [crlset_data] : fuzztest::ReadFilesFromDirectory(
+           GetTestNetDataDirectory()
+               .AppendASCII("fuzzer_data/net_crl_set_fuzzer")
+               .AsUTF8Unsafe())) {
+    seeds.push_back(std::move(crlset_data));
+  }
+  return seeds;
+}
+
+void ParseDoesNotCrash(std::string_view spki_hash,
+                       std::string_view issuer_hash,
+                       const std::vector<uint8_t>& serial,
+                       std::string_view crlset_data) {
+  scoped_refptr<CRLSet> out_crl_set;
+  CRLSet::Parse(crlset_data, &out_crl_set);
+
+  if (out_crl_set) {
+    out_crl_set->CheckSPKI(spki_hash);
+    out_crl_set->CheckSerial(serial, issuer_hash);
+    out_crl_set->IsExpired();
+  }
+}
+
+FUZZ_TEST(CRLSetTest, ParseDoesNotCrash)
+    .WithDomains(
+        fuzztest::Arbitrary<std::string>().WithSize(32),
+        fuzztest::Arbitrary<std::string>().WithSize(32),
+        fuzztest::VectorOf(fuzztest::Arbitrary<uint8_t>())
+            .WithMinSize(4)
+            .WithMaxSize(19),
+        fuzztest::Arbitrary<std::string>().WithSeeds(GetCRLSetRawSeeds));
 
 }  // namespace net
