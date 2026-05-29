@@ -48,6 +48,11 @@ BASE_FEATURE(kAndroidEnableBackgroundMediaLargeFormFactors,
 // hangs. In practice, this means if GPU launch hanges, then retry it once.
 BASE_FEATURE(kAndroidFallbackToNextSlot, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Forces an active text input state update calculation and push from the
+// renderer process to browser whenever an editable view container gains focus.
+BASE_FEATURE(kAndroidForceTextInputStateUpdateUponFocus,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables IMEs to insert media content such as images, gifs and stickers.
 BASE_FEATURE(kAndroidMediaInsertion, base::FEATURE_DISABLED_BY_DEFAULT);
 

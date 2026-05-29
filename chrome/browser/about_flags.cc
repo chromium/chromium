@@ -12230,6 +12230,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-android-force-text-input-state-update-upon-focus",
+     flag_descriptions::kAndroidForceTextInputStateUpdateUponFocusName,
+     flag_descriptions::kAndroidForceTextInputStateUpdateUponFocusDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidForceTextInputStateUpdateUponFocus)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"enable-android-physical-keyboard-autocorrect-underline",
      flag_descriptions::kAndroidPkAutocorrectUnderlineName,
      flag_descriptions::kAndroidPkAutocorrectUnderlineDescription, kOsAndroid,

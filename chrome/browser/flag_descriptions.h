@@ -5245,6 +5245,12 @@ inline constexpr char kAndroidPkAutocorrectUnderlineV2Description[] =
     "disappears as typing resumes. V2 simplifies V1 implementation, while "
     "improving the input app-compatibility.";
 
+inline constexpr char kAndroidForceTextInputStateUpdateUponFocusName[] =
+    "Android Force TextInputState Update Upon Focus";
+inline constexpr char kAndroidForceTextInputStateUpdateUponFocusDescription[] =
+    "Forces an active text input state update calculation and push whenever "
+    "focus is gained on an editable text field.";
+
 inline constexpr char kAndroidShareFullLinkName[] =
     "Share Full Link on Android";
 inline constexpr char kAndroidShareFullLinkDescription[] =

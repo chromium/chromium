@@ -1067,6 +1067,12 @@ public class ImeAdapterImpl
     public void onViewFocusChanged(boolean gainFocus, boolean hideKeyboardOnBlur) {
         if (DEBUG_LOGS) Log.i(TAG, "onViewFocusChanged: gainFocus [%b]", gainFocus);
         if (!gainFocus && hideKeyboardOnBlur) resetAndHideKeyboard();
+        if (gainFocus
+                && isValid()
+                && ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)) {
+            requestTextInputStateUpdate();
+        }
         if (mInputConnectionFactory != null) {
             mInputConnectionFactory.onViewFocusChanged(gainFocus);
         }
@@ -1659,8 +1665,11 @@ public class ImeAdapterImpl
     /** Send a request to the native counterpart to give the latest text input state update. */
     boolean requestTextInputStateUpdate() {
         if (!isValid()) return false;
-        // You won't get state update anyways.
-        if (mInputConnection == null) return false;
+        if (mInputConnection == null
+                && !ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)) {
+            return false;
+        }
         return ImeAdapterImplJni.get().requestTextInputStateUpdate(mNativeImeAdapterAndroid);
     }
 

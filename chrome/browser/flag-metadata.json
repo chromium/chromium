@@ -2837,6 +2837,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-android-force-text-input-state-update-upon-focus",
+    "owners": [
+      "hdchuong@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "enable-android-grammar-check",
     "owners": [
       "jhtin@google.com",

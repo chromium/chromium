@@ -15520,6 +15520,8 @@ from previous Chrome versions.
   <int value="436980707" label="ContextualSearchForceCaption:enabled"/>
   <int value="437371666"
       label="AutofillEnableCardInfoRuntimeRetrieval:enabled"/>
+  <int value="437686060"
+      label="AndroidForceTextInputStateUpdateUponFocus:disabled"/>
   <int value="438220199"
       label="ReduceUserAgentDataLinuxPlatformVersion:enabled"/>
   <int value="438307192" label="FirstPartySets:disabled"/>
@@ -15961,6 +15963,8 @@ from previous Chrome versions.
   <int value="598741917" label="BottomBrowserControlsRefactor:disabled"/>
   <int value="598827460" label="enable-roboto-font-ui"/>
   <int value="598926697" label="VrLaunchIntent:disabled"/>
+  <int value="599466363"
+      label="AndroidForceTextInputStateUpdateUponFocus:enabled"/>
   <int value="600037637" label="AndroidSigninPromos:enabled"/>
   <int value="600643275" label="OobeRecommendAppsScreen:enabled"/>
   <int value="601417094" label="SupportF11AndF12KeyShortcuts:disabled"/>

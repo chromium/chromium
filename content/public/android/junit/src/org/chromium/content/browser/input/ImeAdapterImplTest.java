@@ -143,6 +143,16 @@ public class ImeAdapterImplTest {
     }
 
     @Test
+    @EnableFeatures(ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)
+    public void testOnViewFocusChangedGainedCallsRequestTextInputStateUpdate() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.onViewFocusChanged(/* gainFocus= */ true, /* hideKeyboardOnBlur= */ true);
+        verify(mImeAdapterImplJni).requestTextInputStateUpdate(anyLong());
+    }
+
+    @Test
     @EnableFeatures(ContentFeatureList.ANDROID_CAPTURE_KEY_EVENTS)
     public void testSendCompositionToNative() {
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);

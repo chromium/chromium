@@ -65,6 +65,8 @@ public class ContentFeatureList {
     public static final String ANDROID_CARET_BROWSING = "AndroidCaretBrowsing";
 
     public static final String ANDROID_DEV_TOOLS_FRONTEND = "AndroidDevToolsFrontend";
+    public static final String ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS =
+            "AndroidForceTextInputStateUpdateUponFocus";
 
     public static final String ANDROID_MEDIA_INSERTION = "AndroidMediaInsertion";
 

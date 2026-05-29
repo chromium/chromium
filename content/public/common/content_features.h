@@ -33,6 +33,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDevToolsFrontend);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAndroidEnableBackgroundMediaLargeFormFactors);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidFallbackToNextSlot);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidForceTextInputStateUpdateUponFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidMediaInsertion);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidNavigationBlurTransitionAnimation);
 CONTENT_EXPORT extern const base::FeatureParam<int>

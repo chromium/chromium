@@ -1212,6 +1212,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, physical keyboard autocorrect underline will display. V2 simplifies"
                         + " V1, while improving the input compatibility."),
         Flag.baseFeature(
+                ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS,
+                "When enabled, forces pushing active text input state update calculation "
+                        + "whenever focus is gained on an editable text field."),
+        Flag.baseFeature(
                 ContentFeatures.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
                 "When enabled, misspelling suggestion span will be blocked from showing in"
                         + " composition mode."),
