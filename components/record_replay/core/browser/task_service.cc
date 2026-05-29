@@ -44,6 +44,8 @@ void TaskService::OnTaskDefinitionsRetrieved(
     std::vector<TaskDefinition> task_definitions) {
   for (const TaskDefinition& definition : task_definitions) {
     if (definition.url() == visited_url.spec()) {
+      // TODO(crbug.com/517099841): Split the observation logic from the
+      // execution logic.
       observer_ = std::make_unique<TaskObserver>(
           definition,
           base::BindRepeating(&TaskService::OnTaskCompleted,
@@ -56,6 +58,7 @@ void TaskService::OnTaskDefinitionsRetrieved(
 }
 
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {
+  // TODO(crbug.com/): Persist the observation instead of the definition.
   task_store_->SaveTaskDefinition(
       /*task_definition_id=*/std::nullopt, observation.definition(),
       base::DoNothing());

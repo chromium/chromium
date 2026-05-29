@@ -39,6 +39,9 @@ void TaskObserver::StartObserving(const GURL& visited_url) {
 }
 
 void TaskObserver::OnURLVisited(const GURL& visited_url) {
+  // TODO(crbug.com/517491709): Handle special cases of reaching the final URL:
+  // it's the same as the starting URL, it's never reached, it's reached before
+  // the parameter extraction is completed, etc.
   if (visited_url == final_url_) {
     if (task_parameters_extractor_) {
       task_parameters_extractor_->FillExtractedParametersTo(
