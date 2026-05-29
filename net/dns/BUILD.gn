@@ -510,10 +510,12 @@ source_set("tests") {
 
   deps = [
     "//base",
+    "//base/test:fuzztest_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -576,29 +578,6 @@ if (use_fuzzing_engine) {
       "//net",
     ]
   }
-}
-
-proto_library("host_cache_fuzzer_proto") {
-  proto_in_dir = "//"
-  sources = [ "host_cache_fuzzer.proto" ]
-  deps = [ "//testing/libfuzzer/proto:json_proto" ]
-}
-
-fuzzer_test("net_dns_host_cache_fuzzer") {
-  sources = [ "host_cache_fuzzer.cc" ]
-  deps = [
-    ":host_cache_fuzzer_proto",
-    "//base",
-    "//net",
-    "//net:net_fuzzer_test_support",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
-  dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
 }
 
 fuzzer_test("net_dns_hosts_parse_fuzzer") {
