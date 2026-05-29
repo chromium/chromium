@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[push button] name='Show Menu' haspopup:menu
+++++[menu bar] horizontal setsize:1
+++++++[menu item] name='File' haspopup:menu posinset:1 setsize:1
+++++[push button] name='Show Popover'
+++++[push button] name='Show Options' haspopup:menu

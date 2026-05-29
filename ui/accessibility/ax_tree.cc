@@ -3087,6 +3087,20 @@ std::optional<int> AXTree::GetSetSize(const AXNode& node) {
           controlled_item_set_size;
       return controlled_item_set_size;
     }
+
+    // We want screen readers to announce buttons that pop up a menulist as
+    // pop up buttons. That means exposing their role to kPopUpButton. But
+    // for elements with the kPopUpButton role that aren't linked
+    // to their popups (via aria-controls), the set size calculation returns 0.
+    // <menulist>s aren't linked to their invoker buttons, and we don't want the
+    // invoker buttons to have a setsize anyway, so just return null here,
+    // making the <menulist>-invoking buttons have a setsize property at all.
+    // Unlinked explicit popup buttons get caught here too, but exposing no
+    // setsize for <button aria-haspopup="menu">button</button> seems fine.
+    if (node.GetRole() == ax::mojom::Role::kPopUpButton) {
+      node_set_size_pos_in_set_info_map_[node.id()].set_size = std::nullopt;
+      return std::nullopt;
+    }
   }
 
   // Compute, cache, then return.

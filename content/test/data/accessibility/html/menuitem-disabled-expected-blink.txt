@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++button name='Show Menu' detailsIds=menu
+++++++popUpButton name='Show Menu' detailsIds=menu
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
 ++++++menuItem name='Orphan Disabled' restriction=disabled

@@ -4925,6 +4925,30 @@ ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
     return ax::mojom::blink::HasPopup::kMenu;
   }
 
+  // If this element invokes a menulist via popovertarget OR commandfor, give it
+  // haspopup=menu.
+  Element* invoked_target = nullptr;
+  if (auto* html_element = DynamicTo<HTMLElement>(GetElement())) {
+    if (HTMLElement* command_for_element =
+            DynamicTo<HTMLElement>(html_element->commandForElement())) {
+      CommandEventType command = command_for_element->GetCommandEventType(
+          html_element->command(), html_element->GetExecutionContext());
+      if (command_for_element->IsValidBuiltinPopoverCommand(command)) {
+        invoked_target = command_for_element;
+      }
+    }
+    if (!invoked_target) {
+      if (auto* form_control =
+              DynamicTo<HTMLFormControlElement>(html_element)) {
+        invoked_target = form_control->popoverTargetElement().popover;
+      }
+    }
+  }
+
+  if (invoked_target && IsA<HTMLMenuListElement>(invoked_target)) {
+    return ax::mojom::blink::HasPopup::kMenu;
+  }
+
   return AXObject::HasPopup();
 }
 

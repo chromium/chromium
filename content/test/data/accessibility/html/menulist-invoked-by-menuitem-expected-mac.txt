@@ -1,6 +1,6 @@
 AXWebArea
 ++AXGroup
-++++AXButton AXTitle='Open Main Menu'
+++++AXPopUpButton AXTitle='Open Main Menu'
 ++++AXMenu AXTitle='Open Main Menu'
 ++++++AXMenuItem AXTitle='Submenu'
 ++++AXMenu AXTitle='Submenu'

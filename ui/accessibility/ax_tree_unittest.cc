@@ -4376,9 +4376,10 @@ TEST(AXTreeTest, SetSizePosInSetPopUpButtonAndSelect) {
   initial_state.nodes[5].role = ax::mojom::Role::kMenuListOption;
   AXTree tree(initial_state);
 
-  // The first popupbutton should have SetSize of 0.
+  // The first popupbutton has no controls, no details, and no children,
+  // so it has no SetSize.
   AXNode* popup_button_1 = tree.GetFromId(2);
-  EXPECT_OPTIONAL_EQ(0, popup_button_1->GetSetSize());
+  EXPECT_FALSE(popup_button_1->GetSetSize());
   // The combo box select should have SetSize of 2, since the menulistpopup
   // that it wraps has a SetSize of 2.
   AXNode* combo_box_select = tree.GetFromId(3);
@@ -4729,9 +4730,9 @@ TEST(AXTreeTest, SetSizePosInSetControls) {
   EXPECT_OPTIONAL_EQ(3, item->GetPosInSet());
   EXPECT_OPTIONAL_EQ(3, item->GetSetSize());
   button = tree.GetFromId(7);
-  EXPECT_OPTIONAL_EQ(0, button->GetSetSize());
+  EXPECT_FALSE(button->GetSetSize().has_value());
   button = tree.GetFromId(8);
-  EXPECT_OPTIONAL_EQ(0, button->GetSetSize());
+  EXPECT_FALSE(button->GetSetSize().has_value());
 }
 
 // Tests GetPosInSet and GetSetSize return the assigned int attribute values

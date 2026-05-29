@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++button name='Implicit Button Name' nameFrom=contents detailsIds=menu
+++++++popUpButton name='Implicit Button Name' nameFrom=contents detailsIds=menu
 ++++++++staticText name='Implicit Button Name' nameFrom=contents
 ++++++++++inlineTextBox name='Implicit Button Name' nameFrom=contents
 ++++++genericContainer

@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++button name='Show Menu'
+++++++popUpButton name='Show Menu'
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
 ++++++menu name='Show Menu' setSize=2 ispopup=auto

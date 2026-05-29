@@ -1529,6 +1529,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMenuListInvokerHasPopup) {
+  RunHtmlTest(FILE_PATH_LITERAL("menulist-invoker-haspopup.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityMenuListAriaLabelledbyOverridesLabel) {
   RunHtmlTest(
       FILE_PATH_LITERAL("menulist-aria-labelledby-overrides-label.html"));

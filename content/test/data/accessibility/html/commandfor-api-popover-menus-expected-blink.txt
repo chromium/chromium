@@ -1,9 +1,9 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++button collapsed
+++++++popUpButton collapsed haspopup=menu
 ++++++menuBar horizontal
-++++++++menuItem collapsed name='First item'
+++++++++menuItem collapsed name='First item' haspopup=menu
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
 ++++++++menuItem name='No command item'
@@ -13,26 +13,26 @@ rootWebArea
 ++++++++++staticText name='Custom command item'
 ++++++++++++inlineTextBox name='Custom command item'
 ++++++menu ignored invisible
-++++++button collapsed
+++++++popUpButton collapsed haspopup=menu
 ++++++menuBar horizontal
-++++++++menuItem collapsed name='First item'
+++++++++menuItem collapsed name='First item' haspopup=menu
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
 ++++++menu ignored invisible
 ++++++menuBar horizontal
-++++++++menuItem expanded name='First item'
+++++++++menuItem expanded name='First item' haspopup=menu
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
 ++++++menu ispopup=auto
 ++++++++menuItem name='Submenu1 first item'
 ++++++++++staticText name='Submenu1 first item'
 ++++++++++++inlineTextBox name='Submenu1 first item'
-++++++++menuItem collapsed name='Submenu1 second item'
+++++++++menuItem collapsed name='Submenu1 second item' haspopup=menu
 ++++++++++staticText name='Submenu1 second item'
 ++++++++++++inlineTextBox name='Submenu1 second item'
 ++++++menu ignored invisible
 ++++++menuBar horizontal
-++++++++menuItem collapsed name='First item'
+++++++++menuItem collapsed name='First item' haspopup=menu
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
 ++++++menu ignored invisible

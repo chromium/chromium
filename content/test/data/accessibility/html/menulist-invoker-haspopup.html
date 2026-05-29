@@ -1,0 +1,33 @@
+<!--
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:haspopup*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<!DOCTYPE html>
+<!-- A button with an unopened menulist must have no setSize attribute -->
+<button id="btn" popovertarget="mymenu">Show Menu</button>
+<menubar>
+  <menuitem id="item" commandfor="mymenu" command="toggle-menu">File</menuitem>
+</menubar>
+
+<menulist id="mymenu">
+  <menuitem>New</menuitem>
+  <hr>
+  <menuitem>Save</menuitem>
+  <menuitem>Save As...</menuitem>
+  <menuitem disabled="">Print</menuitem>
+  <hr>
+  <menuitem>Exit</menuitem>
+</menulist>
+
+<!-- Ensure that an invoker pointing to a non-menulist element does NOT get a haspopup=menu attribute. -->
+<button id="btn2" popovertarget="mypopover">Show Popover</button>
+<div id="mypopover" popover>A normal popover</div>
+
+<!-- This button used to receive setSize=0 in Chrome, but now receives no setSize. -->
+<button aria-haspopup="true">
+  Show Options
+</button>

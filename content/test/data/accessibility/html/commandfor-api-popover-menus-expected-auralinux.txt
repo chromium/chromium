@@ -1,17 +1,17 @@
 [document web]
 ++[section]
-++++[push button]
+++++[push button] haspopup:menu
 ++++[menu bar] horizontal
-++++++[menu item] name='First item'
+++++++[menu item] name='First item' haspopup:menu
 ++++++[menu item] name='No command item'
 ++++++[menu item] name='Custom command item'
-++++[push button]
+++++[push button] haspopup:menu
 ++++[menu bar] horizontal
-++++++[menu item] name='First item'
+++++++[menu item] name='First item' haspopup:menu
 ++++[menu bar] horizontal
-++++++[menu item] name='First item' expanded
+++++++[menu item] name='First item' expanded haspopup:menu
 ++++[menu]
 ++++++[menu item] name='Submenu1 first item'
-++++++[menu item] name='Submenu1 second item'
+++++++[menu item] name='Submenu1 second item' haspopup:menu
 ++++[menu bar] horizontal
-++++++[menu item] name='First item'
+++++++[menu item] name='First item' haspopup:menu

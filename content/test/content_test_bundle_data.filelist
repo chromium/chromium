@@ -5147,6 +5147,11 @@ data/accessibility/html/menulist-invoked-by-menuitem-expected-auralinux.txt
 data/accessibility/html/menulist-invoked-by-menuitem-expected-blink.txt
 data/accessibility/html/menulist-invoked-by-menuitem-expected-mac.txt
 data/accessibility/html/menulist-invoked-by-menuitem.html
+data/accessibility/html/menulist-invoker-haspopup-expected-android-external.txt
+data/accessibility/html/menulist-invoker-haspopup-expected-android.txt
+data/accessibility/html/menulist-invoker-haspopup-expected-auralinux.txt
+data/accessibility/html/menulist-invoker-haspopup-expected-blink.txt
+data/accessibility/html/menulist-invoker-haspopup.html
 data/accessibility/html/menulist-multiple-invokers-expected-auralinux.txt
 data/accessibility/html/menulist-multiple-invokers-expected-blink.txt
 data/accessibility/html/menulist-multiple-invokers-expected-mac.txt

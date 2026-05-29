@@ -2436,6 +2436,17 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @CommandLineFlags.Add({"enable-blink-features=MenuElements"})
+    public void test_menulistInvokerHaspopup() {
+        Assume.assumeTrue(
+                "Requires Android 16 QPR2 (36.1) or higher",
+                Build.VERSION.SDK_INT_FULL >= VERSION_CODES_FULL.BAKLAVA_1);
+        performHtmlTest("menulist-invoker-haspopup.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_meter() {
         performHtmlTest("meter.html");
     }

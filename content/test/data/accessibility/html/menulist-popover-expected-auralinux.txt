@@ -1,6 +1,6 @@
 [document web]
 ++[section]
 ++++[push button] name='Show Menu' label-for=[menu]
-++++[menu] name='Show Menu' labelled-by=[push button]
-++++++[menu item] name='Copy'
-++++++[menu item] name='Paste'
+++++[menu] name='Show Menu' labelled-by=[push button] setsize:2
+++++++[menu item] name='Copy' posinset:1 setsize:2
+++++++[menu item] name='Paste' posinset:2 setsize:2

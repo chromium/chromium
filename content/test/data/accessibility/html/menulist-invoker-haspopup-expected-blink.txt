@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++popUpButton collapsed name='Show Menu' haspopup=menu
+++++++++staticText name='Show Menu'
+++++++++++inlineTextBox name='Show Menu'
+++++++menuBar horizontal setSize=1
+++++++++menuItem collapsed name='File' setSize=1 posInSet=1 haspopup=menu
+++++++++++staticText name='File'
+++++++++++++inlineTextBox name='File'
+++++++menu ignored invisible
+++++++button collapsed name='Show Popover'
+++++++++staticText name='Show Popover'
+++++++++++inlineTextBox name='Show Popover'
+++++++popUpButton name='Show Options' haspopup=menu
+++++++++staticText name='Show Options'
+++++++++++inlineTextBox name='Show Options'

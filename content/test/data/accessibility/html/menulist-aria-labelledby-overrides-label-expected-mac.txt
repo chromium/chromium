@@ -1,5 +1,5 @@
 AXWebArea
-++AXButton AXTitle='Implicit Button Name'
+++AXPopUpButton AXTitle='Implicit Button Name'
 ++AXGroup
 ++++AXStaticText AXValue='Labelledby Name'
 ++AXMenu AXTitle='Labelledby Name'
