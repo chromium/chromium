@@ -271,6 +271,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-fyi-astro-qemu",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-fyi-nelson",
 )
 
@@ -304,6 +308,10 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "fuchsia-webgl-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-webgl-astro-qemu",
 )
 
 chrome_internal_verifier(
