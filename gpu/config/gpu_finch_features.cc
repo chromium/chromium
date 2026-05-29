@@ -473,7 +473,11 @@ bool IsUsingVulkan() {
   }
 #endif
 
+#if BUILDFLAG(ENABLE_VULKAN)
   return base::FeatureList::IsEnabled(kVulkan);
+#else
+  return false;
+#endif
 }
 
 bool IsUsingThreadSafeMediaForWebView() {
