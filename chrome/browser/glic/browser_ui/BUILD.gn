@@ -33,6 +33,7 @@ source_set("browser_ui") {
       "glic_actor_task_icon_manager_factory.h",
       "glic_button_controller.h",
       "glic_iph_controller.h",
+      "glic_nudge_controller_desktop.h",
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
       "glic_vector_icon_manager.h",
@@ -45,6 +46,8 @@ source_set("browser_ui") {
       "//components/actor/core:task_id",
       "//ui/base/unowned_user_data",
     ]
+  } else {
+    sources += [ "glic_nudge_controller_android.h" ]
   }
 }
 
@@ -62,10 +65,13 @@ source_set("impl") {
       "glic_actor_task_icon_manager_factory.cc",
       "glic_button_controller.cc",
       "glic_iph_controller.cc",
+      "glic_nudge_controller_desktop.cc",
       "glic_selection_widget.cc",
       "glic_tab_indicator_helper.cc",
       "glic_vector_icon_manager.cc",
     ]
+  } else {
+    sources += [ "glic_nudge_controller_android.cc" ]
   }
 
   deps = [

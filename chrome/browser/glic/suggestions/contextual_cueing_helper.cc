@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -51,16 +53,15 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
+#else
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"  // nogncheck crbug.com/40147906
 #include "ui/views/controls/button/label_button.h"  // nogncheck crbug.com/40147906
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #endif
 
@@ -138,8 +139,12 @@ glic::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
     return nullptr;
   }
   return browser->GetFeatures().glic_nudge_controller();
-#else  // NEEDS_ANDROID_IMPL
-  return nullptr;
+#else
+  if (!glic_nudge_controller_) {
+    glic_nudge_controller_ =
+        std::make_unique<glic::GlicNudgeControllerAndroid>();
+  }
+  return glic_nudge_controller_.get();
 #endif
 }
 

@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -104,6 +105,10 @@ class ContextualCueingHelper
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<ContextualCueingService> contextual_cueing_service_ = nullptr;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
+#endif
 
   base::WeakPtrFactory<ContextualCueingHelper> weak_ptr_factory_{this};
 

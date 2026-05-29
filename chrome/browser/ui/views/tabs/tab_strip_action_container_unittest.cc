@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller_desktop.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
@@ -190,7 +191,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_strip_model_->AppendWebContents(std::move(web_contents_),
                                         /*foreground=*/true);
 
-    glic_nudge_controller_ = std::make_unique<glic::GlicNudgeController>(
+    glic_nudge_controller_ = std::make_unique<glic::GlicNudgeControllerDesktop>(
         browser_window_interface_.get(), tab_list_bridge_.get());
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
