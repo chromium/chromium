@@ -14,12 +14,13 @@ class StatusTray;
 
 namespace glic {
 
-class GlicController;
+class GlicBackgroundDelegate;
 
 class GlicStatusIconChromeOS : public GlicStatusIcon,
                                public ui::NativeThemeObserver {
  public:
-  GlicStatusIconChromeOS(GlicController* controller, StatusTray* status_tray);
+  GlicStatusIconChromeOS(GlicBackgroundDelegate* delegate,
+                         StatusTray* status_tray);
 
   GlicStatusIconChromeOS(const GlicStatusIconChromeOS&) = delete;
   GlicStatusIconChromeOS& operator=(const GlicStatusIconChromeOS&) = delete;

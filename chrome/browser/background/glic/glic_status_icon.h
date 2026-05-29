@@ -25,20 +25,21 @@ class GlobalBrowserCollection;
 
 namespace glic {
 
-class GlicController;
+class GlicBackgroundDelegate;
 
-// This class abstracts away the details for creating a status tray icon and it
+// This class abstracts away the details for creating a status tray icon and its
 // context menu for the glic background mode manager. It is responsible for
-// notifying the GlicController when the UI needs to be shown in response to the
-// status icon being clicked or menu item being triggered.
+// notifying the GlicBackgroundDelegate when the UI needs to be shown in
+// response to the status icon being clicked or menu item being triggered.
 class GlicStatusIcon : public StatusIconObserver,
                        public StatusIconMenuModel::Delegate,
                        public BrowserCollectionObserver {
  public:
-  static std::unique_ptr<GlicStatusIcon> Create(GlicController* controller,
-                                                StatusTray* status_tray);
+  static std::unique_ptr<GlicStatusIcon> Create(
+      GlicBackgroundDelegate* delegate,
+      StatusTray* status_tray);
 
-  GlicStatusIcon(GlicController* controller, StatusTray* status_tray);
+  GlicStatusIcon(GlicBackgroundDelegate* delegate, StatusTray* status_tray);
 
   GlicStatusIcon(const GlicStatusIcon&) = delete;
   GlicStatusIcon& operator=(const GlicStatusIcon&) = delete;
@@ -74,7 +75,7 @@ class GlicStatusIcon : public StatusIconObserver,
 
   std::unique_ptr<StatusIconMenuModel> CreateStatusIconMenu();
 
-  raw_ptr<GlicController> controller_;
+  raw_ptr<GlicBackgroundDelegate> delegate_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};

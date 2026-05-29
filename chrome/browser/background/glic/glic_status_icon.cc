@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/background/glic/glic_controller.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -79,20 +79,20 @@ namespace glic {
 
 // static
 std::unique_ptr<GlicStatusIcon> GlicStatusIcon::Create(
-    GlicController* controller,
+    GlicBackgroundDelegate* delegate,
     StatusTray* status_tray) {
 #if BUILDFLAG(IS_WIN)
-  return std::make_unique<GlicStatusIconWin>(controller, status_tray);
+  return std::make_unique<GlicStatusIconWin>(delegate, status_tray);
 #elif BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<GlicStatusIconChromeOS>(controller, status_tray);
+  return std::make_unique<GlicStatusIconChromeOS>(delegate, status_tray);
 #else
-  return std::make_unique<GlicStatusIcon>(controller, status_tray);
+  return std::make_unique<GlicStatusIcon>(delegate, status_tray);
 #endif
 }
 
-GlicStatusIcon::GlicStatusIcon(GlicController* controller,
+GlicStatusIcon::GlicStatusIcon(GlicBackgroundDelegate* delegate,
                                StatusTray* status_tray)
-    : controller_(controller),
+    : delegate_(delegate),
       status_tray_(status_tray)
 #if BUILDFLAG(IS_MAC)
       ,
@@ -152,7 +152,8 @@ void GlicStatusIcon::Init() {
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {
-  controller_->Toggle(mojom::InvocationSource::kOsButton);
+  delegate_->ToggleUI(/*prevent_close=*/false,
+                      mojom::InvocationSource::kOsButton);
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
@@ -184,7 +185,8 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_TOGGLE: {
-      controller_->Toggle(mojom::InvocationSource::kOsButtonMenu);
+      delegate_->ToggleUI(/*prevent_close=*/false,
+                          mojom::InvocationSource::kOsButtonMenu);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.ToggleGlic"));
       break;

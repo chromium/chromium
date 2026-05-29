@@ -20,9 +20,9 @@
 
 namespace glic {
 
-GlicStatusIconWin::GlicStatusIconWin(GlicController* controller,
+GlicStatusIconWin::GlicStatusIconWin(GlicBackgroundDelegate* delegate,
                                      StatusTray* status_tray)
-    : GlicStatusIcon(controller, status_tray) {}
+    : GlicStatusIcon(delegate, status_tray) {}
 
 GlicStatusIconWin::~GlicStatusIconWin() = default;
 

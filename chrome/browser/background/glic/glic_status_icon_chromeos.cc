@@ -17,9 +17,9 @@
 namespace glic {
 namespace {}
 
-GlicStatusIconChromeOS::GlicStatusIconChromeOS(GlicController* controller,
+GlicStatusIconChromeOS::GlicStatusIconChromeOS(GlicBackgroundDelegate* delegate,
                                                StatusTray* status_tray)
-    : GlicStatusIcon(controller, status_tray) {
+    : GlicStatusIcon(delegate, status_tray) {
   native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 

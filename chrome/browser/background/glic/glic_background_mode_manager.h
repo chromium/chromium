@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 
@@ -29,8 +30,15 @@ class Accelerator;
 
 namespace glic {
 
-class GlicController;
 class GlicStatusIcon;
+
+// Delegate interface for GlicStatusIcon to trigger background mode actions
+// without tightly coupling to the manager.
+class GlicBackgroundDelegate {
+ public:
+  virtual ~GlicBackgroundDelegate() = default;
+  virtual void ToggleUI(bool prevent_close, mojom::InvocationSource source) = 0;
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -48,10 +56,14 @@ enum class HotkeyUsage {
 // listen to a global hotkey, and provide a status icon for triggering the UI.
 class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
                                   public ProfileManagerObserver,
-                                  public ProfileObserver {
+                                  public ProfileObserver,
+                                  public GlicBackgroundDelegate {
  public:
   explicit GlicBackgroundModeManager(StatusTray* status_tray);
   ~GlicBackgroundModeManager() override;
+
+  // GlicBackgroundDelegate:
+  void ToggleUI(bool prevent_close, mojom::InvocationSource source) override;
 
   static GlicBackgroundModeManager* GetInstance();
 
@@ -98,9 +110,6 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
 
   // A helper class for observing pref changes.
   std::unique_ptr<GlicLauncherConfiguration> configuration_;
-
-  // An abstraction used to show/hide the UI.
-  std::unique_ptr<GlicController> controller_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 

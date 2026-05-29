@@ -10,7 +10,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_file_util.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/background/glic/glic_controller.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -63,10 +63,12 @@ class MockStatusTray : public StatusTray {
   const StatusIcons& GetStatusIconsForTesting() const { return status_icons(); }
 };
 
-class MockGlicController : public GlicController {
+class MockGlicBackgroundDelegate : public GlicBackgroundDelegate {
  public:
-  MOCK_METHOD(void, Toggle, (mojom::InvocationSource source), (override));
-  MOCK_METHOD(void, Show, (mojom::InvocationSource source), (override));
+  MOCK_METHOD(void,
+              ToggleUI,
+              (bool prevent_close, mojom::InvocationSource source),
+              (override));
 };
 
 }  // namespace
@@ -81,7 +83,7 @@ class GlicStatusIconTest : public testing::Test {
         /*profile_manager=*/true);
 
     glic_status_icon_ =
-        GlicStatusIcon::Create(&glic_controller_, &status_tray_);
+        GlicStatusIcon::Create(&glic_background_delegate_mock_, &status_tray_);
     glic_status_icon_->Init();
   }
 
@@ -92,7 +94,9 @@ class GlicStatusIconTest : public testing::Test {
   }
 
   GlicStatusIcon* glic_status_icon() { return glic_status_icon_.get(); }
-  MockGlicController* glic_controller() { return &glic_controller_; }
+  MockGlicBackgroundDelegate* glic_background_delegate_mock() {
+    return &glic_background_delegate_mock_;
+  }
   MockStatusIcon* status_icon() {
     return static_cast<MockStatusIcon*>(
         status_tray_.GetStatusIconsForTesting().back().icon.get());
@@ -105,19 +109,21 @@ class GlicStatusIconTest : public testing::Test {
 
   std::unique_ptr<GlicStatusIcon> glic_status_icon_;
   MockStatusTray status_tray_;
-  MockGlicController glic_controller_;
+  MockGlicBackgroundDelegate glic_background_delegate_mock_;
   base::HistogramTester histogram_;
 };
 
 #if !BUILDFLAG(IS_LINUX)
 TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
-  EXPECT_CALL(*glic_controller(), Toggle(testing::_)).Times(1);
+  EXPECT_CALL(*glic_background_delegate_mock(), ToggleUI(false, testing::_))
+      .Times(1);
   status_icon()->DispatchClickEvent();
 }
 #endif
 
 TEST_F(GlicStatusIconTest, ExecuteCommand) {
-  EXPECT_CALL(*glic_controller(), Toggle(testing::_)).Times(1);
+  EXPECT_CALL(*glic_background_delegate_mock(), ToggleUI(false, testing::_))
+      .Times(1);
   base::UserActionTester user_action_tester;
   auto* context_menu = status_icon()->GetContextMenuForTesting();
   context_menu->ExecuteCommand(IDC_GLIC_STATUS_ICON_MENU_TOGGLE, 0);

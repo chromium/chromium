@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
-#include "chrome/browser/background/glic/glic_controller.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -93,14 +93,16 @@ class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
   }
 
   auto SimulateOpenMenuItem() {
-    return Do([this]() {
-      glic_controller_->Show(mojom::InvocationSource::kOsButtonMenu);
+    return Do([]() {
+      GlicBackgroundModeManager::GetInstance()->ToggleUI(
+          /*prevent_close=*/true, mojom::InvocationSource::kOsButtonMenu);
     });
   }
 
   auto SimulateOsButton() {
-    return Do([this]() {
-      glic_controller_->Toggle(mojom::InvocationSource::kOsButton);
+    return Do([]() {
+      GlicBackgroundModeManager::GetInstance()->ToggleUI(
+          /*prevent_close=*/false, mojom::InvocationSource::kOsButton);
     });
   }
 
@@ -139,9 +141,6 @@ class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
   }
 
  private:
-  std::unique_ptr<GlicController> glic_controller_ =
-      std::make_unique<GlicController>();
-
   base::test::ScopedFeatureList features_;
 };
 
