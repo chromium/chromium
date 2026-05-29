@@ -188,6 +188,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/test",
+    "//components/handoff",
     "//components/metrics",
     "//components/open_from_clipboard",
     "//components/open_from_clipboard:test_support",

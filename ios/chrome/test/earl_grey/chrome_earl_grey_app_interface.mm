@@ -321,6 +321,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   FakeUserActivity* fakeActivity =
       [[FakeUserActivity alloc] initWithActivityType:activityType];
 
+  if (urlString) {
+    fakeActivity.webpageURL = [NSURL URLWithString:urlString];
+  }
+
   Class intentClass = NSClassFromString(activityType);
   id intent = [[intentClass alloc] init];
 

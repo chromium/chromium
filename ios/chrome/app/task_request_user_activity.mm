@@ -842,9 +842,19 @@ void OpenSpotlightURL(NSURL* webpage_url,
 
 - (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
   switch (self.userActivityType) {
-    case UserActivityType::kHandoff:
-      // TODO(crbug.com/492115056): Add implementation.
+    case UserActivityType::kHandoff: {
+      NSURL* webpage_url = self.userActivity.webpageURL;
+      if (webpage_url) {
+        GURL webpage_gurl = net::GURLWithNSURL(webpage_url);
+        if (webpage_gurl.is_valid()) {
+          [self openURLs:{webpage_gurl}
+              sceneState:sceneState
+              targetMode:self.targetMode
+              completion:{}];
+        }
+      }
       break;
+    }
     case UserActivityType::kSearchInChrome: {
       URLAndCallback urlAndCallback = GetURLAndCallbackFromSearchInChromeIntent(
           self.userActivity.interaction.intent,

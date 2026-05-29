@@ -300,6 +300,7 @@ source_set("eg2_tests") {
     "x_callback_url_opener_egtest.mm",
   ]
   deps = [
+    "//components/handoff",
     "//components/version_info",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/bookmarks/public:constants",
