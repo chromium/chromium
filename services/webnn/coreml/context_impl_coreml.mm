@@ -11,10 +11,10 @@
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/coreml/graph_impl_coreml.h"
 #include "services/webnn/coreml/tensor_impl_coreml.h"
+#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -27,7 +27,7 @@ ContextImplCoreml::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
-    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -35,7 +35,7 @@ ContextImplCoreml::Create(
   auto task_runner = owning_task_runner;
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
       new ContextImplCoreml(std::move(receiver), std::move(context_provider),
-                            std::move(options), std::move(gpu_sequence),
+                            std::move(options), std::move(gpu_task_scheduler),
                             std::move(memory_tracker),
                             std::move(owning_task_runner), shared_image_manager,
                             std::move(main_task_runner)),
@@ -47,7 +47,7 @@ ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
-    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -59,7 +59,7 @@ ContextImplCoreml::ContextImplCoreml(
                        std::move(options),
                        mojo::ScopedDataPipeConsumerHandle(),
                        mojo::ScopedDataPipeProducerHandle(),
-                       std::move(gpu_sequence),
+                       std::move(gpu_task_scheduler),
                        std::move(memory_tracker),
                        std::move(owning_task_runner),
                        shared_image_manager,

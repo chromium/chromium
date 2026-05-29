@@ -268,8 +268,9 @@ void WebNNTestEnvironment::WaitForAllContextsToBeDestroyed() {
   // Wait for all contexts to be fully destroyed (not just removed from the
   // provider's map). After RemoveWebNNContextImpl erases a context,
   // OnTaskRunnerDeleter posts the actual deletion to the SchedulerTaskRunner.
-  // The destructor explicitly resets gpu_sequence_ (releasing MultiplexRouter
-  // refs) then fires our callback, incrementing destroyed_context_count_.
+  // The destructor explicitly resets gpu_task_scheduler_ (releasing
+  // MultiplexRouter refs) then fires our callback, incrementing
+  // destroyed_context_count_.
   const size_t target_destroyed =
       destroyed_context_count_ + context_provider_->GetContextCountForTesting();
   EXPECT_TRUE(base::test::RunUntil(

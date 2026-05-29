@@ -10,10 +10,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "services/webnn/error.h"
+#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
@@ -127,7 +127,7 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
     return;
   }
 
-  if (!context_->gpu_sequence()) {
+  if (!context_->gpu_task_scheduler()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
@@ -169,16 +169,16 @@ void WebNNTensorImpl::ExportTensor(uint64_t flow_id, uint64_t release_count) {
     return;
   }
 
-  if (!context_->gpu_sequence()) {
+  if (!context_->gpu_task_scheduler()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   gpu::SyncToken release;
   if (release_count != 0) {
-    release = gpu::SyncToken(context_->gpu_sequence()->namespace_id(),
-                             context_->gpu_sequence()->command_buffer_id(),
-                             release_count);
+    release = gpu::SyncToken(
+        context_->gpu_task_scheduler()->namespace_id(),
+        context_->gpu_task_scheduler()->command_buffer_id(), release_count);
   }
 
   context_->RunOrScheduleTask(
@@ -213,16 +213,16 @@ void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
     return;
   }
 
-  if (!context_->gpu_sequence()) {
+  if (!context_->gpu_task_scheduler()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   gpu::SyncToken release;
   if (release_count != 0) {
-    release = gpu::SyncToken(context_->gpu_sequence()->namespace_id(),
-                             context_->gpu_sequence()->command_buffer_id(),
-                             release_count);
+    release = gpu::SyncToken(
+        context_->gpu_task_scheduler()->namespace_id(),
+        context_->gpu_task_scheduler()->command_buffer_id(), release_count);
   }
 
   context_->RunOrScheduleTask(

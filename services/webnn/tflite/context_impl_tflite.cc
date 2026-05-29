@@ -4,10 +4,10 @@
 
 #include "services/webnn/tflite/context_impl_tflite.h"
 
+#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
-#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_tflite.h"
 #include "services/webnn/tflite/tensor_impl_tflite.h"
@@ -25,7 +25,7 @@ ContextImplTflite::Create(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -38,7 +38,7 @@ ContextImplTflite::Create(
       new ContextImplTflite(
           std::move(receiver), std::move(context_provider), std::move(options),
           std::move(write_tensor_consumer), std::move(read_tensor_producer),
-          std::move(gpu_sequence), std::move(memory_tracker),
+          std::move(gpu_task_scheduler), std::move(memory_tracker),
           std::move(owning_task_runner), shared_image_manager,
           std::move(main_task_runner), is_incognito),
       OnTaskRunnerDeleter(std::move(task_runner)));
@@ -50,7 +50,7 @@ ContextImplTflite::ContextImplTflite(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -63,7 +63,7 @@ ContextImplTflite::ContextImplTflite(
                        std::move(options),
                        std::move(write_tensor_consumer),
                        std::move(read_tensor_producer),
-                       std::move(gpu_sequence),
+                       std::move(gpu_task_scheduler),
                        std::move(memory_tracker),
                        std::move(owning_task_runner),
                        shared_image_manager,

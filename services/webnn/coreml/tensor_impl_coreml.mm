@@ -26,12 +26,12 @@
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/error.h"
+#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/resource_task.h"
-#include "services/webnn/scoped_gpu_sequence.h"
 
 namespace webnn::coreml {
 
@@ -396,16 +396,16 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
     return;
   }
 
-  if (!context_->gpu_sequence()) {
+  if (!context_->gpu_task_scheduler()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   gpu::SyncToken release;
   if (release_count != 0) {
-    release = gpu::SyncToken(context_->gpu_sequence()->namespace_id(),
-                             context_->gpu_sequence()->command_buffer_id(),
-                             release_count);
+    release = gpu::SyncToken(
+        context_->gpu_task_scheduler()->namespace_id(),
+        context_->gpu_task_scheduler()->command_buffer_id(), release_count);
   }
 
   // Ensure the Mojo callback is posted back to the task runner. Running

@@ -16,10 +16,10 @@
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
+#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
-#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 

@@ -56,7 +56,7 @@ class ContextProviderTflite;
 class WebNNContextProviderImpl;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
-class ScopedGpuSequence;
+class GpuTaskScheduler;
 
 // A WebNNContextImpl owns a collection of graphs and tensors and may be bound
 // to a device such as a GPU or NPU. It is created and destroyed on its
@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
@@ -180,10 +180,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // by removing itself from the ownership of `context_provider_`.
   void OnLost(const std::string& reason);
 
-  // Exposes the ScopedGpuSequence which can be used to schedule tasks
+  // Exposes the GpuTaskScheduler which can be used to schedule tasks
   // in sequence with this WebNNContext -- that is, on the same gpu::Scheduler
   // sequence. May be null when running without GPU dependencies.
-  ScopedGpuSequence* gpu_sequence() const;
+  GpuTaskScheduler* gpu_task_scheduler() const;
 
   // Returns true if the data pipe consumer handle for WriteTensor() is valid.
   bool HasValidWriteTensorConsumer() const;
@@ -374,7 +374,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // WebNN context API operations execute tasks in a sequence.
   // Within a WebNN context, tasks are orderered, but remain async with respect
   // to tasks in other WebNN contexts or sequences.
-  std::unique_ptr<ScopedGpuSequence> gpu_sequence_;
+  std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler_;
 
   // Data pipe handles for transferring tensor data across processes.
   mojo::ScopedDataPipeConsumerHandle write_tensor_consumer_;

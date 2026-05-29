@@ -20,6 +20,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "services/webnn/error.h"
+#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
@@ -33,7 +34,6 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
@@ -105,7 +105,7 @@ WebNNContextImpl::WebNNContextImpl(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -114,12 +114,12 @@ WebNNContextImpl::WebNNContextImpl(
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(
           std::move(receiver),
-          gpu_sequence->scheduler_task_runner()),
+          gpu_task_scheduler->scheduler_task_runner()),
       context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
       memory_type_tracker_(std::move(memory_tracker)),
-      gpu_sequence_(std::move(gpu_sequence)),
+      gpu_task_scheduler_(std::move(gpu_task_scheduler)),
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)),
       shared_image_manager_(shared_image_manager),
@@ -198,11 +198,20 @@ WebNNContextImpl::~WebNNContextImpl() {
   }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 
-  // Destroy the GPU sequence before signaling destruction. This runs
-  // DestroySequence() which releases any pending MultiplexRouter refs held
-  // by queued tasks (via WrapRefCounted). The callback must fire after this
-  // to guarantee the router is fully cleaned up.
-  gpu_sequence_.reset();
+  // Destroy the GPU task scheduler before signaling destruction. This releases
+  // any pending MultiplexRouter refs held by queued tasks (via WrapRefCounted).
+  // The callback must fire after this to guarantee the router is fully cleaned
+  // up.
+  gpu_task_scheduler_.reset();
+
+  // Sequence destruction must happen on the provider main sequence, and only
+  // after this context has fully torn down (including scheduler shutdown).
+  if (context_provider_) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebNNContextProviderImpl::DestroyAndRemoveGpuSequence,
+                       context_provider_, handle()));
+  }
 
   if (g_destruction_callback_for_testing) {
     g_destruction_callback_for_testing->Run();
@@ -411,8 +420,8 @@ void WebNNContextImpl::CreateTensor(
   tensor_impls_.emplace(*std::move(result));
 }
 
-ScopedGpuSequence* WebNNContextImpl::gpu_sequence() const {
-  return gpu_sequence_.get();
+GpuTaskScheduler* WebNNContextImpl::gpu_task_scheduler() const {
+  return gpu_task_scheduler_.get();
 }
 
 bool WebNNContextImpl::HasValidWriteTensorConsumer() const {
@@ -482,7 +491,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
     return;
   }
 
-  if (!gpu_sequence_) {
+  if (!gpu_task_scheduler_) {
     std::move(callback).Run(ToError<mojom::CreateTensorResult>(
         mojom::Error::Code::kNotSupportedError,
         "WebGPU interop is not supported without a GPU sequence."));
@@ -683,7 +692,7 @@ void WebNNContextImpl::OnLost(const std::string& reason) {
 void WebNNContextImpl::RunOrScheduleTaskWithThisContext(
     RunOrScheduleTaskCallback task,
     const gpu::SyncToken& fence) {
-  // Safe to use std::ref because `this` owns gpu_sequence_ and
+  // Safe to use std::ref because `this` owns gpu_task_scheduler_ and
   // its deletion drops all pending tasks before the context is destroyed.
   RunOrScheduleTask(base::BindOnce(std::move(task), std::ref(*this)), fence);
 }
@@ -691,8 +700,8 @@ void WebNNContextImpl::RunOrScheduleTaskWithThisContext(
 void WebNNContextImpl::RunOrScheduleTask(base::OnceClosure task,
                                          const gpu::SyncToken& fence,
                                          const gpu::SyncToken& release) {
-  if (gpu_sequence_) {
-    gpu_sequence_->ScheduleGpuTask(std::move(task), fence, release);
+  if (gpu_task_scheduler_) {
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), fence, release);
     return;
   }
 

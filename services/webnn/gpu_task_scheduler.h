@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_SCOPED_GPU_SEQUENCE_H_
-#define SERVICES_WEBNN_SCOPED_GPU_SEQUENCE_H_
+#ifndef SERVICES_WEBNN_GPU_TASK_SCHEDULER_H_
+#define SERVICES_WEBNN_GPU_TASK_SCHEDULER_H_
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -13,10 +13,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
 namespace gpu {
 class Scheduler;
 class SchedulerTaskRunner;
@@ -24,25 +20,24 @@ class SchedulerTaskRunner;
 
 namespace webnn {
 
-// Ensures gpu::Sequence is destroyed when the WebNNContext is lost or
-// destroyed. The sequence must be destroyed even if context creation fails,
-// since gpu::Scheduler will DCHECK if any sequences remain alive at
-// destruction.
-class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
+// Non-owning wrapper providing task scheduling for a gpu::Sequence.
+// GpuTaskScheduler must not outlive the gpu::Sequence managed by the provider,
+// except after context destruction where ShutDown() prevents execution.
+class COMPONENT_EXPORT(WEBNN_SERVICE) GpuTaskScheduler {
  public:
-  ScopedGpuSequence(gpu::Scheduler& scheduler,
-                    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                    gpu::CommandBufferId command_buffer_id,
-                    gpu::CommandBufferNamespace namespace_id);
+  GpuTaskScheduler(gpu::Scheduler& scheduler,
+                   gpu::CommandBufferId command_buffer_id,
+                   gpu::SequenceId sequence_id,
+                   gpu::CommandBufferNamespace namespace_id);
 
-  ~ScopedGpuSequence();
+  ~GpuTaskScheduler();
 
   // Move and copy not allowed.
-  ScopedGpuSequence(ScopedGpuSequence&&) = delete;
-  ScopedGpuSequence& operator=(ScopedGpuSequence&&) = delete;
+  GpuTaskScheduler(GpuTaskScheduler&&) = delete;
+  GpuTaskScheduler& operator=(GpuTaskScheduler&&) = delete;
 
-  ScopedGpuSequence(const ScopedGpuSequence&) = delete;
-  ScopedGpuSequence& operator=(const ScopedGpuSequence&) = delete;
+  GpuTaskScheduler(const GpuTaskScheduler&) = delete;
+  GpuTaskScheduler& operator=(const GpuTaskScheduler&) = delete;
 
   // Exposes a SequencedTaskRunner which is used to run Mojo messages in this
   // gpu sequence. Does not support nested loops or delayed tasks.
@@ -56,13 +51,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
                        gpu::SyncToken fence = gpu::SyncToken(),
                        gpu::SyncToken release = gpu::SyncToken());
 
-  gpu::CommandBufferNamespace namespace_id() const { return namespace_id_; }
   gpu::CommandBufferId command_buffer_id() const { return command_buffer_id_; }
+  gpu::CommandBufferNamespace namespace_id() const { return namespace_id_; }
+  gpu::SequenceId sequence_id() const { return sequence_id_; }
 
  private:
-  // Binds the gpu sequence thread upon the first call to ScheduleGpuTask.
-  // Ensures the `last_sync_token_release_id_` and `weak_factory_` are accessed
-  // and destroyed on the same sequence.
+  // Binds to the sequence that first schedules GPU work. All accesses to
+  // `weak_factory_` and destruction of this object must happen on that same
+  // sequence, which requires `scheduler_task_runner_` to be shut down on that
+  // sequence before destruction.
   SEQUENCE_CHECKER(sequence_checker_);
 
   void ScheduleGpuTaskImpl(base::OnceClosure task_closure,
@@ -75,12 +72,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
   const gpu::SequenceId sequence_id_;
   const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
 
-  // Marks the shutdown of this sequence to prevent tasks from running after
-  // destruction of this sequence.
-  base::WeakPtrFactory<ScopedGpuSequence> weak_factory_
+  // Marks shutdown of this sequence to prevent tasks from running after
+  // destruction.
+  base::WeakPtrFactory<GpuTaskScheduler> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace webnn
 
-#endif  // SERVICES_WEBNN_SCOPED_GPU_SEQUENCE_H_
+#endif  // SERVICES_WEBNN_GPU_TASK_SCHEDULER_H_

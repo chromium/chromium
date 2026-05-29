@@ -36,10 +36,10 @@ source_set("webnn_service_base") {
 
   sources = [
     "error.h",
+    "gpu_task_scheduler.cc",
+    "gpu_task_scheduler.h",
     "graph_builder_context.cc",
     "graph_builder_context.h",
-    "scoped_gpu_sequence.cc",
-    "scoped_gpu_sequence.h",
     "sequence_deleter.cc",
     "sequence_deleter.h",
     "webnn_constant_operand.cc",
