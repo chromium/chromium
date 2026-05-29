@@ -1131,8 +1131,8 @@ void HttpStreamPool::AttemptManager::ResolveServiceEndpoint(
   service_endpoint_request_ =
       http_network_session()->host_resolver()->CreateServiceEndpointRequest(
           stream_key().GetHostToResolve(),
-          stream_key().network_anonymization_key(),
-          stream_key().target_network(), net_log(), std::move(parameters));
+          stream_key().network_anonymization_key(), net_log(),
+          std::move(parameters));
 
   dns_resolution_start_time_ = base::TimeTicks::Now();
   int rv = service_endpoint_request_->Start(this);

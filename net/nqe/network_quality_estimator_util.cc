@@ -26,15 +26,14 @@ namespace {
 bool IsPrivateHost(HostResolver* host_resolver,
                    url::SchemeHostPort scheme_host_port,
                    const NetworkAnonymizationKey& network_anonymization_key,
-                   handles::NetworkHandle target_network,
                    NetLogWithSource net_log) {
   // Try resolving `host_port_pair.host()` synchronously.
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       host_resolver->CreateRequest(std::move(scheme_host_port),
-                                   network_anonymization_key, target_network,
-                                   net_log, parameters);
+                                   network_anonymization_key, net_log,
+                                   parameters);
 
   int rv = request->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(rv, ERR_IO_PENDING);
@@ -59,20 +58,17 @@ bool IsRequestForPrivateHost(const URLRequest& request,
                              NetLogWithSource net_log) {
   // Using the request's NetworkAnonymizationKey isn't necessary for privacy
   // reasons, but is needed to maximize the chances of a cache hit.
-  return IsPrivateHost(request.context()->host_resolver(),
-                       url::SchemeHostPort(request.url()),
-                       request.isolation_info().network_anonymization_key(),
-                       request.target_network(), net_log);
+  return IsPrivateHost(
+      request.context()->host_resolver(), url::SchemeHostPort(request.url()),
+      request.isolation_info().network_anonymization_key(), net_log);
 }
 
 bool IsPrivateHostForTesting(
     HostResolver* host_resolver,
     url::SchemeHostPort scheme_host_port,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    handles::NetworkHandle target_network) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return IsPrivateHost(host_resolver, std::move(scheme_host_port),
-                       network_anonymization_key, target_network,
-                       NetLogWithSource());
+                       network_anonymization_key, NetLogWithSource());
 }
 
 }  // namespace internal

@@ -2914,12 +2914,11 @@ class CountingHostResolver : public MockHostResolver {
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       url::SchemeHostPort host,
       NetworkAnonymizationKey network_anonymization_key,
-      handles::NetworkHandle target_network,
       NetLogWithSource net_log,
       std::optional<ResolveHostParameters> optional_parameters) override {
     num_resolve_calls_++;
     return MockHostResolver::CreateRequest(
-        std::move(host), std::move(network_anonymization_key), target_network,
+        std::move(host), std::move(network_anonymization_key),
         std::move(net_log), std::move(optional_parameters));
   }
 

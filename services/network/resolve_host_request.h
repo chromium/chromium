@@ -13,7 +13,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/network_handle.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -35,7 +34,6 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
       net::HostResolver* resolver,
       mojom::HostResolverHostPtr host,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      net::handles::NetworkHandle target_network,
       const std::optional<net::HostResolver::ResolveHostParameters>&
           optional_parameters,
       net::NetLog* net_log);

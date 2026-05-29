@@ -20,7 +20,6 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
@@ -53,7 +52,6 @@ class HostResolverManager::RequestImpl
   RequestImpl(NetLogWithSource source_net_log,
               HostResolver::Host request_host,
               NetworkAnonymizationKey network_anonymization_key,
-              handles::NetworkHandle target_network,
               std::optional<ResolveHostParameters> optional_parameters,
               base::WeakPtr<ResolveContext> resolve_context,
               base::WeakPtr<HostResolverManager> resolver,
@@ -108,8 +106,6 @@ class HostResolverManager::RequestImpl
     return network_anonymization_key_;
   }
 
-  handles::NetworkHandle target_network() const { return target_network_; }
-
   const ResolveHostParameters& parameters() const { return parameters_; }
 
   ResolveContext* resolve_context() const { return resolve_context_.get(); }
@@ -159,7 +155,6 @@ class HostResolverManager::RequestImpl
 
   const HostResolver::Host request_host_;
   const NetworkAnonymizationKey network_anonymization_key_;
-  const handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
   ResolveHostParameters parameters_;
   base::WeakPtr<ResolveContext> resolve_context_;
 

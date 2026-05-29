@@ -69,8 +69,8 @@ TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, Request) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver_->CreateRequest(
           url::SchemeHostPort(url::kHttpScheme, kTargetHost, 80),
-          NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
-          NetLogWithSource(), std::nullopt, resolve_context_.get());
+          NetworkAnonymizationKey(), NetLogWithSource(), std::nullopt,
+          resolve_context_.get());
 
   int result = ERR_IO_PENDING;
   base::RunLoop run_loop;

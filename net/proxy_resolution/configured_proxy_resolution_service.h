@@ -386,7 +386,6 @@ class NET_EXPORT ConfiguredProxyResolutionService
       const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
       base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
       const NetworkAnonymizationKey& network_anonymization_key,
-      handles::NetworkHandle target_network,
       const NetLogWithSource& net_log,
       RequestPriority priority);
 

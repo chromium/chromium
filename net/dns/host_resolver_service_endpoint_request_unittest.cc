@@ -339,8 +339,8 @@ class HostResolverServiceEndpointRequestTest
       ResolveHostParameters parameters = ResolveHostParameters()) {
     return Requester(resolver_->CreateServiceEndpointRequest(
         HostResolver::Host(url::SchemeHostPort(GURL(host))),
-        NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
-        net_log_with_source_, std::move(parameters), resolve_context_.get()));
+        NetworkAnonymizationKey(), net_log_with_source_, std::move(parameters),
+        resolve_context_.get()));
   }
 
   Requester CreateSchemelessRequester(
@@ -348,15 +348,14 @@ class HostResolverServiceEndpointRequestTest
       ResolveHostParameters parameters = ResolveHostParameters()) {
     return Requester(resolver_->CreateServiceEndpointRequest(
         HostResolver::Host(std::move(host_port_pair)),
-        NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
-        net_log_with_source_, std::move(parameters), resolve_context_.get()));
+        NetworkAnonymizationKey(), net_log_with_source_, std::move(parameters),
+        resolve_context_.get()));
   }
 
   LegacyRequester CreateLegacyRequester(std::string_view host) {
     return LegacyRequester(resolver_->CreateRequest(
         url::SchemeHostPort(GURL(host)), NetworkAnonymizationKey(),
-        handles::kInvalidNetworkHandle, NetLogWithSource(),
-        ResolveHostParameters(), resolve_context_.get()));
+        NetLogWithSource(), ResolveHostParameters(), resolve_context_.get()));
   }
 
   void PopulateCacheForUrl(std::string_view host,

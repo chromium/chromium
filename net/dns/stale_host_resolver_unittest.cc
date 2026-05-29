@@ -262,8 +262,7 @@ class StaleHostResolverTest : public TestWithTaskEnvironment {
 
     request_ = resolver_->CreateRequest(
         HostPortPair(kHostname, kPort), NetworkAnonymizationKey(),
-        handles::kInvalidNetworkHandle, NetLogWithSource(),
-        optional_parameters);
+        NetLogWithSource(), optional_parameters);
     resolve_pending_ = true;
     resolve_complete_ = false;
     resolve_error_ = ERR_UNEXPECTED;

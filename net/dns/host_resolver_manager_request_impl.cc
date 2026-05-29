@@ -41,7 +41,6 @@ HostResolverManager::RequestImpl::RequestImpl(
     NetLogWithSource source_net_log,
     HostResolver::Host request_host,
     NetworkAnonymizationKey network_anonymization_key,
-    handles::NetworkHandle target_network,
     std::optional<ResolveHostParameters> optional_parameters,
     base::WeakPtr<ResolveContext> resolve_context,
     base::WeakPtr<HostResolverManager> resolver,
@@ -54,12 +53,11 @@ HostResolverManager::RequestImpl::RequestImpl(
                       features::kSplitHostCacheByNetworkAnonymizationKey)
               ? std::move(network_anonymization_key)
               : NetworkAnonymizationKey()),
-      target_network_(target_network),
       parameters_(optional_parameters ? std::move(optional_parameters).value()
                                       : ResolveHostParameters()),
       resolve_context_(std::move(resolve_context)),
       priority_(parameters_.initial_priority),
-      job_key_(request_host_, target_network_, resolve_context_.get()),
+      job_key_(request_host_, resolve_context_.get()),
       resolver_(std::move(resolver)),
       tick_clock_(tick_clock) {
   CHECK_NE(parameters_.cache_usage,

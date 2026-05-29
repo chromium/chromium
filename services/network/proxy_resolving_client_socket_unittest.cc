@@ -128,7 +128,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
       url_request_context->host_resolver()->CreateRequest(
           kDestinationHostPortPair, kNetworkAnonymizationKey,
-          net::handles::kInvalidNetworkHandle, net::NetLogWithSource(), params);
+          net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
   int result = request1->Start(callback2.callback());
   EXPECT_EQ(net::OK, callback2.GetResult(result));
@@ -143,8 +143,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         url_request_context->host_resolver()->CreateRequest(
-            kDestinationHostPortPair, other_nak,
-            net::handles::kInvalidNetworkHandle, net::NetLogWithSource(),
+            kDestinationHostPortPair, other_nak, net::NetLogWithSource(),
             params);
     net::TestCompletionCallback callback3;
     result = request2->Start(callback3.callback());

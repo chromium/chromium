@@ -101,11 +101,8 @@ bool IsAttemptModeSecure(DnsTransactionFactory::AttemptMode attempt_mode) {
 }  // namespace
 
 HostResolverManager::JobKey::JobKey(HostResolver::Host host,
-                                    handles::NetworkHandle target_network,
                                     ResolveContext* resolve_context)
-    : host(std::move(host)),
-      resolve_context(resolve_context->GetWeakPtr()),
-      target_network(target_network) {}
+    : host(std::move(host)), resolve_context(resolve_context->GetWeakPtr()) {}
 
 HostResolverManager::JobKey::~JobKey() = default;
 
@@ -116,11 +113,11 @@ HostResolverManager::JobKey& HostResolverManager::JobKey::operator=(
 bool HostResolverManager::JobKey::operator<(const JobKey& other) const {
   return std::forward_as_tuple(query_types.ToEnumBitmask(), flags, source,
                                secure_dns_mode, &*resolve_context, host,
-                               network_anonymization_key, target_network) <
-         std::forward_as_tuple(
-             other.query_types.ToEnumBitmask(), other.flags, other.source,
-             other.secure_dns_mode, &*other.resolve_context, other.host,
-             other.network_anonymization_key, other.target_network);
+                               network_anonymization_key) <
+         std::forward_as_tuple(other.query_types.ToEnumBitmask(), other.flags,
+                               other.source, other.secure_dns_mode,
+                               &*other.resolve_context, other.host,
+                               other.network_anonymization_key);
 }
 
 bool HostResolverManager::JobKey::operator==(const JobKey& other) const {
@@ -153,27 +150,8 @@ HostCache::Key HostResolverManager::JobKey::ToCacheKey(bool secure) const {
 }
 
 handles::NetworkHandle HostResolverManager::JobKey::GetTargetNetwork() const {
-  // Multi-network support for Cronet and CCT was originally implemented by
-  // creating multiple URLRequestContexts/ResolveContexts. Until this historical
-  // artifact is removed, we need to maintain this compat layer between:
-  // 1) The old way of doing multi-networking, piggybacking on ResolveContext
-  // 2) The new way of doing multi-networking, using the target_network field
-  //    in the JobKey.
-  // TODO(crbug.com/495684670): Clean this up once multi-network Cronet and CCT
-  // no longer depend on network-bound URLRequestContexts.
-
-  // If there is a ResolveContext, and it has a target network, we are in the
-  // "old way of doing multi-networking" scenario. In this case, there should
-  // never be a non-default target_network set in the JobKey.
-  if (resolve_context &&
-      resolve_context->GetTargetNetwork() != handles::kInvalidNetworkHandle) {
-    CHECK_EQ(target_network, handles::kInvalidNetworkHandle);
-    return resolve_context->GetTargetNetwork();
-  }
-
-  // Otherwise, we are in the "new way of doing multi-networking" scenario. We
-  // can just rely on the target_network field in the JobKey.
-  return target_network;
+  return resolve_context ? resolve_context->GetTargetNetwork()
+                         : handles::kInvalidNetworkHandle;
 }
 
 // static
@@ -1079,7 +1057,7 @@ void HostResolverManager::Job::StartNat64Task() {
   DCHECK(!nat64_task_);
   nat64_task_ = std::make_unique<HostResolverNat64Task>(
       key_.host.GetHostnameWithoutBrackets(), key_.network_anonymization_key,
-      key_.GetTargetNetwork(), net_log_, &*key_.resolve_context, resolver_);
+      net_log_, &*key_.resolve_context, resolver_);
   nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     tick_clock_->NowTicks()));

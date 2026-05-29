@@ -283,13 +283,11 @@ int TransportConnectJob::DoResolveHost() {
   if (std::holds_alternative<url::SchemeHostPort>(params_->destination())) {
     request_ = host_resolver()->CreateRequest(
         std::get<url::SchemeHostPort>(params_->destination()),
-        params_->network_anonymization_key(), params_->target_network(),
-        net_log(), parameters);
+        params_->network_anonymization_key(), net_log(), parameters);
   } else {
     request_ = host_resolver()->CreateRequest(
         std::get<HostPortPair>(params_->destination()),
-        params_->network_anonymization_key(), params_->target_network(),
-        net_log(), parameters);
+        params_->network_anonymization_key(), net_log(), parameters);
   }
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,

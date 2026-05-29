@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_handle.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -120,11 +119,6 @@ void HostResolver::ResolveHost(
 
   auto request = std::make_unique<ResolveHostRequest>(
       internal_resolver_, std::move(host), network_anonymization_key,
-      // There is currently no use case for targeting a specific network when
-      // resolving a host through the network service. Expose this capability
-      // once (if) there is a need. Until then, we always use the default
-      // network.
-      net::handles::kInvalidNetworkHandle,
       ConvertOptionalParameters(optional_parameters), net_log_);
 
   mojo::PendingReceiver<mojom::ResolveHostHandle> control_handle_receiver;

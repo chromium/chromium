@@ -1051,19 +1051,6 @@ int MockHostResolverProc::Resolve(const std::string& hostname,
   return OK;
 }
 
-int MockHostResolverProc::Resolve(const std::string& hostname,
-                                  AddressFamily address_family,
-                                  HostResolverFlags host_resolver_flags,
-                                  AddressList* addrlist,
-                                  int* os_error,
-                                  handles::NetworkHandle network) {
-  // TODO(crbug.com/517817412): Stop ignoring `network` once
-  // MockHostResolverProc supports it. It is currently okay to ignore because
-  // no test requires specific behavior based on the target network yet.
-  return Resolve(hostname, address_family, host_resolver_flags, addrlist,
-                 os_error);
-}
-
 MockHostResolverProc::CaptureList MockHostResolverProc::GetCaptureList() const {
   CaptureList copy;
   {

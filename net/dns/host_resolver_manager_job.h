@@ -39,9 +39,7 @@ class HostResolverNat64Task;
 
 // Key used to identify a HostResolverManager::Job.
 struct HostResolverManager::JobKey {
-  JobKey(HostResolver::Host host,
-         handles::NetworkHandle target_network,
-         ResolveContext* resolve_context);
+  JobKey(HostResolver::Host host, ResolveContext* resolve_context);
   ~JobKey();
 
   JobKey(const JobKey& other);
@@ -59,17 +57,8 @@ struct HostResolverManager::JobKey {
   base::WeakPtr<ResolveContext> resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const;
-  // TODO(crbug.com/495684670): Remove this once the old way of doing
-  // multi-networking has been removed. Currently, this is used as a compat
-  // layer between the two.
-  handles::NetworkHandle GetTargetNetwork() const;
 
- private:
-  // TODO(crbug.com/495684670): Make this public once the old way of doing
-  // multi-networking has been removed. Currently, this should always be
-  // accessed via GetTargetNetwork(), which provides a compat layer between the
-  // two.
-  handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
+  handles::NetworkHandle GetTargetNetwork() const;
 };
 
 // Aggregates all Requests for the same Key. Dispatched via

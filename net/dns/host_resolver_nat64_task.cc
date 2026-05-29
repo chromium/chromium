@@ -24,7 +24,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_handle.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_manager.h"
@@ -35,13 +34,11 @@ namespace net {
 HostResolverNat64Task::HostResolverNat64Task(
     std::string_view hostname,
     NetworkAnonymizationKey network_anonymization_key,
-    handles::NetworkHandle target_network,
     NetLogWithSource net_log,
     ResolveContext* resolve_context,
     base::WeakPtr<HostResolverManager> resolver)
     : hostname_(hostname),
       network_anonymization_key_(std::move(network_anonymization_key)),
-      target_network_(target_network),
       net_log_(std::move(net_log)),
       resolve_context_(resolve_context),
       resolver_(std::move(resolver)) {}
@@ -103,8 +100,8 @@ int HostResolverNat64Task::DoResolve() {
   }
 
   request_ipv4onlyarpa_ = resolver_->CreateRequest(
-      HostPortPair("ipv4only.arpa", 80), network_anonymization_key_,
-      target_network_, net_log_, parameters, resolve_context_);
+      HostPortPair("ipv4only.arpa", 80), network_anonymization_key_, net_log_,
+      parameters, resolve_context_);
 
   return request_ipv4onlyarpa_->Start(base::BindOnce(
       &HostResolverNat64Task::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));

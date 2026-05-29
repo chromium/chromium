@@ -163,8 +163,7 @@ int TcpConnectJob::ConnectInternal() {
     parameters.secure_dns_policy = params_->secure_dns_policy();
     dns_request_ = host_resolver()->CreateServiceEndpointRequest(
         HostResolver::Host(params_->destination()),
-        params_->network_anonymization_key(), params_->target_network(),
-        net_log(), parameters);
+        params_->network_anonymization_key(), net_log(), parameters);
 
     rv = dns_request_->Start(this);
     if (rv == ERR_IO_PENDING) {

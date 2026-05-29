@@ -116,10 +116,10 @@ TEST_F(ThroughputAnalyzerTest, PrivateHost) {
   auto host_resolver = CreateMockHostResolver();
   EXPECT_FALSE(nqe::internal::IsPrivateHostForTesting(
       host_resolver.get(), url::SchemeHostPort("http", "example.com", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
   EXPECT_TRUE(nqe::internal::IsPrivateHostForTesting(
       host_resolver.get(), url::SchemeHostPort("http", "local.com", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 }
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -161,7 +161,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
     EXPECT_EQ(test_case.is_local,
               nqe::internal::IsPrivateHostForTesting(
                   context->host_resolver(), url::SchemeHostPort(test_case.url),
-                  NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+                  NetworkAnonymizationKey()));
     for (size_t i = 0; i < 1000; ++i) {
       std::unique_ptr<URLRequest> request(
           context->CreateRequest(test_case.url, DEFAULT_PRIORITY,
@@ -237,8 +237,7 @@ TEST_F(ThroughputAnalyzerTest,
               nqe::internal::IsPrivateHostForTesting(
                   context->host_resolver(), url::SchemeHostPort(kUrl),
                   use_network_isolation_key ? kNetworkAnonymizationKey
-                                            : NetworkAnonymizationKey(),
-                  handles::kInvalidNetworkHandle));
+                                            : NetworkAnonymizationKey()));
     for (size_t i = 0; i < 1000; ++i) {
       std::unique_ptr<URLRequest> request(
           context->CreateRequest(kUrl, DEFAULT_PRIORITY, &test_delegate,

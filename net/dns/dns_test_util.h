@@ -578,13 +578,6 @@ class MockHostResolverProc : public HostResolverProc {
               AddressList* addrlist,
               int* os_error) override;
 
-  int Resolve(const std::string& hostname,
-              AddressFamily address_family,
-              HostResolverFlags host_resolver_flags,
-              AddressList* addrlist,
-              int* os_error,
-              handles::NetworkHandle network) override;
-
   CaptureList GetCaptureList() const;
 
   void ClearCaptureList();

@@ -595,9 +595,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
-      context->host_resolver()->CreateRequest(
-          kHostPortPair, network_anonymization_key,
-          net::handles::kInvalidNetworkHandle, net::NetLogWithSource(), params);
+      context->host_resolver()->CreateRequest(kHostPortPair,
+                                              network_anonymization_key,
+                                              net::NetLogWithSource(), params);
   net::TestCompletionCallback callback1;
   int result = request1->Start(callback1.callback());
   EXPECT_EQ(net::OK, callback1.GetResult(result));
@@ -613,8 +613,7 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         context->host_resolver()->CreateRequest(
-            kHostPortPair, other_nak, net::handles::kInvalidNetworkHandle,
-            net::NetLogWithSource(), params);
+            kHostPortPair, other_nak, net::NetLogWithSource(), params);
     net::TestCompletionCallback callback2;
     result = request2->Start(callback2.callback());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));

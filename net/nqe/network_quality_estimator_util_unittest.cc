@@ -63,23 +63,23 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHost) {
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver,
       url::SchemeHostPort("http", "[2607:f8b0:4006:819::200e]", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   EXPECT_TRUE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "192.168.0.1", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "92.168.0.1", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   EXPECT_TRUE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example1.com", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example2.com", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   // IsPrivateHostForTesting() should have queried only the resolver's cache.
   EXPECT_EQ(2u, mock_host_resolver.num_non_local_resolves());
@@ -107,7 +107,7 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
   // Not in DNS host cache, so should not be marked as private.
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example3.com", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
   EXPECT_EQ(0u, mock_host_resolver.num_non_local_resolves());
 
   int rv = mock_host_resolver.LoadIntoCache(
@@ -118,7 +118,7 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
 
   EXPECT_TRUE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example3.com", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   // IsPrivateHostForTesting() should have queried only the resolver's cache.
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
@@ -155,7 +155,7 @@ TEST(NetworkQualityEstimatorUtilTest,
   // Not in DNS host cache, so should not be marked as private.
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example3.com", 443),
-      kNetworkAnonymizationKey, handles::kInvalidNetworkHandle));
+      kNetworkAnonymizationKey));
   EXPECT_EQ(0u, mock_host_resolver.num_non_local_resolves());
 
   int rv = mock_host_resolver.LoadIntoCache(
@@ -166,7 +166,7 @@ TEST(NetworkQualityEstimatorUtilTest,
 
   EXPECT_TRUE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example3.com", 443),
-      kNetworkAnonymizationKey, handles::kInvalidNetworkHandle));
+      kNetworkAnonymizationKey));
 
   // IsPrivateHostForTesting() should have queried only the resolver's cache.
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
@@ -175,7 +175,7 @@ TEST(NetworkQualityEstimatorUtilTest,
   // NetworkAnonymizationKey (in this case, any empty one).
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver, url::SchemeHostPort("https", "example3.com", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -199,28 +199,28 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_Localhost) {
 
   EXPECT_TRUE(IsPrivateHostForTesting(
       resolver.get(), url::SchemeHostPort("https", "localhost", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
   EXPECT_TRUE(IsPrivateHostForTesting(
       resolver.get(), url::SchemeHostPort("http", "127.0.0.1", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
   EXPECT_TRUE(IsPrivateHostForTesting(
       resolver.get(), url::SchemeHostPort("http", "0.0.0.0", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
-  EXPECT_TRUE(IsPrivateHostForTesting(
-      resolver.get(), url::SchemeHostPort("http", "[::1]", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
+  EXPECT_TRUE(IsPrivateHostForTesting(resolver.get(),
+                                      url::SchemeHostPort("http", "[::1]", 80),
+                                      NetworkAnonymizationKey()));
   EXPECT_FALSE(IsPrivateHostForTesting(
       resolver.get(), url::SchemeHostPort("http", "google.com", 80),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 
   // Legacy localhost names.
   EXPECT_FALSE(IsPrivateHostForTesting(
       resolver.get(), url::SchemeHostPort("https", "localhost6", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
   EXPECT_FALSE(IsPrivateHostForTesting(
       resolver.get(),
       url::SchemeHostPort("https", "localhost6.localdomain6", 443),
-      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
+      NetworkAnonymizationKey()));
 }
 
 }  // namespace
