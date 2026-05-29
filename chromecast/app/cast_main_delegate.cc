@@ -31,7 +31,6 @@
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "chromecast/common/cast_resource_delegate.h"
 #include "chromecast/common/global_descriptors.h"
 #include "chromecast/gpu/cast_content_gpu_client.h"
 #include "chromecast/renderer/cast_content_renderer_client.h"
@@ -326,9 +325,6 @@ void CastMainDelegate::InitializeResourceBundle() {
 
   ui::SetLocalePaksStoredInApk(true);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  resource_delegate_.reset(new CastResourceDelegate());
-
   // Override ui::DIR_LOCALES to point to the chromecast_locales directory.
   CHECK(base::PathService::OverrideAndCreateIfNeeded(
       ui::DIR_LOCALES,
@@ -340,8 +336,7 @@ void CastMainDelegate::InitializeResourceBundle() {
   // TODO(gunsch): Use LOAD_COMMON_RESOURCES once ResourceBundle no longer
   // hardcodes resource file names.
   ui::ResourceBundle::InitSharedInstanceWithLocale(
-      "en-US", resource_delegate_.get(),
-      ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+      "en-US", nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
 
 #if BUILDFLAG(IS_ANDROID)
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(

@@ -19,7 +19,6 @@ class BrowserMainRunner;
 
 namespace chromecast {
 
-class CastResourceDelegate;
 class CastFeatureListCreator;
 
 namespace shell {
@@ -60,7 +59,6 @@ class CastMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<CastContentBrowserClient> browser_client_;
   std::unique_ptr<CastContentGpuClient> gpu_client_;
   std::unique_ptr<CastContentRendererClient> renderer_client_;
-  std::unique_ptr<CastResourceDelegate> resource_delegate_;
   CastContentClient content_client_;
 
 #if BUILDFLAG(IS_ANDROID)

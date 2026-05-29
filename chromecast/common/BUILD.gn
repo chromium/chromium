@@ -15,18 +15,6 @@ cast_source_set("queryable_data") {
   deps = [ "//base" ]
 }
 
-cast_source_set("resource_delegate") {
-  sources = [
-    "cast_resource_delegate.cc",
-    "cast_resource_delegate.h",
-  ]
-  deps = [
-    "//base",
-    "//ui/base",
-    "//ui/gfx",
-  ]
-}
-
 cast_source_set("activity_url_filter") {
   sources = [
     "activity_filtering_url_loader_throttle.cc",

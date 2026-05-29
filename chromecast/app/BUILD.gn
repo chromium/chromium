@@ -20,7 +20,6 @@ cast_source_set("app") {
     "//chromecast/base",
     "//chromecast/browser",
     "//chromecast/common",
-    "//chromecast/common:resource_delegate",
     "//chromecast/gpu",
     "//chromecast/renderer",
     "//components/crash/core/common:crash_key",
