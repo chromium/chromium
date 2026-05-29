@@ -69,8 +69,11 @@ base::apple::ScopedCFTypeRef<CMBlockBufferRef> CreateBlockBuffer(
     return base::apple::ScopedCFTypeRef<CMBlockBufferRef>(nullptr);
   }
 
-  bus.ToInterleaved<Float32SampleTypeTraits>(
-      frames_filled, reinterpret_cast<float*>(data_ptr));
+  // SAFETY: `data_ptr` points to a memory block in `block_buffer` which was
+  // allocated with size `data_size` in CMBlockBufferAppendMemoryBlock above.
+  auto data_span = UNSAFE_BUFFERS(base::span<char>(data_ptr, data_size));
+  bus.ToInterleavedBytes<Float32SampleTypeTraits>(
+      base::as_writable_bytes(data_span));
   return block_buffer;
 }
 
