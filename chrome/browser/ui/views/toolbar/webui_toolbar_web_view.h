@@ -294,9 +294,6 @@ class WebUIToolbarWebView
   // the toolbar and the active main content's RenderWidgetHostView.
   void SetSurfaceSyncDeadline(std::optional<uint32_t> deadline_in_frames);
 
-  // Resolves the initial deadline from features and applies it if enabled.
-  void ApplyInitialSurfaceSyncDeadline();
-
   WebUIToolbarUI* GetWebUIToolbarUI();
 
   void OnTouchUiChanged();
