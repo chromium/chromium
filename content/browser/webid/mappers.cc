@@ -301,6 +301,29 @@ EmailVerificationRequestResult WellKnownParseStatusToEvpRequestStatus(
   }
 }
 
+EmailVerificationRequestResult
+EmailVerificationWellKnownParseStatusToEvpRequestStatus(
+    ParseStatus parse_status) {
+  switch (parse_status) {
+    case ParseStatus::kHttpNotFoundError:
+      return EmailVerificationRequestResult::
+          kEmailVerificationWellKnownHttpNotFound;
+    case ParseStatus::kNoResponseError:
+      return EmailVerificationRequestResult::
+          kEmailVerificationWellKnownNoResponse;
+    case ParseStatus::kInvalidResponseError:
+      return EmailVerificationRequestResult::
+          kEmailVerificationWellKnownInvalidResponse;
+    case ParseStatus::kEmptyListError:
+      NOTREACHED() << "EmptyListError is not an option for this fetch";
+    case ParseStatus::kInvalidContentTypeError:
+      return EmailVerificationRequestResult::
+          kEmailVerificationWellKnownInvalidContentType;
+    case ParseStatus::kSuccess:
+      NOTREACHED();
+  }
+}
+
 EmailVerificationRequestResult AccountsListParseStatusToEvpRequestStatus(
     ParseStatus parse_status) {
   switch (parse_status) {

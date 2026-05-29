@@ -243,7 +243,8 @@ void EmailVerificationRequest::OnEmailVerificationWellKnownFetched(
     EmailVerifierNetworkRequestManager::WellKnown fetched_well_known) {
   if (status.parse_status != ParseStatus::kSuccess) {
     well_known->data = base::unexpected(
-        WellKnownParseStatusToEvpRequestStatus(status.parse_status));
+        EmailVerificationWellKnownParseStatusToEvpRequestStatus(
+            status.parse_status));
   } else {
     well_known->data = std::move(fetched_well_known);
   }

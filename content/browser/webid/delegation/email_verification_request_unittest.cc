@@ -957,10 +957,12 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
   EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.IsVerifiable",
-      EmailVerificationRequestResult::kWellKnownHttpNotFound, 1);
+      EmailVerificationRequestResult::kEmailVerificationWellKnownHttpNotFound,
+      1);
   EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
                    ->GetEmailVerificationRequestIssueCount(
-                       EmailVerificationRequestResult::kWellKnownHttpNotFound));
+                       EmailVerificationRequestResult::
+                           kEmailVerificationWellKnownHttpNotFound));
 }
 
 TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
@@ -1185,11 +1187,13 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
   EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.IsVerifiable",
-      EmailVerificationRequestResult::kWellKnownInvalidResponse, 1);
-  EXPECT_EQ(1,
-            static_cast<TestRenderFrameHost*>(same_origin_iframe)
-                ->GetEmailVerificationRequestIssueCount(
-                    EmailVerificationRequestResult::kWellKnownInvalidResponse));
+      EmailVerificationRequestResult::
+          kEmailVerificationWellKnownInvalidResponse,
+      1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(same_origin_iframe)
+                   ->GetEmailVerificationRequestIssueCount(
+                       EmailVerificationRequestResult::
+                           kEmailVerificationWellKnownInvalidResponse));
 }
 
 TEST_F(EmailVerificationRequestTest,

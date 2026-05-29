@@ -304,6 +304,10 @@ Called by update_document_policy_enum.py.-->
   <int value="25" label="AccountsInvalidResponse"/>
   <int value="26" label="AccountsInvalidContentType"/>
   <int value="27" label="AccountsEmptyList"/>
+  <int value="28" label="EmailVerificationWellKnownHttpNotFound"/>
+  <int value="29" label="EmailVerificationWellKnownNoResponse"/>
+  <int value="30" label="EmailVerificationWellKnownInvalidResponse"/>
+  <int value="31" label="EmailVerificationWellKnownInvalidContentType"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/email_verification_request.mojom:EmailVerificationRequestResult) -->

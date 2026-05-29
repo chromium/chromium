@@ -558,6 +558,21 @@ EmailVerificationRequestResultToProtocol(
           AccountsInvalidContentType;
     case EmailVerificationRequestResult::kAccountsEmptyList:
       return EmailVerificationRequestIssueReasonEnum::AccountsEmptyList;
+    case EmailVerificationRequestResult::
+        kEmailVerificationWellKnownHttpNotFound:
+      return EmailVerificationRequestIssueReasonEnum::
+          EmailVerificationWellKnownHttpNotFound;
+    case EmailVerificationRequestResult::kEmailVerificationWellKnownNoResponse:
+      return EmailVerificationRequestIssueReasonEnum::
+          EmailVerificationWellKnownNoResponse;
+    case EmailVerificationRequestResult::
+        kEmailVerificationWellKnownInvalidResponse:
+      return EmailVerificationRequestIssueReasonEnum::
+          EmailVerificationWellKnownInvalidResponse;
+    case EmailVerificationRequestResult::
+        kEmailVerificationWellKnownInvalidContentType:
+      return EmailVerificationRequestIssueReasonEnum::
+          EmailVerificationWellKnownInvalidContentType;
     case EmailVerificationRequestResult::kSuccess:
       NOTREACHED();
   }
