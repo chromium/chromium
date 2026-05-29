@@ -212,6 +212,8 @@ bool IsEphemeralWarningCancellationEnabled() {
 
 #if BUILDFLAG(IS_ANDROID)
 const char kPdfDirName[] = "pdfs";
+// File suffix for APKs.
+constexpr base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
 #endif
 
 // Used with GetPlatformDownloadPath() to indicate which platform path to
@@ -1770,6 +1772,17 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
     switch (result) {
       case safe_browsing::DownloadCheckResult::UNKNOWN:
+#if BUILDFLAG(IS_ANDROID)
+        // Only on Android APK files, UNKNOWN verdicts are considered a
+        // DANGEROUS_FILE and produce a generic warning.
+        if (base::FeatureList::IsEnabled(
+                safe_browsing::kMaliciousApkDownloadCheck) &&
+            item->GetFileNameToReportUser().MatchesExtension(kApkSuffix)) {
+          danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
+          break;
+        }
+        [[fallthrough]];
+#endif
       case safe_browsing::DownloadCheckResult::SAFE:
         // For DANGEROUS file types, we still want to warn the user, even if
         // Safe Browsing is unsure about the file.
