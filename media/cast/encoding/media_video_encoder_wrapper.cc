@@ -493,19 +493,21 @@ void MediaVideoEncoderWrapper::UpdateEncoderOptions() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   num_pending_updates_++;
 
-  // Once the Flush() call is complete, we can safely call ChangeOptions() on
-  // the encoder.
-  auto flush_done_callback = base::BindOnce(
-      &CallChangeOptions,
-      // NOTE: Here and below, raw reference is safe because the encoder is
-      // deleted in a task posted to the video thread.
-      std::ref(*encoder_), options_,
-      CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame),
-      CreateCallback(&MediaVideoEncoderWrapper::OnOptionsUpdated));
-
-  // Call Flush on the correct thread.
+  auto flush_done_callback = CreateCallback(
+      &MediaVideoEncoderWrapper::OnFlushDoneForOptionsUpdate, options_);
   CallEncoderOnCorrectThread(base::BindOnce(&CallFlush, std::ref(*encoder_),
                                             std::move(flush_done_callback)));
+}
+
+void MediaVideoEncoderWrapper::OnFlushDoneForOptionsUpdate(
+    media::VideoEncoder::Options options,
+    EncoderStatus status) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  CallEncoderOnCorrectThread(base::BindOnce(
+      &CallChangeOptions, std::ref(*encoder_), std::move(options),
+      CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame),
+      CreateCallback(&MediaVideoEncoderWrapper::OnOptionsUpdated),
+      std::move(status)));
 }
 
 void MediaVideoEncoderWrapper::CallEncoderOnCorrectThread(

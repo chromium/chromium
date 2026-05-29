@@ -121,6 +121,8 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // Posts a task to update the encoder options, such as whether a key frame
   // is requested.
   void UpdateEncoderOptions();
+  void OnFlushDoneForOptionsUpdate(media::VideoEncoder::Options options,
+                                   EncoderStatus status);
   void OnOptionsUpdated(EncoderStatus status);
 
   // We currently manage the threads used for interacting with the encoder
