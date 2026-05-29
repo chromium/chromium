@@ -139,7 +139,10 @@ bool HasSingleNewTabPage(Browser* browser) {
 }
 
 // Pointers to SessionRestoreImpls which are currently restoring the session.
-std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
+std::set<SessionRestoreImpl*>& GetActiveSessionRestorers() {
+  static base::NoDestructor<std::set<SessionRestoreImpl*>> instance;
+  return *instance;
+}
 
 // Tracks whether any session has been restored during the current process
 // lifetime.
@@ -261,18 +264,15 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         restore_started_(base::TimeTicks::Now()) {
     DCHECK(restore_browser_ || restore_apps_);
 
-    if (active_session_restorers == nullptr) {
-      active_session_restorers = new std::set<SessionRestoreImpl*>();
-    }
-
+    auto& active_restorers = GetActiveSessionRestorers();
     // Only one SessionRestoreImpl should be operating on the profile at the
     // same time.
-    DCHECK(std::ranges::find_if(*active_session_restorers,
+    DCHECK(std::ranges::find_if(active_restorers,
                                 [profile](SessionRestoreImpl* restorer) {
                                   return restorer->profile_ == profile;
-                                }) == active_session_restorers->end());
+                                }) == active_restorers.end());
 
-    active_session_restorers->insert(this);
+    active_restorers.insert(this);
 
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
@@ -433,13 +433,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
   SessionRestoreImpl(const SessionRestoreImpl&) = delete;
   SessionRestoreImpl& operator=(const SessionRestoreImpl&) = delete;
 
-  ~SessionRestoreImpl() override {
-    active_session_restorers->erase(this);
-    if (active_session_restorers->empty()) {
-      delete active_session_restorers;
-      active_session_restorers = nullptr;
-    }
-  }
+  ~SessionRestoreImpl() override { GetActiveSessionRestorers().erase(this); }
 
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
@@ -1494,11 +1488,8 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
 
 // static
 bool SessionRestore::IsRestoring(const Profile* profile) {
-  if (active_session_restorers == nullptr) {
-    return false;
-  }
   for (SessionRestoreImpl* const active_session_restorer :
-       *active_session_restorers) {
+       GetActiveSessionRestorers()) {
     if (active_session_restorer->profile() == profile) {
       return true;
     }
@@ -1513,11 +1504,8 @@ bool SessionRestore::IsAnySessionRestored() {
 
 // static
 bool SessionRestore::IsRestoringSynchronously() {
-  if (!active_session_restorers) {
-    return false;
-  }
   for (const SessionRestoreImpl* const active_session_restorer :
-       *active_session_restorers) {
+       GetActiveSessionRestorers()) {
     if (active_session_restorer->synchronous()) {
       return true;
     }
@@ -1577,12 +1565,16 @@ void SessionRestore::OnGotSession(
 }
 
 // static
-SessionRestore::CallbackList* SessionRestore::on_session_restored_callbacks_ =
-    nullptr;
+SessionRestore::CallbackList* SessionRestore::on_session_restored_callbacks() {
+  static base::NoDestructor<CallbackList> instance;
+  return instance.get();
+}
 
 // static
-base::ObserverList<SessionRestoreObserver>::Unchecked*
-    SessionRestore::observers_ = nullptr;
+SessionRestore::SessionRestoreObserverList* SessionRestore::observers() {
+  static base::NoDestructor<SessionRestoreObserverList> instance;
+  return instance.get();
+}
 
 // static
 bool SessionRestore::session_restore_started_ = false;

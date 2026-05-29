@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/sessions/core/session_types.h"
@@ -153,30 +154,16 @@ class SessionRestore {
 
   // Accessor for |*on_session_restored_callbacks_|. Creates a new object the
   // first time so that it always returns a valid object.
-  static CallbackList* on_session_restored_callbacks() {
-    if (!on_session_restored_callbacks_)
-      on_session_restored_callbacks_ = new CallbackList();
-    return on_session_restored_callbacks_;
-  }
+  static CallbackList* on_session_restored_callbacks();
 
   // Accessor for the observer list. Create the list the first time to always
   // return a valid reference.
-  static SessionRestoreObserverList* observers() {
-    if (!observers_)
-      observers_ = new SessionRestoreObserverList();
-    return observers_;
-  }
-
-  // Contains all registered callbacks for session restore notifications.
-  static CallbackList* on_session_restored_callbacks_;
+  static SessionRestoreObserverList* observers();
 
   // Notify SessionRestoreObservers session restore started. If there are
   // multiple concurrent session restores, observers get notified only once in
   // the first session restore.
   static void NotifySessionRestoreStartedLoadingTabs();
-
-  // Contains all registered observers for session restore events.
-  static SessionRestoreObserverList* observers_;
 
   // Whether session restore started or not.
   static bool session_restore_started_;

@@ -159,7 +159,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
     g_browser_process->set_background_mode_manager_for_test(
-        std::unique_ptr<BackgroundModeManager>(new FakeBackgroundModeManager));
+        std::make_unique<FakeBackgroundModeManager>());
 #endif  //  BUILDFLAG(ENABLE_BACKGROUND_MODE)
   }
 
