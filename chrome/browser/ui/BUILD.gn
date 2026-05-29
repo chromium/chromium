@@ -380,6 +380,8 @@ static_library("ui") {
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/translate",
     "//chrome/browser/ui/views/eye_dropper",
+    "//chrome/browser/ui/views/file_system_access",
+    "//chrome/browser/ui/views/file_system_access:impl",
     "//chrome/browser/ui/views/permissions:embedded_permission_prompt_observer",
     "//chrome/browser/ui/views/status_icons",
     "//chrome/browser/ui/webauthn",
@@ -702,6 +704,11 @@ static_library("ui") {
     # split out yet (e.g. browser.h, browser_finder.h).
     "//chrome/browser/sessions",
     "//chrome/browser/sessions:impl",
+
+    # TODO(crbug.com/)353332589: Remove this circular dependency when
+    # the following headers get modularized:
+    # - //c/b/ui/views/chrome_layout_provider.h).
+    "//chrome/browser/ui/views/file_system_access:impl",
   ]
 
   # Desktop-Android-only dependencies.
@@ -1137,8 +1144,6 @@ static_library("ui") {
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",
       "unload_controller.h",
-      "views/file_system_access/file_system_access_scroll_panel.cc",
-      "views/file_system_access/file_system_access_scroll_panel.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
       "views/search_engines/dse_reset_dialog.cc",
@@ -3797,16 +3802,6 @@ static_library("ui") {
       "views/extensions/security_dialog_tracker.cc",
       "views/extensions/security_dialog_tracker.h",
       "views/extensions/windows_utils_views.cc",
-      "views/file_system_access/file_system_access_bubble_controller.cc",
-      "views/file_system_access/file_system_access_bubble_controller.h",
-      "views/file_system_access/file_system_access_page_action_controller.cc",
-      "views/file_system_access/file_system_access_page_action_controller.h",
-      "views/file_system_access/file_system_access_restore_permission_bubble_view.cc",
-      "views/file_system_access/file_system_access_restore_permission_bubble_view.h",
-      "views/file_system_access/file_system_access_usage_bubble_view.cc",
-      "views/file_system_access/file_system_access_usage_bubble_view.h",
-      "views/file_system_access/file_system_access_views_helpers.cc",
-      "views/file_system_access/file_system_access_views_helpers.h",
       "views/find_bar_host.cc",
       "views/find_bar_host.h",
       "views/find_bar_owner.h",
