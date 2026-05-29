@@ -488,12 +488,12 @@ BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheWalMode,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheWalMode",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSynchronousOff,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSynchronousOff",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(int,
                    kSqlDiskCacheShardCount,
                    &kDiskCacheBackendExperiment,
@@ -528,7 +528,7 @@ BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSerialInitialize,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSerialInitialize",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSizeAndPriorityAwareEviction,
                    &kDiskCacheBackendExperiment,
@@ -548,12 +548,12 @@ BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheConsolidatedInMemoryIndex,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheConsolidatedInMemoryIndex",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheIncrementalVacuum,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheIncrementalVacuum",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(int,
                    kSqlDiskCacheIncrementalVacuumPageCount,
                    &kDiskCacheBackendExperiment,
