@@ -59,6 +59,10 @@ PersonalContextAccessManagerFactory::BuildServiceInstanceForBrowserContext(
       personal_context_enablement_service =
           PersonalContextEnablementServiceFactory::GetForProfile(profile);
 
+  if (!personal_context_service || !personal_context_enablement_service) {
+    return nullptr;
+  }
+
   return std::make_unique<autofill::PersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_enablement_service);
 }
