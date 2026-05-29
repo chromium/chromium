@@ -1179,6 +1179,7 @@ void Window::OnParentChanged() {
 void Window::StackChildRelativeTo(Window* child,
                                   Window* target,
                                   StackDirection direction) {
+  ScopedDeleteBlocker blocker(this);
   DCHECK_NE(child, target);
   DCHECK(child);
   DCHECK(target);
