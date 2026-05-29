@@ -81,9 +81,7 @@ void IdentityUrlLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
   // We want to check headers for each redirect. It is common that the header
   // is on the initial load which then redirects back to a homepage.
   HandleResponseOrRedirect(request_url_, response_head);

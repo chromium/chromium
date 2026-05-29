@@ -17,6 +17,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -243,9 +244,7 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    std::vector<std::string>* to_be_removed_headers,
-    net::HttpRequestHeaders* modified_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_headers) {
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
   // URLLoaderThrottles can only change the redirect URL when the network
   // service is enabled. The non-network service path handles this in
   // ChromeNetworkDelegate.
@@ -259,14 +258,15 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
       dynamic_params_->youtube_restrict <
           safe_search_api::YOUTUBE_RESTRICT_COUNT) {
     safe_search_api::ForceYouTubeRestrict(
-        redirect_info->new_url, modified_cors_exempt_headers,
+        redirect_info->new_url,
+        &headers_update_params->modified_cors_exempt_headers,
         static_cast<safe_search_api::YouTubeRestrictMode>(
             dynamic_params_->youtube_restrict));
   }
 
   if (!dynamic_params_->allowed_domains_for_apps.empty() &&
       redirect_info->new_url.DomainIs("google.com")) {
-    modified_cors_exempt_headers->SetHeader(
+    headers_update_params->modified_cors_exempt_headers.SetHeader(
         safe_search_api::kGoogleAppsAllowedDomains,
         dynamic_params_->allowed_domains_for_apps);
   }
@@ -274,7 +274,7 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
 #if BUILDFLAG(IS_ANDROID)
   if (!client_data_header_.empty() &&
       !google_util::IsGoogleAssociatedDomainUrl(redirect_info->new_url)) {
-    to_be_removed_headers->push_back(kCCTClientDataHeader);
+    headers_update_params->removed_headers.push_back(kCCTClientDataHeader);
   }
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

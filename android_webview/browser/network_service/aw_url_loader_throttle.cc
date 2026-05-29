@@ -30,9 +30,7 @@ void AwURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
   if (!added_headers_.empty()) {
     bool is_same_domain = net::registry_controlled_domains::SameDomainOrHost(
         redirect_info->new_url, original_origin_,
@@ -40,8 +38,8 @@ void AwURLLoaderThrottle::WillRedirectRequest(
 
     if (!is_same_domain) {
       // The headers we added must be removed.
-      to_be_removed_request_headers->insert(
-          to_be_removed_request_headers->end(),
+      headers_update_params->removed_headers.insert(
+          headers_update_params->removed_headers.end(),
           std::make_move_iterator(added_headers_.begin()),
           std::make_move_iterator(added_headers_.end()));
       added_headers_.clear();

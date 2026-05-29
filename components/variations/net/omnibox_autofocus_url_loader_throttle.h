@@ -47,9 +47,7 @@ class COMPONENT_EXPORT(OMNIBOX_AUTOFOCUS_HTTP_HEADERS)
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
       bool* defer,
-      std::vector<std::string>* to_be_removed_headers,
-      net::HttpRequestHeaders* modified_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_headers) override;
+      network::HttpRequestHeadersUpdateParams* headers_update_params) override;
 };
 
 }  // namespace variations
