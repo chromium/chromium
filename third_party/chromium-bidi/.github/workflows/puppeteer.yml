@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: 'bidi'
-      - name: Checkout
+      - name: Checkout Puppeteer
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: 'puppeteer/puppeteer'
@@ -56,7 +56,12 @@ jobs:
       - name: Disable AppArmor
         # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        working-directory: bidi
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        working-directory: bidi
+        run: npm run gn:gen
       - name: Install Chromium-BiDi dependencies
         working-directory: bidi
         run: npm ci

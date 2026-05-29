@@ -224,6 +224,8 @@ if (RUN_TESTS === 'true') {
     log('Using chromedriver with mapper...');
     wptRunArgs.push(
       `--webdriver-arg=--bidi-mapper-path=${join(
+        'out',
+        'Default',
         'lib',
         'iife',
         'mapperTab.js',

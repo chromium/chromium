@@ -21,7 +21,7 @@ To restore the project to a known good state, run the following commands in orde
 1. **Build:** `npm run build`
 2. **Unit Tests:** `npm run unit`
 3. **Format:** `npm run format`
-4. **Verify BidiMapper Import:** `node lib/bidiMapper/BidiMapper.js`. If this
+4. **Verify BidiMapper Import:** `node out/Default/gen/src/bidiMapper/BidiMapper.js`. If this
    fails with `ERR_MODULE_NOT_FOUND`, it's likely due to a missing `.js` extension in
    an import statement in one of the TypeScript source files.
 
@@ -31,7 +31,7 @@ To restore the project to a known good state, run the following commands in orde
   extension.
 - They are co-located with the code they are testing.
 - Run unit tests with `npm run unit`. This command first compiles the TypeScript code
-  (including tests) into JavaScript in the `lib` directory and then runs the tests
+  (including tests) into JavaScript in the `out/Default/gen/src/` directory and then runs the tests
   using the Node.js native test runner.
 - When adding new tests, create a new `*.test.ts` file in the `src` directory next to
   the file you are testing. The build process will automatically pick it up.

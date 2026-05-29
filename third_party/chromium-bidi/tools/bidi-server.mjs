@@ -116,7 +116,7 @@ export function createBiDiServerProcess() {
       file: installAndGetChromeDriverPath(),
       args: [
         `--port=${PORT}`,
-        `--bidi-mapper-path=${resolve(join('lib', 'iife', 'mapperTab.js'))}`,
+        `--bidi-mapper-path=${resolve(join('out', 'Default', 'lib', 'iife', 'mapperTab.js'))}`,
         `--log-path=${createLogFile('chromedriver')}`,
         `--readable-timestamp`,
         ...(VERBOSE ? ['--verbose'] : []),
@@ -130,7 +130,7 @@ export function createBiDiServerProcess() {
     runParams = {
       file: 'node',
       args: [
-        resolve(join('lib', 'bidiServer', 'index.js')),
+        resolve(join('out', 'Default', 'gen', 'src', 'bidiServer', 'index.js')),
         ...process.argv.slice(2),
       ],
       options: {

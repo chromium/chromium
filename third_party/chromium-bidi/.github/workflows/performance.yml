@@ -41,7 +41,10 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        run: npm run gn:gen
       - name: Install and build npm dependencies
         run: npm ci
       # Install chrome, chromedriver and headless shell is required to keep them cached.
@@ -97,7 +100,10 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        run: npm run gn:gen
       - name: Install and build npm dependencies
         run: npm ci
       # Install chrome, chromedriver and headless shell is required to keep them cached.
@@ -151,7 +157,10 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        run: npm run gn:gen
       - name: Install and build npm dependencies
         run: npm ci
       # Install chrome, chromedriver and headless shell is required to keep them cached.

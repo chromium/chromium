@@ -1,0 +1,63 @@
+# Copyright 2026 Google LLC.
+# Copyright (c) Microsoft Corporation.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This is the main GN build configuration. This file is loaded after the
+# build args (args.gn) for the build directory and after the toplevel ".gn"
+# file (which points to this file as the build configuration).
+#
+# This particular version of BUILDCONFIG.gn is derived from the original
+# at //build/config/BUILDCONFIG.gn, but does not include many of the toolchain
+# settings that are relevant for compiling C++.
+
+declare_args() {
+  is_official_build = false
+  is_wasm = false
+  is_desktop_linux = current_os == "linux"
+  is_clang = true
+  custom_toolchain = ""
+  host_toolchain = ""
+}
+
+declare_args() {
+  is_debug = !is_official_build
+}
+
+declare_args() {
+  is_component_build = is_debug && current_os != "ios"
+}
+
+# We do not compile C++, so taking the generic toolchain suffices.
+set_default_toolchain("//build/toolchain/linux:x64")
+
+is_android = current_os == "android"
+is_chromeos = current_os == "chromeos"
+is_fuchsia = current_os == "fuchsia"
+is_ios = current_os == "ios"
+is_linux = current_os == "chromeos" || current_os == "linux"
+is_mac = current_os == "mac"
+is_nacl = current_os == "nacl"
+is_win = current_os == "win" || current_os == "winuwp"
+
+is_apple = is_ios || is_mac
+is_posix = !is_win && !is_fuchsia
+
+declare_args() {
+  enable_strict_deps = false
+}
+
+TESTONLY_AND_VISIBILITY = [
+  "testonly",
+  "visibility",
+]

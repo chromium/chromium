@@ -1,0 +1,120 @@
+# Copyright 2026 Google LLC.
+# Copyright (c) Microsoft Corporation.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Standalone GN Template for compiling TypeScript files, fully isolated inside the repository.
+
+template("ts_library") {
+  action(target_name) {
+    script = "//tools/build/scripts/compile_ts.py"
+
+    forward_variables_from(invoker, [
+      "sources",
+      "deps",
+      "visibility",
+      "inputs",
+      "testonly",
+    ])
+
+    if (!defined(inputs)) {
+      inputs = []
+    }
+    inputs += [
+      "//tsconfig.base.json",
+      "//node_modules/typescript/lib/tsc.js",
+    ]
+
+    if (defined(deps)) {
+      foreach(dep, deps) {
+        _dep_name = get_label_info(dep, "name")
+        _dep_gen_dir = get_label_info(dep, "target_gen_dir")
+        inputs += [
+          "$_dep_gen_dir/$_dep_name-tsconfig.json",
+          "$_dep_gen_dir/$_dep_name-tsconfig.json.tsbuildinfo",
+        ]
+      }
+    }
+
+    # Compute target generated tsconfig name and path
+    _tsconfig_output = "$target_gen_dir/$target_name-tsconfig.json"
+
+    args = [
+      "--tsconfig_template", rebase_path("//tsconfig.base.json", root_build_dir),
+      "--tsconfig_output", rebase_path(_tsconfig_output, root_build_dir),
+      "--output_dir", rebase_path(target_gen_dir, root_build_dir),
+      "--root_dir", rebase_path(".", root_build_dir),
+    ]
+
+    if (defined(invoker.es_target)) {
+      args += [
+        "--es-target",
+        invoker.es_target,
+      ]
+    }
+
+    if (defined(invoker.es_libs)) {
+      args += [ "--es-libs" ] + invoker.es_libs
+    }
+
+    _no_emit = defined(invoker.no_emit) && invoker.no_emit
+    if (_no_emit) {
+      args += [ "--no-emit" ]
+    }
+
+    # Resolve dependency tsconfigs dynamically
+    if (defined(deps)) {
+      args += [ "--deps" ]
+      foreach(dep, deps) {
+        _dep_name = get_label_info(dep, "name")
+        _dep_gen_dir = get_label_info(dep, "target_gen_dir")
+        args += [ rebase_path("$_dep_gen_dir/$_dep_name-tsconfig.json", root_build_dir) ]
+      }
+    }
+
+    # Append sources to compiler args
+    if (defined(sources)) {
+      args += [ "--sources" ] + rebase_path(sources, root_build_dir)
+    }
+
+    # Compute list of expected output files for Ninja tracking
+    output_files = [
+      _tsconfig_output,
+      "${_tsconfig_output}.tsbuildinfo",
+    ]
+    if (!_no_emit && defined(sources)) {
+      foreach(src, sources) {
+        _fileName = get_path_info(src, "name")
+        _dir = get_path_info(src, "dir")
+        _rel_dir = rebase_path(_dir, ".")
+        
+        # Maps .ts files to compiled .js and map files in target gen directory
+        output_files += [
+          "$target_gen_dir/$_rel_dir/$_fileName.js",
+          "$target_gen_dir/$_rel_dir/$_fileName.js.map",
+          "$target_gen_dir/$_rel_dir/$_fileName.d.ts",
+        ]
+      }
+    }
+
+    outputs = output_files
+
+    if (defined(deps)) {
+      # Expose deps to Ninja builder chain
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += deps
+    }
+  }
+}

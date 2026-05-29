@@ -1,0 +1,254 @@
+# Copyright 2026 Google LLC.
+# Copyright (c) Microsoft Corporation.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//tools/build/bidi_module.gni")
+
+bidi_foundation_module("utils") {
+  sources = [
+    "utils/Buffer.ts",
+    "utils/DefaultMap.ts",
+    "utils/Deferred.ts",
+    "utils/EventEmitter.ts",
+    "utils/IdWrapper.ts",
+    "utils/Mutex.ts",
+    "utils/ProcessingQueue.ts",
+    "utils/assert.ts",
+    "utils/base64.ts",
+    "utils/cdpErrorConstants.ts",
+    "utils/graphemeTools.ts",
+    "utils/log.ts",
+    "utils/result.ts",
+    "utils/time.ts",
+    "utils/transport.ts",
+    "utils/unitConversions.ts",
+    "utils/urlHelpers.ts",
+    "utils/uuid.ts",
+  ]
+}
+
+bidi_foundation_module("cdp") {
+  sources = [
+    "cdp/CdpClient.ts",
+    "cdp/CdpConnection.ts",
+    "cdp/cdp.ts",
+    "cdp/cdpMessage.ts",
+  ]
+  deps = [
+    ":utils",
+  ]
+}
+
+bidi_foundation_module("protocol") {
+  sources = [
+    "protocol/ErrorResponse.ts",
+    "protocol/cdp.ts",
+    "protocol/chromium-bidi.ts",
+    "protocol/protocol.ts",
+    "protocol/generated/webdriver-bidi-bluetooth.ts",
+    "protocol/generated/webdriver-bidi-nav-speculation.ts",
+    "protocol/generated/webdriver-bidi-permissions.ts",
+    "protocol/generated/webdriver-bidi-ua-client-hints.ts",
+    "protocol/generated/webdriver-bidi.ts",
+  ]
+}
+
+bidi_foundation_module("protocol_parser") {
+  sources = [
+    "protocol-parser/protocol-parser.ts",
+    "protocol-parser/generated/webdriver-bidi-bluetooth.ts",
+    "protocol-parser/generated/webdriver-bidi-nav-speculation.ts",
+    "protocol-parser/generated/webdriver-bidi-permissions.ts",
+    "protocol-parser/generated/webdriver-bidi-ua-client-hints.ts",
+    "protocol-parser/generated/webdriver-bidi.ts",
+  ]
+  deps = [
+    ":protocol",
+  ]
+}
+
+bidi_foundation_module("bidi_mapper") {
+  sources = [
+    "bidiMapper/BidiMapper.ts",
+    "bidiMapper/BidiNoOpParser.ts",
+    "bidiMapper/BidiParser.ts",
+    "bidiMapper/BidiServer.ts",
+    "bidiMapper/BidiTransport.ts",
+    "bidiMapper/CommandProcessor.ts",
+    "bidiMapper/MapperOptions.ts",
+    "bidiMapper/OutgoingMessage.ts",
+    
+    "bidiMapper/modules/bluetooth/BluetoothProcessor.ts",
+    "bidiMapper/modules/browser/BrowserProcessor.ts",
+    "bidiMapper/modules/browser/ContextConfig.ts",
+    "bidiMapper/modules/browser/ContextConfigStorage.ts",
+    "bidiMapper/modules/browser/UserContextStorage.ts",
+    "bidiMapper/modules/cdp/CdpProcessor.ts",
+    "bidiMapper/modules/cdp/CdpTarget.ts",
+    "bidiMapper/modules/cdp/CdpTargetManager.ts",
+    "bidiMapper/modules/context/BrowsingContextImpl.ts",
+    "bidiMapper/modules/context/BrowsingContextProcessor.ts",
+    "bidiMapper/modules/context/BrowsingContextStorage.ts",
+    "bidiMapper/modules/context/NavigationTracker.ts",
+    "bidiMapper/modules/emulation/EmulationProcessor.ts",
+    "bidiMapper/modules/input/ActionDispatcher.ts",
+    "bidiMapper/modules/input/ActionOption.ts",
+    "bidiMapper/modules/input/InputProcessor.ts",
+    "bidiMapper/modules/input/InputSource.ts",
+    "bidiMapper/modules/input/InputState.ts",
+    "bidiMapper/modules/input/InputStateManager.ts",
+    "bidiMapper/modules/input/USKeyboardLayout.ts",
+    "bidiMapper/modules/input/keyUtils.ts",
+    "bidiMapper/modules/log/LogManager.ts",
+    "bidiMapper/modules/log/logHelper.ts",
+    "bidiMapper/modules/network/CollectorsStorage.ts",
+    "bidiMapper/modules/network/NetworkProcessor.ts",
+    "bidiMapper/modules/network/NetworkRequest.ts",
+    "bidiMapper/modules/network/NetworkStorage.ts",
+    "bidiMapper/modules/network/NetworkUtils.ts",
+    "bidiMapper/modules/permissions/PermissionsProcessor.ts",
+    "bidiMapper/modules/script/ChannelProxy.ts",
+    "bidiMapper/modules/script/PreloadScript.ts",
+    "bidiMapper/modules/script/PreloadScriptStorage.ts",
+    "bidiMapper/modules/script/Realm.ts",
+    "bidiMapper/modules/script/RealmStorage.ts",
+    "bidiMapper/modules/script/ScriptProcessor.ts",
+    "bidiMapper/modules/script/SharedId.ts",
+    "bidiMapper/modules/script/WindowRealm.ts",
+    "bidiMapper/modules/script/WorkerRealm.ts",
+    "bidiMapper/modules/session/EventManager.ts",
+    "bidiMapper/modules/session/SessionProcessor.ts",
+    "bidiMapper/modules/session/SubscriptionManager.ts",
+    "bidiMapper/modules/session/events.ts",
+    "bidiMapper/modules/speculation/SpeculationProcessor.ts",
+    "bidiMapper/modules/storage/StorageProcessor.ts",
+    "bidiMapper/modules/webExtension/WebExtensionProcessor.ts",
+  ]
+  deps = [
+    ":utils",
+    ":cdp",
+    ":protocol",
+    ":protocol_parser",
+  ]
+}
+
+bidi_foundation_module("bidi_tab") {
+  sources = [
+    "bidiTab/BidiParser.ts",
+    "bidiTab/Transport.ts",
+    "bidiTab/bidiTab.ts",
+    "bidiTab/mapperTabPage.ts",
+  ]
+  deps = [
+    ":bidi_mapper",
+  ]
+}
+
+bidi_bundle("mapper_bundle") {
+  entrypoint = "$target_gen_dir/bidiTab/bidiTab.js"
+  output_file = "$root_out_dir/lib/iife/mapperTab.js"
+  deps = [
+    ":bidi_tab",
+  ]
+}
+
+ts_library("unit_tests") {
+  testonly = true
+  es_target = "es2023"
+  es_libs = [
+    "dom",
+    "dom.iterable",
+    "es2023",
+  ]
+  sources = [
+    "bidiMapper/modules/browser/BrowserProcessot.test.ts",
+    "bidiMapper/modules/browser/ContextConfigStorage.test.ts",
+    "bidiMapper/modules/context/BrowsingContextStorage.test.ts",
+    "bidiMapper/modules/context/NavigationTracker.test.ts",
+    "bidiMapper/modules/emulation/EmulationProcessor.test.ts",
+    "bidiMapper/modules/log/logHelper.test.ts",
+    "bidiMapper/modules/network/NetworkModuleMocks.test.ts",
+    "bidiMapper/modules/network/NetworkProcessor.test.ts",
+    "bidiMapper/modules/network/NetworkStorage.test.ts",
+    "bidiMapper/modules/network/NetworkUtils.test.ts",
+    "bidiMapper/modules/script/PreloadScriptStorage.test.ts",
+    "bidiMapper/modules/script/SharedId.test.ts",
+    "bidiMapper/modules/session/SubscriptionManager.test.ts",
+    "bidiMapper/modules/session/events.test.ts",
+    "cdp/CdpClient.test.ts",
+    "cdp/CdpConnection.test.ts",
+    "protocol/ErrorResponse.test.ts",
+    "utils/Buffer.test.ts",
+    "utils/DefaultMap.test.ts",
+    "utils/Deferred.test.ts",
+    "utils/EventEmitter.test.ts",
+    "utils/IdWrapper.test.ts",
+    "utils/Mutex.test.ts",
+    "utils/ProcessingQueue.test.ts",
+    "utils/assert.test.ts",
+    "utils/base64.test.ts",
+    "utils/graphemeTools.test.ts",
+    "utils/time.test.ts",
+    "utils/transportStub.test.ts",
+    "utils/unitConversions.test.ts",
+    "utils/urlHelpers.test.ts",
+    "utils/uuid.test.ts",
+  ]
+  deps = [
+    ":bidi_mapper",
+    ":bidi_tab",
+    ":cdp",
+    ":protocol",
+    ":protocol_parser",
+    ":utils",
+  ]
+}
+
+bidi_foundation_module("bidi_server") {
+  sources = [
+    "bidiServer/BrowserInstance.ts",
+    "bidiServer/MapperCdpConnection.ts",
+    "bidiServer/PipeTransport.ts",
+    "bidiServer/SimpleTransport.ts",
+    "bidiServer/WebSocketServer.ts",
+    "bidiServer/index.ts",
+    "bidiServer/reader.ts",
+  ]
+  deps = [
+    ":cdp",
+    ":protocol",
+    ":utils",
+  ]
+}
+
+bidi_foundation_module("chromium_bidi") {
+  sources = [
+    "index.ts",
+  ]
+  deps = [
+    ":bidi_mapper",
+    ":protocol",
+  ]
+}
+
+group("all") {
+  testonly = true
+  deps = [
+    ":mapper_bundle",
+    ":unit_tests",
+    ":bidi_server",
+    ":chromium_bidi",
+  ]
+}
+

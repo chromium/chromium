@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: 'bidi'
-      - name: Checkout
+      - name: Checkout Playwright
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: 'microsoft/playwright'
@@ -27,12 +27,18 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
-          node-version-file: './bidi/.nvmrc'
-          cache-dependency-path: 'playwright/package-lock.json,bidi/package-lock.json'
+          node-version-file: 'bidi/.nvmrc'
+          cache: npm
+          cache-dependency-path: 'bidi/package-lock.json'
       - name: Disable AppArmor
         # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        working-directory: bidi
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        working-directory: bidi
+        run: npm run gn:gen
       - name: Install Chromium-BiDi dependencies
         working-directory: bidi
         run: npm ci

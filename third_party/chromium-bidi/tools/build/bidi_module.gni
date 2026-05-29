@@ -1,0 +1,90 @@
+# Copyright 2026 Google LLC.
+# Copyright (c) Microsoft Corporation.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Custom modular build templates wrapping our standalone ts_library template.
+
+import("//tools/build/ts_library.gni")
+
+# A foundation module that compiles TS files and runs dual type-checking:
+# 1. A browser check (validating DOM, DOM.iterable, and standard ES2023 APIs).
+# 2. A Node.js environment type-check (validating Node.js APIs, preventing runtime issues).
+template("bidi_foundation_module") {
+  _node_type_check_target = target_name + "_node_typecheck"
+
+  # First: node runner type-checking (no JS output emit)
+  ts_library(_node_type_check_target) {
+    forward_variables_from(invoker, "*", [ "visibility", "deps" ])
+    if (defined(invoker.deps)) {
+      # Node typecheck should reference node typecheck deps
+      deps = []
+      foreach(dep, invoker.deps) {
+        deps += [ dep + "_node_typecheck" ]
+      }
+    }
+
+    es_target = "es2023"
+    es_libs = [ "es2023" ] # No DOM libs for pure Node runtimes
+    no_emit = true
+  }
+
+  # Second: main browser compilation target
+  ts_library(target_name) {
+    forward_variables_from(invoker, "*", [ "visibility" ])
+
+    es_target = "es2023"
+    es_libs = [
+      "dom",
+      "dom.iterable",
+      "es2023", # Include full standard ES2023 library types
+    ]
+
+    visibility = [ ":*" ]
+
+    # Add the node typecheck target as a pure GN dependency, not a TS reference
+    if (!defined(public_deps)) {
+      public_deps = []
+    }
+    public_deps += [ ":$_node_type_check_target" ]
+  }
+}
+
+# Bundler template wrapping Rollup.
+template("bidi_bundle") {
+  action(target_name) {
+    script = "//tools/build/scripts/rollup.py"
+    
+    forward_variables_from(invoker, [
+      "entrypoint",
+      "deps",
+      "output_file",
+    ])
+    
+    inputs = [
+      "//rollup.config.mjs",
+      entrypoint,
+    ]
+    
+    outputs = [
+      output_file
+    ]
+    
+    args = [
+      "--config", rebase_path("//rollup.config.mjs", root_build_dir),
+      "--entrypoint", rebase_path(entrypoint, root_build_dir),
+      "--output", rebase_path(output_file, root_build_dir),
+      "--gen-dir", rebase_path(root_out_dir, "//"),
+    ]
+  }
+}

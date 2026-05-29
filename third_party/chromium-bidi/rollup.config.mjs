@@ -20,12 +20,14 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 
+const genDir = process.env.GEN_DIR || 'out/Default';
+
 // Generate Mapper Tab
 const mapperTabConfig = {
   input: 'lib/bidiTab/bidiTab.js',
   output: {
     name: 'mapperTab',
-    file: 'lib/iife/mapperTab.js',
+    file: `${genDir}/lib/iife/mapperTab.js`,
     sourcemap: true,
     format: 'iife',
   },
@@ -47,7 +49,7 @@ const mapperTabConfig = {
           failOnViolation: true,
         },
         output: {
-          file: path.join('lib', 'THIRD_PARTY_NOTICES'),
+          file: path.join(genDir, 'lib', 'THIRD_PARTY_NOTICES'),
           template(dependencies) {
             const stringified_dependencies = dependencies.map((dependency) => {
               let arr = [];

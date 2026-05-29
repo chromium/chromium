@@ -27,3 +27,8 @@ wpt-metadata/mapper/headful/webdriver/tests/bidi/
 **.code-workspace
 .agent/
 **/.DS_Store
+
+# depot_tools and gclient checkouts
+/build/
+/buildtools/
+/third_party/

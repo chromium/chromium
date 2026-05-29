@@ -85,7 +85,10 @@ jobs:
           cache: npm
       - name: Disable AppArmor
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        run: npm run gn:gen
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
@@ -175,7 +178,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        run: npm run gn:gen
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
@@ -300,7 +306,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Sync dependencies
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        run: npm run gn:gen
       - name: Install and build npm dependencies
         run: npm ci
       - uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0

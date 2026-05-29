@@ -19,8 +19,9 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export async function getMapperTabSource(): Promise<string> {
-  return await fs.readFile(
-    path.join(import.meta.dirname, '../iife/mapperTab.js'),
-    'utf8',
+  const buildPath = path.join(
+    import.meta.dirname,
+    '../../../lib/iife/mapperTab.js',
   );
+  return await fs.readFile(buildPath, 'utf8');
 }

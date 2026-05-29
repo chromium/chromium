@@ -6,135 +6,34 @@
     "node": ">=20.19.0 <22.0.0 || >=22.12.0"
   },
   "scripts": {
-    "build": "wireit",
-    "clean": "node tools/clean.mjs",
+    "build": "third_party/ninja/ninja -C out/Default",
+    "clean": "third_party/ninja/ninja -C out/Default -t clean",
+    "gn:gen": "gn gen out/Default",
     "e2e:headful": "HEADLESS=false npm run e2e --",
     "e2e:headless": "npm run e2e:new-headless --",
     "e2e:new-headless": "HEADLESS=new npm run e2e --",
     "e2e:old-headless": "HEADLESS=old npm run e2e --",
-    "e2e": "wireit",
+    "e2e": "npm run build && tools/run-e2e.mjs",
     "flake8": "flake8 examples/ tests/",
     "format": "npm run format:eslint && npm run format:prettier && npm run format:py && npm run format:keep-sorted",
     "format:eslint": "eslint --cache --fix .",
     "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -v '^wpt$')",
     "format:prettier": "prettier --cache --write .",
     "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (pipenv run ruff check --fix . && pipenv run ruff format .)",
-    "prepare": "wireit",
-    "rollup": "wireit",
-    "server": "wireit",
-    "test": "wireit",
-    "tsc": "wireit",
-    "unit": "wireit",
-    "wpt": "wireit",
-    "wpt:all": "wireit",
+    "prepare": "npm run build",
+    "server": "npm run build && tools/run-bidi-server.mjs",
+    "test": "npm run unit && npm run e2e && npm run wpt",
+    "unit": "npm run build && node --test out/Default/gen/src/**/*.test.js",
+    "wpt": "npm run build && tools/run-wpt.mjs",
+    "wpt:all": "npm run build && tools/run-wpt-all.mjs",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "type": "module",
-  "main": "./lib/index.js",
-  "wireit": {
-    "build": {
-      "dependencies": [
-        "rollup",
-        "tsc"
-      ]
-    },
-    "e2e": {
-      "command": "tools/run-e2e.mjs",
-      "files": [
-        "tools/run-e2e.mjs ",
-        "pytest.ini",
-        "tests/**/*.py"
-      ],
-      "dependencies": [
-        "build"
-      ]
-    },
-    "prepare": {
-      "dependencies": [
-        "build"
-      ]
-    },
-    "rollup": {
-      "command": "rollup -c",
-      "dependencies": [
-        "tsc"
-      ],
-      "files": [
-        "lib/bidiMapper/",
-        "rollup.config.mjs"
-      ],
-      "output": [
-        "lib/iife/mapperTab.js"
-      ]
-    },
-    "server": {
-      "command": "tools/run-bidi-server.mjs",
-      "files": [
-        "tools/run-bidi-server.mjs"
-      ],
-      "service": {
-        "readyWhen": {
-          "lineMatches": "(BiDi server|ChromeDriver) was started successfully"
-        }
-      },
-      "dependencies": [
-        "rollup"
-      ]
-    },
-    "test": {
-      "dependencies": [
-        "unit",
-        "e2e",
-        "wpt"
-      ]
-    },
-    "tsc": {
-      "command": "tsc --build src/tsconfig.json --pretty",
-      "clean": "if-file-deleted",
-      "files": [
-        "tsconfig.base.json",
-        "src/**/tsconfig*.json",
-        "src/**/*.ts"
-      ],
-      "output": [
-        "lib/**"
-      ]
-    },
-    "unit": {
-      "command": "node --test lib/**/*.test.js tools/**/*.test.mjs",
-      "dependencies": [
-        "tsc"
-      ]
-    },
-    "wpt": {
-      "command": "tools/run-wpt.mjs",
-      "files": [
-        "tools/run-wpt.mjs",
-        "wpt/tools/webdriver/**/*.py",
-        "wpt/webdriver/tests/**/*.py",
-        "wpt-metadata/**/*.ini"
-      ],
-      "dependencies": [
-        "rollup"
-      ]
-    },
-    "wpt:all": {
-      "command": "tools/run-wpt-all.mjs",
-      "files": [
-        "tools/run-wpt.mjs",
-        "tools/run-wpt-all.mjs",
-        "wpt/tools/webdriver/**/*.py",
-        "wpt/webdriver/tests/**/*.py",
-        "wpt-metadata/**/*.ini"
-      ],
-      "dependencies": [
-        "rollup"
-      ]
-    }
-  },
+  "main": "./out/Default/gen/src/index.js",
   "files": [
-    "lib",
-    "!lib/**/*.test.*",
+    "out/Default/gen/src",
+    "!out/Default/gen/src/**/*.test.*",
+    "out/Default/lib",
     "!*.tsbuildinfo",
     ".browser"
   ],
@@ -176,8 +75,7 @@
     "sinon": "22.0.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.59.3",
-    "websocket": "1.0.35",
-    "wireit": "0.14.12"
+    "websocket": "1.0.35"
   },
   "overrides": {
     "eslint-plugin-import": {

@@ -166,6 +166,23 @@ This is a Node.js project, so install dependencies as usual:
 npm install
 ```
 
+### Build Setup
+
+The project uses Chromium build toolchains (`gn` and `ninja`) for compiling TypeScript and bundling.
+
+1. Fetch the toolchains using `gclient` (requires `depot_tools` installed and in your PATH):
+   ```sh
+   gclient sync
+   ```
+2. Generate the Ninja build configuration:
+   ```sh
+   npm run gn:gen
+   ```
+3. Build the project:
+   ```sh
+   npm run build
+   ```
+
 ### `cargo`
 
 <!-- TODO(jrandolf): Remove after binaries get published -->
@@ -436,16 +453,8 @@ https://www.google.com/chrome/dev/
 
 #### 2. Build Chromedriver BiDi
 
-Oneshot:
-
 ```sh
 npm run build
-```
-
-Continuously:
-
-```sh
-npm run build --watch
 ```
 
 #### 3. Run
