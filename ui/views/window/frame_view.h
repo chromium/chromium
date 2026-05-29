@@ -34,11 +34,10 @@ class VIEWS_EXPORT FrameView : public View, public ViewTargeterDelegate {
   METADATA_HEADER(FrameView, View)
 
  public:
-  // Allows to compose additional non-client hit test rules. `std::nullopt`
+  // Allows to compose additional non-client hit test rules. `HTNOWHERE`
   // should be returned to tell the caller to do further processing to determine
   // where in the non-client area the tested point is (if present at all).
-  using HitTestCallback =
-      base::RepeatingCallback<std::optional<int>(const gfx::Point& point)>;
+  using HitTestCallback = base::RepeatingCallback<int(const gfx::Point& point)>;
 
   FrameView();
   FrameView(const FrameView&) = delete;

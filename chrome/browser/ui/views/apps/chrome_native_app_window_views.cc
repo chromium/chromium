@@ -451,8 +451,7 @@ void ChromeNativeAppWindowViews::OnIconUpdated(
   UpdateWindowIcon();
 }
 
-std::optional<int> ChromeNativeAppWindowViews::NonClientHitTest(
-    const gfx::Point& point) {
+int ChromeNativeAppWindowViews::NonClientHitTest(const gfx::Point& point) {
   if (!widget()->IsFullscreen()) {
     // Check for possible draggable region in the client area for the frameless
     // window.
@@ -462,5 +461,5 @@ std::optional<int> ChromeNativeAppWindowViews::NonClientHitTest(
     }
   }
 
-  return std::nullopt;
+  return HTNOWHERE;
 }

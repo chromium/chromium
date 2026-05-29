@@ -112,7 +112,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
 
  private:
   // Additional hit test handling to support webui bubble draggable regions.
-  std::optional<int> NonClientHitTest(const gfx::Point& point) const;
+  int NonClientHitTest(const gfx::Point& point) const;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

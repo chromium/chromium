@@ -83,7 +83,7 @@ class ChromeNativeAppWindowViews
 
   // Additional hit test handling to support draggable regions for frameless
   // windows.
-  std::optional<int> NonClientHitTest(const gfx::Point& point);
+  int NonClientHitTest(const gfx::Point& point);
 
   // Custom shape of the window. If this is not set then the window has a
   // default shape, usually rectangular.

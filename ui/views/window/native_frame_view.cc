@@ -5,6 +5,7 @@
 #include "ui/views/window/native_frame_view.h"
 
 #include "build/build_config.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
@@ -47,8 +48,9 @@ gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
 
 int NativeFrameView::NonClientHitTest(const gfx::Point& point) {
   if (!non_client_hit_test_callback_.is_null()) {
-    if (auto result = non_client_hit_test_callback_.Run(point); result) {
-      return result.value();
+    int result = non_client_hit_test_callback_.Run(point);
+    if (result != HTNOWHERE) {
+      return result;
     }
   }
 

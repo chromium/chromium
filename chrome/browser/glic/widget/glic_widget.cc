@@ -197,12 +197,12 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
 
  private:
   // Additional hit test handling to support draggable regions.
-  std::optional<int> NonClientHitTest(const gfx::Point& point) const {
+  int NonClientHitTest(const gfx::Point& point) const {
     if (glic_view()->IsPointWithinDraggableRegion(point)) {
       return HTCAPTION;
     }
 
-    return std::nullopt;
+    return HTNOWHERE;
   }
 
   GlicView* glic_view() const {

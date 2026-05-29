@@ -75,9 +75,9 @@ int FrameBorderNonClientHitTest(
     return frame_component;
 
   if (!non_client_hit_test_callback.is_null()) {
-    if (auto result = non_client_hit_test_callback.Run(point_in_widget);
-        result) {
-      return result.value();
+    int result = non_client_hit_test_callback.Run(point_in_widget);
+    if (result != HTNOWHERE) {
+      return result;
     }
   }
 

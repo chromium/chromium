@@ -202,8 +202,9 @@ int AppWindowFrameView::NonClientHitTest(const gfx::Point& point) {
     return frame_component;
 
   if (!non_client_hit_test_callback_.is_null()) {
-    if (auto result = non_client_hit_test_callback_.Run(point); result) {
-      return result.value();
+    int result = non_client_hit_test_callback_.Run(point);
+    if (result != HTNOWHERE) {
+      return result;
     }
   }
 

@@ -274,8 +274,7 @@ gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
   return BubbleDialogDelegateView::GetAnchorRect();
 }
 
-std::optional<int> WebUIBubbleDialogView::NonClientHitTest(
-    const gfx::Point& point) const {
+int WebUIBubbleDialogView::NonClientHitTest(const gfx::Point& point) const {
   // Convert the point to the WebView's coordinates.
   gfx::Point point_in_webview =
       views::View::ConvertPointToTarget(this, web_view_, point);
@@ -284,7 +283,7 @@ std::optional<int> WebUIBubbleDialogView::NonClientHitTest(
     return HTCAPTION;
   }
 
-  return std::nullopt;
+  return HTNOWHERE;
 }
 
 BEGIN_METADATA(WebUIBubbleDialogView)
