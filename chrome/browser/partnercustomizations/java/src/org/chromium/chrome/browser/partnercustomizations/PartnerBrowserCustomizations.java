@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -126,14 +128,20 @@ public class PartnerBrowserCustomizations {
         return sInstance;
     }
 
+    /** Returns whether the feature to disable the partner homepage is enabled. */
+    private static boolean isDisablePartnerHomepageAndroidEnabled() {
+        return ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()
+                && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
+    }
+
     /**
      * @return True if the partner homepage content provider exists and enabled. Note that The data
-     * this method reads is not initialized until the asynchronous initialization of this class has
-     * been completed.
+     *     this method reads is not initialized until the asynchronous initialization of this class
+     *     has been completed.
      */
     public boolean isHomepageProviderAvailableAndEnabled() {
         // Pretend this capability is not available if the feature is disabled.
-        if (ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()) {
+        if (isDisablePartnerHomepageAndroidEnabled()) {
             return false;
         }
         GURL homepageUrl = getHomePageUrl();
@@ -143,7 +151,7 @@ public class PartnerBrowserCustomizations {
     /** {@see #isHomepageProviderAvailableAndEnabled()} but for zero tabs state decisions. */
     public boolean isHomepageProviderAvailableAndEnabledForZeroTabs() {
         // Pretend this capability is not available if the feature is disabled for zero tabs.
-        if (ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()
+        if (isDisablePartnerHomepageAndroidEnabled()
                 && ChromeFeatureList.sDisablePartnerHomepageAndroidForZeroTabs.getValue()) {
             return false;
         }

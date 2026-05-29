@@ -13,6 +13,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -112,11 +114,17 @@ public class HomepageManager
         }
     }
 
+    /** Returns whether the home button removal everywhere is enabled. */
+    private static boolean isHomeButtonRemovalEverywhereEnabled() {
+        return ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue()
+                && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
+    }
+
     /**
      * @return Whether or not homepage is enabled.
      */
     public boolean isHomepageEnabled() {
-        if (ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue()) {
+        if (isHomeButtonRemovalEverywhereEnabled()) {
             return false;
         }
         if (HomepagePolicyManager.isShowHomeButtonManaged()) {
@@ -126,12 +134,20 @@ public class HomepageManager
     }
 
     /**
+     * Returns whether to keep the home button on the New Tab Page during the home button removal.
+     */
+    private static boolean isHomeButtonRemovalKeepOnNtpEnabled() {
+        return ChromeFeatureList.sHomeButtonRemovalKeepOnNtp.getValue()
+                && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
+    }
+
+    /**
      * Returns whether the home button should be shown on the toolbar.
      *
      * @param isNtp Whether the current page is the New Tab Page.
      */
     public boolean shouldShowHomeButtonOnToolbar(boolean isNtp) {
-        if (ChromeFeatureList.sHomeButtonRemovalKeepOnNtp.getValue() && !isNtp) {
+        if (isHomeButtonRemovalKeepOnNtpEnabled() && !isNtp) {
             return false;
         }
         return isHomepageEnabled();
@@ -139,12 +155,12 @@ public class HomepageManager
 
     /** Returns whether the homepage menu item should be shown in the three-dot button app menu. */
     public boolean shouldShowHomepageMenuItem() {
-        return ChromeFeatureList.sHomeButtonRemovalKeepOnNtp.getValue() && isHomepageEnabled();
+        return isHomeButtonRemovalKeepOnNtpEnabled() && isHomepageEnabled();
     }
 
     /** Returns whether the homepage settings should be visible. */
     public static boolean shouldShowHomepageSettings() {
-        return !ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue();
+        return !isHomeButtonRemovalEverywhereEnabled();
     }
 
     /**

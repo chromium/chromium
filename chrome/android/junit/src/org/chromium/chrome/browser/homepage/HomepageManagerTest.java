@@ -555,7 +555,8 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true")
-    public void testIsHomepageEnabled_HomeButtonRemovalEnabled() {
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsHomepageEnabled_HomeButtonRemovalEverywhere_NoBottomBar() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
@@ -563,8 +564,43 @@ public class HomepageManagerTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void testIsHomepageEnabled_HomeButtonRemovalEverywhere_WithBottomBar() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertTrue(homepageManager.isHomepageEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true")
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldShowHomepageSettings_HomeButtonRemovalEverywhere_NoBottomBar() {
+        Assert.assertFalse(HomepageManager.shouldShowHomepageSettings());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void testShouldShowHomepageSettings_HomeButtonRemovalEverywhere_WithBottomBar() {
+        Assert.assertTrue(HomepageManager.shouldShowHomepageSettings());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/false")
+    public void testShouldShowHomepageSettings_HomeButtonRemovalEverywhereDisabled() {
+        Assert.assertTrue(HomepageManager.shouldShowHomepageSettings());
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
-    public void testShouldShowHomeButtonOnToolbar_KeepOnNtp() {
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldShowHomeButtonOnToolbar_KeepOnNtp_NoBottomBar() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
@@ -573,7 +609,21 @@ public class HomepageManagerTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void testShouldShowHomeButtonOnToolbar_KeepOnNtp_WithBottomBar() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertTrue(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertTrue(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/false"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomeButtonOnToolbar_NotKeepOnNtp() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
@@ -584,6 +634,7 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomeButtonOnToolbar_KeepOnNtp_IsNtp_HomepageDisabled() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
@@ -594,7 +645,8 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
-    public void testShouldShowHomepageMenuItem_KeepOnNtp() {
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldShowHomepageMenuItem_KeepOnNtp_NoBottomBar() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
@@ -602,7 +654,20 @@ public class HomepageManagerTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void testShouldShowHomepageMenuItem_KeepOnNtp_WithBottomBar() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertFalse(homepageManager.shouldShowHomepageMenuItem());
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/false"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomepageMenuItem_NotKeepOnNtp() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
@@ -612,6 +677,7 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomepageMenuItem_KeepOnNtp_HomepageDisabled() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()

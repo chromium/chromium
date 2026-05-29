@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -130,5 +131,36 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
         // Make sure the Outcome logged to UMA is correct.
         histograms.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
+    public void testIsHomepageProviderAvailableAndEnabled_FeatureDisabled() {
+        PartnerBrowserCustomizations customizations = PartnerBrowserCustomizations.getInstance();
+        customizations.initializeAsync(ContextUtils.getApplicationContext());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(customizations.isHomepageProviderAvailableAndEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsHomepageProviderAvailableAndEnabled_FeatureEnabled_NoBottomBar() {
+        PartnerBrowserCustomizations customizations = PartnerBrowserCustomizations.getInstance();
+        customizations.initializeAsync(ContextUtils.getApplicationContext());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(customizations.isHomepageProviderAvailableAndEnabled());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void testIsHomepageProviderAvailableAndEnabled_FeatureEnabled_WithBottomBar() {
+        PartnerBrowserCustomizations customizations = PartnerBrowserCustomizations.getInstance();
+        customizations.initializeAsync(ContextUtils.getApplicationContext());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(customizations.isHomepageProviderAvailableAndEnabled());
     }
 }
