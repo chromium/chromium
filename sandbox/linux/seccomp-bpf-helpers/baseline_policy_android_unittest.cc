@@ -54,8 +54,9 @@ BPF_TEST_C(BaselinePolicyAndroid, Membarrier, BaselinePolicyAndroid) {
   syscall(__NR_membarrier, 32 /* cmd */, 0 /* flags */);
 }
 
+// TODO(crbug.com/517465598): Re-enable this test.
 BPF_TEST_C(BaselinePolicyAndroid,
-           SchedGetAffinity_Maybe_Allowed,
+           DISABLED_SchedGetAffinity_Maybe_Allowed,
            BaselinePolicyAndroid) {
   cpu_set_t set{};
   if (base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
