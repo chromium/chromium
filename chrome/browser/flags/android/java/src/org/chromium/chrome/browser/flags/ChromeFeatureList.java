@@ -418,6 +418,7 @@ public abstract class ChromeFeatureList {
     public static final String DOCUMENT_PICTURE_IN_PICTURE_API = "DocumentPictureInPictureAPI";
     public static final String DRAW_CHROME_PAGES_EDGE_TO_EDGE = "DrawChromePagesEdgeToEdge";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
+    public static final String EDGELESS_TOP_INSET = "EdgelessTopInset";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
     public static final String EDGE_TO_EDGE_EXTRA_LOGS = "EdgeToEdgeExtraLogs";
@@ -940,6 +941,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDGE_TO_EDGE_TABLET, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
+    public static final CachedFlag sEdgelessTopInset =
+            newCachedFlag(EDGELESS_TOP_INSET, /* defaultValue= */ false);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
             newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, true);
     public static final CachedFlag sEnableAndroidSidePanel =
@@ -1311,6 +1314,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeMonitorConfigurations,
                     sEdgeToEdgeTablet,
                     sEdgeToEdgeUseBackupNavbarInsets,
+                    sEdgelessTopInset,
                     sEducationalTipDefaultBrowserPromoCard,
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,

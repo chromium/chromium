@@ -5645,6 +5645,11 @@ inline constexpr char kDrawChromePagesEdgeToEdgeName[] =
 inline constexpr char kDrawChromePagesEdgeToEdgeDescription[] =
     "Enables drawing more native pages and secondary activities edge-to-edge.";
 
+inline constexpr char kEdgelessTopInsetName[] = "Edgeless Top Inset";
+inline constexpr char kEdgelessTopInsetDescription[] =
+    "Enables the prototype edgeless top inset feature, allowing opted-in "
+    "pages to draw under the top inset.";
+
 inline constexpr char kEdgeToEdgeExtraLogsName[] = "edge-to-edge-extra-logs";
 inline constexpr char kEdgeToEdgeExtraLogsDescription[] =
     "When this is enabled, extra logs will be emitted for tracking "

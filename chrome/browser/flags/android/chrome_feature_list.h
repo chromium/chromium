@@ -166,6 +166,7 @@ BASE_DECLARE_FEATURE(kEdgeToEdgeExtraLogs);
 BASE_DECLARE_FEATURE(kEdgeToEdgeMonitorConfigurations);
 BASE_DECLARE_FEATURE(kEdgeToEdgeTablet);
 BASE_DECLARE_FEATURE(kEdgeToEdgeUseBackupNavbarInsets);
+BASE_DECLARE_FEATURE(kEdgelessTopInset);
 BASE_DECLARE_FEATURE(kEducationalTipDefaultBrowserPromoCard);
 BASE_DECLARE_FEATURE(kEmptyTabListAnimationKillSwitch);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanel);

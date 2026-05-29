@@ -20575,6 +20575,7 @@ from previous Chrome versions.
   <int value="2084913105" label="RequestDesktopSitePerSiteIph:enabled"/>
   <int value="2085186092" label="BulkPrinters:disabled"/>
   <int value="2085438501" label="ChromeHome:enabled"/>
+  <int value="2086521312" label="EdgelessTopInset:enabled"/>
   <int value="2086569407" label="WebNNOnnxRuntime:enabled"/>
   <int value="2087069781" label="ui-debug-tools:enabled"/>
   <int value="2087846845" label="AIClassifierAPI:disabled"/>
@@ -20679,6 +20680,7 @@ from previous Chrome versions.
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
+  <int value="2118942336" label="EdgelessTopInset:disabled"/>
   <int value="2119575519" label="ComposeUiRefinement:enabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
   <int value="2120179658" label="FeedHeaderRemoval:enabled"/>

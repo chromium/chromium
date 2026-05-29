@@ -2644,6 +2644,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "edgeless-top-inset",
+    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "elastic-overscroll",
     "owners": [ "gastonr@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 150

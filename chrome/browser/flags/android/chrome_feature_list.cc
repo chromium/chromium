@@ -342,6 +342,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeMonitorConfigurations,
     &kEdgeToEdgeTablet,
     &kEdgeToEdgeUseBackupNavbarInsets,
+    &kEdgelessTopInset,
     &kEducationalTipDefaultBrowserPromoCard,
     &kEmptyTabListAnimationKillSwitch,
     &kEnableAndroidSidePanel,
@@ -698,6 +699,7 @@ BASE_FEATURE(kEdgeToEdgeExtraLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeMonitorConfigurations, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeTablet, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeUseBackupNavbarInsets, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEdgelessTopInset, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEducationalTipDefaultBrowserPromoCard, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEmptyTabListAnimationKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableAndroidSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);

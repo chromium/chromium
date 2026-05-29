@@ -5751,6 +5751,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDrawChromePagesEdgeToEdgeName,
      flag_descriptions::kDrawChromePagesEdgeToEdgeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDrawChromePagesEdgeToEdge)},
+    {"edgeless-top-inset", flag_descriptions::kEdgelessTopInsetName,
+     flag_descriptions::kEdgelessTopInsetDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEdgelessTopInset)},
 
     // Android nav bar color animation
     {"nav-bar-color-animation", flag_descriptions::kNavBarColorAnimationName,
