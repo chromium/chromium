@@ -705,13 +705,13 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   // Verify no metrics were recorded, since it is treated as startup as we
   // reset for testing, we should check startup metrics.
   histogram_tester.ExpectTotalCount(
-      "InitialWebUI.Startup.SessionRestore.WithoutExistingWindow."
-      "BrowserWindow.ShowRequestedToFirstPaint",
+      "InitialWebUI.Startup.SessionRestore.BrowserWindow."
+      "ShowRequestedToFirstPaint",
       0);
 
   histogram_tester.ExpectTotalCount(
-      "InitialWebUI.Startup.SessionRestore.WithoutExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap",
+      "InitialWebUI.Startup.SessionRestore.BrowserWindowToReloadButton."
+      "FirstPaintGap",
       0);
 
   keep_alive.reset();

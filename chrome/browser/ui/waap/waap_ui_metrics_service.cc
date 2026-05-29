@@ -125,7 +125,6 @@ const char* GetStartupTemperatureSuffix() {
 
 // Records a startup paint metric for the given `paint_metric_base`.
 void RecordStartupPaintMetric(std::string_view paint_metric_base,
-                              bool with_existing_window,
                               base::TimeTicks start_time,
                               base::TimeTicks paint_time) {
   if (!startup_metric_utils::GetBrowser().ShouldLogStartupHistogram() ||
@@ -142,11 +141,8 @@ void RecordStartupPaintMetric(std::string_view paint_metric_base,
     scenario_suffix = ".SessionRestore";
   }
 
-  const std::string_view with_existing_window_str =
-      ExistingWindowToString(with_existing_window);
-  std::string base_name =
-      base::StrCat({"InitialWebUI.Startup", scenario_suffix, ".",
-                    with_existing_window_str, ".", paint_metric_base});
+  std::string base_name = base::StrCat(
+      {"InitialWebUI.Startup", scenario_suffix, ".", paint_metric_base});
 
   // Record aggregate metric.
   EmitHistogramWithTraceEvent(base_name.c_str(), start_time, paint_time);
@@ -157,25 +153,6 @@ void RecordStartupPaintMetric(std::string_view paint_metric_base,
     EmitHistogramWithTraceEvent(base::StrCat({base_name, temp_suffix}).c_str(),
                                 start_time, paint_time);
   }
-}
-
-// Records a new window paint metric for the given `paint_metric_base`.
-void RecordNewWindowPaintMetric(std::string_view paint_metric_base,
-                                waap::NewWindowCreationSource source,
-                                base::TimeTicks start_time,
-                                base::TimeTicks paint_time) {
-  // Record aggregated metric.
-  EmitHistogramWithTraceEvent(
-      base::StrCat({"InitialWebUI.NewWindow.AllSources.", paint_metric_base})
-          .c_str(),
-      start_time, paint_time);
-
-  // Record source-sliced metric.
-  std::string_view source_str = CreationSourceToString(source);
-  EmitHistogramWithTraceEvent(base::StrCat({"InitialWebUI.NewWindow",
-                                            source_str, ".", paint_metric_base})
-                                  .c_str(),
-                              start_time, paint_time);
 }
 
 // Records a new window paint metric which differentiates whether the new window
@@ -228,7 +205,6 @@ void WaapUIMetricsService::OnReloadButtonCreated() {
 }
 
 void WaapUIMetricsService::OnReloadButtonRendererProcessCreatedAndLaunched(
-    bool with_existing_window,
     base::TimeTicks created_timestamp,
     base::TimeTicks launched_timestamp) {
   // TODO(crbug.com/490810407): Record this and the other metrics as UKM as
@@ -239,19 +215,16 @@ void WaapUIMetricsService::OnReloadButtonRendererProcessCreatedAndLaunched(
   base::TimeTicks time_origin =
       startup_metric_utils::GetBrowser().GetApplicationStartTicksForStartup();
   if (!created_timestamp.is_null()) {
-    RecordStartupPaintMetric("ReloadButton.RendererProcessCreated",
-                             with_existing_window, time_origin,
+    RecordStartupPaintMetric("ReloadButton.RendererProcessCreated", time_origin,
                              created_timestamp);
   }
   if (!launched_timestamp.is_null()) {
     RecordStartupPaintMetric("ReloadButton.RendererProcessLaunched",
-                             with_existing_window, time_origin,
-                             launched_timestamp);
+                             time_origin, launched_timestamp);
   }
 }
 
 void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
-    bool with_existing_window,
     base::TimeTicks time) {
   static bool is_first_call = true;
   // It is possible for the presentation feedback to have a null timestamp even
@@ -269,12 +242,10 @@ void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
 
   base::TimeTicks time_origin =
       startup_metric_utils::GetBrowser().GetApplicationStartTicksForStartup();
-  RecordStartupPaintMetric("BrowserWindow.FirstPaint", with_existing_window,
-                           time_origin, time);
+  RecordStartupPaintMetric("BrowserWindow.FirstPaint", time_origin, time);
 }
 
-void WaapUIMetricsService::OnFirstPaint(bool with_existing_window,
-                                        base::TimeTicks time) {
+void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
   static bool is_first_call = true;
   // See https://crbug.com/464980749#comment10 for why we skip for null.
   if (time.is_null()) {
@@ -289,12 +260,10 @@ void WaapUIMetricsService::OnFirstPaint(bool with_existing_window,
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
   base::TimeTicks time_origin =
       startup_metric_utils::GetBrowser().GetApplicationStartTicksForStartup();
-  RecordStartupPaintMetric("ReloadButton.FirstPaint", with_existing_window,
-                           time_origin, time);
+  RecordStartupPaintMetric("ReloadButton.FirstPaint", time_origin, time);
 }
 
-void WaapUIMetricsService::OnFirstContentfulPaint(bool with_existing_window,
-                                                  base::TimeTicks time) {
+void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
   static bool is_first_call = true;
   // See https://crbug.com/464980749#comment10 for why we skip for null.
   if (time.is_null()) {
@@ -309,12 +278,13 @@ void WaapUIMetricsService::OnFirstContentfulPaint(bool with_existing_window,
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
   base::TimeTicks time_origin =
       startup_metric_utils::GetBrowser().GetApplicationStartTicksForStartup();
-  RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint",
-                           with_existing_window, time_origin, time);
+  RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint", time_origin,
+                           time);
 }
 
 void WaapUIMetricsService::OnNewWindowBrowserWindowFirstPresentation(
     waap::NewWindowCreationSource source,
+    bool with_existing_window,
     base::TimeTicks start_time,
     base::TimeTicks paint_time) {
   if (start_time.is_null() || paint_time.is_null() ||
@@ -323,11 +293,12 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowFirstPresentation(
   }
 
   RecordNewWindowPaintMetric("BrowserWindow.FirstPaint.FromConstructor", source,
-                             start_time, paint_time);
+                             with_existing_window, start_time, paint_time);
 }
 
 void WaapUIMetricsService::OnNewWindowReloadButtonFirstPaint(
     waap::NewWindowCreationSource source,
+    bool with_existing_window,
     base::TimeTicks start_time,
     base::TimeTicks paint_time) {
   if (start_time.is_null() || paint_time.is_null() ||
@@ -336,11 +307,12 @@ void WaapUIMetricsService::OnNewWindowReloadButtonFirstPaint(
   }
 
   RecordNewWindowPaintMetric("ReloadButton.FirstPaint.FromConstructor", source,
-                             start_time, paint_time);
+                             with_existing_window, start_time, paint_time);
 }
 
 void WaapUIMetricsService::OnNewWindowReloadButtonFirstContentfulPaint(
     waap::NewWindowCreationSource source,
+    bool with_existing_window,
     base::TimeTicks start_time,
     base::TimeTicks paint_time) {
   if (start_time.is_null() || paint_time.is_null() ||
@@ -349,17 +321,15 @@ void WaapUIMetricsService::OnNewWindowReloadButtonFirstContentfulPaint(
   }
 
   RecordNewWindowPaintMetric(
-      "ReloadButton.FirstContentfulPaint.FromConstructor", source, start_time,
-      paint_time);
+      "ReloadButton.FirstContentfulPaint.FromConstructor", source,
+      with_existing_window, start_time, paint_time);
 }
 
 void WaapUIMetricsService::OnStartupBrowserWindowToReloadButtonFirstPaintGap(
-    bool with_existing_window,
     base::TimeTicks browser_window_paint_time,
     base::TimeTicks reload_button_paint_time) {
   RecordStartupPaintMetric("BrowserWindowToReloadButton.FirstPaintGap",
-                           with_existing_window, browser_window_paint_time,
-                           reload_button_paint_time);
+                           browser_window_paint_time, reload_button_paint_time);
 }
 
 void WaapUIMetricsService::OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
@@ -373,11 +343,10 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
 }
 
 void WaapUIMetricsService::OnStartupBrowserWindowShowRequestedToFirstPaint(
-    bool with_existing_window,
     base::TimeTicks request_time,
     base::TimeTicks paint_time) {
   RecordStartupPaintMetric("BrowserWindow.ShowRequestedToFirstPaint",
-                           with_existing_window, request_time, paint_time);
+                           request_time, paint_time);
 }
 
 void WaapUIMetricsService::OnNewWindowBrowserWindowShowRequestedToFirstPaint(
