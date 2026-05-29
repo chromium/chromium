@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
 
+#import "base/base64.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -30,6 +31,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -111,6 +115,113 @@ password_manager::PasswordManager* GetPasswordManager(
   }
   PasswordTabHelper* tab_helper = PasswordTabHelper::FromWebState(web_state);
   return tab_helper ? tab_helper->GetPasswordManager() : nullptr;
+}
+
+// Returns YES if `suggestions` contains both password and passkey suggestions.
+BOOL ContainsPasswordsAndPasskeys(NSArray<FormSuggestion*>* suggestions) {
+  BOOL hasPasskeys = NO;
+  BOOL hasPasswords = NO;
+  for (FormSuggestion* suggestion in suggestions) {
+    switch (suggestion.type) {
+      case autofill::SuggestionType::kWebauthnCredential:
+        hasPasskeys = YES;
+        break;
+      case autofill::SuggestionType::kPasswordEntry:
+      case autofill::SuggestionType::kBackupPasswordEntry:
+        hasPasswords = YES;
+        break;
+      default:
+        break;
+    }
+    if (hasPasskeys && hasPasswords) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+// Returns a set of lowercase usernames that have registered passkeys in the
+// given vector matching the passkey suggestions.
+NSMutableSet<NSString*>* GetPasskeyUsernames(
+    const std::vector<password_manager::PasskeyCredential>& passkeys,
+    NSArray<FormSuggestion*>* suggestions) {
+  NSMutableSet<NSString*>* passkeyUsernames = [NSMutableSet set];
+  for (FormSuggestion* suggestion in suggestions) {
+    if (suggestion.type == autofill::SuggestionType::kWebauthnCredential) {
+      std::string encodedId =
+          webauthn::GetPasskeySuggestionEncodedCredentialId(suggestion);
+      std::string decodedIdString;
+      if (base::Base64Decode(encodedId, &decodedIdString)) {
+        std::vector<uint8_t> decodedId(decodedIdString.begin(),
+                                       decodedIdString.end());
+        auto it = std::ranges::find_if(
+            passkeys,
+            [&decodedId](const password_manager::PasskeyCredential& passkey) {
+              return passkey.credential_id() == decodedId;
+            });
+        if (it != passkeys.end()) {
+          NSString* username = base::SysUTF8ToNSString(it->username());
+          if (username.length) {
+            [passkeyUsernames addObject:[username lowercaseString]];
+          }
+        }
+      }
+    }
+  }
+  return passkeyUsernames;
+}
+
+// Returns suggestions filtered to only contain passkeys when there is a
+// password suggestion and a passkey suggestion for the same username.
+NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
+    NSArray<FormSuggestion*>* suggestions,
+    web::WebState* webState,
+    const std::string& frameId) {
+  if (!webState) {
+    return suggestions;
+  }
+
+  if (!ContainsPasswordsAndPasskeys(suggestions)) {
+    return suggestions;
+  }
+
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(webState)
+          ->GetDelegateForFrameId(frameId);
+  if (!delegate) {
+    return suggestions;
+  }
+
+  auto passkeys_result = delegate->GetPasskeys();
+  if (!passkeys_result.has_value() || !(*passkeys_result) ||
+      (*passkeys_result)->empty()) {
+    return suggestions;
+  }
+
+  const std::vector<password_manager::PasskeyCredential>& passkeys =
+      **passkeys_result;
+
+  NSMutableSet<NSString*>* passkeyUsernames =
+      GetPasskeyUsernames(passkeys, suggestions);
+  if (!passkeyUsernames.count) {
+    return suggestions;
+  }
+
+  NSMutableArray<FormSuggestion*>* filteredSuggestions =
+      [NSMutableArray arrayWithCapacity:suggestions.count];
+  for (FormSuggestion* suggestion in suggestions) {
+    if (suggestion.type == autofill::SuggestionType::kPasswordEntry ||
+        suggestion.type == autofill::SuggestionType::kBackupPasswordEntry) {
+      NSString* username = suggestion.value;
+      if (username.length &&
+          [passkeyUsernames containsObject:[username lowercaseString]]) {
+        continue;
+      }
+    }
+    [filteredSuggestions addObject:suggestion];
+  }
+
+  return filteredSuggestions;
 }
 
 }  // namespace
@@ -335,16 +446,25 @@ password_manager::PasswordManager* GetPasswordManager(
       // is called, so we need to store variables used in the completion block
       // locally.
       autofill::FormRendererId formId = params.form_renderer_id;
+      std::string frameId = params.frame_id;
       __weak __typeof(self) weakSelf = self;
+      base::WeakPtr<web::WebState> weakWebState = activeWebState->GetWeakPtr();
       [_suggestionsProviderWrapper
           retrieveSuggestionsForForm:params
                             webState:activeWebState
                           completion:^(NSArray<FormSuggestion*>* suggestions) {
-                            weakSelf.suggestions = suggestions;
-                            [weakSelf
-                                logSubmissionReadinessMetrics:suggestions];
+                            web::WebState* webState = weakWebState.get();
+                            if (!webState) {
+                              return;
+                            }
+                            NSArray<FormSuggestion*>* filteredSuggestions =
+                                FilterDuplicateSuggestions(suggestions,
+                                                           webState, frameId);
+                            weakSelf.suggestions = filteredSuggestions;
+                            [weakSelf logSubmissionReadinessMetrics:
+                                          filteredSuggestions];
                             [weakSelf fetchCredentialsForForm:formId
-                                                     webState:activeWebState];
+                                                     webState:webState];
                           }];
     }
 
