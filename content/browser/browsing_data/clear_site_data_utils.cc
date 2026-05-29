@@ -170,10 +170,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
           std::move(origin_filter_builder), this);
     }
 
-    // We clear client hints for both cookie and cache clears.
+    // We should clear client hints when we clear cookies and cache as well.
+    // The client hints cache is only read in first-party contexts, so can only
+    // be cleared in them too (see ClearSiteDataHandler::Run for the warning).
     if (clear_site_data_types_.HasAny({ClearSiteDataType::kCookies,
                                        ClearSiteDataType::kCache,
-                                       ClearSiteDataType::kClientHints})) {
+                                       ClearSiteDataType::kClientHints}) &&
+        (!storage_key_ || storage_key_->IsFirstPartyContext())) {
       pending_task_count_++;
 
       // For client hints, no mask is being passed per se. Therefore, when

@@ -240,6 +240,17 @@ bool ClearSiteDataHandler::Run() {
     return false;
   }
 
+  // We can't clear the client hints cache outside of first-party contexts, but
+  // there's no reason to early return on an attempt. Instead, we alert here and
+  // bypass the data clearing in SiteDataClearer::RunAndDestroySelfWhenDone.
+  if (clear_site_data_types.Has(ClearSiteDataType::kClientHints) &&
+      (storage_key_ && storage_key_->IsThirdPartyContext())) {
+    delegate_->AddMessage(url_,
+                          "It's not possible to clear the client hints cache "
+                          "from a third-party context.",
+                          blink::mojom::ConsoleMessageLevel::kWarning);
+  }
+
   ExecuteClearingTask(
       origin, clear_site_data_types, storage_buckets_to_remove,
       base::BindOnce(&ClearSiteDataHandler::TaskFinished,

@@ -37,6 +37,7 @@ using Message = ClearSiteDataHandler::ConsoleMessagesDelegate::Message;
 namespace {
 
 const char kClearCookiesHeader[] = "\"cookies\"";
+const char kClearClientHintsHeader[] = "\"clientHints\"";
 const char kClearPrefetchCacheHeader[] = "\"prefetchCache\"";
 const char kClearPrerenderCacheHeader[] = "\"prerenderCache\"";
 const char kClearPrefetchAndPrerenderCacheHeader[] =
@@ -464,6 +465,64 @@ TEST_F(ClearSiteDataHandlerTest, InvalidOrigin) {
     }
     testing::Mock::VerifyAndClearExpectations(&handler);
   }
+}
+
+// Attempt to clear client hints from a third-party context (a nonce is added to
+// the storage key) and see a warning.
+TEST_F(ClearSiteDataHandlerTest, ClientHintsThirdParty) {
+  std::vector<Message> message_buffer;
+  const GURL url = GURL("https://secure-origin.com");
+  TestHandler handler(
+      nullptr, nullptr, kTestStoragePartitionConfig, url,
+      kClearClientHintsHeader, net::LOAD_NORMAL,
+      /*cookie_partition_key=*/std::nullopt,
+      blink::StorageKey::CreateWithNonce(url::Origin::Create(url),
+                                         base::UnguessableToken::Create()),
+      /*partitioned_state_allowed_only=*/false, base::DoNothing(),
+      std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
+
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _, _, _)).Times(1);
+
+  bool defer = handler.DoHandleHeader();
+
+  EXPECT_EQ(defer, true);
+  EXPECT_EQ(message_buffer.size(), 2u);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            message_buffer.front().level);
+  EXPECT_EQ("Cleared data types: \"clientHints\".",
+            message_buffer.front().text);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
+            message_buffer.back().level);
+  EXPECT_EQ(
+      "It's not possible to clear the client hints cache from a third-party "
+      "context.",
+      message_buffer.back().text);
+  testing::Mock::VerifyAndClearExpectations(&handler);
+}
+
+// Attempt to clear client hints from a first party context and see no warning.
+TEST_F(ClearSiteDataHandlerTest, ClientHintsFirstParty) {
+  std::vector<Message> message_buffer;
+  const GURL url = GURL("https://secure-origin.com");
+  TestHandler handler(
+      nullptr, nullptr, kTestStoragePartitionConfig, url,
+      kClearClientHintsHeader, net::LOAD_NORMAL,
+      /*cookie_partition_key=*/std::nullopt,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+      /*partitioned_state_allowed_only=*/false, base::DoNothing(),
+      std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
+
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _, _, _)).Times(1);
+
+  bool defer = handler.DoHandleHeader();
+
+  EXPECT_EQ(defer, true);
+  EXPECT_EQ(message_buffer.size(), 1u);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            message_buffer.front().level);
+  EXPECT_EQ("Cleared data types: \"clientHints\".",
+            message_buffer.front().text);
+  testing::Mock::VerifyAndClearExpectations(&handler);
 }
 
 // Verifies that console outputs from various actions on different URLs
