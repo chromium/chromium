@@ -118,6 +118,7 @@ if (!is_android) {
     sources = [
       "translate_frame_binder_browsertest.cc",
       "translate_manager_browsertest.cc",
+      "translate_manager_render_view_host_browsertest.cc",
     ]
 
     deps = [
@@ -125,6 +126,7 @@ if (!is_android) {
       ":translate",
       "//base",
       "//base/test:test_support",
+      "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/language",
@@ -132,7 +134,10 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/translate",
+      "//chrome/common",
       "//chrome/test:test_support",
+      "//components/language/core/browser",
       "//components/translate/content/browser",
       "//components/translate/core/browser",
       "//components/translate/core/common",
@@ -171,16 +176,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (!is_android) {
-    sources += [ "translate_manager_render_view_host_unittest.cc" ]
-    deps += [
-      "//chrome/app:command_ids",
-      "//chrome/browser/ui/translate",
-      "//chrome/common",
-      "//components/language/core/browser",
-    ]
-  }
 
   if (is_android) {
     sources += [ "translate_manager_render_view_host_android_unittest.cc" ]
