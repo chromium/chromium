@@ -124,9 +124,14 @@ found in the LICENSE file.
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingStart="@dimen/extensions_menu_horizontal_padding"
-                        android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
-                        android:paddingVertical="@dimen/extensions_menu_toggle_vertical_padding"
+                        android:layout_marginStart="@dimen/extensions_menu_horizontal_padding"
+                        android:layout_marginEnd="@dimen/extensions_menu_horizontal_padding"
+                        android:layout_marginTop="@dimen/extensions_menu_containment_vertical_margin"
+                        android:layout_marginBottom="@dimen/extensions_menu_containment_vertical_margin"
+                        android:paddingHorizontal="@dimen/extensions_menu_horizontal_padding"
+                        android:paddingTop="@dimen/extensions_menu_containment_top_padding"
+                        android:paddingBottom="@dimen/extensions_menu_containment_bottom_padding"
+                        android:background="@drawable/extensions_menu_containment"
                         android:visibility="gone">
 
                         <TextView
@@ -159,7 +164,7 @@ found in the LICENSE file.
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:layout_margin="@dimen/extensions_menu_horizontal_padding"
-                            android:background="@drawable/extensions_request_access_bg">
+                            android:background="@drawable/extensions_menu_containment">
 
                             <TextView
                                 android:id="@+id/extensions_request_access_section_title"

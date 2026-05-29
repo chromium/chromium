@@ -8,5 +8,5 @@ found in the LICENSE file.
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@macro/default_card_bg_color" />
-    <corners android:radius="@dimen/extensions_menu_request_access_corner_radius" />
+    <corners android:radius="@dimen/extensions_menu_containment_corner_radius" />
 </shape>

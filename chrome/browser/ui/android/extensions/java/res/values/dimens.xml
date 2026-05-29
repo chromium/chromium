@@ -16,12 +16,15 @@ found in the LICENSE file.
     <dimen name="extensions_menu_extension_icon_size">20dp </dimen>
     <dimen name="extensions_menu_site_permissions_icon_size">20dp </dimen>
     <dimen name="extensions_menu_request_access_padding">12dp</dimen>
-    <dimen name="extensions_menu_request_access_corner_radius">12dp</dimen>
+    <dimen name="extensions_menu_containment_corner_radius">12dp</dimen>
     <dimen name="extensions_menu_header_icon_size">24dp</dimen>
     <dimen name="extensions_menu_header_button_size">@dimen/min_touch_target_size</dimen>
     <dimen name="extensions_menu_divider_vertical_margin">0dp</dimen>
     <dimen name="extensions_menu_footer_min_height">40dp</dimen>
     <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
+    <dimen name="extensions_menu_containment_top_padding">26dp</dimen>
+    <dimen name="extensions_menu_containment_bottom_padding">8dp</dimen>
+    <dimen name="extensions_menu_containment_vertical_margin">8dp</dimen>
 
     <!-- Extensions Toolbar dimensions -->
     <dimen name="extensions_toolbar_icon_size">24dp</dimen>
