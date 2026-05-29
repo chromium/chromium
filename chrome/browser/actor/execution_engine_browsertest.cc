@@ -24,7 +24,9 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
@@ -1069,6 +1071,79 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineDownloadBrowserTest,
                                        true, 1);
   histogram_tester_.ExpectUniqueSample("Actor.Download.SaveAsDialogTriggered",
                                        true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsToolVotes) {
+  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> button1_id =
+      content::GetDOMNodeId(*main_frame(), "#button1");
+  std::optional<int> button2_id =
+      content::GetDOMNodeId(*main_frame(), "#button2");
+  ASSERT_TRUE(button1_id);
+  ASSERT_TRUE(button2_id);
+
+  std::unique_ptr<ToolRequest> click1 =
+      MakeClickRequest(*main_frame(), button1_id.value());
+  std::unique_ptr<ToolRequest> click2 =
+      MakeClickRequest(*main_frame(), button2_id.value());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
+  ExpectOkResult(result);
+
+  // Each of the the ClickTools votes for `kRequested`.
+  const TabObservationStrategy& strategy = result.GetStrategy();
+  EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
+            ScreenshotPolicy::kRequested);
+  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
+            PageContentExtractionPolicy::kRequested);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsMultipleToolVotes) {
+  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  base::test::TestFuture<ToolCallback> on_invoke_future1;
+  base::test::TestFuture<ToolCallback> on_invoke_future2;
+
+  std::unique_ptr<ToolRequest> tool1 = std::make_unique<FakeToolRequest>(
+      on_invoke_future1.GetCallback(), base::OnceClosure(),
+      active_tab()->GetHandle());
+  std::unique_ptr<ToolRequest> tool2 = std::make_unique<FakeToolRequest>(
+      on_invoke_future2.GetCallback(), base::OnceClosure(),
+      active_tab()->GetHandle());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool1, tool2), result.GetCallback());
+
+  // First tool is invoked. Give it votes: Screenshot Skipped, Dom Extraction
+  // Required.
+  ASSERT_TRUE(on_invoke_future1.Wait());
+  mojom::ActionResultPtr result1 = MakeOkResult();
+  result1->screenshot_policy = mojom::ScreenshotPolicy::kSkipped;
+  result1->page_content_policy = mojom::PageContentExtractionPolicy::kRequired;
+  std::move(on_invoke_future1.Take()).Run(std::move(result1));
+
+  // Second tool is invoked. Give it votes: Screenshot Required, Dom Extraction
+  // Skipped.
+  ASSERT_TRUE(on_invoke_future2.Wait());
+  mojom::ActionResultPtr result2 = MakeOkResult();
+  result2->screenshot_policy = mojom::ScreenshotPolicy::kRequired;
+  result2->page_content_policy = mojom::PageContentExtractionPolicy::kSkipped;
+  std::move(on_invoke_future2.Take()).Run(std::move(result2));
+
+  ExpectOkResult(result);
+
+  // The strategy should take the maximum of the votes for the tab.
+  // Screenshot: max(Skipped, Required) = Required.
+  // Dom Extraction: max(Required, Skipped) = Required.
+  const TabObservationStrategy& strategy = result.GetStrategy();
+  EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
+            ScreenshotPolicy::kRequired);
+  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
+            PageContentExtractionPolicy::kRequired);
 }
 
 }  // namespace

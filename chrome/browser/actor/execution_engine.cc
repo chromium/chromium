@@ -1081,6 +1081,15 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
                     end_time - *result->execution_end_time);
 
+  if (GetInProgressAction().GetTabHandle() != tabs::TabHandle::Null()) {
+    observation_strategy_.VoteForScreenshot(
+        GetInProgressAction().GetTabHandle(),
+        static_cast<ScreenshotPolicy>(result->screenshot_policy));
+    observation_strategy_.VoteForPageContentExtraction(
+        GetInProgressAction().GetTabHandle(),
+        static_cast<PageContentExtractionPolicy>(result->page_content_policy));
+  }
+
   if (GetInProgressAction().IsFollowup()) {
     CHECK(!action_results_.empty());
     ActionResultWithLatencyInfo& action_result = action_results_.back();
@@ -1089,14 +1098,6 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   } else {
     action_results_.emplace_back(action_start_time_, end_time,
                                  std::move(result));
-  }
-
-  if (GetInProgressAction().GetTabHandle() != tabs::TabHandle::Null()) {
-    observation_strategy_.VoteForScreenshot(
-        GetInProgressAction().GetTabHandle(), ScreenshotPolicy::kRequested);
-    observation_strategy_.VoteForPageContentExtraction(
-        GetInProgressAction().GetTabHandle(),
-        PageContentExtractionPolicy::kRequested);
   }
 
   SetState(State::kUiPostInvoke);

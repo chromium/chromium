@@ -10,6 +10,7 @@
 
 namespace actor {
 
+// LINT.IfChange(ScreenshotPolicy)
 // Options that can be used to influence whether a tab screenshot is taken
 // after a set of actions has completed. These votes are combined to help
 // determine the final decision about screenshots.
@@ -30,7 +31,9 @@ enum class ScreenshotPolicy {
   // provided.
   kRequired = 2,
 };
+// LINT.ThenChange(//chrome/common/actor.mojom:ScreenshotPolicy)
 
+// LINT.IfChange(PageContentExtractionPolicy)
 // Options a client can use to influence whether a page content extraction
 // (i.e. the construction of `AiPageContent`) is done after a set of actions has
 // completed. These votes are combined to help determine the final decision
@@ -54,6 +57,7 @@ enum class PageContentExtractionPolicy {
   // not.
   kRequired = 2,
 };
+// LINT.ThenChange(//chrome/common/actor.mojom:PageContentExtractionPolicy)
 
 // Collects observation votes for one or more tabs and tallies them to determine
 // whether screenshots and/or page content extraction is performed after actions

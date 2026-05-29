@@ -193,6 +193,45 @@ union InitializeToolResult {
   ActionResult error_result;
 };
 
+// LINT.IfChange(ScreenshotPolicy)
+// Options that can be used to influence whether a tab screenshot is taken
+// after a set of actions has completed. These votes are combined to help
+// determine the final decision about screenshots.
+enum ScreenshotPolicy {
+  // A screenshot should be skipped. Even if performed, the result will be
+  // unused.
+  kSkipped = 0,
+
+  // A screenshot should be taken, but it will not cause a task failure if it is
+  // skipped.
+  kRequested = 1,
+
+  // A screenshot must be taken, and a task failure will occur if it is not
+  // provided.
+  kRequired = 2,
+};
+// LINT.ThenChange(//chrome/browser/actor/tab_observation_strategy.h:ScreenshotPolicy)
+
+// LINT.IfChange(PageContentExtractionPolicy)
+// Options a client can use to influence whether a page content extraction
+// (i.e. the construction of `AiPageContent`) is done after a set of actions has
+// completed. These votes are combined to help determine the final decision
+// about page content extraction.
+enum PageContentExtractionPolicy {
+  // Page content extraction should be skipped. Even if performed, the result
+  // will be unused.
+  kSkipped = 0,
+
+  // Page content extraction should be done, but it will not cause a task
+  // failure if it is skipped.
+  kRequested = 1,
+
+  // Page content extraction must be done, and a task failure will occur if it
+  // is not.
+  kRequired = 2,
+};
+// LINT.ThenChange(//chrome/browser/actor/tab_observation_strategy.h:PageContentExtractionPolicy)
+
 struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
@@ -212,4 +251,7 @@ struct ActionResult {
   // stabilization was started. This field may not be available if the action's
   // execution did not fully complete.
   mojo_base.mojom.TimeTicks? execution_end_time;
+
+  ScreenshotPolicy screenshot_policy = kRequested;
+  PageContentExtractionPolicy page_content_policy = kRequested;
 };

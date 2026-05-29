@@ -414,6 +414,7 @@ source_set("browser_tests") {
   deps = [
     ":actor",
     ":impl",
+    ":impl_test_support",
     ":test_support",
     ":tools_test_support",
     "ui:event_dispatcher",

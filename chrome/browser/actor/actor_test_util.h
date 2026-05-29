@@ -80,6 +80,11 @@ class ActResultFuture
         base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
                                TabObservationStrategy>::Take());
   }
+  const TabObservationStrategy& GetStrategy() {
+    return std::get<1>(
+        base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
+                               TabObservationStrategy>::Get());
+  }
 };
 using PerformActionsFuture = ActResultFuture;
 

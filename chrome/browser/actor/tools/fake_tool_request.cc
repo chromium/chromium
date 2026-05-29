@@ -7,14 +7,18 @@
 #include "chrome/browser/actor/tools/fake_tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
+#include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
 FakeToolRequest::FakeToolRequest(
     base::OnceCallback<void(ToolCallback)> on_invoke,
-    base::OnceClosure on_destroy)
-    : on_invoke_(std::move(on_invoke)), on_destroy_(std::move(on_destroy)) {}
+    base::OnceClosure on_destroy,
+    tabs::TabHandle tab_handle)
+    : on_invoke_(std::move(on_invoke)),
+      on_destroy_(std::move(on_destroy)),
+      tab_handle_(tab_handle) {}
 
 FakeToolRequest::~FakeToolRequest() = default;
 
@@ -27,9 +31,16 @@ ToolRequest::CreateToolResult FakeToolRequest::CreateTool(
       MakeOkResult()};
 }
 
-void FakeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {}
+void FakeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(WaitToolRequest(base::Seconds(0)));
+}
 
 std::string_view FakeToolRequest::Name() const {
   return "FakeTool";
 }
+
+tabs::TabHandle FakeToolRequest::GetTabHandle() const {
+  return tab_handle_;
+}
+
 }  // namespace actor
