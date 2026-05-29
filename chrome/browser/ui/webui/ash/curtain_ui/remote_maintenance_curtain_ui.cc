@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/ash/curtain_ui/remote_maintenance_curtain_ui.h"
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/remote_maintenance_curtain_resources.h"
 #include "chrome/grit/remote_maintenance_curtain_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
