@@ -182,14 +182,10 @@ public interface PasswordStoreAndroidBackend {
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void removeLogin(
+    void removeLogin(
             byte[] pwdSpecificsData,
             byte[] deletionOriginData,
             Optional<Account> syncingAccount,
             Runnable successCallback,
-            Callback<Exception> failureCallback) {
-        // TODO(b/481276658): Remove the default implementation once all interface
-        // implementations are complete.
-        removeLogin(pwdSpecificsData, syncingAccount, successCallback, failureCallback);
-    }
+            Callback<Exception> failureCallback);
 }
