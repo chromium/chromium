@@ -110,7 +110,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
-      voiceSearchCoherenceEnabled: {type: Boolean},
       carouselOnTop_: {
         type: Boolean,
       },
@@ -173,7 +172,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor carouselOnTop_: boolean = false;
   accessor entrypointName: string = '';
   accessor lensButtonDisabled: boolean = false;
-  accessor voiceSearchCoherenceEnabled: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
   protected isRtl_: boolean = document.documentElement.dir === 'rtl';
 

@@ -6,10 +6,11 @@ import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
+import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
-import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/file_carousel.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {ComposeboxFile, mapUploadErrorToProcessFilesError, ProcessFilesError, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
@@ -20,6 +21,7 @@ import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/comp
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';

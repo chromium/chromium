@@ -18,6 +18,7 @@
   --text-input-inline-start-spacing: 16px;
   --text-input-max-height: 190px;
   --fade-duration: 100ms;
+  --cr-composebox-submit-container-size: 40px;
 }
 
 #composebox {
@@ -72,3 +73,52 @@ cr-composebox-tool-chip {
   border-radius: inherit;
 }
 
+/* Voice Search Styles */
+#voiceSearchButton {
+  --cr-icon-button-fill-color: var(--color-composebox-font-light);
+  --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);
+  --cr-icon-button-margin-end: 0px;
+  --cr-icon-button-margin-start: 0px;
+  --cr-icon-button-size: 36px;
+}
+
+:host(:not([searchbox-next-enabled])) #voiceSearchButton,
+:host([searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
+  bottom: 12px;
+  inset-inline-end: 12px;
+  position: absolute;
+}
+
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 18px);
+}
+
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) #voiceSearchButton {
+  bottom: unset;
+  top: var(--cr-composebox-voice-icon-top, 60px);
+}
+
+:host([searchbox-layout-mode='Compact']) #voiceSearchButton {
+  position: absolute;
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 12px);
+  top: 10px;
+}
+
+:host([in-voice-search-mode]) #composebox {
+  block-size: fit-content;
+  min-block-size: 112px;
+  opacity: 0;
+  visibility: hidden;
+}
+
+:host([in-voice-search-mode]) #inputContainer {
+  display: none;
+}
+
+cr-composebox-voice-search {
+  z-index: 2;
+}
+
+:host(:not([in-voice-search-mode])) cr-composebox-voice-search {
+  display: none;
+}

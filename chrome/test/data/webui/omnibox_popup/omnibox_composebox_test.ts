@@ -10,6 +10,7 @@ import {ComposeboxProxyImpl} from 'chrome://omnibox-popup.top-chrome/omnibox_pop
 import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -23,8 +24,12 @@ suite('OmniboxComposeboxTest', () => {
   let omniboxComposebox: OmniboxComposeboxElement;
   let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let testProxy: TestSearchboxBrowserProxy;
+  let originalWindowProxy: WindowProxy;
 
   setup(async () => {
+    if (!originalWindowProxy) {
+      originalWindowProxy = WindowProxy.getInstance();
+    }
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
@@ -57,6 +62,12 @@ suite('OmniboxComposeboxTest', () => {
     omniboxComposebox = document.createElement('cr-omnibox-composebox');
     document.body.appendChild(omniboxComposebox);
     await microtasksFinished();
+  });
+
+  teardown(() => {
+    if (originalWindowProxy) {
+      WindowProxy.setInstance(originalWindowProxy);
+    }
   });
 
   test(
@@ -885,4 +896,105 @@ suite('OmniboxComposeboxTest', () => {
     assertEquals(ToolMode.kUnspecified, activeTool);
     assertFalse(closeEventFired);
   });
-});
+
+  test(
+      'Voice search components render when showVoiceSearch is true and supported',
+      async () => {
+        const windowProxy = TestMock.fromClass(WindowProxy);
+        windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+        windowProxy.setResultMapperFor(
+            'matchMedia', (query: string) => window.matchMedia(query));
+        WindowProxy.setInstance(windowProxy);
+        testProxy.handler.setPromiseResolveFor('getPageClassification', {
+          metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
+        });
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        omniboxComposebox = document.createElement('cr-omnibox-composebox');
+        omniboxComposebox.showVoiceSearch = true;
+        document.body.appendChild(omniboxComposebox);
+        await omniboxComposebox.updateComplete;
+
+        const voiceSearchOverlay = omniboxComposebox.shadowRoot.querySelector(
+            'cr-composebox-voice-search');
+        assertTrue(!!voiceSearchOverlay);
+        const voiceSearchButton =
+            omniboxComposebox.shadowRoot.querySelector('#voiceSearchButton');
+        assertTrue(!!voiceSearchButton);
+      });
+
+  test(
+      'Voice search components do not render when showVoiceSearch is false',
+      async () => {
+        const windowProxy = TestMock.fromClass(WindowProxy);
+        windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+        windowProxy.setResultMapperFor(
+            'matchMedia', (query: string) => window.matchMedia(query));
+        WindowProxy.setInstance(windowProxy);
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        omniboxComposebox = document.createElement('cr-omnibox-composebox');
+        omniboxComposebox.showVoiceSearch = false;
+
+        document.body.appendChild(omniboxComposebox);
+        await omniboxComposebox.updateComplete;
+
+        const voiceSearchOverlay = omniboxComposebox.shadowRoot.querySelector(
+            'cr-composebox-voice-search');
+        assertFalse(!!voiceSearchOverlay);
+        const voiceSearchButton =
+            omniboxComposebox.shadowRoot.querySelector('#voiceSearchButton');
+        assertFalse(!!voiceSearchButton);
+      });
+
+  test(
+      'voice permission changed updates cr-composebox-voice-search class and hides bottomActions',
+      async () => {
+        const windowProxy = TestMock.fromClass(WindowProxy);
+        windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+        windowProxy.setResultMapperFor(
+            'matchMedia', (query: string) => window.matchMedia(query));
+        WindowProxy.setInstance(windowProxy);
+        testProxy.handler.setPromiseResolveFor('getPageClassification', {
+          metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
+        });
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        // Recreate omniboxComposebox so updated loadTimeData and WindowProxy
+        // mock take effect.
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        omniboxComposebox = document.createElement('cr-omnibox-composebox');
+        omniboxComposebox.showVoiceSearch = true;
+        document.body.appendChild(omniboxComposebox);
+        await omniboxComposebox.updateComplete;
+
+        const voiceSearchOverlay = omniboxComposebox.shadowRoot.querySelector(
+            'cr-composebox-voice-search');
+        assertTrue(!!voiceSearchOverlay);
+        // Inject style to disable transitions for instant opacity evaluation.
+        const style = document.createElement('style');
+        style.textContent =
+            '* { transition: none !important; animation: none !important; }';
+        voiceSearchOverlay.shadowRoot.appendChild(style);
+        const bottomActions =
+            voiceSearchOverlay.shadowRoot.querySelector('#bottomActions');
+        assertTrue(!!bottomActions);
+        // Verify that the bottom actions are initially visible (opacity 1).
+        assertEquals('1', window.getComputedStyle(bottomActions).opacity);
+
+        // Simulate voice permission prompt opening.
+        omniboxComposebox.onVoicePermissionChanged(
+            new CustomEvent('voice-permission-changed', {
+              detail: {
+                isOpened: true,
+                height: 100,
+                width: 200,
+              },
+            }));
+        await voiceSearchOverlay.updateComplete;
+
+        assertTrue(voiceSearchOverlay.classList.contains(
+            'embedded-permission-prompt-showing'));
+        assertEquals('0', window.getComputedStyle(bottomActions).opacity);
+      });
+  });

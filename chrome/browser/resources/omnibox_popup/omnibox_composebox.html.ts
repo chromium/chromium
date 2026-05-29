@@ -95,6 +95,12 @@ export function getHtml(this: OmniboxComposeboxElement) {
               ` : ''}
             </div>
           ` : ''}
+          ${this.shouldShowVoiceSearchAtBottom() ? html`
+            <cr-icon-button id="voiceSearchButton" class="voice-icon" part="voice-icon"
+                iron-icon="cr:mic" @click="${this.onVoiceSearchButtonClick}"
+                title="${this.i18n('voiceSearchButtonLabel')}">
+            </cr-icon-button>
+          ` : ''}
           ${this.shouldShowSubmitButton() &&
                 this.searchboxLayoutMode === 'TallBottomContext' ? html`
               <cr-composebox-submit
@@ -109,6 +115,23 @@ export function getHtml(this: OmniboxComposeboxElement) {
         </div>
       </div>
     </div>
+    ${this.shouldShowVoiceSearch() ? html`
+      <cr-composebox-voice-search id="voiceSearch"
+          @voice-permission-changed="${this.onVoicePermissionChanged}"
+          @voice-search-cancel="${this.onVoiceSearchCancel}"
+          @voice-search-final-result="${this.onVoiceSearchFinalResult}"
+          @voice-search-error="${this.onVoiceSearchError}"
+          @transcript-update="${this.onTranscriptUpdate}"
+          @speech-received="${this.onSpeechReceived}"
+          @recording-stopped="${this.onRecordingStopped}"
+          .submitStopButtonsEnabled="${this.voiceSearchCoherenceEnabled}"
+          .liveTranscriptEnabled="${!this.voiceSearchCoherenceEnabled}"
+          .submitButtonIconType="${this.submitButtonIconType}"
+          .dynamicTimeoutEnabled="${false}"
+          .pageCallbackRouter="${this.getSearchboxCallbackRouter()}"
+          exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
+      </cr-composebox-voice-search>
+    ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -159,6 +159,7 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
             },
             hasVoiceSearchError: {type: Boolean},
+            voiceSearchCoherenceEnabled: {type: Boolean},
             isListening: {type: Boolean},
             tabFaviconChipsToCoinsEnabled: {type: Boolean},
           };
@@ -188,6 +189,7 @@ export const ComposeboxEmbedderMixin =
         // Voice search is listening if there is no error and voice search
         // overlay is open (and active).
         accessor isListening: boolean = false;
+        accessor voiceSearchCoherenceEnabled: boolean = false;
 
         accessor tabFaviconChipsToCoinsEnabled: boolean =
             loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
@@ -408,6 +410,11 @@ export const ComposeboxEmbedderMixin =
               changedProperties.has('hasVoiceSearchError')) {
             this.isListening =
                 this.inVoiceSearchMode && !this.hasVoiceSearchError;
+          }
+
+          if (!this.hasUpdated) {
+            this.voiceSearchCoherenceEnabled = loadTimeData.getBoolean(
+                'voiceSearchCoherenceComposeboxesEnabled');
           }
         }
 
@@ -2345,6 +2352,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   lensSendRawFileMediaTypesEnabled: boolean;
   hasVoiceSearchError: boolean;
   isListening: boolean;
+  voiceSearchCoherenceEnabled: boolean;
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
