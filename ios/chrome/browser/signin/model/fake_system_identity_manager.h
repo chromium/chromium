@@ -184,6 +184,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   void FetchCapabilities(id<SystemIdentity> identity,
                          const std::vector<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
+  void FetchCapabilitiesWithPartial(
+      id<SystemIdentity> identity,
+      const std::vector<std::string>& names,
+      FetchCapabilitiesCompletion completion,
+      FetchPartialCapabilitiesCallback partial_callback) final;
 
   void RegisterExternalPrivacyContextProvider(
       id<ExternalPrivacyContextUIProvider> provider) final;
@@ -228,6 +233,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   void FetchCapabilitiesAsync(id<SystemIdentity> identity,
                               const std::vector<std::string>& names,
                               FetchCapabilitiesCallback callback);
+  void FetchCapabilitiesWithPartialAsync(
+      id<SystemIdentity> identity,
+      const std::vector<std::string>& names,
+      FetchCapabilitiesCompletion completion,
+      FetchPartialCapabilitiesCallback partial_callback);
 
   // Posts `closure` to be executed asynchronously on the current sequence
   // while maintaining a counter of pending callbacks. The counter is used

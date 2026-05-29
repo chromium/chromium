@@ -520,6 +520,22 @@ void FakeSystemIdentityManager::FetchCapabilities(
                      GetWeakPtr(), identity, names, std::move(callback)));
 }
 
+void FakeSystemIdentityManager::FetchCapabilitiesWithPartial(
+    id<SystemIdentity> identity,
+    const std::vector<std::string>& names,
+    FetchCapabilitiesCompletion completion,
+    FetchPartialCapabilitiesCallback partial_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
+  // Fetching the hosted domain is an asynchronous operation (as it requires
+  // some network calls).
+  PostClosure(FROM_HERE,
+              base::BindOnce(
+                  &FakeSystemIdentityManager::FetchCapabilitiesWithPartialAsync,
+                  GetWeakPtr(), identity, names, std::move(completion),
+                  std::move(partial_callback)));
+}
+
 void FakeSystemIdentityManager::RegisterExternalPrivacyContextProvider(
     id<ExternalPrivacyContextUIProvider> provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -722,6 +738,25 @@ void FakeSystemIdentityManager::FetchCapabilitiesAsync(
   }
 
   std::move(callback).Run(result);
+}
+
+void FakeSystemIdentityManager::FetchCapabilitiesWithPartialAsync(
+    id<SystemIdentity> identity,
+    const std::vector<std::string>& names,
+    FetchCapabilitiesCompletion completion,
+    FetchPartialCapabilitiesCallback partial_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto callback = base::BindOnce(
+      [](FetchPartialCapabilitiesCallback partial_callback,
+         FetchCapabilitiesCompletion completion,
+         std::map<std::string, CapabilityResult> result) {
+        partial_callback.Run(result);
+        std::move(completion).Run();
+      },
+      std::move(partial_callback), std::move(completion));
+
+  FetchCapabilitiesAsync(identity, names, std::move(callback));
 }
 
 void FakeSystemIdentityManager::PostClosure(base::Location from_here,
