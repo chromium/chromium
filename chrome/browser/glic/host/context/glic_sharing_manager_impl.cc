@@ -293,6 +293,11 @@ void GlicSharingManagerImpl::GetContextForActorFromTab(
         GlicGetContextFromTabError::kPermissionDenied, "profile mismatch"}));
     return;
   }
+  if (!IsTabValidForSharing(tab)) {
+    std::move(callback).Run(base::unexpected(GlicGetContextError{
+        GlicGetContextFromTabError::kPermissionDenied, "permission denied"}));
+    return;
+  }
   GetContextFromTabImpl(tab, options, std::move(callback));
 }
 

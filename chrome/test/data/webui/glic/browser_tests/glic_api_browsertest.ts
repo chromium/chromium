@@ -811,6 +811,17 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(result);
   }
 
+  async testGetContextForActorFromTabWithRestrictedUrl() {
+    await this.host.setTabContextPermissionState(true);
+    assertDefined(this.host.getFocusedTabStateV2);
+    const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
+    assertDefined(focusedTab?.hasNoFocus?.tabFocusCandidateData?.tabId);
+    const tabId = focusedTab.hasNoFocus.tabFocusCandidateData.tabId;
+    await assertRejects(this.host.getContextForActorFromTab!(tabId, {}), {
+      withErrorMessage: 'tabContext failed: permission denied',
+    });
+  }
+
   // TODO(crbug.com/422544382): add test for getContextForActorFromTab for the
   // case where tab is in background.
 
