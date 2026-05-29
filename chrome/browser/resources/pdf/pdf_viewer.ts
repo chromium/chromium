@@ -36,8 +36,9 @@ import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 // </if>
 import type {Bookmark} from './bookmark_type.js';
 import type {BrowserApi} from './browser_api.js';
-import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
+import type {Attachment, DocumentMetadata, Point} from './constants.js';
 // <if expr="enable_pdf_ink2">
+import type {ExtendedKeyEvent} from './constants.js';
 import {AnnotationMode} from './constants.js';
 // </if>
 import {FittingType, FormFieldFocusType} from './constants.js';
@@ -1814,20 +1815,30 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
-  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
+  // <if expr="enable_pdf_ink2">
   /**
    * Performs required tasks after a successful save.
    */
   private onSaveSuccessful_(requestType: SaveRequestType) {
     this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
-    // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_ && requestType === SaveRequestType.ANNOTATION) {
       Ink2Manager.getInstance().saved();
     }
-    // </if> enable_pdf_ink2
     this.fire('save-completed-for-testing');
   }
+  // </if>
 
+  // <if expr="not enable_pdf_ink2 and enable_pdf_save_to_drive">
+  /**
+   * Performs required tasks after a successful save.
+   */
+  private onSaveSuccessful_(_requestType: SaveRequestType) {
+    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
+    this.fire('save-completed-for-testing');
+  }
+  // </if>
+
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   /**
    * Returns whether the beforeunload dialog should be shown.
    */

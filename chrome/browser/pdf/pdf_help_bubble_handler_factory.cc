@@ -16,6 +16,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -29,6 +30,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PdfHelpBubbleHandlerFactory,
 void PdfHelpBubbleHandlerFactory::Create(
     content::RenderFrameHost* render_frame_host,
     HelpFactoryPendingReceiver receiver) {
+#if BUILDFLAG(ENABLE_PDF_INK2)
   if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2)) {
     return;
   }
@@ -42,6 +44,7 @@ void PdfHelpBubbleHandlerFactory::Create(
   // This class inherits from content::DocumentService<>, so its lifetime is
   // bound to the associated `render_frame_host`.
   new PdfHelpBubbleHandlerFactory(render_frame_host, std::move(receiver));
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
 
 PdfHelpBubbleHandlerFactory::PdfHelpBubbleHandlerFactory(

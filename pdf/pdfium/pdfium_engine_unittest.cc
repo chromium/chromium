@@ -40,6 +40,7 @@
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/pdfium/pdfium_test_helpers.h"
 #include "pdf/test/input_event_util.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_client.h"
@@ -72,7 +73,6 @@
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_metrics_handler.h"
-#include "pdf/pdfium/pdfium_test_helpers.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
@@ -100,7 +100,9 @@ constexpr gfx::PointF kHelloWorldStartPosition{35.0f, 110.0f};
 constexpr gfx::PointF kHelloWorldEndPosition{100.0f, 110.0f};
 
 const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
+#if BUILDFLAG(ENABLE_PDF_INK2)
 constexpr gfx::Size kBlankPageSizeInPoints(200, 200);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 MATCHER_P2(LayoutWithSize, width, height, "") {
   return arg.size() == gfx::Size(width, height);
@@ -128,6 +130,7 @@ std::string GetPlatformTextExpectation(std::string expectation) {
   return expectation;
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
 void CheckPdfRenderingIsBlank200x200(FPDF_PAGE page) {
   CheckPdfRendering(page, kBlankPageSizeInPoints, kBlankPngFilePath);
 }
@@ -139,6 +142,7 @@ void CheckSavedPdfRenderingIsBlank200x200(PDFiumEngine* engine) {
   CheckPdfRendering(saved_pdf_data, kPageIndex, kBlankPageSizeInPoints,
                     kBlankPngFilePath);
 }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 class MockTestClient : public TestClient {
  public:

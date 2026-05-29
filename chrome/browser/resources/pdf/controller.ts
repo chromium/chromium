@@ -464,13 +464,13 @@ export class PluginController implements ContentController {
   // </if>
 
   redo() {
-    // <if "enable_pdf_ink2">
+    // <if expr="enable_pdf_ink2">
     this.postMessage_({type: 'annotationRedo'});
     // </if>
   }
 
   undo() {
-    // <if "enable_pdf_ink2">
+    // <if expr="enable_pdf_ink2">
     this.postMessage_({type: 'annotationUndo'});
     // </if>
   }
