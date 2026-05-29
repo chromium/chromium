@@ -971,6 +971,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Task interrupted for user cancellation"/>
   <int value="4" label="Selection toggled via shared menu"/>
   <int value="5" label="Selection toggled via hotkey"/>
+  <int value="6" label="Submit Prompt with Text Selection Cue"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUseCounter) -->

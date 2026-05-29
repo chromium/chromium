@@ -3103,6 +3103,7 @@ export enum WebUseCounter {
   TASK_INTERRUPTED_FOR_USER_CLARIFICATION = 3,
   SELECTION_TOGGLED_VIA_SHARED_MENU = 4,
   SELECTION_TOGGLED_VIA_HOT_KEY = 5,
+  SUBMIT_PROMPT_WITH_TEXT_SELECTION_CUE = 6,
 }
 
 ///////////////////////////////////////////////
