@@ -517,6 +517,11 @@ signin::AccountsInCookieJarInfo GaiaCookieManagerService::ListAccounts() {
   return CreateAccountsInCookieJarInfo();
 }
 
+signin::AccountsInCookieJarInfo
+GaiaCookieManagerService::GetCachedListAccounts() {
+  return CreateAccountsInCookieJarInfo();
+}
+
 void GaiaCookieManagerService::TriggerListAccounts() {
   // Callers suspect that a check to Gaia needs to be done, don't rely on the
   // in progress request, conditions might have changed while the request is

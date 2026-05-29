@@ -377,6 +377,13 @@ class IdentityManager : public KeyedService,
   // IdentityManager::Observer::OnAccountsInCookieJarChanged().
   AccountsInCookieJarInfo GetAccountsInCookieJar() const;
 
+  // Returns the accounts in the cookie jar without triggering an internal
+  // update even if the accounts in the cookie jar are stale.
+  //
+  // TODO(crbug.com/517864199): Remove once GetAccountsInCookieJar() no longer
+  // triggers an update.
+  AccountsInCookieJarInfo GetCachedAccountsInCookieJar() const;
+
   // Returns the session index of the primary account in the cookie jar, or
   // std::nullopt if the primary account is not signed in or not found in the
   // cookie jar.

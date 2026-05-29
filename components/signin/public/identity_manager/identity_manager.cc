@@ -383,6 +383,10 @@ AccountsInCookieJarInfo IdentityManager::GetAccountsInCookieJar() const {
   return gaia_cookie_manager_service_->ListAccounts();
 }
 
+AccountsInCookieJarInfo IdentityManager::GetCachedAccountsInCookieJar() const {
+  return gaia_cookie_manager_service_->GetCachedListAccounts();
+}
+
 std::optional<size_t> IdentityManager::GetSessionIndexForPrimaryAccount()
     const {
   CoreAccountInfo primary_account_info =

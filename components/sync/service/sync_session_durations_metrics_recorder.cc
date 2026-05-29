@@ -268,7 +268,7 @@ void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
       // are stale. This ensures that we log the last known cookie signin status
       // for short-lived sessions.
       cookie_status_to_log = DetermineCookieSigninStatus(
-          identity_manager_->GetAccountsInCookieJar());
+          identity_manager_->GetCachedAccountsInCookieJar());
     } else {
       // Since the feature wasn't working for the user if we didn't know its
       // state, log the status as off.
