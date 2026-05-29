@@ -783,6 +783,11 @@ Google Chrome is unable to recover your settings.
           Set Google Chrome as your default PDF viewer
         </message>
       </if>
+      <if expr="enable_pdf">
+        <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT" desc="Text of the In Product Help message shown for the button to summarize PDF.">
+          Get a quick overview of this document and ask questions with Gemini in Chrome
+        </message>
+      </if>
       <!-- Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
                desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">

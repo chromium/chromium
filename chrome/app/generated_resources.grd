@@ -19427,6 +19427,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_PDF_GLIC_SUMMARIZE_PROMPT" desc="Prompt sent to Gemini to summarize a PDF document.">
         Summarize this document
       </message>
+      <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TITLE" desc="Title of the In Product Help bubble shown for the button to summarize PDF.">
+        Summarize with Gemini
+      </message>
+      <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_GOT_IT" desc="Label on a button inside In Product Help Bubble that acknowledges it and dismisses the bubble.">
+        Got it
+      </message>
     </if>
 
     <!-- Protected content identifiers permission -->
