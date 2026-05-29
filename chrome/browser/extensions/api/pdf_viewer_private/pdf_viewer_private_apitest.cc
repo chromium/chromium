@@ -24,7 +24,8 @@ namespace pdf::mojom {
 
 void PrintTo(const pdf::mojom::InkGlyphInfo& info, std::ostream* os) {
   *os << "{.glyph = " << info.glyph << ", .offset = " << info.offset.ToString()
-      << ", .total_advance = " << info.total_advance << "}";
+      << ", .total_advance = " << info.total_advance
+      << ", .character_index = " << info.character_index << "}";
 }
 
 void PrintTo(const pdf::mojom::InkGlyphInfoPtr& info, std::ostream* os) {
@@ -122,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, GetTextInfo_MojoSerialization) {
   ASSERT_THAT(text_info->text_runs, Not(IsEmpty()));
   pdf::mojom::InkTextRunPtr& text_run = text_info->text_runs[0];
   EXPECT_NE(text_run->location, gfx::RectF());
+  EXPECT_EQ(text_run->text, u"Mojo Test x\u0301");
   ASSERT_THAT(text_run->typeface_runs, Not(IsEmpty()));
   pdf::mojom::InkTypefaceRunPtr& typeface_run = text_run->typeface_runs[0];
   EXPECT_TRUE(typeface_run->is_horizontal);
@@ -138,6 +140,10 @@ IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, GetTextInfo_MojoSerialization) {
       typeface_run->glyphs,
       Contains(Pointee(Field(
           "total_advance", &pdf::mojom::InkGlyphInfo::total_advance, Ne(0)))));
+  EXPECT_THAT(typeface_run->glyphs,
+              Contains(Pointee(Field("character_index",
+                                     &pdf::mojom::InkGlyphInfo::character_index,
+                                     Ne(0)))));
 }
 
 }  // namespace extensions

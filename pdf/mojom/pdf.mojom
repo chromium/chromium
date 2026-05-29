@@ -88,6 +88,9 @@ struct InkGlyphInfo {
   gfx.mojom.Vector2dF offset;
   // Cumulative glyph.advance, which originally comes from Harfbuzz.
   float total_advance;
+  // The Harfbuzz glyph cluster index for this glyph. The index refers to UTF-16
+  // Code Units within the parent InkTextRun `text` string.
+  uint32 character_index;
 };
 
 [EnableIf=enable_pdf_ink2]
@@ -106,6 +109,7 @@ struct InkTextRun {
   array<InkTypefaceRun> typeface_runs;
   // The location of the text run in physical pixels.
   gfx.mojom.RectF location;
+  mojo_base.mojom.String16 text;
 };
 
 // Represents the result from blink::WebFormControlElement::GetTextInfo()

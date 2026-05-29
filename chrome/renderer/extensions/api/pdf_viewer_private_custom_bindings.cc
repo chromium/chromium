@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
@@ -181,6 +182,7 @@ void PdfViewerPrivateCustomBindings::GetTextInfo(
   for (const blink::WebFormControlElement::TextRunInfo& text_run : text_runs) {
     auto text_run_mojo = pdf::mojom::InkTextRun::New();
     text_run_mojo->location = text_run.location;
+    text_run_mojo->text = text_run.text.Utf16();
     for (const blink::WebFormControlElement::TypefaceRunInfo& info :
          text_run.typeface_runs) {
       auto typeface_run_mojo = pdf::mojom::InkTypefaceRun::New();
@@ -191,6 +193,9 @@ void PdfViewerPrivateCustomBindings::GetTextInfo(
         glyph_mojo->glyph = glyph.glyph;
         glyph_mojo->offset = glyph.offset;
         glyph_mojo->total_advance = glyph.total_advance;
+        glyph_mojo->character_index = base::strict_cast<
+            decltype(pdf::mojom::InkGlyphInfo::character_index)>(
+            glyph.character_index);
         typeface_run_mojo->glyphs.push_back(std::move(glyph_mojo));
       }
       text_run_mojo->typeface_runs.push_back(std::move(typeface_run_mojo));
