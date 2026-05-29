@@ -8,10 +8,8 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
-#include "third_party/re2/src/re2/re2.h"
 
 SanitizedDriveFileData::SanitizedDriveFileData() = default;
 SanitizedDriveFileData::SanitizedDriveFileData(const SanitizedDriveFileData&) =
@@ -160,20 +158,9 @@ bool DrivePickerSanitizer::IsThumbnailUrlAcceptable(const GURL& url) {
     return false;
   }
 
-  // For drive.google.com, path must be exactly /thumbnail or match
-  // /file/d/<id>/view or /file/d/<id>/preview
+  // For drive.google.com, path must be exactly /thumbnail
   if (url.host() == "drive.google.com") {
-    if (url.path() == "/thumbnail") {
-      return true;
-    }
-
-    static const base::NoDestructor<re2::RE2> kDriveFileRegex(
-        "/file/d/[a-zA-Z0-9\\-_=]+/(?:view|preview)");
-    if (re2::RE2::FullMatch(url.path(), *kDriveFileRegex)) {
-      return true;
-    }
-
-    return false;
+    return url.path() == "/thumbnail";
   }
 
   // Path must start with a valid Google Drive content/thumbnail prefix:

@@ -168,12 +168,8 @@ TEST_F(DrivePickerSanitizerTest, BlocksInvalidThumbnailUrlForVideo) {
 }
 
 TEST_F(DrivePickerSanitizerTest, AllowsCorrectDriveGoogleComUrls) {
-  auto valid_cases = {
-      "https://drive.google.com/thumbnail",
-      "https://drive.google.com/thumbnail?id=123",
-      "https://drive.google.com/file/d/ABC-123_xyz=/view",
-      "https://drive.google.com/file/d/ABC-123_xyz=/preview",
-      "https://drive.google.com/file/d/ABC-123_xyz=/view?usp=sharing"};
+  auto valid_cases = {"https://drive.google.com/thumbnail",
+                      "https://drive.google.com/thumbnail?id=123"};
 
   for (const auto* url : valid_cases) {
     auto file = CreateValidFile();
@@ -186,10 +182,14 @@ TEST_F(DrivePickerSanitizerTest, AllowsCorrectDriveGoogleComUrls) {
 }
 
 TEST_F(DrivePickerSanitizerTest, BlocksInvalidDriveGoogleComUrls) {
-  auto invalid_cases = {"https://drive.google.com/thumbnail_abc",
-                        "https://drive.google.com/file/d/ABC-123_xyz=/edit",
-                        "https://drive.google.com/file/d//view",
-                        "https://drive.google.com/file/d/abc^def/view"};
+  auto invalid_cases = {
+      "https://drive.google.com/thumbnail_abc",
+      "https://drive.google.com/file/d/ABC-123_xyz=/edit",
+      "https://drive.google.com/file/d//view",
+      "https://drive.google.com/file/d/abc^def/view",
+      "https://drive.google.com/file/d/ABC-123_xyz=/view",
+      "https://drive.google.com/file/d/ABC-123_xyz=/preview",
+      "https://drive.google.com/file/d/ABC-123_xyz=/view?usp=sharing"};
 
   for (const auto* url : invalid_cases) {
     auto file = CreateValidFile();
