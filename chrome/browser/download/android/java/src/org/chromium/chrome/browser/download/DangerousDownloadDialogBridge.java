@@ -16,10 +16,7 @@ import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
-/**
- * Glues dangerous download dialogs UI code and handles the communication to download native
- * backend.
- */
+/** Glues download dialogs UI code and handles the communication to download native backend. */
 @NullMarked
 public class DangerousDownloadDialogBridge {
     private long mNativeDangerousDownloadDialogBridge;
@@ -39,7 +36,7 @@ public class DangerousDownloadDialogBridge {
     }
 
     /**
-     * Called to show a warning dialog for dangerous download.
+     * Called to show a warning dialog for download.
      *
      * @param windowAndroid Window to show the dialog.
      * @param guid GUID of the download.
@@ -47,6 +44,7 @@ public class DangerousDownloadDialogBridge {
      * @param totalBytes Total bytes of the file.
      * @param downloadDomain Domain name to associate with the downloaded file.
      * @param iconId The icon resource for the warning dialog.
+     * @param isDangerous The danger status of the download file.
      */
     @CalledByNative
     public void showDialog(
@@ -55,7 +53,8 @@ public class DangerousDownloadDialogBridge {
             @JniType("std::u16string") String fileName,
             long totalBytes,
             String downloadDomain,
-            int iconId) {
+            int iconId,
+            boolean isDangerous) {
         Activity activity = windowAndroid.getActivity().get();
         if (!(activity instanceof ModalDialogManagerHolder)) {
             onCancel(guid, windowAndroid);
@@ -76,7 +75,8 @@ public class DangerousDownloadDialogBridge {
                             } else {
                                 onCancel(guid, windowAndroid);
                             }
-                        });
+                        },
+                        isDangerous);
     }
 
     @CalledByNative

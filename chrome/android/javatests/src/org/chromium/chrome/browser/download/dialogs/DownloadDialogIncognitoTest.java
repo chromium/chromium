@@ -182,7 +182,8 @@ public class DownloadDialogIncognitoTest {
                                     TOTAL_BYTES,
                                     DOWNLOAD_DOMAIN,
                                     ICON_ID,
-                                    mResultCallback);
+                                    mResultCallback,
+                                    true);
                 });
     }
 }
