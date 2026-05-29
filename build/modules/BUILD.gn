@@ -31,7 +31,15 @@ if (use_unified_system_module) {
   system_headers = libcxx_headers + [
                      "//buildtools/third_party/libc++/__config_site",
                      "//buildtools/third_party/libc++/__assertion_handler",
-                   ] + expand_directory(sysroot + "/usr/include", true)
+                   ]
+  if (is_win) {
+    foreach(include_flag, current_win_toolchain_data.include_flags_I_list) {
+      system_headers +=
+          expand_directory(string_replace(include_flag, "/I", "", 1), true)
+    }
+  } else {
+    system_headers += expand_directory(sysroot + "/usr/include", true)
+  }
 
   modulemap = "${target_gen_dir}/module.modulemap"
 
