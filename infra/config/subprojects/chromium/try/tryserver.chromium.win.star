@@ -408,6 +408,9 @@ try_.builder(
     ),
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+    # TODO: crbug.com/509602362 - Temporarily enable remote linking builder by builder.
+    # Will enable it for all CQ builds again after resolving RBE-CAS issue.
+    siso_remote_linking = True,
 )
 
 try_.builder(
