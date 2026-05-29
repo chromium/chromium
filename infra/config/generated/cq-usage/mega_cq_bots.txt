@@ -106,6 +106,7 @@ chromium/try/linux-cast-x64-rel
 chromium/try/linux-centipede-asan-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
+chromium/try/linux-chromeos-clobber-rel
 chromium/try/linux-chromeos-compile-dbg
 chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel

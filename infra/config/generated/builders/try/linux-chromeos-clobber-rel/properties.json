@@ -4,43 +4,39 @@
       "src",
       "infra",
       "archive_config",
-      "android-desktop-arm64-archive-rel.json"
+      "linux-chromiumos-full.json"
     ],
     "verify_paths_only": true
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/android-desktop-arm64-clobber-rel/gn-args.json"
+        "infra/config/generated/builders/try/linux-chromeos-clobber-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-desktop-arm64-archive-rel",
+              "builder": "linux-chromeos-archive-rel",
               "project": "chromium"
             },
             "builder_spec": {
               "builder_group": "chromium",
               "execution_mode": "COMPILE_AND_TEST",
-              "legacy_android_config": {
-                "config": "base_config"
-              },
               "legacy_chromium_config": {
                 "apply_configs": [
                   "clobber",
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "main_builder",
-                "target_arch": "arm",
+                "config": "chromium",
                 "target_bits": 64,
-                "target_platform": "android"
+                "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android"
+                  "chromeos"
                 ],
                 "config": "chromium"
               }
@@ -51,11 +47,12 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-desktop-arm64-archive-rel",
+          "builder": "linux-chromeos-archive-rel",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/android-desktop-arm64-clobber-rel/targets"
+      "is_compile_only": true,
+      "targets_spec_directory": "infra/config/generated/builders/try/linux-chromeos-clobber-rel/targets"
     }
   },
   "$build/siso": {
@@ -77,6 +74,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.android",
+  "builder_group": "tryserver.chromium.chromiumos",
   "recipe": "chromium_trybot"
 }

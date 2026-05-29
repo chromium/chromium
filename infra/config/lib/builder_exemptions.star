@@ -942,7 +942,6 @@ mega_cq_excluded_builders = [
     # TODO(crbug.com/40282196): Remove the following as trybots are
     # created for them.
     "android-arm64-archive-rel",
-    "linux-chromeos-archive-rel",
 ]
 
 mega_cq_excluded_gardener_rotations = [

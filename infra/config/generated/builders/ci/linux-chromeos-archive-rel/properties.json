@@ -50,6 +50,12 @@
           "project": "chromium"
         }
       ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-chromeos-clobber-rel",
+          "group": "tryserver.chromium.chromiumos"
+        }
+      ],
       "targets_spec_directory": "infra/config/generated/builders/ci/linux-chromeos-archive-rel/targets"
     }
   },

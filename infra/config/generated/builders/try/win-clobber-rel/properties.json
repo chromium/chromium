@@ -1,4 +1,13 @@
 {
+  "$build/archive": {
+    "source_side_spec_path": [
+      "src",
+      "infra",
+      "archive_config",
+      "win-archive-rel.json"
+    ],
+    "verify_paths_only": true
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [

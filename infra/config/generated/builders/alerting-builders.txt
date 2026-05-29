@@ -624,6 +624,7 @@ try/linux-cast-x64-rel
 try/linux-centipede-asan-rel
 try/linux-cfm-rel
 try/linux-chromeos-asan-rel
+try/linux-chromeos-clobber-rel
 try/linux-chromeos-compile-dbg
 try/linux-chromeos-dbg
 try/linux-chromeos-rel

@@ -687,6 +687,7 @@
     "gpu-fyi-try-chromeos-amd64-generic": "try/gpu-fyi-try-chromeos-amd64-generic/gn-args.json",
     "linux-cfm-rel": "try/linux-cfm-rel/gn-args.json",
     "linux-chromeos-annotator-rel": "try/linux-chromeos-annotator-rel/gn-args.json",
+    "linux-chromeos-clobber-rel": "try/linux-chromeos-clobber-rel/gn-args.json",
     "linux-chromeos-compile-dbg": "try/linux-chromeos-compile-dbg/gn-args.json",
     "linux-chromeos-dbg": "try/linux-chromeos-dbg/gn-args.json",
     "linux-chromeos-rel": "try/linux-chromeos-rel/gn-args.json",
