@@ -10,6 +10,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
+#include "base/numerics/safe_math.h"
 #include "media/base/channel_layout.h"
 
 namespace media {
@@ -116,8 +118,21 @@ std::unique_ptr<ScopedAudioChannelLayout> ChannelLayoutToAudioChannelLayout(
   //
   // Code modeled after example from Apple documentation here:
   // https://developer.apple.com/library/content/qa/qa1627/_index.html
-  int output_layout_size =
-      offsetof(AudioChannelLayout, mChannelDescriptions[input_channels]);
+  // Modified to use `size_t` and `base::CheckedNumeric` to prevent integer
+  // truncation and overflow.
+  // `AudioChannelLayout` already includes one `AudioChannelDescription` in its
+  // definition, so we allocate space for `input_channels - 1` additional
+  // descriptions.
+  base::CheckedNumeric<size_t> checked_layout_size =
+      sizeof(AudioChannelLayout) +
+      base::CheckedNumeric<size_t>(input_channels - 1) *
+          sizeof(AudioChannelDescription);
+  size_t output_layout_size = 0;
+  if (!checked_layout_size.AssignIfValid(&output_layout_size)) {
+    DLOG(ERROR) << "Invalid AudioChannelLayout size.";
+    return nullptr;
+  }
+
   auto new_layout =
       std::make_unique<ScopedAudioChannelLayout>(output_layout_size);
 
