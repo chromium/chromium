@@ -111,16 +111,6 @@ function createAppearancePage() {
         value: false,
       },
     },
-    side_panel: {
-      is_right_aligned: {
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
-      alignment_overrides: {
-        type: chrome.settingsPrivate.PrefType.DICTIONARY,
-        value: {},
-      },
-    },
   });
 
   document.body.appendChild(appearancePage);

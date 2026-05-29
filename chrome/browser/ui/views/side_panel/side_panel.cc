@@ -12,7 +12,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
@@ -88,20 +87,11 @@ gfx::Insets GetBorderInsets() {
 
 SidePanel::HorizontalAlignment GetHorizontalAlignment(
     PrefService* pref_service,
-    std::optional<SidePanelEntryId> entry_id) {
-  const base::DictValue& overrides =
-      pref_service->GetDict(prefs::kSidePanelAlignmentOverrides);
-  std::optional<bool> override_value =
-      entry_id ? overrides.FindBool(SidePanelEntryIdToString(*entry_id))
-               : std::nullopt;
-
-  bool is_right_aligned;
-  if (override_value.has_value()) {
-    is_right_aligned = *override_value;
-  } else {
-    is_right_aligned =
-        pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-  }
+    bool use_default_horizontal_alignment) {
+  bool is_right_aligned =
+      pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  is_right_aligned =
+      use_default_horizontal_alignment ? is_right_aligned : !is_right_aligned;
   return is_right_aligned ? SidePanel::HorizontalAlignment::kRight
                           : SidePanel::HorizontalAlignment::kLeft;
 }
@@ -294,8 +284,9 @@ SidePanel::SidePanel(BrowserView* browser_view)
     : browser_view_(browser_view),
       visible_bounds_view_clipper_(
           std::make_unique<VisibleBoundsViewClipper>(this)) {
-  horizontal_alignment_ = GetHorizontalAlignment(
-      browser_view->GetProfile()->GetPrefs(), std::nullopt);
+  horizontal_alignment_ =
+      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(),
+                             use_default_horizontal_alignment_);
 
   // The default z-order is the order in which children were added to the
   // parent view. content_parent_view_ is added first so it exists behind
@@ -313,11 +304,7 @@ SidePanel::SidePanel(BrowserView* browser_view)
   pref_change_registrar_.Add(
       prefs::kSidePanelHorizontalAlignment,
       base::BindRepeating(&SidePanel::UpdateHorizontalAlignment,
-                          base::Unretained(this), std::nullopt));
-  pref_change_registrar_.Add(
-      prefs::kSidePanelAlignmentOverrides,
-      base::BindRepeating(&SidePanel::UpdateHorizontalAlignment,
-                          base::Unretained(this), std::nullopt));
+                          base::Unretained(this)));
 
   animation_subscription_ =
       BrowserAnimationController::From(browser_view_->browser())
@@ -638,6 +625,15 @@ void SidePanel::ResetSidePanelAnimationContent() {
   }
 }
 
+void SidePanel::SetActiveEntryUsesDefaultHorizontalAlignment(
+    bool use_default_horizontal_alignment) {
+  if (use_default_horizontal_alignment_ == use_default_horizontal_alignment) {
+    return;
+  }
+  use_default_horizontal_alignment_ = use_default_horizontal_alignment;
+  UpdateHorizontalAlignment();
+}
+
 views::View* SidePanel::GetContentParentView() {
   return content_parent_view_;
 }
@@ -737,17 +733,10 @@ void SidePanel::AnnounceResize() {
       base::FormatPercent(side_panel_percentage)));
 }
 
-void SidePanel::UpdateHorizontalAlignment(
-    std::optional<SidePanelEntryId> entry_id) {
-  if (!entry_id) {
-    if (auto* side_panel_ui =
-            browser_view_->browser()->GetFeatures().side_panel_ui()) {
-      entry_id = side_panel_ui->GetCurrentEntryId();
-    }
-  }
-
+void SidePanel::UpdateHorizontalAlignment() {
   horizontal_alignment_ =
-      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), entry_id);
+      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(),
+                             use_default_horizontal_alignment_);
 
   InvalidateLayout();
 }
