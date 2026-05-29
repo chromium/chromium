@@ -467,6 +467,11 @@ void Connector::WaitToReadMore() {
   handle_watcher_ = std::make_unique<SimpleWatcher>(
       FROM_HERE, SimpleWatcher::ArmingPolicy::MANUAL, task_runner_,
       interface_name_);
+  // Safe to use Unretained: this callback is stored inside |handle_watcher_|,
+  // which is owned by this Connector. When ~Connector destroys the watcher,
+  // it invalidates the watcher's weak pointers, preventing any further
+  // invocations. The callback is never posted directly — SimpleWatcher
+  // guards delivery through its own weak pointer mechanism.
   MojoResult rv = handle_watcher_->Watch(
       message_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&Connector::OnWatcherHandleReady,
@@ -707,6 +712,11 @@ void Connector::EnsureSyncWatcherExists() {
   if (sync_watcher_) {
     return;
   }
+  // Safe to use Unretained: this callback is stored inside |sync_watcher_|,
+  // which is owned by this Connector. The callback is only invoked
+  // synchronously from SyncHandleRegistry::Wait() on the bound sequence,
+  // never posted. When ~Connector destroys the watcher, the callback is
+  // destroyed with it.
   sync_watcher_ = std::make_unique<SyncHandleWatcher>(
       message_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&Connector::OnSyncHandleWatcherHandleReady,

@@ -39,6 +39,10 @@ class AsyncFlusher;
 class ConnectionGroupRef;
 class PendingFlush;
 
+namespace test {
+class TestableMultiplexRouter;
+}  // namespace test
+
 namespace internal {
 
 // MultiplexRouter supports routing messages for multiple interfaces over a
@@ -103,6 +107,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   void StartReceiving();
 
   MultiplexRouter(base::PassKey<MultiplexRouter>,
+                  ScopedMessagePipeHandle message_pipe,
+                  Config config,
+                  bool set_interface_id_namespace_bit,
+                  scoped_refptr<base::SequencedTaskRunner> runner,
+                  const char* primary_interface_name = "unknown interface");
+
+  MultiplexRouter(base::PassKey<test::TestableMultiplexRouter>,
                   ScopedMessagePipeHandle message_pipe,
                   Config config,
                   bool set_interface_id_namespace_bit,
@@ -202,12 +213,15 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
     return connector_.SimulateReadMessage(std::move(handle));
   }
 
+  Connector& GetConnectorForTesting() { return connector_; }
+
+ protected:
+  ~MultiplexRouter() override;
+
  private:
   class InterfaceEndpoint;
   class MessageWrapper;
   struct Task;
-
-  ~MultiplexRouter() override;
 
   // Indicates whether `message` can unblock any active external sync waiter.
   bool CanUnblockExternalSyncWait(const Message& message);
@@ -300,8 +314,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   // Whether to set the namespace bit when generating interface IDs. Please see
   // comments of kInterfaceIdNamespaceMask.
   const bool set_interface_id_namespace_bit_;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   MessageDispatcher dispatcher_;
   Connector connector_;

@@ -35,6 +35,10 @@ namespace mojo {
 
 class SyncHandleWatcher;
 
+namespace test {
+class RaceConditionScheduler;
+}  // namespace test
+
 // The Connector class is responsible for performing read/write operations on a
 // MessagePipe. It writes messages it receives through the MessageReceiver
 // interface that it subclasses, and it forwards messages it reads through the
@@ -236,7 +240,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // Used for testing and fuzzing.
   bool SimulateReadMessage(ScopedMessageHandle message);
 
+  // For testing purposes only.
+  base::WeakPtr<Connector> GetWeakPtrForTesting() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
+  friend class test::RaceConditionScheduler;
   class ActiveDispatchTracker;
   class RunLoopNestingObserver;
 
@@ -249,12 +259,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // bugs which destroy bindings endpoints from the wrong thread, as this can
   // result in Connector destruction racing with execution of a WeakPtr-bound
   // OnWatcherHandleReady task.
-  void OnWatcherHandleReady(const char* interface_name, MojoResult result);
+  void OnWatcherHandleReady(const char* interface_name, MojoResult result)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Callback of SyncHandleWatcher. See notes on OnWatcherHandleReady()
   // regarding the `interface_name` argument.
   void OnSyncHandleWatcherHandleReady(const char* interface_name,
-                                      MojoResult result);
+                                      MojoResult result)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void OnHandleReadyInternal(MojoResult result);
 
