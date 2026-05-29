@@ -211,15 +211,16 @@ bool DeviceImpl::HasControlTransferPermission(
     if (base::FeatureList::IsEnabled(
             features::kWebUsbEnforceStandardRequestAllowlist)) {
       // Reject all Standard requests except fundamental inspection and
-      // discovery commands (GET_STATUS, GET_DESCRIPTOR, GET_CONFIGURATION,
-      // GET_INTERFACE, SYNCH_FRAME). Legitimate configuration and feature
-      // management must be performed via dedicated WebIDL methods (e.g.,
-      // selectConfiguration).
-      if (request == kUsbRequestGetStatus ||
-          request == kUsbRequestGetDescriptor ||
-          request == kUsbRequestGetConfiguration ||
-          request == kUsbRequestGetInterface ||
-          request == kUsbRequestSynchFrame) {
+      // discovery inbound commands (GET_STATUS, GET_DESCRIPTOR,
+      // GET_CONFIGURATION, GET_INTERFACE, SYNCH_FRAME). Legitimate
+      // configuration and feature management must be performed via dedicated
+      // WebIDL methods (e.g., selectConfiguration).
+      if (direction == UsbTransferDirection::INBOUND &&
+          (request == kUsbRequestGetStatus ||
+           request == kUsbRequestGetDescriptor ||
+           request == kUsbRequestGetConfiguration ||
+           request == kUsbRequestGetInterface ||
+           request == kUsbRequestSynchFrame)) {
         base::UmaHistogramEnumeration(
             "WebUsb.ControlTransferPermissionOutcome",
             WebUsbControlTransferPermissionOutcome::kAllowed);

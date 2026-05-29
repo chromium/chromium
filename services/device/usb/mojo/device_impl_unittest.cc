@@ -1165,6 +1165,75 @@ TEST_F(USBDeviceImplTest, ControlTransferStandardWriteBlocked) {
   EXPECT_CALL(mock_handle(), Close());
 }
 
+// Verify that allowed standard requests (such as GET_DESCRIPTOR) are only
+// permitted when the transfer direction is correctly set to INBOUND. OUTBOUND
+// standard transfers are blocked with PERMISSION_DENIED.
+TEST_F(USBDeviceImplTest, ControlTransferOut_StandardGetRequests_Blocked) {
+  // Mark HID (class 3) as a blocked/protected interface class to prove the
+  // allowlist branch returns before the protected-class check.
+  constexpr uint8_t kHidClass = 0x03;
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(kHidClass));
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  // Interface #2 is HID (class 3) -- a protected/blocked class.
+  constexpr uint8_t kHidInterfaceNumber = 2;
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(kHidInterfaceNumber, /*alternate_setting=*/0,
+                                  kHidClass, /*subclass=*/0, /*protocol=*/0)
+                    .Build());
+
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+  {
+    base::test::TestFuture<bool> future;
+    device->SetConfiguration(1, future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+
+  // Arbitrary attacker-controlled host->device data stage.
+  const std::vector<uint8_t> payload = {0xDE, 0xAD, 0xBE, 0xEF,
+                                        0xCA, 0xFE, 0xBA, 0xBE};
+
+  // The five IN-only standard requests permitted by the allowlist.
+  constexpr uint8_t kGetStatus = 0x00;
+  constexpr uint8_t kGetDescriptor = 0x06;
+  constexpr uint8_t kGetConfiguration = 0x08;
+  constexpr uint8_t kGetInterface = 0x0A;
+  constexpr uint8_t kSynchFrame = 0x0C;
+
+  for (uint8_t request : {kGetStatus, kGetDescriptor, kGetConfiguration,
+                          kGetInterface, kSynchFrame}) {
+    // Report the active request ID in gtest traces if any assertions fail
+    // during this loop iteration.
+    SCOPED_TRACE(base::StringPrintf("bRequest=0x%02x", request));
+
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::STANDARD;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = request;
+    params->value = 0;
+    params->index = kHidInterfaceNumber;
+
+    base::test::TestFuture<mojom::UsbTransferStatus> future;
+    // Mimic the WebUSB abuse scenario where a website calls
+    // controlTransferOut() (forcing OUTBOUND direction and carrying an
+    // arbitrary payload) but specifies a standard read-only (IN-only) request
+    // ID.
+    device->ControlTransferOut(std::move(params), payload, /*timeout=*/0,
+                               future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::UsbTransferStatus::PERMISSION_DENIED);
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
 // Verify that when kWebUsbEnforceStandardRequestAllowlist is disabled, standard
 // modifying/write requests (e.g., SET_CONFIGURATION) fall back to legacy
 // behavior and are allowed.
