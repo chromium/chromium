@@ -14,6 +14,8 @@ external/wpt/secure-payment-confirmation/*
 external/wpt/html/webappapis/system-state-and-capabilities/*
 external/wpt/speculation-rules/prerender/protocol-handler-register.https.html
 external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html
+virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prerender/protocol-handler-register.https.html
+virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html
 
 # crbug.com/397998925 run_bounce_tracking_mitigations and the bounce tracking
 # mitigations feature are not implemented for content shell yet.

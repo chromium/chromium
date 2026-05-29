@@ -88,4 +88,7 @@ BASE_FEATURE(kPrefetchOffTheMainThreadForceForTesting,
 
 BASE_FEATURE(kPrefetchActivationBeacon, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchCancelUnrelatedPrefetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
