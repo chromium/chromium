@@ -38,9 +38,9 @@ declare_args() {
 
   if (is_android) {
     # By default, Trichrome channels are compiled using separate package names.
-    # Set this to 'true' to compile Trichrome channels using the Stable channel's
-    # package name. This currently only affects builds with `android_channel =
-    # "beta"`.
+    # Set this to 'true' to compile Trichrome channels using the Stable
+    # channel's package name. This currently only affects builds with
+    # `android_channel = "beta"`.
     use_stable_package_name_for_trichrome = false
 
     # Set to true to enable new logic for setting the package name and version

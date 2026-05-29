@@ -80,8 +80,8 @@ declare_args() {
 
   clang_base_path = default_clang_base_path
 
-  # Specifies whether or not bitcode should be embedded during compilation.
-  # This is used for creating a MLGO corpus from Chromium in the non-ThinLTO case.
+  # Specifies whether or not bitcode should be embedded during compilation. This
+  # is used for creating a MLGO corpus from Chromium in the non-ThinLTO case.
   clang_embed_bitcode = false
 
   # Set to true to enable output of ThinLTO index and import files used for
@@ -89,7 +89,8 @@ declare_args() {
   lld_emit_indexes_and_imports = false
 }
 
-# We don't really need to collect a corpus for the host tools, just for the target.
+# We don't really need to collect a corpus for the host tools, just for the
+# target.
 lld_emit_indexes_and_imports =
     lld_emit_indexes_and_imports && is_a_target_toolchain
 

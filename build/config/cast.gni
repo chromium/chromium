@@ -6,12 +6,9 @@
 # //chromecast. Args needed only in //chromecast should be declared in
 # //chromecast/chromecast.gni.
 declare_args() {
-
   # If non empty, rpath of executables is set to this.
   # If empty, default value is used.
   target_rpath = ""
-
-
 
   # Set this to true to build for Nest hardware running Linux (aka "CastOS").
   # Set this to false to use the defaults for Linux.
@@ -37,8 +34,7 @@ declare_args() {
   # Android audio only builds.
   #
   # TODO(crbug.com/1293520):  Remove this buildflag.
-  enable_cast_renderer =
-      enable_cast_receiver && (is_linux || is_chromeos)
+  enable_cast_renderer = enable_cast_receiver && (is_linux || is_chromeos)
 }
 
 # Configures media options for cast.  See media/media_options.gni
@@ -71,7 +67,6 @@ if (enable_cast_renderer) {
 assert(is_linux || is_chromeos || is_android || is_fuchsia ||
            !enable_cast_receiver,
        "Cast receiver builds are not supported on $current_os")
-
 
 assert(enable_cast_receiver || !is_castos,
        "is_castos = true requires enable_cast_receiver = true.")

@@ -13,8 +13,8 @@ declare_args() {
     # Chromium, we need to differentiate between the two versions.
     # devtools_location points to the Chromium version in both Chrome-branded
     # and not Chrome-branded builds. devtools_root_location points to the root
-    # of the Chrome-branded version when is_chrome_branded is true and to the root
-    # of the Chromium version when is_chrome_branded is false.
+    # of the Chrome-branded version when is_chrome_branded is true and to the
+    # root of the Chromium version when is_chrome_branded is false.
     # devtools_grd_location is the location of the GRD file listing all DevTools
     # resources.
     devtools_root_location = "third_party/devtools-frontend/src"

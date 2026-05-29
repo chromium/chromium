@@ -49,14 +49,14 @@ declare_args() {
 
   # Chromium provides a Rust toolchain in //third_party/rust-toolchain.
   #
-  # To use a custom toolchain instead, specify an absolute path to the root of
-  # a Rust sysroot, which will have a 'bin' directory and others. Commonly
-  # <home dir>/.rustup/toolchains/nightly-<something>-<something>
-  # Using a custom toolchain should work, but this build configuration is
-  # community-supported and not tested by Chromium CQ.  In particular, Chromium
-  # build may depend on using a *nightly* version of Rust toolchain (see
-  # `tools/rust/unstable_rust_feature_usage.md`) although other projects (e.g. V8)
-  # may be compatible with the stable version of Rust toolchain.
+  # To use a custom toolchain instead, specify an absolute path to the root of a
+  # Rust sysroot, which will have a 'bin' directory and others. Commonly <home
+  # dir>/.rustup/toolchains/nightly-<something>-<something> Using a custom
+  # toolchain should work, but this build configuration is community-supported
+  # and not tested by Chromium CQ. In particular, Chromium build may depend on
+  # using a *nightly* version of Rust toolchain (see
+  # `tools/rust/unstable_rust_feature_usage.md`) although other projects (e.g.
+  # V8) may be compatible with the stable version of Rust toolchain.
   rust_sysroot_absolute = ""
 
   # Directory under which to find `bin/bindgen` (a `bin` directory containing

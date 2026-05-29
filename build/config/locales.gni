@@ -258,8 +258,9 @@ locales_without_pseudolocales = platform_pak_locales - pseudolocales
 locales_with_pseudolocales = platform_pak_locales
 
 declare_args() {
-  # We want to give pseudolocales to everyone except end-users (devs & QA).
-  # Note that this only packages the locales in, and doesn't add the ui to enable them.
+  # We want to give pseudolocales to everyone except end-users (devs & QA). Note
+  # that this only packages the locales in, and doesn't add the ui to enable
+  # them.
   enable_pseudolocales = !is_official_build
 }
 

@@ -1146,7 +1146,7 @@ config("linker") {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
-  if (is_android && (linker_path != "")) {
+  if (is_android && linker_path != "") {
     # Wild linker does not support the default of android+relr.
     # Mold has a bug: https://github.com/rui314/mold/issues/1595
     ldflags += [ "-Wl,--pack-dyn-relocs=relr" ]
@@ -2521,6 +2521,7 @@ config("default_stack_frames") {
       cflags = [ "-fomit-frame-pointer" ]
     }
   }
+
   # On Windows, the flag to enable framepointers "/Oy-" must always come after
   # the optimization flag [e.g. "/O2"]. The optimization flag is set by one of
   # the "optimize" configs, see rest of this file. The ordering that cflags are

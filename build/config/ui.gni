@@ -32,11 +32,10 @@ declare_args() {
   # True means the UI is built using the "views" framework.
   toolkit_views = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
 
-  use_glib =
-      is_linux && !is_castos &&
-      # Avoid the need for glib when Android is building things via secondary
-      # toolchains.
-      target_os != "android"
+  use_glib = is_linux && !is_castos &&
+             # Avoid the need for glib when Android is building things via
+             # secondary toolchains.
+             target_os != "android"
 }
 
 assert(!use_glib || (is_linux && !is_castos))
