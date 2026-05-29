@@ -234,6 +234,9 @@ BASE_FEATURE(kBocaAdjustCaptionBubbleOnExpand,
 // Enables or disables keeping the Boca SWA open when the session is ended.
 BASE_FEATURE(kBocaKeepSWAOpenOnSessionEnded, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables showing material type UI indicator in Boca SWA.
+BASE_FEATURE(kBocaMaterialTypeUiIndicator, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables enforcing sequential execution for Boca Session load.
 BASE_FEATURE(kBocaSequentialSessionLoad, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2346,6 +2349,10 @@ bool IsBocaAdjustCaptionBubbleOnExpandEnabled() {
 
 bool IsBocaKeepSWAOpenOnSessionEndedEnabled() {
   return base::FeatureList::IsEnabled(kBocaKeepSWAOpenOnSessionEnded);
+}
+
+bool IsBocaMaterialTypeUiIndicatorEnabled() {
+  return base::FeatureList::IsEnabled(kBocaMaterialTypeUiIndicator);
 }
 
 bool IsBocaSequentialSessionLoadEnabled() {

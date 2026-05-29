@@ -4289,6 +4289,21 @@
             ]
         }
     ],
+    "BocaMaterialTypeUiIndicator": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "BocaMaterialTypeUiIndicator"
+                    ]
+                }
+            ]
+        }
+    ],
     "BocaMigrateSpeechRecongnizerClient": [
         {
             "platforms": [
