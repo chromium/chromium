@@ -78,6 +78,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       'ArrowUp',
       'ArrowDown',
       ' ',
+      'Backspace',
     ]);
   }
 
@@ -264,6 +265,15 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       // TODO(crbug.com/503785596): shouldn't do this if shift is down.
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault();
+      }
+
+      // Backspace is only relevant to the other end if we're at the very
+      // beginning (where it deletes the search keyword rather than a
+      // character).
+      if (event.key === 'Backspace' &&
+          (this.$.textInput.selectionStart! !== 0 ||
+           this.$.textInput.selectionEnd! !== 0)) {
+        return;
       }
 
       this.browserProxy_.toolbarUIHandler.onOmniboxAction({

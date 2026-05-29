@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -55,13 +56,12 @@ class IconTable {
   IconTable& operator=(const IconTable&) = delete;
   IconTable& operator=(IconTable&&) = delete;
 
-  // Returns an IconHandle to a VectorIcon this class knows about
-  // (see KnownIcons() in .cc). Returns a null IconHandle if it doesn't
-  // recognize it.
+  // Tries to returns an IconHandle to a VectorIcon this class knows about
+  // (see KnownIcons() in .cc). Returns nullopt if it doesn't recognize it.
   //
   // If set, `model_info` will be checked to see if the ImageModel configures
   // a color, and to help out reuse.
-  toolbar_ui_api::IconHandle RegisterVectorIcon(
+  std::optional<toolbar_ui_api::IconHandle> RegisterVectorIcon(
       const gfx::VectorIcon& icon,
       std::optional<ui::ImageModel> model_info = std::nullopt);
 

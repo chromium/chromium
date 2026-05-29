@@ -61,6 +61,10 @@ class MockWebUIToolbarControlDelegate
               (toolbar_ui_api::mojom::LocationBarFlagsPtr state),
               (override));
   MOCK_METHOD(void,
+              OnSelectedKeywordChanged,
+              (toolbar_ui_api::mojom::SelectedKeywordStatePtr state),
+              (override));
+  MOCK_METHOD(void,
               OnLhsChipsStateChanged,
               (toolbar_ui_api::mojom::LhsChipsStatePtr state),
               (override));

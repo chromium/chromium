@@ -191,6 +191,7 @@ export class ToolbarAppElement extends AppElementBase {
         userInputInProgress: false,
         popupOpen: false,
       },
+      selectedKeyword: null,
       contentSettingImageStates: [],
       lhsChipsState: {
         securityChip: {

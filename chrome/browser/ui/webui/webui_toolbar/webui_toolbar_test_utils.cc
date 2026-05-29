@@ -64,7 +64,8 @@ CreateValidNavigationControlsState() {
                   /*is_text_dangerous=*/false,
                   /*is_visible=*/true),
               std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
-              /*permission_dashboard=*/nullptr)),
+              /*permission_dashboard=*/nullptr),
+          toolbar_ui_api::mojom::SelectedKeywordStatePtr()),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),
       /*layout_constants_version=*/0);
 }

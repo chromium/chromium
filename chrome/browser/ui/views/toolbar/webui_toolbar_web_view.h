@@ -82,6 +82,8 @@ class WebUIToolbarControlDelegate {
       toolbar_ui_api::mojom::OmniboxViewStatePtr state) = 0;
   virtual void OnLocationBarFlagsChanged(
       toolbar_ui_api::mojom::LocationBarFlagsPtr state) = 0;
+  virtual void OnSelectedKeywordChanged(
+      toolbar_ui_api::mojom::SelectedKeywordStatePtr state) = 0;
   virtual void OnLhsChipsStateChanged(
       toolbar_ui_api::mojom::LhsChipsStatePtr state) = 0;
   virtual void OnPinnedToolbarActionsStateChanged(
@@ -257,6 +259,8 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::OmniboxViewStatePtr state) override;
   void OnLocationBarFlagsChanged(
       toolbar_ui_api::mojom::LocationBarFlagsPtr state) override;
+  void OnSelectedKeywordChanged(
+      toolbar_ui_api::mojom::SelectedKeywordStatePtr state) override;
   void OnLhsChipsStateChanged(
       toolbar_ui_api::mojom::LhsChipsStatePtr state) override;
   void OnPinnedToolbarActionsStateChanged(

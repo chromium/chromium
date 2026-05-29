@@ -885,6 +885,16 @@ void WebUIToolbarWebView::OnLocationBarFlagsChanged(
   }
 }
 
+void WebUIToolbarWebView::OnSelectedKeywordChanged(
+    toolbar_ui_api::mojom::SelectedKeywordStatePtr state) {
+  // mojo::Equals helps deal with nullability here.
+  if (!mojo::Equals(state,
+                    last_queued_state_.location_bar_state->selected_keyword)) {
+    last_queued_state_.location_bar_state->selected_keyword = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
 void WebUIToolbarWebView::OnLhsChipsStateChanged(
     toolbar_ui_api::mojom::LhsChipsStatePtr state) {
   if (!mojo::Equals(state,

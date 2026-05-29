@@ -479,6 +479,20 @@ WebUIReadOnlyOmnibox::OnKey(
                                                     /*page=*/false);
       break;
 
+    case ui::DomKey::FromCharacter(' '):
+      // This is relying on search keyword activation incrementing browser
+      // version to resolve the conflict with text input with ' ' appended
+      // that's incoming --- the JS side doesn't know whether the space will
+      // trigger the keyboard or not.
+      controller()->edit_model()->OnSpacePressed();
+      break;
+
+    case ui::DomKey::BACKSPACE:
+      if (controller()->edit_model()->is_keyword_selected()) {
+        controller()->edit_model()->ClearKeyword();
+      }
+      break;
+
     default:
       break;
   }

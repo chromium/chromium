@@ -7,6 +7,7 @@
 #include "base/notimplemented.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
+#include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
@@ -134,6 +136,7 @@ WebUILocationBar::OnOmniboxAction(
     toolbar_ui_api::mojom::OmniboxActionPtr action) {
   auto result = omnibox_view_->OnOmniboxAction(std::move(action));
   UpdateLocationBarFlagsState();
+  UpdateSelectedKeywordState();
   return result;
 }
 
@@ -255,6 +258,8 @@ Profile* WebUILocationBar::GetProfile() {
 
 void WebUILocationBar::OnChanged() {
   UpdateLhsChipsState();
+  UpdateLocationBarFlagsState();
+  UpdateSelectedKeywordState();
 }
 
 void WebUILocationBar::UpdateWithoutTabRestore() {
@@ -327,7 +332,6 @@ void WebUILocationBar::Update(content::WebContents* contents) {
   }
 
   OnChanged();
-  UpdateLocationBarFlagsState();
 }
 
 void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
@@ -685,9 +689,29 @@ void WebUILocationBar::OnMovedOrShown(ui::TrackedElement* element) {
 }
 
 void WebUILocationBar::UpdateLocationBarFlagsState() {
+  if (!omnibox_controller_) {  // null in some tests.
+    return;
+  }
+
   auto location_bar_flags = toolbar_ui_api::mojom::LocationBarFlags::New();
   location_bar_flags->user_input_in_progress =
       omnibox_controller_->edit_model()->user_input_in_progress();
   location_bar_flags->popup_open = omnibox_controller_->IsPopupOpen();
   toolbar_delegate_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
+}
+
+void WebUILocationBar::UpdateSelectedKeywordState() {
+  // Purposefully start with null here.
+  toolbar_ui_api::mojom::SelectedKeywordStatePtr keyword_state;
+  if (omnibox_controller_ &&
+      omnibox_controller_->edit_model()->is_keyword_selected()) {
+    keyword_state = toolbar_ui_api::mojom::SelectedKeywordState::New();
+    SelectedKeywordView::KeywordLabelNames keyword_labels =
+        SelectedKeywordView::GetKeywordLabelNames(
+            omnibox_controller_->edit_model()->keyword(),
+            TemplateURLServiceFactory::GetForProfile(browser_->profile()));
+    keyword_state->short_name = keyword_labels.short_name;
+    keyword_state->full_name = keyword_labels.full_name;
+  }
+  toolbar_delegate_->OnSelectedKeywordChanged(std::move(keyword_state));
 }

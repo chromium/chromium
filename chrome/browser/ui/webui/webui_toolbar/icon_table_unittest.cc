@@ -47,13 +47,14 @@ class IconTableTest : public testing::Test, public IconTable::Delegate {
 
 TEST_F(IconTableTest, BasicOperation) {
   // Assuming this icon isn't mapped.
-  toolbar_ui_api::IconHandle i0 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
       icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
-  ASSERT_TRUE(i0.is_null());
+  ASSERT_FALSE(maybe_i0.has_value());
 
-  toolbar_ui_api::IconHandle i1 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i1 =
       icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
-  ASSERT_FALSE(i1.is_null());
+  ASSERT_TRUE(maybe_i1.has_value());
+  auto i1 = std::move(maybe_i1.value());
 
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
       1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
@@ -80,9 +81,11 @@ TEST_F(IconTableTest, BasicOperation) {
   auto expected_delete_i1 = toolbar_ui_api::mojom::IconUpdate::New(
       1u, std::nullopt, IconType::kMaskUrl, /*color=*/std::nullopt);
 
-  toolbar_ui_api::IconHandle i2 = icon_table_.RegisterVectorIcon(
-      vector_icons::kHistoryChromeRefreshOldIcon);
-  ASSERT_FALSE(i2.is_null());
+  std::optional<toolbar_ui_api::IconHandle> maybe_i2 =
+      icon_table_.RegisterVectorIcon(
+          vector_icons::kHistoryChromeRefreshOldIcon);
+  ASSERT_TRUE(maybe_i2.has_value());
+  auto i2 = maybe_i2.value();
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
@@ -98,9 +101,10 @@ TEST_F(IconTableTest, BasicOperation) {
       testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i2))));
 
   // Now also add i3.
-  toolbar_ui_api::IconHandle i3 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i3 =
       icon_table_.RegisterVectorIcon(kMenuBookChromeRefreshOldIcon);
-  ASSERT_FALSE(i3.is_null());
+  ASSERT_TRUE(maybe_i3.has_value());
+  auto i3 = maybe_i3.value();
 
   auto expected_i3 = toolbar_ui_api::mojom::IconUpdate::New(
       3u, "pinned-toolbar-action:SidePanelShowReadAnything", IconType::kIconSet,
@@ -122,9 +126,10 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
   auto icon_table = std::make_unique<IconTable>(this);
   auto icon_table_fetcher = icon_table->MakeIconTableFetcher();
 
-  toolbar_ui_api::IconHandle i1 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i1 =
       icon_table->RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
-  ASSERT_FALSE(i1.is_null());
+  ASSERT_TRUE(maybe_i1.has_value());
+  auto i1 = maybe_i1.value();
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
       1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
       /*color=*/std::nullopt);
@@ -138,9 +143,11 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
       testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1))));
 
   // Now add i2.
-  toolbar_ui_api::IconHandle i2 = icon_table->RegisterVectorIcon(
-      vector_icons::kHistoryChromeRefreshOldIcon);
-  ASSERT_FALSE(i2.is_null());
+  std::optional<toolbar_ui_api::IconHandle> maybe_i2 =
+      icon_table->RegisterVectorIcon(
+          vector_icons::kHistoryChromeRefreshOldIcon);
+  ASSERT_TRUE(maybe_i2.has_value());
+  auto i2 = maybe_i2.value();
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
@@ -163,9 +170,9 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
 }
 
 TEST_F(IconTableTest, RegisterImageModel) {
-  toolbar_ui_api::IconHandle i0 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
       icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
-  ASSERT_TRUE(i0.is_null())
+  ASSERT_FALSE(maybe_i0.has_value())
       << "This test assumes the kVrHeadsetOldIcon isn't mapped";
 
   // Despite the icon not being mapped, we can bind; it'll end up a
@@ -201,10 +208,10 @@ TEST_F(IconTableTest, RegisterColorUrl) {
 }
 
 TEST_F(IconTableTest, RegisterImageModelTryReuse) {
-  toolbar_ui_api::IconHandle i0 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
       icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
-  ASSERT_TRUE(i0.is_null())
-      << "This test assumes the kVrHeadsetIcon isn't mapped";
+  ASSERT_FALSE(maybe_i0.has_value())
+      << "This test assumes the kVrHeadsetOldIcon isn't mapped";
 
   // Start from an empty previous value.
   toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModelTryReuse(
@@ -242,18 +249,19 @@ TEST_F(IconTableTest, RegisterImageModelTryReuse) {
 }
 
 TEST_F(IconTableTest, ScaleFactorChange) {
-  toolbar_ui_api::IconHandle i0 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
       icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
-  ASSERT_TRUE(i0.is_null())
+  ASSERT_FALSE(maybe_i0.has_value())
       << "This test assumes the kVrHeadsetOldIcon isn't mapped";
 
   toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModel(
       ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon));
   ASSERT_FALSE(i1.is_null());
 
-  toolbar_ui_api::IconHandle i2 =
+  std::optional<toolbar_ui_api::IconHandle> maybe_i2 =
       icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
-  ASSERT_FALSE(i2.is_null());
+  ASSERT_TRUE(maybe_i2.has_value());
+  auto i2 = maybe_i2.value();
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
       /*color=*/std::nullopt);

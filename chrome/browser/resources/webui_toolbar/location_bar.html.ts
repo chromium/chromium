@@ -14,7 +14,8 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible ? html`
     @pointerenter="${this.onChipPointerenter_}"
     @pointerleave="${this.onChipPointerleave_}"
     @pointercancel="${this.onChipPointercancel_}">
-</location-icon>` : nothing}
+</location-icon>
+` : nothing}
 ${this.locationBarState.lhsChipsState.permissionDashboard ?
        html`
   <permission-dashboard
@@ -24,6 +25,11 @@ ${this.locationBarState.lhsChipsState.permissionDashboard ?
     @pointerleave="${this.onChipPointerleave_}"
     @pointercancel="${this.onChipPointercancel_}">
   </permission-dashboard>
+` : nothing}
+${this.locationBarState.selectedKeyword ? html`
+  <selected-keyword
+      .selectedKeywordState="${this.locationBarState.selectedKeyword}">
+  </selected-keyword>
 ` : nothing}
 <readonly-omnibox id="omnibox"
   .browserOmniboxState="${this.locationBarState.omniboxViewState}">

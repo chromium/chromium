@@ -139,6 +139,7 @@ class WebUILocationBar : public LocationBar,
   void OnMovedOrShown(ui::TrackedElement* element);
 
   void UpdateLocationBarFlagsState();
+  void UpdateSelectedKeywordState();
 
   // Updates the state of the LHS location bar chips (e.g. security chip) and
   // pushes it to the WebUI.

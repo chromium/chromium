@@ -329,6 +329,18 @@ struct LocationBarFlags {
   bool popup_open = false;
 };
 
+// Search keyword chip, which shows up when the user enters things like
+// "google.com query" or "@history recent site" to replace google.com and
+// @history with a chip describing the search provider.
+struct SelectedKeywordState {
+  // Descriptions to show based on available space. Note that `short_name`
+  // may be empty.
+  mojo_base.mojom.String16 short_name;
+  mojo_base.mojom.String16 full_name;
+
+  // TODO(crbug.com/503784002): Icon
+};
+
 // Enum of all supported pinned toolbar actions.
 enum PinnedToolbarAction {
  kUnspecified, // Unused; triggers assert if used.
@@ -397,6 +409,9 @@ struct LocationBarState {
   array<ContentSettingImageState> content_setting_image_states;
   // LHS location bar chips states.
   LhsChipsState lhs_chips_state;
+
+  // Any search keyword to render, if not null.
+  SelectedKeywordState? selected_keyword;
 };
 
 enum LhsChipIdentifier {
