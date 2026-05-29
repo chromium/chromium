@@ -141,4 +141,23 @@ TEST_P(PDFiumRangeTest, CreateBackwards) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumRangeTest, testing::Bool());
 
+using PDFiumRangeBadPageTest = PDFiumTestBase;
+
+TEST_P(PDFiumRangeBadPageTest, AllTextOnPage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("bad_page.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage page(engine.get(), 0);
+  page.MarkAvailable();
+
+  PDFiumRange range = PDFiumRange::AllTextOnPage(&page);
+  EXPECT_EQ(0, range.char_index());
+  EXPECT_EQ(0, range.char_count());
+  EXPECT_EQ(u"", range.GetText());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumRangeBadPageTest, testing::Bool());
+
 }  // namespace chrome_pdf

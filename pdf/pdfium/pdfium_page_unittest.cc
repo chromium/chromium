@@ -182,6 +182,24 @@ TEST_P(PDFiumPageTest, NonTextPage) {
   EXPECT_EQ(page.GetCharCount(), 0);
 }
 
+TEST_P(PDFiumPageTest, BadPage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("bad_page.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage page(engine.get(), 0);
+  EXPECT_FALSE(page.available());
+  EXPECT_FALSE(page.GetTextPage());
+  EXPECT_EQ(page.GetCharCount(), 0);
+
+  page.MarkAvailable();
+  EXPECT_TRUE(page.available());
+  EXPECT_FALSE(page.GetTextPage());
+  EXPECT_EQ(page.GetCharCount(), -1);
+}
+
 TEST_P(PDFiumPageTest, IsCharInPageBounds) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =

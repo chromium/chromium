@@ -98,7 +98,7 @@ class PDFiumPage {
   // Returns FPDF_TEXTPAGE for the page, loading and parsing it if necessary.
   FPDF_TEXTPAGE GetTextPage();
 
-  // Gets the number of characters in the page.
+  // Gets the number of characters in the page. Returns -1 on error.
   int GetCharCount();
 
   // Resets loaded text and loads it again.

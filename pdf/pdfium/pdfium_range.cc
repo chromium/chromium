@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_range.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -131,7 +132,7 @@ bool IsIgnorableCharacter(char16_t c) {
 
 // static
 PDFiumRange PDFiumRange::AllTextOnPage(PDFiumPage* page) {
-  return PDFiumRange(page, 0, page->GetCharCount());
+  return PDFiumRange(page, 0, std::max(page->GetCharCount(), 0));
 }
 
 // static
@@ -159,7 +160,7 @@ PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
   [[maybe_unused]] FPDF_TEXTPAGE text_page = page_->GetTextPage();
 #if DCHECK_IS_ON()
   AdjustForBackwardsRange(char_index, char_count);
-  DCHECK_LE(char_count, FPDFText_CountChars(text_page));
+  DCHECK_LE(char_count, std::max(FPDFText_CountChars(text_page), 0));
 #endif
 }
 
@@ -180,9 +181,9 @@ void PDFiumRange::SetCharCount(int char_count) {
 
   char_count_ = char_count;
 #if DCHECK_IS_ON()
-  int dummy_index = 0;
-  AdjustForBackwardsRange(dummy_index, char_count);
-  DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));
+  int placeholder_index = 0;
+  AdjustForBackwardsRange(placeholder_index, char_count);
+  DCHECK_LE(char_count, std::max(FPDFText_CountChars(page_->GetTextPage()), 0));
 #endif
 
   cached_screen_rects_point_ = gfx::Point();

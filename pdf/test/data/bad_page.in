@@ -1,0 +1,16 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R] % Deliberately dangling.
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
