@@ -11,9 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -97,9 +100,13 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 }
 
 void OSSyncHandler::HandleOpenBrowserSyncSettings(const base::ListValue& args) {
+  const GURL settings_url(ash::chrome_urls::kChromeUISettingsURL);
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(ash::chrome_urls::kChromeUISettingsURL)
-          .Resolve(ash::chrome_urls::kSyncSetupSubPage),
+      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync) ||
+              !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+          ? settings_url.Resolve(ash::chrome_urls::kSyncSetupSubPage)
+          : settings_url.Resolve(ash::chrome_urls::kAccountSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }

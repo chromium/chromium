@@ -300,7 +300,9 @@ export class OsSettingsSyncSubpageElement extends
 
   private computeSyncSectionDisabled_(): boolean {
     return this.syncStatus !== undefined &&
-        (this.syncStatus.signedInState !== SignedInState.SYNCING ||
+        (this.syncStatus.signedInState !== SignedInState.SYNCING &&
+             (this.syncStatus.signedInState !== SignedInState.SIGNED_IN ||
+              !loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) ||
          !!this.syncStatus.disabled ||
          (!!this.syncStatus.hasError &&
           this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
@@ -534,9 +536,11 @@ export class OsSettingsSyncSubpageElement extends
   }
 
   private computeShowExistingPassphraseBelowAccount_(): boolean {
-    return this.syncStatus !== undefined &&
-        this.syncStatus.signedInState === SignedInState.SYNCING &&
-        this.syncPrefs !== undefined && this.syncPrefs.passphraseRequired;
+    return this.syncStatus !== undefined && this.syncPrefs !== undefined &&
+        this.syncPrefs.passphraseRequired &&
+        (this.syncStatus.signedInState === SignedInState.SYNCING ||
+         (this.syncStatus.signedInState === SignedInState.SIGNED_IN &&
+          loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')));
   }
 
   private onSyncAdvancedClick_(): void {
