@@ -89,6 +89,8 @@ void ResizeForNextOutput(std::string* compressed_log, z_stream* stream) {
 }  // namespace
 
 BASE_FEATURE(kWebRTCLogUploadSuffix, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRTCLogUploadCrossSiteProductName,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string GetLogUploadProduct(WebRtcLogUploadSite site) {
 #if BUILDFLAG(IS_WIN)
@@ -109,7 +111,8 @@ std::string GetLogUploadProduct(WebRtcLogUploadSite site) {
 #error Platform not supported.
 #endif
   if (base::FeatureList::IsEnabled(kWebRTCLogUploadSuffix)) {
-    if (site == WebRtcLogUploadSite::kCrossSite) {
+    if (base::FeatureList::IsEnabled(kWebRTCLogUploadCrossSiteProductName) &&
+        site == WebRtcLogUploadSite::kCrossSite) {
       return base::StrCat({product, "_cross_site_webrtc"});
     }
     return base::StrCat({product, "_webrtc"});
