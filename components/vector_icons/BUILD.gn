@@ -27,6 +27,7 @@ if (current_toolchain == default_toolchain) {
       "add_link.icon",
       "add_link_old.icon",
       "add_old.icon",
+      "add_weight500.icon",
       "ads_chrome_refresh_old.icon",
       "ads_click.icon",
       "ads_click_old.icon",

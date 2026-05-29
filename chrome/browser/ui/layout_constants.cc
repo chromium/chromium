@@ -91,7 +91,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LayoutConstant::kTabAlertIndicatorIconWidth:
       return touch_ui ? 12 : 16;
     case LayoutConstant::kTabCloseButtonSize:
-      return touch_ui ? 24 : 16;
+      return touch_ui ? 24 : (features::IsRoundedIconsEnabled() ? 14 : 16);
     case LayoutConstant::kTabHeight:
       return 34 + GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
     case LayoutConstant::kTabStripHeight:

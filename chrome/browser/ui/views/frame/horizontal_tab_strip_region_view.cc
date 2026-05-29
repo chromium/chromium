@@ -322,7 +322,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
         std::make_unique<NewTabButton>(
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
-            features::IsRoundedIconsEnabled() ? vector_icons::kAdd2Icon
+            features::IsRoundedIconsEnabled() ? vector_icons::kAddWeight500Icon
                                               : vector_icons::kAddOldIcon,
             Edge::kNone, Edge::kNone, browser);
 
