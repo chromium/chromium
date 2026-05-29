@@ -61,12 +61,6 @@ CONTENT_EXPORT void OpenNativeScreenCapturePicker(
 // closes the picker dialog if it is not observing anything else.
 CONTENT_EXPORT void CloseNativeScreenCapturePicker(DesktopMediaID source_id);
 
-// Returns the ID of the PiP window if it exists and should be excluded from the
-// capture of the specified `desktop_id`, by the application owning the PiP
-// window. Must only be called on the UI thread.
-CONTENT_EXPORT std::optional<DesktopMediaID::Id>
-GetPipWindowToExcludeFromScreenCapture(DesktopMediaID::Id desktop_id);
-
 #if BUILDFLAG(IS_MAC)
 struct ApplicationAudioCaptureId {
   std::string bundle_id;

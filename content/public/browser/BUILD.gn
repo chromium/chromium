@@ -135,6 +135,8 @@ source_set("browser_sources") {
     "dedicated_worker_service.h",
     "desktop_capture.cc",
     "desktop_capture.h",
+    "desktop_capture_pip_utils.cc",
+    "desktop_capture_pip_utils.h",
     "desktop_media_id.cc",
     "desktop_media_id.h",
     "desktop_streams_registry.h",

@@ -158,15 +158,6 @@ void CloseNativeScreenCapturePicker(DesktopMediaID source_id) {
       ->CloseNativeScreenCapturePicker(source_id);
 }
 
-std::optional<DesktopMediaID::Id> GetPipWindowToExcludeFromScreenCapture(
-    DesktopMediaID::Id desktop_id) {
-  if (auto* coordinator = content::PipScreenCaptureCoordinator::GetInstance()) {
-    return coordinator->GetPipWindowToExcludeFromScreenCapture(desktop_id);
-  }
-
-  return std::nullopt;
-}
-
 #if BUILDFLAG(IS_MAC)
 void GetApplicationAudioCaptureId(
     DesktopMediaID desktop_media_id,
