@@ -10,6 +10,7 @@
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -167,17 +168,16 @@ void URLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* /* defer */,
-    std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
-  ThrottleRequestAdapter request_adapter(this, request_headers_,
-                                         modified_request_headers,
-                                         to_be_removed_request_headers);
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+  ThrottleRequestAdapter request_adapter(
+      this, request_headers_, &headers_update_params->modified_headers,
+      &headers_update_params->removed_headers);
   delegate_->ProcessRequest(&request_adapter, redirect_info->new_url);
 
-  request_headers_.MergeFrom(*modified_request_headers);
-  for (const std::string& name : *to_be_removed_request_headers)
+  request_headers_.MergeFrom(headers_update_params->modified_headers);
+  for (const std::string& name : headers_update_params->removed_headers) {
     request_headers_.RemoveHeader(name);
+  }
 
   // Modifications to |response_head.headers| will be passed to the
   // URLLoaderClient even though |response_head| is const.

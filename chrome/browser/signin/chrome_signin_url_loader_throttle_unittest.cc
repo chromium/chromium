@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -175,23 +176,21 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   response_head->headers->SetHeader("X-Response-1", "Foo");
   response_head->headers->SetHeader("X-Response-2", "Bar");
 
-  std::vector<std::string> request_headers_to_remove;
-  net::HttpRequestHeaders modified_request_headers;
-  net::HttpRequestHeaders modified_cors_exempt_request_headers;
-  throttle->WillRedirectRequest(
-      &redirect_info, *response_head, &defer, &request_headers_to_remove,
-      &modified_request_headers, &modified_cors_exempt_request_headers);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  throttle->WillRedirectRequest(&redirect_info, *response_head, &defer,
+                                &headers_update_params);
 
   EXPECT_FALSE(defer);
 
   EXPECT_TRUE(response_head->headers->HasHeader("X-Response-1"));
   EXPECT_FALSE(response_head->headers->HasHeader("X-Response-2"));
 
-  EXPECT_THAT(request_headers_to_remove, ElementsAre("X-Request-2"));
-  EXPECT_THAT(modified_request_headers.GetHeader("X-Request-3"),
+  EXPECT_THAT(headers_update_params.removed_headers,
+              ElementsAre("X-Request-2"));
+  EXPECT_THAT(headers_update_params.modified_headers.GetHeader("X-Request-3"),
               testing::Optional(std::string("Baz")));
 
-  EXPECT_TRUE(modified_cors_exempt_request_headers.IsEmpty());
+  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.IsEmpty());
 
   testing::Mock::VerifyAndClearExpectations(delegate);
 
@@ -268,17 +267,14 @@ TEST(ChromeSigninURLLoaderThrottleTest, InterceptSubFrame) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("https://youtube.com");
   auto response_head = network::mojom::URLResponseHead::New();
-
-  std::vector<std::string> request_headers_to_remove;
-  net::HttpRequestHeaders modified_request_headers;
-  net::HttpRequestHeaders modified_cors_exempt_request_headers;
-  throttle->WillRedirectRequest(
-      &redirect_info, *response_head, &defer, &request_headers_to_remove,
-      &modified_request_headers, &modified_cors_exempt_request_headers);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  throttle->WillRedirectRequest(&redirect_info, *response_head, &defer,
+                                &headers_update_params);
   EXPECT_FALSE(defer);
-  EXPECT_TRUE(request_headers_to_remove.empty());
-  EXPECT_TRUE(modified_request_headers.IsEmpty());
-  EXPECT_TRUE(modified_cors_exempt_request_headers.IsEmpty());
+
+  EXPECT_TRUE(headers_update_params.removed_headers.empty());
+  EXPECT_TRUE(headers_update_params.modified_headers.IsEmpty());
+  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.IsEmpty());
 
   throttle->WillProcessResponse(GURL("https://youtube.com"),
                                 response_head.get(), &defer);
@@ -326,12 +322,9 @@ TEST(ChromeSigninURLLoaderThrottleTest, InterceptNullHeaders) {
 
   // Response head with null headers.
   auto response_head = network::mojom::URLResponseHead::New();
-  std::vector<std::string> request_headers_to_remove;
-  net::HttpRequestHeaders modified_request_headers;
-  net::HttpRequestHeaders modified_cors_exempt_request_headers;
-  throttle->WillRedirectRequest(
-      &redirect_info, *response_head, &defer, &request_headers_to_remove,
-      &modified_request_headers, &modified_cors_exempt_request_headers);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  throttle->WillRedirectRequest(&redirect_info, *response_head, &defer,
+                                &headers_update_params);
   EXPECT_FALSE(defer);
 
   EXPECT_FALSE(response_head->headers);

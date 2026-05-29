@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,30 +98,31 @@ TEST_F(OmniboxAutofocusURLLoaderThrottleTest,
        WillRedirectRequest_ToNonGoogleDomain) {
   CreateThrottle();
   net::RedirectInfo redirect_info;
-  std::vector<std::string> to_be_removed_headers;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
   network::mojom::URLResponseHead response_head;
 
   // When redirecting to a non-Google URL, the header name should be added to
   // the list of headers to remove.
   redirect_info.new_url = GURL("https://www.not-google.com");
   throttle_->WillRedirectRequest(&redirect_info, response_head, nullptr,
-                                 &to_be_removed_headers, nullptr, nullptr);
-  EXPECT_EQ(to_be_removed_headers.size(), 1u);
-  EXPECT_EQ(to_be_removed_headers[0], kOmniboxAutofocusHeaderName);
+                                 &headers_update_params);
+  EXPECT_EQ(headers_update_params.removed_headers.size(), 1u);
+  EXPECT_EQ(headers_update_params.removed_headers[0],
+            kOmniboxAutofocusHeaderName);
 }
 
 TEST_F(OmniboxAutofocusURLLoaderThrottleTest,
        WillRedirectRequest_ToGoogleDomain) {
   CreateThrottle();
   net::RedirectInfo redirect_info;
-  std::vector<std::string> to_be_removed_headers;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
   network::mojom::URLResponseHead response_head;
 
   // When redirecting to another Google URL, the header should not be removed.
   redirect_info.new_url = GURL("https://www.google.com");
   throttle_->WillRedirectRequest(&redirect_info, response_head, nullptr,
-                                 &to_be_removed_headers, nullptr, nullptr);
-  EXPECT_TRUE(to_be_removed_headers.empty());
+                                 &headers_update_params);
+  EXPECT_TRUE(headers_update_params.removed_headers.empty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

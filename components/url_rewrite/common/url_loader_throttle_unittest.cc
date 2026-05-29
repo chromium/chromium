@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -385,25 +386,26 @@ TEST_F(URLLoaderThrottleTest, RedirectsRemoveHeaders) {
 
   net::RedirectInfo redirect_info;
   network::mojom::URLResponseHead response_head;
-  std::vector<std::string> to_be_removed_headers;
-  net::HttpRequestHeaders modified_headers;
-  net::HttpRequestHeaders modified_cors_exempt_headers;
 
   // Test same-origin redirect
   redirect_info.new_url = GURL("http://test.net/redirect");
-  throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
-                               &to_be_removed_headers, &modified_headers,
-                               &modified_cors_exempt_headers);
-  EXPECT_TRUE(to_be_removed_headers.empty());
+  {
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
+                                 &headers_update_params);
+    EXPECT_TRUE(headers_update_params.removed_headers.empty());
+  }
 
   // Test cross-origin redirect
   redirect_info.new_url = GURL("http://other.com");
-  throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
-                               &to_be_removed_headers, &modified_headers,
-                               &modified_cors_exempt_headers);
-  EXPECT_EQ(to_be_removed_headers.size(), 2u);
-  EXPECT_EQ(to_be_removed_headers[0], "Header");
-  EXPECT_EQ(to_be_removed_headers[1], "CorsExemptHeader");
+  {
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
+                                 &headers_update_params);
+    EXPECT_EQ(headers_update_params.removed_headers.size(), 2u);
+    EXPECT_EQ(headers_update_params.removed_headers[0], "Header");
+    EXPECT_EQ(headers_update_params.removed_headers[1], "CorsExemptHeader");
+  }
 }
 
 }  // namespace url_rewrite

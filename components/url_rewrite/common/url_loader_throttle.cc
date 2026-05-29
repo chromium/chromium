@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
@@ -205,17 +206,15 @@ void URLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
-    std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
   if (added_headers_.empty()) {
     return;
   }
 
   if (!url::Origin::Create(redirect_info->new_url)
            .IsSameOriginWith(original_origin_)) {
-    to_be_removed_request_headers->insert(
-        to_be_removed_request_headers->end(),
+    headers_update_params->removed_headers.insert(
+        headers_update_params->removed_headers.end(),
         std::make_move_iterator(added_headers_.begin()),
         std::make_move_iterator(added_headers_.end()));
     added_headers_.clear();

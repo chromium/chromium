@@ -5,10 +5,6 @@
 #ifndef CHROME_RENDERER_ASH_MERGE_SESSION_LOADER_THROTTLE_H_
 #define CHROME_RENDERER_ASH_MERGE_SESSION_LOADER_THROTTLE_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
@@ -38,9 +34,7 @@ class AshMergeSessionLoaderThrottle final : public blink::URLLoaderThrottle {
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
       bool* defer,
-      std::vector<std::string>* to_be_removed_headers,
-      net::HttpRequestHeaders* modified_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_headers) override;
+      network::HttpRequestHeadersUpdateParams* headers_update_params) override;
 
  private:
   bool MaybeDeferForMergeSession(
