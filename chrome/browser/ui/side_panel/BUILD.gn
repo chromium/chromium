@@ -35,7 +35,6 @@ source_set("side_panel") {
   ]
 
   deps = [
-    "//chrome/browser:primitives",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//components/pref_registry",

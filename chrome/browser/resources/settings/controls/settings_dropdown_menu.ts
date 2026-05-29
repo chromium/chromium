@@ -100,19 +100,11 @@ export class SettingsDropdownMenuElement extends
 
       /** Label for a11y purposes */
       label: String,
-
-      /**
-       * The value of the element if not using |pref|.
-       */
-      value: {
-        type: String,
-      },
     };
   }
 
   static get observers() {
     return [
-      'updateSelected_(menuOptions, value)',
       'updateSelected_(menuOptions, pref.value.*, prefKey)',
     ];
   }
@@ -123,7 +115,6 @@ export class SettingsDropdownMenuElement extends
   declare noSetPref: boolean;
   declare notFoundValue: string;
   declare label: string;
-  declare value: string;
 
   override focus() {
     this.$.dropdownMenu.focus();
@@ -160,7 +151,7 @@ export class SettingsDropdownMenuElement extends
       return;
     }
 
-    if (!this.noSetPref && this.pref) {
+    if (!this.noSetPref) {
       this.sendPrefChange();
     }
 
@@ -174,7 +165,8 @@ export class SettingsDropdownMenuElement extends
    * Updates the selected item when the pref or menuOptions change.
    */
   private updateSelected_() {
-    if (this.menuOptions === undefined) {
+    if (this.menuOptions === undefined || this.pref === undefined ||
+        this.prefKey === undefined) {
       return;
     }
 
@@ -182,16 +174,7 @@ export class SettingsDropdownMenuElement extends
       return;
     }
 
-    let prefValue: string;
-    if (this.value !== undefined) {
-      prefValue = this.value;
-    } else {
-      if (this.pref === undefined || this.prefKey === undefined) {
-        return;
-      }
-      prefValue = this.prefStringValue_();
-    }
-
+    const prefValue = this.prefStringValue_();
     const option = this.menuOptions.find(function(menuItem) {
       return menuItem.value.toString() === prefValue;
     });
