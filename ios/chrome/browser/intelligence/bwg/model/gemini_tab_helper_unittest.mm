@@ -29,10 +29,9 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
-#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/mojom/model_led_suggestions_service.mojom.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -55,19 +54,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
-
-// Defined to match the layout of GeminiTabHelper::ModelLedSuggestions which is
-// opaque in the header.
-namespace {
-struct TestModelLedSuggestions {
-  TestModelLedSuggestions() = default;
-  ~TestModelLedSuggestions() = default;
-  mojo::Remote<ai::mojom::ModelLedSuggestionsService> service;
-  std::unique_ptr<ai::ModelLedSuggestionsServiceImpl> service_impl;
-  std::optional<std::vector<std::string>> suggestions;
-  bool can_apply = false;
-};
-}  // namespace
 
 class GeminiTabHelperTest : public PlatformTest {
  protected:
@@ -204,9 +190,7 @@ class GeminiTabHelperTest : public PlatformTest {
   void SimulateGeminiEligibilityDecisionReceived(
       const GURL& url,
       const optimization_guide::OptimizationMetadata& metadata) {
-    auto* suggestions_struct = reinterpret_cast<TestModelLedSuggestions*>(
-        tab_helper_->model_led_suggestions_.get());
-    suggestions_struct->can_apply = true;
+    tab_helper_->zero_state_suggestions_service_->SetCanApply(true);
     tab_helper_->current_url_ = url;
     bool user_enabled = profile_->GetPrefs()->GetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);

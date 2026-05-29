@@ -13,6 +13,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -38,9 +39,14 @@ class GeminiSuggestionHandlerTest : public PlatformTest {
   // access.
   void SetSuggestions(GeminiTabHelper* tab_helper,
                       const std::vector<std::string>& suggestions) {
-    ASSERT_TRUE(tab_helper->model_led_suggestions_);
-    tab_helper->model_led_suggestions_->can_apply = true;
-    tab_helper->model_led_suggestions_->suggestions = suggestions;
+    ASSERT_TRUE(tab_helper->zero_state_suggestions_service_);
+    tab_helper->zero_state_suggestions_service_->SetCanApply(true);
+    tab_helper->zero_state_suggestions_service_->suggestions_ = suggestions;
+    if (tab_helper->zero_state_suggestions_service_->web_state_) {
+      tab_helper->zero_state_suggestions_service_->suggestions_url_ =
+          tab_helper->zero_state_suggestions_service_->web_state_
+              ->GetVisibleURL();
+    }
   }
 
   // Helper to set current URL in GeminiTabHelper using the friend class access.

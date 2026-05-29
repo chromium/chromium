@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("zero_state_suggestions") {
+  sources = [
+    "zero_state_suggestions_service.h",
+    "zero_state_suggestions_service.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/zero_state_suggestions/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "zero_state_suggestions_service_unittest.mm" ]
+  deps = [
+    ":zero_state_suggestions",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
