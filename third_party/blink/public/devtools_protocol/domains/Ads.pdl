@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# A domain for ad-related metrics and data.
+experimental domain Ads
+  depends on Network
+  depends on Page
+  depends on Runtime
+
+  # Ad metrics for a page.
+  type AdMetrics extends object
+    properties
+      # The viewport ad density by area, represented as a percentage (an integer
+      # between 0 and 100).
+      integer viewportAdDensityByArea
+      # The time-weighted average of the viewport ad density by area, measured
+      # across the duration of the page.
+      number averageViewportAdDensityByArea
+      # The number of ads currently visible within the viewport.
+      integer viewportAdCount
+      # The time-weighted average of the viewport ad count, measured across the
+      # duration of the page.
+      number averageViewportAdCount
+      # The total ad CPU usage, in milliseconds.
+      number totalAdCpuTime
+      # The total ad network bytes.
+      number totalAdNetworkBytes
+
+  # Retrieves ad metrics for the current page.
+  command getAdMetrics
+    returns
+      AdMetrics metrics

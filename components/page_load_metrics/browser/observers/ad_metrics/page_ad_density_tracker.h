@@ -39,12 +39,33 @@ class PageAdDensityTracker {
     std::optional<int> ad_count;
   };
 
+  // A snapshot of the current ad density statistics, to be serialized and
+  // reported by the DevTools Ads domain.
+  struct LiveStats {
+    // The viewport ad density by area, represented as a percentage (an integer
+    // between 0 and 100).
+    int viewport_ad_density_by_area;
+
+    // The time-weighted average of the viewport ad density by area, measured
+    // across the duration of the page.
+    double average_viewport_ad_density_by_area;
+
+    // The number of ads currently visible within the viewport.
+    int viewport_ad_count;
+
+    // The time-weighted average of the viewport ad count, measured across the
+    // duration of the page.
+    double average_viewport_ad_count;
+  };
+
   PageAdDensityTracker(bool is_in_foreground,
                        const base::TickClock* clock = nullptr);
   ~PageAdDensityTracker();
 
   PageAdDensityTracker(const PageAdDensityTracker&) = delete;
   PageAdDensityTracker& operator=(const PageAdDensityTracker&) = delete;
+
+  LiveStats GetLiveStats();
 
   // Accumulates the last-measured viewport ad density and pauses further
   // tracking. Called when the page becomes hidden from view

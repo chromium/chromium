@@ -24,6 +24,8 @@ _protocol_generated = [
 
 if (enable_devtools_frontend) {
   _protocol_generated += [
+    "protocol/ads.cc",
+    "protocol/ads.h",
     "protocol/autofill.cc",
     "protocol/autofill.h",
     "protocol/extensions.cc",
@@ -121,6 +123,8 @@ static_library("devtools") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/select_file_policy",
+    "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/browser/observers/ad_metrics",
 
     # To prevent circular GN dependencies, this target does not depend on
     # //chrome/browser:browser, even though it has a real build dependency on
@@ -404,6 +408,8 @@ static_library("devtools") {
       "//ui/gfx/geometry",
     ]
     sources += [
+      "protocol/ads_handler.cc",
+      "protocol/ads_handler.h",
       "protocol/autofill_handler.cc",
       "protocol/autofill_handler.h",
       "protocol/browser_handler.cc",

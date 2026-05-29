@@ -44,6 +44,8 @@ class AdsPageLoadMetricsObserver
     : public PageLoadMetricsObserver,
       public subresource_filter::SubresourceFilterObserver {
  public:
+  static const char kObserverName[];
+
   using AggregateFrameData = page_load_metrics::AggregateFrameData;
   using FrameTreeData = page_load_metrics::FrameTreeData;
   using ResourceMimeType = page_load_metrics::ResourceMimeType;
@@ -148,6 +150,17 @@ class AdsPageLoadMetricsObserver
   void OnAdAuctionComplete(bool is_server_auction,
                            bool is_on_device_auction,
                            content::AuctionResult result) override;
+
+  base::TimeDelta GetTotalAdCpuTime() const;
+  int64_t GetTotalAdNetworkBytes() const;
+
+  PageAdDensityTracker::LiveStats GetLiveStats() {
+    return page_ad_density_tracker_.GetLiveStats();
+  }
+
+  base::WeakPtr<AdsPageLoadMetricsObserver> GetWeakPtr() {
+    return ads_weak_factory_.GetWeakPtr();
+  }
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {
@@ -350,6 +363,8 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
+
+  base::WeakPtrFactory<AdsPageLoadMetricsObserver> ads_weak_factory_{this};
 };
 
 }  // namespace page_load_metrics

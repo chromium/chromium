@@ -18,6 +18,9 @@ void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
                                         bool is_ad) {
   // Update the overall usage for all of the relevant buckets.
   cpu_usage_ += update;
+  if (is_ad) {
+    live_ad_cpu_usage_ += update;
+  }
 
   // Update the peak usage.
   total_peak_cpu_.UpdatePeakWindowedPercent(update, update_time);

@@ -20,6 +20,7 @@ namespace content {
 class DevToolsAgentHostClientChannel;
 }  // namespace content
 
+class AdsHandler;
 class AutofillHandler;
 class EmulationHandler;
 class BrowserHandler;
@@ -65,6 +66,7 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
       pending_commands_;
 
   protocol::UberDispatcher dispatcher_;
+  std::unique_ptr<AdsHandler> ads_handler_;
   std::unique_ptr<AutofillHandler> autofill_handler_;
   std::unique_ptr<ExtensionsHandler> extensions_handler_;
   std::unique_ptr<BrowserHandler> browser_handler_;

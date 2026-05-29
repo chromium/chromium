@@ -9,6 +9,7 @@ version
   minor 3
 
 include domains/Accessibility.pdl
+include domains/Ads.pdl
 include domains/Animation.pdl
 include domains/Audits.pdl
 include domains/Autofill.pdl

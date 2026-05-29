@@ -216,6 +216,22 @@ PageAdDensityTracker::PageAdDensityTracker(bool is_in_foreground,
 
 PageAdDensityTracker::~PageAdDensityTracker() = default;
 
+PageAdDensityTracker::LiveStats PageAdDensityTracker::GetLiveStats() {
+  auto density_stats = viewport_ad_density_by_area_stats_.CalculateStats();
+  double average_density = density_stats ? density_stats->mean : 0;
+
+  auto count_stats = viewport_ad_count_stats_.CalculateStats();
+  double average_count = count_stats ? count_stats->mean : 0;
+
+  return {
+      static_cast<int>(
+          viewport_ad_density_by_area_stats_.last_sample().value_or(0)),
+      average_density,
+      static_cast<int>(viewport_ad_count_stats_.last_sample().value_or(0)),
+      average_count,
+  };
+}
+
 std::optional<int> PageAdDensityTracker::MaxPageAdDensityByHeight() const {
   if (auto max_value = page_ad_density_by_height_stats_.maximum_value()) {
     return static_cast<int>(*max_value);

@@ -1386,6 +1386,17 @@ base::TimeTicks MetricsWebContentsObserver::GetCreated() {
   return created_;
 }
 
+base::WeakPtr<PageLoadMetricsObserverInterface>
+MetricsWebContentsObserver::GetMetricsObserver(
+    content::RenderFrameHost* render_frame_host,
+    const char* name) {
+  PageLoadTracker* tracker = GetPageLoadTrackerIfValid(render_frame_host);
+  if (tracker) {
+    return tracker->FindObserver(name);
+  }
+  return nullptr;
+}
+
 // This contains some bugs. RenderFrameHost::IsActive is not relevant to
 // determine what members we have to search.
 //

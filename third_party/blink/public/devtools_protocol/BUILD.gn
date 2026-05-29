@@ -6,6 +6,7 @@ _protocol_out_dir = "$root_gen_dir/third_party/blink/public/devtools_protocol"
 
 domains = [
   "domains/Accessibility.pdl",
+  "domains/Ads.pdl",
   "domains/Animation.pdl",
   "domains/Audits.pdl",
   "domains/Autofill.pdl",

@@ -58,7 +58,13 @@ class TimeWeightedUnivariateStats {
 
   // Returns the maximum sample value observed, or std::nullopt if no samples
   // were added.
-  std::optional<double> maximum_value() const { return maximum_value_; }
+  std::optional<double> maximum_value() const {
+    return last_sample_ ? std::optional<double>(maximum_value_) : std::nullopt;
+  }
+
+  // Returns the last sample value observed, or std::nullopt if no samples
+  // were added.
+  std::optional<double> last_sample() const { return last_sample_; }
 
  private:
   // Accumulates the currently held `last_sample_` over the elapsed time since
@@ -70,8 +76,8 @@ class TimeWeightedUnivariateStats {
   std::array<double, 4> sum_x_ = {};
 
   double total_weight_ = 0;
-  double last_sample_ = 0;
-  std::optional<double> maximum_value_;
+  std::optional<double> last_sample_;
+  double maximum_value_ = 0;
 
   raw_ptr<const base::TickClock> clock_;
   base::TimeTicks last_time_;

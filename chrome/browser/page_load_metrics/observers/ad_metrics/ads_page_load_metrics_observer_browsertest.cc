@@ -51,6 +51,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "net/base/net_errors.h"
@@ -3304,3 +3305,222 @@ INSTANTIATE_TEST_SUITE_P(
       return base::StrCat({std::get<0>(info.param).name,
                            std::get<1>(info.param) ? "_lambda" : "_func"});
     });
+
+class DevToolsAdsTest : public AdsPageLoadMetricsObserverBrowserTest,
+                        public content::TestDevToolsProtocolClient {
+ public:
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    AdsPageLoadMetricsObserverBrowserTest::TearDownOnMainThread();
+  }
+
+  // Polls for ad metrics and waits until they meet expectations. Initial
+  // requests may return incomplete metrics due to reporting delays.
+  void PollForAdMetrics(int64_t expected_min_network_bytes,
+                        int expected_viewport_ad_count,
+                        int expected_density) {
+    while (true) {
+      const base::DictValue* result = SendCommandSync("Ads.getAdMetrics");
+      ASSERT_TRUE(result);
+
+      double network_bytes =
+          result->FindDoubleByDottedPath("metrics.totalAdNetworkBytes")
+              .value_or(0);
+      int viewport_ad_count =
+          result->FindIntByDottedPath("metrics.viewportAdCount").value_or(0);
+      double cpu_time = result->FindDoubleByDottedPath("metrics.totalAdCpuTime")
+                            .value_or(0.0);
+      int viewport_ad_density_by_area =
+          result->FindIntByDottedPath("metrics.viewportAdDensityByArea")
+              .value_or(0);
+      double average_viewport_ad_count =
+          result->FindDoubleByDottedPath("metrics.averageViewportAdCount")
+              .value_or(0.0);
+      double average_viewport_ad_density_by_area =
+          result
+              ->FindDoubleByDottedPath("metrics.averageViewportAdDensityByArea")
+              .value_or(0.0);
+
+      // Exact CPU time and average values depend on the execution environment.
+      // Wait until a positive value (> 0) is recorded for these metrics.
+      if (network_bytes >= expected_min_network_bytes &&
+          viewport_ad_count == expected_viewport_ad_count && cpu_time > 0.0 &&
+          viewport_ad_density_by_area == expected_density &&
+          average_viewport_ad_count > 0.0 &&
+          average_viewport_ad_density_by_area > 0.0) {
+        break;
+      }
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(50));
+      run_loop.Run();
+    }
+  }
+};
+
+// Tests that when ad frames are added to a page, the ad metrics are properly
+// calculated and returned via the Ads.getAdMetrics command.
+IN_PROC_BROWSER_TEST_F(DevToolsAdsTest, GetAdMetrics) {
+  browser()->window()->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule(
+           "expensive_animation_frame.html*"),
+       subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/ads_observer/blank_with_adiframe_writer.html")));
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents(),
+                                                           waiter.get());
+
+  AttachToWebContents(web_contents());
+
+  content::DOMMessageQueue message_queue(web_contents());
+
+  // Add an ad frame. The unique 'id' query parameter ensures that subsequent
+  // requests bypass the browser cache, allowing network bytes to be reliably
+  // recorded.
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "let frame1 = createAdIframeAtRect(0, 0, 100, 100); "
+          "frame1.id = 'test1'; "
+          "frame1.name = 'test1'; "
+          "frame1.src = $1;",
+          embedded_test_server()->GetURL(
+              "a.com",
+              "/ads_observer/expensive_animation_frame.html?delay=200&id=1"))));
+  WaitForRAF(&message_queue);
+
+  int inner_width = EvalJs(web_contents(), "window.innerWidth").ExtractInt();
+  int inner_height = EvalJs(web_contents(), "window.innerHeight").ExtractInt();
+
+  // Viewport density calculation: one 100x100 ad frame = 10,000 area.
+  int expected_density_1 = 10000 * 100 / (inner_width * inner_height);
+
+  // Assert against a lower bound to account for variable HTTP header sizes.
+  // The base payload (`expensive_animation_frame.html`) is 579 bytes.
+  const int64_t kExpectedMinNetworkBytes_1 = 579;
+
+  PollForAdMetrics(
+      /*expected_min_network_bytes=*/kExpectedMinNetworkBytes_1,
+      /*expected_viewport_ad_count=*/1,
+      /*expected_density=*/expected_density_1);
+
+  // Add second frame.
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "let frame2 = createAdIframeAtRect(100, 100, 100, 100); "
+          "frame2.id = 'test2'; "
+          "frame2.name = 'test2'; "
+          "frame2.src = $1;",
+          embedded_test_server()->GetURL(
+              "a.com",
+              "/ads_observer/expensive_animation_frame.html?delay=200&id=2"))));
+  WaitForRAF(&message_queue);
+
+  // Viewport density calculation: two 100x100 ad frames = 20,000 area.
+  int expected_density_2 = 20000 * 100 / (inner_width * inner_height);
+
+  // Expected minimum payload: 2 * 579 = 1158 bytes.
+  const int64_t kExpectedMinNetworkBytes_2 = 1158;
+
+  PollForAdMetrics(
+      /*expected_min_network_bytes=*/kExpectedMinNetworkBytes_2,
+      /*expected_viewport_ad_count=*/2,
+      /*expected_density=*/expected_density_2);
+}
+
+// Tests that ad metrics are correctly reset and reported for the new page when
+// navigating away from an existing page. Validates that we are checking the new
+// APLMO.
+IN_PROC_BROWSER_TEST_F(DevToolsAdsTest, GetAdMetrics_PageNavigated) {
+  browser()->window()->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule(
+           "expensive_animation_frame.html*"),
+       subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/ads_observer/blank_with_adiframe_writer.html")));
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents(),
+                                                           waiter.get());
+
+  AttachToWebContents(web_contents());
+
+  content::DOMMessageQueue message_queue(web_contents());
+
+  // Add an ad frame. The unique 'id' query parameter ensures that subsequent
+  // requests bypass the browser cache, allowing network bytes to be reliably
+  // recorded.
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "let frame1 = createAdIframeAtRect(0, 0, 100, 100); "
+          "frame1.id = 'test1'; "
+          "frame1.name = 'test1'; "
+          "frame1.src = $1;",
+          embedded_test_server()->GetURL(
+              "a.com",
+              "/ads_observer/expensive_animation_frame.html?delay=200&id=1"))));
+  WaitForRAF(&message_queue);
+
+  int inner_width = EvalJs(web_contents(), "window.innerWidth").ExtractInt();
+  int inner_height = EvalJs(web_contents(), "window.innerHeight").ExtractInt();
+
+  // Viewport density calculation: one 100x100 ad frame = 10,000 area.
+  int expected_density_1 = 10000 * 100 / (inner_width * inner_height);
+
+  // Assert against a lower bound to account for variable HTTP header sizes.
+  // The base payload (`expensive_animation_frame.html`) is 579 bytes.
+  const int64_t kExpectedMinNetworkBytes_1 = 579;
+
+  PollForAdMetrics(
+      /*expected_min_network_bytes=*/kExpectedMinNetworkBytes_1,
+      /*expected_viewport_ad_count=*/1,
+      /*expected_density=*/expected_density_1);
+
+  // Navigate away
+  auto waiter2 = CreatePageLoadMetricsTestWaiter();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/ads_observer/blank_with_adiframe_writer.html?navigated")));
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents(),
+                                                           waiter2.get());
+
+  content::DOMMessageQueue message_queue2(web_contents());
+
+  // Add an ad frame (different size) in the new page.
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "let frame2 = createAdIframeAtRect(0, 0, 200, 200); "
+          "frame2.id = 'test2'; "
+          "frame2.name = 'test2'; "
+          "frame2.src = $1;",
+          embedded_test_server()->GetURL(
+              "a.com",
+              "/ads_observer/expensive_animation_frame.html?delay=200&id=2"))));
+  WaitForRAF(&message_queue2);
+
+  // Viewport density calculation: one 200x200 ad frame = 40,000 area.
+  int expected_density_2 = 40000 * 100 / (inner_width * inner_height);
+  const int64_t kExpectedMinNetworkBytes_2 = 579;
+
+  PollForAdMetrics(
+      /*expected_min_network_bytes=*/kExpectedMinNetworkBytes_2,
+      /*expected_viewport_ad_count=*/1,
+      /*expected_density=*/expected_density_2);
+}

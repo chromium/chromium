@@ -110,6 +110,7 @@ class AggregateFrameData {
   // Get the total cpu usage of this page.
   base::TimeDelta total_cpu_usage() const { return cpu_usage_; }
   base::TimeDelta total_ad_cpu_usage() const { return ad_cpu_usage_; }
+  base::TimeDelta live_ad_cpu_usage() const { return live_ad_cpu_usage_; }
 
   // Accessor for the total resource data of the page.
   const ResourceLoadAggregator& resource_data() const { return resource_data_; }
@@ -125,7 +126,15 @@ class AggregateFrameData {
 
   // The overall cpu usage for this page.
   base::TimeDelta cpu_usage_;
+
+  // The total ad cpu usage, updated in batches when frames are destroyed or
+  // when the page load ends. This is the canonical metric for UMA.
   base::TimeDelta ad_cpu_usage_;
+
+  // The total ad cpu usage, updated continuously as CPU timing updates arrive.
+  // Useful for live metrics reporting (e.g. DevTools). Conceptually, this will
+  // eventually match `ad_cpu_usage_`.
+  base::TimeDelta live_ad_cpu_usage_;
 
   // The resource data for this page.
   ResourceLoadAggregator resource_data_;

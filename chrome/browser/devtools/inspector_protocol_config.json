@@ -7,6 +7,9 @@
         "namespace": [ "protocol" ],
         "options": [
             {
+                "domain": "Ads"
+            },
+            {
                 "domain": "Page",
                 "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode" ],
                 "include_events": [],

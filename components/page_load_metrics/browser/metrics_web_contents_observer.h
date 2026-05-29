@@ -213,6 +213,12 @@ class MetricsWebContentsObserver
   // Returns the time this MetricsWebContentsObserver was created.
   base::TimeTicks GetCreated();
 
+  // Retrieves the PageLoadMetricsObserverInterface matching `name` for the
+  // specified `render_frame_host`. Returns null if the observer is not found.
+  base::WeakPtr<PageLoadMetricsObserverInterface> GetMetricsObserver(
+      content::RenderFrameHost* render_frame_host,
+      const char* name);
+
   base::WeakPtr<MetricsWebContentsObserver> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

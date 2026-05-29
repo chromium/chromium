@@ -29,9 +29,10 @@ void TimeWeightedUnivariateStats::AccumulateOutstanding() {
     double weight = elapsed.InMicrosecondsF();
     std::array<double, 4> x = {};
     double prev = 1;
+    double last_sample_value = last_sample_.value_or(0);
 
     for (size_t i = 0; i < 4; ++i) {
-      x[i] = prev * last_sample_;
+      x[i] = prev * last_sample_value;
       sum_x_[i] += x[i] * weight;
       prev = x[i];
     }
@@ -43,8 +44,8 @@ void TimeWeightedUnivariateStats::AccumulateOutstanding() {
 
 void TimeWeightedUnivariateStats::AddSample(double sample) {
   AccumulateOutstanding();
+  maximum_value_ = last_sample_ ? std::max(maximum_value_, sample) : sample;
   last_sample_ = sample;
-  maximum_value_ = std::max(maximum_value_.value_or(sample), sample);
 }
 
 void TimeWeightedUnivariateStats::Pause() {
@@ -62,7 +63,7 @@ void TimeWeightedUnivariateStats::Resume() {
 
 std::optional<TimeWeightedUnivariateStats::DistributionMoments>
 TimeWeightedUnivariateStats::CalculateStats() {
-  if (!maximum_value_.has_value()) {
+  if (!last_sample_.has_value()) {
     return std::nullopt;
   }
 

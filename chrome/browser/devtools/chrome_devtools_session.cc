@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/devtools/protocol/ads_handler.h"
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/protocol/cast_handler.h"
@@ -59,6 +60,12 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
   if (agent_host->GetWebContents() &&
       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
+    if (IsDomainAvailableToUntrustedClient<AdsHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      ads_handler_ = std::make_unique<AdsHandler>(
+          agent_host->GetWebContents(), &dispatcher_,
+          channel->GetClient()->IsTrusted());
+    }
     if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
         channel->GetClient()->IsTrusted()) {
       page_handler_ = std::make_unique<PageHandler>(
