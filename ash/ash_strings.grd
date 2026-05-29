@@ -520,9 +520,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ICON_TOOLTIP" desc="Quick Share tile icon tooltip.">
         Toggle Quick Share. Quick Share is <ph name="quick_share_state">$1<ex>On</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP" desc="Quick Share tile tooltip.">
-        Show Quick Share settings
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_ENABLED" desc="Quick Share tile tooltip when enabled.">
         Show Quick Share settings. <ph name="visibility">$1<ex>Your devices</ex></ph> visibility selected
       </message>
@@ -570,12 +567,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH" desc="Feature name placeholder: The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE" desc="Sub-label for the Nearby Share system tray button." meaning="Nearby Share high visibility mode is currently inactive. [CHAR_LIMIT=14]">
-        Off
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE" desc="Sub-label for the Nearby Share system tray button." meaning="Nearby Share high visibility mode is currently active with the displayed time remaining. [CHAR_LIMIT=14]">
-        On, <ph name="REMAINING_TIME">$1<ex>40 sec</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_OFF_STATE" desc="Sub-label for the Nearby Share system tray feature tile when off." meaning="Nearby Share high visibility mode is currently inactive. [CHAR_LIMIT=14]">
         Everyone, off
@@ -631,9 +622,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST" desc="The label used as the header in the cast popup.">
         Cast screen
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_SHORT" desc="The label used for Cast button in system tray bubble. [CHAR_LIMIT=14]">
-        Cast
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_DEVICES_AVAILABLE" desc="Subtitle under the Cast button in the system tray bubble when Chromecast devices are available for casting">
         Devices available
       </message>
@@ -651,9 +639,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_TITLE" desc="The notification title to tell the user we are casting to a cast device.">
         Casting to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP" desc="The label used in the tray popup to tell the user we are casting the desktop.">
-        Casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT" desc="Menu item label that, when clicked on, opens the access code casting dialog.">
         Connect with a code
@@ -676,9 +661,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Dark theme feature is off.">
         Dark theme is off
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_SETTINGS_TOOLTIP" desc="The tooltip text used for the button in the status tray to show the Dark theme feature settings.">
-        Show dark theme settings
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE" desc="Button label for the Dark theme feature." meaning="Dark theme feature is off. [CHAR_LIMIT=14]">
         Off
       </message>
@@ -697,23 +679,8 @@ Style notes:
       <message name="IDS_ASH_DARK_LIGHT_MODE_EDUCATIONAL_NUDGE_IN_TABLET_MODE" desc="The label used for the dark light mode educational nudge in tablet mode.">
         Switch between dark and light theme. Touch and hold on the desktop, then select Wallpaper &#0038; style.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_ACCESSIBILITY_STOP" desc="Stop button accessibility label used in the tray popup to tell the user to stop a cast to the desktop.">
-        Stop casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_TAB" desc="The title label used in the tray popup to tell the user we are casting a tab.">
-        <ph name="ROUTE_TITLE">$1<ex>YouTube</ex></ph> on <ph name="RECEIVER_NAME">$2<ex>Living Room</ex></ph>
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_TAB_ACCESSIBILITY_STOP" desc="Stop button accessibility label used in the tray popup to tell the user to stop a tab cast.">
-        Stop <ph name="ROUTE_TITLE">$1<ex>YouTube</ex></ph> on <ph name="RECEIVER_NAME">$2<ex>Living Room</ex></ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_UNKNOWN" desc="The label used when we have detected we are casting but do not know what we are casting or who we are casting to.">
         Casting on an unknown receiver
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_UNKNOWN_ACCESSIBILITY_STOP" desc="Stop button accessibility label used in the tray popup to tell the user to stop a cast, but we do not know what we are casting or who we are casting to.">
-        Stop casting on an unknown receiver
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_DESKTOP" desc="The label used in the tray popup to notify that desktop may be cast.">
-        Cast devices available
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_STOP" desc="The label used in the tray popup to stop casting.">
         Stop
@@ -763,9 +730,6 @@ Style notes:
          =1 {1 notification}
          other {# notifications}}
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_HIDDEN_NOTIFICATION_COUNT_LABEL" desc="The label for the number of hidden notifications.">
-        +<ph name="COUNT">$1<ex>2</ex></ph>
-      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH" desc="The label used as the header in the bluetooth popup. [CHAR_LIMIT=14]">
         Bluetooth
@@ -791,28 +755,14 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_SUBTITLE" desc="The secondary label for the Bluetooth Quick Settings detailed view when Bluetooth is unavailable.">
         Try shutting down your device.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
-        {NUM_DEVICES, plural,
-         =1 {Connected to a device}
-         other {Connected to # devices}}
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP" desc="The tooltip text to notify that multiple bluetooth devices are connected.">
         Connected to <ph name="NUM_DEVICES">$1<ex>3</ex></ph> devices
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP_LEGACY" desc="The legacy tooltip text to notify that one bluetooth device is connected.">
-        Connected to <ph name="DEVICE_NAME">$1<ex>wireless mouse</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP" desc="The tooltip text to notify that one bluetooth device is connected.">
         Connected to a device named <ph name="DEVICE_NAME">$1<ex>wireless mouse</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP" desc="The tooltip text to notify that one bluetooth device is connected.">
         Connected to a device named <ph name="DEVICE_NAME">$1<ex>wireless mouse</ex></ph>, <ph name="BATTERY_PERCENTAGE">$2<ex>100</ex></ph>% battery
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED" desc="The label used in the tray popup to notify that bluetooth is enabled.">
-        Bluetooth enabled
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED" desc="The label used in the tray popup to notify that bluetooth is disabled.">
-        Bluetooth disabled
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT" desc="Bluetooth button label in the status tray popup." meaning="Bluetooth is enabled. [CHAR_LIMIT=14]">
         On
@@ -822,15 +772,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_SHORT" desc="Bluetooth button label in the status tray popup." meaning="Bluetooth is unavailable. [CHAR_LIMIT=14]">
         Unavailable
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING" desc="The label used in the tray popup to show bluetooth is discovering devices.">
-        Scanning for devices...
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_DEVICES" desc="The sub-header label for paired devices in Bluetooth device list.">
-        Paired devices
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNPAIRED_DEVICES" desc="The sub-header label for unpaired devices in Bluetooth device list.">
-        Unpaired devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS" desc="The label used in the tray pop up to open Bluetooth setting page.">
         Bluetooth settings
@@ -855,9 +796,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_RIGHT_BUD_LABEL" desc="The label to indicate the battery information is regarding the right true wireless bud.">
         <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% (Right)
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL_LEGACY" desc="The header label to notify that multiple bluetooth devices are connected. [CHAR_LIMIT=14]">
-        Devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL" desc="The header label to notify that multiple bluetooth devices are connected. [CHAR_LIMIT=14]">
         <ph name="NUM_DEVICES">$1<ex>3</ex></ph> devices
@@ -932,9 +870,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON" desc="The text on the label slider button used for showing personalized YouTube music playlists to help users relax and focus.">
         YouTube Music
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_MEDIA_CONTROLS_SOURCE_TITLE" desc="The source title shown in the media controls if a focus mode playlist is selected and playing.">
-        <ph name="PLAYLIST_TYPE">$1<ex>Focus sounds</ex></ph> ᐧ <ph name="PLAYLIST_TITLE">$2<ex>Nature</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OAUTH_CONSENT_LABEL" desc="The text on the label used for showing a text to mention the user the focus panel will access the YouTube Music for personalized music.">
         For personalized focus playlists, allow access to YouTube Music
@@ -1011,9 +946,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL" desc="The text used for the sublabel of the detailed view toggle row for when a user has never used focus mode before. The string can be shortened to 'Set a timer and task' if needed to fit within the character limit. [CHAR_LIMIT=30]">
         Set a timer, task, and music
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON" desc="The text used for the feedback button.">
-        Send feedback
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
         Great job!
       </message>
@@ -1058,9 +990,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_ACTIVE" desc="The accessible name for the toggle button in the focus mode feature tile in the quick settings menu when focus mode is active.">
         Finish Focus. <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON_ACCESSIBLE_NAME" desc="The accessible name for the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is not active.">
-        Start Focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME" desc="The accessible name for the toggle button in the focus mode toggle row in the focus mode detailed view for when focus mode is active.">
         Finish Focus
@@ -1681,17 +1610,11 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_REDUCED_ANIMATIONS" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off reduced animations.">
         Reduced animations
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TAP_DRAGGING" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off tap dragging.">
-        Tap dragging
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SETTINGS" desc="The label used in the accessibility menu of system tray to open accessibility setting page.">
         Accessibility settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HELP" desc="The accessible text for the help button.">
         Help
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DATE_TIME" desc="The time displayed on ash system tray, Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
-        <ph name="date">$1<ex>Aug 31</ex></ph>, <ph name="time">$2<ex>03:00</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_REBOOT" desc="The accessible text for the reboot button.">
         Restart
@@ -1708,9 +1631,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STATUS_TRAY_EXPAND" desc="The accessible text for the button to expand system menu.">
         Expand menu
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL" desc="The label text shown under do not disturb button in system tray bubble. [CHAR_LIMIT=14]">
-        Notifications
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB" desc="The label text shown in the Do Not Disturb feature tile in quick settings bubble. [CHAR_LIMIT=14]">
         Do Not Disturb
       </message>
@@ -1722,37 +1642,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_STATE" desc="The tooltip text indicating that Do-not-disturb mode is off.">
         Do Not Disturb is off.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_ON_TOOLTIP" desc="The tooltip text of the button that shows notification settings. Used when all notifications are enabled.">
-        Show notification settings. Notifications are on
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_OFF_FOR_APPS_TOOLTIP" desc="The tooltip text of the button that shows notification settings. Used when all some notifications are disabled. [ICU Syntax]">
-        {NUM_APPS, plural,
-         =1 {Show notification settings. Notifications are off for an app}
-         other {Show notification settings. Notifications are off for # apps}}
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOOLTIP" desc="The tooltip text of the button that shows notification settings. Used when all notifications are disabled.">
-        Show notification settings. Notifications are off
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ON_SUBLABEL" desc="The sub label text shown under do not disturb button when all notifications are enabled. [CHAR_LIMIT=14]">
-        On, all apps
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_OFF_FOR_APPS_SUBLABEL" desc="The sub label text shown under do not disturb button when some notifications are disabled. [ICU Syntax][CHAR_LIMIT=14]">
-        {NUM_APPS, plural,
-         =1 {Off for an app}
-         other {Off for # apps}}
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_SUBLABEL" desc="The sub label text shown under do not disturb button when all notifications are disabled. [CHAR_LIMIT=14]">
-        Do not disturb
-      </message>
-       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOGGLE_TOOLTIP" desc="The tooltip text of the button that shows notification settings. Used when all notifications are disabled.">
-        Do not disturb is on
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_SUBLABEL" desc="The sub label text shown under the do not disturb button when notifications are disabled (do not disturb is on). [CHAR_LIMIT=14]">
-        On
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_SUBLABEL" desc="The sub label text shown under do not disturb button when notifications are enabled (do not disturb is off). [CHAR_LIMIT=14]">
-        Off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOCALE" desc="The label used for locale button in system tray bubble. [CHAR_LIMIT=14]">
         Language
@@ -3239,9 +3128,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK" desc="The label used in the network dialog header. [CHAR_LIMIT=18]">
         Network
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_INTERNET" desc="The label used in the network dialog header. [CHAR_LIMIT=18]">
-        Internet
-      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_KNOWN_NETWORKS" desc="The label used in the network detailed page for the known networks group">
         Known networks
       </message>
@@ -3766,14 +3652,6 @@ No devices connected.
         Studio-style mic
       </message>
 
-      <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_HFP_MIC_SR" desc="label used for input hfp mic sr toggle">
-        Bluetooth Super Resolution
-      </message>
-
-      <message name="IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE_HFP_MIC_SR_SUPPORTED" desc="label used to warn that NBS is in use and hfp mic sr supported">
-        Your Chromebook or Bluetooth device is using an older version of Bluetooth. Turn on the Bluetooth Super Resolution or use internal microphone for better audio quality.
-      </message>
-
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE" desc="label used to warn that NBS is in use">
         Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use the internal microphone for better audio quality.
       </message>
@@ -3805,9 +3683,6 @@ No devices connected.
         Set wallpaper
       </message>
 
-      <message name="IDS_ASH_STATUS_TRAY_TRACING" desc="The status tray item indicating that performance tracing is running.">
-        Performance tracing enabled
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_TRACING_NOTIFICATION_TITLE" desc="The title of a notification indicating that performance tracing is running.">
         Performance tracing active
       </message>
@@ -3816,9 +3691,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BRIGHTNESS" desc="The accessible text for the brightness slider.">
         Brightness
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_KEYBOARD_BRIGHTNESS" desc="The accessible text for the keyboard brightness slider.">
-        Keyboard brightness
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUDIO" desc="The label used in audio detailed page bottom header of ash tray pop up.">
         Audio settings
@@ -3895,21 +3767,6 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_ENABLED" desc="The label used for the tray item to indicate caps lock is on and to toggle caps lock by the click.">
         CAPS LOCK is on
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_DISABLED" desc="The label used for the tray item to indicate caps lock is on and to toggle caps lock by the click.">
-        CAPS LOCK is off
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_SHORTCUT_SEARCH" desc="The shortcut text used for the caps lock tray item.">
-        Search
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_SHORTCUT_SEARCH_OR_SHIFT" desc="The shortcut text used for the caps lock tray item.">
-        Search or Shift
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_SHORTCUT_ALT_SEARCH" desc="The shortcut text used for the caps lock tray item.">
-        Alt+Search
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_SHORTCUT_ALT_SEARCH_OR_SHIFT" desc="The shortcut text used for the caps lock tray item.">
-        Alt+Search or Shift
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_ALT_SEARCH" desc="The message shown on a bubble when caps lock is turned on.">
         Press Alt+Search or Shift to cancel.
       </message>
@@ -3919,17 +3776,11 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_FN_QUICK_INSERT" desc="The message shown on a bubble when caps lock is turned on.">
         Press fn + Quick Insert or Shift to cancel.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BUBBLE_SESSION_LENGTH_LIMIT" desc="Tray bubble item shown to inform the user that the session length is limited.">
-        Session ends in <ph name="session_time_remaining">$1<ex>4 minutes 23 seconds</ex></ph>.
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATION_SESSION_LENGTH_LIMIT_TITLE" desc="The title of the notification shown to inform the user that the session length is limited.">
         Your session will end in <ph name="session_time_remaining">$1<ex>4 mins 23 secs</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATION_SESSION_LENGTH_LIMIT_MESSAGE" desc="The message of the notification shown to inform the user that the session length is limited.">
         You will automatically be signed out.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK" desc="The text shown in the tray menu button that the user can enable the rotation lock by tapping.">
-        Orientation
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_AUTO" desc="The text shown in the tray menu when rotation is set to auto and the user can enable the rotation lock by tapping.">
         Auto rotate
@@ -3943,20 +3794,8 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_LOCKED_HORIZONTAL_TOOLTIP" desc="The tooltip text used when screen rotation is locked to horizontal.">
         Locked to horizontal
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_LOCKED_LABEL" desc="The label text shown under the tray menu button when screen rotation is locked. [CHAR_LIMIT=14]">
-        Lock
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_LOCKED_VERTICAL_SUBLABEL" desc="The sub label text shown under the tray menu button when screen rotation is locked to vertical. [CHAR_LIMIT=14]">
-        Vertical
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_LOCKED_HORIZONTAL_SUBLABEL" desc="The sub label text shown under the tray menu button when screen rotation is locked to horizontal. [CHAR_LIMIT=14]">
-        Horizontal
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_AUTO_LABEL" desc="The label text shown under the tray menu button when screen rotation is set to auto. [CHAR_LIMIT=14]">
         Auto-rotate
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_AUTO_SUBLABEL" desc="The sub label text shown under the tray menu button when screen rotation is set to auto. [CHAR_LIMIT=14]">
-        On
       </message>
       <message name="IDS_ASH_STATUS_TRAY_KEYBOARD_DISABLED" desc="The text shown in the tray menu when the virtual keyboard is disabled.">
         On-screen keyboard disabled
@@ -4041,9 +3880,6 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_LIST_ITEM_TITLE" desc="Label for a network shown in a list in settings and oobe displaying its name and subtitle.">
         <ph name="NETWORK_NAME">$1<ex>My Verizon eSIM</ex></ph> · <ph name="SERVICE_PROVIDER">$2<ex>Verizon Wireless</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_NOT_CONNECTED" desc="Description in status area or network list when no network is connected.">
-        No network
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_PROHIBITED" desc="Tooltip in network list when the network is prohibited by policy.">
         This network is disabled by your administrator.
       </message>
@@ -4083,15 +3919,6 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING" desc="The message to display in the network list when mobile data is turning off (disabling).">
         Mobile data is turning off...
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND" desc="The message to display in the tether hosts network list when no tether devices are found.">
-        No available hotspot. Make sure your device is nearby and Bluetooth is turned on.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH" desc="The message to display in the tether hosts network list when Bluetooth is disabled.">
-        Turn on Bluetooth to scan for nearby hotspots
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_VPN_DISCONNECTED" desc="The label used in system tray bubble to display vpn is disconnected.">
-        VPN disconnected
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_VPN_SHORT" desc="The short label used for VPN button in system tray bubble. [CHAR_LIMIT=14]">
         VPN
       </message>
@@ -4118,9 +3945,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_WIFI" desc="The label used in the tray popup to separate Wi-Fi networks.">
         Wi-Fi
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER_HOSTS" desc="The label used in the tray popup to separate your tether devices.">
-        Your device hotspots
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ADD_CONNECTION" desc="Title for control to add a new network connection." >
         Add connection
@@ -4990,12 +4814,6 @@ No devices connected.
       <message name="IDS_BROWSER_ACCELERATOR_STOP_DRAG_TAB" desc="Action for accelerator action - Return the tab to its original position.">
         While dragging the tab, press <ph name="KEY_ONE">$1<ex>esc</ex></ph>
       </message>
-
-      <!-- Tray scale strings -->
-      <message name="IDS_ASH_STATUS_TRAY_SCALE" desc="The label used in scale setting detailed page of ash tray popup.">
-        Display scale settings
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_SCALE_SLIDER" desc="The accessible text for the scale slider">Display scale</message>
 
       <message name="IDS_ASH_SPLIT_VIEW_GUIDANCE" desc="Message that shows up on overview mode telling users where to drag the window to use split view.">
         Drag here to use split screen
