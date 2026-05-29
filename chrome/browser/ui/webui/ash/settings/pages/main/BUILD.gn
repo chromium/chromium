@@ -25,7 +25,6 @@ static_library("main") {
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/webui/personalization_app",
     "//base:i18n",
-    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",

@@ -11,7 +11,6 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

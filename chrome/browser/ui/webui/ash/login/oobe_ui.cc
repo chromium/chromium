@@ -149,7 +149,6 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/gaia_auth_host_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/oobe_resources.h"
 #include "chrome/grit/oobe_resources_map.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"

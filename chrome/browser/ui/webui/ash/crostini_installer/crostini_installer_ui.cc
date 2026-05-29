@@ -24,7 +24,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/crostini_installer_resources.h"
 #include "chrome/grit/crostini_installer_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"

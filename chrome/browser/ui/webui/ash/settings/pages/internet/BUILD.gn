@@ -28,7 +28,6 @@ static_library("internet") {
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/network_ui:traffic_counters_resource_provider",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service",

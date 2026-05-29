@@ -22,7 +22,6 @@ static_library("notification_tester") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
