@@ -25,8 +25,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -244,21 +242,10 @@ public class LauncherShortcutActivity extends Activity {
         Intent newIntent;
         if (launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_TAB)
                 || launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB)) {
-            boolean isIncognito =
-                    launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB);
-            if (!isIncognito && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-                int regularCount =
-                        MultiWindowUtils.getInstanceCount(
-                                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
-                int incognitoCount =
-                        MultiWindowUtils.getInstanceCount(
-                                PersistedInstanceType.ACTIVE
-                                        | PersistedInstanceType.OFF_THE_RECORD);
-                if (regularCount == 0 && incognitoCount > 0) {
-                    isIncognito = true;
-                }
-            }
-            newIntent = IntentHandler.createTrustedOpenNewTabIntent(context, isIncognito);
+            newIntent =
+                    IntentHandler.createTrustedOpenNewTabIntent(
+                            context,
+                            launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB));
         } else {
             newIntent =
                     IntentHandler.createTrustedOpenNewWindowIntent(
