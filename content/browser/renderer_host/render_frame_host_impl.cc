@@ -11315,7 +11315,7 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
       site_instance_->group()->GetSafeRef(), widget_route_id,
       popup_widget_host_remote.InitWithNewEndpointAndPassReceiver(),
       widget_host_remote.InitWithNewEndpointAndPassReceiver(),
-      std::move(widget_remote));
+      std::move(widget_remote), GetGlobalId());
   if (widget) {
     RenderWidgetHostViewBase* widget_host_view =
         static_cast<RenderWidgetHostViewBase*>(widget->GetView());
@@ -11358,7 +11358,7 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
   RenderWidgetHostImpl* widget = delegate_->CreateNewPopupWidget(
       site_instance_->group()->GetSafeRef(), widget_route_id,
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
-      std::move(blink_widget));
+      std::move(blink_widget), GetGlobalId());
   if (!widget) {
     return;
   }

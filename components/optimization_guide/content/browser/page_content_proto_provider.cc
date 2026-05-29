@@ -39,7 +39,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -332,14 +331,15 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
     if (web_contents) {
-      const content::RenderProcessHost* render_process_host =
-          render_frame_host->GetProcess();
       for (auto* widget_view : web_contents->GetPopupWidgets()) {
-        if (widget_view && widget_view->GetRenderWidgetHost() &&
-            widget_view->GetRenderWidgetHost()->GetProcess() ==
-                render_process_host) {
-          render_frame_info.has_active_popup = true;
-          break;
+        if (widget_view && widget_view->GetRenderWidgetHost()) {
+          content::RenderWidgetHost* widget_host =
+              widget_view->GetRenderWidgetHost();
+          if (widget_host->GetPopupCreatorFrameId() ==
+              render_frame_host->GetGlobalId()) {
+            render_frame_info.has_active_popup = true;
+            break;
+          }
         }
       }
     }
