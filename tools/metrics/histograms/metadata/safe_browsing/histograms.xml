@@ -2693,8 +2693,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ReferrerAttributionResult{ReferrerAttribution}"
-    enum="SafeBrowsingAttributionResultTypes" expires_after="2026-08-24">
-  <owner>drubery@chromium.org</owner>
+    enum="SafeBrowsingAttributionResultTypes" expires_after="2027-08-24">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The result of referrer attribution, including different types of success or
@@ -2704,8 +2704,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ReferrerURLChainSize{ReferrerAttribution}"
-    units="units" expires_after="2026-06-07">
-  <owner>drubery@chromium.org</owner>
+    units="units" expires_after="2027-06-07">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The length of referrer URL chain we get from referrer attribution. This is
