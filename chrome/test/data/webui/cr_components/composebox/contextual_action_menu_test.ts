@@ -723,6 +723,8 @@ suite('ContextualActionMenu', () => {
     assertEquals(344, flyout.offsetHeight);
   });
 
+  // TODO(crbug.com/512920161): Reenable this test on Linux and Mac
+  // <if expr="not is_linux and not is_macosx">
   test('Share tabs flyout keyboard navigation', async () => {
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: true,
@@ -756,7 +758,6 @@ suite('ContextualActionMenu', () => {
     const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
     assertTrue(!!trigger);
     assertTrue(!!flyout);
-
     // Verify that the flyout is hidden initially.
     assertTrue(flyout.hidden);
 
@@ -791,6 +792,7 @@ suite('ContextualActionMenu', () => {
     // Assert that the focus is correctly returned to the parent trigger button.
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
   });
+  // </if>
 
   test('Tabs counter visibility', async () => {
     actionMenu.showAt(actionMenu);
@@ -888,8 +890,8 @@ suite('ContextualActionMenu', () => {
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
   });
 
-  // TODO(crbug.com/512920161): Reenable this test on Linux
-  // <if expr="not is_linux">
+  // TODO(crbug.com/512920161): Reenable this test on Linux and Mac
+  // <if expr="not is_linux and not is_macosx">
   test(
       'navigates up and down between Share Tabs and other menu items',
       async () => {
