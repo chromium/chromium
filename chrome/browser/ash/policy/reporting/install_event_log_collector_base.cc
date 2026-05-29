@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/policy/reporting/install_event_log_collector_base.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/sessions/exit_type_service.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -57,8 +57,10 @@ void InstallEventLogCollectorBase::OnLogin() {
 
 void InstallEventLogCollectorBase::OnLogout() {
   // Don't log in case session is restared.
-  if (g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted))
+  if (g_browser_process->local_state()->GetBoolean(
+          ash::chrome_prefs::kWasRestarted)) {
     return;
+  }
 
   OnLogoutInternal();
 }

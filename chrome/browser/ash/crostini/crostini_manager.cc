@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
@@ -72,7 +73,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
@@ -1654,7 +1654,8 @@ void CrostiniManager::StartTerminaVm(std::string name,
     request.set_enable_gpu(true);
   }
   if (profile_->GetPrefs()->GetBoolean(prefs::kCrostiniMicAllowed) &&
-      profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
+      profile_->GetPrefs()->GetBoolean(
+          ash::chrome_prefs::kAudioCaptureAllowed)) {
     request.set_enable_audio_capture(true);
   }
   const int32_t cpus = base::SysInfo::NumberOfProcessors() - num_cores_disabled;

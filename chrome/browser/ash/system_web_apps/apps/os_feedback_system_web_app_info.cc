@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/memory/ref_counted_memory.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
@@ -37,7 +37,8 @@ constexpr int kFeedbackAppDefaultWidth = 600;
 constexpr int kFeedbackAppDefaultHeight = 640;
 
 bool IsUserFeedbackAllowed(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
+  return profile->GetPrefs()->GetBoolean(
+      ash::chrome_prefs::kUserFeedbackAllowed);
 }
 
 }  // namespace

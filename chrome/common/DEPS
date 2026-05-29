@@ -94,6 +94,9 @@ specific_include_rules = {
   "pdf_util_unittest\\.cc": [
     "+pdf/content_restriction.h",
   ],
+  "pref_names\\.h": [
+    "+ash/constants/chrome_pref_names.h",
+  ],
   "url_constants\\.h": [
     "+ash/constants/chrome_url_constants.h",
   ],

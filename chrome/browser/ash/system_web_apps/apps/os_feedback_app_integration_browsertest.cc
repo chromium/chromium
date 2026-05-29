@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/shell.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OpenFeedbackByHotKey) {
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, UserFeedbackNotAllowed) {
   WaitForTestSystemAppInstall();
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               false);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::chrome_prefs::kUserFeedbackAllowed, false);
   GURL old_url = FindActiveUrl(browser());
 
   // Try to navigate to the feedback app in the browser.
@@ -200,8 +200,8 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest,
                        HideInLauncherAndSearchWhenUserFeedbackNotAllowed) {
   WaitForTestSystemAppInstall();
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               false);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::chrome_prefs::kUserFeedbackAllowed, false);
 
   // Check the correct attributes for Feedback App.
   auto* system_app =

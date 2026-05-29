@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -606,7 +606,7 @@ TEST_F(ArcPolicyBridgeTest, CaCertificateTest) {
 
 TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyAllowedTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      ::prefs::kDevToolsAvailability,
+      ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kAllowed)));
   GetPoliciesAndVerifyResult(
@@ -618,7 +618,7 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyAllowedTest) {
 TEST_F(ArcPolicyBridgeTest,
        DeveloperToolsPolicyDisallowedForForceInstalledExtensionsTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      ::prefs::kDevToolsAvailability,
+      ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
                                kDisallowedForForceInstalledExtensions)));
@@ -630,7 +630,7 @@ TEST_F(ArcPolicyBridgeTest,
 
 TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyDisallowedTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      ::prefs::kDevToolsAvailability,
+      ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
   GetPoliciesAndVerifyResult(
@@ -641,7 +641,7 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyDisallowedTest) {
 
 TEST_F(ArcPolicyBridgeTest, ForceDevToolsAvailabilityTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      ::prefs::kDevToolsAvailability,
+      ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
   base::test::ScopedCommandLine command_line;

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -88,7 +88,8 @@ void SetPrefValue(const std::string& name,
 syncer::SyncData CreateRestoreOnStartupPrefSyncData(
     SessionStartupPref::PrefValue value) {
   sync_pb::EntitySpecifics specifics;
-  SetPrefValue(::prefs::kRestoreOnStartup, base::Value(static_cast<int>(value)),
+  SetPrefValue(ash::chrome_prefs::kRestoreOnStartup,
+               base::Value(static_cast<int>(value)),
                specifics.mutable_preference());
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));
@@ -474,7 +475,7 @@ TEST_F(FullRestoreServiceTest, ReImage) {
 // restore setting. Don't show the informed restore dialog and don't restore.
 TEST_F(FullRestoreServiceTest, Upgrading) {
   profile()->GetPrefs()->SetInteger(
-      ::prefs::kRestoreOnStartup,
+      ash::chrome_prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -488,7 +489,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 
   // Simulate the Chrome restore setting is changed.
   profile()->GetPrefs()->SetInteger(
-      ::prefs::kRestoreOnStartup,
+      ash::chrome_prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueLast));
 
   // The OS restore setting should not change.

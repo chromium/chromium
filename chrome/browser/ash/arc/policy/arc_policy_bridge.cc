@@ -9,8 +9,8 @@
 #include <string_view>
 #include <utility>
 
-#include "arc_policy_util.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -32,7 +32,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -392,7 +391,7 @@ void MapChromeToArcPolicies(base::DictValue& filtered_policies,
   // policies.
   MapManagedIntPrefToBool(
       policy_util::kArcPolicyKeyDebuggingFeaturesDisabled,
-      ::prefs::kDevToolsAvailability, profile_prefs,
+      ash::chrome_prefs::kDevToolsAvailability, profile_prefs,
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed),
       &filtered_policies);

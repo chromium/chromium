@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/net/secure_dns_config.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -327,12 +327,14 @@ void TemplatesUriResolverImpl::Update(const PrefService& local_state,
                                       const user_manager::User& user) {
   doh_with_identifiers_active_ = false;
 
-  const std::string& mode = local_state.GetString(::prefs::kDnsOverHttpsMode);
+  const std::string& mode =
+      local_state.GetString(ash::chrome_prefs::kDnsOverHttpsMode);
   if (mode == SecureDnsConfig::kModeOff) {
     return;
   }
 
-  effective_templates_ = local_state.GetString(::prefs::kDnsOverHttpsTemplates);
+  effective_templates_ =
+      local_state.GetString(ash::chrome_prefs::kDnsOverHttpsTemplates);
   // In ChromeOS only, the DnsOverHttpsTemplatesWithIdentifiers policy will
   // overwrite the DnsOverHttpsTemplates policy. For privacy reasons, the
   // replacement only happens if the is a salt specified which will be used to

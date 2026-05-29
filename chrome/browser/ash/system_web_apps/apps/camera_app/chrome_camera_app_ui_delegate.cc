@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/camera_app_ui/ocr.mojom.h"
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
@@ -48,7 +49,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
@@ -519,10 +519,11 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   const PrefService* prefs = profile->GetPrefs();
   GURL cca_url = GURL(ash::kChromeUICameraAppURL);
   bool url_allowed = policy::IsOriginInAllowlist(
-      cca_url, prefs, prefs::kVideoCaptureAllowedUrls);
+      cca_url, prefs, ash::chrome_prefs::kVideoCaptureAllowedUrls);
   source->AddBoolean(
       "cca_disallowed",
-      !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
+      !prefs->GetBoolean(ash::chrome_prefs::kVideoCaptureAllowed) &&
+          !url_allowed);
   const auto& camera_save_handler =
       CHECK_DEREF(CameraSaveHandler::Get(*profile));
   source->AddString(

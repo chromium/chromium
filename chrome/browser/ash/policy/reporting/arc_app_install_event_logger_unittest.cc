@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include "ash/constants/chrome_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -490,7 +490,8 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   EXPECT_GT(stateful_free, 0);
 
   // To avoid extra logging.
-  g_browser_process->local_state()->SetBoolean(prefs::kWasRestarted, true);
+  g_browser_process->local_state()->SetBoolean(ash::chrome_prefs::kWasRestarted,
+                                               true);
 }
 
 TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_AddPolicyData) {

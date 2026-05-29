@@ -9,6 +9,7 @@
 
 #include <array>
 #include <iterator>
+#include <string_view>
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -22,6 +23,10 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/chrome_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace prefs {
 
@@ -43,6 +48,10 @@ inline constexpr char kSafeBrowsingForTrustedSourcesEnabled[] =
 // This setting resides both in profile prefs and local state. Accelerator
 // handling code reads local state, while extension APIs use profile pref.
 inline constexpr char kDisableScreenshots[] = "disable_screenshots";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kDisableScreenshots) ==
+              std::string_view(ash::chrome_prefs::kDisableScreenshots));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A boolean specifying whether the partial download bubble (which shows up
 // automatically when downloads are complete) should be enabled. True (partial
@@ -151,6 +160,10 @@ inline constexpr char kSessionExitType[] = "profile.exit_type";
 // 4: restore the URLs defined in kURLsToRestoreOnStartup.
 // 5: open the New Tab Page on startup.
 inline constexpr char kRestoreOnStartup[] = "session.restore_on_startup";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kRestoreOnStartup) ==
+              std::string_view(ash::chrome_prefs::kRestoreOnStartup));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The URLs to restore on startup or when the home button is pressed. The URLs
 // are only restored on startup if kRestoreOnStartup is 4.
@@ -158,6 +171,10 @@ inline constexpr char kURLsToRestoreOnStartup[] = "session.startup_urls";
 
 // Boolean that is true when user feedback to Google is allowed.
 inline constexpr char kUserFeedbackAllowed[] = "feedback_allowed";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kUserFeedbackAllowed) ==
+              std::string_view(ash::chrome_prefs::kUserFeedbackAllowed));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_RLZ)
 // Integer. RLZ ping delay in seconds.
@@ -969,6 +986,10 @@ inline constexpr char kInvertNotificationShown[] =
 // A pref holding the list of printer types to be disabled.
 inline constexpr char kPrinterTypeDenyList[] =
     "printing.printer_type_deny_list";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kPrinterTypeDenyList) ==
+              std::string_view(ash::chrome_prefs::kPrinterTypeDenyList));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The allowed/default value for the 'Headers and footers' checkbox, in Print
 // Preview.
@@ -1478,6 +1499,10 @@ inline constexpr char kAppWindowPlacement[] = "browser.app_window_placement";
 // String which specifies where to download files to by default.
 inline constexpr char kDownloadDefaultDirectory[] =
     "download.default_directory";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kDownloadDefaultDirectory) ==
+              std::string_view(ash::chrome_prefs::kDownloadDefaultDirectory));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Boolean that records if the download directory was changed by an
 // upgrade a unsafe location to a safe location.
@@ -1513,6 +1538,10 @@ inline constexpr char kIncognitoReauthenticationForAndroid[] =
 // String which specifies where to save html files to by default.
 inline constexpr char kSaveFileDefaultDirectory[] =
     "savefile.default_directory";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kSaveFileDefaultDirectory) ==
+              std::string_view(ash::chrome_prefs::kSaveFileDefaultDirectory));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The type used to save the page. See the enum SavePackage::SavePackageType in
 // the chrome/browser/download/save_package.h for the possible values.
@@ -1521,6 +1550,10 @@ inline constexpr char kSaveFileType[] = "savefile.type";
 // String which specifies the last directory that was chosen for uploading
 // or opening a file.
 inline constexpr char kSelectFileLastDirectory[] = "selectfile.last_directory";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kSelectFileLastDirectory) ==
+              std::string_view(ash::chrome_prefs::kSelectFileLastDirectory));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Boolean that specifies if file selection dialogs are shown.
 inline constexpr char kAllowFileSelectionDialogs[] =
@@ -1595,6 +1628,11 @@ inline constexpr char kSuppressUnsupportedOSWarning[] =
 
 // Set before autorestarting Chrome, cleared on clean exit.
 inline constexpr char kWasRestarted[] = "was.restarted";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kWasRestarted) ==
+              std::string_view(ash::chrome_prefs::kWasRestarted));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Whether Extensions are enabled.
@@ -1718,6 +1756,10 @@ inline constexpr char kDevToolsAdbKey[] = "devtools.adb_key";
 
 // Defines administrator-set availability of developer tools.
 inline constexpr char kDevToolsAvailability[] = "devtools.availability";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kDevToolsAvailability) ==
+              std::string_view(ash::chrome_prefs::kDevToolsAvailability));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // List of developer tools availability allowlist.
 inline constexpr char kDeveloperToolsAvailabilityAllowlist[] =
@@ -2129,12 +2171,20 @@ inline constexpr char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 // String specifying the secure DNS mode to use. Any string other than
 // "secure" or "automatic" will be mapped to the default "off" mode.
 inline constexpr char kDnsOverHttpsMode[] = "dns_over_https.mode";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kDnsOverHttpsMode) ==
+              std::string_view(ash::chrome_prefs::kDnsOverHttpsMode));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // String containing a space-separated list of DNS over HTTPS templates to use
 // in secure mode or automatic mode. If no templates are specified in automatic
 // mode, we will attempt discovery of DoH servers associated with the configured
 // insecure resolvers.
 inline constexpr char kDnsOverHttpsTemplates[] = "dns_over_https.templates";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kDnsOverHttpsTemplates) ==
+              std::string_view(ash::chrome_prefs::kDnsOverHttpsTemplates));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Boolean that specifies whether Secure DNS in automatic mode should prefer to
 // fallback to DoH with Google DNS instead of using insecure DNS.
@@ -2152,6 +2202,11 @@ inline constexpr char kAdditionalDnsQueryTypesEnabled[] =
 // is not allowed and no prompt will be shown.
 // See also kAudioCaptureAllowedUrls.
 inline constexpr char kAudioCaptureAllowed[] = "hardware.audio_capture_enabled";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kAudioCaptureAllowed) ==
+              std::string_view(ash::chrome_prefs::kAudioCaptureAllowed));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Holds URL patterns that specify URLs that will be granted access to audio
 // capture devices without prompt.
 inline constexpr char kAudioCaptureAllowedUrls[] =
@@ -2162,10 +2217,19 @@ inline constexpr char kAudioCaptureAllowedUrls[] =
 // prompted for device access.  When disabled, access to video capture devices
 // is not allowed and no prompt will be shown.
 inline constexpr char kVideoCaptureAllowed[] = "hardware.video_capture_enabled";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kVideoCaptureAllowed) ==
+              std::string_view(ash::chrome_prefs::kVideoCaptureAllowed));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Holds URL patterns that specify URLs that will be granted access to video
 // capture devices without prompt.
 inline constexpr char kVideoCaptureAllowedUrls[] =
     "hardware.video_capture_allowed_urls";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kVideoCaptureAllowedUrls) ==
+              std::string_view(ash::chrome_prefs::kVideoCaptureAllowedUrls));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A pref holding the value of the policy used to explicitly allow or deny
 // access to screen capture.  This includes all APIs that allow capturing

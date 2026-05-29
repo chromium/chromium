@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/net/secure_dns_config.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
@@ -241,10 +241,10 @@ class TemplatesUriResolverImplTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    local_state_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsMode,
-                                                SecureDnsConfig::kModeOff);
-    local_state_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsTemplates,
-                                                "");
+    local_state_.registry()->RegisterStringPref(
+        ash::chrome_prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
+    local_state_.registry()->RegisterStringPref(
+        ash::chrome_prefs::kDnsOverHttpsTemplates, "");
     local_state_.registry()->RegisterStringPref(
         ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
     local_state_.registry()->RegisterStringPref(ash::prefs::kDnsOverHttpsSalt,
@@ -304,7 +304,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
   }
 
   void SetUpDOHSecureModeWithSalt(std::string salt) {
-    local_state()->Set(::prefs::kDnsOverHttpsMode,
+    local_state()->Set(ash::chrome_prefs::kDnsOverHttpsMode,
                        base::Value(SecureDnsConfig::kModeSecure));
     local_state()->Set(ash::prefs::kDnsOverHttpsSalt, base::Value(salt));
   }
@@ -315,7 +315,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
   }
 
   void SetUpDOHGoogleDnsTemplate() {
-    local_state()->Set(::prefs::kDnsOverHttpsTemplates,
+    local_state()->Set(ash::chrome_prefs::kDnsOverHttpsTemplates,
                        base::Value(kGoogleDns));
   }
 

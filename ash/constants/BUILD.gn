@@ -23,6 +23,7 @@ component("constants") {
     "ash_switches.cc",
     "ash_switches.h",
     "chrome_custom_icon_catalog.h",
+    "chrome_pref_names.h",
     "chrome_url_constants.h",
     "chrome_webui_url_constants.h",
     "devicetype.cc",

@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -19,7 +19,7 @@ void RegisterProfilePolicyPrefs(PrefRegistrySimple* registry) {
 }
 
 bool HasSessionStartupPref(PrefService* prefs) {
-  return prefs->HasPrefPath(::prefs::kRestoreOnStartup);
+  return prefs->HasPrefPath(ash::chrome_prefs::kRestoreOnStartup);
 }
 
 void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {
@@ -43,7 +43,7 @@ void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {
 }
 
 void UpdateRestorePrefIfNecessary(PrefService* prefs) {
-  if (!prefs->HasPrefPath(::prefs::kRestoreOnStartup)) {
+  if (!prefs->HasPrefPath(ash::chrome_prefs::kRestoreOnStartup)) {
     return;
   }
 

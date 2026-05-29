@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
@@ -59,7 +60,6 @@
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
@@ -200,7 +200,7 @@ ScreenshotArea ConvertToScreenshotArea(const aura::Window* window,
 }
 
 bool IsScreenCaptureDisabledByPolicy(PrefService& local_state) {
-  return local_state.GetBoolean(prefs::kDisableScreenshots);
+  return local_state.GetBoolean(ash::chrome_prefs::kDisableScreenshots);
 }
 
 void CaptureFileFinalized(
@@ -657,13 +657,13 @@ bool ChromeCaptureModeDelegate::IsCameraDisabledByPolicy() const {
   }
 
   auto* profile = ProfileManager::GetActiveUserProfile();
-  return profile &&
-         !profile->GetPrefs()->GetBoolean(prefs::kVideoCaptureAllowed);
+  return profile && !profile->GetPrefs()->GetBoolean(
+                        ash::chrome_prefs::kVideoCaptureAllowed);
 }
 
 bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
   return !ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-      prefs::kAudioCaptureAllowed);
+      ash::chrome_prefs::kAudioCaptureAllowed);
 }
 
 void ChromeCaptureModeDelegate::RegisterVideoConferenceManagerClient(

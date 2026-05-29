@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -278,7 +278,8 @@ TEST_F(ArcAppInstallEventLogCollectorTest, LoginTypes) {
   {
     // Check logout on restart. No log is expected.
     ArcAppInstallEventLogCollector collector(delegate(), profile(), packages_);
-    g_browser_process->local_state()->SetBoolean(prefs::kWasRestarted, true);
+    g_browser_process->local_state()->SetBoolean(
+        ash::chrome_prefs::kWasRestarted, true);
     collector.OnLogout();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }

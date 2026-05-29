@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
@@ -214,7 +215,7 @@ AboutSection::AboutSection(Profile* profile,
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kUserFeedbackAllowed,
+      ash::chrome_prefs::kUserFeedbackAllowed,
       base::BindRepeating(&AboutSection::UpdateReportIssueSearchTags,
                           base::Unretained(this)));
   UpdateReportIssueSearchTags();
@@ -553,7 +554,7 @@ bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
 void AboutSection::UpdateReportIssueSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (pref_service_->GetBoolean(prefs::kUserFeedbackAllowed)) {
+  if (pref_service_->GetBoolean(ash::chrome_prefs::kUserFeedbackAllowed)) {
     updater.AddSearchTags(GetAboutReportIssueSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetAboutReportIssueSearchConcepts());

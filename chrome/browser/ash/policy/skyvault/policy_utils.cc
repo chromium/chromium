@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy::local_user_files {
@@ -98,7 +98,8 @@ bool IsCloudDestination(MigrationDestination destination) {
 }
 
 FileSaveDestination GetDownloadsDestination(Profile* profile) {
-  return GetDestinationForPref(profile, prefs::kDownloadDefaultDirectory);
+  return GetDestinationForPref(profile,
+                               ash::chrome_prefs::kDownloadDefaultDirectory);
 }
 
 FileSaveDestination GetScreenCaptureDestination(Profile* profile) {

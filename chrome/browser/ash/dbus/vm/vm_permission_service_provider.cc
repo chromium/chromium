@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
@@ -362,12 +362,12 @@ void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
   }
 
   const PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetBoolean(prefs::kVideoCaptureAllowed)) {
+  if (prefs->GetBoolean(ash::chrome_prefs::kVideoCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionCamera] =
         prefs->GetBoolean(plugin_vm::prefs::kPluginVmCameraAllowed);
   }
 
-  if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
+  if (prefs->GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
         prefs->GetBoolean(plugin_vm::prefs::kPluginVmMicAllowed);
   }
@@ -381,7 +381,7 @@ void VmPermissionServiceProvider::UpdateBorealisPermissions(VmInfo* vm) {
   }
 
   const PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
+  if (prefs->GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
         prefs->GetBoolean(borealis::prefs::kBorealisMicAllowed);
   }
@@ -398,7 +398,7 @@ void VmPermissionServiceProvider::UpdateBruschettaPermissions(VmInfo* vm) {
   }
 
   const PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
+  if (prefs->GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
         prefs->GetBoolean(bruschetta::prefs::kBruschettaMicAllowed);
   }

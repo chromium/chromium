@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -43,7 +43,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -243,13 +242,13 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
   PrefService* prefs = profile->GetPrefs();
 
   std::vector<printing::mojom::PrinterType> deny_list;
-  if (!prefs->HasPrefPath(prefs::kPrinterTypeDenyList)) {
+  if (!prefs->HasPrefPath(ash::chrome_prefs::kPrinterTypeDenyList)) {
     std::move(callback).Run(deny_list);
     return;
   }
 
   const base::Value& deny_list_from_prefs =
-      prefs->GetValue(prefs::kPrinterTypeDenyList);
+      prefs->GetValue(ash::chrome_prefs::kPrinterTypeDenyList);
 
   deny_list.reserve(deny_list_from_prefs.GetList().size());
   for (const base::Value& deny_list_value : deny_list_from_prefs.GetList()) {

@@ -603,6 +603,9 @@ static_library("constants") {
     sources += [ "chrome_paths_win.cc" ]
     deps += [ "//chrome/install_static:install_static_util" ]
   }
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
 
   if (enable_widevine && enable_library_cdms) {
     deps += [

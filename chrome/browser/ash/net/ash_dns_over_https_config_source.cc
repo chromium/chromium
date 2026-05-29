@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/chrome_pref_names.h"
 #include "chrome/browser/net/secure_dns_config.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -41,7 +41,8 @@ bool AshDnsOverHttpsConfigSource::AutomaticModeFallbackToDohEnabled() const {
 }
 
 bool AshDnsOverHttpsConfigSource::IsConfigManaged() const {
-  return local_state_->FindPreference(prefs::kDnsOverHttpsMode)->IsManaged();
+  return local_state_->FindPreference(ash::chrome_prefs::kDnsOverHttpsMode)
+      ->IsManaged();
 }
 
 void AshDnsOverHttpsConfigSource::SetDohChangeCallback(
