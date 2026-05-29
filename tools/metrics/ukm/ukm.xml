@@ -15220,6 +15220,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Navigation.TypedAndDefault">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Recorded immediately after a successful navigation completes if the user
+    explicitly navigates to a domain via the Omnibox.
+  </summary>
+  <metric name="IsSameAsDefault" enum="Boolean">
+    <summary>
+      Recorded as 1 if the explicitly typed search engine destination matches
+      the user's currently active Default Search Engine (DSE), and 0 if it
+      differs.
+    </summary>
+  </metric>
+</event>
+
 <event name="NavigationPredictorAnchorElementMetrics">
   <owner>ryansturm@chromium.org</owner>
   <summary>

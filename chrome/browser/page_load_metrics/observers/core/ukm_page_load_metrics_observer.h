@@ -205,6 +205,10 @@ class UkmPageLoadMetricsObserver
   void RecordGeneratedNavigationUKM(ukm::SourceId source_id,
                                     const GURL& committed_url);
 
+  // Records the metrics for Navigation.TypedAndDefault.
+  void RecordTypedAndDefaultUKM(ukm::SourceId source_id,
+                                const GURL& committed_url);
+
   // Records some metrics at the end of a page, even for failed provisional
   // loads.
   void RecordPageEndMetrics(

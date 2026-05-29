@@ -47,6 +47,7 @@
 #include "components/page_load_metrics/browser/protocol_util.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -387,6 +388,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                             no_state_prefetch_manager);
   }
   RecordGeneratedNavigationUKM(source_id, navigation_handle->GetURL());
+  RecordTypedAndDefaultUKM(source_id, navigation_handle->GetURL());
   navigation_is_cross_process_ = !navigation_handle->IsSameProcess();
   navigation_entry_offset_ = navigation_handle->GetNavigationEntryOffset();
   main_document_sequence_number_ = web_contents->GetController()
@@ -1804,6 +1806,47 @@ void UkmPageLoadMetricsObserver::RecordGeneratedNavigationUKM(
   builder.SetFirstURLIsHomePage(start_url_is_home_page_);
   builder.SetFirstURLIsDefaultSearchEngine(start_url_is_default_search_);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordTypedAndDefaultUKM(
+    ukm::SourceId source_id,
+    const GURL& committed_url) {
+  // Check if navigation was initiated via the address bar and explicitly typed.
+  if ((page_transition_ & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) == 0 ||
+      !ui::PageTransitionCoreTypeIs(page_transition_,
+                                    ui::PAGE_TRANSITION_TYPED)) {
+    return;
+  }
+
+  if (!browser_context_) {
+    return;
+  }
+
+  auto* template_service = TemplateURLServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  if (!template_service) {
+    return;
+  }
+
+  // Verify the typed URL belongs to some search engine.
+  if (!template_service->GetTemplateURLForHost(
+          std::string(committed_url.host()))) {
+    return;
+  }
+
+  const TemplateURL* default_engine =
+      template_service->GetDefaultSearchProvider();
+  if (!default_engine) {
+    return;
+  }
+
+  bool is_same_as_default =
+      default_engine->GenerateSearchURL(template_service->search_terms_data())
+          .host() == committed_url.host();
+
+  ukm::builders::Navigation_TypedAndDefault(source_id)
+      .SetIsSameAsDefault(static_cast<int>(is_same_as_default))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::EmitUserTimingEvent(base::TimeDelta duration,
