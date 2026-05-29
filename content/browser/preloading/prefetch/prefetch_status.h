@@ -23,7 +23,7 @@ namespace content {
 // go/preloading-dashboard-updates to update the mapping reflected in dashboard,
 // or if you are not a Googler, please file an FYI bug on https://crbug.new with
 // component Internals>Preload.
-// LINT.IfChange
+// LINT.IfChange(PrefetchStatus)
 enum class PrefetchStatus {
   // Deprecated. Replaced by `kPrefetchResponseUsed`.
   //
@@ -255,7 +255,7 @@ enum class PrefetchStatus {
   // The max value of the PrefetchStatus. Update this when new enums are added.
   kMaxValue = kPrefetchCancelledOnUserNavigation,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrefetchProxyPrefetchStatus)
 
 // Mapping from `PrefetchStatus` to `PreloadingFailureReason`.
 static_assert(

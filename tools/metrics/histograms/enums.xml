@@ -23253,6 +23253,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Loaded"/>
 </enum>
 
+<!-- LINT.IfChange(PrefetchProxyPrefetchStatus) -->
+
 <enum name="PrefetchProxyPrefetchStatus">
   <int value="0" label="DEPRECATED Prefetch Used, No Probe">
     The interceptor used a prefetch. (Deprecated M115)
@@ -23479,6 +23481,8 @@ Called by update_net_error_codes.py.-->
     navigation.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_status.h:PrefetchStatus) -->
 
 <enum name="PrefetchRedirectNetworkContextTransition">
   <int value="0" label="Stayed in Default network context"/>
