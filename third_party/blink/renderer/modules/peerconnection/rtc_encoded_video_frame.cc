@@ -22,9 +22,6 @@
 
 namespace blink {
 
-// Allow all fields to be set when calling RTCEncodedVideoFrame.setMetadata.
-BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 constexpr size_t kMaxNumDependencies = 8;
@@ -255,9 +252,7 @@ base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
   if (!original_metadata) {
     return base::unexpected("internal error when calling getMetadata().");
   }
-  if (!IsAllowedSetMetadataChange(original_metadata, metadata) &&
-      !base::FeatureList::IsEnabled(
-          kAllowRTCEncodedVideoFrameSetMetadataAllFields)) {
+  if (!IsAllowedSetMetadataChange(original_metadata, metadata)) {
     return base::unexpected(
         "invalid modification of RTCEncodedVideoFrameMetadata.");
   }

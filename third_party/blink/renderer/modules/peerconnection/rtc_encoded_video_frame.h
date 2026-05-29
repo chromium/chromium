@@ -31,8 +31,6 @@ class RTCEncodedVideoFrameMetadata;
 class RTCEncodedVideoFrameOptions;
 class V8RTCEncodedVideoFrameType;
 
-MODULES_EXPORT BASE_DECLARE_FEATURE(
-    kAllowRTCEncodedVideoFrameSetMetadataAllFields);
 
 class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
