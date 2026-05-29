@@ -1421,7 +1421,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // renderer process for all page frames. With that Chromium does not allow
 // running App specific pages in the same process as a web site from the
 // internet. Allows navigation to app specific URL in the following cases:
-//   - last committed URL is app specific
+//   - last committed virtual URL is app specific
+//   - last committed URL is app specific and loading the same URL
 //   - navigation not a new navigation (back-forward)
 //   - navigation is typed, generated or bookmark
 //   - navigation is performed in iframe and main frame is app-specific page
@@ -1433,10 +1434,16 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   web::NavigationItem* lastItem =
       self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
   if (lastItem &&
-      (web::GetWebClient()->IsAppSpecificURL(lastItem->GetVirtualURL()) ||
-       web::GetWebClient()->IsAppSpecificURL(lastItem->GetURL()))) {
+      (web::GetWebClient()->IsAppSpecificURL(lastItem->GetVirtualURL()))) {
     // Last committed page is also app specific and navigation should be
     // allowed.
+    return YES;
+  }
+
+  if (lastItem && web::GetWebClient()->IsAppSpecificURL(lastItem->GetURL()) &&
+      lastItem->GetURL() == requestURL) {
+    // Last committed page is app specific, but this is not user visible. Only
+    // allow reloading.
     return YES;
   }
 
