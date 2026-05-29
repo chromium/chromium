@@ -583,6 +583,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_backface_visibility_interop =
       RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled();
 
+  settings.enable_unbounded_element =
+      RuntimeEnabledFeatures::UnboundedElementEnabled();
+
   settings.disable_frame_rate_limit =
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 

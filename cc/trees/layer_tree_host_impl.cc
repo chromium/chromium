@@ -1370,6 +1370,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       DCHECK(quad->shared_quad_state);
     }
   }
+  DCHECK(settings_.enable_unbounded_element ||
+         frame->unbounded_render_passes.empty());
   for (const auto& render_pass : frame->unbounded_render_passes) {
     for (auto* quad : render_pass->quad_list) {
       DCHECK(quad->shared_quad_state);
@@ -3161,6 +3163,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   if (!frame->unbounded_render_passes.empty() && delegate_) {
     // Unbounded element is not implemented for TreesInViz yet.
     CHECK(!settings_.TreesInVizInClientProcess());
+    CHECK(settings_.enable_unbounded_element);
 
     viz::CompositorFrame unbounded_frame;
     // TODO(508672616): What other uses of `metadata` are relevant to unbounded

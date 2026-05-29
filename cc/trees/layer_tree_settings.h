@@ -239,6 +239,9 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether to use variable refresh rates when generating begin frames.
   bool enable_variable_refresh_rate = false;
+
+  // Whether the unbounded element API is enabled.
+  bool enable_unbounded_element = false;
 };
 
 }  // namespace cc
