@@ -25,33 +25,7 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-namespace {
-std::string ToString(actor::mojom::JournalEntryType type) {
-  switch (type) {
-    case actor::mojom::JournalEntryType::kBegin:
-      return "Begin";
-    case actor::mojom::JournalEntryType::kEnd:
-      return "End";
-    case actor::mojom::JournalEntryType::kInstant:
-      return "Instant";
-  }
-  NOTREACHED();
-}
-std::string ToString(uint64_t track_uuid, actor::TaskId task_id) {
-  if (actor::MakeFrontEndTrackUUID(task_id) == track_uuid) {
-    return "FrontEnd";
-  } else if (actor::MakeBrowserTrackUUID(task_id) == track_uuid) {
-    return "Browser";
-  } else if (actor::MakeRendererTrackUUID(task_id) == track_uuid) {
-    return "Renderer";
-  } else if (actor::IsGlicExperimentalTriggeringTrack(track_uuid)) {
-    return "GlicExperimentalTriggering";
-  } else {
-    return base::NumberToString(track_uuid);
-  }
-}
 
-}  // namespace
 
 ActorInternalsUIHandler::ActorInternalsUIHandler(
     content::WebContents* web_contents,
@@ -86,9 +60,11 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
   }
 
   handler_->OnJournalEntryAdded(actor_internals::mojom::JournalEntry::New(
-      entry.url, entry.data->event, ToString(entry.data->type),
+      entry.url, entry.data->event,
+      std::string(actor::JournalEntryTypeToString(entry.data->type)),
       std::move(details), entry.data->timestamp, entry.data->task_id.value(),
-      ToString(entry.data->track_uuid, entry.data->task_id), entry.screenshot));
+      actor::TrackToString(entry.data->track_uuid, entry.data->task_id),
+      entry.screenshot));
 }
 
 void ActorInternalsUIHandler::StartLogging() {

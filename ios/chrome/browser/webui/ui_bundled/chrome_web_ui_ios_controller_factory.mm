@@ -21,11 +21,13 @@
 #import "components/webui/chrome_urls/pref_names.h"
 #import "components/webui/regional_capabilities_internals/constants.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/webui/ui_bundled/about/about_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/actor_internals/actor_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
 #import "ios/chrome/browser/webui/ui_bundled/chrome_urls/chrome_urls_ui.h"
@@ -232,6 +234,15 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<OnDeviceLlmInternalsUI>;
   }
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
+  if (url_host == kChromeUIActorInternalsHost) {
+    if (!IsActorEnabled()) {
+      return nullptr;
+    }
+    return InternalDebugPagesEnabled()
+               ? &NewWebUIIOS<ActorInternalsUI>
+               : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
+  }
 
   return nullptr;
 }

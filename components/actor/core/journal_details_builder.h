@@ -105,6 +105,12 @@ inline bool IsGlicExperimentalTriggeringTrack(uint64_t track_uuid) {
          kGlicExperimentalTriggeringTrack;
 }
 
+// Returns a string representation of the journal entry type.
+std::string_view JournalEntryTypeToString(mojom::JournalEntryType type);
+
+// Returns a string representation of the track.
+std::string TrackToString(uint64_t track_uuid, TaskId task_id);
+
 }  // namespace actor
 
 inline std::ostream& operator<<(

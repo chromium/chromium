@@ -43,6 +43,7 @@ inline constexpr char kChromeUITracingURL[] = "chrome://tracing/";
 inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 
 // URL components for Chrome on iOS.
+inline constexpr char kChromeUIActorInternalsHost[] = "actor-internals";
 inline constexpr char kChromeUIAutofillInternalsHost[] = "autofill-internals";
 inline constexpr char kChromeUIBrowserCrashHost[] =
     "inducebrowsercrashforrealz";

@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+source_set("actor_internals") {
+  sources = [
+    "actor_internals_handler.h",
+    "actor_internals_handler.mm",
+    "actor_internals_ui.h",
+    "actor_internals_ui.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/actor/core:journal",
+    "//components/actor/core/internals/browser",
+    "//components/actor/core/internals/resources",
+    "//components/actor/public/mojom:mojo_bindings",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/web/public",
+    "//ios/web/public/webui",
+    "//mojo/public/cpp/bindings",
+  ]
+}

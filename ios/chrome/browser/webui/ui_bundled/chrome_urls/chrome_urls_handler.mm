@@ -12,6 +12,7 @@
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/webui/chrome_urls/pref_names.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -26,7 +27,8 @@ bool IsWebUIInternal(std::string_view host) {
          host == optimization_guide_internals::
                      kChromeUIOptimizationGuideInternalsHost ||
          host == kChromeUIDownloadInternalsHost ||
-         host == kChromeUIInterstitialsHost || host == kChromeUILocalStateHost;
+         host == kChromeUIInterstitialsHost ||
+         host == kChromeUILocalStateHost || host == kChromeUIActorInternalsHost;
 }
 }  // namespace
 
@@ -41,9 +43,16 @@ ChromeUrlsHandler::ChromeUrlsHandler(
 ChromeUrlsHandler::~ChromeUrlsHandler() = default;
 
 void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
+  std::vector<std::string_view> hosts(kChromeHostURLs.begin(),
+                                      kChromeHostURLs.end());
+  if (IsActorEnabled()) {
+    hosts.push_back(kChromeUIActorInternalsHost);
+  }
+  std::sort(hosts.begin(), hosts.end());
+
   std::vector<chrome_urls::mojom::WebuiUrlInfoPtr> webui_urls;
-  webui_urls.reserve(kChromeHostURLs.size());
-  for (const std::string_view host : kChromeHostURLs) {
+  webui_urls.reserve(hosts.size());
+  for (const std::string_view host : hosts) {
     GURL url(
         base::StrCat({kChromeUIScheme, url::kStandardSchemeSeparator, host}));
     chrome_urls::mojom::WebuiUrlInfoPtr url_info(

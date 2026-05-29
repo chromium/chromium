@@ -396,7 +396,6 @@ repack("dev_ui_paks") {
 
   sources = [
     "$root_gen_dir/chrome/accessibility_resources.pak",
-    "$root_gen_dir/chrome/actor_internals_resources.pak",
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/browsing_topics_internals_resources.pak",
     "$root_gen_dir/chrome/chrome_finds_internals_resources.pak",
@@ -414,6 +413,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/privacy_sandbox_internals_resources.pak",
     "$root_gen_dir/chrome/subresource_filter_internals_resources.pak",
     "$root_gen_dir/chrome/usb_internals_resources.pak",
+    "$root_gen_dir/components/actor_internals_resources.pak",
     "$root_gen_dir/components/commerce_internals_resources.pak",
     "$root_gen_dir/components/data_sharing_internals_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",

@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/favicon/model/favicon_service_factory.h",
   "+ios/chrome/browser/flags/about_flags.h",
   "+ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h",
+  "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h",
   "+ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h",
   "+ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h",
