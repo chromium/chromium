@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -61,6 +62,8 @@ void AuthenticatorGPMArbitraryPinView::OnRevealButtonClicked() {
   reveal_button_->SetToggled(pin_revealed_);
   pin_textfield_->SetTextInputType(
       pin_revealed_ ? ui::TEXT_INPUT_TYPE_TEXT : ui::TEXT_INPUT_TYPE_PASSWORD);
+  pin_textfield_->SetTextInputFlags(pin_textfield_->GetTextInputFlags() |
+                                    ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
 }
 
 void AuthenticatorGPMArbitraryPinView::RequestFocus() {
