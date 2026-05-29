@@ -302,7 +302,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             parent_filter, blur.width(), blur.height(), offset.x(), offset.y(),
             shadow.GetColor().Resolve(current_color_, color_scheme_),
             shadow.Opacity());
-        if (shadow.GetColor().IsCurrentColor()) {
+        if (filter_operation->UsesCurrentColor()) {
           effect->SetOriginTainted();
         }
         break;
@@ -478,7 +478,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         filters.AppendDropShadowFilter(
             floored_offset, radius,
             shadow.GetColor().Resolve(current_color_, color_scheme_));
-        if (shadow.GetColor().IsCurrentColor()) {
+        if (op->UsesCurrentColor()) {
           filters.SetOriginTainted();
         }
         break;

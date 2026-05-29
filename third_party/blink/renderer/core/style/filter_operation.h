@@ -371,7 +371,7 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
   bool UsesCurrentColor() const override {
-    return shadow_.GetColor().IsCurrentColor();
+    return shadow_.GetColor().DependsOnCurrentColor();
   }
 
   gfx::RectF MapRect(const gfx::RectF&) const override;
