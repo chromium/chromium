@@ -21,9 +21,11 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/data_model/payments/enum_types.mojom.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -78,95 +80,13 @@ class CreditCard : public FormGroup {
     kVirtualCard,
   };
 
-  // The Issuer for the card. This must stay in sync with the proto enum in
-  // autofill_specifics.proto.
-  enum class Issuer {
-    kIssuerUnknown = 0,
-    kGoogle = 1,
-    kExternalIssuer = 2,
-  };
-
-  // The source of the card benefits. This must stay in sync with the proto
-  // enum in autofill_specifics.proto.
-  enum class BenefitSource {
-    kSourceUnknown = 0,
-    kSourceAmex = 1,
-    kSourceBmo = 2,
-    kSourceCurinos = 3,
-    kMaxValue = kSourceCurinos,
-  };
-
-  // Whether the card has been enrolled in the virtual card feature. This must
-  // stay in sync with the proto enum in autofill_specifics.proto. A java
-  // IntDef@ is generated from this.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-  enum class VirtualCardEnrollmentState {
-    // State unspecified. This is the default value of this enum. Should not be
-    // ever used with cards.
-    kUnspecified = 0,
-    // Deprecated. Card is not enrolled and does not have related virtual card.
-    kUnenrolled = 1,
-    // Card is enrolled and has related virtual cards.
-    kEnrolled = 2,
-    // Card is not enrolled and is not eligible for enrollment.
-    kUnenrolledAndNotEligible = 3,
-    // Card is not enrolled but is eligible for enrollment.
-    kUnenrolledAndEligible = 4,
-  };
-
-  // The enrollment type of the virtual card attached to this card, if one is
-  // present. This must stay in sync with the proto enum in
-  // autofill_specifics.proto.
-  enum class VirtualCardEnrollmentType {
-    // Type unspecified. This is the default value of this enum. Should not be
-    // used with cards that have a virtual card enrolled.
-    kTypeUnspecified = 0,
-    // Issuer-level enrollment.
-    kIssuer = 1,
-    // Network-level enrollment.
-    kNetwork = 2,
-  };
-
-  // Whether the card has been enrolled in the card info retrieval feature.
-  //
-  // 'CardInfoRetrieval' is a Payments server-side feature where some
-  // card information (such as card number, expiry, or CVC) may be
-  // dynamically retrieved from the card issuer during an unmasking call.
-  // From the Chrome client side this looks the same (the UnmaskCardRequest
-  // API call returns the full card number and CVC for use by the client),
-  // however whether or not a card is enrolled in this feature may affect
-  // some UX, authentication methods, feature offerings, user guidance, and
-  // logging.
-  //
-  // Local cards cannot be enrolled in `CardInfoRetrieval`, and always have
-  // their card information stored locally.
-  //
-  // This must stay in sync with the proto enum in autofill_specifics.proto.
-  // A java IntDef@ is generated from this.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-  enum class CardInfoRetrievalEnrollmentState {
-    // State unspecified. This is the default value of this enum.
-    kRetrievalUnspecified = 0,
-    // Card is enrolled for card info retrieval.
-    kRetrievalEnrolled = 1,
-    // Card is not enrolled and is not eligible for enrollment.
-    kRetrievalUnenrolledAndNotEligible = 2,
-    // Card is not enrolled but is eligible for enrollment.
-    kRetrievalUnenrolledAndEligible = 3,
-  };
-
-  // The source of the card creation, indicating whether the card was added
-  // through a Chrome-related service, or through an external service (which
-  // includes Android Autofill). This must stay in sync with the proto enum in
-  // autofill_specifics.proto.
-  enum class CardCreationSource {
-    // State unspecified. This is the default value of this enum.
-    kCreationSourceUnspecified = 0,
-    // The card was added through Chrome.
-    kCreationSourceChromePayments = 1,
-    // The card was added outside of Chrome.
-    kCreationSourceNonChromePayments = 2,
-  };
+  using Issuer = mojom::Issuer;
+  using BenefitSource = mojom::BenefitSource;
+  using CardCreationSource = mojom::CardCreationSource;
+  using VirtualCardEnrollmentType = mojom::VirtualCardEnrollmentType;
+  using VirtualCardEnrollmentState = mojom::VirtualCardEnrollmentState;
+  using CardInfoRetrievalEnrollmentState =
+      mojom::CardInfoRetrievalEnrollmentState;
 
   // Creates a copy of the passed in credit card, and sets its `record_type` to
   // `CreditCard::RecordType::kVirtualCard`. This is used to differentiate

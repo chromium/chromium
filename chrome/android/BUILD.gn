@@ -618,6 +618,7 @@ if (_is_default_toolchain) {
       "//components/autofill/android:autofill_features_java",
       "//components/autofill/android:autofill_java",
       "//components/autofill/android:payments_interfaces_java",
+      "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",

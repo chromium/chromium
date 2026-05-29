@@ -108,7 +108,7 @@ public class PersonalDataManager implements Destroyable {
         private final String mIssuerId;
         private final String mBenefitSource;
         private final @Nullable GURL mProductTermsUrl;
-        private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
+        private final @VirtualCardEnrollmentState.EnumType int mVirtualCardEnrollmentState;
         private final String mProductDescription;
         private final String mCardNameForAutofillDisplay;
         private final String mObfuscatedLastFourDigits;
@@ -132,7 +132,7 @@ public class PersonalDataManager implements Destroyable {
                 @JniType("std::u16string") String cardLabel,
                 @JniType("std::u16string") String nickname,
                 GURL cardArtUrl,
-                @VirtualCardEnrollmentState int virtualCardEnrollmentState,
+                @VirtualCardEnrollmentState.EnumType int virtualCardEnrollmentState,
                 @JniType("std::u16string") String productDescription,
                 @JniType("std::u16string") String cardNameForAutofillDisplay,
                 @JniType("std::u16string") String obfuscatedLastFourDigits,
@@ -227,7 +227,7 @@ public class PersonalDataManager implements Destroyable {
                 String cardLabel,
                 String nickname,
                 @Nullable GURL cardArtUrl,
-                @VirtualCardEnrollmentState int virtualCardEnrollmentState,
+                @VirtualCardEnrollmentState.EnumType int virtualCardEnrollmentState,
                 String productDescription,
                 String cardNameForAutofillDisplay,
                 String obfuscatedLastFourDigits,
@@ -375,7 +375,7 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative
-        public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
+        public @VirtualCardEnrollmentState.EnumType int getVirtualCardEnrollmentState() {
             return mVirtualCardEnrollmentState;
         }
 

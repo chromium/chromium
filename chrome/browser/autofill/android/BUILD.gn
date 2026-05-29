@@ -117,6 +117,7 @@ android_library("java") {
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
     "//components/autofill/android:payments_interfaces_java",
+    "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",

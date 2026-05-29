@@ -43,6 +43,7 @@ android_library("test_support_java") {
   deps = [
     "//base:tasks_java",
     "//chrome/browser/profiles/android:java",
+    "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/hamcrest:hamcrest_java",

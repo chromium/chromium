@@ -1,0 +1,129 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.components.autofill"]
+module autofill.mojom;
+
+// Represents the category of purchases that the benefit can be applied to.
+// The category numbering must not be changed because it is persistent in the
+// DB and it must match
+// `google3/moneta/integrator/common/instrument/instrument_offer.proto`.
+// LINT.IfChange(BenefitCategory)
+enum BenefitCategory {
+  kUnknownBenefitCategory = 0,
+  kSubscription = 1,
+  kFlights = 2,
+  kDining = 3,
+  kEntertainment = 4,
+  kStreaming = 5,
+  kGroceryStores = 6,
+  kAirMilesPartner = 7,
+  kAlcoholStores = 8,
+  kDrugstores = 9,
+  kOfficeSupplies = 10,
+  kRecurringBills = 11,
+  kTransit = 12,
+  kTravel = 13,
+  kWholesaleClubs = 14,
+  kHotels = 15,
+  kCarRentals = 16,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:CategoryBenefitType)
+
+// The Issuer for the card. This must stay in sync with the proto enum in
+// autofill_specifics.proto.
+// LINT.IfChange(Issuer)
+enum Issuer {
+  kIssuerUnknown = 0,
+  kGoogle = 1,
+  kExternalIssuer = 2,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:CardIssuer.Issuer)
+
+// The source of the card benefits. This must stay in sync with the proto
+// enum in autofill_specifics.proto.
+// LINT.IfChange(BenefitSource)
+enum BenefitSource {
+  kSourceUnknown = 0,
+  kSourceAmex = 1,
+  kSourceBmo = 2,
+  kSourceCurinos = 3,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:CardBenefitSource)
+
+// Whether the card has been enrolled in the virtual card feature. This must
+// stay in sync with the proto enum in autofill_specifics.proto.
+// LINT.IfChange(VirtualCardEnrollmentState)
+enum VirtualCardEnrollmentState {
+  // State unspecified. This is the default value of this enum. Should not be
+  // ever used with cards.
+  kUnspecified = 0,
+  // Deprecated. Card is not enrolled and does not have related virtual card.
+  kUnenrolled = 1,
+  // Card is enrolled and has related virtual cards.
+  kEnrolled = 2,
+  // Card is not enrolled and is not eligible for enrollment.
+  kUnenrolledAndNotEligible = 3,
+  // Card is not enrolled but is eligible for enrollment.
+  kUnenrolledAndEligible = 4,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:VirtualCardEnrollmentState)
+
+// The enrollment type of the virtual card attached to this card, if one is
+// present. This must stay in sync with the proto enum in
+// autofill_specifics.proto.
+// LINT.IfChange(VirtualCardEnrollmentType)
+enum VirtualCardEnrollmentType {
+  // Type unspecified. This is the default value of this enum. Should not be
+  // used with cards that have a virtual card enrolled.
+  kTypeUnspecified = 0,
+  // Issuer-level enrollment.
+  kIssuer = 1,
+  // Network-level enrollment.
+  kNetwork = 2,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:VirtualCardEnrollmentType)
+
+// Whether the card has been enrolled in the card info retrieval feature.
+//
+// 'CardInfoRetrieval' is a Payments server-side feature where some
+// card information (such as card number, expiry, or CVC) may be
+// dynamically retrieved from the card issuer during an unmasking call.
+// From the Chrome client side this looks the same (the UnmaskCardRequest
+// API call returns the full card number and CVC for use by the client),
+// however whether or not a card is enrolled in this feature may affect
+// some UX, authentication methods, feature offerings, user guidance, and
+// logging.
+//
+// Local cards cannot be enrolled in `CardInfoRetrieval`, and always have
+// their card information stored locally.
+//
+// This must stay in sync with the proto enum in autofill_specifics.proto.
+// LINT.IfChange(CardInfoRetrievalEnrollmentState)
+enum CardInfoRetrievalEnrollmentState {
+  // State unspecified. This is the default value of this enum.
+  kRetrievalUnspecified = 0,
+  // Card is enrolled for card info retrieval.
+  kRetrievalEnrolled = 1,
+  // Card is not enrolled and is not eligible for enrollment.
+  kRetrievalUnenrolledAndNotEligible = 2,
+  // Card is not enrolled but is eligible for enrollment.
+  kRetrievalUnenrolledAndEligible = 3,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:CardInfoRetrievalEnrollmentState)
+
+// The source of the card creation, indicating whether the card was added
+// through a Chrome-related service, or through an external service (which
+// includes Android Autofill). This must stay in sync with the proto enum in
+// autofill_specifics.proto.
+// LINT.IfChange(CardCreationSource)
+enum CardCreationSource {
+  // State unspecified. This is the default value of this enum.
+  kCreationSourceUnspecified = 0,
+  // The card was added through Chrome.
+  kCreationSourceChromePayments = 1,
+  // The card was added outside of Chrome.
+  kCreationSourceNonChromePayments = 2,
+};
+// LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:CardCreationSource)

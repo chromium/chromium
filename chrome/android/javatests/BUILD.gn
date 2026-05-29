@@ -602,6 +602,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     ":chrome_test_java_helper",
     "//chrome/browser/ui/android/autofill/internal:java",
     "//chrome/browser/ui/android/autofill/internal:javatests",
+    "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
     "//components/payments/content/android:service_impl_java",
   ]
 }

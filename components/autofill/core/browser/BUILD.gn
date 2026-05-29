@@ -1004,6 +1004,7 @@ static_library("browser") {
     ":country_data",
     ":legal_message_line",
     ":payments_sync_utils",
+    "//components/autofill/core/browser/data_model/payments:mojo_bindings",
     "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",

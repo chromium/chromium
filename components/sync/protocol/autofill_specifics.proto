@@ -338,7 +338,7 @@ message CardBenefit {
     HOTELS = 15;
     CAR_RENTALS = 16;
   }
-  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/credit_card_benefit.h:BenefitCategory)
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:BenefitCategory)
 
   // Proto containing data specific to a category benefit.
   message CategoryBenefit {
@@ -363,6 +363,7 @@ message CardBenefit {
 }
 
 message CardIssuer {
+  // LINT.IfChange(Issuer)
   enum Issuer {
     ISSUER_UNKNOWN = 0;
     // Card where the issuer is Google.
@@ -370,6 +371,8 @@ message CardIssuer {
     // Card where the issuer is external.
     EXTERNAL_ISSUER = 2;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:Issuer)
+
   optional Issuer issuer = 1;
 
   // Uniquely identifies the issuer of the card. This field is required when
@@ -402,6 +405,7 @@ message WalletMaskedCreditCard {
     VERVE = 11;
   }
 
+  // LINT.IfChange(VirtualCardEnrollmentState)
   enum VirtualCardEnrollmentState {
     UNSPECIFIED = 0;
     UNENROLLED = 1 [deprecated = true];
@@ -409,32 +413,41 @@ message WalletMaskedCreditCard {
     UNENROLLED_AND_NOT_ELIGIBLE = 3;
     UNENROLLED_AND_ELIGIBLE = 4;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:VirtualCardEnrollmentState)
 
+  // LINT.IfChange(VirtualCardEnrollmentType)
   enum VirtualCardEnrollmentType {
     TYPE_UNSPECIFIED = 0;
     ISSUER = 1;
     NETWORK = 2;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:VirtualCardEnrollmentType)
 
+  // LINT.IfChange(CardInfoRetrievalEnrollmentState)
   enum CardInfoRetrievalEnrollmentState {
     RETRIEVAL_UNSPECIFIED = 0;
     RETRIEVAL_ENROLLED = 1;
     RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE = 2;
     RETRIEVAL_UNENROLLED_AND_ELIGIBLE = 3;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:CardInfoRetrievalEnrollmentState)
 
+  // LINT.IfChange(CardBenefitSource)
   enum CardBenefitSource {
     SOURCE_UNKNOWN = 0;
     SOURCE_AMEX = 1;
     SOURCE_BMO = 2;
     SOURCE_CURINOS = 3;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:BenefitSource)
 
+  // LINT.IfChange(CardCreationSource)
   enum CardCreationSource {
     CREATION_SOURCE_UNSPECIFIED = 0;
     CREATION_SOURCE_CHROME_PAYMENTS = 1;
     CREATION_SOURCE_NON_CHROME_PAYMENTS = 2;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/enum_types.mojom:CardCreationSource)
 
   // Server-generated unique ID string. This is opaque to the client.
   // This is the legacy version of `instrument_id`.

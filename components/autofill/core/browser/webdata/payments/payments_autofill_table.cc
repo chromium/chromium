@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -476,20 +477,22 @@ WebDatabaseTable::TypeKey GetKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-// TODO(crbug.com/417251716): Add logic to check `num` is a valid enum entry.
+// Safely converts a raw database integer into a Mojo enum `T`. It returns
+// `T::kMinValue` (which corresponds to the default or "unknown" value) if the
+// integer cannot be mapped to a known enum value.
+//
+// Fallback to `T::kMinValue` is preferred over declaring the entire database
+// row/entity (e.g., a credit card) invalid. Many enum fields represent optional
+// features (like card benefits, virtual card enrollment, etc.). Dropping the
+// entire entity due to an unparsed or legacy enum value would be highly
+// disruptive (e.g., causing a card to disappear entirely).
 template <typename T>
-  requires(std::is_enum_v<T>)
-bool IsValidValue(int num, T enum_type) {
-  return num >= 0 && num <= static_cast<int>(T::kMaxValue);
+  requires std::is_enum_v<T>
+T CheckedToEnum(std::underlying_type_t<T> raw_int) {
+  T e = static_cast<T>(raw_int);
+  return IsKnownEnumValue(e) ? e : T::kMinValue;
 }
 
-std::string_view ConvertToBenefitSource(int benefit_source_from_table) {
-  return IsValidValue(benefit_source_from_table, CreditCard::BenefitSource())
-             ? CreditCard::GetBenefitSourceStringFromEnum(
-                   static_cast<CreditCard::BenefitSource>(
-                       benefit_source_from_table))
-             : "";
-}
 }  // namespace
 
 PaymentsAutofillTable::PaymentsAutofillTable() = default;
@@ -975,14 +978,14 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_bank_name(s.ColumnString(index++));
     card->SetNickname(s.ColumnString16(index++));
     card->set_card_issuer(
-        static_cast<CreditCard::Issuer>(s.ColumnInt(index++)));
+        CheckedToEnum<CreditCard::Issuer>(s.ColumnInt(index++)));
     card->set_issuer_id(s.ColumnString(index++));
     card->set_instrument_id(s.ColumnInt64(index++));
     card->set_virtual_card_enrollment_state(
-        static_cast<CreditCard::VirtualCardEnrollmentState>(
+        CheckedToEnum<CreditCard::VirtualCardEnrollmentState>(
             s.ColumnInt(index++)));
     card->set_virtual_card_enrollment_type(
-        static_cast<CreditCard::VirtualCardEnrollmentType>(
+        CheckedToEnum<CreditCard::VirtualCardEnrollmentType>(
             s.ColumnInt(index++)));
     card->set_card_art_url(GURL(s.ColumnStringView(index++)));
     card->set_product_description(s.ColumnString16(index++));
@@ -990,14 +993,15 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardInfoRuntimeRetrieval)) {
       card->set_card_info_retrieval_enrollment_state(
-          static_cast<CreditCard::CardInfoRetrievalEnrollmentState>(
+          CheckedToEnum<CreditCard::CardInfoRetrievalEnrollmentState>(
               s.ColumnInt(index++)));
     } else {
       index++;
     }
-    card->set_benefit_source(ConvertToBenefitSource(s.ColumnInt(index++)));
+    card->set_benefit_source(CreditCard::GetBenefitSourceStringFromEnum(
+        CheckedToEnum<CreditCard::BenefitSource>(s.ColumnInt(index++))));
     card->set_card_creation_source(
-        static_cast<CreditCard::CardCreationSource>(s.ColumnInt(index++)));
+        CheckedToEnum<CreditCard::CardCreationSource>(s.ColumnInt(index++)));
     const ServerCvc& cvc = instrument_to_cvc[card->instrument_id()];
     card->set_cvc(cvc.cvc);
     card->set_cvc_modification_date(cvc.last_updated_timestamp);
@@ -1766,8 +1770,8 @@ bool PaymentsAutofillTable::GetCreditCardBenefitsForInstrumentId(
     std::u16string benefit_description = get_benefits.ColumnString16(index++);
     base::Time start_time = get_benefits.ColumnTime(index++);
     base::Time expiry_time = get_benefits.ColumnTime(index++);
-    CreditCardCategoryBenefit::BenefitCategory benefit_category =
-        static_cast<CreditCardCategoryBenefit::BenefitCategory>(
+    const auto benefit_category =
+        CheckedToEnum<CreditCardCategoryBenefit::BenefitCategory>(
             get_benefits.ColumnInt(index++));
 
     switch (benefit_type) {

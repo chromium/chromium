@@ -535,6 +535,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/browser/actor/android:java",
+      "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
       "//url:gurl_java",
     ]
   }
