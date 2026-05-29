@@ -396,18 +396,23 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       !existing_tab ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB;
   // In the case of prevent-close, we do not navigate but instead focus the
-  // existing window
+  // existing window.
   if (!open_in_new_window &&
       (GetLaunchHandler().NeverNavigateExistingClients() ||
        registrar_->IsPreventCloseEnabled(params_->app_id))) {
-    if (base::ValuesEquivalent(WebAppTabHelper::FromWebContents(existing_tab)
-                                   ->EnsureLaunchQueue()
-                                   .GetPendingLaunchAppId(),
-                               &params_->app_id)) {
+    auto* tab_helper = WebAppTabHelper::FromWebContents(existing_tab);
+    if (tab_helper->pending_launch_app_id() == params_->app_id) {
       // This WebContents is already handling a launch for this app. It may
       // currently be out of scope but the in progress app launch will put it
-      // back in scope. The new app launch params can be queued up to fire after
-      // the existing app launch completes.
+      // back in scope. The new app launch params are added on here, so that
+      // it can be tied to the current navigation.
+      if (auto holder = tab_helper->pending_launch_params_holder()) {
+        webapps::LaunchParams launch_params;
+        launch_params.app_id = web_app_->app_id();
+        launch_params.target_url = launch_url;
+        launch_params.paths = params_->launch_files;
+        holder->SetLaunchParams(std::move(launch_params));
+      }
       return {.web_contents = existing_tab, .did_navigate = false};
     }
 

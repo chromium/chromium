@@ -250,6 +250,10 @@ void WebAppTabHelper::DidFinishNavigation(
     return;
   }
 
+  if (launch_queue_) {
+    launch_queue_->DidFinishNavigation(navigation_handle);
+  }
+
   provider_->ui_manager().NotifyDidFinishNavigation(navigation_handle);
 }
 
@@ -510,6 +514,12 @@ void WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage(
     last_processed_manifest_id_for_current_page_ = manifest_id;
     manifest_processed_callbacks_.Notify(manifest_id);
   }
+}
+
+std::optional<webapps::AppId> WebAppTabHelper::pending_launch_app_id() const {
+  return pending_launch_params_holder_
+             ? std::make_optional(pending_launch_params_holder_->app_id())
+             : std::nullopt;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

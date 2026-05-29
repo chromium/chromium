@@ -78,8 +78,7 @@ class EntriesBuilder {
 
 LaunchQueue::LaunchQueue(content::WebContents* web_contents,
                          std::unique_ptr<LaunchQueueDelegate> delegate)
-    : content::WebContentsObserver(web_contents),
-      delegate_(std::move(delegate)) {}
+    : web_contents_(web_contents), delegate_(std::move(delegate)) {}
 
 LaunchQueue::~LaunchQueue() = default;
 
@@ -92,24 +91,9 @@ void LaunchQueue::Enqueue(LaunchParams launch_params) {
     launch_params.dir.clear();
   }
 
-  if (launch_params.started_new_navigation) {
-    Reset();
-    queue_.push_back(std::move(launch_params));
-    pending_navigation_ = true;
-    return;
-  }
-
-  if (pending_navigation_) {
-    if (!queue_.empty()) {
-      DCHECK_EQ(launch_params.app_id, queue_.front().app_id);
-    }
-    queue_.push_back(std::move(launch_params));
-    return;
-  }
-
   last_sent_queued_launch_params_ = launch_params;
   SendLaunchParams(std::move(launch_params),
-                   web_contents()->GetLastCommittedURL());
+                   web_contents_->GetLastCommittedURL());
 }
 
 bool LaunchQueue::IsInScope(const LaunchParams& launch_params,
@@ -120,8 +104,7 @@ bool LaunchQueue::IsInScope(const LaunchParams& launch_params,
 void LaunchQueue::FlushForTesting() const {
   CHECK_IS_TEST();
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
-  web_contents()
-      ->GetPrimaryMainFrame()
+  web_contents_->GetPrimaryMainFrame()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&launch_service);
   launch_service.FlushForTesting();  // IN-TEST
@@ -133,23 +116,6 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
     return;
   }
 
-  if (pending_navigation_) {
-    pending_navigation_ = false;
-    if (!handle->HasCommitted() || handle->IsErrorPage() ||
-        !delegate_->IsInScope(queue_.front(), handle->GetURL())) {
-      Reset();
-    } else {
-      for (LaunchParams& launch_params : queue_) {
-        if (&launch_params == &queue_.back()) {
-          last_sent_queued_launch_params_ = launch_params;
-        }
-        SendLaunchParams(std::move(launch_params), handle->GetURL());
-      }
-      queue_.clear();
-    }
-    return;
-  }
-
   // Reloads have the last sent launch params re-sent as they may contain live
   // file handles that should persist across reloads.
   if (!base::FeatureList::IsEnabled(
@@ -158,7 +124,7 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
       handle->GetReloadType() != content::ReloadType::NONE) {
     if (!delegate_->IsInScope(*last_sent_queued_launch_params_,
                               handle->GetURL())) {
-      Reset();
+      last_sent_queued_launch_params_.reset();
       return;
     }
 
@@ -173,22 +139,9 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   // Leaving the document resets all queue state.
-  if (!handle->IsSameDocument()) {
-    Reset();
+  if (handle->HasCommitted() && !handle->IsSameDocument()) {
+    last_sent_queued_launch_params_.reset();
   }
-}
-
-void LaunchQueue::Reset() {
-  queue_.clear();
-  pending_navigation_ = false;
-  last_sent_queued_launch_params_.reset();
-}
-
-const webapps::AppId* LaunchQueue::GetPendingLaunchAppId() const {
-  if (!pending_navigation_ || queue_.empty()) {
-    return nullptr;
-  }
-  return &(queue_.front().app_id);
 }
 
 void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
@@ -199,8 +152,7 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
       << current_url.spec();
   CHECK(launch_params.target_url.is_valid());
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
-  web_contents()
-      ->GetPrimaryMainFrame()
+  web_contents_->GetPrimaryMainFrame()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&launch_service);
   DCHECK(launch_service);
@@ -208,7 +160,7 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
   std::vector<blink::mojom::FileSystemAccessEntryPtr> files;
 
   if (!launch_params.paths.empty() || !launch_params.dir.empty()) {
-    EntriesBuilder entries_builder(web_contents(), launch_params.target_url,
+    EntriesBuilder entries_builder(web_contents_, launch_params.target_url,
                                    launch_params.paths.size() + 1);
     if (!launch_params.dir.empty()) {
       entries_builder.AddDirectoryEntry(

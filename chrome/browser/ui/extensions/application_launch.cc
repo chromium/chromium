@@ -23,7 +23,6 @@
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/file_handlers/file_handling_launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -46,6 +45,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -228,6 +228,21 @@ ui::mojom::WindowShowState DetermineWindowShowState(
   return ui::mojom::WindowShowState::kDefault;
 }
 
+void MaybePopulateLaunchParams(const apps::AppLaunchParams& params,
+                               const Extension* extension,
+                               const GURL& url,
+                               NavigateParams& nav_params) {
+  if (extension &&
+      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
+    webapps::LaunchParams launch_params;
+    launch_params.app_id = extension->id();
+    launch_params.target_url = url;
+    launch_params.paths = params.launch_files;
+    launch_params.started_new_navigation = true;
+    nav_params.launch_params = std::move(launch_params);
+  }
+}
+
 WebContents* OpenApplicationTab(Profile* profile,
                                 const apps::AppLaunchParams& launch_params,
                                 const GURL& url) {
@@ -270,6 +285,7 @@ WebContents* OpenApplicationTab(Profile* profile,
   NavigateParams params(browser, url, transition);
   params.tabstrip_add_types = add_type;
   params.disposition = disposition;
+  MaybePopulateLaunchParams(launch_params, extension, url, params);
 
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     WebContents* existing_tab =
@@ -394,11 +410,6 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
       NOTREACHED();
   }
 
-  if (supports_web_file_handlers) {
-    extensions::EnqueueLaunchParamsInWebContents(tab, extension, url,
-                                                 params.launch_files);
-  }
-
   return tab;
 }
 
@@ -521,6 +532,7 @@ WebContents* NavigateApplicationWindow(Browser* browser,
   NavigateParams nav_params(browser, url, transition);
   nav_params.disposition = disposition;
   nav_params.pwa_navigation_capturing_force_off = true;
+  MaybePopulateLaunchParams(params, extension, url, nav_params);
   Navigate(&nav_params);
 
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;

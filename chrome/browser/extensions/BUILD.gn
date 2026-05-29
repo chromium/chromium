@@ -835,8 +835,6 @@ source_set("extensions") {
       "extension_view_host_web_modal_handler.h",
       "external_install_error_desktop.cc",
       "external_install_error_desktop.h",
-      "file_handlers/file_handling_launch_utils.cc",
-      "file_handlers/file_handling_launch_utils.h",
       "initial_external_extension_loader.cc",
       "initial_external_extension_loader.h",
       "theme_installed_infobar_delegate.cc",

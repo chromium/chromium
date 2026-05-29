@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_launch_params_holder.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
@@ -158,6 +159,20 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // window instead of in a browser tab.
   bool is_in_app_window() const { return window_app_id_.has_value(); }
 
+  base::WeakPtr<WebAppLaunchParamsHolder> pending_launch_params_holder() const {
+    return pending_launch_params_holder_;
+  }
+
+  // This is needed so that the web app launch navigation handle user data can
+  // be used to set the launch params, as there is no easy way to access the
+  // navigation handle from the web contents, apart from observing when a
+  // navigation started and finished.
+  void SetPendingLaunchParamsHolder(
+      base::WeakPtr<WebAppLaunchParamsHolder> holder) {
+    pending_launch_params_holder_ = std::move(holder);
+  }
+  std::optional<webapps::AppId> pending_launch_app_id() const;
+
   webapps::LaunchQueue& EnsureLaunchQueue();
   void EnqueueLaunchParams(webapps::LaunchParams launch_params);
 
@@ -248,6 +263,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   std::optional<webapps::AppId> app_id_;
   std::optional<webapps::AppId> window_app_id_;
+  base::WeakPtr<WebAppLaunchParamsHolder> pending_launch_params_holder_;
 
   // True when this tab is the pinned home tab of a tabbed web app.
   bool is_pinned_home_tab_ = false;

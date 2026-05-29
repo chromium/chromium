@@ -36,19 +36,40 @@ void WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
 
 WebAppLaunchNavigationHandleUserData::WebAppLaunchNavigationHandleUserData(
     content::NavigationHandle& navigation_handle)
-    : navigation_handle_(navigation_handle), force_iph_off_(false) {}
+    : navigation_handle_(navigation_handle),
+      web_contents_(navigation_handle.GetWebContents()),
+      force_iph_off_(false) {
+  CHECK(navigation_handle.IsInPrimaryMainFrame());
+}
+
+const webapps::AppId& WebAppLaunchNavigationHandleUserData::app_id() const {
+  return app_id_;
+}
+
+const webapps::LaunchParams&
+WebAppLaunchNavigationHandleUserData::GetLaunchParams() const {
+  CHECK(launch_params_.has_value())
+      << "Attempted to access launch params after they were consumed/moved.";
+  return *launch_params_;
+}
 
 void WebAppLaunchNavigationHandleUserData::SetLaunchParams(
     webapps::LaunchParams launch_params) {
+  app_id_ = launch_params.app_id;
   launch_params_ = std::move(launch_params);
-  content::WebContents* web_contents = navigation_handle_->GetWebContents();
-  if (web_contents) {
+  if (web_contents_) {
     WebAppTabHelper* tab_helper =
-        WebAppTabHelper::FromWebContents(web_contents);
+        WebAppTabHelper::FromWebContents(web_contents_);
     if (tab_helper) {
       tab_helper->EnsureLaunchQueue();
+      tab_helper->SetPendingLaunchParamsHolder(GetWeakPtr());
     }
   }
+}
+
+base::WeakPtr<WebAppLaunchParamsHolder>
+WebAppLaunchNavigationHandleUserData::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void WebAppLaunchNavigationHandleUserData::SetLaunchParamsMetadata(
@@ -58,6 +79,7 @@ void WebAppLaunchNavigationHandleUserData::SetLaunchParamsMetadata(
   if (!launch_params_) {
     launch_params_.emplace();
   }
+  app_id_ = app_id;
   launch_params_->app_id = app_id;
   launch_params_->target_url = target_url;
   if (launch_params_->time_navigation_started_for_enqueue.is_null()) {
@@ -65,21 +87,14 @@ void WebAppLaunchNavigationHandleUserData::SetLaunchParamsMetadata(
         time_navigation_started;
   }
 
-  content::WebContents* web_contents = navigation_handle_->GetWebContents();
-  if (web_contents) {
+  if (web_contents_) {
     WebAppTabHelper* tab_helper =
-        WebAppTabHelper::FromWebContents(web_contents);
+        WebAppTabHelper::FromWebContents(web_contents_);
     if (tab_helper) {
       tab_helper->EnsureLaunchQueue();
+      tab_helper->SetPendingLaunchParamsHolder(GetWeakPtr());
     }
   }
-}
-
-const webapps::LaunchParams&
-WebAppLaunchNavigationHandleUserData::launch_params() const {
-  CHECK(launch_params_.has_value())
-      << "Attempted to access launch params after they were consumed/moved.";
-  return *launch_params_;
 }
 
 void WebAppLaunchNavigationHandleUserData::
@@ -87,10 +102,7 @@ void WebAppLaunchNavigationHandleUserData::
   if (!launch_params_) {
     return;
   }
-
-  content::WebContents* web_contents = navigation_handle_->GetWebContents();
-
-  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents_);
   CHECK(tab_helper);
 
   // Extract app_id and target_url before moving launch_params_.
@@ -117,9 +129,9 @@ void WebAppLaunchNavigationHandleUserData::
           : apps::LaunchContainer::kLaunchContainerTab;
   RecordLaunchMetrics(app_id, container,
                       apps::LaunchSource::kFromNavigationCapturing, target_url,
-                      web_contents);
+                      web_contents_);
 
-  RecordNavigationCapturingDisplayModeMetrics(app_id, web_contents,
+  RecordNavigationCapturingDisplayModeMetrics(app_id, web_contents_,
                                               !tab_helper->is_in_app_window());
 
   if (!force_iph_off_) {
@@ -127,7 +139,7 @@ void WebAppLaunchNavigationHandleUserData::
     // instead pass in the Browser instance earlier.
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            web_contents);
+            web_contents_);
     if (browser) {
       MaybeShowNavigationCaptureIph(app_id, browser->GetProfile(),
                                     browser->GetBrowserForMigrationOnly());

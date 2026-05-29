@@ -2019,9 +2019,9 @@ void NavigationCapturingProcess::SetLaunchedAppIdAndUpdateLaunchParams(
     auto* user_data =
         WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
             *navigation_handle());
-    return user_data
-               ? std::make_optional<GURL>(user_data->launch_params().target_url)
-               : std::nullopt;
+    return user_data ? std::make_optional<GURL>(
+                           user_data->GetLaunchParams().target_url)
+                     : std::nullopt;
   }();
 
   bool navigate_params_updated_for_url =

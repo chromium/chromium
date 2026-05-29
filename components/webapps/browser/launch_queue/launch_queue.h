@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class GURL;
 
@@ -37,7 +37,7 @@ class LaunchQueueDelegate;
 //   the scenario where a user opens a web app via a file handler which provides
 //   a file handle to the app. Without this reload mechanism the page would lose
 //   access to the file handle if the user were to refresh the page.
-class LaunchQueue : public content::WebContentsObserver {
+class LaunchQueue {
  public:
   LaunchQueue(content::WebContents* web_contents,
               std::unique_ptr<LaunchQueueDelegate> delegate);
@@ -45,41 +45,20 @@ class LaunchQueue : public content::WebContentsObserver {
   LaunchQueue(const LaunchQueue&) = delete;
   LaunchQueue& operator=(const LaunchQueue&) = delete;
 
-  ~LaunchQueue() override;
+  ~LaunchQueue();
 
   void Enqueue(LaunchParams launch_params);
 
   bool IsInScope(const LaunchParams& launch_params, const GURL& url) const;
 
-  const webapps::AppId* GetPendingLaunchAppId() const;
-
   void FlushForTesting() const;
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
+  void DidFinishNavigation(content::NavigationHandle* handle);
 
  private:
-  // Reset self back to the initial state.
-  void Reset();
-
   void SendLaunchParams(LaunchParams launch_params, const GURL& current_url);
 
-  // TODO(crbug.com/390252819): The `queue_` will be cleaned up in future CLs.
-  //
-  // Currently, the way launch params are
-  // enqueued for a web app rely on the fragile dependency of having the
-  // WebAppTabHelper be created before the LaunchQueue based on the registration
-  // order of WebContentsObserver. The reason it has been implemented this way
-  // is to support extensions, which enqueue launch params BEFORE navigation
-  // commits, unlike web apps. Future CLs in this chain will streamline
-  // that behavior so that all LaunchParams are enqueued post navigation
-  // commit, so we don't have to worry about "staging" launch params,
-  // and instead rely on a NavigationHandleUserData to enqueue them as
-  // soon as possible.
-  std::vector<LaunchParams> queue_;
-
-  // Whether to send the queue of launch params on the next navigation.
-  bool pending_navigation_ = false;
+  raw_ptr<content::WebContents> web_contents_;
 
   // A copy of the last sent launch params ready to resend should the user
   // reload the page.
