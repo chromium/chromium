@@ -29,13 +29,12 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
  */
 @NullMarked
 public class ManagementView extends ScrollView {
+    // TODO(crbug.com/517881189): Remove the following redundant booleans.
     private boolean mIsBrowserManaged;
     private boolean mIsProfileManaged;
     private boolean mIsBrowserReportingEnabled;
     private boolean mIsProfileReportingEnabled;
     private boolean mIsLegacyTechReportingEnabled;
-    private boolean mIsSecurityEventReportingEnabled;
-    private boolean mIsUrlFilteringEnabled;
 
     private LinearLayout mManagementContainer;
 
@@ -57,6 +56,8 @@ public class ManagementView extends ScrollView {
     @VisibleForTesting TextView mThreatProtectionSecurityEventDescription;
     @VisibleForTesting TextView mThreatProtectionPageVisited;
     @VisibleForTesting TextView mThreatProtectionPageVisitedDescription;
+    @VisibleForTesting TextView mThreatProtectionDownload;
+    @VisibleForTesting TextView mThreatProtectionDownloadDescription;
 
     private @Nullable UiConfig mUiConfig;
 
@@ -103,6 +104,9 @@ public class ManagementView extends ScrollView {
         mThreatProtectionPageVisited = findViewById(R.id.threat_protection_page_visited);
         mThreatProtectionPageVisitedDescription =
                 findViewById(R.id.threat_protection_page_visited_description);
+        mThreatProtectionDownload = findViewById(R.id.threat_protection_download);
+        mThreatProtectionDownloadDescription =
+                findViewById(R.id.threat_protection_download_description);
 
         // Set default management status
         mIsBrowserManaged = false;
@@ -110,8 +114,10 @@ public class ManagementView extends ScrollView {
         mIsBrowserReportingEnabled = false;
         mIsProfileReportingEnabled = false;
         mIsLegacyTechReportingEnabled = false;
-        mIsSecurityEventReportingEnabled = false;
-        mIsUrlFilteringEnabled = false;
+
+        mThreatProtectionSecurityEvent.setEnabled(false);
+        mThreatProtectionPageVisited.setEnabled(false);
+        mThreatProtectionDownload.setEnabled(false);
 
         adjustView();
 
@@ -193,29 +199,24 @@ public class ManagementView extends ScrollView {
     }
 
     public boolean isThreatProtectionEnabled() {
-        return mIsSecurityEventReportingEnabled || mIsUrlFilteringEnabled;
-    }
-
-    public boolean shouldShowSecurityEventInfo() {
-        return mIsSecurityEventReportingEnabled && mThreatProtectionMore.isChecked();
-    }
-
-    public boolean shouldShowUrlFilteringInfo() {
-        return mIsUrlFilteringEnabled && mThreatProtectionMore.isChecked();
+        return mThreatProtectionSecurityEvent.isEnabled()
+                || mThreatProtectionPageVisited.isEnabled()
+                || mThreatProtectionDownload.isEnabled();
     }
 
     public void setSecurityEventReportingEnabled(boolean isEnabled) {
-        if (mIsSecurityEventReportingEnabled != isEnabled) {
-            mIsSecurityEventReportingEnabled = isEnabled;
-            adjustView();
-        }
+        mThreatProtectionSecurityEvent.setEnabled(isEnabled);
+        adjustView();
     }
 
     public void setUrlFilteringEnabled(boolean isEnabled) {
-        if (mIsUrlFilteringEnabled != isEnabled) {
-            mIsUrlFilteringEnabled = isEnabled;
-            adjustView();
-        }
+        mThreatProtectionPageVisited.setEnabled(isEnabled);
+        adjustView();
+    }
+
+    public void setDownloadEnterpriseScanEnabled(boolean isEnabled) {
+        mThreatProtectionDownload.setEnabled(isEnabled);
+        adjustView();
     }
 
     /** Gets whether legacy tech reporting is enabled. */
@@ -255,6 +256,14 @@ public class ManagementView extends ScrollView {
 
     public void setUrlFilteringDescriptionText(SpannableStringBuilder text) {
         mThreatProtectionPageVisitedDescription.setText(text);
+    }
+
+    public void setDownloadEnterpriseScanText(SpannableStringBuilder text) {
+        mThreatProtectionDownload.setText(text);
+    }
+
+    public void setDownloadEnterpriseScanDescriptionText(SpannableStringBuilder text) {
+        mThreatProtectionDownloadDescription.setText(text);
     }
 
     /** Adjusts Title, Description, and Learn More link based on management status. */
@@ -300,13 +309,31 @@ public class ManagementView extends ScrollView {
         mThreatProtectionMore.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
 
         mThreatProtectionSecurityEvent.setVisibility(
-                shouldShowSecurityEventInfo() ? VISIBLE : GONE);
+                mThreatProtectionSecurityEvent.isEnabled() && mThreatProtectionMore.isChecked()
+                        ? VISIBLE
+                        : GONE);
         mThreatProtectionSecurityEventDescription.setVisibility(
-                shouldShowSecurityEventInfo() ? VISIBLE : GONE);
+                mThreatProtectionSecurityEvent.isEnabled() && mThreatProtectionMore.isChecked()
+                        ? VISIBLE
+                        : GONE);
 
-        mThreatProtectionPageVisited.setVisibility(shouldShowUrlFilteringInfo() ? VISIBLE : GONE);
+        mThreatProtectionPageVisited.setVisibility(
+                mThreatProtectionPageVisited.isEnabled() && mThreatProtectionMore.isChecked()
+                        ? VISIBLE
+                        : GONE);
         mThreatProtectionPageVisitedDescription.setVisibility(
-                shouldShowUrlFilteringInfo() ? VISIBLE : GONE);
+                mThreatProtectionPageVisited.isEnabled() && mThreatProtectionMore.isChecked()
+                        ? VISIBLE
+                        : GONE);
+
+        mThreatProtectionDownload.setVisibility(
+                mThreatProtectionDownload.isEnabled() && mThreatProtectionMore.isChecked()
+                        ? VISIBLE
+                        : GONE);
+        mThreatProtectionDownloadDescription.setVisibility(
+                mThreatProtectionDownload.isEnabled() && mThreatProtectionMore.isChecked()
+                        ? VISIBLE
+                        : GONE);
     }
 
     /**

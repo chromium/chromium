@@ -536,6 +536,29 @@ static bool JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
          enterprise_connectors::REAL_TIME_CHECK_DISABLED;
 }
 
+// static
+static bool
+JNI_ManagedBrowserUtils_IsOnFileDownloadedEnterpriseConnectorEnabled(
+    JNIEnv* env,
+    Profile* profile) {
+  DCHECK(profile);
+
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableDownloadEnterpriseScanOnClank)) {
+    return false;
+  }
+
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile);
+
+  return service &&
+         !service
+              ->GetAnalysisServiceProviderNames(
+                  enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED)
+              .empty();
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void GetManagementIcon(const GURL& url,

@@ -50,6 +50,11 @@ public class ManagedBrowserUtils {
         return ManagedBrowserUtilsJni.get().isEnterpriseRealTimeUrlCheckModeEnabled(profile);
     }
 
+    /** Wrapper around native call to check if "OnFileDownloadedEnterpriseConnector" is enabled. */
+    public static boolean isOnFileDownloadedEnterpriseConnectorEnabled(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isOnFileDownloadedEnterpriseConnectorEnabled(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(@JniType("Profile*") Profile profile);
@@ -66,5 +71,7 @@ public class ManagedBrowserUtils {
         boolean isOnSecurityEventEnterpriseConnectorEnabled(@JniType("Profile*") Profile profile);
 
         boolean isEnterpriseRealTimeUrlCheckModeEnabled(@JniType("Profile*") Profile profile);
+
+        boolean isOnFileDownloadedEnterpriseConnectorEnabled(@JniType("Profile*") Profile profile);
     }
 }

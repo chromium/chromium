@@ -252,6 +252,9 @@ public class ManagementViewTest {
         doReturn(false)
                 .when(mMockManagedBrowserUtilNatives)
                 .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnFileDownloadedEnterpriseConnectorEnabled(mMockProfile);
 
         createDialog();
 
@@ -266,6 +269,8 @@ public class ManagementViewTest {
         Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
     }
 
     @Test
@@ -276,6 +281,9 @@ public class ManagementViewTest {
         doReturn(true)
                 .when(mMockManagedBrowserUtilNatives)
                 .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnFileDownloadedEnterpriseConnectorEnabled(mMockProfile);
 
         createDialog();
 
@@ -290,6 +298,8 @@ public class ManagementViewTest {
         Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
 
         view.mThreatProtectionMore.performClick();
 
@@ -302,6 +312,8 @@ public class ManagementViewTest {
         Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
     }
 
     @Test
@@ -312,6 +324,9 @@ public class ManagementViewTest {
         doReturn(false)
                 .when(mMockManagedBrowserUtilNatives)
                 .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnFileDownloadedEnterpriseConnectorEnabled(mMockProfile);
 
         createDialog();
 
@@ -326,6 +341,8 @@ public class ManagementViewTest {
         Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
 
         view.mThreatProtectionMore.performClick();
 
@@ -338,16 +355,21 @@ public class ManagementViewTest {
         Assert.assertEquals(View.VISIBLE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.VISIBLE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
     }
 
     @Test
-    public void testThreatProtection_allEnabled() {
-        doReturn(true)
+    public void testThreatProtection_downloadEnabled() {
+        doReturn(false)
                 .when(mMockManagedBrowserUtilNatives)
                 .isEnterpriseRealTimeUrlCheckModeEnabled(mMockProfile);
-        doReturn(true)
+        doReturn(false)
                 .when(mMockManagedBrowserUtilNatives)
                 .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnFileDownloadedEnterpriseConnectorEnabled(mMockProfile);
 
         createDialog();
 
@@ -362,6 +384,52 @@ public class ManagementViewTest {
         Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
+
+        view.mThreatProtectionMore.performClick();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, view.mThreatProtectionDownloadDescription.getVisibility());
+    }
+
+    @Test
+    public void testThreatProtection_allEnabled() {
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isEnterpriseRealTimeUrlCheckModeEnabled(mMockProfile);
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnFileDownloadedEnterpriseConnectorEnabled(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDownloadDescription.getVisibility());
 
         view.mThreatProtectionMore.performClick();
 
@@ -374,5 +442,8 @@ public class ManagementViewTest {
         Assert.assertEquals(View.VISIBLE, view.mThreatProtectionPageVisited.getVisibility());
         Assert.assertEquals(
                 View.VISIBLE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDownload.getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, view.mThreatProtectionDownloadDescription.getVisibility());
     }
 }

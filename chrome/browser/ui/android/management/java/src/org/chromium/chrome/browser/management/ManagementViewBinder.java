@@ -57,6 +57,15 @@ class ManagementViewBinder {
         } else if (propertyKey == ManagementProperties.URL_FILTERING_DESCRIPTION_TEXT) {
             view.setUrlFilteringDescriptionText(
                     model.get(ManagementProperties.URL_FILTERING_DESCRIPTION_TEXT));
+        } else if (propertyKey == ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_ENABLED) {
+            view.setDownloadEnterpriseScanEnabled(
+                    model.get(ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_ENABLED));
+        } else if (propertyKey == ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_TEXT) {
+            view.setDownloadEnterpriseScanText(
+                    model.get(ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_TEXT));
+        } else if (propertyKey == ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_DESCRIPTION_TEXT) {
+            view.setDownloadEnterpriseScanDescriptionText(
+                    model.get(ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_DESCRIPTION_TEXT));
         }
     }
 }

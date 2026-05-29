@@ -497,10 +497,10 @@
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature" formatter_data="android_java">
     Security event occurs
   </message>
-  <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_EVENT" desc="Event for the file download scanning feature.">
+  <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_EVENT" desc="Event for the file download scanning feature." formatter_data="android_java">
     File is downloaded
   </message>
-  <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_VISIBLE_DATA" desc="Description of the visible data for the file download scanning feature.">
+  <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_VISIBLE_DATA" desc="Description of the visible data for the file download scanning feature." formatter_data="android_java">
     Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.
   </message>
   <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature." formatter_data="android_java">

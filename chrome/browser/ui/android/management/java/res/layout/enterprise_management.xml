@@ -130,6 +130,20 @@ found in the LICENSE file.
             android:text="@string/management_threat_protection_more"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
+       <!-- Keep the connector ordering in sync with https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/management/management_ui_handler.cc;l=486;drc=2e070bfa61f747388fddaafd8eaf9519f89e80de -->
+        <TextView
+            android:id="@+id/threat_protection_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_browser_item_margin_top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <TextView
+            android:id="@+id/threat_protection_download_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
         <TextView
             android:id="@+id/threat_protection_security_event"
             android:layout_width="wrap_content"

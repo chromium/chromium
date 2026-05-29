@@ -82,6 +82,16 @@ public class ManagementMediator {
                         .with(
                                 ManagementProperties.SECURITY_EVENT_REPORTING_DESCRIPTION_TEXT,
                                 getSecurityEventReportingDescriptionText())
+                        .with(
+                                ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_ENABLED,
+                                ManagedBrowserUtils.isOnFileDownloadedEnterpriseConnectorEnabled(
+                                        profile))
+                        .with(
+                                ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_TEXT,
+                                getDownloadEnterpriseScanText())
+                        .with(
+                                ManagementProperties.DOWNLOAD_ENTERPRISE_SCAN_DESCRIPTION_TEXT,
+                                getDownloadEnterpriseScanDescriptionText())
                         .build();
     }
 
@@ -158,6 +168,20 @@ public class ManagementMediator {
                 .append(buildString(R.string.management_connectors_visible_data))
                 .append(": ")
                 .append(buildString(R.string.management_enterprise_reporting_visible_data));
+    }
+
+    private SpannableStringBuilder getDownloadEnterpriseScanText() {
+        return new SpannableStringBuilder()
+                .append(buildString(R.string.management_connectors_event))
+                .append(": ")
+                .append(buildString(R.string.management_file_downloaded_event));
+    }
+
+    private SpannableStringBuilder getDownloadEnterpriseScanDescriptionText() {
+        return new SpannableStringBuilder()
+                .append(buildString(R.string.management_connectors_visible_data))
+                .append(": ")
+                .append(buildString(R.string.management_file_downloaded_visible_data));
     }
 
     private boolean isLegacyTechReportingEnabled(PrefService prefs) {
