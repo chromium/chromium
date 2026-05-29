@@ -1,6 +1,13 @@
 include_rules = [
   "+net/base",
+  "+net/url_request/redirect_info.h",
   "+services/network/public",
   "+third_party/blink/public/common",
   "+url",
 ]
+
+specific_include_rules = {
+  "url_loader_throttle_unittest.cc": [
+    "+net/http/http_request_headers.h",
+  ],
+}

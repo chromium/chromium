@@ -11,7 +11,10 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "net/http/http_request_headers.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -351,6 +354,56 @@ TEST_F(URLLoaderThrottleTest, AllowAndDeny) {
   EXPECT_TRUE(delegate.canceled());
   EXPECT_EQ(delegate.cancel_reason(),
             "Resource load blocked by embedder policy.");
+}
+
+TEST_F(URLLoaderThrottleTest, RedirectsRemoveHeaders) {
+  mojom::UrlRequestRewriteAddHeadersPtr add_headers =
+      mojom::UrlRequestRewriteAddHeaders::New();
+  add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("CorsExemptHeader", "Value"));
+  mojom::UrlRequestActionPtr rewrite =
+      mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
+  std::vector<mojom::UrlRequestActionPtr> actions;
+  actions.push_back(std::move(rewrite));
+  mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+  rule->hosts_filter = std::optional<std::vector<std::string>>({"*.test.net"});
+  rule->actions = std::move(actions);
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
+
+  URLLoaderThrottle throttle(
+      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
+      CreateCorsExemptHeadersCallback({"CorsExemptHeader"}));
+  bool unused_defer = false;
+
+  network::ResourceRequest request;
+  request.url = GURL("http://test.net");
+  throttle.WillStartRequest(&request, &unused_defer);
+  EXPECT_TRUE(request.headers.HasHeader("Header"));
+  EXPECT_TRUE(request.cors_exempt_headers.HasHeader("CorsExemptHeader"));
+
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHead response_head;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+
+  // Test same-origin redirect
+  redirect_info.new_url = GURL("http://test.net/redirect");
+  throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
+                               &to_be_removed_headers, &modified_headers,
+                               &modified_cors_exempt_headers);
+  EXPECT_TRUE(to_be_removed_headers.empty());
+
+  // Test cross-origin redirect
+  redirect_info.new_url = GURL("http://other.com");
+  throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
+                               &to_be_removed_headers, &modified_headers,
+                               &modified_cors_exempt_headers);
+  EXPECT_EQ(to_be_removed_headers.size(), 2u);
+  EXPECT_EQ(to_be_removed_headers[0], "Header");
+  EXPECT_EQ(to_be_removed_headers[1], "CorsExemptHeader");
 }
 
 }  // namespace url_rewrite

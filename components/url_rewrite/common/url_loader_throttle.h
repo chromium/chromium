@@ -5,14 +5,25 @@
 #ifndef COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_
 #define COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/origin.h"
+
+namespace net {
+struct RedirectInfo;
+class HttpRequestHeaders;
+}  // namespace net
 
 namespace network {
 struct ResourceRequest;
-}
+namespace mojom {
+class URLResponseHead;
+}  // namespace mojom
+}  // namespace network
 
 namespace url_rewrite {
 
@@ -36,6 +47,13 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle {
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
+  void WillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer,
+      std::vector<std::string>* to_be_removed_request_headers,
+      net::HttpRequestHeaders* modified_request_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
 
  private:
   // Applies transformations specified by |rule| to |request|, conditional on
@@ -54,6 +72,9 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle {
 
   scoped_refptr<UrlRequestRewriteRules> rules_;
   IsHeaderCorsExemptCallback is_header_cors_exempt_callback_;
+
+  std::vector<std::string> added_headers_;
+  url::Origin original_origin_;
 };
 
 }  // namespace url_rewrite
