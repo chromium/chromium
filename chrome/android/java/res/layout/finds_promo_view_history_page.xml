@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+        android:id="@+id/finds_promo_view_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/MaterialCardStyle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp">
+
+            <ImageView
+                android:id="@+id/finds_promo_image"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="16dp"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:src="@drawable/chrome_sync_logo"/>
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/finds_promo_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading"
+                android:text="@string/chrome_finds_opt_in_bottom_sheet_description"/>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/finds_promo_positive_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/chrome_finds_opt_in_bottom_sheet_positive_button_text"
+                style="@style/FilledButton" />
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/finds_promo_negative_button"
+                style="@style/TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/chrome_finds_opt_in_bottom_sheet_negative_button_text"/>
+
+        </LinearLayout>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/finds_promo_close_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="center"
+            android:src="@drawable/btn_close"
+            android:contentDescription="@string/close"
+            app:tint="@macro/default_icon_color" />
+
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+</FrameLayout>

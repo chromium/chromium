@@ -477,6 +477,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 && mProfile != null
                 && FindsFeatures.sEnableHistoryPageOptIn.getValue()) {
             checkFindsPromoShowCriteriaAsync(mProfile);
+        } else if (FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
+            updateFindsPromoVisibility();
         }
     }
 
@@ -544,8 +546,35 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     private View getFindsPromoContainer() {
-        // TODO(crbug.com/510904234): Add the UI layout and click handlers.
-        return new View(mManager.getContext());
+        Context context = mManager.getContext();
+        View view =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.finds_promo_view_history_page, null, false);
+        Button positiveButton = view.findViewById(R.id.finds_promo_positive_button);
+        Button negativeButton = view.findViewById(R.id.finds_promo_negative_button);
+        View closeButton = view.findViewById(R.id.finds_promo_close_button);
+        positiveButton.setOnClickListener(
+                v -> {
+                    FindsUtils.acceptOptIn(
+                            context,
+                            assumeNonNull(mProfile),
+                            assumeNonNull(mSnackbarManager),
+                            () -> dismissFindsOptInPromo());
+                });
+        negativeButton.setOnClickListener(v -> dismissFindsOptInPromo());
+        closeButton.setOnClickListener(v -> dismissFindsOptInPromo());
+        return view;
+    }
+
+    private void dismissFindsOptInPromo() {
+        if (!mFindsPromoVisible) return;
+
+        mFindsPromoVisible = false;
+        setHeaders();
+
+        if (mProfile != null) {
+            FindsUtils.setOptInPromoInteracted(mProfile);
+        }
     }
 
     @EnsuresNonNull("mPrivacyDisclaimerTextView")
@@ -765,9 +794,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     private void updateFindsPromoVisibility() {
-        // This method is only called when the promo has been verified to be eligible.
-        assert mFindsPromoShowEligible;
-
         // Ensure that the Finds Promo is mutually exclusive with the History Sync Promo.
         mFindsPromoVisible = !mHistorySyncPromoVisible;
 

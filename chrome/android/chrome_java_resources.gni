@@ -526,6 +526,7 @@ chrome_java_resources = [
   "java/res/layout/find_toolbar.xml",
   "java/res/layout/finds_opt_in_bottom_sheet.xml",
   "java/res/layout/finds_opt_in_bottom_sheet_content.xml",
+  "java/res/layout/finds_promo_view_history_page.xml",
   "java/res/layout/fre_tos_privacy_disclaimer.xml",
   "java/res/layout/gesture_user_education_iph_layout.xml",
   "java/res/layout/google_wallet_widget.xml",
