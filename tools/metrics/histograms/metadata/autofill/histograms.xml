@@ -8994,8 +8994,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Affiliated.SelectedIndex"
     units="index" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The index of the selected loyalty card on the affiliated loyalty cards
     screen in the Touch To Fill bottom sheet. Recorded when user selects a
@@ -9006,8 +9005,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.TouchToFill.LoyaltyCard.All.SelectedIndex"
     units="index" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The index of the selected loyalty card on the all loyalty cards screen in
     the Touch To Fill bottom sheet. Recorded when user selects a loyalty card
@@ -9019,8 +9017,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown"
     units="loyalty cards" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of affiliatd loyalty cards shown in the Touch To Fill bottom
     sheet. Recorded when showing the bottom sheet.
@@ -9030,8 +9027,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.TouchToFill.LoyaltyCard.NumberOfLoyaltyCardsShown"
     units="loyalty cards" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of all loyalty cards of a user shown in the Touch To Fill bottom
     sheet. All loyalty cards are shown on the second screen in the bottom sheet
@@ -9043,8 +9039,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Outcome"
     enum="TouchToFill.LoyaltyCard.Outcome" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the user action on the Touch To Fill for loyalty cards. It is
     recorded when the Touch To Fill bottom sheet is closed.
@@ -9054,8 +9049,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Source"
     enum="TouchToFill.LoyaltyCard.Source" expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the source that triggered the Touch To Fill for loyalty cards. It is
     recorded when the Touch To Fill bottom sheet is shown.
@@ -9065,8 +9059,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.TouchToFill.LoyaltyCard.TriggerOutcome"
     enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
-  <owner>osaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the outcome of the attempt to trigger Touch To Fill for loyalty
     cards. It is recorded only when the form is parsed as a loyalty card by
