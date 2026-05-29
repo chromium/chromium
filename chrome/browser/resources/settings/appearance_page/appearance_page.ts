@@ -193,23 +193,6 @@ export class SettingsAppearancePageElement extends
 
       showManagedThemeDialog_: Boolean,
 
-      sidePanelOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {
-              value: 'true',
-              name: loadTimeData.getString('uiFeatureAlignRight'),
-            },
-            {
-              value: 'false',
-              name: loadTimeData.getString('uiFeatureAlignLeft'),
-            },
-          ];
-        },
-      },
-
       tabStripOptions_: {
         readOnly: true,
         type: Array,
@@ -274,6 +257,34 @@ export class SettingsAppearancePageElement extends
           return loadTimeData.getBoolean('showCtrlTabMru');
         },
       },
+      sidePanelAlignmentOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignLeft'),
+            },
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignRight'),
+            },
+          ];
+        },
+      },
+
+      configurableSidePanels_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          const json =
+              loadTimeData.valueExists('configurableSidePanelAlignments') ?
+              loadTimeData.getString('configurableSidePanelAlignments') :
+              '[]';
+          return JSON.parse(json);
+        },
+      },
     };
   }
 
@@ -320,7 +331,8 @@ export class SettingsAppearancePageElement extends
   declare private showProjectsPanelEnabled_: boolean;
   declare private showEverythingMenuEnabled_: boolean;
   declare private showManagedThemeDialog_: boolean;
-  declare private sidePanelOptions_: DropdownMenuOptionList;
+  declare private sidePanelAlignmentOptions_: DropdownMenuOptionList;
+  declare private configurableSidePanels_: Array<{id: string, label: string}>;
   declare private tabStripOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
@@ -605,6 +617,26 @@ export class SettingsAppearancePageElement extends
   private onManagedDialogClosed_() {
     this.showManagedThemeDialog_ = false;
   }
+
+  private getOverrideValue_(
+      id: string, overrides: Record<string, boolean>|undefined,
+      defaultIsRight: boolean|undefined): string {
+    if (defaultIsRight === undefined) {
+      return '';
+    }
+    const isRight = (overrides && overrides[id] !== undefined) ? overrides[id] :
+                                                                 defaultIsRight;
+    return isRight.toString();
+  }
+
+  private onOverrideAlignmentChange_(event: Event) {
+    const dropdown = event.target as SettingsDropdownMenuElement;
+    const entryId = dropdown.dataset['entryId']!;
+    const newValue = dropdown.getSelectedValue() === 'true';
+    this.set(`prefs.side_panel.alignment_overrides.value.${entryId}`, newValue);
+  }
+
+
 
   // SettingsViewMixin
   override getFocusConfig() {

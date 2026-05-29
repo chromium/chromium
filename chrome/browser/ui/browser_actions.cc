@@ -35,6 +35,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
@@ -486,6 +487,16 @@ void BrowserActions::InitializeSidePanelActions() {
                 static_cast<
                     std::underlying_type_t<actions::ActionPinnableState>>(
                     actions::ActionPinnableState::kNotPinnable))
+            .Build());
+  }
+
+  if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
+    root_action_item_->AddChild(
+        SidePanelAction(
+            SidePanelEntryId::kGlic, IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_GLIC,
+            IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_GLIC, omnibox::kSparkIcon,
+            kActionSidePanelShowGlic, bwi, false)
+            .SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile))
             .Build());
   }
 }

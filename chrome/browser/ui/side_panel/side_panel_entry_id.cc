@@ -14,6 +14,18 @@ std::string SidePanelEntryIdToString(SidePanelEntryId id) {
 }
 #undef SIDE_PANEL_TO_STRING_CASE_STATEMENT
 
+#define SIDE_PANEL_FROM_STRING_CASE_STATEMENT(entry_id, action_id, \
+                                              histogram_name)      \
+  if (name == #entry_id) {                                         \
+    return SidePanelEntryId::entry_id;                             \
+  }
+std::optional<SidePanelEntryId> SidePanelEntryIdFromString(
+    std::string_view name) {
+  SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_FROM_STRING_CASE_STATEMENT)
+  return std::nullopt;
+}
+#undef SIDE_PANEL_FROM_STRING_CASE_STATEMENT
+
 #define SIDE_PANEL_HISTOGRAM_NAME_CASE_STATEMENT(entry_id, action_id, \
                                                  histogram_name)      \
   case SidePanelEntryId::entry_id:                                    \

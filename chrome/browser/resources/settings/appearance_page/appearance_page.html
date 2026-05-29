@@ -25,11 +25,13 @@
         border-top: var(--cr-separator-line);
       }
 
-      .indented-toggles {
+      .indented-toggles,
+      .indented-rows {
         padding-inline-end: 0;
       }
 
-      .indented-toggles settings-toggle-button {
+      .indented-toggles settings-toggle-button,
+      .indented-rows .cr-row {
         padding-inline-start: 0;
       }
 
@@ -243,15 +245,37 @@
           </settings-toggle-button>
         </template>
 
-        <div class="cr-row">
-          <div class="flex cr-padded-text" aria-hidden="true">
-            $i18n{sidePanelPosition}
+        <div class="cr-row">$i18n{sidePanelPosition}</div>
+        <div class="list-frame indented-rows">
+          <template is="dom-repeat" items="[[configurableSidePanels_]]">
+            <div class="cr-row continuation">
+              <div class="flex cr-padded-text" aria-hidden="true">
+                [[item.label]]
+              </div>
+              <settings-dropdown-menu
+                  label="[[item.label]]"
+                  menu-options="[[sidePanelAlignmentOptions_]]"
+                  data-entry-id$="[[item.id]]"
+                  pref="[[prefs.side_panel.is_right_aligned]]"
+                  no-set-pref
+                  value="[[getOverrideValue_(
+                    item.id, prefs.side_panel.alignment_overrides.value,
+                    prefs.side_panel.is_right_aligned.value)]]"
+                  on-settings-control-change="onOverrideAlignmentChange_">
+              </settings-dropdown-menu>
+            </div>
+          </template>
+
+          <div class="cr-row continuation">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              $i18n{sidePanelAlignmentChromePanels}
+            </div>
+            <settings-dropdown-menu id="sidePanelPosition"
+                label="$i18n{sidePanelAlignmentChromePanels}"
+                pref="{{prefs.side_panel.is_right_aligned}}"
+                menu-options="[[sidePanelAlignmentOptions_]]">
+            </settings-dropdown-menu>
           </div>
-          <settings-dropdown-menu id="sidePanelPosition"
-              label="$i18n{sidePanelPosition}"
-              pref="{{prefs.side_panel.is_right_aligned}}"
-              menu-options="[[sidePanelOptions_]]">
-          </settings-dropdown-menu>
         </div>
         <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
           <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>

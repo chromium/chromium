@@ -250,11 +250,7 @@ void SidePanelCoordinator::PopulateSidePanel(
 
   entry->set_last_open_trigger(open_trigger);
 
-  // Contextual tasks should not respect the horizontal alignment of other side
-  // panels. This is special case behavior that should be removed if we want to
-  // support it long term.
-  side_panel->SetActiveEntryUsesDefaultHorizontalAlignment(
-      entry->key().id() != SidePanelEntry::Id::kContextualTasks);
+  side_panel->UpdateHorizontalAlignment(entry->key().id());
 
   if (entry->should_show_header()) {
     side_panel->AddHeaderView(std::make_unique<SidePanelHeader>(

@@ -56,6 +56,9 @@ enum class SidePanelEntryId { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_ENTRY_ID_ENUM) };
 
 std::string SidePanelEntryIdToString(SidePanelEntryId id);
 
+std::optional<SidePanelEntryId> SidePanelEntryIdFromString(
+    std::string_view name);
+
 std::string_view SidePanelEntryIdToHistogramName(SidePanelEntryId id);
 
 std::optional<actions::ActionId> SidePanelEntryIdToActionId(
