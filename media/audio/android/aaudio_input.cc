@@ -125,14 +125,14 @@ void AAudioInputStream::Start(AudioInputCallback* callback) {
     callback_ = callback;
   }
 
-  audio_manager_->OnPrepareToStartAAudioInputStream(this);
+  // Acquire the Bluetooth SCO state before starting the stream. The Android
+  // framework requires SCO to be active before the stream is started.
+  audio_manager_->AcquireScoState(this);
   if (stream_wrapper_->Start()) {
-    // Successfully started `stream_wrapper_`.
-    audio_manager_->OnStartAAudioInputStream(this);
     return;
   }
-  audio_manager_->OnFailedToStartAAudioInputStream(this);
-
+  // Release the SCO state if the stream failed to start.
+  audio_manager_->ReleaseScoState(this);
   {
     base::AutoLock al(lock_);
     callback_->OnError();
@@ -159,7 +159,8 @@ void AAudioInputStream::Stop() {
     callback_ = nullptr;
   }
 
-  audio_manager_->OnStopAAudioInputStream(this);
+  // Release the Bluetooth SCO state as the stream is stopping.
+  audio_manager_->ReleaseScoState(this);
 
   if (!stream_wrapper_->Stop()) {
     temp_error_callback->OnError();
@@ -296,6 +297,8 @@ void AAudioInputStream::HandleDeviceChange() {
   audio_manager_->OnAAudioInputStreamDeviceChanged(this);
 
   if (!stream_wrapper_->Start()) {
+    // Release the SCO state as the stream failed to start.
+    audio_manager_->ReleaseScoState(this);
     base::AutoLock al(lock_);
     if (callback_) {
       callback_->OnError();

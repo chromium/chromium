@@ -904,15 +904,15 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
 }
 
 // Manages the Bluetooth SCO state when a Bluetooth SCO input device is
-// explicitly requested. The Android framework strictly requires the SCO state
-// to be set via the framework API prior to the stream starting (see
-// b/459531858). `state` should be true before starting the stream, and false
-// if the start fails.
-void AudioManagerAndroid::OnPrepareToStartAAudioInputStream(
-    AAudioInputStream* stream) {
+// requested, either explicitly or system decided (implicitly chosen). The
+// Android framework strictly requires the SCO state to be set via the framework
+// API prior to the stream starting (see b/459531858 and b/514903919). The SCO
+// state should be acquired before starting the stream, and released if the
+// start fails.
+void AudioManagerAndroid::AcquireScoState(AAudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  if (!stream->IsExplicitlyRequestingBluetoothSco()) {
+  if (!IsUsingBluetoothSco(stream)) {
     return;
   }
 
@@ -920,8 +920,7 @@ void AudioManagerAndroid::OnPrepareToStartAAudioInputStream(
   GetJniDelegate().MaybeSetBluetoothScoState(true);
 }
 
-void AudioManagerAndroid::OnFailedToStartAAudioInputStream(
-    AAudioInputStream* stream) {
+void AudioManagerAndroid::ReleaseScoState(AAudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
   if (input_streams_requiring_sco_.erase(stream) == 0) {
@@ -971,66 +970,28 @@ bool AudioManagerAndroid::IsUsingBluetoothSco(AAudioInputStream* stream) {
   return actual_device->second.GetType() == AudioDeviceType::kBluetoothSco;
 }
 
-void AudioManagerAndroid::OnStartAAudioInputStream(AAudioInputStream* stream) {
-  // Enable Bluetooth SCO for Bluetooth SCO input streams when per-stream device
-  // selection is enabled. This should be done both in the case where a
-  // Bluetooth device was explicitly requested, and in the case where a
-  // Bluetooth device was implicitly chosen for a default stream.
 
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
-  // OnPrepareToStartAAudioInputStream might already inserted the stream when
-  // it explicitly requests SCO.
-  if (input_streams_requiring_sco_.contains(stream) ||
-      !IsUsingBluetoothSco(stream)) {
-    return;
-  }
-
-  input_streams_requiring_sco_.insert(stream);
-
-  // SCO can safely be re-enabled even if it is already on.
-  GetJniDelegate().MaybeSetBluetoothScoState(true);
-}
 
 void AudioManagerAndroid::OnAAudioInputStreamDeviceChanged(
     AAudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  // If BT SCO is explicitly requested on this tream, fine to ignore the
+  // If BT SCO is explicitly requested on this stream, fine to ignore the
   // device changed callback from system.
   if (stream->IsExplicitlyRequestingBluetoothSco()) {
     return;
   }
 
   const bool was_requiring_sco = input_streams_requiring_sco_.contains(stream);
-  const bool is_requiring_sco = IsUsingBluetoothSco(stream);
 
   if (was_requiring_sco) {
-    // Always stop to handle BT-to-BT cycle and BT-to-Speaker transitions
-    // correctly.
-    OnStopAAudioInputStream(stream);
+    // Always release the current SCO state to handle BT-to-BT cycle and
+    // BT-to-Speaker transitions correctly.
+    ReleaseScoState(stream);
   }
 
-  if (is_requiring_sco) {
-    // Start will re-evaluate and re-enable SCO if necessary.
-    OnStartAAudioInputStream(stream);
-  }
-}
-
-void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
-  // Disable Bluetooth SCO when it is no longer needed by any input streams.
-
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
-  // Only disable SCO if the last stream requiring it was just stopped
-  if (input_streams_requiring_sco_.erase(stream) == 0) {
-    return;
-  }
-  if (!input_streams_requiring_sco_.empty()) {
-    return;
-  }
-
-  GetJniDelegate().MaybeSetBluetoothScoState(false);
+  // Re-acquire the SCO state if the new device requires it.
+  AcquireScoState(stream);
 }
 
 void AudioManagerAndroid::SetMute(JNIEnv* env, bool muted) {

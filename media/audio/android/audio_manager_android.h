@@ -177,22 +177,18 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // output devices.
   static AudioParameters::Format GetHdmiOutputEncodingFormats();
 
-  // Called by an `AAudioInputStream` before it is about to start.
-  void OnPrepareToStartAAudioInputStream(AAudioInputStream* stream);
-  // Called by an `AAudioInputStream` after it failed to start.
-  void OnFailedToStartAAudioInputStream(AAudioInputStream* stream);
+  // Acquires the Bluetooth SCO state for an AAudio input stream.
+  // Must be called on the audio thread before attempting to start the stream
+  // to ensure SCO is active.
+  void AcquireScoState(AAudioInputStream* stream);
 
-  // Called by an `AAudioInputStream` when it is started, i.e. it begins
-  // providing audio data.
-  void OnStartAAudioInputStream(AAudioInputStream* stream);
+  // Releases the Bluetooth SCO state for an AAudio input stream when it is
+  // stopped or fails to start. Must be called on the audio thread.
+  void ReleaseScoState(AAudioInputStream* stream);
 
   // Called by an `AAudioInputStream` when its underlying audio device is
   // changed, i.e. it stops and restarts providing audio data.
   void OnAAudioInputStreamDeviceChanged(AAudioInputStream* stream);
-
-  // Called by an `AAudioInputStream` when it is stopped, i.e. it stops
-  // providing audio data.
-  void OnStopAAudioInputStream(AAudioInputStream* stream);
 
   bool IsUsingBluetoothSco(AAudioInputStream* stream);
 
@@ -269,6 +265,9 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   OutputStreams output_streams_;
   BluetoothOutputStreams bluetooth_output_streams_;
 
+  // The set of active input streams that have acquired the Bluetooth SCO state.
+  // The global SCO state is turned on when this set transitions from empty to
+  // non-empty, and turned off when it transitions back to empty.
   InputStreams input_streams_requiring_sco_;
 
   // Enabled when first input stream is created and set to false when last
