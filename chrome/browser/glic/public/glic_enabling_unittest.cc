@@ -1020,6 +1020,37 @@ TEST_F(GlicEnablingProfileEligibilityTest,
   EXPECT_TRUE(callback_called);
 }
 
+TEST_F(GlicEnablingProfileEligibilityTest,
+       IsExperimentalTriggeringEnabledDefault) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+
+  // By default, the preference should be at its default value.
+  EXPECT_TRUE(enabling.IsExperimentalTriggeringEnabledDefault());
+
+  // Set it to true explicitly.
+  enabling.SetExperimentalTriggeringEnabled(true);
+  EXPECT_FALSE(enabling.IsExperimentalTriggeringEnabledDefault());
+
+  // Set it to false explicitly
+  enabling.SetExperimentalTriggeringEnabled(false);
+  EXPECT_FALSE(enabling.IsExperimentalTriggeringEnabledDefault());
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       IsExperimentalTriggeringUserControlled) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+
+  // By default, the preference is user-controlled.
+  EXPECT_TRUE(enabling.IsExperimentalTriggeringUserControlled());
+
+  // Make the preference managed (enforced by policy)
+  static_cast<TestingProfile*>(profile())
+      ->GetTestingPrefService()
+      ->SetManagedPref(prefs::kGlicExperimentalTriggeringEnabled,
+                       std::make_unique<base::Value>(false));
+  EXPECT_FALSE(enabling.IsExperimentalTriggeringUserControlled());
+}
+
 TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
   bool callback_called = false;
   auto subscription = glic::GlicKeyedService::Get(profile())

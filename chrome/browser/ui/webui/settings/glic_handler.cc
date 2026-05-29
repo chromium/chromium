@@ -486,6 +486,24 @@ bool GlicHandler::ShouldShowWebActuationToggle(Profile* profile) {
   return false;
 }
 
+bool GlicHandler::ShouldShowExperimentalTriggeringToggle(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
+    return false;
+  }
+  if (!ShouldShowWebActuationToggle(profile)) {
+    return false;
+  }
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!glic_service) {
+    return false;
+  }
+  if (!glic_service->enabling().IsExperimentalTriggeringUserControlled()) {
+    return false;
+  }
+  return !glic_service->enabling().IsExperimentalTriggeringEnabledDefault();
+}
+
 void GlicHandler::HandleGetActorLoginPermissions(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   AllowJavascript();

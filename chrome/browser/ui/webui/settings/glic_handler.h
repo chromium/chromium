@@ -38,6 +38,10 @@ class GlicHandler : public SettingsPageUIHandler,
   // Returns whether the web actuation toggle should be shown for `profile`.
   static bool ShouldShowWebActuationToggle(Profile* profile);
 
+  // Returns whether the experimental triggering toggle should be shown for
+  // `profile`.
+  static bool ShouldShowExperimentalTriggeringToggle(Profile* profile);
+
   void AllowJavascriptForTesting() { AllowJavascript(); }
 
   // Sends the client whether the web actuation is enabled.

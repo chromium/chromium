@@ -421,6 +421,12 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Returns true if the user enabled actuation on web pref is at its default
   // value.
   bool IsUserEnabledActuationOnWebDefault() const;
+  // Returns true if the experimental triggering enabled pref is at its default
+  // value.
+  bool IsExperimentalTriggeringEnabledDefault() const;
+  // Returns true if the experimental triggering enabled pref is user
+  // controlled.
+  bool IsExperimentalTriggeringUserControlled() const;
   // Sets whether user enabled actuation on web.
   void SetUserEnabledActuationOnWeb(bool enabled);
 

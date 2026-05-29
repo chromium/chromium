@@ -1019,8 +1019,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
   html_source->AddBoolean(
       "showGlicExperimentalTriggering",
-      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
-          GlicHandler::ShouldShowWebActuationToggle(profile));
+      GlicHandler::ShouldShowExperimentalTriggeringToggle(profile));
 }
 
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {

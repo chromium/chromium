@@ -962,6 +962,18 @@ bool GlicEnabling::IsUserEnabledActuationOnWebDefault() const {
   return pref && pref->IsDefaultValue();
 }
 
+bool GlicEnabling::IsExperimentalTriggeringEnabledDefault() const {
+  const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
+      prefs::kGlicExperimentalTriggeringEnabled);
+  return pref && pref->IsDefaultValue();
+}
+
+bool GlicEnabling::IsExperimentalTriggeringUserControlled() const {
+  const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
+      prefs::kGlicExperimentalTriggeringEnabled);
+  return pref && !pref->IsManaged();
+}
+
 void GlicEnabling::SetUserEnabledActuationOnWeb(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
                                    enabled);

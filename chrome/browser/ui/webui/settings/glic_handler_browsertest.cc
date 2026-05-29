@@ -118,6 +118,17 @@ class GlicHandlerSubscriptionTierBrowserTest : public GlicHandlerBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class GlicHandlerExperimentalTriggeringBrowserTest
+    : public GlicHandlerConsentBrowserTest {
+ public:
+  GlicHandlerExperimentalTriggeringBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlicExperimentalTriggering}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // TODO(crbug.com/388101855): Remove buildflag when GlobalAcceleratorListener
 // supports Linux Wayland.
 #if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
@@ -396,6 +407,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("glic-web-actuation-toggle-visibility-changed",
             data.arg1()->GetString());
   EXPECT_TRUE(data.arg2()->GetBool());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicHandlerBrowserTest,
+    ShouldShowExperimentalTriggeringToggle_FeatureFlagDisabled) {
+  // 1. When kGlicExperimentalTriggering is disabled by default in
+  // GlicHandlerBrowserTest, it should return false.
+  EXPECT_FALSE(GlicHandler::ShouldShowExperimentalTriggeringToggle(
+      browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicHandlerExperimentalTriggeringBrowserTest,
+    ShouldShowExperimentalTriggeringToggle_FeatureFlagEnabled) {
+  // When both features are enabled and user has consented to Web Actuation:
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(true);
+
+  // 1. If the experimental triggering preference is at its default value,
+  // ShouldShowExperimentalTriggeringToggle should return false.
+  EXPECT_FALSE(GlicHandler::ShouldShowExperimentalTriggeringToggle(
+      browser()->profile()));
+
+  // 2. If the experimental triggering preference has been modified (not
+  // default), ShouldShowExperimentalTriggeringToggle should return true.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetExperimentalTriggeringEnabled(true);
+  EXPECT_TRUE(GlicHandler::ShouldShowExperimentalTriggeringToggle(
+      browser()->profile()));
 }
 
 }  // namespace settings
