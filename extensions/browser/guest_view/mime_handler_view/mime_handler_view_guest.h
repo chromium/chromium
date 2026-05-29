@@ -39,6 +39,7 @@ class MimeHandlerViewGuest
 
   // GuestViewBase overrides.
   bool CanBeEmbeddedInsideCrossProcessFrames() const override;
+  GURL GetOwnerSiteURL() const override;
   void GuestOverrideRendererPreferences(
       blink::RendererPreferences& preferences) final;
 

@@ -86,7 +86,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
       ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
           guest->owner_rfh());
 
-  const GURL& owner_site_url = guest->GetOwnerSiteURL();
+  const GURL owner_site_url = guest->GetOwnerSiteURL();
   // Ok for |owner_extension| to be nullptr, the embedder might be WebUI.
   Feature::Availability availability = feature->IsAvailableToContext(
       owner_extension,

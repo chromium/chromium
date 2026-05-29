@@ -239,8 +239,12 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Returns the URL of the owner RenderFrameHost's last committed URL.
   const GURL& GetOwnerLastCommittedURL() const;
 
-  // Returns the URL of the owner RenderFrameHost's SiteInstance.
-  const GURL& GetOwnerSiteURL() const;
+  // Returns a URL representing the owner RenderFrameHost's origin, derived from
+  // its last committed origin. For opaque origins (e.g., sandboxed frames),
+  // uses the precursor tuple origin. Subclasses may override to handle cases
+  // where the origin has no useful precursor (e.g., browser-initiated data:
+  // URLs).
+  virtual GURL GetOwnerSiteURL() const;
 
   // Returns the host of the owner WebContents. If the owner RenderFrameHost is
   // for an extension, returns the host of its URL, which is an extension ID. If

@@ -981,6 +981,31 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Basic) {
   LoadAppWithGuest("web_view/simple");
 }
 
+// Tests that GuestViewBase::GetOwnerSiteURL() correctly returns the extension
+// origin URL when the webview is embedded in a sandboxed iframe (which has an
+// opaque origin). This exercises the GetTupleOrPrecursorTupleIfOpaque() path.
+IN_PROC_BROWSER_TEST_P(WebViewTest, OwnerSiteURLFromSandboxedIframe) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAppWithGuest("web_view/sandboxed_owner");
+
+  guest_view::GuestViewBase* guest = GetGuestView();
+  ASSERT_TRUE(guest);
+  ASSERT_TRUE(guest->owner_rfh());
+
+  // The owner RFH should be the sandboxed iframe, which has an opaque origin.
+  url::Origin owner_origin = guest->owner_rfh()->GetLastCommittedOrigin();
+  EXPECT_TRUE(owner_origin.opaque());
+
+  // Despite the opaque origin, GetOwnerSiteURL() should return the extension
+  // origin URL by unwrapping the precursor origin.
+  GURL owner_site_url = guest->GetOwnerSiteURL();
+  EXPECT_TRUE(owner_site_url.SchemeIs(extensions::kExtensionScheme));
+
+  // The owner site URL host should be the extension ID.
+  GURL embedder_url = GetEmbedderWebContents()->GetLastCommittedURL();
+  EXPECT_EQ(embedder_url.DeprecatedGetOriginAsURL(), owner_site_url);
+}
+
 class WebContentsAudioMutedObserver : public content::WebContentsObserver {
  public:
   explicit WebContentsAudioMutedObserver(content::WebContents* web_contents)

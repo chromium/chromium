@@ -599,11 +599,11 @@ const GURL& GuestViewBase::GetOwnerLastCommittedURL() const {
   return owner_rfh()->GetLastCommittedURL();
 }
 
-const GURL& GuestViewBase::GetOwnerSiteURL() const {
+GURL GuestViewBase::GetOwnerSiteURL() const {
   return owner_rfh()
-      ->GetSiteInstance()
-      ->GetSecurityPrincipal()
-      .GetDeprecatedSiteURL();
+      ->GetLastCommittedOrigin()
+      .GetTupleOrPrecursorTupleIfOpaque()
+      .GetURL();
 }
 
 void GuestViewBase::SetAttachParams(const base::DictValue& params) {
