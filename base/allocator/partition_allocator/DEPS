@@ -13,7 +13,7 @@ include_rules = [ "+partition_alloc" ]
 # between chromium and partition_alloc. Remove those exceptions:
 specific_include_rules = {
   # Dependencies on //testing:
-  ".*_(perf|unit)?test.*\.(h|cc)": [
+  ".*_(perf|unit)?test.*\\.(h|cc)": [
     "+testing/gmock/include/gmock/gmock.h",
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/perf/perf_result_reporter.h",
@@ -23,19 +23,19 @@ specific_include_rules = {
   ],
 
   # Dependencies on //base:
-  "extended_api\.cc": [
+  "extended_api\\.cc": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
   ],
-  "partition_alloc_perftest\.cc": [
+  "partition_alloc_perftest\\.cc": [
     "+base/allocator/dispatcher/dispatcher.h",
     "+base/debug/allocation_trace.h",
     "+base/debug/debugging_buildflags.h",
     "+base/timer/lap_timer.h",
   ],
-  "partition_lock_perftest\.cc": [
+  "partition_lock_perftest\\.cc": [
     "+base/timer/lap_timer.h",
   ],
-  "raw_ptr_unittest\.cc": [
+  "raw_ptr_unittest\\.cc": [
     "+base/allocator/partition_alloc_features.h",
     "+base/allocator/partition_alloc_support.h",
     "+base/cpu.h",
@@ -47,7 +47,7 @@ specific_include_rules = {
     "+base/test/scoped_feature_list.h",
     "+base/types/to_address.h",
   ],
-  "raw_ref_unittest\.cc": [
+  "raw_ref_unittest\\.cc": [
     "+base/debug/asan_service.h",
     "+base/memory/raw_ptr_asan_service.h",
     "+base/test/gtest_util.h",

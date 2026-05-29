@@ -36,7 +36,7 @@ include_rules = [
 
 specific_include_rules = {
   # To evaluate the performance effects of using absl's flat_hash_map.
-  "supports_user_data\.cc": [
+  "supports_user_data\\.cc": [
     "+third_party/abseil-cpp/absl/container/flat_hash_map.h",
   ]
 }
