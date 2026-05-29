@@ -851,7 +851,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
         }
 
-        boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
+        boolean isTargetIncognito =
+                ChromeMultiInstancePersistentStore.readProfileType(instanceId)
+                        == SupportedProfileType.OFF_THE_RECORD;
+        boolean openAdjacently =
+                MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity, isTargetIncognito);
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, /* preferNew= */ false, openAdjacently, source);
