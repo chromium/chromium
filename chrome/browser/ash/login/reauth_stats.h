@@ -15,7 +15,10 @@ namespace ash {
 void RecordReauthReason(PrefService& local_state,
                         const AccountId& account_id,
                         ReauthReason reason);
-void SendReauthReason(const AccountId& account_id, bool password_changed);
+
+void SendReauthReason(PrefService& local_state,
+                      const AccountId& account_id,
+                      bool password_changed);
 
 }  // namespace ash
 

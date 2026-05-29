@@ -854,7 +854,7 @@ void LoginDisplayHostMojo::OnAuthSuccess(const UserContext& user_context) {
   }
 
   if (gaia_reauth_account_id_.has_value()) {
-    SendReauthReason(gaia_reauth_account_id_.value(),
+    SendReauthReason(local_state_.get(), gaia_reauth_account_id_.value(),
                      false /* password changed */);
     gaia_reauth_account_id_.reset();
   }
@@ -863,7 +863,7 @@ void LoginDisplayHostMojo::OnAuthSuccess(const UserContext& user_context) {
 void LoginDisplayHostMojo::OnPasswordChangeDetectedFor(
     const AccountId& account) {
   if (account.is_valid()) {
-    SendReauthReason(account, true /* password changed */);
+    SendReauthReason(local_state_.get(), account, true /* password changed */);
   }
   gaia_reauth_account_id_.reset();
 }
