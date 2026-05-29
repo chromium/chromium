@@ -777,6 +777,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void DrawingBufferClientInterruptPixelLocalStorage() override;
   void DrawingBufferClientRestorePixelLocalStorage() override;
   void DrawingBufferClientRestoreScissorTest() override;
+  void DrawingBufferClientRestoreRasterizerDiscard() override;
   void DrawingBufferClientRestoreMaskAndClearValues() override;
   void DrawingBufferClientRestorePixelPackParameters() override;
   void DrawingBufferClientRestoreTexture2DBinding() override;

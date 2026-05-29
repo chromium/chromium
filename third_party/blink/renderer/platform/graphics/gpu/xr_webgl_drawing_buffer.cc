@@ -386,6 +386,9 @@ void XRWebGLDrawingBuffer::ClearBoundFramebuffer() {
   }
 
   gl->Disable(GL_SCISSOR_TEST);
+  if (drawing_buffer_->IsWebGL2()) {
+    gl->Disable(GL_RASTERIZER_DISCARD);
+  }
 
   gl->Clear(clear_bits);
 
@@ -394,6 +397,7 @@ void XRWebGLDrawingBuffer::ClearBoundFramebuffer() {
     return;
 
   client->DrawingBufferClientRestoreScissorTest();
+  client->DrawingBufferClientRestoreRasterizerDiscard();
   client->DrawingBufferClientRestoreMaskAndClearValues();
 }
 

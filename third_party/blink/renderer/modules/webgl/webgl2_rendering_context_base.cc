@@ -5832,6 +5832,20 @@ WebGL2RenderingContextBase::GetUnpackPixelStoreParams(
   return params;
 }
 
+void WebGL2RenderingContextBase::DrawingBufferClientRestoreRasterizerDiscard() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  if (rasterizer_discard_enabled_) {
+    ContextGL()->Enable(GL_RASTERIZER_DISCARD);
+  } else {
+    ContextGL()->Disable(GL_RASTERIZER_DISCARD);
+  }
+}
+
 void WebGL2RenderingContextBase::
     DrawingBufferClientRestorePixelUnpackBufferBinding() {
   if (destruction_in_progress_)

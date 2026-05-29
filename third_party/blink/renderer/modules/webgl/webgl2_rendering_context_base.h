@@ -944,6 +944,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
       Platform::WebGLContextType context_type);
 
   // DrawingBuffer::Client implementation.
+  void DrawingBufferClientRestoreRasterizerDiscard() override;
   void DrawingBufferClientRestorePixelUnpackBufferBinding() override;
   void DrawingBufferClientRestorePixelPackBufferBinding() override;
   void DrawingBufferClientRestorePixelPackParameters() override;

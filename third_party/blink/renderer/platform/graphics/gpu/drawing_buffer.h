@@ -97,6 +97,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // Returns true if the DrawingBuffer is currently bound for draw.
     virtual bool DrawingBufferClientIsBoundForDraw() = 0;
     virtual void DrawingBufferClientRestoreScissorTest() = 0;
+    virtual void DrawingBufferClientRestoreRasterizerDiscard() = 0;
     // Interrupt and restore pixel local storage, if it was active.
     virtual void DrawingBufferClientInterruptPixelLocalStorage() = 0;
     virtual void DrawingBufferClientRestorePixelLocalStorage() = 0;
@@ -316,6 +317,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<CanvasResource> ExportCanvasResource();
 
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource();
+
+  bool IsWebGL2() const {
+    return webgl_version_ == Platform::WebGLContextType::kWebGL2ContextType;
+  }
 
   static const size_t kDefaultColorBufferCacheLimit;
 

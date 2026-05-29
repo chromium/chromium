@@ -68,6 +68,9 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
   }
 
   gl->Disable(GL_SCISSOR_TEST);
+  if (webgl2_) {
+    gl->Disable(GL_RASTERIZER_DISCARD);
+  }
 
   if (descriptor_.is_texture_array) {
     DLOG(ERROR) << __func__ << " Performing texture array clear";
@@ -98,6 +101,7 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
       static_cast<DrawingBuffer::Client*>(context());
 
   client->DrawingBufferClientRestoreScissorTest();
+  client->DrawingBufferClientRestoreRasterizerDiscard();
   client->DrawingBufferClientRestoreMaskAndClearValues();
   client->DrawingBufferClientRestoreFramebufferBinding();
 }
