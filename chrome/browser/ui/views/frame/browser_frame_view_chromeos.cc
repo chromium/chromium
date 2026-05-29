@@ -938,11 +938,6 @@ int BrowserFrameViewChromeOS::GetTabStripRightInset() const {
 }
 
 bool BrowserFrameViewChromeOS::GetShouldPaint() const {
-  // Floated windows show their frame as they need to be dragged or hidden.
-  if (IsFloated()) {
-    return true;
-  }
-
   // We need to paint when the top-of-window views are revealed in immersive
   // fullscreen.
   auto* const immersive_mode_controller =
