@@ -100,6 +100,18 @@ sessions::tab_restore::Group* CreateSessionGroup(
   return group;
 }
 
+sessions::tab_restore::Split* CreateSessionSplit(
+    SessionID::id_type id,
+    std::initializer_list<sessions::tab_restore::Tab*> tabs) {
+  auto* split = new sessions::tab_restore::Split;
+  split->id = SessionID::FromSerializedValue(id);
+  split->tabs.reserve(tabs.size());
+  for (auto* tab : tabs) {
+    split->tabs.emplace_back(tab);
+  }
+  return split;
+}
+
 std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
     const std::u16string& title) {
   auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
@@ -539,6 +551,47 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
   EXPECT_EQ(51, hist2->tabs[0]->session_id.id());
   EXPECT_EQ(52, hist2->tabs[1]->session_id.id());
   EXPECT_EQ(53, hist2->tabs[2]->session_id.id());
+}
+
+TEST_F(HistoryMenuBridgeTest, RecentlyClosedSplits) {
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
+
+  auto entries{CreateSessionEntries({
+      CreateSessionSplit(
+          30,
+          {
+              CreateSessionTab(31, "http://left.com", "Left View"),
+              CreateSessionTab(32, "http://right.com", "Right View"),
+          }),
+  })};
+
+  using ::testing::ReturnRef;
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(ReturnRef(entries));
+
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  ASSERT_EQ(1U, [[menu itemArray] count]);
+
+  // Verify the parent Split item
+  NSMenuItem* parent_item = [menu itemAtIndex:0];
+  MockBridge::HistoryItem* hist_parent =
+      bridge_->HistoryItemForMenuItem(parent_item);
+  EXPECT_TRUE(hist_parent);
+  EXPECT_EQ(30, hist_parent->session_id.id());
+  EXPECT_EQ(2U, hist_parent->tabs.size());
+  EXPECT_NSEQ(@"Split View", [parent_item title]);
+
+  // Verify the submenu containing the individual tabs
+  NSMenu* submenu = [parent_item submenu];
+  EXPECT_EQ(4U,
+            [[submenu itemArray] count]);  // Restore All + Separator + 2 Tabs
+
+  EXPECT_NSEQ(@"Left View", [[submenu itemAtIndex:2] title]);
+  EXPECT_NSEQ(@"Right View", [[submenu itemAtIndex:3] title]);
+
+  EXPECT_EQ(31, hist_parent->tabs[0]->session_id.id());
+  EXPECT_EQ(32, hist_parent->tabs[1]->session_id.id());
 }
 
 // Tests that we properly request an icon from the FaviconService.

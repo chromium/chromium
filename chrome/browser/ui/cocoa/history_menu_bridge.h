@@ -206,6 +206,13 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
                            NSInteger tag,
                            NSInteger index);
 
+  // Adds an item for the split entry with a submenu containing its tabs.
+  // Returns whether the item was successfully added.
+  bool AddSplitEntryToMenu(sessions::tab_restore::Split* split,
+                           NSMenu* menu,
+                           NSInteger tag,
+                           NSInteger index);
+
   // Adds standard 'Restore All' items and an item for each tab in |tabs|,
   // potentially filtering out tabs like the NTP. Returns the number of tabs
   // successfully added and updates the HistoryItem with those tabs.

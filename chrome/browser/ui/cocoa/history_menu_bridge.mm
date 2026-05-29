@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -181,8 +182,13 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
         break;
       }
       case sessions::tab_restore::Type::SPLIT: {
-        // TODO(crbug.com/509526064): Support split tabs in the MacOS History
-        // Menu.
+        bool added = AddSplitEntryToMenu(
+            static_cast<sessions::tab_restore::Split*>(entry.get()), menu,
+            kRecentlyClosed, index);
+        if (added) {
+          ++index;
+          ++added_count;
+        }
         break;
       }
     }
@@ -407,6 +413,50 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
   NSImage* image = NSImageFromImageSkia(group_icon);
   item->icon = image;
   [item->menu_item setImage:item->icon];
+
+  // Create the menu item parent.
+  NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
+  [parent_item setSubmenu:submenu];
+  return true;
+}
+
+bool HistoryMenuBridge::AddSplitEntryToMenu(sessions::tab_restore::Split* split,
+                                            NSMenu* menu,
+                                            NSInteger tag,
+                                            NSInteger index) {
+  const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs =
+      split->tabs;
+  if (tabs.empty()) {
+    return false;
+  }
+
+  // Create the item for the parent/split.
+  auto item = std::make_unique<HistoryItem>();
+  item->session_id = split->id;
+
+  // Set the title of the split.
+  item->title = l10n_util::GetStringUTF16(IDS_RECENTLY_CLOSED_SPLIT);
+
+  // Set the icon of the split view.
+  const auto& color_provider =
+      [AppController.sharedController lastActiveColorProvider];
+  const gfx::VectorIcon* vector_icon = nullptr;
+  if (split->visual_data.split_layout() ==
+      split_tabs::SplitTabLayout::kStacked) {
+    vector_icon = &kSplitSceneHorizontalCustomIcon;
+  } else {
+    vector_icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                      : kSplitSceneOldIcon);
+  }
+  gfx::ImageSkia split_icon =
+      gfx::CreateVectorIcon(*vector_icon, gfx::kFaviconSize,
+                            color_provider.GetColor(ui::kColorMenuIcon));
+  item->icon = NSImageFromImageSkia(split_icon);
+  [item->icon setTemplate:YES];
+
+  // Create the submenu.
+  NSMenu* submenu = [[NSMenu alloc] init];
+  AddTabsToSubmenu(submenu, item.get(), tabs);
 
   // Create the menu item parent.
   NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
