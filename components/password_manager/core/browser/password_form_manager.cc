@@ -1133,7 +1133,8 @@ PasswordForm::Scheme PasswordFormManager::GetScheme() const {
 }
 
 void PasswordFormManager::ProcessServerPredictions(
-    const std::map<FormSignature, FormPredictions>& predictions) {
+    const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+        predictions) {
   if (parser_.server_predictions()) {
     // This method might be called multiple times. No need to process
     // predictions again.
@@ -1576,7 +1577,8 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
 }
 
 void PasswordFormManager::UpdateServerPredictionsForObservedForm(
-    const std::map<FormSignature, FormPredictions>& predictions) {
+    const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+        predictions) {
   CHECK(observed_form());
   if (net::IsLocalhost(observed_form()->url())) {
     // Avoid relying on crowdsourcing on localhost to avoid aggregating multiple
@@ -1588,7 +1590,7 @@ void PasswordFormManager::UpdateServerPredictionsForObservedForm(
 
   FormSignature observed_form_signature =
       CalculateFormSignature(*observed_form());
-  auto it = predictions.find(observed_form_signature);
+  auto it = predictions.find({observed_form_signature, driver_id_});
   if (it == predictions.end()) {
     return;
   }
@@ -1620,7 +1622,8 @@ void PasswordFormManager::UpdateServerPredictionsForObservedForm(
 
 void PasswordFormManager::UpdateFormManagerWithFormChanges(
     const FormData& observed_form_data,
-    const std::map<FormSignature, FormPredictions>& predictions) {
+    const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+        predictions) {
   *mutable_observed_form() = observed_form_data;
 
   // If the observed form has changed, it might be autofilled again.
