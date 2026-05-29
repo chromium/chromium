@@ -36,11 +36,19 @@ class WebUIBackForwardControl {
                          ui::mojom::MenuSourceType source);
 
   void SetEnabled(bool enabled);
+  bool is_enabled() const { return enabled_; }
+
   void SetIsPinned(bool is_pinned);
   // Returns true if the home button is pinned, and so should be shown if
   // there's enough room for it on the toolbar. Always returns true for the back
   // button.
   bool IsPinned() const;
+
+  // Sets whether or not the button has overflowed - that is, not displayed on
+  // the toolbar because there's no space for it. When not pinned, overflowed
+  // should be set to false. Updates state if needed.
+  void SetIsOverflowed(bool is_overflowed);
+  bool is_overflowed() const { return is_overflowed_; }
 
   toolbar_ui_api::mojom::BackForwardButtonStatePtr GetButtonState() const;
 
@@ -61,6 +69,7 @@ class WebUIBackForwardControl {
   std::unique_ptr<views::MenuRunner> menu_runner_;
   bool enabled_ = true;
   bool is_pinned_ = true;
+  bool is_overflowed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_BACK_FORWARD_CONTROL_H_

@@ -71,9 +71,18 @@ bool WebUIBackForwardControl::IsPinned() const {
   return is_pinned_;
 }
 
+void WebUIBackForwardControl::SetIsOverflowed(bool is_overflowed) {
+  if (is_overflowed_ == is_overflowed) {
+    return;
+  }
+  is_overflowed_ = is_overflowed;
+  delegate_->OnBackForwardStateChanged();
+}
+
 toolbar_ui_api::mojom::BackForwardButtonStatePtr
 WebUIBackForwardControl::GetButtonState() const {
   return toolbar_ui_api::mojom::BackForwardButtonState::New(
-      /*enabled=*/enabled_, /*should_be_shown=*/is_pinned_,
+      /*enabled=*/enabled_,
+      /*should_be_shown=*/is_pinned_ && !is_overflowed_,
       /*is_context_menu_visible=*/menu_runner_ && menu_runner_->IsRunning());
 }

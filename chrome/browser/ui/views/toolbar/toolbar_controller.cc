@@ -134,12 +134,14 @@ ToolbarController::ToolbarController(
     const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
     int element_flex_order_start,
     views::View* toolbar_container_view,
+    WebUIToolbarControllerDelegate* webui_toolbar_controller_delegate,
     OverflowButton* overflow_button,
     ToolbarController::PinnedActionsDelegate* pinned_actions_delegate,
     PinnedToolbarActionsModel* pinned_actions_model)
     : responsive_elements_(responsive_elements),
       element_flex_order_start_(element_flex_order_start),
       toolbar_container_view_(toolbar_container_view),
+      webui_toolbar_controller_delegate_(webui_toolbar_controller_delegate),
       overflow_button_(overflow_button),
       pinned_actions_delegate_(pinned_actions_delegate),
       pinned_actions_model_(pinned_actions_model) {
@@ -209,6 +211,18 @@ ToolbarController::ToolbarController(
               }
             }},
         overflow_id);
+  }
+
+  // Adjust overflow order of WebUI toolbar. It doesn't have an entry in
+  // `responsive_elements` because it potentially adds multiple elements, so has
+  // to be handled separately.
+  auto* const web_ui_toolbar_element = FindToolbarElementWithId(
+      toolbar_container_view_, kWebUIToolbarElementIdentifier);
+  if (web_ui_toolbar_element) {
+    views::FlexSpecification flex_spec =
+        web_ui_toolbar_element->GetProperty(views::kFlexBehaviorKey)
+            ->WithOrder(id_to_order_map.at(kWebUIToolbarElementIdentifier));
+    web_ui_toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
   }
 
   responsive_elements_ = GetResponsiveElementsWithOrderedActions();
@@ -336,12 +350,13 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
 std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
   std::vector<ui::ElementIdentifier> order = {
-      kToolbarMediaButtonElementId,
-      kToolbarBatterySaverButtonElementId,
-      kToolbarHomeButtonElementId,
-      kToolbarForwardButtonElementId,
-      kToolbarAvatarButtonElementId,
-      kToolbarSplitTabsToolbarButtonElementId,
+      kToolbarMediaButtonElementId, kToolbarBatterySaverButtonElementId,
+      kToolbarHomeButtonElementId, kToolbarHomeButtonElementId,
+      // The WebUIToolbarWebView is between the home and forward button in
+      // overflow order, since it can include one or both of them, and hides
+      // them on overflow.
+      kWebUIToolbarElementIdentifier, kToolbarForwardButtonElementId,
+      kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
       ContextualTasksButton::kContextualTasksToolbarButton};
   if (base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
     const auto it =
@@ -613,14 +628,28 @@ bool ToolbarController::IsOverflowed(
           [&](ToolbarController::ElementIdInfo id) {
             const auto* const toolbar_element = FindToolbarElementWithId(
                 toolbar_container_view_, id.overflow_identifier);
-            const views::FlexLayout* const flex_layout =
-                static_cast<views::FlexLayout*>(
-                    toolbar_container_view_->GetLayoutManager());
-            return flex_layout->CanBeVisible(toolbar_element) &&
-                   !(proposed_layout
-                         ? proposed_layout->GetLayoutFor(toolbar_element)
-                               ->visible
-                         : toolbar_element->GetVisible());
+            // If the element is on the toolbar, it's being handled by Views, so
+            // check the state of the Views element.
+            if (toolbar_element) {
+              const views::FlexLayout* const flex_layout =
+                  static_cast<views::FlexLayout*>(
+                      toolbar_container_view_->GetLayoutManager());
+              return flex_layout->CanBeVisible(toolbar_element) &&
+                     !(proposed_layout
+                           ? proposed_layout->GetLayoutFor(toolbar_element)
+                                 ->visible
+                           : toolbar_element->GetVisible());
+            }
+            // If the element is not on the toolbar, either it's being handled
+            // by WebUI, or the element was not added to the toolbar. We do not
+            // know which, so need to check with the WebUI toolbar in either
+            // case, if there is a WebUI toolbar.
+            if (webui_toolbar_controller_delegate_) {
+              return webui_toolbar_controller_delegate_->IsOverflowed(
+                  id.overflow_identifier, proposed_layout);
+            } else {
+              return false;
+            }
           }},
       element.overflow_id);
 }
@@ -757,9 +786,16 @@ bool ToolbarController::IsCommandIdEnabled(int command_id) const {
             return pinned_actions_delegate_->GetActionItemFor(id)->GetEnabled();
           },
           [this](ToolbarController::ElementIdInfo id) {
-            return FindToolbarElementWithId(toolbar_container_view_,
-                                            id.overflow_identifier)
-                ->GetEnabled();
+            const views::View* element = FindToolbarElementWithId(
+                toolbar_container_view_, id.overflow_identifier);
+            if (element) {
+              return element->GetEnabled();
+            }
+            // If an element is on the overflow menu, but has no toolbar
+            // element, there must be a WebUI toolbar handling that element.
+            CHECK(webui_toolbar_controller_delegate_);
+            return webui_toolbar_controller_delegate_->IsEnabled(
+                id.overflow_identifier);
           }},
       responsive_elements_.at(command_id).overflow_id);
 }
@@ -784,9 +820,16 @@ void ToolbarController::ExecuteCommand(int command_id, int event_flags) {
             const auto& activate_identifier = id.activate_identifier;
             const auto* const element = FindToolbarElementWithId(
                 toolbar_container_view_, activate_identifier);
-            CHECK(element);
-            const auto* button = AsViewClass<views::Button>(element);
-            button->button_controller()->NotifyClick();
+            if (element) {
+              const auto* button = AsViewClass<views::Button>(element);
+              button->button_controller()->NotifyClick();
+            } else {
+              // If an element is on the overflow menu, but has no toolbar
+              // element, there must be a WebUI toolbar handling that element.
+              CHECK(webui_toolbar_controller_delegate_);
+              webui_toolbar_controller_delegate_->OverflowButtonClicked(
+                  id.activate_identifier);
+            }
             action_key.emplace<ui::ElementIdentifier>(activate_identifier);
           }},
       element_info.overflow_id);

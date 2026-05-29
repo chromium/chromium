@@ -37,6 +37,12 @@ class WebUIHomeControl {
   // there's enough room for it on the toolbar.
   bool IsPinned() const;
 
+  // Sets whether or not the button has overflowed - that is, not displayed on
+  // the toolbar because there's no space for it. When not pinned, overflowed
+  // should be set to false. Updates state if needed.
+  void SetIsOverflowed(bool is_overflowed);
+  bool is_overflowed() const { return is_overflowed_; }
+
   // Handles context menu requests from the WebUI.
   void HandleContextMenu(const gfx::Rect& screen_rect,
                          ui::mojom::MenuSourceType source);
@@ -68,6 +74,7 @@ class WebUIHomeControl {
   BooleanPrefMember pin_state_;
   bool is_pinned_ = false;
   bool is_context_menu_visible_ = false;
+  bool is_overflowed_ = false;
 
   ui::mojom::MenuSourceType last_source_type_for_testing_ =
       ui::mojom::MenuSourceType::kNone;

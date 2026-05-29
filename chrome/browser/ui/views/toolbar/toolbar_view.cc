@@ -421,6 +421,9 @@ void ToolbarView::Init() {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
         browser_, browser_->command_controller(),
         std::move(webui_location_bar)));
+
+    toolbar_webview_->SetProperty(views::kFlexBehaviorKey,
+                                  toolbar_webview_->GetFlexSpecification());
   }
 
   if (!features::IsWebUIReloadButtonEnabled() ||
@@ -1608,7 +1611,7 @@ void ToolbarView::InitLayout() {
   toolbar_controller_ = std::make_unique<ToolbarController>(
       ToolbarController::GetDefaultResponsiveElements(browser_),
       ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-      this, overflow_button_, pinned_toolbar_actions_,
+      this, toolbar_webview_.get(), overflow_button_, pinned_toolbar_actions_,
       PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
   overflow_button_->set_toolbar_controller(toolbar_controller_.get());
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_home_control.h"
@@ -32,6 +34,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
@@ -46,7 +49,14 @@ template <typename T>
 class ScopedUnownedUserData;
 }
 
+// This has to be forward declared and stored in unique_ptrs<> due to the
+// separate toolbar/impl targets in BUILD.gn.
+namespace browser_controls_api {
+class BrowserControlsAdapterImpl;
+}
+
 namespace views {
+struct ProposedLayout;
 class WebView;
 }  // namespace views
 
@@ -109,6 +119,7 @@ class WebUIToolbarWebView
     : public views::View,
       public content::WebContentsObserver,
       public toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate,
+      public ToolbarController::WebUIToolbarControllerDelegate,
       public browser_controls_api::BrowserControlsService::
           BrowserControlsServiceDelegate,
       public WebUIToolbarUI::DependencyProvider,
@@ -187,8 +198,11 @@ class WebUIToolbarWebView
   // views::View:
   void AddedToWidget() override;
   void OnThemeChanged() override;
+  gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void PreferredSizeChanged() override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -199,9 +213,20 @@ class WebUIToolbarWebView
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+  // ToolbarController::WebUIToolbarControllerDelegate:
+  bool IsOverflowed(
+      ui::ElementIdentifier identifier,
+      const views::ProposedLayout* proposed_layout) const override;
+  bool IsEnabled(ui::ElementIdentifier identifier) const override;
+  void OverflowButtonClicked(ui::ElementIdentifier identifier) override;
+
   // webui_toolbar::IconTable::Delegate:
   const ui::ColorProvider* GetColorProvider() const override;
   float GetScaleFactor() const override;
+
+  // Returns the FlexSpecification for determining the size of `this`. The
+  // returned value must not outlive `this`, since it includes a bound callback.
+  views::FlexSpecification GetFlexSpecification();
 
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
@@ -309,6 +334,42 @@ class WebUIToolbarWebView
   void PushNavigationState();
   toolbar_ui_api::mojom::BackForwardControlStatePtr GetBackForwardState() const;
 
+  // Which buttons have overflowed. Allowed ComputeLayout() to be const, and
+  // usable both for computing putative sizes during layout, and updating which
+  // buttons have overflowed when the View is actually resized.
+  struct ButtonOverflowInfo {
+    bool is_forward_button_overflowed = false;
+    bool is_home_button_overflowed = false;
+  };
+
+  // Computes the layout of elements displayed in the toolbar such that they fit
+  // in the available width, if possible. If `width` is 0, returns the min size,
+  // if it's unbounded, returns the size needed to everything. Returns the
+  // actual size <= the passed in `available_width` that `this` can usefully
+  // use.
+  //
+  // If `button_overflow_info` is non-null, writes which buttons should be
+  // overflowed to it.
+  gfx::Size ComputeLayout(
+      views::SizeBound available_width,
+      ButtonOverflowInfo* button_overflow_info = nullptr) const;
+
+  // Uses ComputeLayout() to figure out which buttons should be moved to the
+  // overflow menu, given current dimensions, and informs those buttons that
+  // they should not be on the overflow menu. Should be called on bounds
+  // changes, and when a button is pinned/unpinned or its desired visibility
+  // state changes for any other reason.
+  void UpdateButtonOverflowState();
+
+  // The FlexRule callback used to create a FlexSpecification that computes the
+  // size to use given the provided bounds. This returns what the actual size
+  // would be given `bounds`, but does not change internal state or hide any
+  // overflowed buttons, since this does not indicate an actual change in the
+  // size of the toolbar. Due to that, it neither reads nor writes the overflow
+  // state of any buttons, though it does rely on calculating how many buttons
+  // would be hidden if the provided bounds were all the available space.
+  gfx::Size FlexLayoutRule(const views::View*, const views::SizeBounds& bounds);
+
   // The most recent NavigationControlsState, consisting of the state of all
   // controls managed by the toolbar. This may or may not have been sent to
   // `web_ui`. If this state has not yet been sent, then there must be a pending
@@ -324,6 +385,12 @@ class WebUIToolbarWebView
 
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
+
+  // Used to handle clicks from the overflow menu, through the
+  // ToolbarUIServiceDelegate interface. Once the overflow menus are converted
+  // to use WebUI themselves, this should no longer be needed.
+  std::unique_ptr<browser_controls_api::BrowserControlsAdapterImpl>
+      browser_controls_adapter_;
 
   webui_toolbar::IconTable icon_table_;
 

@@ -42,6 +42,14 @@ bool WebUIHomeControl::IsPinned() const {
   return is_pinned_;
 }
 
+void WebUIHomeControl::SetIsOverflowed(bool is_overflowed) {
+  if (is_overflowed_ == is_overflowed) {
+    return;
+  }
+  is_overflowed_ = is_overflowed;
+  UpdateState();
+}
+
 void WebUIHomeControl::HandleContextMenu(
     const gfx::Rect& screen_rect,
     ui::mojom::MenuSourceType source_type) {
@@ -103,7 +111,7 @@ void WebUIHomeControl::OnIsPinnedChanged() {
 
 void WebUIHomeControl::UpdateState() {
   auto state = toolbar_ui_api::mojom::HomeControlState::New();
-  state->should_be_shown = is_pinned_;
+  state->should_be_shown = is_pinned_ && !is_overflowed_;
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   is_context_menu_visible_ = state->is_context_menu_visible;
 
