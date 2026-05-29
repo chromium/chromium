@@ -6539,4 +6539,284 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          SqlPersistentStoreTest::ParamToString);
 
+class SqlPersistentStoreIncrementalVacuumTest : public SqlPersistentStoreTest {
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kDiskCacheBackendExperiment,
+          {{net::features::kDiskCacheBackendParam.name, "sql"},
+           {net::features::kSqlDiskCacheWalMode.name,
+            IsWalModeEnabled() ? "true" : "false"},
+           {net::features::kSqlDiskCacheIncrementalVacuum.name, "true"},
+           {net::features::kSqlDiskCacheIncrementalVacuumPageCount.name,
+            "10"}}}},
+        {});
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    background_task_runners_.emplace_back(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  }
+
+  int CreateFreelistPagesAndGetCount() {
+    // 1. Insert some entries and write data to make the DB grow.
+    for (int i = 0; i < 10; ++i) {
+      CacheEntryKey key(base::StrCat({"key_", base::NumberToString(i)}));
+      auto res_id = CreateEntryAndGetResId(key);
+      std::string data(10 * 1024, 'a');
+      auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+      EXPECT_EQ(
+          WriteEntryData(key, res_id, /*old_body_end=*/0,
+                         EntryWriteBuffer(std::move(buffer), data.size(), 0),
+                         /*truncate=*/false),
+          SqlPersistentStore::Error::kOk);
+    }
+
+    // 2. Delete all entries. This should create many free pages.
+    base::test::TestFuture<SqlPersistentStore::Error> delete_future;
+    store_->DeleteAllEntries(delete_future.GetCallback());
+    EXPECT_EQ(delete_future.Get(), SqlPersistentStore::Error::kOk);
+
+    // 3. Verify we have freelist pages.
+    int initial_freelist_count = 0;
+    {
+      auto db_handle = ManuallyOpenDatabase();
+      sql::Statement statement(
+          db_handle->GetReadonlyStatement("PRAGMA freelist_count"));
+      if (statement.Step()) {
+        initial_freelist_count = statement.ColumnInt(0);
+      }
+    }
+    return initial_freelist_count;
+  }
+};
+
+TEST_P(SqlPersistentStoreIncrementalVacuumTest, EnableIncrementalVacuum) {
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Verify auto_vacuum is INCREMENTAL (2)
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db_handle->GetReadonlyStatement("PRAGMA auto_vacuum"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ(statement.ColumnInt(0), 2);
+  }
+}
+
+TEST_P(SqlPersistentStoreIncrementalVacuumTest, RunIncrementalVacuum) {
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+  // Set the state to idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  int initial_freelist_count = CreateFreelistPagesAndGetCount();
+  ASSERT_GT(initial_freelist_count, 10);
+
+  // 4. Trigger incremental vacuum.
+  base::test::TestFuture<bool> vacuum_future;
+  store_->MaybeRunIncrementalVacuum(
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false),
+      vacuum_future.GetCallback());
+  EXPECT_TRUE(vacuum_future.Get());
+
+  // 5. Verify freelist pages decreased.
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db_handle->GetReadonlyStatement("PRAGMA freelist_count"));
+    ASSERT_TRUE(statement.Step());
+    int final_freelist_count = statement.ColumnInt(0);
+    EXPECT_EQ(final_freelist_count, 0);
+  }
+}
+
+TEST_P(SqlPersistentStoreIncrementalVacuumTest,
+       DoNotRunIncrementalVacuumWhenActive) {
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+  // Set the state to active (not idle).
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kVisiblePageLoading);
+
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  int initial_freelist_count = CreateFreelistPagesAndGetCount();
+  ASSERT_GT(initial_freelist_count, 10);
+
+  // 3. Trigger incremental vacuum.
+  base::test::TestFuture<bool> vacuum_future;
+  store_->MaybeRunIncrementalVacuum(
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false),
+      vacuum_future.GetCallback());
+  EXPECT_FALSE(vacuum_future.Get());
+
+  // 4. Verify freelist pages did NOT decrease.
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db_handle->GetReadonlyStatement("PRAGMA freelist_count"));
+    ASSERT_TRUE(statement.Step());
+    int final_freelist_count = statement.ColumnInt(0);
+    EXPECT_EQ(final_freelist_count, initial_freelist_count);
+  }
+}
+
+TEST_P(SqlPersistentStoreIncrementalVacuumTest, AbortIncrementalVacuum) {
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+  // Set the state to idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  int initial_freelist_count = CreateFreelistPagesAndGetCount();
+  ASSERT_GT(initial_freelist_count, 10);
+
+  // 3. Create abort flag and set it to true.
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, true);
+
+  // 4. Trigger incremental vacuum with aborted flag.
+  base::test::TestFuture<bool> vacuum_future;
+  store_->MaybeRunIncrementalVacuum(abort_flag, vacuum_future.GetCallback());
+  EXPECT_FALSE(vacuum_future.Get());
+
+  // 5. Verify freelist pages did NOT decrease.
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db_handle->GetReadonlyStatement("PRAGMA freelist_count"));
+    ASSERT_TRUE(statement.Step());
+    int final_freelist_count = statement.ColumnInt(0);
+    EXPECT_EQ(final_freelist_count, initial_freelist_count);
+  }
+}
+
+TEST_P(SqlPersistentStoreIncrementalVacuumTest,
+       RunIncrementalVacuumPreservesRemainingEntries) {
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+  // Set the state to idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  base::Time start_time = base::Time::Now();
+  std::vector<CacheEntryKey> keys;
+  std::vector<SqlPersistentStore::ResId> res_ids;
+  std::vector<std::string> datas;
+
+  // 1. Insert 10 entries and write data, advancing clock by 1 minute each.
+  for (int i = 0; i < 10; ++i) {
+    CacheEntryKey key(base::StrCat({"key_", base::NumberToString(i)}));
+    keys.push_back(key);
+
+    auto res_id = CreateEntryAndGetResId(key);
+    res_ids.push_back(res_id);
+
+    std::string data(10 * 1024,
+                     'a' + i);  // Unique data for each entry ('a' to 'j')
+    datas.push_back(data);
+
+    auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+    ASSERT_EQ(
+        WriteEntryData(key, res_id, /*old_body_end=*/0,
+                       EntryWriteBuffer(std::move(buffer), data.size(), 0),
+                       /*truncate=*/false),
+        SqlPersistentStore::Error::kOk);
+
+    task_environment_.AdvanceClock(base::Minutes(1));
+  }
+
+  // 2. Delete middle entries (key_1 to key_8).
+  // Range: [start_time + 30s, start_time + 8m + 30s]
+  base::Time initial_time = start_time + base::Seconds(30);
+  base::Time end_time = start_time + base::Minutes(8) + base::Seconds(30);
+
+  base::test::TestFuture<SqlPersistentStore::Error> delete_future;
+  store_->DeleteLiveEntriesBetween(initial_time, end_time,
+                                   /*excluded_list=*/{},
+                                   delete_future.GetCallback());
+  ASSERT_EQ(delete_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // 3. Verify we have freelist pages.
+  int initial_freelist_count = 0;
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db_handle->GetReadonlyStatement("PRAGMA freelist_count"));
+    ASSERT_TRUE(statement.Step());
+    initial_freelist_count = statement.ColumnInt(0);
+    EXPECT_GT(initial_freelist_count, 10);
+  }
+
+  // 4. Trigger incremental vacuum.
+  base::test::TestFuture<bool> vacuum_future;
+  store_->MaybeRunIncrementalVacuum(
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false),
+      vacuum_future.GetCallback());
+  EXPECT_TRUE(vacuum_future.Get());
+
+  // 5. Verify freelist pages decreased to 0.
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db_handle->GetReadonlyStatement("PRAGMA freelist_count"));
+    ASSERT_TRUE(statement.Step());
+    int final_freelist_count = statement.ColumnInt(0);
+    EXPECT_EQ(final_freelist_count, 0);
+  }
+
+  // 6. Verify key_0 (first) and key_9 (last) are still readable and have
+  // correct data.
+  for (int i : {0, 9}) {
+    auto open_result = OpenEntry(keys[i]);
+    ASSERT_TRUE(open_result.has_value());
+    ASSERT_TRUE(open_result->has_value());
+
+    auto& entry_info = **open_result;
+    EXPECT_EQ(entry_info.res_id, res_ids[i]);
+    EXPECT_EQ(entry_info.body_end, static_cast<int64_t>(datas[i].size()));
+
+    // Read and verify data.
+    auto read_buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(datas[i].size());
+    auto read_result = ReadEntryData(keys[i], entry_info.res_id, 0, read_buffer,
+                                     datas[i].size(), entry_info.body_end,
+                                     /*sparse_reading=*/false);
+    ASSERT_TRUE(read_result.has_value());
+    EXPECT_EQ(read_result->read_bytes, static_cast<int>(datas[i].size()));
+    EXPECT_EQ(std::string(read_buffer->data(), read_result->read_bytes),
+              datas[i]);
+  }
+
+  // 7. Verify middle entries (key_1 to key_8) are indeed deleted.
+  for (int i = 1; i <= 8; ++i) {
+    auto open_result = OpenEntry(keys[i]);
+    ASSERT_TRUE(open_result.has_value());
+    EXPECT_FALSE(open_result->has_value());  // Should be nullopt (not found)
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SqlPersistentStoreIncrementalVacuumTest,
+    testing::Bool(),
+    SqlPersistentStoreIncrementalVacuumTest::ParamToString);
+
 }  // namespace disk_cache

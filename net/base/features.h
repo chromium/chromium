@@ -593,6 +593,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheCacheSize);
 // Whether to use consolidated in memory index.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kSqlDiskCacheConsolidatedInMemoryIndex);
+// Whether to enable incremental vacuum for the SQL disk cache backend.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheIncrementalVacuum);
+// The number of pages to vacuum per step during incremental vacuum.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                      kSqlDiskCacheIncrementalVacuumPageCount);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.

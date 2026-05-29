@@ -407,6 +407,14 @@ void SqlPersistentStore::BackendShard::MaybeRunCheckpoint(
       .Then(std::move(callback));
 }
 
+void SqlPersistentStore::BackendShard::MaybeRunIncrementalVacuum(
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+    base::OnceCallback<void(bool)> callback) {
+  backend_.AsyncCall(&SqlPersistentStore::Backend::MaybeRunIncrementalVacuum)
+      .WithArgs(std::move(abort_flag))
+      .Then(std::move(callback));
+}
+
 void SqlPersistentStore::BackendShard::EnableStrictCorruptionCheckForTesting() {
   strict_corruption_check_enabled_ = true;
   backend_.AsyncCall(

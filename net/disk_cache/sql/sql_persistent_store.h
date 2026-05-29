@@ -89,7 +89,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kCheckSumError = 19,
     kDatabaseClosed = 20,
     kAbortedDueToBrowserActivity = 21,
-    kMaxValue = kAbortedDueToBrowserActivity
+    kFailedToSetAutoVacuum = 22,
+    kIncrementalVacuumDisabled = 23,
+    kMaxValue = kIncrementalVacuumDisabled
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -591,6 +593,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // If the browser is idle and the number of pages recorded in the WAL exceeds
   // kSqlDiskCacheIdleCheckpointThreshold, a checkpoint is executed.
   void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback);
+
+  // If the browser is idle and the database is configured with incremental
+  // vacuum, this method runs incremental vacuum to reclaim free pages. It
+  // vacuums up to N pages (controlled by feature param) at a time in a loop
+  // while the browser remains idle and `abort_flag` is not set. `callback` is
+  // invoked when the operation is complete on all shards.
+  void MaybeRunIncrementalVacuum(
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      base::OnceCallback<void(bool)> callback);
 
   enum class IndexState {
     // The in-memory index is not available (e.g., not yet loaded or

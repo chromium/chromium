@@ -437,6 +437,21 @@ Error SqlPersistentStore::Backend::InitializeInternal(
     return Error::kFailedToRazeIncompatibleDatabase;
   }
 
+  const bool is_new_db = !sql::MetaTable::DoesTableExist(&db_);
+  if (is_new_db && net::features::kSqlDiskCacheIncrementalVacuum.Get()) {
+    if (!db_.Execute("PRAGMA auto_vacuum = INCREMENTAL")) {
+      return Error::kFailedToSetAutoVacuum;
+    }
+    if (net::features::kSqlDiskCacheWalMode.Get()) {
+      // In WAL mode, db_.Open() internally executes "PRAGMA journal_mode =
+      // WAL", which writes WAL metadata to the database header. After this
+      // write, SQLite silently ignores subsequent auto_vacuum changes. We must
+      // run VACUUM here to force SQLite to apply the incremental vacuum setting
+      // and rewrite the header.
+      std::ignore = db_.Execute("VACUUM");
+    }
+  }
+
   // Ensures atomicity of initialization: either all schema setup and metadata
   // writes succeed, or all are rolled back, preventing an inconsistent state.
   sql::Transaction transaction(&db_);
@@ -444,7 +459,7 @@ Error SqlPersistentStore::Backend::InitializeInternal(
     return Error::kFailedToStartTransaction;
   }
 
-  if (!sql::MetaTable::DoesTableExist(&db_)) {
+  if (is_new_db) {
     // Initialize the database schema.
     if (!InitSchema(db_)) {
       return Error::kFailedToInitializeSchema;
@@ -478,7 +493,18 @@ Error SqlPersistentStore::Backend::InitializeInternal(
 
   store_status_.entry_count = static_cast<int32_t>(tmp_entry_count);
 
-  return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
+  if (!transaction.Commit()) {
+    return Error::kFailedToCommitTransaction;
+  }
+
+  {
+    sql::Statement statement(db_.GetReadonlyStatement("PRAGMA auto_vacuum"));
+    if (statement.Step() && statement.ColumnInt(0) == 2) {
+      incremental_vacuum_enabled_ = true;
+    }
+  }
+
+  return Error::kOk;
 }
 
 void SqlPersistentStore::Backend::DatabaseErrorCallback(
@@ -3094,6 +3120,88 @@ void SqlPersistentStore::Backend::OnCommitCallback(int pages) {
     return;
   }
   wal_pages_ = pages;
+}
+
+int SqlPersistentStore::Backend::GetFreelistCount() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement statement(db_.GetReadonlyStatement("PRAGMA freelist_count"));
+  if (!statement.Step()) {
+    return 0;
+  }
+  return statement.ColumnInt(0);
+}
+
+bool SqlPersistentStore::Backend::MaybeRunIncrementalVacuum(
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.MaybeRunIncrementalVacuum");
+  base::ElapsedTimer timer;
+  int pages_vacuumed = 0;
+  Error error =
+      MaybeRunIncrementalVacuumInternal(std::move(abort_flag), pages_vacuumed);
+  const std::string_view result_type =
+      error == Error::kOk ? "Success"
+                          : (error == Error::kAborted ? "Abort" : "Failure");
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                    "IdleEventIncrementalVacuum.", result_type, "Time"}),
+      timer.Elapsed());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                    "IdleEventIncrementalVacuum.Result"}),
+      error);
+  base::UmaHistogramCounts100000(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                    "IdleEventIncrementalVacuum.", result_type, "Pages"}),
+      pages_vacuumed);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.MaybeRunIncrementalVacuum",
+                   "result", [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(error, dict);
+                     dict.Add("pages", pages_vacuumed);
+                   });
+  return error == Error::kOk;
+}
+
+SqlPersistentStore::Error
+SqlPersistentStore::Backend::MaybeRunIncrementalVacuumInternal(
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+    int& pages_vacuumed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pages_vacuumed = 0;
+
+  if (!incremental_vacuum_enabled_) {
+    return Error::kIncrementalVacuumDisabled;
+  }
+
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
+  }
+
+  if (!IsBrowserIdle() || abort_flag->data.load(std::memory_order_relaxed)) {
+    return Error::kAborted;
+  }
+
+  const int freelist_count = GetFreelistCount();
+  const int page_count_to_vacuum =
+      net::features::kSqlDiskCacheIncrementalVacuumPageCount.Get();
+  const int iterations =
+      (freelist_count + page_count_to_vacuum - 1) / page_count_to_vacuum;
+
+  const std::string sql =
+      base::StrCat({"PRAGMA incremental_vacuum(",
+                    base::NumberToString(page_count_to_vacuum), ")"});
+  for (int i = 0; i < iterations; ++i) {
+    if (!IsBrowserIdle() || abort_flag->data.load(std::memory_order_relaxed)) {
+      return Error::kAborted;
+    }
+    if (!db_.Execute(sql)) {
+      return Error::kFailedToExecute;
+    }
+    pages_vacuumed =
+        std::min(pages_vacuumed + page_count_to_vacuum, freelist_count);
+  }
+  return Error::kOk;
 }
 
 base::FilePath SqlPersistentStore::Backend::GetDatabaseFilePath() const {

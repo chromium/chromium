@@ -161,6 +161,9 @@ class SqlPersistentStore::BackendShard {
   bool MaybeRunCleanupDoomedEntries(ErrorCallback callback);
 
   void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback);
+  void MaybeRunIncrementalVacuum(
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      base::OnceCallback<void(bool)> callback);
 
   void EnableStrictCorruptionCheckForTesting();
   void SetSimulateDbFailureForTesting(bool fail);

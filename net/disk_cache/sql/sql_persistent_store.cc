@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -650,6 +651,26 @@ void SqlPersistentStore::RunNextCheckpoint(
           .Then(base::BindOnce(&SqlPersistentStore::RunNextCheckpoint,
                                weak_factory_.GetWeakPtr(),
                                std::move(callback))));
+}
+
+void SqlPersistentStore::MaybeRunIncrementalVacuum(
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+    base::OnceCallback<void(bool)> callback) {
+  if (!net::features::kSqlDiskCacheIncrementalVacuum.Get()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  auto barrier_callback = base::BarrierCallback<bool>(
+      GetSizeOfShards(), base::BindOnce(
+                             [](base::OnceCallback<void(bool)> callback,
+                                const std::vector<bool>& results) {
+                               std::move(callback).Run(std::ranges::all_of(
+                                   results, std::identity{}));
+                             },
+                             std::move(callback)));
+  for (const auto& backend_shard : backend_shards_) {
+    backend_shard->MaybeRunIncrementalVacuum(abort_flag, barrier_callback);
+  }
 }
 
 void SqlPersistentStore::EnableStrictCorruptionCheckForTesting() {

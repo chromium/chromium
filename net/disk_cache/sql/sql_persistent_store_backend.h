@@ -180,6 +180,8 @@ class SqlPersistentStore::Backend {
 
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndex();
   bool MaybeRunCheckpoint();
+  bool MaybeRunIncrementalVacuum(
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag);
 
   void EnableStrictCorruptionCheckForTesting() {
     strict_corruption_check_enabled_ = true;
@@ -432,6 +434,10 @@ class SqlPersistentStore::Backend {
 
   void MaybeCrashIfCorrupted(bool corruption_detected);
   void OnCommitCallback(int pages);
+  int GetFreelistCount();
+  Error MaybeRunIncrementalVacuumInternal(
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      int& pages_vacuumed);
 
   base::FilePath GetDatabaseFilePath() const;
 
@@ -448,6 +454,7 @@ class SqlPersistentStore::Backend {
   // The number of pages in the write-ahead log file. This is updated by
   // `OnCommitCallback` and reset to 0 after a checkpoint.
   int wal_pages_ = 0;
+  bool incremental_vacuum_enabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

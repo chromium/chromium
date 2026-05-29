@@ -976,6 +976,9 @@ void SqlBackendImpl::OnBrowserIdle() {
   store_->MaybeLoadInMemoryIndex(base::DoNothing());
   store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
   store_->MaybeRunCheckpoint(base::DoNothing());
+  store_->MaybeRunIncrementalVacuum(
+      exclusive_operation_coordinator_.GetHasPendingTaskFlag(),
+      base::DoNothing());
   MaybeTriggerEviction(/*is_idle_time_eviction=*/true);
 }
 

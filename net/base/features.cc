@@ -549,6 +549,16 @@ BASE_FEATURE_PARAM(bool,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheConsolidatedInMemoryIndex",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kSqlDiskCacheIncrementalVacuum,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheIncrementalVacuum",
+                   false);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheIncrementalVacuumPageCount,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheIncrementalVacuumPageCount",
+                   100);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
