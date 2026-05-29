@@ -84,27 +84,21 @@ void BlinkAXTreeSource::Selection(
 
   // If focus is on an atomic text field, and the selection is invalid or it is
   // completely on or within the focused atomic text field, we will ask the
-  // text field for its selection data. Otherwise, we will use frame global
-  // document selection.
-  bool use_text_field_selection = false;
-  if (focus->IsAtomicTextField()) {
-    if (!ax_selection.IsValid()) {
-      use_text_field_selection = true;
-    } else {
-      // Use the atomic text field selection if document selection is in the
-      // descendants of the atomic text field. The atomic text fields use a
-      // user agent shadow DOM which is hidden from the accessibility layer and
-      // anchoring selection to these nodes will create downstream
-      // inconsistency.
-      use_text_field_selection =
-          IsDescendantOf(ax_selection.Anchor().ContainerObject(), focus) &&
-          IsDescendantOf(ax_selection.Focus().ContainerObject(), focus);
-    }
-  }
-  if (use_text_field_selection) {
-    ax_selection = AXSelection::FromCurrentSelection(
+  // text field for its selection data and use it if it is valid.
+  // Atomic text fields use a user agent shadow DOM which is hidden from the
+  // accessibility layer and anchoring selection to these nodes will create
+  // downstream inconsistency.
+  if (focus->IsAtomicTextField() &&
+      (!ax_selection.IsValid() ||
+       (IsDescendantOf(ax_selection.Anchor().ContainerObject(), focus) &&
+        IsDescendantOf(ax_selection.Focus().ContainerObject(), focus)))) {
+    AXSelection textfield_selection = AXSelection::FromCurrentSelection(
         ToTextControl(CHECK_DEREF(focus->GetNode())), *ax_object_cache_);
-    CHECK(ax_selection.IsValid());
+    if (textfield_selection.IsValid()) {
+      ax_selection = textfield_selection;
+    } else {
+      DUMP_WILL_BE_NOTREACHED() << "Invalid selection on atomic text field";
+    }
   }
   if (!ax_selection.IsValid()) {
     return;
