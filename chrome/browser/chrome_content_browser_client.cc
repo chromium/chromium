@@ -7073,9 +7073,29 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
           webauthn::pref_names::kAllowWithBrokenCerts)) {
     return true;
   }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (caller_origin.scheme() == extensions::kExtensionScheme) {
-    return true;
+  // If the top-level frame is an extension page and the WebAuthn caller is in
+  // a subframe, validate that all ancestor frames between the caller and the
+  // extension frame have secure origins. Chrome unconditionally blocks subframe
+  // navigations with certificate errors (see AllowCertificateError), so
+  // checking origin schemes is sufficient to determine security.
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  if (main_frame->GetLastCommittedOrigin().scheme() ==
+      extensions::kExtensionScheme) {
+    content::RenderFrameHost* current = rfh;
+    while (current) {
+      const url::Origin& origin = current->GetLastCommittedOrigin();
+      if (origin.scheme() == extensions::kExtensionScheme) {
+        return true;
+      }
+      if (!origin.GetURL().SchemeIsCryptographic() &&
+          !net::IsLocalhost(origin.GetURL())) {
+        return false;
+      }
+      current = current->GetParentOrOuterDocument();
+    }
   }
 #endif
 #if !BUILDFLAG(IS_ANDROID)
@@ -7089,8 +7109,6 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
   if (net::IsLocalhost(caller_origin.GetURL())) {
     return true;
   }
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
