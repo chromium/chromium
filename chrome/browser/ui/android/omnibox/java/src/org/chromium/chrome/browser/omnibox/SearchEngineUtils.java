@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
@@ -12,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsMana
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -211,7 +214,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
             CachedZeroSuggestionsManager.saveSearchEngineMetadata(mDefaultSearchEngineMetadata);
         }
 
-        retrieveFaviconFromBrandedResources(templateUrl);
+        retrieveFavicon(templateUrl, this::setSearchEngineIcon);
     }
 
     /** Add observer to be notified whenever the Omnibox hint text changes. */
@@ -326,32 +329,51 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         }
     }
 
-    @VisibleForTesting
-    void retrieveFaviconFromDefaultResources(TemplateUrl templateUrl) {
-        if (!mTemplateUrlService.isDefaultSearchEngineGoogle()) {
-            // Fall back to next source.
-            recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
-            retrieveFaviconFromOriginUrl(templateUrl);
-            return;
-        }
-
-        setSearchEngineIcon(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
+    /**
+     * Retrieve the favicon for the given TemplateUrl.
+     *
+     * @param templateUrl The TemplateUrl to retrieve the favicon for.
+     * @param callback The callback to receive the StatusIconResource, or null if not found.
+     */
+    public void retrieveFavicon(
+            TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
+        retrieveFaviconFromBrandedResources(templateUrl, callback);
     }
 
-    private void retrieveFaviconFromBrandedResources(TemplateUrl templateUrl) {
+    private void retrieveFaviconFromBrandedResources(
+            TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
         // Branded resources are only available on Chrome branded builds.
         if (BuildConfig.IS_CHROME_BRANDED) {
             @Nullable Bitmap bm = templateUrl.getBuiltInSearchEngineIcon();
             if (bm != null) {
-                onFaviconRetrieveCompleted(templateUrl.getFaviconURL(), bm);
+                callback.onResult(
+                        new StatusIconResource(
+                                templateUrl.getFaviconURL().getSpec(), bm, Resources.ID_NULL));
+                recordEvent(Events.FETCH_SUCCESS);
                 return;
             }
         }
 
-        retrieveFaviconFromDefaultResources(templateUrl);
+        retrieveFaviconFromDefaultResources(templateUrl, callback);
     }
 
-    private void retrieveFaviconFromOriginUrl(TemplateUrl templateUrl) {
+    @VisibleForTesting
+    void retrieveFaviconFromDefaultResources(
+            TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
+        if (mTemplateUrlService.getSearchEngineTypeFromTemplateUrl(templateUrl.getKeyword())
+                != SearchEngineType.SEARCH_ENGINE_GOOGLE) {
+            // Fall back to next source.
+            recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
+            retrieveFaviconFromOriginUrl(templateUrl, callback);
+            return;
+        }
+
+        callback.onResult(
+                new StatusIconResource(R.drawable.ic_logo_googleg_20dp, Resources.ID_NULL));
+    }
+
+    private void retrieveFaviconFromOriginUrl(
+            TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
         var originUrl = new GURL(templateUrl.getURL()).getOrigin();
         boolean willCall =
                 mFaviconHelper.getLocalFaviconImageForURL(
@@ -362,25 +384,23 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                         (image, iconUrl) -> {
                             if (image == null) {
                                 recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
-                                resetFavicon();
+                                callback.onResult(null);
                             } else {
-                                onFaviconRetrieveCompleted(originUrl, image);
+                                recordEvent(Events.FETCH_SUCCESS);
+                                callback.onResult(
+                                        new StatusIconResource(
+                                                originUrl.getSpec(), image, Resources.ID_NULL));
                             }
                         });
 
         if (!willCall) {
             recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
-            resetFavicon();
+            callback.onResult(null);
         }
     }
 
     private void resetFavicon() {
         setSearchEngineIcon(null);
-    }
-
-    private void onFaviconRetrieveCompleted(GURL faviconUrl, Bitmap bitmap) {
-        setSearchEngineIcon(new StatusIconResource(faviconUrl.getSpec(), bitmap, 0));
-        recordEvent(Events.FETCH_SUCCESS);
     }
 
     /** Returns whether the search engine logo should be shown. */

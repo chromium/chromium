@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.JumpStartContext;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -104,6 +105,9 @@ public class SearchEngineUtilsUnitTest {
         doReturn(faviconUrl).when(mTemplateUrl).getFaviconURL();
         doReturn(mTemplateUrl).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(SearchEngineType.SEARCH_ENGINE_OTHER)
+                .when(mTemplateUrlService)
+                .getSearchEngineTypeFromTemplateUrl(any());
         doReturn(true)
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
@@ -209,6 +213,9 @@ public class SearchEngineUtilsUnitTest {
 
         // Simulate DSE change to Google.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(SearchEngineType.SEARCH_ENGINE_GOOGLE)
+                .when(mTemplateUrlService)
+                .getSearchEngineTypeFromTemplateUrl(any());
         searchEngineUtils.onTemplateURLServiceChanged();
 
         verify(mEngineIconObserver).onSearchEngineIconChanged(mStatusIconCaptor.capture());
@@ -219,6 +226,12 @@ public class SearchEngineUtilsUnitTest {
 
     private void configureSearchEngine(String keyword, String shortName) {
         doReturn("google".equals(keyword)).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(
+                        "google".equals(keyword)
+                                ? SearchEngineType.SEARCH_ENGINE_GOOGLE
+                                : SearchEngineType.SEARCH_ENGINE_OTHER)
+                .when(mTemplateUrlService)
+                .getSearchEngineTypeFromTemplateUrl(any());
         doReturn(keyword).when(mTemplateUrl).getKeyword();
         doReturn(shortName).when(mTemplateUrl).getShortName();
     }
