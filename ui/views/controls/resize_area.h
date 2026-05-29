@@ -12,11 +12,16 @@ namespace views {
 
 class ResizeAreaDelegate;
 
-// An invisible area that acts like a horizontal resizer.
+// An invisible area that acts like a horizontal/vertical resizer.
 class VIEWS_EXPORT ResizeArea : public View {
   METADATA_HEADER(ResizeArea, View)
 
  public:
+  enum class Axis {
+    kHorizontal,  // Resizes left/right
+    kVertical,    // Resizes up/down
+  };
+
   explicit ResizeArea(ResizeAreaDelegate* delegate);
 
   ResizeArea(const ResizeArea&) = delete;
@@ -37,24 +42,30 @@ class VIEWS_EXPORT ResizeArea : public View {
   // drag has happened but the mouse has not yet been released.
   bool is_resizing() { return is_resizing_; }
 
+  Axis axis() const { return axis_; }
+  void set_axis(Axis axis) { axis_ = axis; }
+
  private:
   // Report the amount the user resized by to the delegate, accounting for
   // directionality.
   void ReportResizeAmount(int resize_amount, bool last_update);
 
-  // Converts |event_x| to screen coordinates and sets |initial_position_| to
-  // this value.
-  void SetInitialPosition(int event_x);
+  // Converts |event_position| to screen coordinates and sets
+  // |initial_position_| to this value.
+  void SetInitialPosition(int event_position);
 
   // The delegate to notify when we have updates.
   raw_ptr<ResizeAreaDelegate> delegate_;
 
   bool is_resizing_ = false;
 
-  // The event's x-position at the start of the resize operation. The resize
-  // area will move while being dragged, so |initial_position_| is represented
-  // in screen coordinates so that we don't lose our bearings.
+  // The event's position in the resize axis at the start of the resize
+  // operation. The resize area will move while being dragged, so
+  // |initial_position_| is represented in screen coordinates so that we don't
+  // lose our bearings.
   int initial_position_ = 0;
+
+  Axis axis_ = Axis::kHorizontal;
 };
 
 }  // namespace views

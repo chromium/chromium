@@ -10278,6 +10278,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
                desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
                Right
       </message>
+      <message name="IDS_SPLIT_VIEW_RESIZE_TOP_SIDE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
+               desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
+               Top
+      </message>
+      <message name="IDS_SPLIT_VIEW_RESIZE_BOTTOM_SIDE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
+               desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
+               Bottom
+      </message>
 
       <!-- Vertical Tab Strings -->
       <if expr="use_titlecase">

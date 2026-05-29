@@ -6,10 +6,12 @@
 
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,9 +27,9 @@
 
 namespace {
 constexpr int kHandleCornerRadius = 2;
-constexpr int kHandleHeight = 24;
-constexpr int kHandlePadding = 6;
-constexpr int kHandleWidth = 4;
+constexpr int kHandleOffAxisSize = 24;
+constexpr int kHandleResizeAxisPadding = 6;
+constexpr int kHandleResizeAxisSize = 4;
 constexpr int kResizeIncrement = 50;
 }  // namespace
 
@@ -43,7 +45,6 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetPreferredSize(gfx::Size(kHandleWidth, kHandleHeight));
   SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
@@ -82,16 +83,24 @@ MultiContentsResizeArea::MultiContentsResizeArea(
     MultiContentsView* multi_contents_view)
     : ResizeArea(multi_contents_view),
       multi_contents_view_(multi_contents_view) {
-  auto* layout_manager =
+  flex_layout_manager_ =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+  flex_layout_manager_->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   resize_handle_ = AddChildView(std::make_unique<MultiContentsResizeHandle>());
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsResizeAreaElementId);
-  SetPreferredSize(gfx::Size(kHandleWidth + kHandlePadding, kHandleHeight));
+  OnLayoutUpdated();
+}
+
+void MultiContentsResizeArea::SetLayout(split_tabs::SplitTabLayout layout) {
+  Axis old_axis = axis();
+  set_axis(layout == split_tabs::SplitTabLayout::kSideBySide ? Axis::kHorizontal
+                                                             : Axis::kVertical);
+  if (axis() != old_axis) {
+    OnLayoutUpdated();
+  }
 }
 
 void MultiContentsResizeArea::OnGestureEvent(ui::GestureEvent* event) {
@@ -116,10 +125,10 @@ void MultiContentsResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
 
 bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   int resize_amount = 0;
-  if (event.key_code() == ui::VKEY_LEFT) {
-    resize_amount = base::i18n::IsRTL() ? kResizeIncrement : -kResizeIncrement;
-  } else if (event.key_code() == ui::VKEY_RIGHT) {
-    resize_amount = base::i18n::IsRTL() ? -kResizeIncrement : kResizeIncrement;
+  if (event.key_code() == DecreaseContentsSizeKeyCode()) {
+    resize_amount = -kResizeIncrement;
+  } else if (event.key_code() == IncreaseContentsSizeKeyCode()) {
+    resize_amount = kResizeIncrement;
   }
 
   if (resize_amount == 0) {
@@ -128,23 +137,19 @@ bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
 
   multi_contents_view_->OnResize(resize_amount, true);
 
-  if (multi_contents_view_->width() > 0) {
-    const int left_percent =
+  if ((axis() == Axis::kHorizontal ? multi_contents_view_->width()
+                                   : multi_contents_view_->height()) > 0) {
+    const int start_percent =
         base::ClampRound(multi_contents_view_->GetSplitRatio() * 100);
-    const int right_percent = 100 - left_percent;
+    const int end_percent = 100 - start_percent;
 
-    bool is_rtl = base::i18n::IsRTL();
-    std::u16string first_label = l10n_util::GetStringUTF16(
-        is_rtl ? IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT
-               : IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT);
-    std::u16string second_label = l10n_util::GetStringUTF16(
-        is_rtl ? IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT
-               : IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT);
-
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
-        IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT, first_label,
-        base::FormatPercent(left_percent), second_label,
-        base::FormatPercent(right_percent)));
+    auto [start_label_id, end_label_id] = GetAccessibleAlertStringIds();
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringFUTF16(IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT,
+                                   l10n_util::GetStringUTF16(start_label_id),
+                                   base::FormatPercent(start_percent),
+                                   l10n_util::GetStringUTF16(end_label_id),
+                                   base::FormatPercent(end_percent)));
   }
   return true;
 }
@@ -160,6 +165,48 @@ void MultiContentsResizeArea::OnMouseExited(const ui::MouseEvent& event) {
 void MultiContentsResizeArea::SetVisible(bool visible) {
   views::View::SetVisible(visible);
   resize_handle_->UpdateVisibility();
+}
+
+void MultiContentsResizeArea::OnLayoutUpdated() {
+  flex_layout_manager_->SetOrientation(
+      axis() == Axis::kHorizontal ? views::LayoutOrientation::kVertical
+                                  : views::LayoutOrientation::kHorizontal);
+
+  gfx::Size preferred_size(kHandleResizeAxisSize + kHandleResizeAxisPadding,
+                           kHandleOffAxisSize);
+  gfx::Size resize_handle_preferred_size(kHandleResizeAxisSize,
+                                         kHandleOffAxisSize);
+  if (axis() == Axis::kVertical) {
+    preferred_size.Transpose();
+    resize_handle_preferred_size.Transpose();
+  }
+  SetPreferredSize(preferred_size);
+  resize_handle_->SetPreferredSize(resize_handle_preferred_size);
+}
+
+ui::KeyboardCode MultiContentsResizeArea::DecreaseContentsSizeKeyCode() {
+  return axis() == Axis::kHorizontal
+             ? (base::i18n::IsRTL() ? ui::VKEY_RIGHT : ui::VKEY_LEFT)
+             : ui::VKEY_UP;
+}
+
+ui::KeyboardCode MultiContentsResizeArea::IncreaseContentsSizeKeyCode() {
+  return axis() == Axis::kHorizontal
+             ? (base::i18n::IsRTL() ? ui::VKEY_LEFT : ui::VKEY_RIGHT)
+             : ui::VKEY_DOWN;
+}
+
+std::pair<int, int> MultiContentsResizeArea::GetAccessibleAlertStringIds() {
+  return axis() == Axis::kHorizontal
+             ? (base::i18n::IsRTL()
+                    ? std::
+                          pair{IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT,
+                               IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT}
+                    : std::
+                          pair{IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT,
+                               IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT})
+             : std::pair{IDS_SPLIT_VIEW_RESIZE_TOP_SIDE_ACCESSIBLE_ALERT,
+                         IDS_SPLIT_VIEW_RESIZE_BOTTOM_SIDE_ACCESSIBLE_ALERT};
 }
 
 BEGIN_METADATA(MultiContentsResizeArea)

@@ -2099,22 +2099,27 @@ void BrowserView::SetContentsSize(const gfx::Size& size) {
   DCHECK(!GetContentsSize().IsEmpty());
 
   int width_diff = size.width() - GetContentsSize().width();
-  const int height_diff = size.height() - GetContentsSize().height();
+  int height_diff = size.height() - GetContentsSize().height();
 
   // Resizing the window may be expensive, so only do it if the size is wrong.
   if (width_diff == 0 && height_diff == 0) {
     return;
   }
 
-  // If in split view, the width diff needs to be scaled by the split ratio to
+  // If in split view, the size diff needs to be scaled by the split ratio to
   // account for the combined width of both contents views.
   if (multi_contents_view_->IsInSplitView()) {
     const double split_ratio = multi_contents_view_->GetSplitRatio();
     CHECK(split_ratio > 0.0 && split_ratio < 1.0);
-    const double multiplier = 1.0 / (multi_contents_view_->GetActiveIndex() == 0
-                                         ? split_ratio
-                                         : (1.0 - split_ratio));
-    width_diff *= multiplier;
+    const double divider = multi_contents_view_->GetActiveIndex() == 0
+                               ? split_ratio
+                               : (1.0 - split_ratio);
+    if (multi_contents_view_->GetSplitLayout() ==
+        split_tabs::SplitTabLayout::kSideBySide) {
+      width_diff = std::round(width_diff / divider);
+    } else {
+      height_diff = std::round(height_diff / divider);
+    }
   }
 
   gfx::Rect bounds = GetBounds();

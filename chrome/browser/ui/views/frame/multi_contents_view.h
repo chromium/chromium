@@ -261,14 +261,17 @@ class MultiContentsView
   // allows for some flexibility when it comes to particularly narrow windows.
   ViewSizes ClampToMinSize(gfx::Rect available_space, ViewSizes sizes) const;
 
-  // Returns the minimum width for a single view within the `MultiContentsView`.
-  // Returns 0 if not in a split view.
+  // Returns the minimum size along the resize axis for a single view within the
+  // `MultiContentsView`. Returns 0 if not in a split view.
   int GetMinViewSize(gfx::Rect available_space) const;
 
   void UpdateContentsBorderAndOverlay();
 
-  double CalculateRatioWithSnapPoints(double end_width,
-                                      double total_width) const;
+  double CalculateRatioWithSnapPoints(double start_size,
+                                      double total_size) const;
+
+  // Helper function that gets the component of |size| along the resize axis.
+  int GetResizeAxisComponent(const gfx::Size& size) const;
 
   raw_ptr<BrowserView> browser_view_;
   std::unique_ptr<MultiContentsViewDelegate> delegate_;
@@ -307,9 +310,9 @@ class MultiContentsView
   // See `SetTargetContentBounds()`.
   std::optional<TargetContentBounds> target_content_bounds_;
 
-  // Width of `start_contents_.contents_view_` when a resize action began.
-  // Nullopt if not currently resizing.
-  std::optional<double> initial_start_width_on_resize_;
+  // Initial size of `start_contents_.contents_view_` along the resize axis when
+  // a resize action began. Nullopt if not currently resizing.
+  std::optional<int> initial_start_size_on_resize_;
 
   // Insets of the start and end contents view when in split view.
   gfx::Insets split_view_insets_;

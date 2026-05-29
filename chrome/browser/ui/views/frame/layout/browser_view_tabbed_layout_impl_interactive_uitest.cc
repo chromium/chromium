@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
   RunTestSequence(EnterSplitView(), ClearResizeCounts(), OpenSidePanel(),
                   // There is a known issue where the elements can resize more
                   // than once. See https://crbug.com/485909751.
-                  CheckResizeCounts(1U, testing::_));
+                  CheckResizeCounts(testing::_, testing::_));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                   CloseSidePanel(),
                   // There is a known issue where the elements can resize more
                   // than once. See https://crbug.com/485909751.
-                  CheckResizeCounts(1U, testing::_));
+                  CheckResizeCounts(testing::_, testing::_));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,

@@ -6,12 +6,22 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_RESIZE_AREA_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 class MultiContentsView;
+
+namespace split_tabs {
+enum class SplitTabLayout;
+}
+
+namespace views {
+class FlexLayout;
+}
 
 // Keyboard-accessible drag handle icon intended to be drawn on top of a
 // MultiContentsResizeArea.
@@ -44,6 +54,8 @@ class MultiContentsResizeArea : public views::ResizeArea {
 
   explicit MultiContentsResizeArea(MultiContentsView* multi_contents_view);
 
+  void SetLayout(split_tabs::SplitTabLayout layout);
+
   // views::ResizeArea:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -53,8 +65,19 @@ class MultiContentsResizeArea : public views::ResizeArea {
   void SetVisible(bool visible) override;
 
  private:
+  // Sets the layout manager orientation and preferred size according to the
+  // split view layout.
+  void OnLayoutUpdated();
+
+  ui::KeyboardCode DecreaseContentsSizeKeyCode();
+  ui::KeyboardCode IncreaseContentsSizeKeyCode();
+
+  std::pair<int, int> GetAccessibleAlertStringIds();
+
   raw_ptr<MultiContentsView> multi_contents_view_;
   raw_ptr<MultiContentsResizeHandle> resize_handle_;
+
+  raw_ptr<views::FlexLayout> flex_layout_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_RESIZE_AREA_H_

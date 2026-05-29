@@ -265,6 +265,7 @@ void MultiContentsView::ShowSplitView(
     visual_data_ = visual_data;
     contents_container_views_[1]->SetVisible(true);
     resize_area_->SetVisible(true);
+    resize_area_->SetLayout(visual_data.split_layout());
     UpdateContentsBorderAndOverlay();
   } else {
     // If the split view is visible, update the split visual data.
@@ -327,6 +328,7 @@ void MultiContentsView::UpdateSplitVisualData(
   }
 
   visual_data_ = visual_data;
+  resize_area_->SetLayout(visual_data.split_layout());
   InvalidateLayout();
 }
 
@@ -381,37 +383,35 @@ std::vector<views::View*> MultiContentsView::GetAccessiblePanes() {
 }
 
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
-  if (!initial_start_width_on_resize_.has_value()) {
-    initial_start_width_on_resize_ =
-        std::make_optional(contents_container_views_[0]->size().width());
+  if (!initial_start_size_on_resize_.has_value()) {
+    initial_start_size_on_resize_ = std::make_optional(
+        GetResizeAxisComponent(contents_container_views_[0]->size()));
   }
-  double total_width = contents_container_views_[0]->size().width() +
-                       contents_container_views_[0]->GetInsets().width() +
-                       contents_container_views_[1]->size().width() +
-                       contents_container_views_[1]->GetInsets().width();
-  double end_width = (initial_start_width_on_resize_.value() +
-                      contents_container_views_[0]->GetInsets().width() +
-                      static_cast<double>(resize_amount));
+  double total_size =
+      GetResizeAxisComponent(contents_container_views_[0]->size()) +
+      GetResizeAxisComponent(contents_container_views_[1]->size());
+  double new_start_size = initial_start_size_on_resize_.value() + resize_amount;
 
-  // If end_width is within the snap point widths, update to the snap point.
+  // If new_start_size is within the snap point sizes, update to the snap
+  // point.
   delegate_->ResizeWebContents(
-      CalculateRatioWithSnapPoints(end_width, total_width), done_resizing);
+      CalculateRatioWithSnapPoints(new_start_size, total_size), done_resizing);
 
   if (done_resizing) {
-    initial_start_width_on_resize_ = std::nullopt;
+    initial_start_size_on_resize_ = std::nullopt;
   }
 }
 
 double MultiContentsView::CalculateRatioWithSnapPoints(
-    double end_width,
-    double total_width) const {
+    double start_size,
+    double total_size) const {
   for (const double& snap_point : snap_points_) {
-    double dp_snap_point = snap_point * total_width;
-    if (std::abs(dp_snap_point - end_width) < kSnapDistance) {
+    double dp_snap_point = snap_point * total_size;
+    if (std::abs(dp_snap_point - start_size) < kSnapDistance) {
       return snap_point;
     }
   }
-  return end_width / total_width;
+  return start_size / total_size;
 }
 
 void MultiContentsView::OnThemeChanged() {
@@ -498,6 +498,9 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   available_space =
       CalculateSeparatorLayouts(available_space, layouts.child_layouts);
 
+  if (IsInSplitView()) {
+    available_space.Inset(split_view_insets_);
+  }
   ViewSizes sizes = GetViewSizes(available_space);
 
   gfx::Rect start_rect, resize_rect, end_rect;
@@ -515,24 +518,6 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
                             gfx::Size(available_space.width(), sizes.resize));
     end_rect = gfx::Rect(resize_rect.bottom_left(),
                          gfx::Size(available_space.width(), sizes.end));
-  }
-
-  if (IsInSplitView()) {
-    if (GetSplitLayout() == split_tabs::SplitTabLayout::kStacked) {
-      start_rect.Inset(gfx::Insets::TLBR(split_view_insets_.top(),
-                                         split_view_insets_.left(), 0,
-                                         split_view_insets_.right()));
-      end_rect.Inset(gfx::Insets::TLBR(0, split_view_insets_.left(),
-                                       split_view_insets_.bottom(),
-                                       split_view_insets_.right()));
-    } else {
-      start_rect.Inset(gfx::Insets::TLBR(split_view_insets_.top(),
-                                         split_view_insets_.left(),
-                                         split_view_insets_.bottom(), 0));
-      end_rect.Inset(gfx::Insets::TLBR(split_view_insets_.top(), 0,
-                                       split_view_insets_.bottom(),
-                                       split_view_insets_.right()));
-    }
   }
 
   layouts.child_layouts.emplace_back(contents_container_views_[0],
@@ -843,6 +828,13 @@ void MultiContentsView::SetSplitViewInsets(const gfx::Insets& insets) {
   // This can be called during BrowserView layout, so protect against creating a
   // layout loop.
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
+int MultiContentsView::GetResizeAxisComponent(const gfx::Size& size) const {
+  return (visual_data_.split_layout() ==
+          split_tabs::SplitTabLayout::kSideBySide)
+             ? size.width()
+             : size.height();
 }
 
 BEGIN_METADATA(MultiContentsView)

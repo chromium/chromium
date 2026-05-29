@@ -193,17 +193,15 @@ class MultiContentsViewUiTest
 
   // Perform a check on the contents view sizes following a keyboard-triggered
   // resize
-  auto CheckResizeKey(ui::KeyboardCode key_code,
-                      base::RepeatingCallback<bool(double, double)> check) {
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
-                                        kMultiContentsViewLayoutObserver);
+  auto CheckResizeKey(
+      ui::KeyboardCode key_code,
+      base::RepeatingCallback<bool(double, double)> check,
+      ui::test::StateIdentifier<MultiContentsViewLayoutObserver> observer_id) {
     auto result = Steps(
-        FocusElement(
-            MultiContentsResizeHandle::kMultiContentsResizeHandleElementId),
         SendKeyPress(
             MultiContentsResizeHandle::kMultiContentsResizeHandleElementId,
             key_code),
-        CheckResizeValues(check, kMultiContentsViewLayoutObserver));
+        CheckResizeValues(check, observer_id));
     AddDescriptionPrefix(result, "CheckResizeKey()");
     return result;
   }
@@ -301,15 +299,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
 // Check that resizing the browser window in split view correctly resizes
 // both content panes.
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
-  if (GetParam() == split_tabs::SplitTabLayout::kStacked) {
-    // TODO(crbug.com/510832426): Re-enable this test once resize area supports
-    // horizontal layout.
-    GTEST_SKIP();
-  }
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
-                                      kLayoutObserverStart);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
-                                      kLayoutObserverEnd);
+                                      kLayoutObserver);
 
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
@@ -319,22 +310,22 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
                      /*ratio=*/0.75),
       ResizeContents(500),
 
-      // Set the contents size to 600.
-      ResizeContents(600),
-      // Check that the active contents size is 600.
+      // Set the contents size to 450. This value is chosen to be small enough
+      // that the window bounds will not get clamped due to screen size
+      // constraint on test bots, and large enough for each contents view to be
+      // above the minimum contents size.
+      ResizeContents(450),
+      // Check that the active contents size is 450. The inactive contents
+      // should be 150, in line with the 0.75 split ratio.
       CheckResizeValues(
           base::BindRepeating([](double start_size, double end_size) {
-            return base::IsApproximatelyEqual(start_size, 600.0, 6.0);
+            // ResizeContents takes in the size of the active contents view, but
+            // but must resize the entire browser window while preserving the
+            // split ratio, so there may be a small rounding error.
+            return base::IsApproximatelyEqual(start_size, 450.0, 1.0) &&
+                   base::IsApproximatelyEqual(end_size, 150.0, 1.0);
           }),
-          kLayoutObserverStart),
-      // The inactive tab loses some sizing, so activate it before validating
-      // size. It should be size to 200, in line with the 0.75 split ratio.
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
-      CheckResizeValues(
-          base::BindRepeating([](double start_size, double end_size) {
-            return base::IsApproximatelyEqual(end_size, 200.0, 6.0);
-          }),
-          kLayoutObserverEnd));
+          kLayoutObserver));
 }
 
 // Create a new split and exit the split view and ensure only 1 contents view is
@@ -537,16 +528,11 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesToMinSize) {
       CheckResize(
           10000, base::BindRepeating([](double start_size, double end_size) {
             // On large window, uses flat min size.
-            return end_size == 60 - MultiContentsView::kSplitViewContentInset;
+            return end_size == 60;
           })));
 }
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesToSnapPointSize) {
-  if (GetParam() == split_tabs::SplitTabLayout::kStacked) {
-    // TODO(crbug.com/510832426): Re-enable this test once resize area supports
-    // horizontal layout.
-    GTEST_SKIP();
-  }
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
       MultiContentsViewLayoutObserver,
       kMultiContentsViewLayoutInitialResizeObserver);
@@ -559,14 +545,14 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesToSnapPointSize) {
       // Resize outside of the snap point width
       CheckResizeWithId(
           100, base::BindRepeating([](double start_size, double end_size) {
-            return start_size == end_size + 200;
+            return base::IsApproximatelyEqual(start_size, end_size + 200, 1.0);
           }),
           kMultiContentsViewLayoutInitialResizeObserver),
       // Resize back to within the snap point margin and snap back to 50% size
       CheckResizeWithId(
           -96, base::BindRepeating([](double start_size, double end_size) {
             // On large window, uses snap point size.
-            return end_size == start_size;
+            return base::IsApproximatelyEqual(start_size, end_size, 1.0);
           }),
           kMultiContentsViewLayoutSnapResizeObserver));
 }
@@ -595,12 +581,12 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
 // Check that the MultiContentsView resize area correctly resizes the start and
 // end contents views via key events.
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
-  if (GetParam() == split_tabs::SplitTabLayout::kStacked) {
-    // TODO(crbug.com/510832426): Re-enable this test once resize area supports
-    // horizontal layout.
-    GTEST_SKIP();
-  }
-
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
+                                      kMultiContentsViewLayoutObserver1);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
+                                      kMultiContentsViewLayoutObserver2);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
+                                      kMultiContentsViewLayoutObserver3);
   auto increase_start_size_key =
       GetParam() == split_tabs::SplitTabLayout::kSideBySide ? ui::VKEY_RIGHT
                                                             : ui::VKEY_DOWN;
@@ -613,23 +599,31 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
             multi_contents_view()->start_contents_view_for_testing()->size();
         gfx::Size end_size =
             multi_contents_view()->end_contents_view_for_testing()->size();
-        return GetSize(start_size) == GetSize(end_size);
+        return base::IsApproximatelyEqual(GetSize(start_size),
+                                          GetSize(end_size), 1);
       }),
+      FocusElement(
+          MultiContentsResizeHandle::kMultiContentsResizeHandleElementId),
       CheckResizeKey(
           increase_start_size_key,
           base::BindRepeating([](double start_size, double end_size) {
-            return start_size > end_size;
-          })),
+            return !base::IsApproximatelyEqual(start_size, end_size, 1.0) &&
+                   (start_size > end_size);
+          }),
+          kMultiContentsViewLayoutObserver1),
       CheckResizeKey(
           decrease_start_size_key,
           base::BindRepeating([](double start_size, double end_size) {
-            return start_size == end_size;
-          })),
+            return base::IsApproximatelyEqual(start_size, end_size, 1.0);
+          }),
+          kMultiContentsViewLayoutObserver2),
       CheckResizeKey(
           decrease_start_size_key,
           base::BindRepeating([](double start_size, double end_size) {
-            return start_size < end_size;
-          })));
+            return !base::IsApproximatelyEqual(start_size, end_size, 1.0) &&
+                   (start_size < end_size);
+          }),
+          kMultiContentsViewLayoutObserver3));
 }
 
 // Check that MultiContentsView only has insets on the contents views when in a
@@ -639,9 +633,9 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
 // update to use interior margins then we should check whether those are set
 // here instead of checking sizes.
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, InsetsOnlyInSplit) {
-  // When the layout is horizontal, also take into account the top separator
-  // when comparing the height of the multi contents view to the contents views.
-  const int kSeparatorThickness =
+  // When not in a split, also take into account the top separator when
+  // comparing the height of the multi contents view to the contents views.
+  const int kTopSeparatorHeight =
       (GetParam() == split_tabs::SplitTabLayout::kStacked
            ? views::Separator::kThickness
            : 0);
@@ -651,7 +645,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, InsetsOnlyInSplit) {
             multi_contents_view()->GetActiveContentsView()->bounds();
         gfx::Rect multi_contents_view_bounds = multi_contents_view()->bounds();
         return GetSize(active_contents_bounds) ==
-               GetSize(multi_contents_view_bounds) - kSeparatorThickness;
+               GetSize(multi_contents_view_bounds) - kTopSeparatorHeight;
       }),
       CreateTabsAndEnterSplitView(), Check([&]() {
         int contents_and_resize_size =
@@ -660,7 +654,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, InsetsOnlyInSplit) {
                 multi_contents_view()->GetInactiveContentsView()->bounds()) +
             GetSize(multi_contents_view()->resize_area_for_testing()->bounds());
         return contents_and_resize_size <
-               GetSize(multi_contents_view()->bounds()) - kSeparatorThickness;
+               GetSize(multi_contents_view()->bounds());
       }));
 }
 
