@@ -56,7 +56,7 @@ def StripProtoExtension(filename):
 def RewriteImports(ts_files):
   for file_path in ts_files:
     try:
-      with open(file_path, 'r+') as f:
+      with open(file_path, 'r+', encoding='utf-8') as f:
         lines = f.readlines()
         modified = False
         for i, line in enumerate(itertools.islice(lines, 50)):
