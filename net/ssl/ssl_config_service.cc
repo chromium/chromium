@@ -140,6 +140,14 @@ std::vector<uint16_t> SSLContextConfig::GetSupportedGroups(
   return groups_out;
 }
 
+std::optional<uint16_t> SSLContextConfig::RequestServerPadding() const {
+  if (!base::FeatureList::IsEnabled(features::kAddTLSServerHandshakePadding)) {
+    return std::nullopt;
+  }
+  return base::saturated_cast<uint16_t>(
+      features::kAddTLSServerHandshakePaddingBytes.Get());
+}
+
 bool SSLContextConfig::ShouldAdvertiseTrustAnchorIDs() const {
   return (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
           (!trust_anchor_ids.empty() || !mtc_trust_anchor_ids.empty()));

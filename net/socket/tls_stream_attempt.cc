@@ -213,6 +213,8 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
     if (ssl_context_config.ech_enabled) {
       ssl_config_->ech_config_list = endpoint->metadata.ech_config_list;
     }
+    ssl_config_->server_padding_to_request =
+        ssl_context_config.RequestServerPadding();
   }
 
   nested_attempt_.reset();

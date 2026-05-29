@@ -401,4 +401,31 @@ TEST(SSLContextConfigTest, TrustAnchorIDsRetryMultipleTAIsMatchOneMTCAnchor) {
   EXPECT_FALSE(used_mtc_fallback);
 }
 
+TEST(SSLContextConfigTest, RequestServerPadding) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kAddTLSServerHandshakePadding);
+    SSLContextConfig config;
+    EXPECT_EQ(std::nullopt, config.RequestServerPadding());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAddTLSServerHandshakePadding,
+        {{"AddTLSServerHandshakePaddingBytes", "128"}});
+    SSLContextConfig config;
+    EXPECT_EQ(128, config.RequestServerPadding());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAddTLSServerHandshakePadding,
+        {{"AddTLSServerHandshakePaddingBytes", "0"}});
+    SSLContextConfig config;
+    EXPECT_EQ(0, config.RequestServerPadding());
+  }
+}
+
 }  // namespace net

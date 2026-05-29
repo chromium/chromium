@@ -639,6 +639,12 @@ EVENT_TYPE(SOCKS_UNKNOWN_ADDRESS_TYPE)
 //    "cipher_suite": <Integer code for the cipher suite>,
 //    "is_resumed": <Whether we resumed a session>,
 //    "next_proto": <The next protocol negotiated via ALPN>,
+//    "key_exchange_group": <ID of the (EC)DH group used for key exchange>,
+//    "peer_signature_algorithm": <signature algorithm used by peer>,
+//    "encrypted_client_hello": <if Encrypted Client Hello was used>,
+//    "requested_server_padding": <Whether server padding was requested>,
+//    "received_server_padding": <Whether server padding was received>,
+//
 //  }
 EVENT_TYPE(SSL_CONNECT)
 

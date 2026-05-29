@@ -6717,4 +6717,95 @@ TEST_P(SSLClientSocketAlpsTest, UnusedProtocols) {
   EXPECT_THAT(rv, IsOk());
 }
 
+TEST_F(SSLClientSocketTest, ServerPaddingSupported) {
+  SSLServerConfig server_config;
+  server_config.server_padding_enabled = true;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLConfig ssl_config;
+  ssl_config.server_padding_to_request = 128;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_TRUE(ssl_info.server_padding_requested);
+  EXPECT_TRUE(ssl_info.server_padding_received);
+
+  auto entries = log_observer_.GetEntries();
+  EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
+  EXPECT_EQ(true, entries.back().params.FindBool("requested_server_padding"));
+  EXPECT_EQ(true, entries.back().params.FindBool("received_server_padding"));
+}
+
+TEST_F(SSLClientSocketTest, ServerPaddingSupportedZeroPadding) {
+  SSLServerConfig server_config;
+  server_config.server_padding_enabled = true;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLConfig ssl_config;
+  ssl_config.server_padding_to_request = 0;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_TRUE(ssl_info.server_padding_requested);
+  EXPECT_TRUE(ssl_info.server_padding_received);
+
+  auto entries = log_observer_.GetEntries();
+  EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
+  EXPECT_EQ(true, entries.back().params.FindBool("requested_server_padding"));
+  EXPECT_EQ(true, entries.back().params.FindBool("received_server_padding"));
+}
+
+TEST_F(SSLClientSocketTest, ServerPaddingSupportedNoPaddingRequested) {
+  SSLServerConfig server_config;
+  server_config.server_padding_enabled = true;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLConfig ssl_config;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(ssl_info.server_padding_requested);
+  EXPECT_FALSE(ssl_info.server_padding_received);
+
+  auto entries = log_observer_.GetEntries();
+  EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
+  EXPECT_EQ(false, entries.back().params.FindBool("requested_server_padding"));
+  EXPECT_EQ(false, entries.back().params.FindBool("received_server_padding"));
+}
+
+TEST_F(SSLClientSocketTest, ServerPaddingUnsupported) {
+  SSLServerConfig server_config;
+  server_config.server_padding_enabled = false;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLConfig ssl_config;
+  ssl_config.server_padding_to_request = 128;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_TRUE(ssl_info.server_padding_requested);
+  EXPECT_FALSE(ssl_info.server_padding_received);
+
+  auto entries = log_observer_.GetEntries();
+  EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
+  EXPECT_EQ(true, entries.back().params.FindBool("requested_server_padding"));
+  EXPECT_EQ(false, entries.back().params.FindBool("received_server_padding"));
+}
+
 }  // namespace net

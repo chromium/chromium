@@ -3250,6 +3250,59 @@ TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessDefault_Async) {
               IsError(ERR_LOCAL_NETWORK_PERMISSION_MISSING));
 }
 
+TEST_F(URLRequestHttpJobWithMockSocketsTest,
+       TestHttpTimeToFirstByteServerPadding) {
+  base::HistogramTester histograms;
+  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 12\r\n\r\n"),
+                      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.ssl_info.server_padding_received = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data);
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(GURL("https://www.example.com"), DEFAULT_PRIORITY,
+                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(), IsOk());
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsTest,
+       TestHttpTimeToFirstByteServerPaddingNotSent) {
+  base::HistogramTester histograms;
+  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 12\r\n\r\n"),
+                      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data);
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(GURL("https://www.example.com"), DEFAULT_PRIORITY,
+                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(), IsOk());
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+}
+
 }  // namespace net
 
 #if BUILDFLAG(IS_ANDROID)

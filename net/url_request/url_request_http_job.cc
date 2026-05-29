@@ -1942,6 +1942,14 @@ void URLRequestHttpJob::RecordTimer() {
     base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13.Google",
                                   to_start);
   }
+
+  // Record additional metric for handshakes that contain padding from the
+  // server.
+  if (transaction_ && transaction_->GetResponseInfo() &&
+      transaction_->GetResponseInfo()->ssl_info.server_padding_received) {
+    base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.ServerPadding",
+                                  to_start);
+  }
 }
 
 void URLRequestHttpJob::ResetTimer() {

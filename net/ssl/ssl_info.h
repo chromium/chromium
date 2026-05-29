@@ -119,6 +119,14 @@ class NET_EXPORT SSLInfo {
   // used, or when the SSLInfo was loaded from cache.
   std::optional<int32_t> crs_root_id;
 #endif
+
+  // True if the client requested padding through the server padding extension.
+  // This field is only set for client sockets.
+  bool server_padding_requested = false;
+
+  // True if the server sent the requested padding to the client.
+  // This field is only set for client sockets.
+  bool server_padding_received = false;
 };
 
 }  // namespace net

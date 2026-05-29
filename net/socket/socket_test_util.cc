@@ -992,6 +992,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
   if (next_ssl_data->expect_no_trust_anchor_ids) {
     EXPECT_EQ(std::nullopt, ssl_config.trust_anchor_ids);
   }
+  if (next_ssl_data->expected_server_padding_to_request) {
+    EXPECT_EQ(*next_ssl_data->expected_server_padding_to_request,
+              ssl_config.server_padding_to_request);
+  }
   return std::make_unique<MockSSLClientSocket>(
       std::move(stream_socket), host_and_port, ssl_config, next_ssl_data);
 }

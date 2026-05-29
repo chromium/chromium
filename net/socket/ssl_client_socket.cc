@@ -170,6 +170,12 @@ void SSLClientSocket::RecordSSLConnectResult(
       base::UmaHistogramSparse("Net.SSL_KeyExchange.ECDHE",
                                ssl_info.key_exchange_group);
     }
+
+    if (ssl_info.server_padding_received) {
+      base::UmaHistogramCustomTimes("Net.SSL_Connection_Latency_ServerPadding",
+                                    connect_duration, base::Milliseconds(1),
+                                    base::Minutes(1), 100);
+    }
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));

@@ -859,6 +859,14 @@ BASE_FEATURE(kCookieParseRejectEmptyNameAmbiguous,
 BASE_FEATURE(kEnablePrivateVerificationTokens,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAddTLSServerHandshakePadding, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kAddTLSServerHandshakePaddingBytes,
+                   &kAddTLSServerHandshakePadding,
+                   "AddTLSServerHandshakePaddingBytes",
+                   0);
+
 bool IsDnsPlatformSupported() {
 #if BUILDFLAG(IS_ANDROID)
   // android_res_n{query, result} are available starting from API level 29 (Q).

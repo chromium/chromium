@@ -54,6 +54,11 @@ struct NET_EXPORT SSLContextConfig {
   // Anchor IDs are configured.
   bool ShouldAdvertiseTrustAnchorIDs() const;
 
+  // Returns the amount of bytes of padding that should be requested from the
+  // server for the TLS handshake. This will return nullopt if a padding request
+  // should not be sent.
+  std::optional<uint16_t> RequestServerPadding() const;
+
   // Helper function to select TLS Trust Anchor IDs to advertise in the TLS
   // handshake, so that the server can serve a certificate that the client
   // trusts. `server_advertised_trust_anchor_ids` is a list of Trust Anchor IDs,

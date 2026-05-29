@@ -1709,6 +1709,8 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
     config.trust_anchor_ids = base::as_string_view(
         ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));
   }
+  // TODO(crbug.com/515272365) add server padding flag to QUIC config once its
+  // there.
   return config;
 }
 

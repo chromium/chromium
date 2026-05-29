@@ -434,6 +434,8 @@ int SSLConnectJob::DoSSLConnect() {
       ssl_config.trust_anchor_ids.emplace();
     }
   }
+  ssl_config.server_padding_to_request =
+      ssl_client_context()->config().RequestServerPadding();
 
   net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
     base::DictValue dict;

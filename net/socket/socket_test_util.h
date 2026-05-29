@@ -664,6 +664,7 @@ struct SSLSocketDataProvider {
   // Expects no trust anchors extension. This is a separate field to avoid a
   // confusing double-optional.
   bool expect_no_trust_anchor_ids = false;
+  std::optional<uint16_t> expected_server_padding_to_request;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;

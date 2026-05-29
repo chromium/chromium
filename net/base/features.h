@@ -898,6 +898,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieParseRejectEmptyNameAmbiguous);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kEnablePrivateVerificationTokens);
 
+// If enabled, request servers to add additional padding to TLS handshakes. The
+// amount requested is configurable by the parameter
+// kAddTLSServerHandshakePaddingBytes, with a maximum of 16k bytes.
+NET_EXPORT BASE_DECLARE_FEATURE(kAddTLSServerHandshakePadding);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kAddTLSServerHandshakePaddingBytes);
+
 NET_EXPORT bool IsDnsPlatformSupported();
 
 // If enabled, load the NoVarySearchCache persisted data on a different

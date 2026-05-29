@@ -88,6 +88,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/network_time/network_time_test_utils.h"
 #include "components/network_time/network_time_tracker.h"
@@ -7688,3 +7689,59 @@ IN_PROC_BROWSER_TEST_F(InsecureFormNavigationThrottleFencedFrameBrowserTest,
 // XMLHttpRequest over bad ssl in synchronous mode.
 
 // XMLHttpRequest over OK ssl in synchronous mode.
+
+class SSLServerPaddingBrowserTest
+    : public SSLUITest,
+      public testing::WithParamInterface<std::optional<int>> {
+ public:
+  SSLServerPaddingBrowserTest() {
+    if (padding_enabled()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          net::features::kAddTLSServerHandshakePadding,
+          {{"AddTLSServerHandshakePaddingBytes",
+            base::NumberToString(GetParam().value())}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          net::features::kAddTLSServerHandshakePadding);
+    }
+  }
+
+  bool padding_enabled() { return GetParam().has_value(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SSLServerPaddingBrowserTest,
+                       ValidHandshakeAndHistograms) {
+  base::HistogramTester histograms;
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::SSLServerConfig ssl_config;
+  ssl_config.server_padding_enabled = true;
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/title1.html")));
+
+  content::FetchHistogramsFromChildProcesses();
+  base::test::TestFuture<void> future;
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
+      /*async=*/true, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  if (padding_enabled()) {
+    histograms.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding", 1);
+    histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+  } else {
+    histograms.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding", 0);
+    histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SSLServerPaddingBrowserTest,
+                         ::testing::Values(std::optional(128),
+                                           std::optional(0),
+                                           std::nullopt));

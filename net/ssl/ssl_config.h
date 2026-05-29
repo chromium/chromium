@@ -174,6 +174,10 @@ struct NET_EXPORT SSLConfig {
   // enough to implement the extension and can process the server's list of
   // available trust anchors.
   std::optional<std::vector<uint8_t>> trust_anchor_ids;
+
+  // If not nullopt, the amount of server padding to request from the server.
+  // Experimental, may be removed at any time.
+  std::optional<uint16_t> server_padding_to_request = std::nullopt;
 };
 
 }  // namespace net
