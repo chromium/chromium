@@ -38,6 +38,9 @@ def __step_config(ctx, step_config):
         "chrome/installer/linux/rpm/build.py",
         "chrome/installer/linux/rpm/calculate_package_deps.py",
         "chrome/installer/linux/rpm/merge_package_deps.py",
+        # Parses components_locale_settings.grd and dynamically reads multiple
+        # translation .xtb files, making static input tracking too complex.
+        "components/language/core/browser/generate_incognito_language_list_map.py",
         "components/optimization_guide/tools/gen_on_device_proto_descriptors.py",
         # Requires dynamic globbing of hundreds of policy definition YAML files
         # under components/policy/resources/templates/ directory.
