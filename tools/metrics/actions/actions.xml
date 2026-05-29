@@ -16896,6 +16896,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Indigo.ReplaceImage.Complete">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    User completed the replace image onboarding process.
+  </description>
+</action>
+
+<action name="Indigo.ReplaceImage.Trigger">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    User triggered the replace image onboarding process.
+  </description>
+</action>
+
 <action name="Indigo.Transformation.Failure" not_user_triggered="true">
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>

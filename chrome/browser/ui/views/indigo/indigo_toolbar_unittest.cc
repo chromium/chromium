@@ -143,8 +143,7 @@ TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   // Buttons are drawn.
   // TODO(b/512246764): Update expectation after making button visible.
   EXPECT_FALSE(regenerate_button->IsDrawn());
-  // TODO(b/512245645): Update expectation after making button visible.
-  EXPECT_FALSE(replace_photo_button->IsDrawn());
+  EXPECT_TRUE(replace_photo_button->IsDrawn());
   EXPECT_TRUE(delete_photo_button->IsDrawn());
 
   // Interact with expanded buttons.

@@ -317,9 +317,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                   &IndigoToolbar::OnReplacePhotoClicked,
                                   base::Unretained(this))))
                           .SetProperty(views::kElementIdentifierKey,
-                                       kReplacePhotoButtonElementId)
-                          // TODO(b/512245645): Make this visible.
-                          .SetVisible(false),
+                                       kReplacePhotoButtonElementId),
                       views::Builder<views::Button>(
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(

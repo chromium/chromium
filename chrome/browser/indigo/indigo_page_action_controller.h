@@ -69,6 +69,13 @@ enum class ResetType {
   kResetReplacementsOnly,
 };
 
+enum class OnboardingDisposition {
+  // Triggered in the normal course of using the feature.
+  kDefault,
+  // Triggered to replace the existing image.
+  kReplacePhoto,
+};
+
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
 class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
@@ -128,8 +135,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
       controller_->CheckEligibilityForOnboarding(eligibility);
     }
 
-    void CheckOnboardingResult(const OnboardingResult& result) {
-      controller_->OnOnboardingDialogClosed(result);
+    void CheckOnboardingResult(OnboardingDisposition disposition,
+                               const OnboardingResult& result) {
+      controller_->OnOnboardingDialogClosed(disposition, result);
     }
 
     void SetOnboardingDialogFactory(OnboardingDialogFactory factory) {
@@ -144,6 +152,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
 
+  // Shows the onboarding dialog with the appropriate URL based on disposition.
+  void ShowOnboardingDialog(OnboardingDisposition disposition);
+
   // Called when the eligibility has been fetched.
   void CheckEligibilityForOnboarding(const CombinedEligibility& eligibility);
 
@@ -151,7 +162,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void ContinueInvoke(const CombinedEligibility& eligibility);
 
   // Updates state and handles preference changes when the dialog closes.
-  void OnOnboardingDialogClosed(const OnboardingResult& result);
+  void OnOnboardingDialogClosed(OnboardingDisposition disposition,
+                                const OnboardingResult& result);
 
   // Called when the delete request completes.
   void OnDeleteOriginalPhotoComplete(base::expected<void, DeleteError> result);
