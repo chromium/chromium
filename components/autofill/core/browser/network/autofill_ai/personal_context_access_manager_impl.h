@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
 
 namespace personal_context {
+class PersonalContextEnablementService;
 class PersonalContextService;
 }  // namespace personal_context
 
@@ -16,8 +17,10 @@ namespace autofill {
 
 class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
  public:
-  explicit PersonalContextAccessManagerImpl(
-      personal_context::PersonalContextService* personal_context_service);
+  PersonalContextAccessManagerImpl(
+      personal_context::PersonalContextService* personal_context_service,
+      personal_context::PersonalContextEnablementService*
+          personal_context_enablement_service);
 
   PersonalContextAccessManagerImpl(const PersonalContextAccessManagerImpl&) =
       delete;
@@ -29,6 +32,8 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
  private:
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
+  const raw_ref<personal_context::PersonalContextEnablementService>
+      personal_context_enablement_service_;
 };
 
 }  // namespace autofill

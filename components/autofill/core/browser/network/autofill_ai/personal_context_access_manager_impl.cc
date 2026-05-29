@@ -9,8 +9,12 @@
 namespace autofill {
 
 PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
-    personal_context::PersonalContextService* personal_context_service)
-    : personal_context_service_(CHECK_DEREF(personal_context_service)) {}
+    personal_context::PersonalContextService* personal_context_service,
+    personal_context::PersonalContextEnablementService*
+        personal_context_enablement_service)
+    : personal_context_service_(CHECK_DEREF(personal_context_service)),
+      personal_context_enablement_service_(
+          CHECK_DEREF(personal_context_enablement_service)) {}
 
 PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
 
