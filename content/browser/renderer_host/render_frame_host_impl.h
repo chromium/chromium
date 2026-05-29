@@ -2658,8 +2658,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RequestUnboundedSurface(
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client) override;
-  void DismissActiveUnboundedSurface();
+          client,
+      const gfx::Rect& bounds) override;
+  void DismissUnboundedSurface();
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
@@ -4480,9 +4481,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void OnReadClipboardData(base::OnceCallback<void(bool)> callback,
                            std::string result) const;
-
-  // Dismisses the open unbounded surface, if there is one.
-  void DismissUnboundedSurfaceIfActive();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

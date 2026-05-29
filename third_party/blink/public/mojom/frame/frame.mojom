@@ -815,10 +815,12 @@ interface LocalFrameHost {
   InitializeCrashReportContext(uint64 length)
       => (mojo_base.mojom.UnsafeSharedMemoryRegion region);
 
-  // Request the instantiation of an overlay host container.
+  // Request the instantiation of an overlay host container with the
+  // provided bounds.
   RequestUnboundedSurface(
       pending_associated_receiver<UnboundedSurfaceHost> host,
-      pending_associated_remote<UnboundedSurfaceClient> client);
+      pending_associated_remote<UnboundedSurfaceClient> client,
+      gfx.mojom.Rect bounds);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

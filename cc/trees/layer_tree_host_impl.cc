@@ -3170,7 +3170,12 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     unbounded_frame.render_pass_list =
         std::move(frame->unbounded_render_passes);
 
-    populate_resources(unbounded_frame, unbounded_frame.render_pass_list);
+    // TODO(crbug.com/508672616): populate_resources is currently skipped for
+    // unbounded_frame because SubmitUnboundedCompositorFrame has an empty
+    // default implementation and drops the frame. In a later patchset when
+    // the frame is actually submitted to Viz, re-enable this call to ensure
+    // exported resources are properly tracked and returned.
+    // populate_resources(unbounded_frame, unbounded_frame.render_pass_list);
 
     // TODO(508672616): Consider moving this Submit call to
     // LayerTreeHostImpl::DrawLayers where the bounded compositor frame is

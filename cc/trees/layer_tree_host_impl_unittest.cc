@@ -15528,6 +15528,28 @@ TEST_P(OverscrollEffectTest, RespectsOverscrollBehaviorOnRoot) {
   VerifyOverscrollBehavior(OuterViewportScrollLayer());
 }
 
+// TODO(crbug.com/508672616): Unbounded element is not implemented for
+// TreesInViz yet.
+class UnboundedElementTest : public LayerTreeHostImplTest {};
+INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(UnboundedElementTest,
+                                       CommitToActiveTree,
+                                       CommitToPendingTree);
+TEST_P(UnboundedElementTest, UnboundedCompositorFrameExtraction) {
+  LayerTreeImpl* active_tree = host_impl_->active_tree();
+  EffectTree& effect_tree =
+      active_tree->property_trees()->effect_tree_mutable();
+
+  EffectNode effect_node;
+  effect_node.element_id = ElementId(10);
+  int effect_node_id = effect_tree.Insert(effect_node, 0);
+  effect_tree.MutableNode(effect_node_id).render_surface_reason =
+      RenderSurfaceReason::kUnboundedElement;
+
+  EXPECT_TRUE(effect_tree.Node(effect_node_id).HasRenderSurface());
+  EXPECT_EQ(RenderSurfaceReason::kUnboundedElement,
+            effect_tree.Node(effect_node_id).render_surface_reason);
+}
+
 TEST_P(LayerTreeHostImplTest, CollectTrackedElementRects) {
   auto* root_layer = SetupRootLayer<SolidColorLayerImpl>(
       host_impl_->active_tree(), gfx::Size(100, 100));

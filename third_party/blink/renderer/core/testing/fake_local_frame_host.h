@@ -219,7 +219,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void RequestUnboundedSurface(
       mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceClient>
-          client) override {}
+          client,
+      const gfx::Rect& bounds) override {}
   void NotifyDocumentInteractive() override;
 
  private:

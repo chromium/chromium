@@ -1573,6 +1573,22 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
     return promise;
   }
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  gfx::Rect bounds;
+  if (auto* layout_object = GetLayoutObject()) {
+    bounds = layout_object->AbsoluteBoundingBoxRect();
+  }
+
+  if (bounds.IsEmpty()) {
+    // TODO(crbug.com/508672616): This is likely weird for now as an element
+    // without layout or with display: none has empty bounds. We should think of
+    // a cleaner way to handle or report this.
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Unbounded elements must have non-empty bounds."));
+    return promise;
+  }
+
   // TODO(crbug.com/508672616) This should invalidate compositing, via
   // SetNeedsPaintPropertyUpdate().
   SetUnboundedElementActive(true);
@@ -1586,7 +1602,7 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
   auto client_remote = client_receiver.InitWithNewEndpointAndPassRemote();
 
   frame->GetLocalFrameHostRemote().RequestUnboundedSurface(
-      std::move(host_receiver), std::move(client_remote));
+      std::move(host_receiver), std::move(client_remote), bounds);
   resolver->Resolve();
 
   return promise;
