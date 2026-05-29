@@ -160,8 +160,8 @@ UILabel* CreateSubtitleLabel() {
   // The email for the passkey request.
   NSString* _email;
 
-  // URL of the current page the bottom sheet is being displayed on.
-  GURL _url;
+  // Relying party identifier of the passkey request.
+  NSString* _rpId;
 
   // The passkey creation handler for user actions.
   __weak id<BrowserCoordinatorCommands> _handler;
@@ -217,10 +217,12 @@ UILabel* CreateSubtitleLabel() {
 
 #pragma mark - PasskeyCreationBottomSheetConsumer
 
-- (void)setUsername:(NSString*)username email:(NSString*)email url:(GURL)url {
+- (void)setUsername:(NSString*)username
+              email:(NSString*)email
+               rpId:(NSString*)rpId {
   _username = username;
   _email = email;
-  _url = url;
+  _rpId = rpId;
 }
 
 #pragma mark - Private
@@ -249,8 +251,9 @@ UILabel* CreateSubtitleLabel() {
 
     faviconView.contentMode = UIViewContentModeScaleAspectFit;
     faviconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    GURL pageURL("https://" + base::SysNSStringToUTF8(_rpId));
     _faviconLoader->FaviconForPageUrl(
-        _url, kFaviconSize, kFaviconSize,
+        pageURL, kFaviconSize, kFaviconSize,
         /*fallback_to_google_server=*/true,
         ^(FaviconAttributes* attributes, bool cached) {
           [faviconView configureWithAttributes:attributes];
@@ -262,7 +265,7 @@ UILabel* CreateSubtitleLabel() {
   usernameLabel.text = _username;
 
   UILabel* domainLabel = CreateDomainLabel();
-  domainLabel.text = base::SysUTF8ToNSString(_url.host());
+  domainLabel.text = _rpId;
 
   UIStackView* textStack =
       CreateLabelsStackView(@[ usernameLabel, domainLabel ]);

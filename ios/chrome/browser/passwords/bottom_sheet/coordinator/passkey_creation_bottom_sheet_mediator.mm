@@ -42,9 +42,6 @@
 
   // Module containing the reauthentication mechanism.
   id<ReauthenticationProtocol> _reauthModule;
-
-  // URL of the current page the bottom sheet is being displayed on.
-  GURL _URL;
 }
 
 - (instancetype)
@@ -66,7 +63,6 @@
     _requestInfo = std::move(requestInfo);
     _accountForSaving = accountForSaving;
     _reauthModule = reauthModule;
-    _URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
     _mediatorDelegate = mediatorDelegate;
   }
   return self;
@@ -176,8 +172,15 @@
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PasskeyCreationBottomSheetConsumer>)consumer {
+  NSString* rpId = [self rpId];
+  if (!rpId) {
+    // The RP ID should not be empty, dismiss the flow.
+    [_mediatorDelegate dismissPasskeyCreation];
+    return;
+  }
+
   _consumer = consumer;
-  [_consumer setUsername:[self username] email:[self email] url:_URL];
+  [_consumer setUsername:[self username] email:[self email] rpId:rpId];
 }
 
 #pragma mark - WebStateListObserving
@@ -197,6 +200,22 @@
 }
 
 #pragma mark - Private
+
+// Returns the relying party identifier for the passkey request.
+- (NSString*)rpId {
+  webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
+    return nil;
+  }
+
+  std::string rpId =
+      passkeyTabHelper->RelyingPartyIdForRequest(_requestInfo->request_id);
+  if (rpId.empty()) {
+    return nil;
+  }
+
+  return base::SysUTF8ToNSString(rpId);
+}
 
 // Returns the username for the passkey request.
 - (NSString*)username {

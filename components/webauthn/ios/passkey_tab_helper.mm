@@ -740,6 +740,23 @@ std::string PasskeyTabHelper::UsernameForRequest(
   return "";
 }
 
+std::string PasskeyTabHelper::RelyingPartyIdForRequest(
+    const std::string& request_id) {
+  // Check registration requests first.
+  auto registration_it = registration_requests_.find(request_id);
+  if (registration_it != registration_requests_.end()) {
+    return registration_it->second.RpId();
+  }
+
+  // Check assertion requests next.
+  auto assertion_it = assertion_requests_.find(request_id);
+  if (assertion_it != assertion_requests_.end()) {
+    return assertion_it->second.RpId();
+  }
+
+  return "";
+}
+
 std::optional<bool> PasskeyTabHelper::ShouldPerformUserVerification(
     const std::string& request_id,
     bool is_biometric_authentication_enabled) const {

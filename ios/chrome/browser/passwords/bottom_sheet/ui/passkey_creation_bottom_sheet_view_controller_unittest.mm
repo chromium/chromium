@@ -21,7 +21,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "url/gurl.h"
 
 // Tests for PasskeyCreationBottomSheetViewController.
 class PasskeyCreationBottomSheetViewControllerTest : public PlatformTest {
@@ -42,9 +41,9 @@ class PasskeyCreationBottomSheetViewControllerTest : public PlatformTest {
 TEST_F(PasskeyCreationBottomSheetViewControllerTest, BasicInformation) {
   NSString* username = @"user";
   NSString* email = @"email@example.com";
-  GURL url("https://example.com");
+  NSString* rpId = @"example.com";
 
-  [view_controller_ setUsername:username email:email url:url];
+  [view_controller_ setUsername:username email:email rpId:rpId];
   [view_controller_ loadView];
   [view_controller_ viewDidLoad];
 
@@ -71,7 +70,7 @@ TEST_F(PasskeyCreationBottomSheetViewControllerTest, BasicInformation) {
       base::apple::ObjCCast<UILabel>(labelsStackView.arrangedSubviews[1]);
 
   EXPECT_NSEQ(username, usernameLabel.text);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(url.host()), domainLabel.text);
+  EXPECT_NSEQ(rpId, domainLabel.text);
 
   // Verifies the button stack configuration.
   EXPECT_NSEQ(

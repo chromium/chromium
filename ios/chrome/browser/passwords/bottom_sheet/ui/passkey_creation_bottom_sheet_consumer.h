@@ -7,13 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-#import "url/gurl.h"
-
 // Delegate for the passkey creation bottom sheet.
 @protocol PasskeyCreationBottomSheetConsumer
 
-// Sets the username, email and url for the current passkey request.
-- (void)setUsername:(NSString*)username email:(NSString*)email url:(GURL)URL;
+// Sets the username, email and relying party identifier for the current passkey
+// request.
+- (void)setUsername:(NSString*)username
+              email:(NSString*)email
+               rpId:(NSString*)rpId;
 
 @end
 

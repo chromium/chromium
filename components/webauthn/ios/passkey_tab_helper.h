@@ -111,6 +111,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // have a username.
   std::string UsernameForRequest(const std::string& request_id);
 
+  // Returns the relying party identifier associated with the current request ID
+  // or an empty string if the request is not found.
+  std::string RelyingPartyIdForRequest(const std::string& request_id);
+
   // Sets the passkey command handler.
   void SetIOSPasskeyClientCommandsHandler(id<IOSPasskeyClientCommands> handler);
 
