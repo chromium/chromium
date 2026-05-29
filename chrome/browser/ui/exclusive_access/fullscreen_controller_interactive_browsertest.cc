@@ -108,8 +108,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   // browser has focus. Thus, this can only be used in interactive ui tests
   // and not on sharded tests.
   bool IsPointerLocked() {
-    const bool controller_locked = browser()
-                                       ->GetExclusiveAccessManager()
+    const bool controller_locked = GetExclusiveAccessManager()
                                        ->pointer_lock_controller()
                                        ->IsPointerLocked();
     // Verify that IsPointerLocked is consistent between the

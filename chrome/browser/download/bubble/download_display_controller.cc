@@ -37,7 +37,7 @@ namespace {
 // //chrome/browser/ui/fullscreen_util_mac.h. Kept local to avoid a circular
 // dependency with //chrome/browser/ui.
 bool IsInContentFullscreen(BrowserWindowInterface* browser) {
-  ExclusiveAccessManager* const manager = browser->GetExclusiveAccessManager();
+  ExclusiveAccessManager* const manager = ExclusiveAccessManager::From(browser);
   if (!manager) {
     return false;
   }

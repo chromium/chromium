@@ -644,7 +644,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
-      browser->window()->GetExclusiveAccessContext());
+      browser, browser->window()->GetExclusiveAccessContext());
 
   // This code needs exclusive access manager to be initialized.
 #if !BUILDFLAG(IS_CHROMEOS)

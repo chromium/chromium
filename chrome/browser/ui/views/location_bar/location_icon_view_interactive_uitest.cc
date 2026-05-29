@@ -53,7 +53,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
     EXPECT_FALSE(initial_fullscreen);
 
     auto* fullscreen_controller =
-        browser()->GetExclusiveAccessManager()->fullscreen_controller();
+        ExclusiveAccessManager::From(browser())->fullscreen_controller();
     fullscreen_controller->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
 
     // Wait for fullscreen transition.
@@ -80,7 +80,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
     EXPECT_TRUE(initial_fullscreen);
 
     auto* fullscreen_controller =
-        browser()->GetExclusiveAccessManager()->fullscreen_controller();
+        ExclusiveAccessManager::From(browser())->fullscreen_controller();
     fullscreen_controller->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
 
     // Wait for fullscreen exit.

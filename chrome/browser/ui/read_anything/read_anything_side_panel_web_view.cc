@@ -143,9 +143,8 @@ bool ReadAnythingSidePanelWebView::HandleKeyboardEvent(
             ->controller();
     if (controller && controller->tab() &&
         controller->tab()->GetBrowserWindowInterface()) {
-      controller->tab()
-          ->GetBrowserWindowInterface()
-          ->GetExclusiveAccessManager()
+      ExclusiveAccessManager::From(
+          controller->tab()->GetBrowserWindowInterface())
           ->HandleUserKeyEvent(event);
       return true;
     }

@@ -252,8 +252,7 @@ void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
   ui_test_utils::FullscreenWaiter waiter(browser(),
                                          {.browser_fullscreen = true});
   static const char kExtensionId[] = "extension-id";
-  browser()
-      ->GetExclusiveAccessManager()
+  GetExclusiveAccessManager()
       ->fullscreen_controller()
       ->ToggleBrowserFullscreenModeWithExtension(
           extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
@@ -295,7 +294,7 @@ FullscreenController* ExclusiveAccessTest::GetFullscreenController() {
 }
 
 ExclusiveAccessManager* ExclusiveAccessTest::GetExclusiveAccessManager() {
-  return browser()->GetFeatures().exclusive_access_manager();
+  return ExclusiveAccessManager::From(browser());
 }
 
 void ExclusiveAccessTest::SetEscRepeatWindowLength(

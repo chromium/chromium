@@ -730,8 +730,7 @@ void LensOverlayController::ShowUI(
   }
   ShowModalUI();
   fullscreen_subscription_ =
-      tab_->GetBrowserWindowInterface()
-          ->GetExclusiveAccessManager()
+      ExclusiveAccessManager::From(tab_->GetBrowserWindowInterface())
           ->fullscreen_controller()
           ->RegisterOnFullscreenStateChanged(base::BindRepeating(
               &LensOverlayController::OnFullscreenStateChanged,

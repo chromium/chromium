@@ -350,7 +350,7 @@ void ToastController::CreateToast(ToastParams params,
       false);
   toast_observer_.Observe(toast_widget_);
   fullscreen_subscription_ =
-      browser_window_interface_->GetExclusiveAccessManager()
+      ExclusiveAccessManager::From(browser_window_interface_)
           ->fullscreen_controller()
           ->RegisterOnFullscreenStateChanged(
               base::BindRepeating(&ToastController::OnFullscreenStateChanged,

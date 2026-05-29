@@ -139,7 +139,7 @@ void BrowserExtensionWindowController::SetFullscreenMode(
   NOTIMPLEMENTED();
 #else
   if (window()->IsFullscreen() != is_fullscreen) {
-    browser_->GetExclusiveAccessManager()
+    ExclusiveAccessManager::From(&browser_.get())
         ->fullscreen_controller()
         ->ToggleBrowserFullscreenModeWithExtension(extension_url);
   }

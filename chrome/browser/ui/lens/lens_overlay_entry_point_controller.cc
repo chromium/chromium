@@ -112,7 +112,7 @@ void LensOverlayEntryPointController::Initialize(
 
   // Observe changes to fullscreen state.
   fullscreen_subscription_ =
-      browser_window_interface_->GetExclusiveAccessManager()
+      ExclusiveAccessManager::From(browser_window_interface_)
           ->fullscreen_controller()
           ->RegisterOnFullscreenStateChanged(base::BindRepeating(
               &LensOverlayEntryPointController::OnFullscreenStateChanged,
@@ -170,7 +170,7 @@ bool LensOverlayEntryPointController::IsEnabled() const {
 
   // Disable in fullscreen without top-chrome.
   if (!lens::features::GetLensOverlayEnableInFullscreen() &&
-      browser_window_interface_->GetExclusiveAccessManager()
+      ExclusiveAccessManager::From(browser_window_interface_)
           ->context()
           ->IsFullscreen() &&
       !browser_window_interface_->IsTabStripVisible()) {

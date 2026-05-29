@@ -166,7 +166,7 @@ ExclusiveAccessManager*
 WebUIBrowserExclusiveAccessContext::GetExclusiveAccessManager() {
   // The exclusive_access_manager is created in InitPostWindowConstruction,
   // so it might not be available during early initialization.
-  auto* manager = browser_->GetFeatures().exclusive_access_manager();
+  auto* manager = ExclusiveAccessManager::From(browser_);
   DCHECK(manager) << "ExclusiveAccessManager should be initialized before use";
   return manager;
 }

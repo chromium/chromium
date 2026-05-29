@@ -45,6 +45,7 @@ source_set("exclusive_access") {
     "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//components/content_settings/core/browser",
     "//components/fullscreen_control",

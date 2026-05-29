@@ -116,7 +116,7 @@ class KeyboardLockInteractiveBrowserTest
 #endif
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
-    return browser()->GetFeatures().exclusive_access_manager();
+    return ExclusiveAccessManager::From(browser());
   }
 
   KeyboardLockController* GetKeyboardLockController() {

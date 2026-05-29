@@ -20,9 +20,8 @@ bool IsInContentFullscreen(
     const BrowserWindowInterface* browser_window_interface) {
   // Const cast because ExclusiveAccessManager and its accessors are not
   // const-correct.
-  auto* const manager =
-      const_cast<BrowserWindowInterface*>(browser_window_interface)
-          ->GetExclusiveAccessManager();
+  auto* const manager = ExclusiveAccessManager::From(
+      const_cast<BrowserWindowInterface*>(browser_window_interface));
   if (!manager) {
     return false;
   }

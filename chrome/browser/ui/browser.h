@@ -746,7 +746,6 @@ class Browser : public TabStripModelObserver,
       DidBecomeActiveCallback callback) override;
   base::CallbackListSubscription RegisterDidBecomeInactive(
       DidBecomeInactiveCallback callback) override;
-  ExclusiveAccessManager* GetExclusiveAccessManager() override;
   BrowserActions* GetActions() override;
   Type GetType() const override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;

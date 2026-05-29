@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
@@ -50,7 +51,22 @@ bool IsUnmodifiedEscKeyDownEvent(const input::NativeWebKeyboardEvent& event) {
 
 }  // namespace
 
+DEFINE_USER_DATA(ExclusiveAccessManager);
+
+// static
+ExclusiveAccessManager* ExclusiveAccessManager::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+// static
+const ExclusiveAccessManager* ExclusiveAccessManager::From(
+    const BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 ExclusiveAccessManager::ExclusiveAccessManager(
+    BrowserWindowInterface* browser,
     ExclusiveAccessContext* exclusive_access_context)
     : exclusive_access_context_(exclusive_access_context),
       fullscreen_controller_(this),
@@ -59,7 +75,15 @@ ExclusiveAccessManager::ExclusiveAccessManager(
       exclusive_access_controllers_({&fullscreen_controller_,
                                      &keyboard_lock_controller_,
                                      &pointer_lock_controller_}),
-      permission_manager_(exclusive_access_context) {}
+      permission_manager_(exclusive_access_context) {
+  if (browser) {
+    scoped_unowned_user_data_.emplace(browser->GetUnownedUserDataHost(), *this);
+  }
+}
+
+ExclusiveAccessManager::ExclusiveAccessManager(
+    ExclusiveAccessContext* exclusive_access_context)
+    : ExclusiveAccessManager(nullptr, exclusive_access_context) {}
 
 ExclusiveAccessManager::~ExclusiveAccessManager() = default;
 

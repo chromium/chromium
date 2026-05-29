@@ -2580,7 +2580,7 @@ void RenderViewContextMenu::AppendExitFullscreenItem() {
   }
 
   // Only show item if in fullscreen mode.
-  ExclusiveAccessManager* manager = browser->GetExclusiveAccessManager();
+  ExclusiveAccessManager* manager = ExclusiveAccessManager::From(browser);
   if (!manager ||
       !manager->fullscreen_controller()->IsControllerInitiatedFullscreen()) {
     return;
@@ -4911,7 +4911,7 @@ void RenderViewContextMenu::ExecExitFullscreen() {
     NOTREACHED();
   }
 
-  ExclusiveAccessManager* manager = browser->GetExclusiveAccessManager();
+  ExclusiveAccessManager* manager = ExclusiveAccessManager::From(browser);
   if (manager) {
     manager->ExitExclusiveAccess();
   }

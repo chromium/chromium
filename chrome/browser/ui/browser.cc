@@ -1114,10 +1114,6 @@ void Browser::SynchronouslyDestroyBrowser() {
   // `this` is no longer valid from this point forward.
 }
 
-ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
-  return GetFeatures().exclusive_access_manager();
-}
-
 BrowserActions* Browser::GetActions() {
   return GetFeatures().browser_actions();
 }

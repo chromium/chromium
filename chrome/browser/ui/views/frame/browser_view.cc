@@ -681,7 +681,7 @@ class BrowserView::ExclusiveAccessContextImpl
   }
 
   ExclusiveAccessManager* GetExclusiveAccessManager() override {
-    return browser_view_->browser_->GetFeatures().exclusive_access_manager();
+    return ExclusiveAccessManager::From(browser_view_->browser());
   }
 
   ui::AcceleratorProvider* GetAcceleratorProvider() override {

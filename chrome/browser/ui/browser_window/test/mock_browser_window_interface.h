@@ -81,10 +81,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               RegisterDidBecomeInactive,
               (DidBecomeInactiveCallback callback),
               (override));
-  MOCK_METHOD(ExclusiveAccessManager*,
-              GetExclusiveAccessManager,
-              (),
-              (override));
   MOCK_METHOD(BrowserActions*, GetActions, (), (override));
   MOCK_METHOD(std::vector<tabs::TabInterface*>,
               GetAllTabInterfaces,
