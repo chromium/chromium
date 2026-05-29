@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 #include "chrome/browser/profiles/profile.h"

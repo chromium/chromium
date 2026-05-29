@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"

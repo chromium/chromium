@@ -16,6 +16,7 @@ static_library("vm") {
 
   deps = [
     ":mojo_bindings",
+    "//ash/strings",
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/plugin_vm",

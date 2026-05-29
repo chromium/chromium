@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"

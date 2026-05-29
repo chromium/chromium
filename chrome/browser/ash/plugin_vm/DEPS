@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/simple_message_box.h",
   "+chrome/common/chrome_features.h",
-  "+chrome/grit",
   "+chrome/test/base",
 ]
 
@@ -41,6 +40,11 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
   ],
+
+  "plugin_vm_diagnostics\\.cc": [
+    "+chrome/grit",
+  ],
+
   ".*_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
