@@ -1011,9 +1011,16 @@ void PasswordManager::OnUserModifiedNonPasswordField(
 
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
                                              const FormData& form_data) {
-  PasswordFormManager* manager = ProvisionallySaveForm(form_data, driver, true);
+  PasswordFormManager* manager =
+      GetMatchedManagerForForm(driver, form_data.renderer_id());
 
-  if (manager) {
+  const bool had_manually_filled_password_before =
+      manager && manager->GetSubmittedForm() &&
+      HasManuallyFilledPassword(*(manager->GetSubmittedForm()));
+
+  manager = ProvisionallySaveForm(form_data, driver, true);
+
+  if (manager && !had_manually_filled_password_before) {
     if (const PasswordForm* form = manager->GetSubmittedForm();
         form && HasManuallyFilledPassword(*form)) {
       manager->OnPasswordFilledManually();

@@ -1571,6 +1571,143 @@ TEST_P(PasswordManagerTest, DontSaveAlreadySavedCredential) {
             user_action_tester.GetActionCount("PasswordManager_LoginPassed"));
 }
 
+TEST_P(PasswordManagerTest,
+       OnInformAboutUserInput_OnlyTriggerWhenPasswordAdded) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordDateLastFilled};
+  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));
+
+  const PasswordForm saved_match(MakeSavedForm());
+  store_->AddLogin(password_manager::FromPasswordForm(saved_match));
+
+  FormData form_data = MakeSimpleFormData();
+  // Ensure initial form has no password value.
+  test_api(form_data).field(1).set_value(std::u16string());
+
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
+
+  auto& field = test_api(form_data).field(1);
+
+  // Advance the clock to make the expected timestamp different from epoch.
+  task_environment_.AdvanceClock(base::Days(1));
+  auto expected_last_filled = base::Time::Now();
+
+  auto expected_logins_matcher = ElementsAre(Pair(
+      saved_match.signon_realm,
+      ElementsAre(AllOf(Field(&PasswordForm::password_value, Eq(u"p4ssword")),
+                        HasDateLastFilled(expected_last_filled)))));
+
+  // 1. Transition from no password to password (exact match).
+  field.set_value(u"p4ssword");
+  field.set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+
+  // We expect OnPasswordFilledManually to be called, which updates
+  // date_last_filled. We don't expect ShowManualFallbackForSaving because it's
+  // an exact match.
+  EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
+
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+
+  // Wait for the store to process the change (update date_last_filled).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto logins = GetAllLoginsSync(store_.get());
+    auto it = logins.find(saved_match.signon_realm);
+    return it != logins.end() && !it->second.empty() &&
+           it->second[0].date_last_filled == expected_last_filled;
+  }));
+
+  // Verify that date_last_filled was updated.
+  EXPECT_THAT(GetAllLoginsSync(store_.get()), expected_logins_matcher);
+  Mock::VerifyAndClearExpectations(&client_);
+
+  // 2. Transition from filled password to typed password (and different value).
+  field.set_value(u"password123");
+  field.set_properties_mask(autofill::FieldPropertiesFlags::kUserTyped);
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, ShowManualFallbackForSaving)
+      .WillOnce(MoveArg<0>(&form_manager_to_save));
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+
+  ASSERT_TRUE(form_manager_to_save);
+  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
+              Field(&PasswordForm::password_value, Eq(u"password123")));
+
+  // Store should not change.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(GetAllLoginsSync(store_.get()), expected_logins_matcher);
+  Mock::VerifyAndClearExpectations(&client_);
+
+  // 3. Transition from password to empty.
+  field.set_value(std::u16string());
+  field.set_properties_mask(0);
+
+  EXPECT_CALL(client_, HideManualFallbackForSaving);
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+
+  // Store should not change.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(GetAllLoginsSync(store_.get()), expected_logins_matcher);
+  Mock::VerifyAndClearExpectations(&client_);
+}
+
+TEST_P(PasswordManagerTest,
+       OnInformAboutUserInput_TriggerWhenManualFallbackAfterTyping) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordDateLastFilled};
+  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));
+
+  const PasswordForm saved_match(MakeSavedForm());
+  store_->AddLogin(password_manager::FromPasswordForm(saved_match));
+
+  FormData form_data = MakeSimpleFormData();
+  // Ensure initial form has no password value.
+  test_api(form_data).field(1).set_value(std::u16string());
+
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
+
+  auto& field = test_api(form_data).field(1);
+
+  // Advance the clock to make the expected timestamp different from epoch.
+  task_environment_.AdvanceClock(base::Days(1));
+  auto expected_last_filled = base::Time::Now();
+
+  // 1. Transition from no password to typed password.
+  field.set_value(u"a");
+  field.set_properties_mask(autofill::FieldPropertiesFlags::kUserTyped);
+
+  EXPECT_CALL(client_, ShowManualFallbackForSaving);
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+  Mock::VerifyAndClearExpectations(&client_);
+
+  // 2. Transition from typed password to manually filled password.
+  field.set_value(u"p4ssword");
+  field.set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+
+  // Wait for the store to process the change (update date_last_filled).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto logins = GetAllLoginsSync(store_.get());
+    auto it = logins.find(saved_match.signon_realm);
+    return it != logins.end() && !it->second.empty() &&
+           it->second[0].date_last_filled == expected_last_filled;
+  }));
+
+  // Verify that date_last_filled was updated.
+  auto expected_logins_matcher = ElementsAre(Pair(
+      saved_match.signon_realm,
+      ElementsAre(AllOf(Field(&PasswordForm::password_value, Eq(u"p4ssword")),
+                        HasDateLastFilled(expected_last_filled)))));
+  EXPECT_THAT(GetAllLoginsSync(store_.get()), expected_logins_matcher);
+}
+
 TEST_P(PasswordManagerTest, NoManualFallbackWhenFetchIsPending) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 
@@ -6933,6 +7070,10 @@ TEST_P(PasswordManagerTest, DateLastFilledIsUpdated) {
 
   const PasswordForm form(MakeSimpleForm());
   FormData observed = form.form_data;
+  // Clear the password value for initial parsing to ensure transition from
+  // empty to filled triggers OnPasswordFilledManually.
+  test_api(observed).field(1).set_value(std::u16string());
+
   manager()->OnPasswordFormsParsed(&driver_, {observed});
   manager()->OnPasswordFormsRendered(&driver_, {observed});
   task_environment_.RunUntilIdle();
@@ -6941,7 +7082,9 @@ TEST_P(PasswordManagerTest, DateLastFilledIsUpdated) {
   task_environment_.AdvanceClock(base::Days(1));
   auto expected_last_filled = base::Time::Now();
 
-  // Simulate user-triggered password filling.
+  // Simulate user-triggered password filling by restoring the value and setting
+  // the properties mask.
+  test_api(observed).field(1).set_value(u"p4ssword");
   test_api(observed).field(1).set_properties_mask(
       autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   manager()->OnInformAboutUserInput(&driver_, observed);
