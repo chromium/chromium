@@ -53,7 +53,7 @@ found in the LICENSE file.
 
     <!-- TODO(crbug.com/513452611): Update to use correct icon once
     defined. -->
-    <!-- TODO(crbug.com/513452611): Remove android:visible="false" once
+    <!-- TODO(crbug.com/513452611): Remove app:isPreferenceVisible="false" once
     launched. -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_shopping"
@@ -61,7 +61,7 @@ found in the LICENSE file.
         android:title="@string/autofill_shopping_title"
         android:icon="@drawable/ic_shoppingmode_24dp"
         android:summary="@string/autofill_and_passwords_shopping_summary"
-        android:visible="false"/>
+        app:isPreferenceVisible="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_settings"
