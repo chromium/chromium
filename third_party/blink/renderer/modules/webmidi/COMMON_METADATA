@@ -1,0 +1,7 @@
+monorail: {
+  component: "Blink>WebMIDI"
+}
+team_email: "midi-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456151
+}
