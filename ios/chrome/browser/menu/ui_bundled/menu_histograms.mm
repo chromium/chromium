@@ -70,8 +70,6 @@ const char kSelectDriveIdentityEntryActionsHistogram[] =
     "Mobile.ContextMenu.SelectDriveIdentityEntry.Actions";
 const char kTabGroupIndicatorEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabGroupIndicatorEntry.Actions";
-const char kAutofillManualFallbackPlusAddressEntryActionsHistogram[] =
-    "Mobile.ContextMenu.AutofillManualFallbackPlusAddressEntry.Actions";
 const char kTabGroupIndicatorNTPEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabGroupIndicatorNTPEntry.Actions";
 const char kLastVisitedHistoryEntryActionsHistogram[] =
@@ -155,7 +153,7 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
     case kMenuScenarioHistogramTabGroupIndicatorEntry:
       return kTabGroupIndicatorEntryActionsHistogram;
     case kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry:
-      return kAutofillManualFallbackPlusAddressEntryActionsHistogram;
+      NOTREACHED();
     case kMenuScenarioHistogramTabGroupIndicatorNTPEntry:
       return kTabGroupIndicatorNTPEntryActionsHistogram;
     case kMenuScenarioHistogramLastVisitedHistoryEntry:

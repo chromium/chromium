@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="Sort Drive Items By Opening Time"/>
   <int value="59" label="Select Drive Identity"/>
   <int value="60" label="Add Drive Account"/>
-  <int value="61" label="Manage In New Tab"/>
+  <int value="61" label="Manage In New Tab (Obsolete)"/>
   <int value="62" label="Recent Activity in Shared Tab Group"/>
   <int value="63" label="AI Prototyping"/>
   <int value="64" label="Manage shared tab group"/>
@@ -272,7 +272,8 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="Sort Drive Items Entry"/>
   <int value="29" label="Select Drive Identity Entry"/>
   <int value="30" label="Tab Group Indicator Entry"/>
-  <int value="31" label="Autofill Manual Fallback Plus Address Entry"/>
+  <int value="31"
+      label="Autofill Manual Fallback Plus Address Entry (Obsolete)"/>
   <int value="32" label="Tab Group Indicator on NTP Entry"/>
   <int value="33" label="Last Visited History Entry"/>
   <int value="34" label="Image on a Reader Mode page"/>

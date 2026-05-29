@@ -243,10 +243,6 @@ class TabGroup;
 // Creates a UIAction instance to add an account to choose drive files from.
 - (UIAction*)actionToAddAccountForDriveWithBlock:(ProceduralBlock)block;
 
-// Creates a UIAction instance whose title and icon are configured for showing
-// manage in a new tab, which will invoke the given `block` when executed.
-- (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block;
-
 // Creates a UIAction instance to show the recent activity in a shared tab
 // group.
 - (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block;

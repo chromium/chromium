@@ -1925,9 +1925,6 @@
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB" desc="The iOS menu item for opening a link in another tab. Shorter than the desktop version [iOS only]">
         Open in New Tab
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB" desc="The iOS menu item for managing a selected item. [iOS only]">
-        Manage
-      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS" desc="The iOS menu item for opening a list of links in new tabs. Shorter than the desktop version [iOS only]">
         Open All
       </message>

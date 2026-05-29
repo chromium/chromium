@@ -71,7 +71,7 @@ enum class MenuActionType {
   SortDriveItemsByOpeningTime = 58,
   SelectDriveIdentity = 59,
   AddDriveAccount = 60,
-  ManageInNewTab = 61,
+  ManageInNewTab = 61,  // Obsolete
   RecentActivityInSharedTabGroup = 62,
   AIPrototyping = 63,
   ManageSharedTabGroup = 64,
