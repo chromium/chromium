@@ -180,7 +180,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     private void setUpViews() {
         SearchActivityPreferences prefs =
                 new SearchActivityPreferences(
-                        "EngineName", new GURL("http://engine"), true, true, true);
+                        null, "EngineName", new GURL("http://engine"), true, true, true);
 
         mWidgetView =
                 mDelegate

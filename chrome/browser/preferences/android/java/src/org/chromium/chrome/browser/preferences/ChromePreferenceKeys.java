@@ -883,17 +883,17 @@ public final class ChromePreferenceKeys {
             "Chrome.SearchEngineChoice.PendingOsChoiceDialogShownAttempts";
 
     public static final String SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE =
-            "org.chromium.chrome.browser.searchwidget.IS_VOICE_SEARCH_AVAILABLE";
+            "Chrome.Widget.IsVoiceSearchAvailable";
     public static final String SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES =
-            "org.chromium.chrome.browser.searchwidget.NUM_CONSECUTIVE_CRASHES";
+            "Chrome.Widget.NumConsecutiveCrashes";
     public static final String SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME =
-            "org.chromium.chrome.browser.searchwidget.SEARCH_ENGINE_SHORTNAME";
-    public static final String SEARCH_WIDGET_SEARCH_ENGINE_URL =
-            "org.chromium.chrome.browser.searchwidget.SEARCH_ENGINE_URL";
+            "Chrome.Widget.SearchEngineShortName";
+    public static final String SEARCH_WIDGET_SEARCH_ENGINE_URL = "Chrome.Widget.SearchEngineUrl";
+    public static final String SEARCH_WIDGET_ACCOUNT_EMAIL = "Chrome.Widget.AccountEmail";
     public static final String SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE =
-            "org.chromium.chrome.browser.searchwidget.IS_GOOGLE_LENS_AVAILABLE";
+            "Chrome.Widget.IsGoogleLensAvailable";
     public static final String SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE =
-            "org.chromium.chrome.browser.searchwidget.IS_INCOGNITO_AVAILABLE";
+            "Chrome.Widget.IsIncognitoAvailable";
 
     // Segmentation platform related prefs.
     public static final String SEGMENTATION_FEED_ACTIVE_USER = "Chrome.Segmentation.FeedActiveUser";
@@ -1305,6 +1305,13 @@ public final class ChromePreferenceKeys {
                 READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,
+                SEARCH_WIDGET_ACCOUNT_EMAIL,
+                SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
+                SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
+                SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
+                SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES,
+                SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME,
+                SEARCH_WIDGET_SEARCH_ENGINE_URL,
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SERIAL_NOTIFICATION_IDS,
                 SETUP_LIST_COMPLETED_KEY_PREFIX.pattern(),

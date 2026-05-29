@@ -111,6 +111,7 @@ public class SearchWidgetProviderTest {
                     SearchWidgetProvider.performUpdate(
                             null,
                             new SearchActivityPreferences(
+                                    /* accountEmail= */ null,
                                     searchEngineName,
                                     null,
                                     voiceSearchAvailable,

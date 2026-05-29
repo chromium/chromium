@@ -16,6 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_ACCOUNT_EMAIL;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE;
@@ -44,11 +45,13 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
@@ -61,6 +64,7 @@ public class SearchActivityPreferencesManagerTest {
     @Mock private TemplateUrl mTemplateUrlMock;
     @Mock private Profile mProfile;
     @Mock private LensController mLensController;
+    @Mock private IdentityManager mIdentityManager;
 
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
@@ -83,6 +87,7 @@ public class SearchActivityPreferencesManagerTest {
         LensController.setInstanceForTesting(mLensController);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
 
         doAnswer(
                         invocation -> {
@@ -127,25 +132,29 @@ public class SearchActivityPreferencesManagerTest {
     public void preferenceTest_equalWithSameContent() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, true, true);
+                        "email@a.b", "test", new GURL("https://test.url"), true, true, true);
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, true, true);
+                        "email@a.b", "test", new GURL("https://test.url"), true, true, true);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 
-        p1 = new SearchActivityPreferences(null, new GURL("https://test.url"), true, false, true);
-        p2 = new SearchActivityPreferences(null, new GURL("https://test.url"), true, false, true);
+        p1 =
+                new SearchActivityPreferences(
+                        null, null, new GURL("https://test.url"), true, false, true);
+        p2 =
+                new SearchActivityPreferences(
+                        null, null, new GURL("https://test.url"), true, false, true);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 
-        p1 = new SearchActivityPreferences("test", null, false, true, true);
-        p2 = new SearchActivityPreferences("test", null, false, true, true);
+        p1 = new SearchActivityPreferences(null, "test", null, false, true, true);
+        p2 = new SearchActivityPreferences(null, "test", null, false, true, true);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 
-        p1 = new SearchActivityPreferences(null, null, false, false, false);
-        p2 = new SearchActivityPreferences(null, null, false, false, false);
+        p1 = new SearchActivityPreferences(null, null, null, false, false, false);
+        p2 = new SearchActivityPreferences(null, null, null, false, false, false);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
     }
@@ -154,10 +163,10 @@ public class SearchActivityPreferencesManagerTest {
     public void preferenceTest_notEqualWithDifferentVoiceAvailability() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, false, false);
+                        null, "test", new GURL("https://test.url"), true, false, false);
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), false, false, false);
+                        null, "test", new GURL("https://test.url"), false, false, false);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -166,10 +175,10 @@ public class SearchActivityPreferencesManagerTest {
     public void preferenceTest_notEqualWithDifferentLensAvailability() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, true, false);
+                        null, "test", new GURL("https://test.url"), true, true, false);
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, false, false);
+                        null, "test", new GURL("https://test.url"), true, false, false);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -178,10 +187,10 @@ public class SearchActivityPreferencesManagerTest {
     public void preferenceTest_notEqualWithDifferentIncognitoAvailability() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, true, true);
+                        null, "test", new GURL("https://test.url"), true, true, true);
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
-                        "test", new GURL("https://test.url"), true, true, false);
+                        null, "test", new GURL("https://test.url"), true, true, false);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -190,10 +199,10 @@ public class SearchActivityPreferencesManagerTest {
     public void preferenceTest_notEqualWithDifferentSearchEngineName() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences(
-                        "Search Engine 1", new GURL("https://test.url"), true, true, true);
+                        null, "Search Engine 1", new GURL("https://test.url"), true, true, true);
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
-                        "Search Engine 2", new GURL("https://test.url"), true, true, true);
+                        null, "Search Engine 2", new GURL("https://test.url"), true, true, true);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -202,10 +211,22 @@ public class SearchActivityPreferencesManagerTest {
     public void preferenceTest_notEqualWithDifferentSearchEngineUrl() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences(
-                        "Google", new GURL("https://www.google.com"), true, true, true);
+                        null, "Google", new GURL("https://www.google.com"), true, true, true);
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
-                        "Google", new GURL("https://www.google.pl"), true, true, true);
+                        null, "Google", new GURL("https://www.google.pl"), true, true, true);
+        Assert.assertNotEquals(p1, p2);
+        Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
+    }
+
+    @Test
+    public void preferenceTest_notEqualWithDifferentEmail() {
+        SearchActivityPreferences p1 =
+                new SearchActivityPreferences(
+                        "a@b.com", "Google", new GURL("https://www.google.com"), true, true, true);
+        SearchActivityPreferences p2 =
+                new SearchActivityPreferences(
+                        "c@d.com", "Google", new GURL("https://www.google.com"), true, true, true);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -226,7 +247,7 @@ public class SearchActivityPreferencesManagerTest {
         // Perform an update and check the number of calls.
         var newSettings =
                 new SearchActivityPreferences(
-                        "Search Engine", new GURL("https://URL"), false, true, true);
+                        null, "Search Engine", new GURL("https://URL"), false, true, true);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(newSettings, false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(observer1).accept(eq(newSettings));
@@ -242,7 +263,7 @@ public class SearchActivityPreferencesManagerTest {
         // Perform an update and check the number of calls.
         newSettings =
                 new SearchActivityPreferences(
-                        "Search Engine", new GURL("https://URL"), true, true, true);
+                        null, "Search Engine", new GURL("https://URL"), true, true, true);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(newSettings, false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(observer1).accept(eq(newSettings));
@@ -285,7 +306,7 @@ public class SearchActivityPreferencesManagerTest {
         // Verify that we don't get excessive update notifications.
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences(
-                        "ABC", new GURL("https://abc.xyz"), false, true, true),
+                        null, "ABC", new GURL("https://abc.xyz"), false, true, true),
                 false);
         verify(listener1, never()).accept(any());
         verify(listener2, never()).accept(any());
@@ -313,6 +334,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE));
+        Assert.assertFalse(manager.contains(SEARCH_WIDGET_ACCOUNT_EMAIL));
 
         // Install receiver of the async pref update notification.
         // We expect the on-disk prefs to be already updated when this call is made.
@@ -323,7 +345,8 @@ public class SearchActivityPreferencesManagerTest {
         // Save settings to disk.
         var persistedUrl = new GURL("https://URL");
         var preference =
-                new SearchActivityPreferences("Search Engine", persistedUrl, false, true, true);
+                new SearchActivityPreferences(
+                        "persisted@email.com", "Search Engine", persistedUrl, false, true, true);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(preference, true);
         // Should not be live right away - expect posted task.
         verify(listener, never()).accept(any());
@@ -344,6 +367,8 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertEquals(
                 true, manager.readBoolean(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE, false));
         Assert.assertEquals(true, manager.readBoolean(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE, false));
+        Assert.assertEquals(
+                "persisted@email.com", manager.readString(SEARCH_WIDGET_ACCOUNT_EMAIL, null));
 
         // Reset values to defaults / "clear application data". Make sure we don't have anything on
         // disk.
@@ -353,6 +378,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE));
+        Assert.assertFalse(manager.contains(SEARCH_WIDGET_ACCOUNT_EMAIL));
     }
 
     @Test
@@ -468,6 +494,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.googleLensAvailable);
         Assert.assertTrue(data.voiceSearchAvailable);
         Assert.assertTrue(data.incognitoAvailable);
+        Assert.assertNull(data.accountEmail);
 
         // Disable Lens.
         doReturn(false).when(mLensController).isLensEnabled(any());
@@ -477,6 +504,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(data.googleLensAvailable);
         Assert.assertTrue(data.voiceSearchAvailable);
         Assert.assertTrue(data.incognitoAvailable);
+        Assert.assertNull(data.accountEmail);
 
         // Disable Voice.
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(false);
@@ -486,6 +514,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(data.googleLensAvailable);
         Assert.assertFalse(data.voiceSearchAvailable);
         Assert.assertTrue(data.incognitoAvailable);
+        Assert.assertNull(data.accountEmail);
 
         // Disable Incognito.
         IncognitoUtils.setEnabledForTesting(false);
@@ -495,6 +524,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(data.googleLensAvailable);
         Assert.assertFalse(data.voiceSearchAvailable);
         Assert.assertFalse(data.incognitoAvailable);
+        Assert.assertNull(data.accountEmail);
     }
 
     @Test
