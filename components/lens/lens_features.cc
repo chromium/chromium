@@ -138,6 +138,9 @@ BASE_FEATURE(kLensSendRawFileMediaTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSendUrlsInComposeboxes, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOnlySendAaiForModalityChips,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1322,6 +1325,10 @@ bool IsLensSendRawFileMediaTypesEnabled() {
 
 bool IsLensSendUrlsInComposeboxesEnabled() {
   return base::FeatureList::IsEnabled(kLensSendUrlsInComposeboxes);
+}
+
+bool IsLensOnlySendAaiForModalityChipsEnabled() {
+  return base::FeatureList::IsEnabled(kLensOnlySendAaiForModalityChips);
 }
 
 }  // namespace lens::features

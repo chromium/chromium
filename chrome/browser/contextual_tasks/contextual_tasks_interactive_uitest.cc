@@ -820,8 +820,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForFaviconGroupWithTitle(kPrimaryTab, "title1.html"),
       WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
       VerifySubmitQueryMessage(
-          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
-          "title1.html"));
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -862,8 +861,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       ForceClickMenuButton(kPrimaryTab, "fileUpload"),
       WaitForDocumentChipWithTitle(kPrimaryTab, "download.pdf"),
       WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
-      VerifySubmitQueryMessage(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
-                               "download.pdf"));
+      VerifySubmitQueryMessage(lens::LensOverlayRequestId::MEDIA_TYPE_PDF));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -986,9 +984,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
           /*expected_query_text=*/"",
           /*expected_viewport_image_count=*/2,
           /*expected_upload_image_count=*/2,
-          /*expected_upload_file_count=*/1,
-          std::vector<std::string>{"title1.html", "title2.html",
-                                   "download.pdf"}));
+          /*expected_upload_file_count=*/1, std::vector<std::string>{}));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -1102,13 +1098,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       ClickButton(kPrimaryTab, kSubmitButton),
 
       // 7. Verify multiple inputs + query text in the final message
-      VerifyMultipleSubmitQueryMessage(
-          "Query with multiple attachments",
-          /*expected_viewport_image_count=*/2,
-          /*expected_upload_image_count=*/2,
-          /*expected_upload_file_count=*/1,
-          std::vector<std::string>{"title1.html", "title2.html",
-                                   "download.pdf"}));
+      VerifyMultipleSubmitQueryMessage("Query with multiple attachments",
+                                       /*expected_viewport_image_count=*/2,
+                                       /*expected_upload_image_count=*/2,
+                                       /*expected_upload_file_count=*/1,
+                                       std::vector<std::string>{}));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -1158,8 +1152,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 
       // Verify the sent query includes the auto-suggested tab context.
       VerifySubmitQueryMessage(
-          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
-          "title1.html"));
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -1344,8 +1337,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
 
       // Verify the sent query includes the auto-suggested tab context.
       VerifySubmitQueryMessage(
-          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
-          "title1.html"));
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
@@ -1625,5 +1617,77 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksInteractiveUiTestParameterized,
                          testing::Bool());
+
+class ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled
+    : public ContextualTasksInteractiveUiTest {
+ public:
+  ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled() {
+    scoped_feature_list_aai_disabled_.InitAndDisableFeature(
+        lens::features::kLensOnlySendAaiForModalityChips);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_aai_disabled_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled,
+    AddAndSubmitTabFromComposebox_SendsAai) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  const DeepQuery kFaviconGroup = {
+      "contextual-tasks-app", "#composebox",       "#composebox",
+      "#contextEntrypoint",   "#entrypointButton", "composebox-favicon-group"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      AddInstrumentedTab(kGenericTab, kGenericPageUrl),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+      ForceClickAddContextEntrypoint(kPrimaryTab),
+      ForceClickMenuButton(kPrimaryTab, 0),
+      WaitForFaviconGroupWithTitle(kPrimaryTab, "title1.html"),
+      WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
+      // When flag is disabled, unresolved URLs (Tabs) are sent in AAI.
+      VerifySubmitQueryMessage(
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          "title1.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled,
+    AddAndSubmitPdfChipFromComposebox_SendsAai) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII("download.pdf");
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+      ForceClickAddContextEntrypoint(kPrimaryTab),
+      ForceClickMenuButton(kPrimaryTab, "fileUpload"),
+      WaitForDocumentChipWithTitle(kPrimaryTab, "download.pdf"),
+      WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
+      // When flag is disabled, PDF is sent in AAI.
+      VerifySubmitQueryMessage(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
+                               "download.pdf"));
+}
 
 }  // namespace contextual_tasks

@@ -551,29 +551,31 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
       // Process modality chips.
       added_inputs.add_added_inputs()->CopyFrom(
           file_info->input_data->modality_chip_props->added_input());
-    } else if (IsUnresolvedUrlUpload(*file_info)) {
-      lens::AimThumbnail* thumbnail = added_inputs.add_turn_title_thumbnail();
-      thumbnail->set_title(file_info->input_data->parsed_url.value());
-      thumbnail->mutable_icon()->set_type(lens::AimIconType::ICON_TYPE_LINK);
-    } else if (file_info->request_id.has_value() &&
-               file_info->mime_type != lens::MimeType::kImage) {
-      // Process Lens file non-image uploads. Do not create added inputs for
-      // image uploads.
-      lens::LensOverlayLensFile* lens_file =
-          added_inputs.add_added_inputs()->mutable_lens_file();
-      lens_file->set_vsrid(
-          lens::Base64EncodeRequestId(file_info->request_id.value()));
-      lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
-      auto mime_type = MimeTypeStringFromFileInfo(*file_info);
-      if (mime_type.has_value()) {
-        lens_file->set_mime_type(mime_type.value());
-      }
-      lens_file->set_file_name(file_info->file_name);
-      if (file_info->tab_title.has_value()) {
-        lens_file->set_page_title(file_info->tab_title.value());
-      }
-      if (file_info->tab_url.has_value()) {
-        lens_file->set_page_url(file_info->tab_url.value().spec());
+    } else if (!lens::features::IsLensOnlySendAaiForModalityChipsEnabled()) {
+      if (IsUnresolvedUrlUpload(*file_info)) {
+        lens::AimThumbnail* thumbnail = added_inputs.add_turn_title_thumbnail();
+        thumbnail->set_title(file_info->input_data->parsed_url.value());
+        thumbnail->mutable_icon()->set_type(lens::AimIconType::ICON_TYPE_LINK);
+      } else if (file_info->request_id.has_value() &&
+                 file_info->mime_type != lens::MimeType::kImage) {
+        // Process Lens file non-image uploads. Do not create added inputs for
+        // image uploads.
+        lens::LensOverlayLensFile* lens_file =
+            added_inputs.add_added_inputs()->mutable_lens_file();
+        lens_file->set_vsrid(
+            lens::Base64EncodeRequestId(file_info->request_id.value()));
+        lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
+        auto mime_type = MimeTypeStringFromFileInfo(*file_info);
+        if (mime_type.has_value()) {
+          lens_file->set_mime_type(mime_type.value());
+        }
+        lens_file->set_file_name(file_info->file_name);
+        if (file_info->tab_title.has_value()) {
+          lens_file->set_page_title(file_info->tab_title.value());
+        }
+        if (file_info->tab_url.has_value()) {
+          lens_file->set_page_url(file_info->tab_url.value().spec());
+        }
       }
     }
   }
