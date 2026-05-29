@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -20,7 +21,10 @@ interface ImageReplacement {
   // Params:
   //   `host_remote`: Will be used to communicate with the browser process about
   //     this image's replacement.
-  StartReplacement(pending_remote<ImageReplacementHost> host_remote);
+  //   `tracked_element_feature_id`: A viz::TrackedElementFeature to associate
+  //     with the element, if tracking is required.
+  StartReplacement(pending_remote<ImageReplacementHost> host_remote,
+                   int32? tracked_element_feature_id);
 
   // Instructs the renderer to stop painting the original image content and
   // start painting the replacement frame instead.
@@ -43,10 +47,10 @@ interface ImageReplacementHost {
   //   `replacement_frame_token`: Identifier for the subframe in the replacement
   //     image shadow tree. The host is responsible for navigating this subframe
   //     to the remote content.
-  //   `quad`: The bounding quad of the replacement frame in the main viewport
-  //     space, in physical pixels.
   //   `original_image`: Bytes for the original image.
+  //   `tracked_element_id`: The viz::TrackedElementId which identifies this
+  //     element, if tracking was requested.
   ReplacementFrameAttached(LocalFrameToken replacement_frame_token,
-                           gfx.mojom.QuadF quad,
-                           ImageData original_image);
+                           ImageData original_image,
+                           mojo_base.mojom.Token? tracked_element_id);
 };

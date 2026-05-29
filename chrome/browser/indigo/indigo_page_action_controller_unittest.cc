@@ -650,7 +650,8 @@ TEST_F(IndigoPageActionControllerTest, OnCloseResetsReplacements) {
    public:
     FakeImageReplacement() = default;
     void StartReplacement(
-        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host) override {
+        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host,
+        std::optional<int32_t> tracked_element_feature_id) override {
       // Do nothing.
     }
     void RenderReplacement() override {}

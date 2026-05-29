@@ -16,6 +16,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -81,6 +82,7 @@ TEST_F(IndigoToolbarTest, CloseAndReopen) {
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
   EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(1);
 
   views::View* toolbar_view = GetToolbarView();
@@ -95,6 +97,7 @@ TEST_F(IndigoToolbarTest, CloseAndReopen) {
 
   // Show again
   toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
   views::View* toolbar_view_after_close = GetToolbarView();
   ASSERT_NE(toolbar_view_after_close, nullptr);
   EXPECT_TRUE(toolbar_view_after_close->GetVisible());
@@ -104,6 +107,7 @@ TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
   EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(0);
 
   views::View* toolbar_view = GetToolbarView();
@@ -158,6 +162,38 @@ TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   EXPECT_FALSE(regenerate_button->IsDrawn());
   EXPECT_FALSE(replace_photo_button->IsDrawn());
   EXPECT_FALSE(delete_photo_button->IsDrawn());
+}
+
+TEST_F(IndigoToolbarTest, ToolbarBounds) {
+  MockIndigoToolbarDelegate delegate;
+  auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
+  // Show with empty rect (production initial state)
+  toolbar->Show(overlay_view());
+  overlay_view()->DeprecatedLayoutImmediately();
+
+  views::View* toolbar_view = GetToolbarView();
+  ASSERT_NE(toolbar_view, nullptr);
+
+  // Should be invisible initially
+  EXPECT_FALSE(toolbar_view->GetVisible());
+
+  // Now simulate compositor update with real bounds
+  toolbar->UpdateTrackedPosition(gfx::Rect(100, 100, 400, 300));
+  overlay_view()->DeprecatedLayoutImmediately();
+
+  // Should now be visible and moved away from fallback position
+  EXPECT_TRUE(toolbar_view->GetVisible());
+  EXPECT_NE(toolbar_view->bounds().origin(), gfx::Point(20, 20));
+  // Size should still be correct
+  EXPECT_LT(toolbar_view->bounds().height(), 100);
+  EXPECT_LT(toolbar_view->bounds().width(), 350);
+
+  // Simulate compositor update with empty bounds (image out of view)
+  toolbar->UpdateTrackedPosition(gfx::Rect());
+  overlay_view()->DeprecatedLayoutImmediately();
+
+  // Should be hidden again
+  EXPECT_FALSE(toolbar_view->GetVisible());
 }
 
 }  // namespace indigo

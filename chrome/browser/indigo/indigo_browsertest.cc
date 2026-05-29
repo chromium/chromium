@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -58,7 +59,24 @@ const char kHtmlBody[] = R"(
 <html><body>
 <img id="target_image"
      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-     style="width:512px; height:512px; position:absolute; left:50px; top:50px;">
+     style="width:100px; height:100px; position:absolute; left:50px; top:50px;">
+</body></html>)";
+
+const char kScrollHtmlBody[] = R"(
+<!DOCTYPE html>
+<html>
+<body style="height: 2000px; margin: 0;">
+<img id="target_image"
+     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+     style="width:512px; height:512px; position:absolute; left:50px; top:500px;">
+</body></html>)";
+
+const char kTransformHtmlBody[] = R"(
+<!DOCTYPE html>
+<html><body>
+<img id="target_image"
+     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+     style="width:100px; height:100px; position:absolute; left:50px; top:100px; transform: rotate(45deg);">
 </body></html>)";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
@@ -117,11 +135,11 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
   ~IndigoBrowserTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    ASSERT_TRUE(fake_api_.InitializeAndListen());
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIndigo,
           {{features::kIndigoGenerateUrl.name,
-            embedded_test_server()->GetURL("/generate").spec()}}},
+            fake_api_.GetGenerateUrl().spec()}}},
          {blink::features::kImageReplacement, {}}},
         {});
     InteractiveBrowserTest::SetUp();
@@ -169,6 +187,8 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
                                                  true);
 
+    fake_api_.StartAcceptingConnectionsAutomatic();
+
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [&](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -180,6 +200,22 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
             response->set_content_type("text/html");
             return response;
           }
+          if (request.relative_url == "/scroll.html") {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content(kScrollHtmlBody);
+            response->set_content_type("text/html");
+            return response;
+          }
+          if (request.relative_url == "/transform.html") {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content(kTransformHtmlBody);
+            response->set_content_type("text/html");
+            return response;
+          }
           if (request.relative_url == "/empty.html") {
             auto response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
@@ -188,22 +224,10 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
             response->set_content_type("text/html");
             return response;
           }
-          if (request.relative_url == "/generate") {
-            auto response =
-                std::make_unique<net::test_server::BasicHttpResponse>();
-            response->set_code(net::HTTP_OK);
-            response->set_content(R"({
-              "result": {
-                "generatedImageUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-              }
-            })");
-            response->set_content_type("application/json");
-            return response;
-          }
           return nullptr;
         }));
 
-    embedded_test_server()->StartAcceptingConnections();
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -215,6 +239,7 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  FakeApi fake_api_;
 
  private:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -225,7 +250,7 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   raw_ptr<views::View> toolbar_view = nullptr;
-  gfx::Rect image_bounds{50, 50, 512, 512};
+  gfx::Rect image_bounds{50, 50, 100, 100};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
@@ -256,8 +281,8 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, CloseResetsReplacements) {
   class FakeImageReplacement : public blink::mojom::ImageReplacement {
    public:
     void StartReplacement(
-        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host) override {
-    }
+        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host,
+        std::optional<int32_t> tracked_element_feature_id) override {}
     void RenderReplacement() override {}
   };
 
@@ -301,7 +326,7 @@ class IndigoHighDsfBrowserTest : public IndigoBrowserTest {
 IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   raw_ptr<views::View> toolbar_view = nullptr;
-  gfx::Rect image_bounds{50, 50, 512, 512};
+  gfx::Rect image_bounds{50, 50, 100, 100};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
@@ -436,7 +461,8 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
         auto* tab1 = tabs::TabInterface::GetFromContents(tab1_contents);
         auto* controller = IndigoPageActionController::From(tab1);
         ASSERT_TRUE(controller);
-        controller->ShowToolbarInside(gfx::Rect(10, 10, 100, 100));
+        controller->SetTrackedBoundsForTesting(gfx::Rect(10, 10, 100, 100));
+        controller->ShowToolbar();
       })),
 
       // Verify toolbar is NOT shown (since active tab is Tab 2 which doesn't
@@ -448,6 +474,85 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
 
       // Verify toolbar IS now shown
       WaitForShow(IndigoToolbar::kToolbarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningScroll) {
+  const GURL url = embedded_test_server()->GetURL("/scroll.html");
+  raw_ptr<views::View> toolbar_view = nullptr;
+  gfx::Rect image_bounds{50, 500, 512, 512};
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      PressButton(kIndigoPageActionIconElementId),
+
+      AfterShow(IndigoToolbar::kToolbarElementId,
+                base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  toolbar_view = AsView(el);
+                })),
+      ObserveState(kToolbarBoundsState, std::ref(toolbar_view)),
+
+      // Verify initial toolbar position (unscrolled)
+      WithElement(kWebContentsId,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* contents = el->AsA<TrackedElementWebContents>();
+                    views::WebView* web_view = contents->owner()->GetWebView();
+                    views::View::ConvertRectToScreen(web_view, &image_bounds);
+                  })),
+      WaitForState(kToolbarBoundsState,
+                   IsCloseToTopRightOf(std::ref(image_bounds))),
+
+      // Scroll the page down by 300px
+      ExecuteJsAt(kWebContentsId, {}, "() => { window.scrollTo(0, 300); }"),
+
+      // Update expected image bounds in screen space
+      WithElement(kWebContentsId,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* contents = el->AsA<TrackedElementWebContents>();
+                    views::WebView* web_view = contents->owner()->GetWebView();
+                    image_bounds = gfx::Rect(50, 500 - 300, 512, 512);
+                    views::View::ConvertRectToScreen(web_view, &image_bounds);
+                  })),
+
+      // Verify toolbar moved to follow the scroll
+      WaitForState(kToolbarBoundsState,
+                   IsCloseToTopRightOf(std::ref(image_bounds))),
+
+      // Scroll the page down by 1100px to push the image completely offscreen
+      ExecuteJsAt(kWebContentsId, {}, "() => { window.scrollTo(0, 1100); }"),
+
+      // Verify toolbar is hidden
+      WaitForHide(IndigoToolbar::kToolbarElementId),
+
+      StopObservingState(kToolbarBoundsState));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
+  const GURL url = embedded_test_server()->GetURL("/transform.html");
+  raw_ptr<views::View> toolbar_view = nullptr;
+  gfx::Rect image_bounds{29, 79, 141, 141};
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      PressButton(kIndigoPageActionIconElementId),
+
+      AfterShow(IndigoToolbar::kToolbarElementId,
+                base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  toolbar_view = AsView(el);
+                })),
+      ObserveState(kToolbarBoundsState, std::ref(toolbar_view)),
+
+      WithElement(kWebContentsId,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* contents = el->AsA<TrackedElementWebContents>();
+                    views::WebView* web_view = contents->owner()->GetWebView();
+                    views::View::ConvertRectToScreen(web_view, &image_bounds);
+                  })),
+
+      WaitForState(kToolbarBoundsState,
+                   IsCloseToTopRightOf(std::ref(image_bounds))),
+      StopObservingState(kToolbarBoundsState));
 }
 
 }  // namespace
