@@ -32,6 +32,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Fake SceneState to set sceneSessionID.
 @interface TaskUpdaterFakeSceneState : SceneState
@@ -104,6 +106,15 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
 
     agent_ = [[TaskUpdaterSceneAgent alloc] init];
     [scene_state_ addAgent:agent_];
+
+    mock_application_ = OCMPartialMock([UIApplication sharedApplication]);
+    OCMStub([mock_application_ applicationState])
+        .andReturn(UIApplicationStateActive);
+  }
+
+  void TearDown() override {
+    [(OCMockObject*)mock_application_ stopMocking];
+    PlatformTest::TearDown();
   }
 
   AuthenticationService* auth_service() {
@@ -124,6 +135,7 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
   ProfileState* profile_state_;
   TaskUpdaterFakeSceneState* scene_state_;
   TaskUpdaterSceneAgent* agent_;
+  id mock_application_;
 };
 
 // Tests that TaskExecutionProfileLoaded is sent when profile is loaded.
