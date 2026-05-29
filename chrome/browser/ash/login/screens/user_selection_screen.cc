@@ -233,7 +233,7 @@ proximity_auth::mojom::AuthType GetInitialUserAuthType(
   // this might be a leftover from an old version.
   if (has_gaia_account &&
       token_status == user_manager::User::OAUTH2_TOKEN_STATUS_INVALID) {
-    RecordReauthReason(user->GetAccountId(), ReauthReason::kOther);
+    RecordReauthReason(local_state, user->GetAccountId(), ReauthReason::kOther);
   }
 
   // We need to force an online signin if the user is marked as requiring it or
@@ -693,7 +693,8 @@ void UserSelectionScreen::OnUserStatusChecked(const AccountId& account_id,
                                               const std::string& token,
                                               bool reauth_required) {
   if (reauth_required) {
-    RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);
+    RecordReauthReason(local_state_.get(), account_id,
+                       ReauthReason::kInvalidTokenHandle);
     SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                 std::u16string());
   }
@@ -782,7 +783,7 @@ void UserSelectionScreen::OnSessionStateChanged() {
 }
 
 void UserSelectionScreen::OnInvalidSyncToken(const AccountId& account_id) {
-  RecordReauthReason(account_id,
+  RecordReauthReason(local_state_.get(), account_id,
                      ReauthReason::kSamlPasswordSyncTokenValidationFailed);
   SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
               std::u16string());

@@ -124,7 +124,8 @@ void LockScreenReauthManager::MaybeForceReauthOnLockScreenInternal(
 
   // Record the reauth reason in case the user signed out without going through
   // lock screen online flow.
-  RecordReauthReason(primary_user_->GetAccountId(), reauth_reason);
+  RecordReauthReason(local_state_.get(), primary_user_->GetAccountId(),
+                     reauth_reason);
 
   if (reauth_reason == ReauthReason::kSamlPasswordSyncTokenValidationFailed) {
     is_reauth_required_by_saml_token_mismatch_ = true;

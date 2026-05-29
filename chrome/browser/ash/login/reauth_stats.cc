@@ -23,10 +23,12 @@ ReauthReason GetReauthReason(const user_manager::KnownUser& known_user,
 
 }  // namespace
 
-void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
+void RecordReauthReason(PrefService& local_state,
+                        const AccountId& account_id,
+                        ReauthReason reason) {
   if (reason == ReauthReason::kNone)
     return;
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   if (GetReauthReason(known_user, account_id) == reason)
     return;
 

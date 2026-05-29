@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/reauth_reason.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -139,7 +141,9 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       } else {
         LOG(WARNING) << "Reauth proof token is not present";
         was_reauth_proof_token_missing_ = true;
-        RecordReauthReason(account_id, ReauthReason::kCryptohomeRecovery);
+        // TODO(crbug.com/404133029): Avoid using g_browser_process here.
+        RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()),
+                           account_id, ReauthReason::kCryptohomeRecovery);
         view_->ShowReauthNotification();
         return;
       }
