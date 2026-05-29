@@ -56,9 +56,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "crypto/keypair.h"
+#include "crypto/nss_key_util.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "extensions/browser/extension_system.h"
 #include "net/cert/nss_cert_database.h"
+#include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -129,11 +132,15 @@ class FakeArcCertInstaller : public ArcCertInstaller {
       InstallArcCertsCallback callback) override {
     certs_.clear();
     cert_ids_.clear();
+    cert_slots_.clear();
     for (const auto& cert : certs) {
       std::string cert_name =
           x509_certificate_model::GetCertNameOrNickname(cert.nss_cert.get());
-      certs_[cert_name] = GetDerCert64(cert.nss_cert.get());
-      cert_ids_[cert_name] = cert.id;
+      if (certs_.find(cert_name) == certs_.end()) {
+        certs_[cert_name] = GetDerCert64(cert.nss_cert.get());
+        cert_ids_[cert_name] = cert.id;
+        cert_slots_[cert_name] = cert.slot;
+      }
     }
 
     callback_ = std::move(callback);
@@ -160,10 +167,15 @@ class FakeArcCertInstaller : public ArcCertInstaller {
 
   std::map<std::string, std::string> cert_ids() const { return cert_ids_; }
 
+  std::map<std::string, keymanagement::mojom::ChapsSlot> cert_slots() const {
+    return cert_slots_;
+  }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   std::map<std::string, std::string> certs_;
   std::map<std::string, std::string> cert_ids_;
+  std::map<std::string, keymanagement::mojom::ChapsSlot> cert_slots_;
   InstallArcCertsCallback callback_;
 };
 
@@ -361,6 +373,11 @@ class CertStoreServiceTest
   // all install events are processed by CertStoreService.
   void SetUpCerts(const std::vector<TestCertData>& certs_to_setup);
 
+  void SetUpDynamicCerts(
+      const std::vector<
+          std::pair<std::string, keymanagement::mojom::ChapsSlot>>&
+          certs_to_setup);
+
   // Registers the given |cert| as corporate usage through platform keys.
   void RegisterCorporateKey(CERTCertificate* cert);
 
@@ -394,6 +411,13 @@ class CertStoreServiceTest
   void SetUpTestClientCerts(const std::vector<TestCertData>& certs_to_setup,
                             base::OnceClosure done_callback,
                             net::NSSCertDatabase* cert_db);
+
+  void SetUpDynamicTestClientCerts(
+      const std::vector<
+          std::pair<std::string, keymanagement::mojom::ChapsSlot>>&
+          certs_to_setup,
+      base::OnceClosure done_callback,
+      net::NSSCertDatabase* cert_db);
 
   // Imports the given |nss_cert| into the NSS |cert_db|.
   void ImportCert(CERTCertificate* const nss_cert,
@@ -662,6 +686,78 @@ void CertStoreServiceTest::SetUpTestClientCerts(
   std::move(done_callback).Run();
 }
 
+void CertStoreServiceTest::SetUpDynamicTestClientCerts(
+    const std::vector<std::pair<std::string, keymanagement::mojom::ChapsSlot>>&
+        certs_to_setup,
+    base::OnceClosure done_callback,
+    net::NSSCertDatabase* cert_db) {
+  for (const auto& [cn, slot_type] : certs_to_setup) {
+    crypto::ScopedPK11Slot scoped_slot =
+        (slot_type == keymanagement::mojom::ChapsSlot::kUser)
+            ? cert_db->GetPrivateSlot()
+            : cert_db->GetSystemSlot();
+    PK11SlotInfo* slot = scoped_slot.get();
+    ASSERT_TRUE(slot);
+
+    crypto::keypair::PrivateKey private_key =
+        crypto::keypair::PrivateKey::GenerateRsa2048();
+    std::vector<uint8_t> pkcs8 = private_key.ToPrivateKeyInfo();
+
+    crypto::ScopedSECKEYPrivateKey nss_key =
+        crypto::ImportNSSKeyFromPrivateKeyInfo(slot, pkcs8, /*permanent=*/true);
+    ASSERT_TRUE(nss_key);
+
+    static uint32_t g_serial_number = 1;
+    std::string der_cert;
+    ASSERT_TRUE(net::x509_util::CreateSelfSignedCert(
+        private_key.key(), net::x509_util::DIGEST_SHA256, "CN=" + cn,
+        g_serial_number++, base::Time::UnixEpoch(), base::Time::UnixEpoch(), {},
+        &der_cert));
+
+    net::ScopedCERTCertificate cert =
+        net::x509_util::CreateCERTCertificateFromBytes(
+            base::as_byte_span(der_cert));
+    ASSERT_TRUE(cert);
+
+    TestCertData test_data(cn, true /* is_corporate_usage */, slot_type);
+    installed_certs_.emplace_back(
+        test_data, net::x509_util::DupCERTCertificate(cert.get()));
+  }
+  std::move(done_callback).Run();
+}
+
+void CertStoreServiceTest::SetUpDynamicCerts(
+    const std::vector<std::pair<std::string, keymanagement::mojom::ChapsSlot>>&
+        certs_to_setup) {
+  size_t initial_size = installed_certs_.size();
+
+  {
+    base::RunLoop loop;
+    NssServiceFactory::GetForContext(profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+            &CertStoreServiceTest::SetUpDynamicTestClientCerts,
+            base::Unretained(this), certs_to_setup, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  ASSERT_EQ(installed_certs_.size(), certs_to_setup.size() + initial_size);
+
+  for (size_t i = initial_size; i < installed_certs_.size(); ++i) {
+    const InstalledTestCert& cert = installed_certs_[i];
+    if (cert.test_data.is_corporate_usage) {
+      RegisterCorporateKey(cert.nss_cert.get());
+    }
+    base::RunLoop loop;
+    NssServiceFactory::GetForContext(profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+            &CertStoreServiceTest::ImportCert, base::Unretained(this),
+            cert.nss_cert.get(), loop.QuitClosure()));
+    loop.Run();
+    installer_->Wait();
+    installer_->RunCompletionCallback(true /* success */);
+  }
+}
+
 void CertStoreServiceTest::ImportCert(CERTCertificate* const nss_cert,
                                       base::OnceClosure done_callback,
                                       net::NSSCertDatabase* cert_db) {
@@ -766,6 +862,36 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
                                   test_data_.certs.begin() + i),
         service));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
+                       PRE_SystemPrioritizedOverUserSlotCerts) {
+  policy::AffiliationTestHelper::PreLoginUser(affiliation_mixin_.account_id());
+}
+
+IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
+                       SystemPrioritizedOverUserSlotCerts) {
+  CertStoreService* service =
+      CertStoreServiceFactory::GetForBrowserContext(profile());
+  ASSERT_TRUE(service);
+
+  // Install duplicate certs: User first, then System.
+  std::vector<std::pair<std::string, keymanagement::mojom::ChapsSlot>>
+      custom_certs = {{kFileName1, keymanagement::mojom::ChapsSlot::kUser},
+                      {kFileName1, keymanagement::mojom::ChapsSlot::kSystem}};
+
+  ASSERT_NO_FATAL_FAILURE(SetUpDynamicCerts(custom_certs));
+
+  ASSERT_EQ(2U, installed_certs_.size());
+  std::string name0 = x509_certificate_model::GetCertNameOrNickname(
+      installed_certs_[0].nss_cert.get());
+  std::string name1 = x509_certificate_model::GetCertNameOrNickname(
+      installed_certs_[1].nss_cert.get());
+  EXPECT_EQ(name0, name1);
+
+  ASSERT_TRUE(installer_->cert_slots().count(name0));
+  EXPECT_EQ(installer_->cert_slots()[name0],
+            keymanagement::mojom::ChapsSlot::kSystem);
 }
 
 INSTANTIATE_TEST_SUITE_P(

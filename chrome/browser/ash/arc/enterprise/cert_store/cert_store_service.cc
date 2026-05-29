@@ -368,10 +368,10 @@ void CertStoreService::OnClientCertStoreChanged() {
 }
 
 void CertStoreService::UpdateCertificates() {
-  ListCerts(context_, keymanagement::mojom::ChapsSlot::kUser,
+  ListCerts(context_, keymanagement::mojom::ChapsSlot::kSystem,
             base::BindOnce(&CertStoreService::OnCertificatesListed,
                            weak_ptr_factory_.GetWeakPtr(),
-                           keymanagement::mojom::ChapsSlot::kUser,
+                           keymanagement::mojom::ChapsSlot::kSystem,
                            std::vector<CertDescription>()));
 }
 
@@ -482,8 +482,8 @@ void CertStoreService::OnBuiltAllowedCertDescriptionsForKeyMint(
     return;
   }
 
-  if (slot == keymanagement::mojom::ChapsSlot::kUser) {
-    ListCertsInSystemSlot(std::move(cert_descriptions));
+  if (slot == keymanagement::mojom::ChapsSlot::kSystem) {
+    ListCertsInUserSlot(std::move(cert_descriptions));
     return;
   }
   // At this point certs have been gathered from all available slots (i.e. user
@@ -507,8 +507,8 @@ void CertStoreService::OnBuiltAllowedCertDescriptionsForKeymaster(
     return;
   }
 
-  if (slot == keymanagement::mojom::ChapsSlot::kUser) {
-    ListCertsInSystemSlot(std::move(cert_descriptions));
+  if (slot == keymanagement::mojom::ChapsSlot::kSystem) {
+    ListCertsInUserSlot(std::move(cert_descriptions));
     return;
   }
   // At this point certs have been gathered from all available slots (i.e. user
@@ -528,6 +528,15 @@ void CertStoreService::ListCertsInSystemSlot(
             base::BindOnce(&CertStoreService::OnCertificatesListed,
                            weak_ptr_factory_.GetMutableWeakPtr(),
                            keymanagement::mojom::ChapsSlot::kSystem,
+                           std::move(cert_descriptions)));
+}
+
+void CertStoreService::ListCertsInUserSlot(
+    std::vector<CertDescription> cert_descriptions) const {
+  ListCerts(context_, keymanagement::mojom::ChapsSlot::kUser,
+            base::BindOnce(&CertStoreService::OnCertificatesListed,
+                           weak_ptr_factory_.GetMutableWeakPtr(),
+                           keymanagement::mojom::ChapsSlot::kUser,
                            std::move(cert_descriptions)));
 }
 

@@ -140,6 +140,8 @@ class CertStoreService : public KeyedService,
   // only thread that knows if the system slot is enabled.
   void ListCertsInSystemSlot(
       std::vector<CertDescription> cert_descriptions) const;
+  void ListCertsInUserSlot(
+      std::vector<CertDescription> cert_descriptions) const;
 
   // Processes metadata from |allowed_certs| stored in the given |slot| and
   // appends them to |certificates|.
