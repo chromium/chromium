@@ -40,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
@@ -126,6 +127,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
+    @Mock private BackPressManager mBackPressManager;
 
     private Activity mActivity;
     private NewTabPageLayout mNewTabPageLayout;
@@ -335,7 +337,8 @@ public class NewTabPageCoordinatorUnitTest {
                         mSnackbarManager,
                         /* isTablet= */ false,
                         mTabStripHeightSupplier,
-                        mHomeSurfaceTracker);
+                        mHomeSurfaceTracker,
+                        mBackPressManager);
 
         mCoordinator.initialize(
                 mTileGroupDelegate,

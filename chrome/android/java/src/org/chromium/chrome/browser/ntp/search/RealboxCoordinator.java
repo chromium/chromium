@@ -18,10 +18,12 @@ import androidx.annotation.StyleRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ViewUtils;
 
@@ -34,8 +36,9 @@ public class RealboxCoordinator implements NtpSearchBox, LocationBarEmbedder {
 
     /**
      * @param viewStub The {@link ViewStub} to be replaced with the inflated realbox layout.
+     * @param backPressManager Used to consume/handle back presses during interactions.
      */
-    public RealboxCoordinator(ViewStub viewStub) {
+    public RealboxCoordinator(ViewStub viewStub, BackPressManager backPressManager) {
         mView = ViewUtils.replace(viewStub, R.layout.realbox_layout);
     }
 
@@ -157,5 +160,10 @@ public class RealboxCoordinator implements NtpSearchBox, LocationBarEmbedder {
     @Override
     public @IdRes int getSuggestionsContainerInflatedViewId() {
         return R.id.ntp_realbox_results_container;
+    }
+
+    @Override
+    public @BackPressHandler.Type int getBackPressHandlerType() {
+        return BackPressHandler.Type.REALBOX;
     }
 }

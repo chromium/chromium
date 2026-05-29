@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,11 +26,12 @@ public class NtpSearchBoxFactory {
             boolean isIncognito,
             WindowAndroid windowAndroid,
             NewTabPageManager newTabPageManager,
-            Profile profile) {
+            Profile profile,
+            BackPressManager backPressManager) {
         // TODO(https://crbug.com/507131334): || with OmniboxCapabilities.isDesktopPlatform() when
         // more functional.
         if (OmniboxFeatures.sForceAndroidRealbox.isEnabled()) {
-            return new RealboxCoordinator(viewStub);
+            return new RealboxCoordinator(viewStub, backPressManager);
         } else {
             return new SearchBoxCoordinator(
                     context,

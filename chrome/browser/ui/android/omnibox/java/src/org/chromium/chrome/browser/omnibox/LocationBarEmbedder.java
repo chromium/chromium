@@ -13,6 +13,7 @@ import androidx.annotation.IdRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.AsyncViewStub;
 
 /**
@@ -60,5 +61,10 @@ public interface LocationBarEmbedder {
      */
     default void beginEmbeddedDelayedTransition(ViewGroup sceneRoot, Transition transition) {
         TransitionManager.beginDelayedTransition(sceneRoot, transition);
+    }
+
+    /** Returns the back press handler type for the embedder. */
+    default @BackPressHandler.Type int getBackPressHandlerType() {
+        return BackPressHandler.Type.LOCATION_BAR;
     }
 }

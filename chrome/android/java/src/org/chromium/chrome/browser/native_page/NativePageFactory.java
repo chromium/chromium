@@ -298,7 +298,8 @@ public class NativePageFactory {
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
                     mTopInsetProvider,
-                    mStartupMetricsTracker);
+                    mStartupMetricsTracker,
+                    mBackPressManager);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {

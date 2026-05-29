@@ -40,6 +40,7 @@ public interface BackPressHandler {
         Type.CLOSE_WATCHER,
         Type.FIND_TOOLBAR,
         Type.LOCATION_BAR,
+        Type.REALBOX,
         Type.ACTOR_OVERLAY,
         Type.BOTTOM_CONTROLS,
         Type.TAB_HISTORY,
@@ -69,15 +70,16 @@ public interface BackPressHandler {
         int MANUAL_FILLING = 10;
         int CANCEL_TAB_STRIP_DRAG = 11;
         int LOCATION_BAR = 12;
-        int ACTOR_OVERLAY = 13;
-        int TAB_MODAL_HANDLER = 14;
-        int CLOSE_WATCHER = 15;
-        int FIND_TOOLBAR = 16;
-        int BOTTOM_CONTROLS = 17;
-        int TAB_HISTORY = 18;
-        int NATIVE_PAGE = 19;
-        int SHOW_READING_LIST = 20;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 21;
+        int REALBOX = 13;
+        int ACTOR_OVERLAY = 14;
+        int TAB_MODAL_HANDLER = 15;
+        int CLOSE_WATCHER = 16;
+        int FIND_TOOLBAR = 17;
+        int BOTTOM_CONTROLS = 18;
+        int TAB_HISTORY = 19;
+        int NATIVE_PAGE = 20;
+        int SHOW_READING_LIST = 21;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 22;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

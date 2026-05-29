@@ -37,6 +37,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -397,7 +398,9 @@ public class NewTabPage
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @param moduleRegistrySupplier Supplier for the {@link ModuleRegistry}.
      * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController}.
+     * @param topInsetProvider Provider for top insets.
      * @param startupMetricsTracker Used to record NTP startup metric.
+     * @param backPressManager Manages back press dispatching.
      */
     public NewTabPage(
             Activity activity,
@@ -423,7 +426,8 @@ public class NewTabPage
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             TopInsetProvider topInsetProvider,
-            StartupMetricsTracker startupMetricsTracker) {
+            StartupMetricsTracker startupMetricsTracker,
+            BackPressManager backPressManager) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -517,7 +521,8 @@ public class NewTabPage
                         snackbarManager,
                         mIsTablet,
                         mTabStripHeightSupplier,
-                        homeSurfaceTracker);
+                        homeSurfaceTracker,
+                        backPressManager);
 
         initializeFeedSurfaceProvider(
                 activity,
