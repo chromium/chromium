@@ -585,7 +585,8 @@ result.links = linksArray;
         _config->use_rich_extraction(),
         _config->use_rich_extraction_with_actionable(),
         _config->extract_paid_content(),
-        _config->attempt_paid_content_json_fixing(), nonce, jsTimeout,
+        _config->attempt_paid_content_json_fixing(),
+        _config->include_sensitive_payments_for_redaction(), nonce, jsTimeout,
         base::BindOnce(
             callbackJson, weakSelf, annotatedPageContentBarrier, isMainFrame,
             frame->GetSecurityOrigin(),
@@ -614,7 +615,8 @@ result.links = linksArray;
         _config->use_rich_extraction(),
         _config->use_rich_extraction_with_actionable(),
         _config->extract_paid_content(),
-        _config->attempt_paid_content_json_fixing(), nonce, jsTimeout,
+        _config->attempt_paid_content_json_fixing(),
+        _config->include_sensitive_payments_for_redaction(), nonce, jsTimeout,
         base::BindOnce(
             callback, weakSelf, annotatedPageContentBarrier, isMainFrame,
             frame->GetSecurityOrigin(),

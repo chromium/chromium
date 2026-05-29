@@ -41,6 +41,11 @@ class PageContextWrapperConfig {
   // This needs and will implicitly activate rich extraction.
   bool attempt_paid_content_json_fixing() const;
 
+  // True to include sensitive payments for redaction.
+  // This mirrors the `include_sensitive_payments_for_redaction` flag in
+  // Blink's `mojom::blink::AIPageContentOptions`.
+  bool include_sensitive_payments_for_redaction() const;
+
   // Returns the variant of the configuration to inject into the histograms.
   // Does not include all config bits, only structure-defining ones
   // ("InnerTextOnly", "Rich", and "RichAndActionable").
@@ -64,7 +69,8 @@ class PageContextWrapperConfig {
       bool extract_paid_content,
       bool attempt_paid_content_json_fixing,
       bool extract_autofill,
-      bool extract_autofill_credit_card_redactions);
+      bool extract_autofill_credit_card_redactions,
+      bool include_sensitive_payments_for_redaction);
 
   // Bit to use the refactored PageContextExtractor.
   bool use_refactored_extractor_;
@@ -89,6 +95,9 @@ class PageContextWrapperConfig {
 
   // Bit to apply Autofill credit card redaction policies.
   bool extract_autofill_credit_card_redactions_;
+
+  // Bit to include sensitive payments for redaction.
+  bool include_sensitive_payments_for_redaction_;
 };
 
 // Builder for PageContextWrapperConfig.
@@ -138,6 +147,10 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetExtractAutofillCreditCardRedactions(
       bool extract_autofill_credit_card_redactions);
 
+  // Sets whether to include sensitive payments for redaction.
+  PageContextWrapperConfigBuilder& SetIncludeSensitivePaymentsForRedaction(
+      bool include_sensitive_payments_for_redaction);
+
   // Returns the PageContextWrapperConfig.
   PageContextWrapperConfig Build() const;
 
@@ -150,6 +163,7 @@ class PageContextWrapperConfigBuilder {
   bool attempt_paid_content_json_fixing_;
   bool extract_autofill_;
   bool extract_autofill_credit_card_redactions_;
+  bool include_sensitive_payments_for_redaction_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_WRAPPER_CONFIG_H_

@@ -152,8 +152,8 @@ const constructInnerTextTree =
 function extractPageContext(
     nonce: string, keepCrossOriginFrameData: boolean,
     useRichExtraction: boolean, actionableMode: boolean,
-    extractPaidContent: boolean,
-    attemptPaidContentJsonFixing: boolean): ExtractionResult {
+    extractPaidContent: boolean, attemptPaidContentJsonFixing: boolean,
+    includeSensitivePaymentsForRedaction: boolean): ExtractionResult {
   // If the PageContext should be detached, early return.
   if (shouldDetachPageContext()) {
     return { shouldDetachPageContext: true } as DetachData;
@@ -162,7 +162,7 @@ function extractPageContext(
   // The script should only run if it has no same-origin parent. (The script
   // should only start execution on top-most nodes of a given origin).
   if (window.self !== window.top &&
-    location.ancestorOrigins?.[0] === location.origin) {
+      location.ancestorOrigins?.[0] === location.origin) {
     // Not the top-most same-origin frame, early exit.
     return null;
   }
@@ -174,7 +174,7 @@ function extractPageContext(
     const maxDepth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH;
     const apc = extractAnnotatedPageContent(
         document, nonce, 0, maxDepth, actionableMode, extractPaidContent,
-        attemptPaidContentJsonFixing);
+        attemptPaidContentJsonFixing, includeSensitivePaymentsForRedaction);
     return isPageContextIPCOptimizationEnabled() ? JSONStringify(apc) : apc;
   }
 

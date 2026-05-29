@@ -112,7 +112,8 @@ class PageContextExtractorJavaScriptFeatureTest
       feature()->ExtractPageContext(
           frame, include_cross_origin_frame_content, use_rich_extraction,
           use_rich_extraction_with_actionable, extract_paid_content,
-          attempt_paid_content_json_fixing, nonce, timeout,
+          attempt_paid_content_json_fixing,
+          /*include_sensitive_payments_for_redaction=*/false, nonce, timeout,
           base::BindOnce(
               [](base::OnceCallback<void(std::optional<base::Value>)> callback,
                  const base::Value* value) {
@@ -124,7 +125,8 @@ class PageContextExtractorJavaScriptFeatureTest
       feature()->ExtractPageContextJSON(
           frame, include_cross_origin_frame_content, use_rich_extraction,
           use_rich_extraction_with_actionable, extract_paid_content,
-          attempt_paid_content_json_fixing, nonce, timeout,
+          attempt_paid_content_json_fixing,
+          /*include_sensitive_payments_for_redaction=*/false, nonce, timeout,
           future.GetCallback());
     }
     return future.Take();

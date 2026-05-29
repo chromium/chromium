@@ -7037,6 +7037,137 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RootNodeAttributes) {
             optimization_guide::proto::AX_ROLE_BUTTON);
 }
 
+// Tests extraction of geometry for sensitive payment fields when the
+// configuration is enabled, even if actionable mode is off.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_SensitivePaymentRedactionGeometry) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("Sensitive Payment Geometry Test",
+               RawHtml("<form>"
+                       "  <input type='checkbox' id='normal_checkbox'>"
+                       "  <input type='password' id='password_field'>"
+                       "</form>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          // Intentionally disable actionable mode to test the override.
+          .SetUseRichExtractionWithActionable(false)
+          .SetIncludeSensitivePaymentsForRedaction(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& form = root.children_nodes(0);
+  EXPECT_EQ(form.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM);
+  ASSERT_EQ(form.children_nodes_size(), 2);
+
+  const auto& checkbox_input = form.children_nodes(0);
+  const auto& password_input = form.children_nodes(1);
+
+  // Normal checkbox input should NOT have geometry since actionable mode is off
+  // and it's not considered sensitive payment data.
+  EXPECT_FALSE(
+      checkbox_input.content_attributes().geometry().has_outer_bounding_box());
+  EXPECT_FALSE(checkbox_input.content_attributes()
+                   .geometry()
+                   .has_visible_bounding_box());
+
+  // Password input SHOULD have geometry because it is considered sensitive
+  // and the config is enabled.
+  EXPECT_TRUE(
+      password_input.content_attributes().geometry().has_outer_bounding_box());
+  EXPECT_TRUE(password_input.content_attributes()
+                  .geometry()
+                  .has_visible_bounding_box());
+  // Basic validation that the geometry was indeed extracted and is non-zero.
+  EXPECT_GT(password_input.content_attributes()
+                .geometry()
+                .outer_bounding_box()
+                .width(),
+            0);
+  EXPECT_GT(password_input.content_attributes()
+                .geometry()
+                .outer_bounding_box()
+                .height(),
+            0);
+}
+
+// Tests that geometry is NOT extracted for sensitive payment fields when the
+// configuration is disabled and actionable mode is off.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_SensitivePaymentRedactionGeometry_Disabled) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("Sensitive Payment Geometry Disabled Test",
+               RawHtml("<form>"
+                       "  <input type='text' id='normal_text'>"
+                       "  <input type='password' id='password_field'>"
+                       "</form>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(false)
+          // Explicitly disable the feature.
+          .SetIncludeSensitivePaymentsForRedaction(false)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& form = root.children_nodes(0);
+  ASSERT_EQ(form.children_nodes_size(), 2);
+
+  const auto& checkbox_input = form.children_nodes(0);
+  const auto& password_input = form.children_nodes(1);
+
+  // Neither should have geometry.
+  EXPECT_FALSE(
+      checkbox_input.content_attributes().geometry().has_outer_bounding_box());
+  EXPECT_FALSE(
+      password_input.content_attributes().geometry().has_outer_bounding_box());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

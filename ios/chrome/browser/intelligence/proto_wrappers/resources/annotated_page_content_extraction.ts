@@ -615,6 +615,54 @@ function getFormControlType(element: HTMLElement): FormControlType|undefined {
 }
 
 /**
+ * Checks whether the form control element may contain sensitive payment
+ * information.
+ *
+ * Matches Blink's `MayContainSensitiveData` in
+ * third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.cc.
+ *
+ * @param element The DOM element to check.
+ * @return True if the form control may contain sensitive payments.
+ */
+function mayContainSensitivePayment(element: HTMLElement): boolean {
+  const formControlType = getFormControlType(element);
+  if (formControlType === undefined) {
+    return false;
+  }
+
+  switch (formControlType) {
+    case FormControlType.INPUT_EMAIL:
+    case FormControlType.INPUT_MONTH:
+    case FormControlType.INPUT_NUMBER:
+    case FormControlType.INPUT_PASSWORD:
+    case FormControlType.INPUT_SEARCH:
+    case FormControlType.INPUT_TELEPHONE:
+    case FormControlType.INPUT_TEXT:
+    case FormControlType.INPUT_URL:
+    case FormControlType.SELECT_ONE:
+    case FormControlType.TEXT_AREA:
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Checks whether geometry should be extracted for sensitive payment redaction.
+ *
+ * @param element The DOM element to check.
+ * @param includeSensitivePaymentsForRedaction Whether the configuration is
+ *     enabled.
+ * @return True if geometry should be extracted for sensitive payment.
+ */
+function shouldExtractGeometryForSensitivePayment(
+    element: HTMLElement,
+    includeSensitivePaymentsForRedaction: boolean): boolean {
+  return includeSensitivePaymentsForRedaction &&
+      mayContainSensitivePayment(element);
+}
+
+/**
  * Extracts the relationships (rel attribute) from an anchor element.
  *
  * @param anchorElement The anchor element to extract relationships from.
@@ -1631,7 +1679,8 @@ function getAttributesForTextNode(
 function getContentForIframeNode(
     iframeElement: HTMLIFrameElement, nonce: string, depth: number,
     maxDepth: number, actionableMode: boolean,
-    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
+    paidContentContext: PaidContentExtractionContext,
+    includeSensitivePaymentsForRedaction: boolean): PageContentNode|null {
   const attributes: PageContentAttributes = {
     attributeType: PageContentAttributeType.IFRAME,
     annotatedRoles: [],
@@ -1659,7 +1708,8 @@ function getContentForIframeNode(
       const pageContent = extractAnnotatedPageContent(
           contentDoc, nonce, depth + APC_NODE_DEPTH_COST, maxDepth,
           actionableMode, paidContentContext.extractPaidContent,
-          paidContentContext.attemptPaidContentJsonFixing);
+          paidContentContext.attemptPaidContentJsonFixing,
+          includeSensitivePaymentsForRedaction);
       if (pageContent) {
         childTree = pageContent.rootNode;
         localFrameData = pageContent.frameData;
@@ -2093,6 +2143,7 @@ function getTableNameForTableNode(
 function getBasicContentForNonGenericElement(
     domNode: HTMLElement, nonce: string, depth: number, maxDepth: number,
     actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
+    includeSensitivePaymentsForRedaction: boolean,
     styleCache?: StyleCache): PageContentNode|null {
   const tagName = getStandardTagName(domNode);
 
@@ -2101,7 +2152,7 @@ function getBasicContentForNonGenericElement(
     case TAG_IFRAME:
       return getContentForIframeNode(
           domNode as HTMLIFrameElement, nonce, depth, maxDepth, actionableMode,
-          paidContentContext);
+          paidContentContext, includeSensitivePaymentsForRedaction);
     case TAG_IMG:
       return {
         childrenNodes: [],
@@ -2364,6 +2415,7 @@ function getContentForElementNode(
     interactionInfo: PageContentNodeInteractionInfo|undefined,
     actionableMode: boolean, interactiveNodeIds: InteractiveNodeIds,
     paidContentContext: PaidContentExtractionContext,
+    includeSensitivePaymentsForRedaction: boolean,
     styleCache?: StyleCache): PageContentNode|null {
   let labelForDOMNodeID: number | undefined = undefined;
   if (actionableMode && getStandardTagName(domNode) === TAG_LABEL) {
@@ -2376,7 +2428,7 @@ function getContentForElementNode(
   // 1. Try to get basic content for non-generic elements.
   contentNode = getBasicContentForNonGenericElement(
       domNode, nonce, depth, maxDepth, actionableMode, paidContentContext,
-      styleCache);
+      includeSensitivePaymentsForRedaction, styleCache);
 
   const annotatedRoles: PageContentAnnotatedRole[] = [];
   addAnnotatedRoles(domNode, annotatedRoles, paidContentContext, styleCache);
@@ -2612,10 +2664,13 @@ function populateFragmentsIfNeeded(
 function addNodeGeometry(
     element: HTMLElement, attributes: PageContentAttributes,
     context: ClippingContext, actionableMode: boolean,
+    includeSensitivePaymentsForRedaction: boolean,
     styleCache?: StyleCache): ClippingContext {
-  // Only process element nodes when in actionable mode and return incoming
-  // context in that case since the resulting rectangle isn't needed.
-  if (!actionableMode) {
+  // Process element nodes when in actionable mode, or if it may contain
+  // sensitive payments and they should be redacted.
+  if (!actionableMode &&
+      !shouldExtractGeometryForSensitivePayment(
+          element, includeSensitivePaymentsForRedaction)) {
     return context;
   }
 
@@ -2718,7 +2773,8 @@ function maybeGenerateContentNode(
     domNode: Node, nonce: string, depth: number, maxDepth: number,
     interactiveNodeIds: InteractiveNodeIds, actionableMode: boolean,
     paidContentContext: PaidContentExtractionContext, hasCanvas: boolean,
-    parentContext: ClippingContext, styleCache?: StyleCache): {
+    parentContext: ClippingContext,
+    includeSensitivePaymentsForRedaction: boolean, styleCache?: StyleCache): {
   node: PageContentNode|null,
   nextClippingContext: ClippingContext,
 } {
@@ -2746,8 +2802,9 @@ function maybeGenerateContentNode(
         getNodeInteractionInfo(element, actionableMode, hasCanvas, styleCache);
 
     const contentNode = getContentForElementNode(
-        element, nonce, depth, maxDepth, interactionInfo,
-        actionableMode, interactiveNodeIds, paidContentContext, styleCache);
+        element, nonce, depth, maxDepth, interactionInfo, actionableMode,
+        interactiveNodeIds, paidContentContext,
+        includeSensitivePaymentsForRedaction, styleCache);
     if (contentNode) {
       const domNodeId = getOrCreateNodeId(domNode);
       if (domNodeId !== null) {
@@ -2755,10 +2812,9 @@ function maybeGenerateContentNode(
       }
 
 
-
       const nextClippingContext = addNodeGeometry(
           element, contentNode.contentAttributes, parentContext, actionableMode,
-          styleCache);
+          includeSensitivePaymentsForRedaction, styleCache);
       return {node: contentNode, nextClippingContext};
     }
   }
@@ -2865,7 +2921,8 @@ function generateAndPushContentNode(
     node: Node, nonce: string, maxDepth: number,
     ancestorStack: AncestorStackItem[], interactiveNodeIds: InteractiveNodeIds,
     actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
-    hasCanvas: boolean, styleCache?: StyleCache) {
+    hasCanvas: boolean, includeSensitivePaymentsForRedaction: boolean,
+    styleCache?: StyleCache) {
   const parentStackItem = ancestorStack[ancestorStack.length - 1]!;
 
   // 2. Generate Content Node. Skip nodes that are too deep while keep
@@ -2880,7 +2937,8 @@ function generateAndPushContentNode(
 
   const result = maybeGenerateContentNode(
       node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode,
-      paidContentContext, hasCanvas, parentContext, styleCache);
+      paidContentContext, hasCanvas, parentContext,
+      includeSensitivePaymentsForRedaction, styleCache);
   if (!result.node) {
     // Ignore the node if it can't be parsed. That node cannot be a parent
     // either where another node in the ancestor stack will be picked as the
@@ -3376,7 +3434,8 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
 export function extractAnnotatedPageContent(
     document: Document, nonce: string, depth: number = 0, maxDepth: number,
     actionableMode: boolean, extractPaidContent: boolean,
-    attemptPaidContentJsonFixing: boolean): PageContent|null {
+    attemptPaidContentJsonFixing: boolean,
+    includeSensitivePaymentsForRedaction: boolean): PageContent|null {
   if (depth > maxDepth) {
     return null;
   }
@@ -3464,7 +3523,7 @@ export function extractAnnotatedPageContent(
           normalClip: getViewportRect(document),
           absoluteClip: getViewportRect(document),
         },
-        actionableMode, styleCache),
+        actionableMode, includeSensitivePaymentsForRedaction, styleCache),
   }];
 
   // Collect interactive nodes (focused element, selection start/end).
@@ -3565,7 +3624,8 @@ export function extractAnnotatedPageContent(
     // walking the tree since future nodes might be shallow enough.
     generateAndPushContentNode(
         currentNode, nonce, maxDepth, ancestorStack, interactiveNodeIds,
-        actionableMode, paidContentContext, hasCanvas, styleCache);
+        actionableMode, paidContentContext, hasCanvas,
+        includeSensitivePaymentsForRedaction, styleCache);
 
     currentNode = walker.nextNode();
   }
