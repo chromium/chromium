@@ -56,6 +56,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     }
 
     @Override
+    public int getMinWidthDp() {
+        return 0;
+    }
+
+    @Override
     public int determineContainerWidth(int requestedWidth, int availableWidth, int windowWidth) {
         // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
         return requestedWidth;

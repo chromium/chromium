@@ -22,7 +22,10 @@ import java.util.Map;
 @NullMarked
 public interface SideUiCoordinator extends SideUiStateProvider {
 
-    /** Minimum width for {@code WebContents}, regardless of side panel visibility. */
+    /**
+     * Minimum width (in dp) reserved for {@code WebContents} when calculating {@link SideUiSpecs}
+     * and determining {@link SideUiContainer}s' visibility.
+     */
     int MIN_WEB_CONTENTS_WIDTH_DP = 412;
 
     /**

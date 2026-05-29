@@ -20,6 +20,16 @@ public interface SidePanelContainerCoordinator {
     int MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL = 1200;
 
     /**
+     * Minimum side panel width.
+     *
+     * <p>If the window width can't accommodate both (minimum side panel width) and (minimum {@code
+     * WebContents} width), the side panel will be closed.
+     *
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator#MIN_WEB_CONTENTS_WIDTH_DP
+     */
+    int MIN_SIDE_PANEL_WIDTH_DP = 200;
+
+    /**
      * Fixed, narrow side panel width for when the window can accommodate both the side panel and
      * {@code WebContents} with minimum width.
      *

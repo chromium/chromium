@@ -75,6 +75,11 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
+    public int getMinWidthDp() {
+        return 0;
+    }
+
+    @Override
     @AnchorSide
     public int getAnchorSide() {
         return mAnchorSide;

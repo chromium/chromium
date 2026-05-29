@@ -171,6 +171,11 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public int getMinWidthDp() {
+        return MIN_SIDE_PANEL_WIDTH_DP;
+    }
+
+    @Override
     @AnchorSide
     public int getAnchorSide() {
         log(TAG, "getAnchorSide");
