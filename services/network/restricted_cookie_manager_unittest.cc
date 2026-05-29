@@ -852,7 +852,7 @@ TEST_P(RestrictedCookieManagerTest,
   }
 }
 
-TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
+TEST_P(RestrictedCookieManagerTest, GetCookiesStringFromWrongOrigin) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
   SetSessionCookie("cookie-name-2", "cookie-value-2", "example.com", "/");
   SetSessionCookie("other-cookie-name", "other-cookie-value", "notexample.com",
@@ -872,6 +872,8 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
       &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
+  EXPECT_EQ(version, mojo::shared_memory_version::kInvalidVersion);
+  EXPECT_FALSE(mapped_region.IsValid());
 
   // One more time but also requesting some shared memory.
   EXPECT_TRUE(backend()->GetCookiesString(
@@ -883,6 +885,31 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
       &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
+  EXPECT_EQ(version, mojo::shared_memory_version::kInvalidVersion);
+  EXPECT_FALSE(mapped_region.IsValid());
+}
+
+TEST_P(RestrictedCookieManagerTest, GetCookiesStringFromOpaqueOrigin) {
+  SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
+
+  service_->OverrideOriginForTesting(url::Origin());
+
+  ExpectBadMessage("Access is denied in this context");
+  std::string cookies_out;
+  base::ReadOnlySharedMemoryRegion mapped_region;
+  uint64_t version = 0;
+
+  EXPECT_TRUE(backend()->GetCookiesString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/true,
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
+  EXPECT_TRUE(received_bad_message());
+  EXPECT_EQ(cookies_out, "");
+  EXPECT_EQ(version, mojo::shared_memory_version::kInvalidVersion);
+  EXPECT_FALSE(mapped_region.IsValid());
 }
 
 TEST_P(RestrictedCookieManagerTest, GetAllAdTagged) {

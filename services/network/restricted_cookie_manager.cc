@@ -1025,8 +1025,13 @@ void RestrictedCookieManager::GetCookiesString(
     GetCookiesStringCallback callback) {
   TRACE_EVENT("net", "RestrictedCookieManager::GetCookiesString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
+    std::move(callback).Run(mojo::shared_memory_version::kInvalidVersion, {},
+                            "");
+    return;
+  }
+
   base::ElapsedTimer timer;
-  // Checks done by GetAllForUrl
 
   if (metrics_updater_) {
     metrics_updater_->OnGetCookiesString();
