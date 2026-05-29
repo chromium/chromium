@@ -69,6 +69,11 @@ class CORE_EXPORT SoftNavigationContext
   // navigations are committed to the performance timeline.
   uint64_t NavigationId() const { return navigation_id_; }
 
+  LocalDOMWindow* DomWindow() const { return window_.Get(); }
+  uint64_t InteractionId() const {
+    return initial_event_timing_ ? initial_event_timing_->interactionId() : 0;
+  }
+
   // The soft navigation offset is an exact count of the soft navigations
   // emitted to UKM since the start of the page load. This is similar in spirit
   // to the navigation id, but has stricter requirements due to the usage for
@@ -143,6 +148,9 @@ class CORE_EXPORT SoftNavigationContext
 
   uint64_t PaintedArea() const { return painted_area_; }
   uint64_t ContextId() const { return context_id_; }
+  InteractionContentfulPaint* LargestIcpEntry() const {
+    return largest_icp_entry_.Get();
+  }
 
   // Reports a new contentful paint area to this context, and the Node painted.
   bool AddPaintedArea(PaintTimingRecord*);

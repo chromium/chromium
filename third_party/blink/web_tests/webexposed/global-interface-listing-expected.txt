@@ -10157,11 +10157,11 @@ interface SnapEvent : Event
 interface SoftNavigationEntry : PerformanceEntry
     attribute @@toStringTag
     getter interactionId
-    getter largestInteractionContentfulPaint
     getter navigationType
     getter paintTime
     getter presentationTime
     method constructor
+    method getLargestInteractionContentfulPaint
 interface SourceBuffer : EventTarget
     attribute @@toStringTag
     getter appendWindowEnd

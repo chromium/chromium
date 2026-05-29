@@ -1484,20 +1484,15 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
   }
 }
 
-void WindowPerformance::AddSoftNavigationEntry(
-    const AtomicString& name,
+SoftNavigationEntry* WindowPerformance::AddSoftNavigationEntry(
     base::TimeTicks timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
-    uint32_t navigation_id,
-    V8NavigationType::Enum navigation_type,
-    uint64_t interaction_id,
-    InteractionContentfulPaint* largest_interaction_contentful_paint) {
+    SoftNavigationContext* context) {
   CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
       GetExecutionContext()));
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
-      name, MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
-      DomWindow(), navigation_id, navigation_type, interaction_id,
-      largest_interaction_contentful_paint);
+      MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
+      context);
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {
     UseCounter::Count(GetExecutionContext(),
@@ -1506,6 +1501,7 @@ void WindowPerformance::AddSoftNavigationEntry(
   }
 
   AddSoftNavigationToPerformanceTimeline(entry);
+  return entry;
 }
 
 void WindowPerformance::PageVisibilityChanged() {

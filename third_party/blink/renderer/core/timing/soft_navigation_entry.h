@@ -11,21 +11,16 @@
 
 namespace blink {
 class InteractionContentfulPaint;
+class SoftNavigationContext;
 class V8ObjectBuilder;
 
 class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SoftNavigationEntry(
-      AtomicString name,
-      double start_time,
-      const DOMPaintTimingInfo& paint_timing_info,
-      DOMWindow* source,
-      uint32_t navigation_id,
-      V8NavigationType::Enum navigation_type,
-      uint64_t interaction_id,
-      InteractionContentfulPaint* largest_interaction_contentful_paint);
+  SoftNavigationEntry(double start_time,
+                      const DOMPaintTimingInfo& paint_timing_info,
+                      SoftNavigationContext* context);
   ~SoftNavigationEntry() override;
 
   const AtomicString& entryType() const override;
@@ -37,9 +32,7 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
 
   uint64_t interactionId() const { return interaction_id_; }
 
-  InteractionContentfulPaint* largestInteractionContentfulPaint() const {
-    return largest_interaction_contentful_paint_.Get();
-  }
+  InteractionContentfulPaint* getLargestInteractionContentfulPaint() const;
 
   void Trace(Visitor*) const override;
 
@@ -48,7 +41,7 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
 
   const V8NavigationType::Enum navigation_type_;
   const uint64_t interaction_id_;
-  Member<InteractionContentfulPaint> largest_interaction_contentful_paint_;
+  const Member<SoftNavigationContext> context_;
 };
 
 }  // namespace blink

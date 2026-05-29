@@ -4,32 +4,29 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 
+#include "base/check_deref.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
 namespace blink {
 
 SoftNavigationEntry::SoftNavigationEntry(
-    AtomicString name,
     double start_time,
     const DOMPaintTimingInfo& paint_timing_info,
-    DOMWindow* source,
-    uint32_t navigation_id,
-    V8NavigationType::Enum navigation_type,
-    uint64_t interaction_id,
-    InteractionContentfulPaint* largest_interaction_contentful_paint)
+    SoftNavigationContext* context)
     : PerformanceEntry(
           /*duration=*/paint_timing_info.presentation_time - start_time,
-          name,
+          AtomicString(CHECK_DEREF(context).AttributionUrl()),
           start_time,
-          source,
-          navigation_id),
-      navigation_type_(navigation_type),
-      interaction_id_(interaction_id),
-      largest_interaction_contentful_paint_(
-          largest_interaction_contentful_paint) {
+          CHECK_DEREF(context).DomWindow(),
+          CHECK_DEREF(context).NavigationId()),
+      navigation_type_(CHECK_DEREF(context).NavigationType()),
+      interaction_id_(CHECK_DEREF(context).InteractionId()),
+      context_(context) {
   SetPaintTimingInfo(paint_timing_info);
 }
 
@@ -43,8 +40,14 @@ PerformanceEntryType SoftNavigationEntry::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kSoftNavigation;
 }
 
+InteractionContentfulPaint*
+SoftNavigationEntry::getLargestInteractionContentfulPaint() const {
+  CHECK(context_);
+  return context_->LargestIcpEntry();
+}
+
 void SoftNavigationEntry::Trace(Visitor* visitor) const {
-  visitor->Trace(largest_interaction_contentful_paint_);
+  visitor->Trace(context_);
   PerformanceEntry::Trace(visitor);
 }
 
@@ -52,8 +55,6 @@ void SoftNavigationEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("navigationType", navigationType().AsStringView());
   builder.AddNumber("interactionId", interaction_id_);
-  builder.Add("largestInteractionContentfulPaint",
-              largest_interaction_contentful_paint_.Get());
 }
 
 }  // namespace blink
