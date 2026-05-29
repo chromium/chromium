@@ -90,6 +90,9 @@ function tests_runFullyEnabled(documentId) {
           state.shareImageAllowed, 'shareImageAllowed should be true');
       chrome.test.assertTrue(
           state.actuationAllowed, 'actuationAllowed should be true');
+      chrome.test.assertTrue(
+          state.userEnableActuationOnWeb,
+          'userEnableActuationOnWeb should be true');
 
       chrome.test.succeed();
     },
@@ -115,6 +118,9 @@ function tests_runDisabled(documentId) {
     // not otherwise enabled.
     chrome.test.assertTrue(
         state.actuationAllowed, 'actuationAllowed should be true');
+    chrome.test.assertFalse(
+        state.userEnableActuationOnWeb,
+        'userEnableActuationOnWeb should be false');
     chrome.test.succeed();
   }]);
 }
@@ -136,6 +142,9 @@ function tests_runNotReady(documentId) {
         state.shareImageAllowed, 'shareImageAllowed should be true');
     chrome.test.assertTrue(
         state.actuationAllowed, 'actuationAllowed should be true');
+    chrome.test.assertFalse(
+        state.userEnableActuationOnWeb,
+        'userEnableActuationOnWeb should be false');
     chrome.test.succeed();
   }]);
 }

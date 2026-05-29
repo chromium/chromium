@@ -164,6 +164,9 @@ api::glic_private::ProfileState CreateProfileState(Profile* profile) {
       base::FeatureList::IsEnabled(features::kGlicActor) && glic_service &&
       glic_service->actor_policy_checker().CanActOnWeb();
 
+  state.user_enable_actuation_on_web =
+      glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb();
+
   return state;
 }
 
@@ -482,8 +485,10 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
       open_in_foreground = false;
     } else if (disposition == extensions_features::GlicOpenNewTabDisposition::
                                   kForegroundIfNotConsented) {
-      open_in_foreground =
-          !CreateProfileState(profile).is_enabled_and_consented;
+      api::glic_private::ProfileState profile_state =
+          CreateProfileState(profile);
+      open_in_foreground = !profile_state.is_enabled_and_consented ||
+                           !profile_state.user_enable_actuation_on_web;
     }
     options.target.surface = glic::NewTab(
         tab_interface->GetBrowserWindowInterface(), open_in_foreground);

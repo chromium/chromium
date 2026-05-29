@@ -30,6 +30,7 @@ declare namespace chrome {
       liveAllowed: boolean;
       shareImageAllowed: boolean;
       actuationAllowed: boolean;
+      userEnableActuationOnWeb: boolean;
     }
 
     export enum InvocationSource {

@@ -32,6 +32,7 @@ dictionary ProfileState {
   required boolean liveAllowed;
   required boolean shareImageAllowed;
   required boolean actuationAllowed;
+  required boolean userEnableActuationOnWeb;
 };
 
 enum InvocationSource {

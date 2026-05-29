@@ -13,6 +13,8 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -64,6 +66,12 @@ class GlicPrivateApiFullyEnabledTest
 IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, GetState) {
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
       kGlicPrivateTestExtensionId);
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                         /*create=*/true);
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(true);
+
   EXPECT_TRUE(RunExtensionTest(
       "glic_private",
       {.extension_url = "test.html", .custom_arg = "fully_enabled"},
@@ -224,6 +232,83 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiNewTabInBackgroundTest,
       GetTabListInterface()->GetActiveTab()->GetContents();
   content::WaitForLoadStop(active_contents);
   EXPECT_NE(active_contents->GetLastCommittedURL(),
+            chrome::ChromeUINewTabURLAsGURL());
+}
+
+class GlicPrivateApiNewTabForegroundIfNotConsentedTest
+    : public GlicPrivateApiFullyEnabledTest {
+ public:
+  GlicPrivateApiNewTabForegroundIfNotConsentedTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        extensions_features::kApiGlicAccessFromGoogleWebpage,
+        {{"glic_open_new_tab_disposition", "foreground_if_not_consented"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiNewTabForegroundIfNotConsentedTest,
+                       InvokeInNewTabBackgroundWhenActuationEnabled) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  auto interceptor = CreateMockPromptResponseInterceptor();
+
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                         /*create=*/true);
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(true);
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "invoke_new_tab"},
+      {.load_as_component = true}))
+      << message_;
+
+  // Verify that at least one new tab was created.
+  EXPECT_GE(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
+
+  // Verify that the active tab is not the new tab page.
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  content::WaitForLoadStop(active_contents);
+  EXPECT_NE(active_contents->GetLastCommittedURL(),
+            chrome::ChromeUINewTabURLAsGURL());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiNewTabForegroundIfNotConsentedTest,
+                       InvokeInNewTabForegroundWhenActuationDisabled) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  auto interceptor = CreateMockPromptResponseInterceptor();
+
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                         /*create=*/true);
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(false);
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "invoke_new_tab"},
+      {.load_as_component = true}))
+      << message_;
+
+  // Verify that at least one new tab was created.
+  EXPECT_GE(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
+
+  // Verify that the active tab is the new tab page.
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  content::WaitForLoadStop(active_contents);
+  EXPECT_EQ(active_contents->GetLastCommittedURL(),
             chrome::ChromeUINewTabURLAsGURL());
 }
 
