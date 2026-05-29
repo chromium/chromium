@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "base/trace_event/named_trigger.h"
 #import "components/security_state/core/security_state.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -281,6 +282,8 @@ void WebStateImpl::RealizedWebState::OnNavigationStarted(
   if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()]) {
     return;
   }
+
+  base::trace_event::EmitNamedTrigger("navigation-start");
 
   base::WeakPtr<NavigationContextImpl> weak_context = context->GetWeakPtr();
   for (auto& observer : observers()) {

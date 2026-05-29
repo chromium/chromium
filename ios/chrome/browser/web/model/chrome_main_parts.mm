@@ -25,6 +25,7 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_tick_clock.h"
+#import "base/trace_event/named_trigger.h"
 #import "build/blink_buildflags.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/crash/core/common/crash_key.h"
@@ -311,6 +312,11 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Now that the file thread has been started, start recording.
   StartMetricsRecording();
+
+  // This must happen after `SetupFieldTracingFromFieldTrial()`, which is
+  // triggered by `SetupMetrics()` above.
+  base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName);
 
   // Ensure that the KeyedService factories are registered.
   EnsureProfileKeyedServiceFactoriesBuilt();

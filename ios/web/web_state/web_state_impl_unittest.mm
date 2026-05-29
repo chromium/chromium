@@ -18,6 +18,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
+#import "base/trace_event/named_trigger.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
@@ -1194,6 +1195,47 @@ TEST_F(WebStateImplTest, TestIsCustomOpenPanelSupported) {
 
   ASSERT_FALSE(unrealized_web_state.IsRealized());
   EXPECT_FALSE(unrealized_web_state.IsCustomOpenPanelSupported());
+}
+
+class TestNamedTriggerManager : public base::trace_event::NamedTriggerManager {
+ public:
+  TestNamedTriggerManager() {
+    base::trace_event::NamedTriggerManager::SetInstance(this);
+  }
+  ~TestNamedTriggerManager() override {
+    base::trace_event::NamedTriggerManager::SetInstance(nullptr);
+  }
+
+  bool DoEmitNamedTrigger(const std::string& trigger_name,
+                          std::optional<int32_t> value,
+                          uint64_t flow_id) override {
+    last_trigger_name_ = trigger_name;
+    return true;
+  }
+
+  const std::string& last_trigger_name() const { return last_trigger_name_; }
+
+ private:
+  std::string last_trigger_name_;
+};
+
+// Verifies that "navigation-start" trigger is emitted when navigation starts.
+TEST_F(WebStateImplTest, NavigationStartTrigger) {
+  TestNamedTriggerManager trigger_manager;
+
+  std::unique_ptr<WebStateImpl> web_state =
+      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+
+  EXPECT_TRUE(trigger_manager.last_trigger_name().empty());
+
+  std::unique_ptr<NavigationContextImpl> context =
+      NavigationContextImpl::CreateNavigationContext(
+          web_state.get(), GURL(), /*has_user_gesture=*/true,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK,
+          /*is_renderer_initiated=*/true);
+  web_state->OnNavigationStarted(context.get());
+
+  EXPECT_EQ(trigger_manager.last_trigger_name(), "navigation-start");
 }
 
 }  // namespace web
