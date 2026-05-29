@@ -37,6 +37,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -344,8 +345,17 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals("uploaded-token", attachment.getToken());
         assertFalse(attachment.isUploadComplete());
 
-        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                "uploaded-token", ContextUploadStatus.UPLOAD_SUCCESSFUL);
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ContextUploadStatus",
+                                ContextUploadStatus.UPLOAD_SUCCESSFUL)
+                        .build()) {
+            mFuseboxAttachmentModelList.onContextUploadStatusChanged(
+                    "uploaded-token",
+                    ContextUploadStatus.UPLOAD_SUCCESSFUL,
+                    ContextUploadErrorType.UNKNOWN);
+        }
         assertTrue(attachment.isUploadComplete());
         verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
@@ -395,10 +405,27 @@ public class FuseboxAttachmentModelListUnitTest {
         assertFalse(preTokenizedAttachment.isUploadComplete());
         assertFalse(uploadedAttachment.isUploadComplete());
 
-        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                "pretokenized-token", ContextUploadStatus.UPLOAD_SUCCESSFUL);
-        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                "uploaded-token", ContextUploadStatus.UPLOAD_FAILED);
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ContextUploadStatus",
+                                ContextUploadStatus.UPLOAD_SUCCESSFUL)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ContextUploadStatus",
+                                ContextUploadStatus.UPLOAD_FAILED)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ContextUploadError",
+                                ContextUploadErrorType.UNKNOWN)
+                        .build()) {
+            mFuseboxAttachmentModelList.onContextUploadStatusChanged(
+                    "pretokenized-token",
+                    ContextUploadStatus.UPLOAD_SUCCESSFUL,
+                    ContextUploadErrorType.UNKNOWN);
+            mFuseboxAttachmentModelList.onContextUploadStatusChanged(
+                    "uploaded-token",
+                    ContextUploadStatus.UPLOAD_FAILED,
+                    ContextUploadErrorType.UNKNOWN);
+        }
         assertTrue(uploadFailedNotified.get());
 
         assertTrue(preTokenizedAttachment.isUploadComplete());
@@ -525,11 +552,11 @@ public class FuseboxAttachmentModelListUnitTest {
 
         when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn("token2");
         mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                "token", ContextUploadStatus.VALIDATION_FAILED);
+                "token", ContextUploadStatus.VALIDATION_FAILED, ContextUploadErrorType.UNKNOWN);
         assertEquals("token2", tabAttachment.getToken());
 
         mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                "token2", ContextUploadStatus.VALIDATION_FAILED);
+                "token2", ContextUploadStatus.VALIDATION_FAILED, ContextUploadErrorType.UNKNOWN);
         assertTrue(mFuseboxAttachmentModelList.isEmpty());
     }
 
@@ -624,7 +651,9 @@ public class FuseboxAttachmentModelListUnitTest {
             FuseboxAttachment attachment = createTestAttachment("test");
             mFuseboxAttachmentModelList.add(attachment);
             mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                    "token1", ContextUploadStatus.UPLOAD_SUCCESSFUL);
+                    "token1",
+                    ContextUploadStatus.UPLOAD_SUCCESSFUL,
+                    ContextUploadErrorType.UNKNOWN);
         }
     }
 
@@ -683,7 +712,7 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.add(tabAttachment);
 
         mFuseboxAttachmentModelList.onContextUploadStatusChanged(
-                "token", ContextUploadStatus.VALIDATION_FAILED);
+                "token", ContextUploadStatus.VALIDATION_FAILED, ContextUploadErrorType.UNKNOWN);
 
         assertTrue(mFuseboxAttachmentModelList.isEmpty());
         verify(mComposeboxQueryControllerBridge).removeAttachment("token");

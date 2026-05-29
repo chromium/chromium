@@ -16,6 +16,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.contextual_search.ContextUploadErrorType;
+import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -266,6 +268,20 @@ public class FuseboxMetrics {
     private static void recordAttachmentSizeHistogram(String histogramName, int sizeInKiB) {
         UmaRecorderHolder.get()
                 .recordExponentialHistogram(histogramName, sizeInKiB, 100, 100000, 100);
+    }
+
+    static void recordContextUploadStatus(@ContextUploadStatus int status) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.MobileFusebox.ContextUploadStatus",
+                status,
+                ContextUploadStatus.MAX_VALUE + 1);
+    }
+
+    static void recordContextUploadError(@ContextUploadErrorType int errorType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.MobileFusebox.ContextUploadError",
+                errorType,
+                ContextUploadErrorType.MAX_VALUE + 1);
     }
 
     @SuppressLint("SwitchIntDef") // COUNT entry missing

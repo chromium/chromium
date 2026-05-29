@@ -494,10 +494,12 @@ void ComposeboxQueryControllerBridge::OnContextUploadStatusChanged(
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  int native_error_type = static_cast<int>(
+      error_type.value_or(contextual_search::ContextUploadErrorType::kUnknown));
   Java_ComposeboxQueryControllerBridge_onContextUploadStatusChanged(
       env, java_obj_,
       base::android::ConvertUTF8ToJavaString(env, context_token.ToString()),
-      static_cast<int>(context_upload_status));
+      static_cast<int>(context_upload_status), native_error_type);
 
   if (input_state_model_) {
     input_state_model_->OnContextChanged();

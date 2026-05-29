@@ -49,13 +49,17 @@ enum class ContextUploadStatus {
   // This must always be the last valid enum.
   kMaxValue = kUploadReplaced,
 };
-// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ContextUploadStatus)
+// LINT.ThenChange(
+//   //components/omnibox/composebox/composebox_query.mojom:ContextUploadStatus,
+//   //tools/metrics/histograms/metadata/omnibox/enums.xml:ContextUploadStatus
+// )
 
 // Returns true if the upload status is considered terminal.
 bool IsTerminalContextStatus(ContextUploadStatus status);
 
 // LINT.IfChange(ContextUploadErrorType)
 // For upload error notifications and metrics.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.contextual_search
 enum class ContextUploadErrorType {
   // Unknown.
   kUnknown = 0,
@@ -90,7 +94,10 @@ enum class ContextUploadErrorType {
   // This must always be the last valid enum.
   kMaxValue = kBrowserProcessingMaxPdfsExceededError,
 };
-// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ContextUploadErrorType)
+// LINT.ThenChange(
+//   //components/omnibox/composebox/composebox_query.mojom:ContextUploadErrorType,
+//   //tools/metrics/histograms/metadata/omnibox/enums.xml:ContextUploadErrorType
+// )
 
 // Struct containing file information for a file upload.
 struct FileInfo {

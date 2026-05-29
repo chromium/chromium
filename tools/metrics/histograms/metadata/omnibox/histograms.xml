@@ -2691,6 +2691,45 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.ContextUploadError"
+    enum="ContextUploadErrorType" expires_after="2027-05-19">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the error type when a context (attachment) upload fails.
+
+    Emitted when the upload transitions to a terminal failure state (validation
+    failure, upload failure, or upload expiration) after a user attempts to add
+    an attachment (e.g. by choosing a file, capturing an image, or adding a tab)
+    in the Composebox.
+
+    This is recorded once per failed upload attempt. If an upload fails and is
+    retried, subsequent failures will trigger additional emissions. It is not
+    emitted if the upload succeeds, or if the user manually removes the pending
+    attachment before the failure is reported. Adding the same attachment
+    repeatedly will trigger subsequent emissions for each attempt.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ContextUploadStatus"
+    enum="ContextUploadStatus" expires_after="2027-05-19">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the status of a context (attachment) upload.
+
+    Emitted on every status change reported by the backend for an active upload,
+    starting when the user adds an attachment (e.g. file, image, tab) in the
+    Composebox. This includes intermediate states (processing, upload started)
+    and terminal states (success, validation failed, upload failed, expired).
+
+    Emitted multiple times per attachment upload (once for each transition). If
+    the user manually removes the attachment before the upload finishes, no
+    further status changes for that upload are recorded. Adding the same
+    attachment repeatedly triggers subsequent emissions for each attempt.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.DragAndDrop{ComposeboxDragAndDropType}"
     enum="ComposeboxDragAndDropType" expires_after="2026-11-11">
   <owner>thegreenfrog@chromium.org</owner>

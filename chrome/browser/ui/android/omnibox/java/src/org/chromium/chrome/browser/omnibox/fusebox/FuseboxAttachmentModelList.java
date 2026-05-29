@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge.ContextUploadObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -40,6 +41,7 @@ import java.util.function.Predicate;
 @NullMarked
 public class FuseboxAttachmentModelList
         implements ContextUploadObserver, Iterable<FuseboxAttachment> {
+
     private final ModelList mModelList = new ModelList();
     private final SimpleRecyclerViewAdapter mAdapter =
             new FuseboxAttachmentRecyclerViewAdapter(mModelList);
@@ -369,15 +371,19 @@ public class FuseboxAttachmentModelList
     }
 
     @Override
-    public void onContextUploadStatusChanged(String token, @ContextUploadStatus int status) {
+    public void onContextUploadStatusChanged(
+            String token, @ContextUploadStatus int status, @ContextUploadErrorType int errorType) {
         if (TextUtils.isEmpty(token)) return;
         FuseboxAttachment pendingAttachment = findAttachmentWithToken(token);
         if (pendingAttachment == null) return;
+
+        FuseboxMetrics.recordContextUploadStatus(status);
 
         switch (status) {
             case ContextUploadStatus.VALIDATION_FAILED:
             case ContextUploadStatus.UPLOAD_FAILED:
             case ContextUploadStatus.UPLOAD_EXPIRED:
+                FuseboxMetrics.recordContextUploadError(errorType);
                 if (pendingAttachment.retryUpload(
                         assumeNonNull(mComposeboxQueryControllerBridge))) {
                     break;

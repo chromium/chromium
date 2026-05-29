@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -46,8 +47,12 @@ public class ComposeboxQueryControllerBridge {
         /**
          * @param token Unique string identifier for the context.
          * @param status The status of the context's upload.
+         * @param errorType The error type if the upload failed.
          */
-        void onContextUploadStatusChanged(String token, @ContextUploadStatus int status);
+        void onContextUploadStatusChanged(
+                String token,
+                @ContextUploadStatus int status,
+                @ContextUploadErrorType int errorType);
     }
 
     private long mNativeInstance;
@@ -107,9 +112,13 @@ public class ComposeboxQueryControllerBridge {
     }
 
     @CalledByNative
-    void onContextUploadStatusChanged(String token, @ContextUploadStatus int contextUploadStatus) {
+    void onContextUploadStatusChanged(
+            String token,
+            @ContextUploadStatus int contextUploadStatus,
+            @ContextUploadErrorType int errorType) {
         if (mContextUploadObserver != null) {
-            mContextUploadObserver.onContextUploadStatusChanged(token, contextUploadStatus);
+            mContextUploadObserver.onContextUploadStatusChanged(
+                    token, contextUploadStatus, errorType);
         }
     }
 
