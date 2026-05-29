@@ -66,7 +66,7 @@ class PLATFORM_EXPORT AudioChannel final {
   }
 
   // How many sample-frames do we contain?
-  uint32_t length() const { return data_span_.size(); }
+  uint32_t length() const { return static_cast<uint32_t>(data_span_.size()); }
 
   // ResizeSmaller() can only be called with a new length <= the current length.
   // The data stored in the bus will remain undisturbed.

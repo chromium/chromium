@@ -32,6 +32,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -50,7 +51,8 @@ DirectConvolver::DirectConvolver(
 
 void DirectConvolver::Process(base::span<const float> source,
                               base::span<float> destination) {
-  const uint32_t frames_to_process = destination.size();
+  const uint32_t frames_to_process =
+      base::checked_cast<uint32_t>(destination.size());
   DCHECK_EQ(frames_to_process, input_block_size_);
 
   const size_t kernel_size = ConvolutionKernelSize();

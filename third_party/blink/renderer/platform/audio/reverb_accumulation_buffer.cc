@@ -31,6 +31,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -61,14 +62,16 @@ void ReverbAccumulationBuffer::ReadAndClear(base::span<float> destination) {
     std::ranges::fill(source.first(number_of_frames2), 0.0f);
   }
 
-  read_index_ = (read_index_ + number_of_frames) % buffer_length;
+  read_index_ = base::checked_cast<uint32_t>((read_index_ + number_of_frames) %
+                                             buffer_length);
 }
 
 void ReverbAccumulationBuffer::UpdateReadIndex(
     uint32_t* read_index,
     uint32_t number_of_frames) const {
   // Update caller's readIndex
-  *read_index = (*read_index + number_of_frames) % buffer_.size();
+  *read_index = base::checked_cast<uint32_t>((*read_index + number_of_frames) %
+                                             buffer_.size());
 }
 
 uint32_t ReverbAccumulationBuffer::Accumulate(base::span<const float> source,
@@ -80,7 +83,8 @@ uint32_t ReverbAccumulationBuffer::Accumulate(base::span<const float> source,
   const size_t write_index = (*read_index + delay_frames) % buffer_length;
 
   // Update caller's readIndex
-  *read_index = (*read_index + number_of_frames) % buffer_length;
+  *read_index = base::checked_cast<uint32_t>((*read_index + number_of_frames) %
+                                             buffer_length);
 
   const size_t frames_available = buffer_length - write_index;
   const size_t number_of_frames1 = std::min(number_of_frames, frames_available);
@@ -95,16 +99,17 @@ uint32_t ReverbAccumulationBuffer::Accumulate(base::span<const float> source,
   vector_math::Vadd(source.first(number_of_frames1),
                     destination.subspan(write_index, number_of_frames1),
                     destination.subspan(write_index, number_of_frames1),
-                    number_of_frames1);
+                    base::checked_cast<uint32_t>(number_of_frames1));
 
   // Handle wrap-around if necessary
   if (number_of_frames2 > 0) {
     vector_math::Vadd(source.subspan(number_of_frames1, number_of_frames2),
                       destination.first(number_of_frames2),
-                      destination.first(number_of_frames2), number_of_frames2);
+                      destination.first(number_of_frames2),
+                      base::checked_cast<uint32_t>(number_of_frames2));
   }
 
-  return write_index;
+  return base::checked_cast<uint32_t>(write_index);
 }
 
 void ReverbAccumulationBuffer::Reset() {

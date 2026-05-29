@@ -618,7 +618,8 @@ void AudioBus::CopyWithSampleAccurateGainValuesFrom(
       source = source_bus.Channel(channel_index)->Span();
     }
     base::span<float> destination = Channel(channel_index)->MutableSpan();
-    vector_math::Vmul(source, gain_values, destination, gain_values.size());
+    vector_math::Vmul(source, gain_values, destination,
+                      base::checked_cast<uint32_t>(gain_values.size()));
   }
 }
 

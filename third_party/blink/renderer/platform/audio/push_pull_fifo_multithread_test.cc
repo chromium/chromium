@@ -29,7 +29,7 @@ class FIFOClient {
   USING_FAST_MALLOC(FIFOClient);
 
  public:
-  FIFOClient(PushPullFIFO* fifo, size_t bus_length, size_t jitter_range_ms)
+  FIFOClient(PushPullFIFO* fifo, uint32_t bus_length, size_t jitter_range_ms)
       : fifo_(fifo),
         bus_(AudioBus::Create(fifo->StateForTest().number_of_channels,
                               bus_length)),
@@ -53,7 +53,9 @@ class FIFOClient {
   virtual void Stop(int callback_counter) = 0;
   virtual void RunTask() = 0;
 
-  void Pull(size_t frames_to_pull) { fifo_->Pull(bus_.get(), frames_to_pull); }
+  void Pull(uint32_t frames_to_pull) {
+    fifo_->Pull(bus_.get(), frames_to_pull);
+  }
 
   void Push() { fifo_->Push(bus_.get()); }
 
@@ -106,10 +108,11 @@ class FIFOClient {
 // |frames_to_pull| is variable.
 class PullClient final : public FIFOClient {
  public:
-  PullClient(PushPullFIFO* fifo, size_t frames_to_pull, double jitter_range_ms)
+  PullClient(PushPullFIFO* fifo,
+             uint32_t frames_to_pull,
+             double jitter_range_ms)
       : FIFOClient(fifo, frames_to_pull, jitter_range_ms),
-        frames_to_pull_(frames_to_pull) {
-  }
+        frames_to_pull_(frames_to_pull) {}
 
   void RunTask() override {
     Pull(frames_to_pull_);
@@ -120,14 +123,16 @@ class PullClient final : public FIFOClient {
   }
 
  private:
-  size_t frames_to_pull_;
+  uint32_t frames_to_pull_;
 };
 
 // FIFO-pushing client (producer). This mimics the WebAudio rendering thread.
 // The frames to push are static as 128 frames.
 class PushClient final : public FIFOClient {
  public:
-  PushClient(PushPullFIFO* fifo, size_t frames_to_push, double jitter_range_ms)
+  PushClient(PushPullFIFO* fifo,
+             uint32_t frames_to_push,
+             double jitter_range_ms)
       : FIFOClient(fifo, frames_to_push, jitter_range_ms) {}
 
   void RunTask() override {
@@ -143,14 +148,14 @@ struct FIFOSmokeTestParam {
   const double sample_rate;
   const unsigned number_of_channels;
   const uint32_t render_quantum_frames;
-  const size_t fifo_length;
+  const uint32_t fifo_length;
   const double test_duration_ms;
   // Buffer size for pulling. Equivalent of |callback_buffer_size|.
-  const size_t pull_buffer_size;
+  const uint32_t pull_buffer_size;
   // Jitter range for the pulling interval.
   const double pull_jitter_range_ms;
   // Buffer size for pushing. Equivalent of WebAudio render quantum.
-  const size_t push_buffer_size;
+  const uint32_t push_buffer_size;
   // Jitter range for the pushing interval.
   const double push_jitter_range_ms;
 };

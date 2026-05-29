@@ -28,6 +28,7 @@
 #include <cmath>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -114,7 +115,7 @@ void Vclip(base::span<const float> source,
 #endif
 
   impl::Vclip(source.data(), 1, &low_threshold, &high_threshold, dest.data(), 1,
-              dest.size());
+              base::checked_cast<uint32_t>(dest.size()));
 }
 
 void Vclip(base::span<const float> source,

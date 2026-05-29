@@ -29,6 +29,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -128,7 +129,7 @@ size_t Delay::ProcessARateScalar(size_t start,
 
   DCHECK_LT(write_index_, buffer_length);
 
-  for (unsigned i = start; i < frames_to_process; ++i) {
+  for (size_t i = start; i < frames_to_process; ++i) {
     double delay_time = std::fmax(delay_times_[i], 0);
     double desired_delay_frames = delay_time * sample_rate_;
 
@@ -176,7 +177,7 @@ void Delay::ProcessARate(base::span<const float> source,
   CopyToCircularBuffer(buffer_.as_span(), write_index_, source,
                        frames_to_process);
 
-  unsigned frames_processed;
+  size_t frames_processed;
   std::tie(frames_processed, write_index_) =
       ProcessARateVector(destination, frames_to_process);
 
@@ -261,14 +262,15 @@ void Delay::ProcessKRate(base::span<const float> source,
     // Interpolate samples, where f = interpolation_factor
     //   dest[k] = dest[k] + f*(temp_span[k] - dest[k]);
 
+    auto frames_to_process_32 = base::checked_cast<uint32_t>(frames_to_process);
     // temp_span[k] = temp_span[k] - dest[k]
-    vector_math::Vsub(temp_span, destination, temp_span, frames_to_process);
+    vector_math::Vsub(temp_span, destination, temp_span, frames_to_process_32);
 
     // dest[k] = dest[k] + f*temp_span[k]
     //         = dest[k] + f*(temp_span[k] - dest[k]);
     //
     vector_math::Vsma(temp_span, interpolation_factor, destination,
-                      frames_to_process);
+                      frames_to_process_32);
   }
 }
 

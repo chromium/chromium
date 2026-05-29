@@ -30,6 +30,7 @@
 
 #include "base/bit_cast.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -146,8 +147,8 @@ void SincResampler::ConsumeSource(base::span<float> buffer) {
 
   // Wrap the provided buffer by an AudioBus for use by the source provider.
   const size_t number_of_source_frames = buffer.size();
-  scoped_refptr<AudioBus> bus =
-      AudioBus::Create(1, number_of_source_frames, false);
+  scoped_refptr<AudioBus> bus = AudioBus::Create(
+      1, base::checked_cast<uint32_t>(number_of_source_frames), false);
 
   // FIXME: Find a way to make the following const-correct:
   bus->SetChannelMemory(0, buffer);

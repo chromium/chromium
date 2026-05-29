@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_destination_uma_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 
@@ -109,19 +110,25 @@ void AudioDestinationUmaReporter::Report() {
   if (++callback_count_ >= kMetricsReportCycle) {
     base::UmaHistogramCustomCounts(
         fifo_delay_histogram_name_,
-        fifo_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1, 1000, 50);
+        base::checked_cast<int>(fifo_delay_sum_.InMilliseconds() /
+                                kMetricsReportCycle),
+        1, 1000, 50);
     base::UmaHistogramCustomCounts(
         fifo_delay_histogram_name_with_latency_tag_,
-        fifo_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1, 1000, 50);
+        base::checked_cast<int>(fifo_delay_sum_.InMilliseconds() /
+                                kMetricsReportCycle),
+        1, 1000, 50);
 
     base::UmaHistogramCustomCounts(
         total_playout_delay_histogram_name_,
-        total_playout_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1,
-        1000, 50);
+        base::checked_cast<int>(total_playout_delay_sum_.InMilliseconds() /
+                                kMetricsReportCycle),
+        1, 1000, 50);
     base::UmaHistogramCustomCounts(
         total_playout_delay_histogram_name_with_latency_tag_,
-        total_playout_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1,
-        1000, 50);
+        base::checked_cast<int>(total_playout_delay_sum_.InMilliseconds() /
+                                kMetricsReportCycle),
+        1, 1000, 50);
 
     fifo_delay_sum_ = base::TimeDelta();
     total_playout_delay_sum_ = base::TimeDelta();

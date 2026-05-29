@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -31,11 +32,9 @@ std::complex<double> EvaluatePolynomial(base::span<const double> coef,
   // Use Horner's method to evaluate the polynomial P(z) = sum(coef[k]*z^k, k,
   // 0, order);
   std::complex<double> result = 0;
-  const size_t coef_size = coef.size();
-  if (coef_size) {
-    const int order = coef_size - 1;
-    for (int k = order; k >= 0; --k) {
-      result = result * z + std::complex<double>(coef[k]);
+  if (coef.size()) {
+    for (double c : base::Reversed(coef)) {
+      result = result * z + std::complex<double>(c);
     }
   }
 
