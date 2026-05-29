@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/mojom/oak_session.mojom.h"
+#include "components/private_ai/testing/fake_private_ai_oak_session_driver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,14 +100,18 @@ class SecureSessionAsyncImplTest : public ::testing::Test {
  public:
   SecureSessionAsyncImplTest()
       : fake_oak_session_service_(std::make_unique<FakeOakSessionService>()),
-        secure_session_(SecureSessionAsyncImpl::CreateForTesting(
-            fake_oak_session_service_->BindAndCreateRemote())) {}
+        fake_oak_session_driver_(
+            std::make_unique<FakePrivateAiOakSessionDriver>(
+                fake_oak_session_service_->BindAndCreateRemote())),
+        secure_session_(std::make_unique<SecureSessionAsyncImpl>(
+            fake_oak_session_driver_.get())) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<FakeOakSessionService> fake_oak_session_service_;
+  std::unique_ptr<FakePrivateAiOakSessionDriver> fake_oak_session_driver_;
   std::unique_ptr<SecureSessionAsyncImpl> secure_session_;
 };
 

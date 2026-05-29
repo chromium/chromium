@@ -22,6 +22,7 @@
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/private_ai_common.h"
+#include "components/private_ai/private_ai_oak_session_driver.h"
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_session.h"
 #include "components/private_ai/transport.h"
@@ -37,7 +38,8 @@ class SecureChannelImpl : public SecureChannel {
    public:
     FactoryImpl(const GURL& url,
                 network::mojom::NetworkContext* network_context,
-                PrivateAiLogger* logger);
+                PrivateAiLogger* logger,
+                PrivateAiOakSessionDriver* oak_session_driver);
     ~FactoryImpl() override;
 
     std::unique_ptr<SecureChannel> Create(ResponseCallback callback) override;
@@ -46,6 +48,7 @@ class SecureChannelImpl : public SecureChannel {
     const GURL url_;
     raw_ptr<network::mojom::NetworkContext> network_context_;
     raw_ptr<PrivateAiLogger> logger_;
+    raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
   };
 
   SecureChannelImpl(ResponseCallback callback,

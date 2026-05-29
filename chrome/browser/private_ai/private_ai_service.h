@@ -12,6 +12,8 @@
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/private_ai/common/private_ai_logger.h"
+#include "components/private_ai/content/private_ai_network_driver_content.h"
+#include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "components/private_ai/phosphor/oauth_token_provider.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -103,6 +105,9 @@ class PrivateAiService : public KeyedService,
   std::unique_ptr<phosphor::TokenManager> token_manager_;
   // Owned by `token_manager_`.
   raw_ptr<phosphor::TokenFetcherImpl> token_fetcher_;
+
+  PrivateAiOakSessionDriverContent oak_session_driver_;
+  PrivateAiNetworkDriverContent network_driver_;
 
   std::unique_ptr<Client> client_;
 

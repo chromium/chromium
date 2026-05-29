@@ -37,8 +37,12 @@ namespace private_ai {
 SecureChannelImpl::FactoryImpl::FactoryImpl(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
-    PrivateAiLogger* logger)
-    : url_(url), network_context_(network_context), logger_(logger) {}
+    PrivateAiLogger* logger,
+    PrivateAiOakSessionDriver* oak_session_driver)
+    : url_(url),
+      network_context_(network_context),
+      logger_(logger),
+      oak_session_driver_(oak_session_driver) {}
 
 SecureChannelImpl::FactoryImpl::~FactoryImpl() = default;
 
@@ -46,7 +50,8 @@ std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
     ResponseCallback callback) {
   auto transport =
       std::make_unique<WebSocketClient>(url_, network_context_, logger_);
-  auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
+  auto secure_session =
+      std::make_unique<SecureSessionAsyncImpl>(oak_session_driver_);
   auto attestation_handler = std::make_unique<AttestationHandlerImpl>(logger_);
 
   return std::make_unique<SecureChannelImpl>(

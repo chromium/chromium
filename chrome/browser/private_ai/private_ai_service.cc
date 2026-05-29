@@ -65,7 +65,7 @@ PrivateAiService::PrivateAiService(
       kPrivateAiUrl.Get(), GetApiKey(), kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
-      token_manager_.get(), &logger_);
+      token_manager_.get(), &logger_, &oak_session_driver_, &network_driver_);
 }
 
 PrivateAiService::~PrivateAiService() {

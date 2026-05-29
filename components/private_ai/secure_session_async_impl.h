@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_PRIVATE_AI_SECURE_SESSION_ASYNC_IMPL_H_
 #define COMPONENTS_PRIVATE_AI_SECURE_SESSION_ASYNC_IMPL_H_
 
-#include <memory>
-#include <optional>
-
 #include "components/private_ai/mojom/oak_session.mojom.h"
+#include "components/private_ai/private_ai_oak_session_driver.h"
 #include "components/private_ai/secure_session.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
@@ -17,10 +15,8 @@ namespace private_ai {
 
 class SecureSessionAsyncImpl : public SecureSession {
  public:
-  static std::unique_ptr<SecureSessionAsyncImpl> CreateForTesting(
-      mojo::Remote<mojom::OakSession> service);
-
-  SecureSessionAsyncImpl();
+  explicit SecureSessionAsyncImpl(
+      PrivateAiOakSessionDriver* oak_session_driver);
   ~SecureSessionAsyncImpl() override;
 
   // SecureSession:
@@ -34,8 +30,6 @@ class SecureSessionAsyncImpl : public SecureSession {
                DecryptOnceCallback callback) override;
 
  private:
-  explicit SecureSessionAsyncImpl(mojo::Remote<mojom::OakSession> service);
-
   mojo::Remote<mojom::OakSession> service_;
 };
 

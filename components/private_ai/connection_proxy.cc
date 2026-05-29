@@ -15,10 +15,10 @@
 #include "components/private_ai/common/base64_utils.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
-#include "content/public/browser/network_service_instance.h"
 #include "net/http/http_request_headers.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "url/origin.h"
 
@@ -84,11 +84,13 @@ ConnectionProxy::ConnectionProxy(
     const GURL& proxy_url,
     PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
+    PrivateAiNetworkDriver* network_driver,
     InnerConnectionFactory inner_connection_factory,
     base::OnceCallback<void(StatusCode)> on_disconnect)
     : proxy_url_(proxy_url),
       logger_(logger),
       token_manager_(token_manager),
+      network_driver_(network_driver),
       inner_connection_factory_(std::move(inner_connection_factory)),
       on_disconnect_(std::move(on_disconnect)) {
   CHECK(proxy_url_.is_valid());
@@ -161,11 +163,12 @@ void ConnectionProxy::OnProxyToken(
     return;
   }
 
-
   auto context_params = network::mojom::NetworkContextParams::New();
+#if BUILDFLAG(IS_CT_SUPPORTED)
   context_params->enforce_chrome_ct_policy = true;
-  context_params->cert_verifier_params = content::GetCertVerifierParams(
-      cert_verifier::mojom::CertVerifierCreationParams::New());
+#endif
+  context_params->cert_verifier_params =
+      network_driver_->GetCertVerifierParams();
   context_params->initial_custom_proxy_config =
       internal::CreateCustomProxyConfig(proxy_url_, *auth_token, logger_);
 
@@ -177,7 +180,7 @@ void ConnectionProxy::OnProxyToken(
   logger_->LogInfo(FROM_HERE, "Got auth token for proxy. Connecting to " +
                                   proxy_url_.spec());
 
-  content::CreateNetworkContextInNetworkService(
+  network_driver_->CreateNetworkContext(
       proxied_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 
   inner_connection_ =

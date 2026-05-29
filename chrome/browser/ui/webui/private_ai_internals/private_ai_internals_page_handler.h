@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
+#include "components/private_ai/content/private_ai_network_driver_content.h"
+#include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -79,6 +81,8 @@ class PrivateAiInternalsPageHandler
   raw_ptr<PrivateAiLogger> private_ai_logger_;
   // The client created by webui. Used for testing.
   PrivateAiLogger webui_logger_;
+  PrivateAiOakSessionDriverContent oak_session_driver_content_;
+  PrivateAiNetworkDriverContent network_driver_content_;
   std::unique_ptr<Client> webui_client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   mojo::Receiver<private_ai_internals::mojom::PrivateAiInternalsPageHandler>

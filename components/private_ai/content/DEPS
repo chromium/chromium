@@ -1,0 +1,5 @@
+include_rules = [
+  "+content/public/browser/service_process_host.h",
+  "+content/public/browser/network_service_instance.h",
+  "+content/public/test/browser_task_environment.h",
+]

@@ -33,6 +33,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
     PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
     ConnectionFactoryImpl::SecureChannelFactoryOverride secure_channel_override,
+    PrivateAiOakSessionDriver* oak_session_driver,
     base::RepeatingCallback<void(StatusCode)> on_disconnect,
     network::mojom::NetworkContext* network_context) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
@@ -40,7 +41,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
     secure_channel_factory = secure_channel_override.Run();
   } else {
     secure_channel_factory = std::make_unique<SecureChannelImpl::FactoryImpl>(
-        url, network_context, logger);
+        url, network_context, logger, oak_session_driver);
   }
 
   std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(
@@ -59,10 +60,18 @@ std::unique_ptr<Connection> CreateConnectionStack(
 ConnectionFactoryImpl::ConnectionFactoryImpl(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
-    PrivateAiLogger* logger)
-    : url_(url), network_context_(network_context), logger_(logger) {
+    PrivateAiLogger* logger,
+    PrivateAiOakSessionDriver* oak_session_driver,
+    PrivateAiNetworkDriver* network_driver)
+    : url_(url),
+      network_context_(network_context),
+      logger_(logger),
+      oak_session_driver_(oak_session_driver),
+      network_driver_(network_driver) {
   CHECK(network_context_);
   CHECK(logger_);
+  CHECK(oak_session_driver_);
+  CHECK(network_driver_);
 
   std::string api_key;
   CHECK(net::GetValueForKeyInQuery(url, "key", &api_key))
@@ -87,9 +96,9 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
   if (!proxy_url_.is_valid()) {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server (direct).");
-    connection = CreateConnectionStack(url_, logger_, token_manager_,
-                                       secure_channel_override_, on_disconnect,
-                                       network_context_);
+    connection = CreateConnectionStack(
+        url_, logger_, token_manager_, secure_channel_override_,
+        oak_session_driver_, on_disconnect, network_context_);
   } else {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server via proxy: " +
@@ -97,12 +106,12 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     CHECK(token_manager_);
     // ConnectionProxy requires an inner factory that creates a connection
     // with token attestation.
-    auto inner_connection_factory =
-        base::BindOnce(&CreateConnectionStack, url_, logger_, token_manager_,
-                       secure_channel_override_, on_disconnect);
+    auto inner_connection_factory = base::BindOnce(
+        &CreateConnectionStack, url_, logger_, token_manager_,
+        secure_channel_override_, oak_session_driver_, on_disconnect);
 
     connection = std::make_unique<ConnectionProxy>(
-        proxy_url_, logger_, token_manager_,
+        proxy_url_, logger_, token_manager_, network_driver_,
         std::move(inner_connection_factory), on_disconnect);
   }
 

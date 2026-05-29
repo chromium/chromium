@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/private_ai/crypto/constants.h"
 #include "components/private_ai/mojom/oak_session.mojom.h"
-#include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
@@ -77,22 +76,9 @@ std::vector<uint8_t> ConvertToBytes(
 
 }  // namespace
 
-// static
-std::unique_ptr<SecureSessionAsyncImpl>
-SecureSessionAsyncImpl::CreateForTesting(  // IN-TEST
-    mojo::Remote<mojom::OakSession> service) {
-  return base::WrapUnique(new SecureSessionAsyncImpl(std::move(service)));
-}
-
 SecureSessionAsyncImpl::SecureSessionAsyncImpl(
-    mojo::Remote<mojom::OakSession> service)
-    : service_(std::move(service)) {}
-
-SecureSessionAsyncImpl::SecureSessionAsyncImpl()
-    : service_(content::ServiceProcessHost::Launch<mojom::OakSession>(
-          content::ServiceProcessHost::Options()
-              .WithDisplayName("Oak Session Service")
-              .Pass())) {}
+    PrivateAiOakSessionDriver* oak_session_driver)
+    : service_(oak_session_driver->BindOakSessionService()) {}
 
 SecureSessionAsyncImpl::~SecureSessionAsyncImpl() = default;
 

@@ -23,6 +23,8 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
+#include "components/private_ai/content/private_ai_network_driver_content.h"
+#include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/proto/private_ai.pb.h"
@@ -69,7 +71,8 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
 
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
-                     network_context_, token_manager_, &webui_logger_);
+                     network_context_, token_manager_, &webui_logger_,
+                     &oak_session_driver_content_, &network_driver_content_);
   webui_client_->EstablishConnection(
       proto::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
   std::move(callback).Run();

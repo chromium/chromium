@@ -64,6 +64,8 @@ source_set("private_ai") {
     "connection_unused_timeout.cc",
     "connection_unused_timeout.h",
     "private_ai_common.h",
+    "private_ai_network_driver.h",
+    "private_ai_oak_session_driver.h",
     "secure_channel.h",
     "secure_channel_impl.cc",
     "secure_channel_impl.h",
@@ -75,7 +77,10 @@ source_set("private_ai") {
     "websocket_client.cc",
     "websocket_client.h",
   ]
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":features",
+    "//components/private_ai/mojom",
+  ]
   deps = [
     ":proto",
     ":proto_extras",
@@ -83,11 +88,9 @@ source_set("private_ai") {
     "//components/private_ai/attestation",
     "//components/private_ai/common",
     "//components/private_ai/crypto",
-    "//components/private_ai/mojom",
     "//components/private_ai/oak_session_service",
     "//components/private_ai/phosphor",
     "//components/private_ai/proto_utils",
-    "//content/public/browser",
     "//crypto",
     "//mojo/public/cpp/system",
     "//net",
@@ -106,6 +109,10 @@ source_set("testing") {
   sources = [
     "testing/fake_connection.cc",
     "testing/fake_connection.h",
+    "testing/fake_private_ai_network_driver.cc",
+    "testing/fake_private_ai_network_driver.h",
+    "testing/fake_private_ai_oak_session_driver.cc",
+    "testing/fake_private_ai_oak_session_driver.h",
     "testing/fake_secure_channel.cc",
     "testing/fake_secure_channel.h",
     "testing/fake_token_manager.cc",
@@ -119,6 +126,8 @@ source_set("testing") {
     "//base",
     "//base/test:test_support",
     "//components/private_ai/phosphor",
+    "//services/cert_verifier/public/mojom",
+    "//services/network/public/mojom",
     "//testing/gmock",
   ]
 }
@@ -149,12 +158,12 @@ source_set("unit_tests") {
     "//components/private_ai/attestation:unit_tests",
     "//components/private_ai/common",
     "//components/private_ai/common:unit_tests",
+    "//components/private_ai/content:unit_tests",
     "//components/private_ai/crypto:unit_tests",
     "//components/private_ai/mojom",
     "//components/private_ai/phosphor",
     "//components/private_ai/phosphor:unit_tests",
     "//components/private_ai/proto_utils:unit_tests",
-    "//content/test:test_support",
     "//mojo/public/cpp/system",
     "//services/network:test_support",
     "//services/network/public/mojom",

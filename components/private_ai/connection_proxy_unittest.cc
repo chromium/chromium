@@ -18,6 +18,7 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/testing/fake_connection.h"
+#include "components/private_ai/testing/fake_private_ai_network_driver.h"
 #include "components/private_ai/testing/fake_token_manager.h"
 #include "net/base/proxy_string_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -38,6 +39,7 @@ class ConnectionProxyTest : public testing::Test {
   void CreateConnectionProxy() {
     connection_proxy_ = std::make_unique<ConnectionProxy>(
         GURL("https://proxy.example.com"), &logger_, &token_manager_,
+        &network_driver_,
         base::BindOnce(&ConnectionProxyTest::CreateInnerConnection,
                        base::Unretained(this)),
         base::BindOnce(&ConnectionProxyTest::OnDisconnect,
@@ -64,6 +66,7 @@ class ConnectionProxyTest : public testing::Test {
 
   PrivateAiLogger logger_;
   FakeTokenManager token_manager_;
+  FakePrivateAiNetworkDriver network_driver_;
   std::unique_ptr<ConnectionProxy> connection_proxy_;
   raw_ptr<FakeConnection> inner_connection_ = nullptr;
   base::OnceClosure on_inner_connection_created_;
@@ -166,7 +169,7 @@ TEST_F(ConnectionProxyTest, ProxyRuleFormat) {
 
 TEST_F(ConnectionProxyTest, FailsWithEmptyProxyUrl) {
   EXPECT_CHECK_DEATH((void)std::make_unique<ConnectionProxy>(
-      GURL(), &logger_, &token_manager_,
+      GURL(), &logger_, &token_manager_, &network_driver_,
       base::BindOnce(&ConnectionProxyTest::CreateInnerConnection,
                      base::Unretained(this)),
       base::BindOnce(&ConnectionProxyTest::OnDisconnect,

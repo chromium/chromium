@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/private_ai/client_impl.h"
 #include "components/private_ai/common/private_ai_logger.h"
@@ -23,9 +22,13 @@
 #include "components/private_ai/connection_timeout.h"
 #include "components/private_ai/connection_token_attestation.h"
 #include "components/private_ai/private_ai_common.h"
+#include "components/private_ai/private_ai_network_driver.h"
+#include "components/private_ai/private_ai_oak_session_driver.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/status_code.h"
+#include "components/private_ai/testing/fake_private_ai_network_driver.h"
+#include "components/private_ai/testing/fake_private_ai_oak_session_driver.h"
 #include "components/private_ai/testing/fake_secure_channel.h"
 #include "components/private_ai/testing/fake_token_manager.h"
 #include "services/network/test/test_network_context.h"
@@ -47,7 +50,8 @@ class ClientImplIntegrationTest : public testing::Test {
     GURL url("wss://example.com?key=test-api-key");
 
     auto factory = std::make_unique<ConnectionFactoryImpl>(
-        url, &test_network_context_, &logger_);
+        url, &test_network_context_, &logger_, &oak_session_driver_,
+        &network_driver_);
     factory_ptr_ = factory.get();
     factory->EnableTokenAttestation(&token_manager_);
     factory->SetSecureChannelFactoryForTesting(base::BindLambdaForTesting(
@@ -93,6 +97,8 @@ class ClientImplIntegrationTest : public testing::Test {
   PrivateAiLogger logger_;
   network::TestNetworkContext test_network_context_;
   FakeTokenManager token_manager_;
+  FakePrivateAiOakSessionDriver oak_session_driver_;
+  FakePrivateAiNetworkDriver network_driver_;
   std::vector<raw_ptr<FakeSecureChannel>> secure_channels_;
   std::unique_ptr<ClientImpl> client_;
   raw_ptr<ConnectionFactoryImpl> factory_ptr_ = nullptr;

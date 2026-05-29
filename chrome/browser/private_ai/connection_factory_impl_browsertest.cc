@@ -15,6 +15,8 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
+#include "components/private_ai/testing/fake_private_ai_network_driver.h"
+#include "components/private_ai/testing/fake_private_ai_oak_session_driver.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -52,8 +54,15 @@ class ConnectionFactoryImplBrowserTest : public InProcessBrowserTest {
 
   PrivateAiLogger* GetLogger() { return &logger_; }
 
+  FakePrivateAiOakSessionDriver* GetOakSessionDriver() {
+    return &oak_session_driver_;
+  }
+  FakePrivateAiNetworkDriver* GetNetworkDriver() { return &network_driver_; }
+
  private:
   PrivateAiLogger logger_;
+  FakePrivateAiOakSessionDriver oak_session_driver_;
+  FakePrivateAiNetworkDriver network_driver_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -61,7 +70,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        CreateConnectionWithoutToken) {
   GURL url("wss://private-ai.googleapis.com?key=test_api_key");
 
-  ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
+  ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger(),
+                                GetOakSessionDriver(), GetNetworkDriver());
 
   auto connection = factory.Create(base::DoNothing());
   EXPECT_TRUE(connection);
@@ -70,15 +80,17 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        FactoryCtorFailsWithoutApiKey) {
   GURL url("wss://private-ai.googleapis.com");
-  EXPECT_CHECK_DEATH(
-      ConnectionFactoryImpl(url, GetNetworkContext(), GetLogger()));
+  EXPECT_CHECK_DEATH(ConnectionFactoryImpl(url, GetNetworkContext(),
+                                           GetLogger(), GetOakSessionDriver(),
+                                           GetNetworkDriver()));
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        CreateConnectionWithToken) {
   GURL url("wss://private-ai.googleapis.com?key=test_api_key");
 
-  ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
+  ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger(),
+                                GetOakSessionDriver(), GetNetworkDriver());
   factory.EnableTokenAttestation(GetTokenManager());
 
   auto connection = factory.Create(base::DoNothing());
@@ -89,7 +101,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        CreateConnectionWithProxyAndToken) {
   GURL url("wss://private-ai.googleapis.com?key=test_api_key");
 
-  ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
+  ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger(),
+                                GetOakSessionDriver(), GetNetworkDriver());
   factory.EnableTokenAttestation(GetTokenManager());
   factory.EnableProxy(GURL("https://proxy.com"));
 

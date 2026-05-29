@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "private_ai_network_driver_content.cc",
+    "private_ai_network_driver_content.h",
+    "private_ai_oak_session_driver_content.cc",
+    "private_ai_oak_session_driver_content.h",
+  ]
+
+  deps = [
+    "//components/private_ai",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/cert_verifier/public/mojom",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "private_ai_network_driver_content_unittest.cc",
+    "private_ai_oak_session_driver_content_unittest.cc",
+  ]
+  deps = [
+    ":content",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+  ]
+}
