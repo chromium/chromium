@@ -172,8 +172,14 @@ bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
     return true;
   }
 
-  if (StyleRef().HasBorderRadius() &&
-      HitTestClippedOutByBorder(hit_test_location, accumulated_offset)) {
+  if (StyleRef().HasBorderShape() &&
+      HitTestClippedOutByBorderShape(*this, hit_test_location,
+                                     accumulated_offset)) {
+    if (!result.GetHitTestRequest().IsHitTestVisualOverflow()) {
+      return false;
+    }
+  } else if (StyleRef().HasBorderRadius() &&
+             HitTestClippedOutByBorder(hit_test_location, accumulated_offset)) {
     if (!result.GetHitTestRequest().IsHitTestVisualOverflow()) {
       return false;
     }
