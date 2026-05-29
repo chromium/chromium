@@ -261,9 +261,7 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::ReleaseSelfReference() {
 }
 
 void StreamingSearchPrefetchURLLoader::ResponseReader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {}
 void StreamingSearchPrefetchURLLoader::ResponseReader::SetPriority(
     net::RequestPriority priority,
@@ -804,14 +802,12 @@ void StreamingSearchPrefetchURLLoader::RunEventQueue() {
 }
 
 void StreamingSearchPrefetchURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   if (is_in_fallback_) {
     DCHECK(network_url_loader_);
-    network_url_loader_->FollowRedirect(removed_headers, modified_headers,
-                                        modified_cors_exempt_headers, new_url);
+    network_url_loader_->FollowRedirect(std::move(headers_update_params),
+                                        new_url);
     return;
   }
   // This should never be called for a non-network service URLLoader.

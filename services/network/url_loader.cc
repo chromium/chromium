@@ -788,9 +788,7 @@ URLLoader::~URLLoader() {
 const void* const URLLoader::kUserDataKey = &URLLoader::kUserDataKey;
 
 void URLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   if (!deferred_redirect_url_) {
     NOTREACHED();
@@ -819,8 +817,9 @@ void URLLoader::FollowRedirect(
 
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
-  if (!AreRequestHeadersSafe(modified_headers) ||
-      !AreRequestHeadersSafe(modified_cors_exempt_headers)) {
+  if (!AreRequestHeadersSafe(headers_update_params.modified_headers) ||
+      !AreRequestHeadersSafe(
+          headers_update_params.modified_cors_exempt_headers)) {
     NotifyCompleted(net::ERR_INVALID_ARGUMENT);
     // |this| may have been deleted.
     return;
@@ -830,7 +829,8 @@ void URLLoader::FollowRedirect(
   // the request.
   if (allow_cookies_from_browser_) {
     cookies_from_browser_ = url_loader_util::GetCookiesFromHeaders(
-        modified_headers, modified_cors_exempt_headers);
+        headers_update_params.modified_headers,
+        headers_update_params.modified_cors_exempt_headers);
   }
 
   // Reset the state of the LNA checker - redirects should be treated like new
@@ -843,14 +843,17 @@ void URLLoader::FollowRedirect(
   // restored.
   DCHECK(shared_storage_request_helper_);
   shared_storage_request_helper_->UpdateSharedStorageWritableEligible(
-      removed_headers, modified_headers);
+      headers_update_params.removed_headers,
+      headers_update_params.modified_headers);
 
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
 
-  net::HttpRequestHeaders merged_modified_headers = modified_headers;
-  merged_modified_headers.MergeFrom(modified_cors_exempt_headers);
-  url_request_->FollowDeferredRedirect(removed_headers,
+  net::HttpRequestHeaders merged_modified_headers =
+      std::move(headers_update_params.modified_headers);
+  merged_modified_headers.MergeFrom(
+      headers_update_params.modified_cors_exempt_headers);
+  url_request_->FollowDeferredRedirect(headers_update_params.removed_headers,
                                        merged_modified_headers);
   new_redirect_url_.reset();
 }

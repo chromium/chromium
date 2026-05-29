@@ -602,9 +602,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
 
   // network::mojom::URLLoader:
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {
     // new_url isn't expected to have a value, but prefer it if it's populated.
     if (new_url.has_value()) {

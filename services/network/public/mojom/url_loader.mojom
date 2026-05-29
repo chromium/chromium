@@ -43,10 +43,9 @@ interface URLLoader {
   //
   // If |new_url| is specified, then the request will be made to it instead of
   // the redirected URL. |new_url| must be same-origin to the redirected URL.
-  FollowRedirect(array<string> removed_headers,
-                 network.mojom.HttpRequestHeaders modified_headers,
-                 network.mojom.HttpRequestHeaders modified_cors_exempt_headers,
-                 url.mojom.Url? new_url);
+  FollowRedirect(
+      network.mojom.HttpRequestHeadersUpdateParams headers_update_params,
+      url.mojom.Url? new_url);
 
   // Sets the request priority.
   // |intra_priority_value| is a lesser priority which is used to prioritize

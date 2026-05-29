@@ -103,13 +103,14 @@ PrefetchURLLoader::PrefetchURLLoader(
 PrefetchURLLoader::~PrefetchURLLoader() = default;
 
 void PrefetchURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
-  DCHECK(modified_headers.IsEmpty())
+  // Only `headers_update_params.removed_headers` is supported.
+  DCHECK(headers_update_params.modified_headers.IsEmpty())
       << "Redirect with modified headers was not supported yet. "
          "crbug.com/845683";
+  headers_update_params.modified_headers.Clear();
+  headers_update_params.modified_cors_exempt_headers.Clear();
   DCHECK(!new_url) << "Redirect with modified URL was not "
                       "supported yet. crbug.com/845683";
   if (signed_exchange_prefetch_handler_) {
@@ -120,10 +121,7 @@ void PrefetchURLLoader::FollowRedirect(
   }
 
   DCHECK(loader_);
-  loader_->FollowRedirect(
-      removed_headers, net::HttpRequestHeaders() /* modified_headers */,
-      net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
-      std::nullopt);
+  loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
 }
 
 void PrefetchURLLoader::SetPriority(net::RequestPriority priority,

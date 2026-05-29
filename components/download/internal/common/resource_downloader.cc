@@ -275,11 +275,8 @@ void ResourceDownloader::OnResponseStarted(
 }
 
 void ResourceDownloader::OnReceiveRedirect() {
-  url_loader_->FollowRedirect(
-      std::vector<std::string>() /* removed_headers */,
-      net::HttpRequestHeaders() /* modified_headers */,
-      net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
-      std::nullopt);
+  url_loader_->FollowRedirect(/*headers_update_params=*/{},
+                              /*new_url=*/std::nullopt);
 }
 
 void ResourceDownloader::OnResponseCompleted() {

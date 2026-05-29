@@ -1642,7 +1642,8 @@ TEST_F(NetworkServiceTestWithService, RawRequestHeadersAbsent) {
   StartLoadingURL(request, OriginatingProcessId::browser());
   client()->RunUntilRedirectReceived();
   EXPECT_TRUE(client()->has_received_redirect());
-  loader()->FollowRedirect({}, {}, {}, std::nullopt);
+  loader()->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
 }
 

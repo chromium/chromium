@@ -104,9 +104,7 @@ void OfflinePageURLLoader::SetTabIdGetterForTesting(
 }
 
 void OfflinePageURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   NOTREACHED();
 }

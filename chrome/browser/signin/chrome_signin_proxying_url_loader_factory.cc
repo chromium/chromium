@@ -134,9 +134,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
 
   // network::mojom::URLLoader:
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override;
 
   void SetPriority(net::RequestPriority priority,
@@ -388,27 +386,22 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
-    const std::vector<std::string>& removed_headers_ext,
-    const net::HttpRequestHeaders& modified_headers_ext,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers_ext,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& opt_new_url) {
-  std::vector<std::string> removed_headers = removed_headers_ext;
-  net::HttpRequestHeaders modified_headers = modified_headers_ext;
-  net::HttpRequestHeaders modified_cors_exempt_headers =
-      modified_cors_exempt_headers_ext;
-  ProxyRequestAdapter adapter(this, headers_, &modified_headers,
-                              &removed_headers);
+  ProxyRequestAdapter adapter(this, headers_,
+                              &headers_update_params.modified_headers,
+                              &headers_update_params.removed_headers);
   factory_->delegate_->ProcessRequest(&adapter, redirect_info_.new_url);
 
-  headers_.MergeFrom(modified_headers);
-  cors_exempt_headers_.MergeFrom(modified_cors_exempt_headers);
-  for (const std::string& name : removed_headers) {
+  headers_.MergeFrom(headers_update_params.modified_headers);
+  cors_exempt_headers_.MergeFrom(
+      headers_update_params.modified_cors_exempt_headers);
+  for (const std::string& name : headers_update_params.removed_headers) {
     headers_.RemoveHeader(name);
     cors_exempt_headers_.RemoveHeader(name);
   }
 
-  target_loader_->FollowRedirect(removed_headers, modified_headers,
-                                 modified_cors_exempt_headers, opt_new_url);
+  target_loader_->FollowRedirect(std::move(headers_update_params), opt_new_url);
 
   request_url_ = redirect_info_.new_url;
   referrer_ = GURL(redirect_info_.new_referrer);

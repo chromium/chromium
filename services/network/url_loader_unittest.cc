@@ -980,7 +980,8 @@ class URLLoaderTest : public testing::Test {
 
     if (expect_redirect_) {
       client_.RunUntilRedirectReceived();
-      loader->FollowRedirect({}, {}, {}, std::nullopt);
+      loader->FollowRedirect(/*headers_update_params=*/{},
+                             /*new_url=*/std::nullopt);
     }
 
     if (body) {
@@ -3652,10 +3653,10 @@ TEST_F(URLLoaderTest, RedirectModifiedHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Header3"));
 
   // Overwrite Header2 and add Header3.
-  net::HttpRequestHeaders redirect_headers;
-  redirect_headers.SetHeader("Header2", "");
-  redirect_headers.SetHeader("Header3", "Value3");
-  loader->FollowRedirect({}, redirect_headers, {}, std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader("Header2", "");
+  headers_update_params.modified_headers.SetHeader("Header3", "Value3");
+  loader->FollowRedirect(std::move(headers_update_params), std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -3693,9 +3694,9 @@ TEST_F(URLLoaderTest, RedirectFailsOnModifyUnsafeHeader) {
 
     client.RunUntilRedirectReceived();
 
-    net::HttpRequestHeaders redirect_headers;
-    redirect_headers.SetHeader(unsafe_header, "foo");
-    loader->FollowRedirect({}, redirect_headers, {}, std::nullopt);
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    headers_update_params.modified_headers.SetHeader(unsafe_header, "foo");
+    loader->FollowRedirect(std::move(headers_update_params), std::nullopt);
 
     client.RunUntilComplete();
     delete_run_loop.Run();
@@ -3730,8 +3731,9 @@ TEST_F(URLLoaderTest, RedirectRemoveHeader) {
   EXPECT_EQ("Value2", request_headers1.find("Header2")->second);
 
   // Remove Header1.
-  std::vector<std::string> removed_headers = {"Header1"};
-  loader->FollowRedirect(removed_headers, {}, {}, std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Header1"};
+  loader->FollowRedirect(std::move(headers_update_params), std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -3767,10 +3769,10 @@ TEST_F(URLLoaderTest, RedirectRemoveHeaderAndAddItBack) {
   EXPECT_EQ("Value2", request_headers1.find("Header2")->second);
 
   // Remove Header1 and add it back using a different value.
-  std::vector<std::string> removed_headers = {"Header1"};
-  net::HttpRequestHeaders modified_headers;
-  modified_headers.SetHeader("Header1", "NewValue1");
-  loader->FollowRedirect(removed_headers, modified_headers, {}, std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Header1"};
+  headers_update_params.modified_headers.SetHeader("Header1", "NewValue1");
+  loader->FollowRedirect(std::move(headers_update_params), std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -3809,7 +3811,8 @@ TEST_F(URLLoaderTest, UpgradeAddsSecHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Sec-Fetch-User"));
 
   // Now follow the redirect to the final destination and validate again.
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
@@ -3858,7 +3861,8 @@ TEST_F(URLLoaderTest, DowngradeRemovesSecHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Sec-Fetch-User"));
 
   // Now follow the redirect to the final destination and validate again.
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
@@ -3912,7 +3916,8 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Sec-Fetch-User"));
 
   // Follow our redirect and then verify again.
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client()->ClearHasReceivedRedirect();
   client()->RunUntilRedirectReceived();
 
@@ -3928,7 +3933,8 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
 
   // Now follow the final redirect back to a trustworthy destination and
   // re-validate.
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
@@ -4806,8 +4812,10 @@ TEST_F(URLLoaderTest, FollowRedirectTwice) {
 
   client()->RunUntilRedirectReceived();
 
-  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
-  EXPECT_NOTREACHED_DEATH(url_loader->FollowRedirect({}, {}, {}, std::nullopt));
+  url_loader->FollowRedirect(/*headers_update_params=*/{},
+                             /*new_url=*/std::nullopt);
+  EXPECT_NOTREACHED_DEATH(url_loader->FollowRedirect(
+      /*headers_update_params=*/{}, /*new_url=*/std::nullopt));
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -4906,7 +4914,8 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
   EXPECT_EQ(0, private_key->sign_count());
 
   client()->RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   // MockNetworkServiceClient gives away the private key when it invokes
   // ContinueWithCertificate, so we have to give it the key again.
   client_cert_observer.set_private_key(private_key);
@@ -5479,7 +5488,8 @@ TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
       client()->CreateRemote());
 
   client()->RunUntilRedirectReceived();
-  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+  url_loader->FollowRedirect(/*headers_update_params=*/{},
+                             /*new_url=*/std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -5526,7 +5536,8 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
   EXPECT_TRUE(client()->response_head()->load_with_storage_access);
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kNone);
-  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+  url_loader->FollowRedirect(/*headers_update_params=*/{},
+                             /*new_url=*/std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -5571,7 +5582,8 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kActive);
-  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+  url_loader->FollowRedirect(/*headers_update_params=*/{},
+                             /*new_url=*/std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6114,7 +6126,8 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
       loader_client.CreateRemote());
 
   loader_client.RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   loader_client.RunUntilComplete();
   delete_run_loop.Run();
   EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
@@ -6368,7 +6381,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
                   "Set-Cookie: server-redirect=true"),
               std::string::npos);
 
-    loader->FollowRedirect({}, {}, {}, std::nullopt);
+    loader->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
@@ -6409,7 +6423,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         loader_client.CreateRemote());
 
     loader_client.RunUntilRedirectReceived();
-    loader->FollowRedirect({}, {}, {}, std::nullopt);
+    loader->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
@@ -8850,9 +8865,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, SimpleRedirect) {
   // Follow redirect is called by the client. Even if the shared storage request
   // helper updates headers, `FollowRedirect()` could still be called by the
   // client without headers changes.
-  url_loader_->FollowRedirect(/*removed_headers=*/{}, /*modified_headers=*/{},
-                              /*modified_cors_exempt_headers=*/{},
-                              std::nullopt);
+  url_loader_->FollowRedirect(/*headers_update_params=*/{},
+                              /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
 
   delete_run_loop_.Run();
@@ -8892,9 +8906,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, MultipleRedirects) {
   // Follow redirect is called by the client. Even if the shared storage request
   // helper updates headers, `FollowRedirect()` could still be called by the
   // client without headers changes.
-  url_loader_->FollowRedirect(/*removed_headers=*/{}, /*modified_headers=*/{},
-                              /*modified_cors_exempt_headers=*/{},
-                              std::nullopt);
+  url_loader_->FollowRedirect(/*headers_update_params=*/{},
+                              /*new_url=*/std::nullopt);
   client()->RunUntilRedirectReceived();
   ASSERT_TRUE(client()->has_received_redirect());
 
@@ -8904,9 +8917,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, MultipleRedirects) {
   // Follow redirect is called by the client. Even if the shared storage request
   // helper updates headers, `FollowRedirect()` could still be called by the
   // client without headers changes.
-  url_loader_->FollowRedirect(/*removed_headers=*/{}, /*modified_headers=*/{},
-                              /*modified_cors_exempt_headers=*/{},
-                              std::nullopt);
+  url_loader_->FollowRedirect(/*headers_update_params=*/{},
+                              /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
   WaitForHeadersReceived(2);
 
@@ -8950,9 +8962,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, CrossSiteRedirect) {
   // Follow redirect is called by the client. Even if the shared storage request
   // helper updates headers, `FollowRedirect()` could still be called by the
   // client without headers changes.
-  url_loader_->FollowRedirect(/*removed_headers=*/{}, /*modified_headers=*/{},
-                              /*modified_cors_exempt_headers=*/{},
-                              std::nullopt);
+  url_loader_->FollowRedirect(/*headers_update_params=*/{},
+                              /*new_url=*/std::nullopt);
   client()->RunUntilComplete();
   WaitForHeadersReceived(1);
 
@@ -8987,13 +8998,11 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, RedirectNoLongerEligible) {
 
   // Simulate having permission revoked by the client, the effect of which is
   // the request header is removed.
-  std::vector<std::string> removed_headers(
-      {std::string(kSecSharedStorageWritableHeader.data(),
-                   kSecSharedStorageWritableHeader.size())});
-  url_loader_->FollowRedirect(removed_headers,
-                              /*modified_headers=*/{},
-                              /*modified_cors_exempt_headers=*/{},
-                              std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {
+      std::string(kSecSharedStorageWritableHeader.data(),
+                  kSecSharedStorageWritableHeader.size())};
+  url_loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
 
   // The `SharedStorageRequestHelper` has `shared_storage_writable_eligible_`
   // now set to false because the request header was removed.
@@ -9027,12 +9036,10 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, RedirectBecomesEligible) {
 
   // Simulate having permission restored by the client, the effect of which is
   // the request header is added.
-  net::HttpRequestHeaders modified_headers;
-  modified_headers.SetHeader(kSecSharedStorageWritableHeader,
-                             kSecSharedStorageWritableValue);
-  url_loader_->FollowRedirect(/*removed_headers=*/{}, modified_headers,
-                              /*modified_cors_exempt_headers=*/{},
-                              std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader(
+      kSecSharedStorageWritableHeader, kSecSharedStorageWritableValue);
+  url_loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
 
   // The `SharedStorageRequestHelper` has `shared_storage_writable_eligible_`
   // now set to true because the request header was added.

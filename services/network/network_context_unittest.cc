@@ -7840,7 +7840,8 @@ TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
   EXPECT_TRUE(
       HasCookie(client.response_head()->request_cookies, "chocolate", "chip"));
   EXPECT_EQ(client.redirect_info().new_url, final_url);
-  loader->FollowRedirect({}, {}, {}, {});
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
 
   client.RunUntilResponseReceived();
   EXPECT_EQ(net::HTTP_OK, client.response_head()->headers->response_code());
@@ -8010,14 +8011,16 @@ TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
   EXPECT_TRUE(
       HasCookie(client.response_head()->request_cookies, "chocolate", "chip"));
   client.ClearHasReceivedRedirect();
-  loader->FollowRedirect({}, {}, {}, {});
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
 
   client.RunUntilRedirectReceived();
   EXPECT_EQ(net::HTTP_TEMPORARY_REDIRECT,
             client.response_head()->headers->response_code());
   EXPECT_FALSE(HasCookie(client.response_head()->request_cookies, "chocolate"));
   EXPECT_EQ(client.redirect_info().new_url, https_url);
-  loader->FollowRedirect({}, {}, {}, {});
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
 
   client.RunUntilResponseReceived();
   EXPECT_EQ(net::HTTP_OK, client.response_head()->headers->response_code());
@@ -8715,13 +8718,14 @@ class NetworkContextSplitCacheEnabledTest : public NetworkContextTest {
 
     if (expect_redirect) {
       client->RunUntilRedirectReceived();
-      loader->FollowRedirect({}, {}, {}, new_url);
+      loader->FollowRedirect({}, new_url);
       client->ClearHasReceivedRedirect();
     }
 
     if (new_url) {
       client->RunUntilRedirectReceived();
-      loader->FollowRedirect({}, {}, {}, std::nullopt);
+      loader->FollowRedirect(/*headers_update_params=*/{},
+                             /*new_url=*/std::nullopt);
     }
 
     client->RunUntilComplete();
@@ -10375,7 +10379,9 @@ TEST_P(NetworkContextBrowserCookieTest, Redirect) {
   ValidateRequestHeaderIsUnset(kHeader2Name);
 
   // Redirect with cookies added to the modified headers.
-  loader_->FollowRedirect({}, {GenerateTestRequestHeaders()}, {}, std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers = GenerateTestRequestHeaders();
+  loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
   url_loader_client()->RunUntilComplete();
   EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
 
@@ -10417,7 +10423,10 @@ TEST_P(NetworkContextBrowserCookieTest, RedirectClear) {
   net::HttpRequestHeaders modified_headers;
   const char kHeader1ValueUpdated[] = "new-header-value-1";
   modified_headers.SetHeader(kHeader1Name, kHeader1ValueUpdated);
-  loader_->FollowRedirect({kHeader2Name}, {modified_headers}, {}, std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers.push_back(kHeader2Name);
+  headers_update_params.modified_headers = modified_headers;
+  loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
   url_loader_client()->RunUntilComplete();
   EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
 
@@ -10446,9 +10455,12 @@ TEST_P(NetworkContextBrowserCookieTest, CorsRedirect) {
   ValidateRequestHeaderIsUnset(kCorsHeaderName);
 
   // Redirect with cookies added to the modified headers.
-  loader_->FollowRedirect({kHeader1Name}, {GenerateTestRequestHeaders()},
-                          {GenerateTestCorsExemptRequestHeaders()},
-                          std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers.push_back(kHeader1Name);
+  headers_update_params.modified_headers = GenerateTestRequestHeaders();
+  headers_update_params.modified_cors_exempt_headers =
+      GenerateTestCorsExemptRequestHeaders();
+  loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
   url_loader_client()->RunUntilComplete();
   EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
 
@@ -10498,8 +10510,12 @@ TEST_P(NetworkContextBrowserCookieTest, CorsRedirectClear) {
   const char kCorsHeaderValueUpdated[] = "new-cors-header-value";
   modified_cors_exempt_headers.SetHeader(kCorsHeaderName,
                                          kCorsHeaderValueUpdated);
-  loader_->FollowRedirect({kHeader1Name}, {modified_headers},
-                          {modified_cors_exempt_headers}, std::nullopt);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers.push_back(kHeader1Name);
+  headers_update_params.modified_headers = modified_headers;
+  headers_update_params.modified_cors_exempt_headers =
+      modified_cors_exempt_headers;
+  loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
   url_loader_client()->RunUntilComplete();
   EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
 
@@ -11112,7 +11128,8 @@ TEST_P(StorageAccessHeaderRedirectNetworkContextTest, RetryThenRedirect) {
       mojom::kURLLoadOptionNone, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   client.RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, {});
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
 
   client.RunUntilComplete();
 
@@ -11524,7 +11541,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RedirectWithLoad) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client.RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, {});
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client.RunUntilComplete();
 
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "None"));
@@ -11588,7 +11606,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RedirectThenLoad) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client.RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, {});
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client.RunUntilComplete();
 
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "None"));

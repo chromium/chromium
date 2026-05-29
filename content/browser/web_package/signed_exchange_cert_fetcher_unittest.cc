@@ -97,10 +97,8 @@ class MockURLLoader final : public network::mojom::URLLoader {
 
   ~MockURLLoader() override = default;
 
-  MOCK_METHOD4(FollowRedirect,
-               void(const std::vector<std::string>&,
-                    const net::HttpRequestHeaders&,
-                    const net::HttpRequestHeaders&,
+  MOCK_METHOD2(FollowRedirect,
+               void(network::HttpRequestHeadersUpdateParams,
                     const std::optional<GURL>&));
   MOCK_METHOD2(SetPriority,
                void(net::RequestPriority priority,

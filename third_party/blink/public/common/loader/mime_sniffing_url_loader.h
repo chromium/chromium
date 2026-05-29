@@ -104,9 +104,7 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   // network::mojom::URLLoader implementation (called from the destination of
   // the response):
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;

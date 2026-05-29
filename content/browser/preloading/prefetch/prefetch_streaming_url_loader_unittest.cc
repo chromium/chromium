@@ -38,13 +38,11 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
     // network::mojom::URLLoader
     void FollowRedirect(
-        const std::vector<std::string>& removed_headers,
-        const net::HttpRequestHeaders& modified_headers,
-        const net::HttpRequestHeaders& modified_cors_exempt_headers,
+        network::HttpRequestHeadersUpdateParams headers_update_params,
         const std::optional<GURL>& new_url) override {
-      EXPECT_EQ(removed_headers.size(), 0U);
-      EXPECT_TRUE(modified_headers.IsEmpty());
-      EXPECT_TRUE(modified_cors_exempt_headers.IsEmpty());
+      EXPECT_TRUE(headers_update_params.removed_headers.empty());
+      EXPECT_TRUE(headers_update_params.modified_headers.IsEmpty());
+      EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.IsEmpty());
       EXPECT_FALSE(new_url);
 
       ASSERT_TRUE(on_follow_redirect_closure_);

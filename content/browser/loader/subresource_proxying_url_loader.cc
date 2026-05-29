@@ -58,9 +58,7 @@ SubresourceProxyingURLLoader::SubresourceProxyingURLLoader(
 SubresourceProxyingURLLoader::~SubresourceProxyingURLLoader() = default;
 
 void SubresourceProxyingURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   if (!redirect_pending_) {
     mojo::ReportBadMessage("Unexpected FollowRedirect");
@@ -68,16 +66,13 @@ void SubresourceProxyingURLLoader::FollowRedirect(
   }
   redirect_pending_ = false;
 
-  std::vector<std::string> new_removed_headers = removed_headers;
-  net::HttpRequestHeaders new_modified_headers = modified_headers;
-
   for (auto& interceptor : interceptors_) {
-    interceptor->WillFollowRedirect(new_url, new_removed_headers,
-                                    new_modified_headers);
+    interceptor->WillFollowRedirect(new_url,
+                                    headers_update_params.removed_headers,
+                                    headers_update_params.modified_headers);
   }
 
-  loader_->FollowRedirect(new_removed_headers, new_modified_headers,
-                          modified_cors_exempt_headers, new_url);
+  loader_->FollowRedirect(std::move(headers_update_params), new_url);
 }
 
 void SubresourceProxyingURLLoader::SetPriority(net::RequestPriority priority,

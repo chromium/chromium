@@ -335,10 +335,7 @@ void ThrottlingURLLoader::FollowRedirect(
     std::optional<GURL> new_url;
     if (!throttle_will_redirect_redirect_url_.is_empty())
       new_url = throttle_will_redirect_redirect_url_;
-    url_loader_->FollowRedirect(
-        headers_update_params_.removed_headers,
-        headers_update_params_.modified_headers,
-        headers_update_params_.modified_cors_exempt_headers, new_url);
+    url_loader_->FollowRedirect(std::move(headers_update_params_), new_url);
     throttle_will_redirect_redirect_url_ = GURL();
   }
 

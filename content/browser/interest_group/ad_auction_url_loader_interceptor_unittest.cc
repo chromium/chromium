@@ -649,9 +649,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       url::Origin::Create(GURL("https://foo1.com")),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  remote_loader->FollowRedirect(/*removed_headers=*/{},
-                                /*modified_headers=*/{},
-                                /*modified_cors_exempt_headers=*/{},
+  remote_loader->FollowRedirect(/*headers_update_params=*/{},
                                 /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
@@ -781,9 +779,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       url::Origin::Create(GURL("https://foo1.com")),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  remote_loader->FollowRedirect(/*removed_headers=*/{},
-                                /*modified_headers=*/{},
-                                /*modified_cors_exempt_headers=*/{},
+  remote_loader->FollowRedirect(/*headers_update_params=*/{},
                                 /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
@@ -985,9 +981,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
                          {"00000000-0000-0000-0000-000000000000:e30="}));
   base::RunLoop().RunUntilIdle();
 
-  remote_loader->FollowRedirect(/*removed_headers=*/{},
-                                /*modified_headers=*/{},
-                                /*modified_cors_exempt_headers=*/{},
+  remote_loader->FollowRedirect(/*headers_update_params=*/{},
                                 /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
@@ -1049,9 +1043,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, UnsolicitedFollowRedirect) {
 
   // This should trigger ReportBadMessage in
   // SubresourceProxyingURLLoader::FollowRedirect
-  remote_loader->FollowRedirect(/*removed_headers=*/{},
-                                /*modified_headers=*/{},
-                                /*modified_cors_exempt_headers=*/{},
+  remote_loader->FollowRedirect(/*headers_update_params=*/{},
                                 /*new_url=*/std::nullopt);
   remote_loader.FlushForTesting();
   base::RunLoop().RunUntilIdle();

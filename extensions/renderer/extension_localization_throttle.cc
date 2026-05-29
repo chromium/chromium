@@ -129,9 +129,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
   // network::mojom::URLLoader implementation (called from the destination of
   // the response):
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {
     // ExtensionLocalizationURLLoader starts handling the request after
     // OnReceivedResponse(). A redirect response is not expected.

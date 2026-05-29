@@ -173,9 +173,7 @@ class FileURLDirectoryLoader
 
   // network::mojom::URLLoader:
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
@@ -406,9 +404,7 @@ class FileURLLoader : public network::mojom::URLLoader {
 
   // network::mojom::URLLoader:
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {
     // |removed_headers| and |modified_headers| are unused. It doesn't make
     // sense for files. The FileURLLoader can redirect only to another file.

@@ -42,20 +42,17 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
 
   // network::mojom::URLLoader implementation:
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_request_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_request_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {
-    DCHECK(removed_headers.empty() && modified_request_headers.IsEmpty() &&
-           modified_cors_exempt_request_headers.IsEmpty())
+    DCHECK(headers_update_params.removed_headers.empty() &&
+           headers_update_params.modified_headers.IsEmpty() &&
+           headers_update_params.modified_cors_exempt_headers.IsEmpty())
         << "Redirect with removed or modified headers was not supported yet. "
            "crbug.com/845683";
     DCHECK(!new_url.has_value())
         << "Redirect with modified URL was not supported yet. "
            "crbug.com/845683";
-    loader_sink_->FollowRedirect(
-        {} /* removed_headers */, {} /* modified_headers */,
-        {} /* modified_cors_exempt_headers */, std::nullopt /* new_url */);
+    loader_sink_->FollowRedirect({}, std::nullopt);
   }
 
   void SetPriority(net::RequestPriority priority,

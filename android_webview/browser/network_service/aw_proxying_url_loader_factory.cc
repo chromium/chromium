@@ -166,9 +166,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   // network::mojom::URLLoader
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
@@ -779,28 +777,14 @@ void InterceptedRequest::OnComplete(
 // URLLoader methods.
 
 void InterceptedRequest::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   if (target_loader_) {
     if (!origin_matched_headers_.empty()) {
-      // Copy the passed in header objects so we can modify the objects before
-      // passing them on.
-      std::vector<std::string> amended_removed_headers = removed_headers;
-      net::HttpRequestHeaders amended_modified_headers = modified_headers;
-      ApplyOriginMatchedHeaders(&amended_removed_headers,
-                                &amended_modified_headers);
-
-      target_loader_->FollowRedirect(amended_removed_headers,
-                                     amended_modified_headers,
-                                     modified_cors_exempt_headers, new_url);
-    } else {
-      // Just pass the arguments directly if we do not have any origin matched
-      // headers to apply.
-      target_loader_->FollowRedirect(removed_headers, modified_headers,
-                                     modified_cors_exempt_headers, new_url);
+      ApplyOriginMatchedHeaders(&headers_update_params.removed_headers,
+                                &headers_update_params.modified_headers);
     }
+    target_loader_->FollowRedirect(std::move(headers_update_params), new_url);
   } else {
     // Apply any potential headers to the canonical `request_.headers` to keep
     // it in sync.

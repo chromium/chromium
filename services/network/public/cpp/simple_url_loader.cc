@@ -1914,22 +1914,22 @@ void SimpleURLLoaderImpl::OnReceiveRedirect(
     return;
   }
 
+  network::HttpRequestHeadersUpdateParams headers_update_params;
   std::vector<std::string> removed_headers;
   if (on_redirect_callback_) {
     base::WeakPtr<SimpleURLLoaderImpl> weak_this =
         weak_ptr_factory_.GetWeakPtr();
     GURL url_before_redirect = final_url_;
     on_redirect_callback_.Run(url_before_redirect, redirect_info,
-                              *response_head, &removed_headers);
+                              *response_head,
+                              &headers_update_params.removed_headers);
     // If deleted by the callback, bail now.
     if (!weak_this)
       return;
   }
 
   final_url_ = redirect_info.new_url;
-  url_loader_->FollowRedirect(removed_headers, {} /* modified_headers */,
-                              {} /* modified_cors_exempt_headers */,
-                              {} /* new_url */);
+  url_loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
 }
 
 void SimpleURLLoaderImpl::OnTransferSizeUpdated(int32_t transfer_size_diff) {

@@ -760,9 +760,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
   EXPECT_FALSE(browser_client().last_get_topics_param());
   EXPECT_TRUE(browser_client().last_observe_param());
 
-  remote_loader->FollowRedirect(/*removed_headers=*/{},
-                                /*modified_headers=*/{},
-                                /*modified_cors_exempt_headers=*/{},
+  remote_loader->FollowRedirect(/*headers_update_params=*/{},
                                 /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
@@ -842,9 +840,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   EXPECT_FALSE(browser_client().last_get_topics_param());
   EXPECT_TRUE(browser_client().last_observe_param());
 
-  remote_loader->FollowRedirect(/*removed_headers=*/{},
-                                /*modified_headers=*/{},
-                                /*modified_cors_exempt_headers=*/{},
+  remote_loader->FollowRedirect(/*headers_update_params=*/{},
                                 /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 

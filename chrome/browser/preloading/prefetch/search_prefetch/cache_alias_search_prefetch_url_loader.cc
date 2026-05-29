@@ -235,9 +235,7 @@ void CacheAliasSearchPrefetchURLLoader::OnComplete(
 }
 
 void CacheAliasSearchPrefetchURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   // This should never be called for a non-network service URLLoader.
   NOTREACHED();

@@ -35,9 +35,7 @@ class MockURLLoader : public network::mojom::URLLoader {
       : receiver_(this, std::move(receiver)) {}
 
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {
     called_follow_redirect_ = true;
   }
@@ -128,7 +126,8 @@ TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest, FollowRedirectBlocked) {
 
   // Call FollowRedirect on the renderer remote. It should be blocked.
   mojo::test::BadMessageObserver bad_message_observer;
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
 
   EXPECT_EQ("URLLoaderProxy: FollowRedirect is forbidden from renderer.",
             bad_message_observer.WaitForBadMessage());
@@ -167,7 +166,8 @@ TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest,
   factory_remote.FlushForTesting();
 
   // Call FollowRedirect. It should be forwarded directly and NOT blocked.
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   loader.FlushForTesting();
   task_environment_.RunUntilIdle();
 

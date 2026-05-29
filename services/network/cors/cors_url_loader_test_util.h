@@ -253,17 +253,21 @@ class CorsURLLoaderTestBase : public testing::Test {
       const net::HttpRequestHeaders& modified_cors_exempt_headers =
           net::HttpRequestHeaders()) {
     DCHECK(url_loader_);
-    url_loader_->FollowRedirect(removed_headers, modified_headers,
-                                modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    headers_update_params.removed_headers = std::move(removed_headers);
+    headers_update_params.modified_headers = std::move(modified_headers);
+    headers_update_params.modified_cors_exempt_headers =
+        std::move(modified_cors_exempt_headers);
+    url_loader_->FollowRedirect(std::move(headers_update_params),
                                 /*new_url=*/std::nullopt);
   }
 
   void AddHostHeaderAndFollowRedirect() {
     DCHECK(url_loader_);
-    net::HttpRequestHeaders modified_headers;
-    modified_headers.SetHeader(net::HttpRequestHeaders::kHost, "bar.test");
-    url_loader_->FollowRedirect(/*removed_headers=*/{}, modified_headers,
-                                /*modified_cors_exempt_headers=*/{},
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    headers_update_params.modified_headers.SetHeader(
+        net::HttpRequestHeaders::kHost, "bar.test");
+    url_loader_->FollowRedirect(std::move(headers_update_params),
                                 /*new_url=*/std::nullopt);
   }
 

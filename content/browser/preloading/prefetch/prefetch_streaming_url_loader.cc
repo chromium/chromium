@@ -276,11 +276,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
   switch (redirect_status) {
     case PrefetchRedirectStatus::kFollow:
       CHECK(prefetch_url_loader_);
-      prefetch_url_loader_->FollowRedirect(
-          std::move(headers_update_params.removed_headers),
-          std::move(headers_update_params.modified_headers),
-          std::move(headers_update_params.modified_cors_exempt_headers),
-          /*new_url=*/std::nullopt);
+      prefetch_url_loader_->FollowRedirect(std::move(headers_update_params),
+                                           /*new_url=*/std::nullopt);
       break;
     case PrefetchRedirectStatus::kSwitchNetworkContext:
       // The redirect requires a switch in network context, so the redirect will

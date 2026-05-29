@@ -102,9 +102,7 @@ class CONTENT_EXPORT SignedExchangeLoader final
 
   // network::mojom::URLLoader implementation
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;

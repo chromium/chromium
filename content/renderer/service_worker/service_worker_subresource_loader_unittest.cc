@@ -1521,7 +1521,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, RedirectResponse) {
 
   // Redirect once more.
   fake_controller_.RespondWithRedirect("https://other.example.com/baz.png");
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client->RunUntilRedirectReceived();
 
   EXPECT_EQ(net::OK, client->completion_status().error_code);
@@ -1543,7 +1544,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, RedirectResponse) {
             MOJO_RESULT_OK);
   fake_controller_.RespondWithStream(
       stream_callback.BindNewPipeAndPassReceiver(), std::move(consumer_handle));
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client->RunUntilResponseReceived();
 
   auto& info = client->response_head();
@@ -1614,7 +1616,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, TooManyRedirects) {
     redirect_location = std::string("https://www.example.com/redirect_") +
                         base::NumberToString(count);
     fake_controller_.RespondWithRedirect(redirect_location);
-    loader->FollowRedirect({}, {}, {}, std::nullopt);
+    loader->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
   }
   client->RunUntilComplete();
 
@@ -1645,7 +1648,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, FollowNonexistentRedirect) {
 
   // Tell the loader to follow a non-existent redirect. It should complete
   // with network error.
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
   client->RunUntilComplete();
   EXPECT_EQ(net::ERR_INVALID_REDIRECT, client->completion_status().error_code);
 }

@@ -582,9 +582,7 @@ bool KeepAliveURLLoader::IsContextDetached() const {
 }
 
 void KeepAliveURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::FollowRedirect", "request_id",

@@ -503,9 +503,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   // network::mojom::URLLoader methods
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
@@ -1331,15 +1329,16 @@ Response InterceptionJob::InnerContinueRequest(
 
 void InterceptionJob::ProcessFollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers) {
-  std::vector<std::string> removed_headers;
-  net::HttpRequestHeaders modified_headers;
   CHECK(headers_before_redirect_);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
   HeadersOverride::ComputeModifications(*headers_before_redirect_,
                                         create_loader_params_->request.headers,
-                                        removed_headers, modified_headers);
+                                        headers_update_params.removed_headers,
+                                        headers_update_params.modified_headers);
+  headers_update_params.modified_cors_exempt_headers =
+      modified_cors_exempt_headers;
   headers_before_redirect_.reset();
-  loader_->FollowRedirect(removed_headers, modified_headers,
-                          modified_cors_exempt_headers, std::nullopt);
+  loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
   state_ = State::kRequestSent;
 }
 
@@ -1812,9 +1811,7 @@ void InterceptionJob::Shutdown() {
 
 // URLLoader methods
 void InterceptionJob::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   DCHECK(!new_url.has_value()) << "Redirect with modified url was not "
                                   "supported yet. crbug.com/845683";
@@ -1841,11 +1838,14 @@ void InterceptionJob::FollowRedirect(
   // Reflect changes to the request that the network service will make on
   // FollowRedirect.
   net::RedirectUtil::UpdateHttpRequest(request->url, request->method, info,
-                                       removed_headers, modified_headers,
+                                       headers_update_params.removed_headers,
+                                       headers_update_params.modified_headers,
                                        &request->headers, &clear_body);
-  request->cors_exempt_headers.MergeFrom(modified_cors_exempt_headers);
-  for (const std::string& name : removed_headers)
+  request->cors_exempt_headers.MergeFrom(
+      headers_update_params.modified_cors_exempt_headers);
+  for (const std::string& name : headers_update_params.removed_headers) {
     request->cors_exempt_headers.RemoveHeader(name);
+  }
 
   if (clear_body) {
     request->request_body = nullptr;
@@ -1870,7 +1870,7 @@ void InterceptionJob::FollowRedirect(
       return;
   }
   if (state_ == State::kRedirectReceived) {
-    ProcessFollowRedirect(modified_cors_exempt_headers);
+    ProcessFollowRedirect(headers_update_params.modified_cors_exempt_headers);
     return;
   }
 

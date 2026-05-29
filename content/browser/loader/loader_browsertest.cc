@@ -1342,14 +1342,14 @@ IN_PROC_BROWSER_TEST_F(LoaderOriginForgeryBrowserTest,
 
   // Now simulate the compromised renderer by calling FollowRedirect with a
   // forged Origin.
-  net::HttpRequestHeaders modified_headers;
-  modified_headers.SetHeader("Origin", "https://evil.test");
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader("Origin",
+                                                   "https://evil.test");
 
   base::RunLoop disconnect_run_loop;
   loader.set_disconnect_handler(disconnect_run_loop.QuitClosure());
 
-  loader->FollowRedirect(/*removed_headers=*/{}, modified_headers,
-                         /*modified_cors_exempt_headers=*/{},
+  loader->FollowRedirect(std::move(headers_update_params),
                          /*new_url=*/std::nullopt);
 
   // Wait for the request to fail by disconnection.

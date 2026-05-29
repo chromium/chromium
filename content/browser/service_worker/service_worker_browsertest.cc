@@ -8157,10 +8157,9 @@ class InterceptorURLLoader : public network::mojom::URLLoader {
     client_->OnComplete(status);
   }
 
-  void FollowRedirect(const std::vector<std::string>&,
-                      const net::HttpRequestHeaders&,
-                      const net::HttpRequestHeaders&,
-                      const std::optional<GURL>&) override {}
+  void FollowRedirect(
+      network::HttpRequestHeadersUpdateParams headers_update_params,
+      const std::optional<GURL>&) override {}
   void SetPriority(net::RequestPriority, int32_t) override {}
 
  private:

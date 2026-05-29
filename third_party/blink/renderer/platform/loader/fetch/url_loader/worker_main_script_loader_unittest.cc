@@ -91,10 +91,9 @@ class WorkerMainScriptLoaderTest : public testing::Test {
     FakeURLLoader& operator=(const FakeURLLoader&) = delete;
 
     // network::mojom::URLLoader overrides.
-    void FollowRedirect(const std::vector<std::string>&,
-                        const net::HttpRequestHeaders&,
-                        const net::HttpRequestHeaders&,
-                        const std::optional<GURL>&) override {}
+    void FollowRedirect(
+        network::HttpRequestHeadersUpdateParams headers_update_params,
+        const std::optional<GURL>&) override {}
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
 

@@ -421,9 +421,7 @@ void CorsURLLoader::Start() {
 }
 
 void CorsURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
   // If this is a navigation from a renderer, then its a service worker
   // passthrough of a navigation request.  Since this case uses manual
@@ -456,9 +454,8 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
-  net::HttpRequestHeaders mutable_modified_headers = modified_headers;
   if (!process_id_.is_browser() &&
-      ContainsForbiddenSecurityHeader(mutable_modified_headers)) {
+      ContainsForbiddenSecurityHeader(headers_update_params.modified_headers)) {
     mojo::ReportBadMessage(
         "CorsURLLoader: Forbidden Sec- header from renderer in FollowRedirect");
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
@@ -466,7 +463,8 @@ void CorsURLLoader::FollowRedirect(
   }
 
   // Does not allow modifying headers that are stored in `cors_exempt_headers`.
-  for (const auto& header : mutable_modified_headers.GetHeaderVector()) {
+  for (const auto& header :
+       headers_update_params.modified_headers.GetHeaderVector()) {
     if (request_.cors_exempt_headers.HasHeader(header.key)) {
       LOG(WARNING) << "A client is trying to modify header value for '"
                    << header.key << "', but it is not permitted.";
@@ -477,7 +475,8 @@ void CorsURLLoader::FollowRedirect(
 
   if (base::FeatureList::IsEnabled(
           features::kBlockOriginHeaderModificationOnRedirect) &&
-      modified_headers.HasHeader(net::HttpRequestHeaders::kOrigin)) {
+      headers_update_params.modified_headers.HasHeader(
+          net::HttpRequestHeaders::kOrigin)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     mojo::ReportBadMessage(
         "CorsURLLoader: Origin header modification on redirect is not "
@@ -485,26 +484,29 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
-  for (const auto& name : removed_headers) {
+  for (const auto& name : headers_update_params.removed_headers) {
     request_.headers.RemoveHeader(name);
     request_.cors_exempt_headers.RemoveHeader(name);
   }
 
-  request_.headers.MergeFrom(mutable_modified_headers);
+  request_.headers.MergeFrom(headers_update_params.modified_headers);
 
-  if (GetSecSharedStorageWritableHeader(mutable_modified_headers)) {
+  if (GetSecSharedStorageWritableHeader(
+          headers_update_params.modified_headers)) {
     request_.shared_storage_writable_eligible = true;
-  } else if (std::ranges::contains(removed_headers,
+  } else if (std::ranges::contains(headers_update_params.removed_headers,
                                    kSecSharedStorageWritableHeader)) {
     request_.shared_storage_writable_eligible = false;
   }
 
   if (!CorsURLLoaderFactory::IsValidCorsExemptHeaders(
-          *context_->cors_exempt_header_list(), modified_cors_exempt_headers)) {
+          *context_->cors_exempt_header_list(),
+          headers_update_params.modified_cors_exempt_headers)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
   }
-  request_.cors_exempt_headers.MergeFrom(modified_cors_exempt_headers);
+  request_.cors_exempt_headers.MergeFrom(
+      headers_update_params.modified_cors_exempt_headers);
 
   if (!AreRequestHeadersSafe(request_.headers)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
@@ -579,8 +581,7 @@ void CorsURLLoader::FollowRedirect(
       request_.url, request_.mode, request_.request_initiator,
       request_.isolated_world_origin, fetch_cors_flag_, tainted_,
       *origin_access_list_);
-  network_loader_->FollowRedirect(removed_headers, modified_headers,
-                                  modified_cors_exempt_headers, new_url);
+  network_loader_->FollowRedirect(std::move(headers_update_params), new_url);
 }
 
 void CorsURLLoader::SetPriority(net::RequestPriority priority,

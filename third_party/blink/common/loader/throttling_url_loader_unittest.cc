@@ -129,14 +129,9 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
 
   // network::mojom::URLLoader implementation.
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      network::HttpRequestHeadersUpdateParams headers_update_params,
       const std::optional<GURL>& new_url) override {
-    headers_update_params_.removed_headers = removed_headers;
-    headers_update_params_.modified_headers = modified_headers;
-    headers_update_params_.modified_cors_exempt_headers =
-        modified_cors_exempt_headers;
+    headers_update_params_ = std::move(headers_update_params);
   }
 
   void SetPriority(net::RequestPriority priority,
