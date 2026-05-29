@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -492,13 +493,7 @@ void AnnotatedPageContentRequest::StartExtraction(
 
   if (IsPdf()) {
 #if BUILDFLAG(ENABLE_PDF)
-    if (is_pdf_text_extraction_enabled_) {
-      RecordRequestType(ExtractionRequestType::kPDFText);
-      RequestPdfText(trigger_source);
-    } else {
-      RecordRequestType(ExtractionRequestType::kPDFPageCount);
-      RequestPdfPageCount();
-    }
+    RequestPdf(trigger_source);
 #endif  // BUILDFLAG(ENABLE_PDF)
   } else {
     RecordRequestType(ExtractionRequestType::kAnnotatedPageContent);
@@ -760,54 +755,35 @@ void AnnotatedPageContentRequest::RecordAnnotatedPageContentMetrics(
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-void AnnotatedPageContentRequest::RequestPdfPageCount() {
-  CHECK(IsPdf());
-  auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
-  if (pdf_helper) {
-    pdf_helper->RegisterForDocumentLoadComplete(
-        base::BindOnce(&AnnotatedPageContentRequest::OnPdfDocumentLoadComplete,
-                       weak_factory_.GetWeakPtr()));
-  }
-}
-
-void AnnotatedPageContentRequest::RequestPdfText(TriggerSource trigger_source) {
-  TRACE_EVENT0("browser", "AnnotatedPageContentRequest::RequestPdfText");
+void AnnotatedPageContentRequest::RequestPdf(TriggerSource trigger_source) {
   CHECK(IsPdf());
 
-  FetchPageContextOptions options;
-  options.pdf_options.emplace(PdfOptions::Format::kText,
-                              features::MaxPDFTextExtractionByteSize());
+  if (auto* pdf_helper =
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents())) {
+    // If the PDF content request callback is not run in the end because the
+    // PDF load never completes, this will record the status to the histogram.
+    base::ScopedClosureRunner metrics_recorder(base::BindOnce([]() {
+      RecordPDFDocumentStatus(PDFDocumentStatus::kLoadNotComplete);
+    }));
 
-  // PDF text extraction is triggered with a default 3-second delay after the
-  // page stops loading (see `kAnnotatedPageContentCaptureDelay`).
-  //
-  // For most PDFs, the first page renders within this delay (see UMA
-  // histogram `PDF.FirstPaintTime`). If it is not rendered, extraction may
-  // return an empty string.
-  //
-  // TODO(b/422120832): This fixed delay will be replaced by
-  // `PageSettledMonitor`, the general page stability detection mechanism also
-  // used by Actor. This implementation may require changes when that happens.
-  fetch_page_context_callback_.Run(
-      *web_contents(), options, /*progress_listener=*/nullptr,
-      base::BindOnce(&AnnotatedPageContentRequest::OnPageContextFetched,
-                     weak_factory_.GetWeakPtr(), trigger_source));
-}
-
-void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
-  CHECK(IsPdf());
-  lifecycle_ = Lifecycle::kExtracted;
-
-  auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
-  if (pdf_helper) {
-    // Fetch zero PDF bytes to just receive the total page count.
-    pdf_helper->GetPdfBytes(
-        /*size_limit=*/0,
-        base::BindOnce(
-            &RecordPdfPageCountMetrics,
-            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+    // TODO(b/422120832): Replace `RegisterForDocumentLoadComplete` with the
+    // `PDFDocumentHelper::IsDocumentLoadComplete` check once
+    // `PageSettledMonitor` is enabled by default. `PageSettledMonitor` already
+    // waits for PDF document load complete. However, a load complete check is
+    // still required as `PageSettledMonitor` notifies page settled when it
+    // times out. In this case, the PDF document may not complete loading.
+    if (is_pdf_text_extraction_enabled_) {
+      pdf_helper->RegisterForDocumentLoadComplete(
+          base::BindOnce(&AnnotatedPageContentRequest::RequestPdfText,
+                         weak_factory_.GetWeakPtr(), trigger_source,
+                         std::move(metrics_recorder)));
+    } else {
+      pdf_helper->RegisterForDocumentLoadComplete(base::BindOnce(
+          &AnnotatedPageContentRequest::RequestPdfPageCount,
+          weak_factory_.GetWeakPtr(), std::move(metrics_recorder)));
+    }
+  } else {
+    RecordPDFDocumentStatus(PDFDocumentStatus::kPDFDocumentHelperUnavailable);
   }
 
   // Requests for PDFs are synchronously rejected in
@@ -816,6 +792,50 @@ void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
   CHECK(on_demand_callbacks_.empty());
 
   ResolveAllCallbacksWith(std::nullopt);
+}
+
+void AnnotatedPageContentRequest::RequestPdfPageCount(
+    base::ScopedClosureRunner metrics_recorder) {
+  CHECK(IsPdf());
+
+  RecordRequestType(ExtractionRequestType::kPDFPageCount);
+  RecordPDFDocumentStatus(PDFDocumentStatus::kLoadComplete);
+  std::ignore = metrics_recorder.Release();
+
+  lifecycle_ = Lifecycle::kExtracted;
+
+  if (auto* pdf_helper =
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents())) {
+    // Fetch zero PDF bytes to just receive the total page count.
+    pdf_helper->GetPdfBytes(
+        /*size_limit=*/0,
+        base::BindOnce(
+            &RecordPdfPageCountMetrics,
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+  }
+}
+
+void AnnotatedPageContentRequest::RequestPdfText(
+    TriggerSource trigger_source,
+    base::ScopedClosureRunner metrics_recorder) {
+  TRACE_EVENT0("browser", "AnnotatedPageContentRequest::RequestPdfText");
+  CHECK(IsPdf());
+
+  RecordRequestType(ExtractionRequestType::kPDFText);
+  RecordPDFDocumentStatus(PDFDocumentStatus::kLoadComplete);
+  std::ignore = metrics_recorder.Release();
+
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kText,
+                              features::MaxPDFTextExtractionByteSize());
+
+  // PDF text extraction is requested after PDF document load complete. If
+  // `PageSettledMonitor` is not used, there is an additional 3-second delay
+  // before the extraction (see `kAnnotatedPageContentCaptureDelay`).
+  fetch_page_context_callback_.Run(
+      *web_contents(), options, /*progress_listener=*/nullptr,
+      base::BindOnce(&AnnotatedPageContentRequest::OnPageContextFetched,
+                     weak_factory_.GetWeakPtr(), trigger_source));
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

@@ -10,6 +10,9 @@ namespace page_content_annotations {
 inline constexpr char kPageContentExtractionRequestTypeHistogram[] =
     "OptimizationGuide.PageContentExtraction.RequestType";
 
+inline constexpr char kPageContentExtractionPDFDocumentStatusHistogram[] =
+    "OptimizationGuide.PageContentExtraction.PDF.DocumentStatus";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 
@@ -22,7 +25,21 @@ enum class ExtractionRequestType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:PageContentExtractionRequestType)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+
+// LINT.IfChange(PDFDocumentStatus)
+enum class PDFDocumentStatus {
+  kLoadComplete = 0,
+  kLoadNotComplete = 1,
+  kPDFDocumentHelperUnavailable = 2,
+  kMaxValue = kPDFDocumentHelperUnavailable,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:PageContentExtractionPDFDocumentStatus)
+
 void RecordRequestType(ExtractionRequestType request_type);
+
+void RecordPDFDocumentStatus(PDFDocumentStatus status);
 
 }  // namespace page_content_annotations
 

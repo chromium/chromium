@@ -13,4 +13,9 @@ void RecordRequestType(ExtractionRequestType request_type) {
                                 request_type);
 }
 
+void RecordPDFDocumentStatus(PDFDocumentStatus status) {
+  base::UmaHistogramEnumeration(
+      kPageContentExtractionPDFDocumentStatusHistogram, status);
+}
+
 }  // namespace page_content_annotations

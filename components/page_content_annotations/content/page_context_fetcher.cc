@@ -489,6 +489,11 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
   // - GetPdfBytes() is not safe.
   // - GetPageText() is safe but returns an empty string.
   //
+  // PageContextFetcher is only responsible for fetching page context. It is not
+  // responsible for waiting for the page (including PDF) being stable --
+  // clients should ensure page stability and manage the timing of extraction.
+  // Clients should not rely on the `IsDocumentLoadComplete()` check below.
+  //
   // See comments in `AnnotatedPageContentRequest::RequestPdfText` for more
   // information about the timing of PDF text extraction.
   if (is_pdf_document && pdf_helper && pdf_helper->IsDocumentLoadComplete()) {

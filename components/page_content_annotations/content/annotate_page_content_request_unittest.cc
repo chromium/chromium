@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -50,6 +51,11 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#include "components/pdf/browser/pdf_document_helper_client.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace page_content_annotations {
 
@@ -102,6 +108,16 @@ class TestPageContentExtractionService : public PageContentExtractionService {
   feature_engagement::test::MockTracker mock_tracker_;
   base::OnceClosure quit_closure_;
 };
+
+// `TestPDFDocumentHelperClient` is used for signaling that the PDF document has
+// finished loading.
+#if BUILDFLAG(ENABLE_PDF)
+class TestPDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
+ public:
+  TestPDFDocumentHelperClient() = default;
+  ~TestPDFDocumentHelperClient() override = default;
+};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class AnnotatePageContentRequestTest
     : public content::RenderViewHostTestHarness,
@@ -275,6 +291,14 @@ class AnnotatePageContentRequestTest
     navigation->Start();
     navigation->SetContentsMimeType("application/pdf");
     navigation->Commit();
+
+#if BUILDFLAG(ENABLE_PDF)
+    pdf::PDFDocumentHelper::CreateForCurrentDocument(
+        main_rfh(), std::make_unique<TestPDFDocumentHelperClient>());
+    pdf::PDFDocumentHelper::GetForCurrentDocument(main_rfh())
+        ->OnDocumentLoadComplete();
+#endif  // BUILDFLAG(ENABLE_PDF)
+
     WaitForPageSettled();
   }
 
@@ -1380,6 +1404,10 @@ TEST_P(AnnotatePageContentRequestTest, OnLoadTriggerPDFExtraction) {
         kPageContentExtractionRequestTypeHistogram,
         ExtractionRequestType::kPDFPageCount, PlatformSupportsPDF() ? 1 : 0);
   }
+
+  histogram_tester.ExpectUniqueSample(
+      kPageContentExtractionPDFDocumentStatusHistogram,
+      PDFDocumentStatus::kLoadComplete, PlatformSupportsPDF() ? 1 : 0);
 }
 
 // For PDF documents, on-hidden trigger is not allowed. This is because PDF
@@ -1605,6 +1633,96 @@ TEST_P(AnnotatePageContentRequestTest, OnHideFix_FeatureDisabled) {
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 
   extraction_service().RemoveObserver(&example_observer);
+}
+
+// If `PDFDocumentHelper` is never created for the PDF, the extraction does not
+// take place.
+TEST_P(AnnotatePageContentRequestTest,
+       NoPDFTextExtractionIfPDFDocumentHelperUnavailable) {
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter histogram_waiter(
+      kPageContentExtractionPDFDocumentStatusHistogram);
+
+  SetTriggeringMode("on_load");
+
+  // Simulate a PDF load without creating the `PDFDocumentHelper`.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/file.pdf"), web_contents());
+  navigation->Start();
+  navigation->SetContentsMimeType("application/pdf");
+  navigation->Commit();
+
+  TriggerDidStopLoading();
+  WaitForPageSettled();
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+  EXPECT_FALSE(extraction_service().last_extracted_pdf_text().has_value());
+
+  // The PDF request has never been registered because `PDFDocumentHelper` is
+  // unavailable.
+  histogram_tester.ExpectTotalCount(kPageContentExtractionRequestTypeHistogram,
+                                    0);
+  if (PlatformSupportsPDF()) {
+    histogram_waiter.Wait();
+    histogram_tester.ExpectUniqueSample(
+        kPageContentExtractionPDFDocumentStatusHistogram,
+        PDFDocumentStatus::kPDFDocumentHelperUnavailable, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        kPageContentExtractionPDFDocumentStatusHistogram, 0);
+  }
+}
+
+// If the PDF document load never completes, the extraction does not take place.
+TEST_P(AnnotatePageContentRequestTest,
+       NoPDFTextExtractionIfPDFDocumentLoadNotComplete) {
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter histogram_waiter(
+      kPageContentExtractionPDFDocumentStatusHistogram);
+
+  SetTriggeringMode("on_load");
+
+  // Simulate a PDF load which never completes.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/file.pdf"), web_contents());
+  navigation->Start();
+  navigation->SetContentsMimeType("application/pdf");
+  navigation->Commit();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // Create the document helper, but never signal document load complete.
+  pdf::PDFDocumentHelper::CreateForCurrentDocument(
+      main_rfh(), std::make_unique<TestPDFDocumentHelperClient>());
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  TriggerDidStopLoading();
+  WaitForPageSettled();
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Simulate PDF goes away by destroying the request and the web contents.
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  DeleteContents();
+
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+  EXPECT_FALSE(extraction_service().last_extracted_pdf_text().has_value());
+
+  // The PDF request has been registered, but never gets invoked. When the
+  // callback is destroyed, the status of PDF document should be recorded.
+  histogram_tester.ExpectTotalCount(kPageContentExtractionRequestTypeHistogram,
+                                    0);
+  if (PlatformSupportsPDF()) {
+    histogram_waiter.Wait();
+    histogram_tester.ExpectUniqueSample(
+        kPageContentExtractionPDFDocumentStatusHistogram,
+        PDFDocumentStatus::kLoadNotComplete, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        kPageContentExtractionPDFDocumentStatusHistogram, 0);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

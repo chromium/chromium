@@ -29,6 +29,10 @@
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace optimization_guide {
 class PageContextEligibility;
 
@@ -198,11 +202,11 @@ class AnnotatedPageContentRequest
   bool IsPageReadyForExtraction() const;
 
 #if BUILDFLAG(ENABLE_PDF)
-  void RequestPdfPageCount();
-  void RequestPdfText(TriggerSource trigger_source);
+  void RequestPdf(TriggerSource trigger_source);
 
-  // Invoked when pdf document is loaded, so that the metadata can be queried.
-  void OnPdfDocumentLoadComplete();
+  void RequestPdfPageCount(base::ScopedClosureRunner metrics_recorder);
+  void RequestPdfText(TriggerSource trigger_source,
+                      base::ScopedClosureRunner metrics_recorder);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   void OnPageContextEligibilityAPILoaded(

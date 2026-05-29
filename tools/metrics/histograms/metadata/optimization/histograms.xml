@@ -2473,6 +2473,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageContentExtraction.PDF.DocumentStatus"
+    enum="PageContentExtractionPDFDocumentStatus" expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status of the PDF document when a content extraction request is
+    made. Recorded once per extraction request for a PDF document.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.RequestType"
     enum="PageContentExtractionRequestType" expires_after="2027-05-05">
   <owner>xiaochenzh@chromium.org</owner>

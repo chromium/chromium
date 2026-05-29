@@ -142,4 +142,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
 }
