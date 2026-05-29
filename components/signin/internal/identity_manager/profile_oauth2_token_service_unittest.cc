@@ -993,11 +993,13 @@ TEST_F(ProfileOAuth2TokenServiceTest, GenerateBindingKeyRegistrationToken) {
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   EXPECT_FALSE(oauth2_service_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code", future.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code",
+      future.GetCallback()));
 
   delegate_ptr_->EnableTokenBindingRegistration();
   EXPECT_TRUE(oauth2_service_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code", future.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code",
+      future.GetCallback()));
   EXPECT_FALSE(future.IsReady());
 
   delegate_ptr_->IssueTokenBindingRegistrationTokenForAuthCode(

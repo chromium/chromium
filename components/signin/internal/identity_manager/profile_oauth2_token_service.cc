@@ -353,7 +353,8 @@ void ProfileOAuth2TokenService::UpdateAuthErrorForTesting(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 bool ProfileOAuth2TokenService::GenerateBindingKeyRegistrationToken(
-    std::string_view supported_algorithms,
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        supported_algorithms,
     std::string_view auth_code,
     base::OnceCallback<void(
         std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {

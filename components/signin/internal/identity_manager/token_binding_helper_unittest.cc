@@ -358,8 +358,9 @@ TEST_F(TokenBindingHelperTest,
   base::test::TestFuture<
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code",
-                                               future.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
+      future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -381,8 +382,9 @@ TEST_F(TokenBindingHelperTest,
   base::test::TestFuture<
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code",
-                                               future.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
+      future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -405,10 +407,12 @@ TEST_F(TokenBindingHelperTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_2;
 
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_1",
-                                               future_1.GetCallback());
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_2",
-                                               future_2.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_1",
+      future_1.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_2",
+      future_2.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future_1.Get().has_value());
@@ -436,8 +440,9 @@ TEST_F(TokenBindingHelperTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_3;
 
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_1",
-                                               future_1.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_1",
+      future_1.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future_1.Get().has_value());
   EXPECT_EQ(future_1.Get()->wrapped_binding_key, wrapped_key);
@@ -448,8 +453,9 @@ TEST_F(TokenBindingHelperTest,
   helper().SetBindingKey(account_id_1, {});
   EXPECT_TRUE(helper().IsRegistrationKeyReady());
 
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_2",
-                                               future_2.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_2",
+      future_2.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future_2.Get().has_value());
   EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
@@ -458,8 +464,9 @@ TEST_F(TokenBindingHelperTest,
   helper().SetBindingKey(account_id_2, {});
   EXPECT_FALSE(helper().IsRegistrationKeyReady());
 
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_3",
-                                               future_3.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_3",
+      future_3.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future_3.Get().has_value());
   EXPECT_NE(future_2.Get()->binding_key_id, future_3.Get()->binding_key_id);
@@ -475,8 +482,9 @@ TEST_F(TokenBindingHelperTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_2;
 
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_1",
-                                               future_1.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_1",
+      future_1.GetCallback());
 
   // Adding an unbound token (setting binding key to empty for an account that
   // didn't have a binding key) should not clear the in-progress registration
@@ -484,8 +492,9 @@ TEST_F(TokenBindingHelperTest,
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   helper().SetBindingKey(account_id, {});
 
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_2",
-                                               future_2.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_2",
+      future_2.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future_1.Get().has_value());
@@ -512,7 +521,8 @@ TEST_F(TokenBindingHelperTest, OnAllCredentialsLoadedNoRefreshTokens) {
   EXPECT_FALSE(helper().IsRegistrationKeyReady());
 }
 
-TEST_F(TokenBindingHelperTest, OnAllCredentialsLoadedGeneratesNewKeyIfEmpty) {
+TEST_F(TokenBindingHelperTest,
+       OnAllCredentialsLoadedDoesNotGenerateNewKeyIfEmpty) {
   helper().OnAllCredentialsLoaded(true);
   RunBackgroundTasks();
   EXPECT_TRUE(helper().IsRegistrationKeyReady());
@@ -520,8 +530,9 @@ TEST_F(TokenBindingHelperTest, OnAllCredentialsLoadedGeneratesNewKeyIfEmpty) {
   base::test::TestFuture<
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code",
-                                               future.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
+      future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -541,8 +552,9 @@ TEST_F(TokenBindingHelperTest, OnAllCredentialsLoadedReusesExistingKey) {
   base::test::TestFuture<
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
-  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code",
-                                               future.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken(
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
+      future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -558,9 +570,9 @@ class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
   }
 
   void StartUpgrade(const CoreAccountId& account_id) {
-    helper().PerformTokenBindingUpgrade(account_id, "test_token",
-                                        shared_factory_, "test_device_id",
-                                        "test_challenge");
+    helper().PerformTokenBindingUpgrade(
+        account_id, "test_token", shared_factory_, "test_device_id",
+        "test_challenge", {crypto::SignatureVerifier::ECDSA_SHA256});
   }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {

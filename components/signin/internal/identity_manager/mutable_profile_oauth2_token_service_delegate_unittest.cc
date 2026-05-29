@@ -2621,7 +2621,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   EXPECT_FALSE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code", future.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code",
+      future.GetCallback()));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -2638,7 +2639,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code", future.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code",
+      future.GetCallback()));
   EXPECT_FALSE(future.Get().has_value());
 }
 
@@ -2668,7 +2670,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_1;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code_1", future_1.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code_1",
+      future_1.GetCallback()));
   EXPECT_FALSE(future_1.Get().has_value());
 
   // Revoking credentials removes the binding key and resets the registration
@@ -2684,7 +2687,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_2;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code_2", future_2.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code_2",
+      future_2.GetCallback()));
   EXPECT_FALSE(future_2.Get().has_value());
 }
 
@@ -2721,7 +2725,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_1;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code_1", future_1.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code_1",
+      future_1.GetCallback()));
   EXPECT_FALSE(future_1.Get().has_value());
 
   // Revoking all credentials removes all binding keys and resets the
@@ -2738,7 +2743,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_2;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code_2", future_2.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code_2",
+      future_2.GetCallback()));
   EXPECT_FALSE(future_2.Get().has_value());
 }
 
@@ -2767,7 +2773,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_1;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code_1", future_1.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code_1",
+      future_1.GetCallback()));
   EXPECT_FALSE(future_1.Get().has_value());
 
   // Invalidating the refresh token removes the binding key and resets the
@@ -2784,7 +2791,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future_2;
   EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
-      "ES256", "test_code_2", future_2.GetCallback()));
+      {crypto::SignatureVerifier::ECDSA_SHA256}, "test_code_2",
+      future_2.GetCallback()));
   EXPECT_FALSE(future_2.Get().has_value());
 }
 

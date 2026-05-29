@@ -213,7 +213,8 @@ void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   bool started = identity_manager->GenerateBindingKeyRegistrationToken(
-      supported_algorithms, authorization_code_,
+      signin::ParseSignatureAlgorithmList(supported_algorithms),
+      authorization_code_,
       base::BindOnce(&DiceTokenFetcher::OnRegistrationTokenGenerated,
                      base::Unretained(this)));
   if (!started) {

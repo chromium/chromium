@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -75,6 +76,10 @@ constexpr char kTokenBindingChallengeHeader[] =
     "X-Chrome-Auth-Token-Binding-Challenge";
 constexpr char kTokenBindingResponseKey[] = "tokenBindingResponse";
 constexpr char kDirectedResponseKey[] = "directedResponse";
+
+constexpr std::array kDefaultAlgorithms = {
+    crypto::SignatureVerifier::ECDSA_SHA256,
+    crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 constexpr auto kOAuth2ResponseByErrorReason =
     base::MakeFixedFlatMap<std::string_view, OAuth2Response>({
@@ -255,6 +260,17 @@ void RecordApiCallMetrics(OAuth2MintTokenApiCallResult result,
   if (response) {
     base::UmaHistogramEnumeration("Signin.OAuth2MintToken.Response", *response);
   }
+}
+
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
+ParseSignatureAlgorithm(std::string_view algo_str) {
+  if (base::EqualsCaseInsensitiveASCII(algo_str, "ES256")) {
+    return crypto::SignatureVerifier::ECDSA_SHA256;
+  }
+  if (base::EqualsCaseInsensitiveASCII(algo_str, "RS256")) {
+    return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -569,6 +585,28 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::DictValue& dict) {
       dict.FindStringByDottedPath("boundTokenUpgradeInfo.challenge");
   if (challenge) {
     result.bound_token_upgrade_challenge = *challenge;
+  }
+
+  const base::ListValue* supported_algorithms =
+      dict.FindListByDottedPath("boundTokenUpgradeInfo.supportedAlgorithms");
+  if (!supported_algorithms) {
+    result.bound_token_upgrade_supported_algorithms =
+        base::ToVector(kDefaultAlgorithms);
+  } else {
+    // TODO(crbug.com/514242898): Unify this string-to-enum parser with similar
+    // conversion functions in the codebase (e.g. into //crypto).
+    for (const auto& value : *supported_algorithms) {
+      const std::string* algo_str = value.GetIfString();
+      if (!algo_str) {
+        continue;
+      }
+
+      std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
+          ParseSignatureAlgorithm(*algo_str);
+      if (algo.has_value()) {
+        result.bound_token_upgrade_supported_algorithms.push_back(*algo);
+      }
+    }
   }
 
   return result;

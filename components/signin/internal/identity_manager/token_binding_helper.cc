@@ -14,6 +14,7 @@
 #include "base/barrier_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -45,7 +46,6 @@
 namespace {
 
 constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
-constexpr std::string_view kAcceptableAlgorithmsForUpgrade = "ES256 RS256";
 
 constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
@@ -123,7 +123,8 @@ void TokenBindingHelper::ClearAllKeys() {
 }
 
 void TokenBindingHelper::MaybeInitializeRegistrationTokenHelper(
-    std::string_view supported_algorithms) {
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        supported_algorithms) {
   if (registration_token_helper_) {
     return;
   }
@@ -143,8 +144,7 @@ void TokenBindingHelper::MaybeInitializeRegistrationTokenHelper(
   } else {
     registration_token_helper_ =
         std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
-            *unexportable_key_service_,
-            signin::ParseSignatureAlgorithmList(supported_algorithms));
+            *unexportable_key_service_, base::ToVector(supported_algorithms));
   }
 }
 
@@ -152,7 +152,11 @@ void TokenBindingHelper::OnAllCredentialsLoaded(bool has_refresh_tokens) {
   if (!has_refresh_tokens) {
     return;
   }
-  MaybeInitializeRegistrationTokenHelper(kAcceptableAlgorithmsForUpgrade);
+
+  MaybeInitializeRegistrationTokenHelper({
+      crypto::SignatureVerifier::ECDSA_SHA256,
+      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+  });
   CHECK(registration_token_helper_);
   registration_token_helper_->CreateKeyLoaderIfNeeded();
 }
@@ -163,7 +167,8 @@ bool TokenBindingHelper::IsRegistrationKeyReady() const {
 }
 
 void TokenBindingHelper::GenerateBindingKeyRegistrationToken(
-    std::string_view supported_algorithms,
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        supported_algorithms,
     std::string_view auth_code,
     base::OnceCallback<void(
         std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {
@@ -255,7 +260,9 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
     std::string_view refresh_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view device_id,
-    std::string_view challenge) {
+    std::string_view challenge,
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        supported_algorithms) {
   CHECK(base::FeatureList::IsEnabled(
       switches::kEnableChromeRefreshTokenBindingUpgrade));
   CHECK_NE(refresh_token, GaiaConstants::kInvalidRefreshToken);
@@ -276,9 +283,8 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
 
   // `base::Unretained()` is safe because `this` owns
   // `registration_token_helper_`.
-  // TODO(crbug.com/514242898): Use the supported algorithms from the server.
   GenerateBindingKeyRegistrationToken(
-      kAcceptableAlgorithmsForUpgrade, challenge,
+      supported_algorithms, challenge,
       base::BindOnce(&TokenBindingHelper::OnUpgradeRegistrationTokenGenerated,
                      base::Unretained(this), account_id));
 }

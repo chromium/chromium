@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
 #include "components/signin/public/identity_manager/token_binding_info.h"
+#include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -114,13 +115,14 @@ class ProfileOAuth2TokenServiceDelegate {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Asynchronously generates a registration token for binding a refresh token
   // to a shared binding key.
-  // `supported_algorithms` is a space-separated list of acceptable signature
-  // algorithm names (e.g., "ES256 RS256"). This parameter may be ignored if an
-  // existing binding key is reused instead of generating a new one.
+  // `supported_algorithms` is a list of acceptable signature algorithms. This
+  // parameter may be ignored if an existing binding key is reused instead of
+  // generating a new one.
   // Returns false if the generation cannot be started. In that case, `callback`
   // will not be invoked.
   virtual bool GenerateBindingKeyRegistrationToken(
-      std::string_view supported_algorithms,
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          supported_algorithms,
       std::string_view auth_code,
       base::OnceCallback<
           void(std::optional<signin::BindingKeyRegistrationTokenResult>)>

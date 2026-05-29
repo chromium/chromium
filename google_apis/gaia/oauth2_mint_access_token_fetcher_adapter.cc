@@ -199,7 +199,8 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
   if (!result.bound_token_upgrade_challenge.empty() &&
       token_upgrade_callback_) {
     std::move(token_upgrade_callback_)
-        .Run(result.bound_token_upgrade_challenge);
+        .Run(result.bound_token_upgrade_challenge,
+             result.bound_token_upgrade_supported_algorithms);
   }
   FireOnGetTokenSuccess(response_builder.build());
 }
