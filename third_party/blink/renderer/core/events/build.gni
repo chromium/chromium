@@ -101,4 +101,5 @@ blink_core_tests_events = [
   "pointer_event_util_test.cc",
   "touch_event_test.cc",
   "web_input_event_conversion_test.cc",
+  "wheel_event_test.cc",
 ]

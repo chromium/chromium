@@ -49,10 +49,6 @@ class CORE_EXPORT WheelEvent final : public MouseEvent {
   static WheelEvent* Create(const WebMouseWheelEvent& native_event,
                             LocalDOMWindow& window);
 
-  static WheelEvent* Create(const WebMouseWheelEvent& native_event,
-                            const gfx::Vector2dF& delta_in_pixels,
-                            LocalDOMWindow& window);
-
   static WheelEvent* Create(const AtomicString& type,
                             const WheelEventInit* initializer) {
     return MakeGarbageCollected<WheelEvent>(type, initializer);
@@ -78,6 +74,7 @@ class CORE_EXPORT WheelEvent final : public MouseEvent {
     return wheel_delta_.y();
   }  // Deprecated, negative when scrolling down.
   unsigned deltaMode() const { return delta_mode_; }
+  bool momentum() const { return is_momentum_; }
 
   const AtomicString& InterfaceName() const override;
   bool IsMouseEvent() const override;
@@ -100,6 +97,7 @@ class CORE_EXPORT WheelEvent final : public MouseEvent {
   double delta_z_;
   unsigned delta_mode_;
   WebMouseWheelEvent native_event_;
+  bool is_momentum_ = false;
 };
 
 template <>

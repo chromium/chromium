@@ -757,7 +757,8 @@ void RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent(
     const std::optional<gfx::PointF>& target_location) {
   TRACE_EVENT("input",
               "RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent",
-              "phase", PhaseToString(mouse_wheel_event.phase), "target",
+              "phase", PhaseToString(mouse_wheel_event.phase), "momentum_phase",
+              PhaseToString(mouse_wheel_event.momentum_phase), "target",
               static_cast<void*>(target), "wheel_target_",
               static_cast<void*>(wheel_target_));
   if (!root_view->IsPointerLocked()) {

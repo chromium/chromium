@@ -9,6 +9,7 @@ dictionary WheelEventInit : MouseEventInit {
     double deltaY = 0.0;
     double deltaZ = 0.0;
     unsigned long deltaMode = 0;
+    [RuntimeEnabled=WheelEventMomentum] boolean momentum = false;
 
     // Non-standard APIs
     long wheelDeltaX = 0;

@@ -7003,6 +7003,13 @@
       depends_on: ["WebXR"],
       status: "stable",
     },
+    // Expose the momentum field in mouse wheel events that indicates whether an
+    // event is synthesized by the platform to simulate scroll inertia after the
+    // user has ended the physical scroll interaction.
+    // https://crbug.com/40704952
+    {
+      name: "WheelEventMomentum",
+    },
     // If enabled, window.default[Ss]tatus will be supported. This is disabled
     // by default, and is here to allow this behavior to be re-enabled via Finch
     // in case of problems. This flag should be removed by Q1 2023, assuming
