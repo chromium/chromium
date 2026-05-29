@@ -105,7 +105,7 @@ BOOL SetStartupParametersForSpotlightAction(
   }
   return YES;
 }
-// LINT.ThenChange(ios/chrome/app/task_request_user_activity.mm)
+// LINT.ThenChange(//ios/chrome/app/task_request_user_activity.mm)
 
 }  // namespace spotlight
 
