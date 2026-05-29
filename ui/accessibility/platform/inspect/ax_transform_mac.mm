@@ -126,6 +126,12 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
     return AXElementToBaseValue(value, indexer);
   }
 
+  // NSAccessibilityCustomAction: expose the action name.
+  if (NSAccessibilityCustomAction* custom_action =
+          base::apple::ObjCCast<NSAccessibilityCustomAction>(value)) {
+    return base::Value(base::SysNSStringToUTF16(custom_action.name));
+  }
+
   // Scalar value.
   return base::Value(
       base::SysNSStringToUTF16([NSString stringWithFormat:@"%@", value]));

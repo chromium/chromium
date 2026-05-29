@@ -784,6 +784,11 @@ bool DumpAccessibilityTestBase::IsTestingExternalTree() const {
   // what assistive technologies operates with. Other platforms
   // test the internal accessibility tree except the Android one which tests
   // both.
+  //
+  // TODO(crbug.com/407816615): AXUIElementCopyAttributeValue cannot observe
+  // NSAccessibilityCustomAction values across the cross-process AX boundary;
+  // such attributes must be covered in-process. See
+  // BrowserAccessibilityCocoaAriaActionsBrowserTest.
   return GetParam() == ui::AXApiType::kMac;
 #else
   return false;

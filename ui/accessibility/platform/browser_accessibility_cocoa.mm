@@ -2989,6 +2989,64 @@ bool ui::IsNSRange(id value) {
 }
 // LINT.ThenChange(NSAccessibilityPressAction)
 
+- (NSArray<NSAccessibilityCustomAction*>*)accessibilityCustomActions {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  if (!_owner->HasState(ax::mojom::State::kHasActions)) {
+    return nil;
+  }
+
+  const std::vector<int32_t>& action_ids =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+  if (action_ids.empty()) {
+    return nil;
+  }
+
+  NSMutableArray<NSAccessibilityCustomAction*>* custom_actions =
+      [NSMutableArray arrayWithCapacity:action_ids.size()];
+  BrowserAccessibilityManager* manager = _owner->manager();
+
+  for (int32_t target_id : action_ids) {
+    BrowserAccessibility* target = manager->GetFromID(target_id);
+    if (!target) {
+      continue;
+    }
+
+    std::u16string name = target->GetNameAsString16();
+    if (name.empty()) {
+      continue;
+    }
+
+    NSString* action_name = base::SysUTF16ToNSString(name);
+    // Capture target_id by value; re-resolve the target in the handler to
+    // handle tree mutations between action creation and invocation.
+    int32_t captured_target_id = target_id;
+    __weak BrowserAccessibilityCocoa* weak_self = self;
+    NSAccessibilityCustomAction* action = [[NSAccessibilityCustomAction alloc]
+        initWithName:action_name
+             handler:^BOOL {
+               BrowserAccessibilityCocoa* strong_self = weak_self;
+               if (!strong_self || ![strong_self instanceActive]) {
+                 return NO;
+               }
+               BrowserAccessibilityManager* mgr =
+                   strong_self->_owner->manager();
+               BrowserAccessibility* action_target =
+                   mgr->GetFromID(captured_target_id);
+               if (!action_target) {
+                 return NO;
+               }
+               mgr->DoDefaultAction(*action_target);
+               return YES;
+             }];
+    [custom_actions addObject:action];
+  }
+
+  return custom_actions.count > 0 ? custom_actions : nil;
+}
+
 // Sets an override value for a specific accessibility attribute.
 // This class does not support this.
 - (BOOL)accessibilitySetOverrideValue:(id)value

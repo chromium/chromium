@@ -8,10 +8,12 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,6 +26,7 @@
 #include "net/base/data_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -1138,6 +1141,164 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   info = GetUserInfoForSelectedTextChangedNotification();
   EXPECT_EQ(id{content_editable},
             [info objectForKey:ui::NSAccessibilityTextChangeElement]);
+}
+
+// Mac-only in-process coverage for accessibilityCustomActions. The Mac AX
+// dump test cannot observe NSAccessibilityCustomAction values across the
+// cross-process AX boundary (crbug.com/407816615).
+class BrowserAccessibilityCocoaAriaActionsBrowserTest
+    : public BrowserAccessibilityCocoaBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowserAccessibilityCocoaBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AriaActions");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaAriaActionsBrowserTest,
+                       AccessibilityCustomActionsExposed) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(data:text/html,
+      <div role="tab" id="my-tab" aria-actions="edit open delete">
+        your-file-name.pdf
+        <button id="edit">Edit</button>
+        <button id="open">Open</button>
+        <button id="delete">Delete</button>
+      </div>)HTML")));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  ui::BrowserAccessibility* tab = FindNode(ax::mojom::Role::kTab);
+  ASSERT_NE(nullptr, tab);
+
+  BrowserAccessibilityCocoa* cocoa_tab =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          tab->GetNativeViewAccessible().Get());
+  NSArray<NSAccessibilityCustomAction*>* actions =
+      [cocoa_tab accessibilityCustomActions];
+  ASSERT_NE(nil, actions);
+  ASSERT_EQ(3u, actions.count);
+  EXPECT_NSEQ(@"Edit", actions[0].name);
+  EXPECT_NSEQ(@"Open", actions[1].name);
+  EXPECT_NSEQ(@"Delete", actions[2].name);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaAriaActionsBrowserTest,
+                       AccessibilityCustomActionDispatchesToTarget) {
+  AccessibilityNotificationWaiter load_waiter(shell()->web_contents(),
+                                              ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(data:text/html,
+      <div role="tab" id="my-tab" aria-actions="edit">
+        your-file-name.pdf
+        <button id="edit" onclick=
+            "document.getElementById('edit').innerText = 'edit clicked';">
+          Edit
+        </button>
+      </div>)HTML")));
+  ASSERT_TRUE(load_waiter.WaitForNotification());
+
+  ui::BrowserAccessibility* tab = FindNode(ax::mojom::Role::kTab);
+  ASSERT_NE(nullptr, tab);
+
+  BrowserAccessibilityCocoa* cocoa_tab =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          tab->GetNativeViewAccessible().Get());
+  NSArray<NSAccessibilityCustomAction*>* actions =
+      [cocoa_tab accessibilityCustomActions];
+  ASSERT_NE(nil, actions);
+  ASSERT_EQ(1u, actions.count);
+  EXPECT_NSEQ(@"Edit", actions[0].name);
+
+  // Invoking the handler should dispatch `kDoDefault` to the target, which
+  // fires the button's onclick handler and mutates its accessible name.
+  AccessibilityNotificationWaiter name_waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::NAME_CHANGED);
+  EXPECT_TRUE(actions[0].handler());
+  ASSERT_TRUE(name_waiter.WaitForNotification());
+
+  // The action array re-derives names from the live AX tree, so the renamed
+  // target's name should surface on the next query.
+  actions = [cocoa_tab accessibilityCustomActions];
+  ASSERT_NE(nil, actions);
+  ASSERT_EQ(1u, actions.count);
+  EXPECT_NSEQ(@"edit clicked", actions[0].name);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaAriaActionsBrowserTest,
+                       AccessibilityCustomActionsFilterEmptyNameTargets) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(data:text/html,
+      <div role="tab" id="src" aria-actions="edit unnamed delete">
+        Source
+        <button id="edit">Edit</button>
+        <button id="unnamed"></button>
+        <button id="delete">Delete</button>
+      </div>)HTML")));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  ui::BrowserAccessibility* tab = FindNode(ax::mojom::Role::kTab);
+  ASSERT_NE(nullptr, tab);
+
+  BrowserAccessibilityCocoa* cocoa_tab =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          tab->GetNativeViewAccessible().Get());
+  NSArray<NSAccessibilityCustomAction*>* actions =
+      [cocoa_tab accessibilityCustomActions];
+  ASSERT_NE(nil, actions);
+  ASSERT_EQ(2u, actions.count);
+  EXPECT_NSEQ(@"Edit", actions[0].name);
+  EXPECT_NSEQ(@"Delete", actions[1].name);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaAriaActionsBrowserTest,
+                       AccessibilityCustomActionsTrackTargetIdMutation) {
+  AccessibilityNotificationWaiter load_waiter(shell()->web_contents(),
+                                              ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(data:text/html,
+      <div role="tab" id="my-tab" aria-actions="edit open">
+        your-file-name.pdf
+        <button id="edit">Edit</button>
+        <button id="open">Open</button>
+        <button id="close">Close</button>
+      </div>)HTML")));
+  ASSERT_TRUE(load_waiter.WaitForNotification());
+
+  ui::BrowserAccessibility* tab = FindNode(ax::mojom::Role::kTab);
+  ASSERT_NE(nullptr, tab);
+  BrowserAccessibilityCocoa* cocoa_tab =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          tab->GetNativeViewAccessible().Get());
+  NSArray<NSAccessibilityCustomAction*>* actions =
+      [cocoa_tab accessibilityCustomActions];
+  ASSERT_NE(nil, actions);
+  ASSERT_EQ(2u, actions.count);
+  EXPECT_NSEQ(@"Edit", actions[0].name);
+  EXPECT_NSEQ(@"Open", actions[1].name);
+
+  // Mutating the source element's `aria-actions` attribute should be reflected
+  // in subsequent reads of `accessibilityCustomActions`. Signal the end of the
+  // test on every frame after the mutation so that we know all pending AX
+  // serializations have been processed before re-querying.
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.getElementById('my-tab')"
+                     ".setAttribute('aria-actions', 'close');"));
+  {
+    AccessibilityNotificationWaiter eot_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kEndOfTest);
+    for (auto* host : CollectAllRenderFrameHosts(shell()->web_contents())) {
+      ui::AXActionData action_data;
+      action_data.action = ax::mojom::Action::kSignalEndOfTest;
+      host->AccessibilityPerformAction(action_data);
+    }
+    ASSERT_TRUE(eot_waiter.WaitForNotification(/*all_frames=*/true));
+  }
+
+  actions = [cocoa_tab accessibilityCustomActions];
+  ASSERT_NE(nil, actions);
+  ASSERT_EQ(1u, actions.count);
+  EXPECT_NSEQ(@"Close", actions[0].name);
 }
 
 }  // namespace content
