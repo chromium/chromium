@@ -5656,13 +5656,40 @@ auto GraphBuilderTflite::SerializeGatherIndices(
       const TensorIndex lesser_tensor_index,
       SerializeTemporaryTensorWithByteSizeCheck(indices_tensor_info.dimensions,
                                                 ::tflite::TensorType_BOOL));
+  TensorIndex less_input_tensor_index = clamp_tensor_index;
+  TensorIndex less_output_tensor_index = lesser_tensor_index;
+  if (indices_rank > 4) {
+    // The TFLite LESS kernel only supports tensors up to rank 4. Flatten the
+    // indices to 1D before LESS and then reshape back to the original shape.
+    const int32_t flattened_size =
+        std::accumulate(indices_tensor_info.dimensions.begin(),
+                        indices_tensor_info.dimensions.end(), int32_t{1},
+                        std::multiplies<int32_t>());
+    const std::array<int32_t, 1> flattened_shape = {flattened_size};
+    ASSIGN_OR_RETURN(const TensorIndex flattened_indices_tensor_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         flattened_shape, cast_tensor_type));
+    operators_.emplace_back(SerializeReshapeOperation(
+        clamp_tensor_index, flattened_indices_tensor_index, flattened_shape));
+
+    ASSIGN_OR_RETURN(const TensorIndex flattened_lesser_tensor_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         flattened_shape, ::tflite::TensorType_BOOL));
+    less_input_tensor_index = flattened_indices_tensor_index;
+    less_output_tensor_index = flattened_lesser_tensor_index;
+  }
   ASSIGN_OR_RETURN(const TensorIndex zero_value_tensor_index,
                    SerializeTensorWithBuffer<DataType>(
                        /*buffer=*/std::array<DataType, 1>{0},
                        /*dimensions=*/{}));
   operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_LESS, clamp_tensor_index,
-      zero_value_tensor_index, lesser_tensor_index));
+      ::tflite::BuiltinOperator_LESS, less_input_tensor_index,
+      zero_value_tensor_index, less_output_tensor_index));
+  if (indices_rank > 4) {
+    operators_.emplace_back(
+        SerializeReshapeOperation(less_output_tensor_index, lesser_tensor_index,
+                                  indices_tensor_info.dimensions));
+  }
 
   ASSIGN_OR_RETURN(const TensorIndex add_tensor_index,
                    SerializeTemporaryTensorWithByteSizeCheck(
