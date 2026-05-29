@@ -1054,3 +1054,182 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
     EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
   }
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
+                       SortTabsWithCheckedFirst) {
+  // Navigate the initial tab to the popup URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+
+  // Set the popup state to composebox (AIM) so that session handle and
+  // composebox handler are active.
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Set up an override to construct `MockTabContextualizationController`
+  // for all tabs in this test.
+  ui::UserDataFactory::ScopedOverride controller_override =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindRepeating(
+              [](tabs::TabInterface& tab)
+                  -> std::unique_ptr<lens::TabContextualizationController> {
+                auto mock =
+                    std::make_unique<MockTabContextualizationController>(&tab);
+                EXPECT_CALL(*mock, GetPageContext)
+                    .WillRepeatedly([&tab](
+                                        lens::TabContextualizationController::
+                                            GetPageContextCallback callback) {
+                      auto data = std::make_unique<lens::ContextualInputData>();
+                      data->is_page_context_eligible = true;
+                      data->page_url = tab.GetContents()->GetLastCommittedURL();
+                      data->page_title = "Title";
+                      data->primary_content_type =
+                          lens::MimeType::kAnnotatedPageContent;
+                      std::move(callback).Run(std::move(data));
+                    });
+                return mock;
+              }));
+
+  // Add three tabs.
+  GURL url1(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url1,
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/false));
+
+  GURL url2(embedded_test_server()->GetURL("/title3.html"));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 2, url2,
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/false));
+
+  GURL url3(embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 3, url3,
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/false));
+
+  // Order of activation/recency: 3, then 2, then 1 (making 1 active/most
+  // recent).
+  browser()->tab_strip_model()->ActivateTabAt(3);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(2);
+  int32_t tab2_id = tab2->GetHandle().raw_value();
+  tabs::TabInterface* tab3 = browser()->tab_strip_model()->GetTabAtIndex(3);
+  int32_t tab3_id = tab3->GetHandle().raw_value();
+
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+
+  // Helper lambda to get tab items from the menu.
+  auto get_tab_items = [&]() {
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    std::vector<std::pair<std::u16string, bool>> items;
+    ui::SimpleMenuModel* target_model =
+        controller.shared_tabs_menu_model()
+            ? controller.shared_tabs_menu_model()
+            : controller.menu_model();
+
+    for (size_t i = 0; i < target_model->GetItemCount(); ++i) {
+      int command_id = target_model->GetCommandIdAt(i);
+      if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
+          command_id < kMinOmniboxContextMenuRecentTabsCommandId +
+                           controller.GetMaxTabSuggestions()) {
+        bool has_checkmark = !target_model->GetMinorIconAt(i).IsEmpty();
+        items.emplace_back(target_model->GetLabelAt(i), has_checkmark);
+      }
+    }
+    return items;
+  };
+
+  // Initially, all tabs are unchecked. Sorting should be based on
+  // recency/active. Tab 1 is currently active/most recent.
+  {
+    auto tab_items = get_tab_items();
+    ASSERT_EQ(3u, tab_items.size());
+    EXPECT_EQ(tab_items[0].first, u"Title Of Awesomeness");  // Tab 1
+    EXPECT_FALSE(tab_items[0].second);
+    EXPECT_EQ(tab_items[1].first, u"Title Of More Awesomeness");  // Tab 2
+    EXPECT_FALSE(tab_items[1].second);
+    EXPECT_EQ(tab_items[2].first, u"OK");  // Tab 3
+    EXPECT_FALSE(tab_items[2].second);
+  }
+
+  // Click on tab 3, making its checkmark appear.
+  handler->AddTabContext(tab3_id, /*delay_upload=*/false, base::DoNothing());
+
+  // Now, Tab 3 should be sorted second since tab 2
+  // is also checked (selected) but more recent than tab 3. Tab 1 is most
+  // recent, but it is not checked (not selected), so it goes after the checked
+  // tabs.
+  {
+    auto tab_items = get_tab_items();
+    ASSERT_EQ(3u, tab_items.size());
+    // Tab 2: Checked and more recent:
+    EXPECT_EQ(tab_items[2].first, u"Title Of More Awesomeness");
+    EXPECT_FALSE(tab_items[2].second);
+    // Tab 3 (checked): Selected and less recent:
+    EXPECT_EQ(tab_items[0].first, u"OK");  // Tab 3 (checked)
+    EXPECT_TRUE(tab_items[0].second);
+    // Tab 1 (unchecked): Most recent but unselected:
+    EXPECT_EQ(tab_items[1].first, u"Title Of Awesomeness");
+    EXPECT_FALSE(tab_items[1].second);
+  }
+
+  // Stage (check/select) Tab 2 for upload as well.
+  handler->AddTabContext(tab2_id, /*delay_upload=*/false, base::DoNothing());
+
+  // Now, both Tab 2 and Tab 3 are checked.
+  // Tab 2 is more recent than Tab 3, so order should be: Tab 2, Tab 3, Tab 1.
+  {
+    auto tab_items = get_tab_items();
+    ASSERT_EQ(3u, tab_items.size());
+    // Tab 2 (checked, more recent):
+    EXPECT_EQ(tab_items[0].first, u"Title Of More Awesomeness");
+    EXPECT_TRUE(tab_items[0].second);
+    // Tab 3 (checked, less recent):
+    EXPECT_EQ(tab_items[1].first, u"OK");
+    EXPECT_TRUE(tab_items[1].second);
+    // Tab 1 (unchecked):
+    EXPECT_EQ(tab_items[2].first, u"Title Of Awesomeness");
+    EXPECT_FALSE(tab_items[2].second);
+  }
+
+  // Delete Tab 2 from staged tabs.
+  // Find token of Tab 2.
+  base::UnguessableToken tab2_token;
+  for (const auto& pair : handler->selected_tabs) {
+    if (pair.second == tab2_id) {
+      tab2_token = pair.first;
+      break;
+    }
+  }
+  ASSERT_FALSE(tab2_token.is_empty());
+  handler->DeleteContextFromBrowser(tab2_token, /*from_automatic_chip=*/false);
+
+  // Now only Tab 3 is checked. Order should be: Tab 3, Tab 1, Tab 2.
+  {
+    auto tab_items = get_tab_items();
+    ASSERT_EQ(3u, tab_items.size());
+    // Tab 3 (checked):
+    EXPECT_EQ(tab_items[0].first, u"OK");
+    EXPECT_TRUE(tab_items[0].second);
+    // Tab 1 (unchecked, more recent):
+    EXPECT_EQ(tab_items[1].first, u"Title Of Awesomeness");
+    EXPECT_FALSE(tab_items[1].second);
+    // Tab 2 (unchecked, less recent):
+    EXPECT_EQ(tab_items[2].first, u"Title Of More Awesomeness");
+    EXPECT_FALSE(tab_items[2].second);
+  }
+}

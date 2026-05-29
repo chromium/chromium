@@ -87,6 +87,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
     GURL url;
     base::TimeTicks last_active;
     bool is_active_tab = false;
+    bool is_checked = false;
   };
 
   OmniboxContextMenuController(const OmniboxContextMenuController&) = delete;
@@ -123,6 +124,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   static OmniboxController* GetOmniboxController(
       content::WebContents* web_contents);
   static OmniboxPopupUI* GetOmniboxPopupUI(content::WebContents* web_contents);
+  int GetMaxTabSuggestions() const;
 
  private:
   friend class TabSimpleMenuModel;
@@ -197,8 +199,6 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void UpdateSearchboxContextToolMode(omnibox::ToolMode tool_mode);
 
   bool IsContentSharingEnabled() const;
-
-  int GetMaxTabSuggestions() const;
 
   omnibox::ContextType CommandIdToEnum(int command_id) const;
 

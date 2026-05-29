@@ -341,9 +341,6 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     first_tab_index = menu_model_->GetItemCount();
   }
 
-  auto* composebox_handler =
-      GetOmniboxPopupUI() ? GetOmniboxPopupUI()->composebox_handler() : nullptr;
-
   // Add tabs to the target destination in UI.
   for (const auto& tab : tabs) {
     target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
@@ -357,16 +354,9 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     input_type_for_command_id_[next_command_id_] =
         omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
 
-    // If tab has been staged for uploading, set `is_checked` to `true`,
-    // meaning a checkmark should be drawn.
-    bool is_checked = false;
-    if (composebox_handler) {
-      is_checked = std::ranges::any_of(
-          composebox_handler->selected_tabs,
-          [&](const auto& pair) { return tab.tab_id == pair.second; });
-    }
-    // If the tab is selected, add a check mark icon.
-    if (is_checked) {
+    // If tab has been staged for uploading,
+    // add a check mark icon.
+    if (tab.is_checked) {
       size_t index = target_menu_model->GetItemCount() - 1;
       auto check_icon = ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
@@ -574,19 +564,31 @@ OmniboxContextMenuController::GetRecentTabs() {
     tab_data.url = last_committed_url;
     tab_data.is_active_tab = (tab == tab_strip_model->GetActiveTab());
 
+    auto* composebox_handler = GetOmniboxPopupUI()
+                                   ? GetOmniboxPopupUI()->composebox_handler()
+                                   : nullptr;
+    if (composebox_handler) {
+      tab_data.is_checked = std::ranges::any_of(
+          composebox_handler->selected_tabs,
+          [&](const auto& pair) { return tab_data.tab_id == pair.second; });
+    }
+
     tab_data.last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
                  web_contents->GetLastInteractionTimeTicks());
     tabs.push_back(tab_data);
   }
 
-  // Sort tabs by most recently active.
+  // Sort tabs with checked first, followed by most recently active.
   int max_tab_suggestions =
       std::min(static_cast<int>(tabs.size()), GetMaxTabSuggestions());
   std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
                     tabs.end(),
                     [](const OmniboxContextMenuController::TabInfo& a,
                        const OmniboxContextMenuController::TabInfo& b) {
+                      if (a.is_checked != b.is_checked) {
+                        return a.is_checked > b.is_checked;
+                      }
                       return a.last_active > b.last_active;
                     });
   tabs.resize(max_tab_suggestions);
