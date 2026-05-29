@@ -308,9 +308,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
            ToolbarController::ElementIdInfo(
                kToolbarBatterySaverButtonElementId,
                IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER,
-               &(features::IsRoundedIconsEnabled()
-                     ? kEnergySavingsLeafIcon
-                     : kBatterySaverRefreshOldIcon),
+               &kBatterySaverRefreshCustomIcon,
                kToolbarBatterySaverButtonElementId,
                kToolbarBatterySaverBubbleElementId),
            /*is_section_end=*/false),

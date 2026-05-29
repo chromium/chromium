@@ -25,9 +25,8 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
     : ToolbarButton(base::BindRepeating(&BatterySaverButton::OnClicked,
                                         base::Unretained(this))),
       browser_view_(browser_view) {
-  SetVectorIcon(features::IsRoundedIconsEnabled()
-                    ? kEnergySavingsLeafIcon
-                    : kBatterySaverRefreshOldIcon);
+  // We use a custom version of the energy saver left icon.
+  SetVectorIcon(kBatterySaverRefreshCustomIcon);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
