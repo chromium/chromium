@@ -761,6 +761,81 @@ TEST_F(AutofillAgentTestWithFeatures,
   task_environment_.RunUntilIdle();
 }
 
+// A test fixture that sets the autofill agent's `focus_requires_scroll` config
+// option to false, which allows `DidChangeScrollOffset` to notify the driver.
+class AutofillAgentTestWithoutFocusRequiresScroll
+    : public AutofillAgentTestWithFeatures {
+ public:
+  void SetUp() override {
+    AutofillAgentTestWithFeatures::SetUp();
+    test_api(autofill_agent()).set_focus_requires_scroll(false);
+  }
+};
+
+// Tests that scroll handling accepts a focused field even when suggestions were
+// last requested for another field.
+TEST_F(AutofillAgentTestWithoutFocusRequiresScroll,
+       DidChangeScrollOffsetUsesFocusedElement) {
+  LoadHTML("<form><input id=ff><input id=other></form>");
+
+  WebFormControlElement focused_field =
+      GetWebElementById("ff").DynamicTo<WebFormControlElement>();
+  ASSERT_TRUE(focused_field);
+  WebFormControlElement other_field =
+      GetWebElementById("other").DynamicTo<WebFormControlElement>();
+  ASSERT_TRUE(other_field);
+  FieldRendererId focused_field_id =
+      form_util::GetFieldRendererId(focused_field);
+  FieldRendererId other_field_id = form_util::GetFieldRendererId(other_field);
+  Focus("ff");
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(_, focused_field_id, _, _, _));
+  test_api(autofill_agent())
+      .ShowSuggestions(
+          focused_field,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          /*form_cache=*/{}, /*password_request=*/std::nullopt);
+  ASSERT_TRUE(focused_field.Focused());
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(_, other_field_id, _, _, _));
+  test_api(autofill_agent())
+      .ShowSuggestions(
+          other_field,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          /*form_cache=*/{}, /*password_request=*/std::nullopt);
+  ASSERT_TRUE(focused_field.Focused());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(autofill_driver(), TextFieldDidScroll(_, focused_field_id))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  test_api(autofill_agent()).DidChangeScrollOffset();
+  run_loop.Run();
+}
+
+// Tests that scrolling with no focused form control does not notify the driver.
+TEST_F(AutofillAgentTestWithoutFocusRequiresScroll,
+       DidChangeScrollOffsetIgnoresNonFormControlFocus) {
+  LoadHTML("<form><input id=ff></form><div id=ce contenteditable></div>");
+
+  WebFormControlElement field =
+      GetWebElementById("ff").DynamicTo<WebFormControlElement>();
+  ASSERT_TRUE(field);
+  WebElement contenteditable = GetWebElementById("ce");
+  ASSERT_TRUE(contenteditable);
+  test_api(autofill_agent())
+      .ShowSuggestions(
+          field, AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          /*form_cache=*/{}, /*password_request=*/std::nullopt);
+
+  Focus("ce");
+  ASSERT_TRUE(contenteditable.Focused());
+
+  EXPECT_CALL(autofill_driver(), TextFieldDidScroll).Times(0);
+  test_api(autofill_agent()).DidChangeScrollOffset();
+}
+
 // Tests that suggestion availability updates the field identified by
 // `field_id`.
 TEST_F(AutofillAgentTestWithFeatures, SetSuggestionAvailabilityUsesFieldId) {

@@ -399,7 +399,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // implications due to the frequency of selectionchange events.
   void OnInactivityTimerFired(FieldRendererId field_id);
 
-  void DidChangeScrollOffsetImpl(FieldRendererId element_id);
+  // Handles scroll offset changes asynchronously because layout may still be
+  // updating while the scroll signal is dispatched.
+  void DidChangeScrollOffsetImpl();
 
   // At least on Android, multiple AskForValuesToFill() events may be fired in
   // short succession. Since getting the event handling right in AutofillAgent

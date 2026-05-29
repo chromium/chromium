@@ -54,6 +54,13 @@ class AutofillAgentTestApi {
     agent_->SelectFieldOptionsChanged(element);
   }
 
+  void DidChangeScrollOffset() { agent_->DidChangeScrollOffset(); }
+
+  void set_focus_requires_scroll(bool focus_requires_scroll) {
+    const_cast<AutofillAgent::Config&>(agent_->config_).focus_requires_scroll =
+        AutofillAgent::FocusRequiresScroll(focus_requires_scroll);
+  }
+
   const FormCache& form_cache() { return agent_->form_cache_; }
 
   PasswordAutofillAgent* password_autofill_agent() {

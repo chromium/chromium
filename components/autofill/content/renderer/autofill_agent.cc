@@ -603,29 +603,32 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
-  if (!config_.focus_requires_scroll) {
-    // Post a task here since scroll offset may change during layout.
-    // TODO(crbug.com/40559425): Do not cancel other tasks and do not invalidate
-    // PasswordAutofillAgent::autofill_agent_.
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    if (auto* render_frame = unsafe_render_frame()) {
-      render_frame->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&AutofillAgent::DidChangeScrollOffsetImpl,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    last_queried_element_.GetId()));
-    }
-  } else {
+  if (config_.focus_requires_scroll) {
     HidePopup();
+    return;
+  }
+
+  // Post a task here since scroll offset may change during layout.
+  // TODO(crbug.com/40559425): Do not cancel other tasks and do not invalidate
+  // PasswordAutofillAgent::autofill_agent_.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (auto* render_frame = unsafe_render_frame()) {
+    render_frame->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&AutofillAgent::DidChangeScrollOffsetImpl,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
+void AutofillAgent::DidChangeScrollOffsetImpl() {
+  WebDocument document = GetDocument();
+  if (!document) {
+    return;
+  }
   WebFormControlElement element =
-      form_util::GetFormControlByRendererId(element_id);
-  if (element != last_queried_element_.GetField() || !element ||
-      config_.focus_requires_scroll || !is_popup_possibly_visible_ ||
-      !element.Focused()) {
+      document.FocusedElement().DynamicTo<WebFormControlElement>();
+  if (!element || config_.focus_requires_scroll ||
+      !is_popup_possibly_visible_) {
     return;
   }
 
