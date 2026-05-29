@@ -1028,6 +1028,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testDisabledWalletDataSharingDataCard_shownWhenDisabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1049,6 +1050,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testDisabledWalletDataSharingDataCard_notShownWhenWalletPublicPassEnabled()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -1071,6 +1073,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testDisabledWalletDataSharingDataCard_notShownInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1091,7 +1094,10 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testDisabledWalletDataSharingDataCard_notShownWhenFeatureDisabled()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -1114,6 +1120,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_notRenderedIfCannotListEntityInstancesInSettings()
             throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
@@ -1139,7 +1146,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testAutofillAiEntities_renderedCorrectly() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
         EntityType passportType = TestUtils.getPassportEntityType();
@@ -1234,6 +1244,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_notRenderedIfDisabledAndEmpty() throws Exception {
         EntityType disabledType =
                 TestUtils.getVehicleEntityType(
@@ -1268,6 +1279,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_notRenderedIfReadOnlyAndEmpty() throws Exception {
         EntityType readOnlyType =
                 TestUtils.getPassportEntityType(
@@ -1302,6 +1314,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_renderedIfDisabledButNotEmpty() throws Exception {
         EntityType disabledType =
                 TestUtils.getVehicleEntityType(
@@ -1348,6 +1361,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensEditorOnAddClickForLocalEntity() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -1394,7 +1408,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void
             testAutofillAiEntities_opensEditorOnAddClickForWalletEntity_showsSnackbarWhenFeatureDisabled()
                     throws Exception {
@@ -1459,6 +1476,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensEditorOnAddClickForWalletEntity_showsDialog()
             throws Exception {
         EntityType vehicleType =
@@ -1537,6 +1555,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensEditorOnClick() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -1574,6 +1593,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensEditorOnAddClick_eligibleForWalletFalse()
             throws Exception {
         EntityType vehicleType =
@@ -1621,6 +1641,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensEditorOnAddClick_eligibleForWalletTrue()
             throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -1676,6 +1697,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensWalletOnClick() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -1722,6 +1744,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensWalletDefaultPage_whenUrlIsNull() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -1769,6 +1792,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick() throws Exception {
         EntityType passportType = TestUtils.getPassportEntityType();
 
@@ -1808,7 +1832,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick_featureDisabled()
             throws Exception {
         EntityType passportType = TestUtils.getPassportEntityType();
@@ -1851,6 +1878,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_rebuildsOnEntityChange() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -1946,6 +1974,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensEditorOnSuccessfulReauth() throws Exception {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1988,6 +2017,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_doesNotOpenEditorOnFailedReauth() throws Exception {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -2032,6 +2062,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAddEntityButton_disabledInThirdPartyMode() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
@@ -2160,6 +2191,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAddEntityButton_defaultAvailabilityOn_enabledIfCanEnable() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
@@ -2188,6 +2220,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAddEntityButton_defaultAvailabilityOn_disabledIfCannotEnable()
             throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
@@ -2216,7 +2249,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testAddEntityButton_defaultAvailabilityOff_enabledIfEligibleAndOptedIn()
             throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
@@ -2246,7 +2282,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testAddEntityButton_defaultAvailabilityOff_disabledIfNotEligible()
             throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
@@ -2276,7 +2315,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testAddEntityButton_defaultAvailabilityOff_disabledIfNotOptedIn() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =

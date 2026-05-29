@@ -51,7 +51,12 @@ import java.io.IOException;
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+
+    // TODO (crbug.com/513493349): Remove this feature flag and update tests.
+    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+})
 public class PasswordsPreferenceTest {
     private static final int RENDER_TEST_REVISION = 2;
 

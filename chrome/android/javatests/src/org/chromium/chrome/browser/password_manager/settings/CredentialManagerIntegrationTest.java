@@ -60,7 +60,12 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/344665935): Failing when batched, batch this again.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList
+            .YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID // TODO (crbug.com/513493349): Remove this
+                                                   // feature flag and update tests.
+})
 public class CredentialManagerIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();

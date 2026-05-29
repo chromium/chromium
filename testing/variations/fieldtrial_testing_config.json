@@ -3519,7 +3519,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillYourSavedInfoAndroid"
+                        "YourSavedInfoSettingsPageAndroid"
                     ]
                 }
             ]
