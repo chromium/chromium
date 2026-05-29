@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(EyeDropperViewAuraInteractiveTest, ActiveChangeCancel) {
       ShowEyeDropper(web_contents->GetPrimaryMainFrame(), &listener);
   ASSERT_TRUE(eye_dropper);
   EXPECT_FALSE(listener.IsCanceled());
-  web_contents->GetRenderWidgetHostView()->Hide();
+  web_contents->WasHidden();
   EXPECT_TRUE(listener.IsCanceled());
 }
 
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(EyeDropperViewAuraInteractiveTest, InactiveWindow) {
   EyeDropperListener listener;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  web_contents->GetRenderWidgetHostView()->Hide();
+  web_contents->WasHidden();
   ASSERT_FALSE(web_contents->GetPrimaryMainFrame()->GetView()->HasFocus());
   std::unique_ptr<content::EyeDropper> eye_dropper =
       ShowEyeDropper(web_contents->GetPrimaryMainFrame(), &listener);

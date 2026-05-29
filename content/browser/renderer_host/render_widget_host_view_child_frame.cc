@@ -271,6 +271,10 @@ void RenderWidgetHostViewChildFrame::ShowWithVisibility(
     frame_connector_->SetVisibilityForChildViews(true);
 }
 
+void RenderWidgetHostViewChildFrame::Show() {
+  ShowWithVisibility(PageVisibilityState::kVisible);
+}
+
 void RenderWidgetHostViewChildFrame::Hide() {
   if (frame_connector_) {
     frame_connector_->SetKeepSurfaceAlive(false);

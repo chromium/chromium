@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(CompositorImplLowEndBrowserTest,
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
   rwhva->OnRootWindowVisibilityChanged(false);
-  rwhva->Hide();
+  web_contents()->WasHidden();
 
   // Ensure that context is eventually dropped and at that point we do not have
   // a valid frame.
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(CompositorImplLowEndBrowserTest,
   compositor->SetVisibleForTesting(true);
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
-  rwhva->Show();
+  web_contents()->WasShown();
   rwhva->OnRootWindowVisibilityChanged(true);
 
   // Wait for a swap after becoming visible.

@@ -498,7 +498,7 @@ void RenderWidgetHostViewAura::InitAsPopup(
                                         display::kInvalidDisplayId);
 
   SetBounds(bounds_in_screen);
-  Show();
+  ShowWithVisibility(PageVisibilityState::kVisible);
   if (NeedsMouseCapture())
     window_->SetCapture();
 

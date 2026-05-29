@@ -8,6 +8,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "content/test/test_render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,7 @@ class ImageCaptureImplTest : public RenderViewHostTestHarness {
         /*skip_connecting_to_media_stream_manager_for_testing=*/true);
   }
 
-  void HideView() { main_rfh()->GetView()->Hide(); }
+  void HideView() { web_contents()->WasHidden(); }
 
   void SetPermissionForPTZ(blink::mojom::PermissionStatus status) {
     content::PermissionController* permission_controller =

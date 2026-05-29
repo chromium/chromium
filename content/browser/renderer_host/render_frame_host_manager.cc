@@ -4651,7 +4651,9 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     }
     // And since we are reusing the RenderViewHost make sure it is hidden, like
     // a new RenderViewHost would be, until navigation commits.
-    render_view_host->GetWidget()->GetView()->Hide();
+    static_cast<RenderWidgetHostViewBase*>(
+        render_view_host->GetWidget()->GetView())
+        ->Hide();
   }
 
   // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
@@ -5415,7 +5417,7 @@ void RenderFrameHostManager::CommitPending(
     // blink::Page of changes to the PageVisibilityState. This currently does
     // not affect the visibility of the blink::WidgetBase. We should unify these
     // two visibility states to prevent them from drifting.
-    old_view->Hide();
+    static_cast<RenderWidgetHostViewBase*>(old_view)->Hide();
     if (old_render_frame_host->child_count()) {
       old_render_frame_host->SetVisibilityForChildViews(false);
     }

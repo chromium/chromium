@@ -15320,7 +15320,8 @@ void RenderFrameHostImpl::ForEachImmediateLocalRoot(
 
 void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {
   ForEachImmediateLocalRoot([visible](RenderFrameHostImpl* frame_host) {
-    if (auto* view = frame_host->GetView()) {
+    if (auto* view = static_cast<RenderWidgetHostViewChildFrame*>(
+            frame_host->GetView())) {
       return visible ? view->Show() : view->Hide();
     }
   });

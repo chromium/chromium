@@ -54,7 +54,7 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/update_client/update_client.h"
-#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
@@ -1786,7 +1786,7 @@ TEST_F(AILanguageModelTest, Priority) {
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAre("hi"));
 
-  main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
+  web_contents()->WasHidden();
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
               ElementsAre("Priority: background", "hi"));
 
@@ -1794,7 +1794,7 @@ TEST_F(AILanguageModelTest, Priority) {
   EXPECT_THAT(Prompt(*fork, MakeInput("bar")),
               ElementsAre("Priority: background", "hi"));
 
-  main_rfh()->GetRenderWidgetHost()->GetView()->Show();
+  web_contents()->WasShown();
   EXPECT_THAT(Prompt(*session, MakeInput("baz")), ElementsAre("hi"));
 }
 

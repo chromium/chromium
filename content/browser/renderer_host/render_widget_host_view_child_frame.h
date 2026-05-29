@@ -254,6 +254,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() const;
 
+  // Shows the view.
+  void Show();
+
  protected:
   friend class RenderWidgetHostView;
   friend class RenderWidgetHostViewChildFrameTest;

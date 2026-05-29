@@ -41,6 +41,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/page_visibility_state.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -538,7 +539,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     window_.pretendIsKeyWindow = YES;
     [window_.contentView addSubview:rwhv_cocoa_];
     [rwhv_cocoa_ setFrame:window_.contentView.bounds];
-    rwhv_mac_->Show();
+    rwhv_mac_->ShowWithVisibility(PageVisibilityState::kVisible);
 
     // The `MockRenderWidgetHostImpl` constructed above does not go through the
     // initilization steps seen by an actual RWH in the browser.  This test

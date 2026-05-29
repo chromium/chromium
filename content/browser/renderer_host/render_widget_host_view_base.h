@@ -111,7 +111,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // RenderWidgetHostView implementation.
   RenderWidgetHost* GetRenderWidgetHost() final;
   ui::TextInputClient* GetTextInputClient() override;
-  void Show() final;
   void WasUnOccluded() override {}
   void WasOccluded() override {}
   std::u16string GetSelectedText() override;
@@ -407,6 +406,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // the web contents should be hidden, e.g., because a background tab is
   // screen captured.
   virtual void ShowWithVisibility(PageVisibilityState page_visibility) = 0;
+
+  // Hides the view.
+  virtual void Hide() = 0;
 
   // Tells the View to destroy itself.
   virtual void Destroy();

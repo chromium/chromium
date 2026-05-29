@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Hide the view and evict the frame. This should trigger a copy of the stale
   // frame content.
-  GetRenderWidgetHostView()->Hide();
+  shell()->web_contents()->WasHidden();
   auto* dfh = GetDelegatedFrameHost();
   static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
       dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Unhidding the view should reset the stale content layer to show the new
   // frame content.
-  GetRenderWidgetHostView()->Show();
+  shell()->web_contents()->WasShown();
   EXPECT_FALSE(
       GetDelegatedFrameHost()->stale_content_layer_->has_external_content());
 }
@@ -199,14 +199,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Hide the view and evict the frame. This should trigger a copy of the stale
   // frame content.
-  GetRenderWidgetHostView()->Hide();
+  shell()->web_contents()->WasHidden();
   auto* dfh = GetDelegatedFrameHost();
   static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
       dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
   EXPECT_EQ(GetDelegatedFrameHost()->frame_eviction_state_,
             DelegatedFrameHost::FrameEvictionState::kPendingEvictionRequests);
 
-  GetRenderWidgetHostView()->Show();
+  shell()->web_contents()->WasShown();
   EXPECT_EQ(GetDelegatedFrameHost()->frame_eviction_state_,
             DelegatedFrameHost::FrameEvictionState::kNotStarted);
 
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Hide the view and evict the frame. This should not trigger a copy of the
   // stale frame content as the WebContentDelegate returns false.
-  GetRenderWidgetHostView()->Hide();
+  shell()->web_contents()->WasHidden();
   auto* dfh = GetDelegatedFrameHost();
   static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
       dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());

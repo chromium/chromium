@@ -32,7 +32,7 @@
 #include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/on_device_model/public/cpp/features.h"
@@ -554,11 +554,11 @@ TEST_F(AIRewriterTest, Priority) {
   EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
               ElementsAre("hi"));
 
-  main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
+  web_contents()->WasHidden();
   EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
               ElementsAre("Priority: background", "hi"));
 
-  main_rfh()->GetRenderWidgetHost()->GetView()->Show();
+  web_contents()->WasShown();
   EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
               ElementsAre("hi"));
 }

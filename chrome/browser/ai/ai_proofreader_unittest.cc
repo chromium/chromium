@@ -26,7 +26,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -470,11 +470,11 @@ TEST_F(AIProofreaderTest, Priority) {
 
   EXPECT_THAT(Proofread(*proofreader_remote, kInputString), ElementsAre("hi"));
 
-  main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
+  web_contents()->WasHidden();
   EXPECT_THAT(Proofread(*proofreader_remote, kInputString),
               ElementsAre("Priority: background", "hi"));
 
-  main_rfh()->GetRenderWidgetHost()->GetView()->Show();
+  web_contents()->WasShown();
   EXPECT_THAT(Proofread(*proofreader_remote, kInputString), ElementsAre("hi"));
 }
 

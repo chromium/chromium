@@ -5232,7 +5232,7 @@ void WebContentsImpl::SetPrimaryMainFrameViewVisibility(Visibility visibility) {
       static_cast<RenderWidgetHostViewBase*>(view)->ShowWithVisibility(
           page_visibility);
     } else if (visibility == Visibility::HIDDEN) {
-      view->Hide();
+      static_cast<RenderWidgetHostViewBase*>(view)->Hide();
     } else {
       view->WasOccluded();
     }
@@ -5648,13 +5648,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
 
       // TODO(brettw): It seems bogus that we have to call this function on the
       // newly created object and give it one of its own member variables.
-      RenderWidgetHostView* widget_view = new_view->CreateViewForWidget(
+      RenderWidgetHostViewBase* widget_view = new_view->CreateViewForWidget(
           new_contents_impl->GetRenderViewHost()->GetWidget());
       view_->SetOverscrollControllerEnabled(CanOverscrollContent());
       if (!renderer_started_hidden) {
         // RenderWidgets for frames always initialize as hidden. If the renderer
         // created this window as visible, then we show it here.
-        widget_view->Show();
+        widget_view->ShowWithVisibility(PageVisibilityState::kVisible);
       }
     }
     // Save the created window associated with the route so we can show it

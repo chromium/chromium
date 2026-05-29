@@ -815,10 +815,6 @@ bool RenderWidgetHostViewBase::HasSize() const {
   return true;
 }
 
-void RenderWidgetHostViewBase::Show() {
-  ShowWithVisibility(PageVisibilityState::kVisible);
-}
-
 void RenderWidgetHostViewBase::Destroy() {
   host_ = nullptr;
 }

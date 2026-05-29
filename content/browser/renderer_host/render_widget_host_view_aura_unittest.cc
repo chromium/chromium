@@ -851,8 +851,7 @@ class RenderWidgetHostViewAuraOverscrollTest
 
     InitViewForFrame(nullptr);
     view_->SetBounds(gfx::Rect(0, 0, 400, 200));
-    view_->Show();
-
+    view_->ShowWithVisibility(PageVisibilityState::kVisible);
   }
 
   // TODO(jdduke): Simulate ui::Events, injecting through the view.
@@ -1158,7 +1157,7 @@ TEST_F(RenderWidgetHostViewAuraTest, InitController) {
       stylus_handwriting::win::kStylusHandwritingWin);
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   EXPECT_FALSE(
       StylusHandwritingControllerWin::BindInterfacesCalledForTesting());
@@ -1355,7 +1354,7 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupClosesWhenParentMoves) {
 // Checks that IME-composition-event state is maintained correctly.
 TEST_F(RenderWidgetHostViewAuraTest, SetCompositionText) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   ui::CompositionText composition_text;
@@ -1400,7 +1399,7 @@ TEST_F(RenderWidgetHostViewAuraTest, SetCompositionText) {
 // node is changed.
 TEST_F(RenderWidgetHostViewAuraTest, FocusedNodeChanged) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   ui::CompositionText composition_text;
@@ -1416,7 +1415,7 @@ TEST_F(RenderWidgetHostViewAuraTest, FocusedNodeChanged) {
 // clicking to cancel the composition.
 TEST_F(RenderWidgetHostViewAuraTest, FinishCompositionByMouse) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   ui::CompositionText composition_text;
@@ -1462,7 +1461,7 @@ TEST_F(RenderWidgetHostViewAuraTest, FinishCompositionByMouse) {
 // Checks that WasOcculded/WasUnOccluded notifies RenderWidgetHostImpl.
 TEST_F(RenderWidgetHostViewAuraTest, WasOccluded) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_FALSE(widget_host_->IsHidden());
 
   // Verifies WasOccluded sets RenderWidgetHostImpl as hidden and WasUnOccluded
@@ -1476,7 +1475,7 @@ TEST_F(RenderWidgetHostViewAuraTest, WasOccluded) {
   // the state.
   view_->WasOccluded();
   EXPECT_TRUE(widget_host_->IsHidden());
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_FALSE(widget_host_->IsHidden());
 
   // WasOccluded and WasUnOccluded are not in pairs. The last one dictates
@@ -1499,7 +1498,7 @@ TEST_F(RenderWidgetHostViewAuraTest, WasOccluded) {
 // Checks that touch-event state is maintained correctly.
 TEST_F(RenderWidgetHostViewAuraTest, TouchEventState) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // Start with no touch-event handler in the renderer.
   auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
@@ -1610,7 +1609,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchEventState) {
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingWithKeyboardLockActiveForOneKey) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   auto test_hook = std::make_unique<TestScopedKeyboardHook>();
   test_hook->LockSpecificKey(ui::DomCode::US_A);
@@ -1659,7 +1658,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingWithKeyboardLockActiveForEscKey) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   auto test_hook = std::make_unique<TestScopedKeyboardHook>();
   test_hook->LockSpecificKey(ui::DomCode::ESCAPE);
@@ -1695,7 +1694,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingWithKeyboardLockActiveForAllKeys) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   auto test_hook = std::make_unique<TestScopedKeyboardHook>();
   test_hook->LockAllKeys();
@@ -1755,7 +1754,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
   InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
   ASSERT_NE(nullptr, view_->GetNativeView());
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   MockRenderWidgetHostImpl* parent_host =
       static_cast<MockRenderWidgetHostImpl*>(parent_host_);
@@ -1813,7 +1812,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -1900,7 +1899,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TimerBasedLatchingBreaksWithMouseMove) {
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -1965,7 +1964,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -2027,7 +2026,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -2080,7 +2079,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -2245,7 +2244,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MouseWheelScrollingAfterGFCWithoutGFS) {
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // When the user puts their fingers down a GFC is received. This will change
   // the touchpad scroll state in mouse wheel phase handler to may_begin.
@@ -2299,7 +2298,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // When the user puts their fingers down a GFC is receieved.
   ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
@@ -2487,7 +2486,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
 TEST_F(RenderWidgetHostViewAuraTest, MultiTouchPointsStates) {
   InitViewForFrame(parent_view_->GetNativeView());
   view_->Focus();
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   view_->UseFakeDispatcher();
 
   ui::TouchEvent press0(ui::EventType::kTouchPressed, gfx::Point(30, 30),
@@ -2601,7 +2600,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MultiTouchPointsStates) {
 // handler on the page.
 TEST_F(RenderWidgetHostViewAuraTest, TouchEventSyncAsync) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
@@ -2991,7 +2990,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
   cursor_client.AddObserver(view_);
 
   // Expect a message the first time the cursor is shown.
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   base::RunLoop().RunUntilIdle();
   GetAndResetDispatchedMessages();
   cursor_client.ShowCursor();
@@ -3028,7 +3027,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
 
   // Show the view. Since the cursor was invisible when the view was hidden,
   // no message should be sent.
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, GetAndResetDispatchedMessages().size());
 
@@ -3051,7 +3050,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
 
   // Show the view. Since the cursor was visible when the view was hidden,
   // a message is expected to be sent.
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   base::RunLoop().RunUntilIdle();
   auto events = GetAndResetDispatchedMessages();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3070,7 +3069,7 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateCursorIfOverSelf) {
   ParentHostView(view_, parent_view_);
   // Note that all coordinates in this test are screen coordinates.
   view_->SetBounds(gfx::Rect(60, 60, 100, 100));
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   aura::test::TestCursorClient cursor_client(
       parent_view_->GetNativeView()->GetRootWindow());
@@ -3141,7 +3140,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
   view_->SetSize(frame_size);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   cc::RenderFrameMetadata metadata;
   metadata.root_background_color = SkColors::kRed;
   view_->SetRenderFrameMetadata(metadata);
@@ -3184,7 +3183,7 @@ TEST_F(RenderWidgetHostViewAuraTest, Resize) {
   aura::client::ParentWindowWithContext(view_->GetNativeView(), root_window,
                                         gfx::Rect(size1),
                                         display::kInvalidDisplayId);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   view_->SetSize(size1);
   EXPECT_EQ(size1.ToString(), view_->GetRequestedRendererSize().ToString());
   EXPECT_TRUE(widget_host_->visual_properties_ack_pending_for_testing());
@@ -3305,7 +3304,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
 
   // Make each renderer visible, and swap a frame on it, then make it invisible.
   for (size_t i = 0; i < renderer_count; ++i) {
-    UNSAFE_TODO(views[i])->Show();
+    UNSAFE_TODO(views[i])->ShowWithVisibility(PageVisibilityState::kVisible);
     EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
     UNSAFE_TODO(views[i])->Hide();
   }
@@ -3317,14 +3316,14 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
     EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
 
   // LRU renderer is [0], make it visible, it should evict the next LRU [1].
-  views[0]->Show();
+  views[0]->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_HAS_FRAME(views[0]);
   EXPECT_EVICTED(UNSAFE_TODO(views[1]));
   views[0]->Hide();
 
   // LRU renderer is [1], which is still hidden. Showing it and submitting a
   // CompositorFrame to it should evict the next LRU [2].
-  UNSAFE_TODO(views[1])->Show();
+  UNSAFE_TODO(views[1])->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_HAS_FRAME(views[0]);
   EXPECT_HAS_FRAME(UNSAFE_TODO(views[1]));
   EXPECT_EVICTED(UNSAFE_TODO(views[2]));
@@ -3334,14 +3333,14 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   // Make all renderers but [0] visible and swap a frame on them, keep [0]
   // hidden, it becomes the LRU.
   for (size_t i = 1; i < renderer_count; ++i) {
-    UNSAFE_TODO(views[i])->Show();
+    UNSAFE_TODO(views[i])->ShowWithVisibility(PageVisibilityState::kVisible);
     EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
   }
   EXPECT_EVICTED(views[0]);
 
   // Make [0] visible, and swap a frame on it. Nothing should be evicted
   // although we're above the limit.
-  views[0]->Show();
+  views[0]->ShowWithVisibility(PageVisibilityState::kVisible);
   for (size_t i = 0; i < renderer_count; ++i)
     EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
 
@@ -3350,7 +3349,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   EXPECT_EVICTED(views[0]);
 
   // Make [0] visible, don't give it a frame, it should be waiting.
-  views[0]->Show();
+  views[0]->ShowWithVisibility(PageVisibilityState::kVisible);
   // Make [0] hidden, it should stop waiting.
   views[0]->Hide();
 
@@ -3359,7 +3358,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   gfx::Size size2(200, 200);
   UNSAFE_TODO(views[1])->SetSize(size2);
   // Show it, it should block until we give it a frame.
-  UNSAFE_TODO(views[1])->Show();
+  UNSAFE_TODO(views[1])->ShowWithVisibility(PageVisibilityState::kVisible);
   ASSERT_TRUE(
       UNSAFE_TODO(views[1])->window_->layer()->GetOldestAcceptableFallback());
   EXPECT_EQ(
@@ -3377,7 +3376,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   ParentHostView(view_, parent_view_);
   widget_host_->ClearVisualProperties();
   view_->SetSize(view_rect.size());
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // Defaults to full height of the view.
   EXPECT_EQ(100, view_->GetVisibleViewportSize().height());
@@ -3457,7 +3456,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchEventPositionsArentRounded) {
   const float kY = 50.23f;
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(),
                        ui::EventTimeForNow(),
@@ -5015,7 +5014,7 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateInsetsWithVirtualKeyboardEnabled) {
 TEST_F(RenderWidgetHostViewAuraTest,
        InvalidEventsHaveSyncHandlingDisabled) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
@@ -5053,7 +5052,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
 // Checks key event codes.
 TEST_F(RenderWidgetHostViewAuraTest, KeyEvent) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
                          ui::DomCode::US_A, ui::EF_NONE);
@@ -5068,7 +5067,7 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEvent) {
 
 TEST_F(RenderWidgetHostViewAuraTest, KeyEventsHandled) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::KeyEvent key_event1(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   view_->OnKeyEvent(&key_event1);
@@ -5094,7 +5093,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputRightAlt) {
   ResetArabicIndicDigitInputStateForTesting();
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kArabicIndicDigitInput);
@@ -5140,7 +5139,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputCtrlAndAlt) {
   ResetArabicIndicDigitInputStateForTesting();
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kArabicIndicDigitInput);
@@ -5171,7 +5170,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputCtrlAndAlt) {
 
 TEST_F(RenderWidgetHostViewAuraTest, SetCanScrollForWebMouseWheelEvent) {
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // Simulates the mouse wheel event with ctrl modifier applied.
   ui::MouseWheelEvent event(gfx::Vector2d(1, 1), gfx::Point(), gfx::Point(),
@@ -5245,7 +5244,7 @@ TEST_F(RenderWidgetHostViewAuraTest, SetCanScrollForWebMouseWheelEvent) {
 TEST_F(RenderWidgetHostViewAuraTest, CorrectNumberOfAcksAreDispatched) {
   InitViewForFrame(parent_view_->GetNativeView());
   view_->Focus();
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   view_->UseFakeDispatcher();
 
   ui::TouchEvent press1(ui::EventType::kTouchPressed, gfx::Point(30, 30),
@@ -5492,7 +5491,7 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   // Initialize the view.
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_TRUE(legacy_render_widget_host_HWND());
 
   // Simulate a tooltip.
@@ -5519,7 +5518,7 @@ TEST_F(RenderWidgetHostViewAuraTest, LegacyRenderWidgetHostHWNDAuraLookup) {
   // Initialize the view.
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ASSERT_TRUE(legacy_render_widget_host_HWND());
   HWND hwnd = legacy_render_widget_host_HWND()->hwnd();
@@ -5546,7 +5545,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   // Initialize the view.
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // Test scenario: 2 touch points, hide the view after down, show the view
   // after the 1st touch point up, hide the view again, then show after 2nd
@@ -5561,7 +5560,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_b,
                                               0);
   legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id_a, 0);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_b,
                                               0);
   view_->Hide();
@@ -5663,7 +5662,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
           TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   ui::ScrollEvent begin_scroll(
       ui::EventType::kScroll, gfx::Point(2, 2), ui::EventTimeForNow(), 0, 2, 2,
@@ -5734,7 +5733,7 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
   // unless the `view_` is parented directly to the root window.
   InitViewForFrame(parent_view_->GetNativeView()->GetRootWindow());
   view_->Focus();
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   aura::Window* root = view_->GetNativeView()->GetRootWindow();
   root->SetTargetHandler(view_);
@@ -5773,7 +5772,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchpadResendsFilteredGSB) {
       TestTimeouts::action_max_timeout());
 
   InitViewForFrame(nullptr);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // Simulate the browser paint-holding stage. This is a bit hacky since the
   // mock RWHI is self_owned, so it has already called InputRouter::MakeActive
@@ -5829,7 +5828,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
 
   // No LocalSurfaceId will be allocated if the view is hidden during
   // naviagtion.
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   // No new LocalSurfaceId should be allocated for the first navigation and the
   // timer should not fire.
   widget_host_->DidNavigate();
@@ -5871,13 +5870,13 @@ TEST_F(RenderWidgetHostViewAuraTest, AllocateLocalSurfaceIdOnEviction) {
   // View has to not be empty in order for frame eviction to be invoked.
   view_->SetSize(gfx::Size(54, 32));
   ParentHostView(view_, parent_view_);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   view_->Hide();
   auto* dfh = view_->delegated_frame_host_.get();
   static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
       dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_NE(id1, id2);
 }
@@ -5888,10 +5887,10 @@ TEST_F(RenderWidgetHostViewAuraTest, DropFallbackIfResizedWhileHidden) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
   view_->SetSize(gfx::Size(50, 30));
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   view_->Hide();
   view_->SetSize(gfx::Size(54, 32));
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   ASSERT_TRUE(view_->window_->layer()->GetOldestAcceptableFallback());
   EXPECT_EQ(*view_->window_->layer()->GetOldestAcceptableFallback(),
             *view_->window_->layer()->GetSurfaceId());
@@ -5902,7 +5901,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DropFallbackIfResizedWhileHidden) {
 TEST_F(RenderWidgetHostViewAuraTest, DontDropFallbackIfNotResizedWhileHidden) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   // Force fallback being set.
   view_->DidNavigate();
   view_->ResetFallbackToFirstNavigationSurface();
@@ -5910,7 +5909,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DontDropFallbackIfNotResizedWhileHidden) {
   viz::SurfaceId fallback =
       *view_->window_->layer()->GetOldestAcceptableFallback();
   view_->Hide();
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   ASSERT_TRUE(view_->window_->layer()->GetOldestAcceptableFallback());
   EXPECT_EQ(fallback, *view_->window_->layer()->GetSurfaceId());
 }
@@ -5921,7 +5920,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TakeFallbackContent) {
   // Initialize the first view.
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  view_->Show();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
   // Create and initialize the second view.
   FakeRenderWidgetHostViewAura* view2 = CreateView();
@@ -5944,7 +5943,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TakeFallbackContentForPrerender) {
   FakeRenderWidgetHostViewAura* old_view = CreateView(/*hidden = */ false);
   old_view->InitAsChild(nullptr);
   ParentHostView(old_view, parent_view_);
-  old_view->Show();
+  old_view->ShowWithVisibility(PageVisibilityState::kVisible);
   ASSERT_TRUE(old_view->IsShowing());
   ASSERT_TRUE(
       old_view->delegated_frame_host_client_->DelegatedFrameHostIsVisible());
@@ -6252,7 +6251,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
   // for RenderWidgetHostViewAura::GetInputMethod() to work.
   void InitializeAura() {
     InitViewForFrame(nullptr);
-    view_->Show();
+    view_->ShowWithVisibility(PageVisibilityState::kVisible);
   }
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
