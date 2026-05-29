@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -48,7 +49,10 @@ std::unique_ptr<KeyedService>
 AuthErrorObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  return std::make_unique<AuthErrorObserver>(profile);
+  // NOTE: Allow g_browser_process here as this class is initialized lazily with
+  // base::NoDestructor.
+  return std::make_unique<AuthErrorObserver>(g_browser_process->local_state(),
+                                             profile);
 }
 
 }  // namespace ash

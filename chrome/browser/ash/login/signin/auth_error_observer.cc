@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -29,7 +28,8 @@ bool AuthErrorObserver::ShouldObserve(Profile* profile) {
   return user && user->HasGaiaAccount();
 }
 
-AuthErrorObserver::AuthErrorObserver(Profile* profile) : profile_(profile) {
+AuthErrorObserver::AuthErrorObserver(PrefService* local_state, Profile* profile)
+    : local_state_(CHECK_DEREF(local_state)), profile_(profile) {
   DCHECK(ShouldObserve(profile));
 }
 
@@ -99,9 +99,8 @@ void AuthErrorObserver::HandleAuthError(
 
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         account_id, user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
-    // TODO(crbug.com/404133029): Avoid using g_browser_process here.
-    RecordReauthReason(CHECK_DEREF(g_browser_process->local_state()),
-                       account_id, ReauthReason::kSyncFailed);
+    RecordReauthReason(local_state_.get(), account_id,
+                       ReauthReason::kSyncFailed);
   } else if (auth_error.state() == GoogleServiceAuthError::NONE) {
     if (user->oauth_token_status() ==
         user_manager::User::OAUTH2_TOKEN_STATUS_INVALID) {
