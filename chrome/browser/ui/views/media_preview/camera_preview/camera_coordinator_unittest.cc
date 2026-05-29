@@ -19,7 +19,6 @@
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
 #include "components/media_effects/test/scoped_media_device_info.h"

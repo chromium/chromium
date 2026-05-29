@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/renderer_context_menu/views/toolkit_delegate_views.h"

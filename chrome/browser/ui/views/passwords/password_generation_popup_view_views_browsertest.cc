@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/browser/ui/views/passwords/password_generation_popup_view_views.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"

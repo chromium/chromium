@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_updated_confirmation_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_upgrade_bubble_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_ui.h"

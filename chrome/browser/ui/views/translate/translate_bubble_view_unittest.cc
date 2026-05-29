@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/translate/translate_language_search_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/translate_prefs.h"

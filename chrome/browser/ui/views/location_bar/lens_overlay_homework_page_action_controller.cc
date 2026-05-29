@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"

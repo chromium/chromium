@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"

@@ -54,7 +54,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/zoom/zoom_controller.h"

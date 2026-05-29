@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "components/viz/common/frame_timing_details.h"

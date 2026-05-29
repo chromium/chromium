@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_manager.h"

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"

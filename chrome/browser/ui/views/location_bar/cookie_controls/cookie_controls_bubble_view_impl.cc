@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"

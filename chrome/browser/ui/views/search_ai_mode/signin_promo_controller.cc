@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"

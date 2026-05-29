@@ -10,7 +10,6 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/first_run/first_run_internal.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/grit/branded_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 

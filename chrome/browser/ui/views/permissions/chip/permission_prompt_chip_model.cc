@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"

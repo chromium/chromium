@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/media_message_center/notification_theme.h"

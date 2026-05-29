@@ -11,7 +11,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"

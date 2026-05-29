@@ -9,7 +9,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"

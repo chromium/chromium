@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/media_router_metrics.h"

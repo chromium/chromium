@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/permissions/permission_indicators_tab_data.h"

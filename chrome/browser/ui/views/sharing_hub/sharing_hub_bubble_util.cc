@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 
 #include "base/functional/bind.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"

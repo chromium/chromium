@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tab_sharing/mock_tab_sharing_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/capture_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"

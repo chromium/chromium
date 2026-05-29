@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"

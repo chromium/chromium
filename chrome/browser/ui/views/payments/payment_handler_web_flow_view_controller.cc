@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"

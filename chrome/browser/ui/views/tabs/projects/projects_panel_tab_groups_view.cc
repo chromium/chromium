@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"

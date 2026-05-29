@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/record_replay/replay_recording_bubble_view.h"
 #include "chrome/browser/ui/views/record_replay/save_recording_bubble_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
 #include "components/record_replay/core/browser/task_store.h"
