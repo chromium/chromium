@@ -226,7 +226,9 @@ void ImageController::FlushDecodeTasksForTesting() {
 }
 
 void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
-  DCHECK(!cache_ || !cache);
+  if (cache_ == cache) {
+    return;
+  }
 
   if (!cache) {
     SetPredecodeImages(std::vector<DrawImage>(),
