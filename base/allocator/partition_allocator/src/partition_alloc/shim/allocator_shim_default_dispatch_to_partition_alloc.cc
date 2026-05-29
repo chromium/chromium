@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstring>
 #include <map>
 #include <string>
 #include <tuple>

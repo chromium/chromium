@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <cstring>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"

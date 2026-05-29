@@ -5,6 +5,7 @@
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 
 #include <atomic>
+#include <cstring>
 #include <type_traits>
 
 #include "partition_alloc/partition_alloc_base/check.h"

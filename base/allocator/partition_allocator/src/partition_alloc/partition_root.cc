@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <cstring>
 
 #include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
@@ -62,7 +63,6 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
                   kAllocInfoSize] = {addr, size};
 }
 #endif  // PA_BUILDFLAG(RECORD_ALLOC_INFO)
-
 
 }  // namespace partition_alloc::internal
 
@@ -1385,8 +1385,8 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // PA_BUILDFLAG(DCHECKS_ARE_ON)
-    // Write a new trailing cookie only when it is possible to keep track
-    // raw size (otherwise we wouldn't know where to look for it later).
+        // Write a new trailing cookie only when it is possible to keep track
+        // raw size (otherwise we wouldn't know where to look for it later).
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
     if (settings_.use_cookie) {
       internal::PartitionCookieWriteValue(PA_UNSAFE_TODO(

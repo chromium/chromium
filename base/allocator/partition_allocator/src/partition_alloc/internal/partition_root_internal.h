@@ -5,6 +5,8 @@
 #ifndef PARTITION_ALLOC_INTERNAL_PARTITION_ROOT_INTERNAL_H_
 #define PARTITION_ALLOC_INTERNAL_PARTITION_ROOT_INTERNAL_H_
 
+#include <cstring>
+
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/allocation_guard.h"
 #include "partition_alloc/bucket_lookup.h"

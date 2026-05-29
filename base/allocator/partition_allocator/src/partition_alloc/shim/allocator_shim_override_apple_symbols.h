@@ -9,6 +9,8 @@
 #ifndef PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_SYMBOLS_H_
 #define PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_SYMBOLS_H_
 
+#include <cstring>
+
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 

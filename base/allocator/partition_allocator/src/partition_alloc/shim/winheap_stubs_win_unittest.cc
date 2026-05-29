@@ -4,6 +4,8 @@
 
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
+#include <cstring>
+
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"

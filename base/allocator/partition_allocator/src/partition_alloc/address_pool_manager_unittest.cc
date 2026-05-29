@@ -6,6 +6,7 @@
 
 #include <array>
 #include <cstdint>
+#include <cstring>
 
 #include "partition_alloc/address_space_stats.h"
 #include "partition_alloc/build_config.h"

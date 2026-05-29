@@ -14,6 +14,7 @@
 #include <new.h>
 
 #include <climits>
+#include <cstring>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/bits.h"

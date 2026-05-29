@@ -4,6 +4,8 @@
 
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 
+#include <cstring>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace allocator_shim {

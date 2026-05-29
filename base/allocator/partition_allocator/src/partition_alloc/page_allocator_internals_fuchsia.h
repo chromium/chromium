@@ -20,6 +20,7 @@
 #include <lib/zx/vmo.h>
 
 #include <cstdint>
+#include <cstring>
 
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/fuchsia/fuchsia_logging.h"
