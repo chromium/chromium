@@ -1188,14 +1188,16 @@ public class CompositorViewHolder extends FrameLayout
             boolean keyboardInsetTransitionInProgress =
                     mDeferredWebContentsHeightInsetUpdate != null
                             || rawKeyboardInset != mAppliedWebContentsHeightInset;
+            boolean keyboardVisible =
+                    KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
 
-            if (!keyboardCompensationActive && !keyboardInsetTransitionInProgress) {
+            if (!keyboardCompensationActive
+                    && !keyboardInsetTransitionInProgress
+                    && !keyboardVisible) {
+                // Only refresh the baseline once keyboard state has fully settled.
                 mLastStableOutsetModeWebContentsHeight = webContentsHeight;
-            } else if (keyboardCompensationActive
-                    && mLastStableOutsetModeWebContentsHeight != null
-                    && webContentsHeight > mLastStableOutsetModeWebContentsHeight) {
-                // While keyboard compensation is active, WebContents height should never exceed
-                // the last stable baseline captured with compensation inactive.
+            } else if (mLastStableOutsetModeWebContentsHeight != null) {
+                // Clamp both directions while keyboard state is in flight.
                 webContentsHeight = mLastStableOutsetModeWebContentsHeight;
             }
         }

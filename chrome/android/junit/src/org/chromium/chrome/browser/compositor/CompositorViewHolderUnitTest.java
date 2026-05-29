@@ -853,6 +853,44 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
+    public void testWebContentResizeTriggeredDueToKeyboardDismiss_hasNoTransientUndershoot() {
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
+        reset(mWebContents);
+
+        int fullViewportHeight = 785;
+        int fullViewportWidth = 1080;
+        int intermediateViewportHeight = fullViewportHeight - 24;
+
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+
+        // Establish baseline before keyboard transition.
+        when(mMockKeyboard.isKeyboardShowing(any())).thenReturn(false);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        reset(mWebContents);
+
+        // Layout race during dismiss: view height shrinks while the inset supplier still reads 0
+        // and the IME animation is in progress.
+        when(mMockKeyboard.isKeyboardShowing(any())).thenReturn(true);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(24);
+        when(mCompositorViewHolder.getHeight()).thenReturn(intermediateViewportHeight);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        ArgumentCaptor<Integer> resizedHeightCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(mWebContents, atLeast(1))
+                .setSize(eq(fullViewportWidth), resizedHeightCaptor.capture());
+        for (int observedHeight : resizedHeightCaptor.getAllValues()) {
+            Assert.assertTrue(
+                    "Unexpected transient undershoot: "
+                            + observedHeight
+                            + " < "
+                            + fullViewportHeight,
+                    observedHeight >= fullViewportHeight);
+        }
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX)
     public void
             testWebContentResizeTriggeredDueToKeyboardTransition_withKillSwitch_usesLegacySizing() {
