@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "tts_controller_impl\.cc": [
+  "tts_controller_impl\\.cc": [
     # TtsControllerImpl uses GetLanguage(), which is not grd related.
     "+ui/base/l10n/l10n_util.h",
   ],

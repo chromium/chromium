@@ -42,12 +42,12 @@ include_rules = [
 specific_include_rules = {
   # These classes subclass `blink::WebView` and RenderWidget to inject behaviour
   # for web tests.
-  "web_(frame|view|widget)_test_proxy\.h": [
+  "web_(frame|view|widget)_test_proxy\\.h": [
     "+content/renderer",
   ],
   # cc files do not leak includes so they are allowed to reference the test
   # helpers that include //content/renderer, and //content/renderer itself.
-  ".*\.cc": [
+  ".*\\.cc": [
     "+content/renderer",
     "+content/web_test/renderer/web_frame_test_proxy.h",
     "+content/web_test/renderer/web_widget_test_proxy.h",

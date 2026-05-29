@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.cc": [
+  ".*test\\.cc": [
     # Allow inclusion of specific components that we depend on for testing
     "+ui/base/resource/resource_bundle.h",
   ],
@@ -14,7 +14,7 @@ specific_include_rules = {
     # Some test cases are not yet supported depending on platform.
     "+ui/ozone/public/ozone_platform.h",
   ],
-  "desktop_capturer_ash\.cc": [
+  "desktop_capturer_ash\\.cc": [
     "+ash/shell.h",
   ]
 }

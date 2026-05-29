@@ -11,7 +11,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "tracing_handler\.cc": [
+  "tracing_handler\\.cc": [
     "+third_party/perfetto"
   ]
 }

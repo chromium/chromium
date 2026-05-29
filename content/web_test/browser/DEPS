@@ -30,7 +30,7 @@ include_rules = [
 specific_include_rules = {
   # cc (and mm) files do not leak includes so they are allowed to reference
   # //content/browser.
-  ".*\.(cc|mm)": [
+  ".*\\.(cc|mm)": [
     "+content/browser",
     "+services/tracing/public/cpp",
     "+third_party/perfetto/include",

@@ -132,70 +132,70 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+components/os_crypt/async",
     "+services/network/test",
   ],
-  ".*test_utils?(_.+)?\.(h|cc)": [
+  ".*test_utils?(_.+)?\\.(h|cc)": [
     "+services/network/test",
   ],
-  "browser_interface_binders\.cc": [
+  "browser_interface_binders\\.cc": [
     "+services/webnn/public/mojom/features.mojom-features.h",
   ],
-  "browser_main_loop\.cc": [
+  "browser_main_loop\\.cc": [
     # TODO(crbug.com/40672800): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
     "+device/fido/hid/fido_hid_discovery.h",
   ],
-  "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
+  "browsing_data_(filter_builder|remover)_impl_unittest\\.cc": [
     "+services/network/cookie_manager.h",
   ],
-  "gpu_data_manager_visual_proxy_ozone_linux\.(cc|h)": [
+  "gpu_data_manager_visual_proxy_ozone_linux\\.(cc|h)": [
     "+ui/ozone/public/ozone_platform.h",
     "+ui/ozone/public/platform_gl_egl_utility.h",
   ],
-  "navigation_url_loader_impl_unittest\.cc": [
+  "navigation_url_loader_impl_unittest\\.cc": [
     "+services/network/cookie_settings.h",
     "+services/network/pervasive_resources/shared_resource_checker.h",
     "+services/network/resource_scheduler/resource_scheduler_client.h",
     "+services/network/url_loader.h",
     "+services/network/url_request_context_owner.h",
   ],
-  "network_service_browsertest\.cc": [
+  "network_service_browsertest\\.cc": [
     "+services/network/network_service.h",
   ],
-  "network_service_instance_impl\.cc": [
+  "network_service_instance_impl\\.cc": [
     # Used to instantiate a CertVerifierServiceFactory in the browser process.
     "+services/cert_verifier/cert_verifier_service_factory.h",
     # TODO(crbug.com/40672800): Remove.
     "+services/network/network_service.h",
   ],
-  "signed_exchange_handler_unittest\.cc": [
+  "signed_exchange_handler_unittest\\.cc": [
     "+services/network/network_context.h",
   ],
   # SiteInstance and BrowsingInstance should not depend on the types of things
   # that rely on them, like RenderFrameHostImpl or WebContentsImpl.
-  "(site_instance_impl|browsing_instance)\.(cc|h)": [
+  "(site_instance_impl|browsing_instance)\\.(cc|h)": [
     "-content/browser/renderer_host",
     "-content/browser/web_contents",
     # These files do not cycle back to SiteInstance or BrowsingInstance.
     "+content/browser/renderer_host/render_process_host_impl.h",
     "+content/browser/renderer_host/agent_scheduling_group_host.h",
   ],
-  "storage_partition_impl_unittest\.cc": [
+  "storage_partition_impl_unittest\\.cc": [
     "+services/network/cookie_manager.h",
     "+third_party/leveldatabase",
   ],
   "launch_as_mojo_client_browsertest.cc": [
     "+ui/ozone/public/ozone_switches.h",
   ],
-  "site_per_process_mac_browsertest\.mm": [
+  "site_per_process_mac_browsertest\\.mm": [
     "+content/app_shim_remote_cocoa",
   ],
-  "utility_sandbox_delegate_win\.cc": [
+  "utility_sandbox_delegate_win\\.cc": [
     "+content/utility/sandbox_delegate_data.mojom.h"
   ],
-  "utility_process_host\.cc": [
+  "utility_process_host\\.cc": [
     "+ui/ozone/public/ozone_switches.h",
   ],
   "web_app_system_media_controls_manager.cc": [

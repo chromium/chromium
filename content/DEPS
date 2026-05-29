@@ -137,7 +137,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_browsertest[a-z_]*\.(cc|h|mm)": [
+  ".*_browsertest[a-z_]*\\.(cc|h|mm)": [
     # content -> content/shell dependency is disallowed, except browser tests.
     "+content/shell/browser",
     "+content/shell/common",
@@ -146,7 +146,7 @@ specific_include_rules = {
     # content -> tools dependency is disallowed, except buildflags for switches.
     "+tools/v8_context_snapshot/buildflags.h",
   ],
-  ".*_unittest\.(cc|h|m)": [
+  ".*_unittest\\.(cc|h|m)": [
     # unittests can now embed fuzzing tests, and this dependency is needed to
     # access FUZZ_TEST macro and various domain generators.
     "+third_party/fuzztest",

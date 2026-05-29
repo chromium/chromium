@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "btm_bounce_detector_browsertest\.cc": [
+  "btm_bounce_detector_browsertest\\.cc": [
     "+device/fido",
   ],
 }

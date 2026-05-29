@@ -34,34 +34,34 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*\.cc": [
+  ".*\\.cc": [
     "+content/browser",
     "+content/common/content_constants_internal.h",
     "+content/common/features.h",
     "-content/browser/loader",
   ],
-  ".*\.mm": [
+  ".*\\.mm": [
     "+content/browser",
   ],
 
-  "authenticator_request_client_delegate\.*": [
+  "authenticator_request_client_delegate\\.*": [
     "+components/password_manager/core/common/credential_manager_types.h",
     "+device/fido",
   ],
-  "digital_credentials_cross_device\.h": [
+  "digital_credentials_cross_device\\.h": [
     "+device/fido",
   ],
-  "web_authentication_delegate\.*": [
+  "web_authentication_delegate\\.*": [
     "+device/fido",
   ],
 
-  "desktop_capture\.h": [
+  "desktop_capture\\.h": [
     # desktop_capture.h creates a DesktopCaptureOptions to share between
     # content/browser and chrome/browser.
     "+third_party/webrtc/modules/desktop_capture/desktop_capture_options.h",
   ],
 
-  ".*unittest\.cc": [
+  ".*unittest\\.cc": [
     "+services/network/network_service.h",
   ],
 }

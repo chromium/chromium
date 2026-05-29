@@ -7,13 +7,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "tracing_controller_impl\.cc": [
+  "tracing_controller_impl\\.cc": [
     "+v8"
   ],
-  "cast_tracing_agent\.": [
+  "cast_tracing_agent\\.": [
     "+chromecast/tracing"
   ],
-  "startup_tracing_controller\.cc": [
+  "startup_tracing_controller\\.cc": [
     "+third_party/perfetto"
   ]
 }

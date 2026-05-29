@@ -18,7 +18,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_(unit|browser)test\.(cc|mm)": [
+  ".*_(unit|browser)test\\.(cc|mm)": [
     "+content/browser/web_contents",
     "+content/public/browser/web_contents.h",
     "+content/public/browser/web_contents_delegate.h",
@@ -31,38 +31,38 @@ specific_include_rules = {
   "frame_token_message_queue.cc": [
     "+components/viz/common/quads/compositor_frame_metadata.h",
   ],
-  "embedded_frame_sink_provider_impl_unittest\.cc": [
+  "embedded_frame_sink_provider_impl_unittest\\.cc": [
     "+components/viz/service",
   ],
-  "navigation_transitions/navigation_transition_utils\.cc": [
+  "navigation_transitions/navigation_transition_utils\\.cc": [
     "+gpu/command_buffer/client/client_shared_image.h",
   ],
   "render_frame_host_impl.cc": [
     "+components/webauthn/core/browser/remote_validation.h",
   ],
-  "render_process_host_impl(_receiver_bindings)?\.cc": [
+  "render_process_host_impl(_receiver_bindings)?\\.cc": [
     "+google_apis/gaia/gaia_config.h",
     "+google_apis/gaia/gaia_switches.h",
     # TODO(crbug.com/41326135): Dependencies on ozone should be removed, as content
     # embedded in mus won't be able to talk to the native ozone.
     "+ui/ozone/public/ozone_switches.h",
   ],
-  "render_widget_host_view_aura_unittest\.cc": [
+  "render_widget_host_view_aura_unittest\\.cc": [
     "+ui/ozone/public/ozone_platform.h",
     "+components/stylus_handwriting/win/features.h",
   ],
-  "render_widget_host_view_aura\.cc": [
+  "render_widget_host_view_aura\\.cc": [
     "+ui/ozone/public/ozone_platform.h",
   ],
-  "render_widget_host_view_base\.cc": [
+  "render_widget_host_view_base\\.cc": [
     "+ui/ozone/public/ozone_platform.h",
   ],
-  "render_widget_host_view_mac\.mm": [
+  "render_widget_host_view_mac\\.mm": [
     "+components/device_event_log/device_event_log.h",
     "+content/public/browser/web_contents.h",
     "+ui/menus/cocoa/text_services_context_menu.h",
   ],
-  "render_widget_host_view_ios_uiview\.mm": [
+  "render_widget_host_view_ios_uiview\\.mm": [
     "+components/strings/grit/components_strings.h",
     "+ui/base/l10n/l10n_util_mac.h",
   ],
