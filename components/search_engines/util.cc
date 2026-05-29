@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
@@ -289,8 +290,11 @@ bool IsSearchEngineKeywordValidToUse(const std::u16string& keyword_input,
     return false;
   }
 
+  std::u16string normalized_keyword =
+      base::i18n::ToLower(keyword_input_trimmed);
+
   const TemplateURL* turl_with_keyword =
-      service->GetTemplateURLForKeyword(keyword_input_trimmed);
+      service->GetTemplateURLForKeyword(normalized_keyword);
   return (!turl_with_keyword || turl_with_keyword == existing_url);
 }
 

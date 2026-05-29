@@ -43,8 +43,14 @@ TEST_F(SearchEngineUtilTemplateUrlTest, IsSearchEngineKeywordValidToUse) {
   // Keyword already in use.
   EXPECT_FALSE(IsSearchEngineKeywordValidToUse(u"google", service, nullptr));
 
+  // Keyword already in use (case-insensitive).
+  EXPECT_FALSE(IsSearchEngineKeywordValidToUse(u"Google", service, nullptr));
+
   // Keyword in use, but by the same TemplateURL (editing).
   EXPECT_TRUE(IsSearchEngineKeywordValidToUse(u"google", service, t_url));
+
+  // Keyword in use by the same TemplateURL (editing, case-insensitive).
+  EXPECT_TRUE(IsSearchEngineKeywordValidToUse(u"Google", service, t_url));
 }
 
 TEST_F(SearchEngineUtilTemplateUrlTest, GetFixedUpSearchEngineUrl) {
