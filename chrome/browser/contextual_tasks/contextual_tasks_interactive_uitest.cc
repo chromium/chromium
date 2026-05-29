@@ -76,6 +76,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 class TestTabContextualizationController
     : public lens::TabContextualizationController {
  public:
+  inline static SkColor screenshot_color_ = SK_ColorRED;
+
   explicit TestTabContextualizationController(tabs::TabInterface* tab)
       : lens::TabContextualizationController(tab) {}
   ~TestTabContextualizationController() override = default;
@@ -85,7 +87,7 @@ class TestTabContextualizationController
       CaptureScreenshotCallback callback) override {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(100, 100, /*isOpaque=*/true);
-    bitmap.eraseColor(SK_ColorRED);
+    bitmap.eraseColor(screenshot_color_);
     std::move(callback).Run(bitmap);
   }
 
@@ -156,6 +158,15 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kContextualTasks},
         /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes});
+    tab_context_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting<
+                lens::TabContextualizationController>(base::BindRepeating(
+                [](tabs::TabInterface& tab)
+                    -> std::unique_ptr<lens::TabContextualizationController> {
+                  return std::make_unique<TestTabContextualizationController>(
+                      &tab);
+                }));
   }
   ~ContextualTasksInteractiveUiTest() override = default;
 
@@ -203,6 +214,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
     InteractiveBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -278,16 +290,6 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         contextual_search::kSearchContentSharingSettings,
         static_cast<int>(
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
-
-    tab_context_override_ =
-        tabs::TabFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting<
-                lens::TabContextualizationController>(base::BindRepeating(
-                [](tabs::TabInterface& tab)
-                    -> std::unique_ptr<lens::TabContextualizationController> {
-                  return std::make_unique<TestTabContextualizationController>(
-                      &tab);
-                }));
   }
 
   void TearDownOnMainThread() override {
@@ -509,25 +511,32 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   // from the browser to the inner WebContents.
   auto VerifySubmitQueryMessage(
       lens::LensOverlayRequestId::MediaType expected_media_type,
-      std::optional<std::string> expected_added_input_name = std::nullopt) {
+      std::optional<std::string> expected_added_input_name = std::nullopt,
+      int expected_message_index = 0) {
     return Steps(
-        // Wait until the inner WebContents receives a message starting with the
-        // SubmitQuery protobuf tag byte (18 / 0x12).
+        // Wait until the inner WebContents receives the message at the expected
+        // index.
         WaitForJsResult(kInnerWebContentsId,
-                        "() => window.receivedMessages.some(buf => new "
-                        "Uint8Array(buf)[0] === 18)"),
+                        base::StringPrintf(
+                            "() => window.receivedMessages.filter(buf => new "
+                            "Uint8Array(buf)[0] === 18).length > %d",
+                            expected_message_index)),
         WithElement(kInnerWebContentsId, [expected_media_type,
-                                          expected_added_input_name](
+                                          expected_added_input_name,
+                                          expected_message_index](
                                              ui::TrackedElement* el) {
           auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
           // Extract the binary protobuf message from JavaScript by converting
           // the matching ArrayBuffer into a base64 encoded string.
           std::string base64_msg =
-              content::EvalJs(web_contents,
-                              "btoa(Array.from(new "
-                              "Uint8Array(window.receivedMessages.find(buf => "
-                              "new Uint8Array(buf)[0] === 18))).map(b => "
-                              "String.fromCharCode(b)).join(''))")
+              content::EvalJs(
+                  web_contents,
+                  base::StringPrintf(
+                      "btoa(Array.from(new "
+                      "Uint8Array(window.receivedMessages.filter(buf => new "
+                      "Uint8Array(buf)[0] === 18)[%d])).map(b => "
+                      "String.fromCharCode(b)).join(''))",
+                      expected_message_index))
                   .ExtractString();
           std::string decoded_msg;
           ASSERT_TRUE(base::Base64Decode(base64_msg, &decoded_msg));
@@ -536,7 +545,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
 
           // Verify core query payload requirements.
           EXPECT_TRUE(message.has_submit_query());
-          EXPECT_EQ(
+          ASSERT_EQ(
               message.submit_query().payload().lens_image_query_data_size(), 1);
           EXPECT_EQ(message.submit_query()
                         .payload()
@@ -587,28 +596,35 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
       int expected_viewport_image_count,
       int expected_upload_image_count,
       int expected_upload_file_count,
-      std::vector<std::string> expected_added_input_names) {
+      std::vector<std::string> expected_added_input_names,
+      int expected_message_index = 0) {
     return Steps(
-        // Wait until the inner WebContents receives a message starting with the
-        // SubmitQuery protobuf tag byte (18 / 0x12).
+        // Wait until the inner WebContents receives the message at the expected
+        // index.
         WaitForJsResult(kInnerWebContentsId,
-                        "() => window.receivedMessages.some(buf => new "
-                        "Uint8Array(buf)[0] === 18)"),
+                        base::StringPrintf(
+                            "() => window.receivedMessages.filter(buf => new "
+                            "Uint8Array(buf)[0] === 18).length > %d",
+                            expected_message_index)),
         WithElement(kInnerWebContentsId, [expected_query_text,
                                           expected_viewport_image_count,
                                           expected_upload_image_count,
                                           expected_upload_file_count,
-                                          expected_added_input_names](
+                                          expected_added_input_names,
+                                          expected_message_index](
                                              ui::TrackedElement* el) {
           auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
           // Extract the binary protobuf message from JavaScript by converting
           // the matching ArrayBuffer into a base64 encoded string.
           std::string base64_msg =
-              content::EvalJs(web_contents,
-                              "btoa(Array.from(new "
-                              "Uint8Array(window.receivedMessages.find(buf => "
-                              "new Uint8Array(buf)[0] === 18))).map(b => "
-                              "String.fromCharCode(b)).join(''))")
+              content::EvalJs(
+                  web_contents,
+                  base::StringPrintf(
+                      "btoa(Array.from(new "
+                      "Uint8Array(window.receivedMessages.filter(buf => new "
+                      "Uint8Array(buf)[0] === 18)[%d])).map(b => "
+                      "String.fromCharCode(b)).join(''))",
+                      expected_message_index))
                   .ExtractString();
           std::string decoded_msg;
           ASSERT_TRUE(base::Base64Decode(base64_msg, &decoded_msg));
@@ -655,14 +671,15 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         }));
   }
 
-  auto InputText(const std::string& query_text) {
+  auto InputText(const ui::ElementIdentifier& contents_id,
+                 const std::string& query_text) {
     const DeepQuery kComposeboxInput = {"contextual-tasks-app", "#composebox",
                                         "#composebox", "#composeboxInput",
                                         "#input"};
     return Steps(
-        ClickElement(kPrimaryTab, kComposeboxInput),
+        ClickElement(contents_id, kComposeboxInput),
         ExecuteJsAt(
-            kPrimaryTab, kComposeboxInput,
+            contents_id, kComposeboxInput,
             base::StringPrintf(
                 "(el) => { "
                 "  el.value = '%s'; "
@@ -670,6 +687,10 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                 "  el.dispatchEvent(new Event('change', { bubbles: true })); "
                 "}",
                 query_text.c_str())));
+  }
+
+  auto InputText(const std::string& query_text) {
+    return InputText(kPrimaryTab, query_text);
   }
 
  protected:
@@ -1690,4 +1711,81 @@ IN_PROC_BROWSER_TEST_F(
                                "download.pdf"));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       RecontextualizationViewportChangeOnly) {
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const DeepQuery kComposeboxContainer = {"contextual-tasks-app", "#composebox",
+                                          "#composebox"};
+
+  const DeepQuery kFaviconGroup = {
+      "contextual-tasks-app", "#composebox",       "#composebox",
+      "#contextEntrypoint",   "#entrypointButton", "composebox-favicon-group"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  ContextualTasksPanelController* coordinator =
+      ContextualTasksPanelController::From(browser());
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), Do([&]() {
+        coordinator->Show(
+            false,
+            omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              kContextualTasksSidePanelWebViewElementId),
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
+                                 0),
+
+      // Wait for WebUI components to load.
+      WaitForElementExists(kSidePanelWebContentsId, kComposeboxContainer),
+
+      // Navigate active tab to a valid page.
+      NavigateWebContents(kPrimaryTab, kGenericPageUrl),
+
+      // Turn 1: The tab context is auto-suggested and submitted.
+      WaitForFaviconGroupWithTitle(kSidePanelWebContentsId, "title1.html"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+
+      // Verify Turn 1 query has the webpage and image context.
+      VerifySubmitQueryMessage(
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, /*expected_message_index=*/0),
+
+      // Turn 2: Submit a second query without changing the viewport screenshot.
+      InputText(kSidePanelWebContentsId, "second query"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+
+      // Verify Turn 2 query is sent, but since the viewport did not change,
+      // no new context upload occurred (0 uploads).
+      VerifyMultipleSubmitQueryMessage("second query",
+                                       /*expected_viewport_image_count=*/0,
+                                       /*expected_upload_image_count=*/0,
+                                       /*expected_upload_file_count=*/0,
+                                       /*expected_added_input_names=*/{},
+                                       /*expected_message_index=*/1),
+
+      // Turn 3: Change the viewport screenshot color (simulates
+      // scrolling/viewport change).
+      Do([&]() {
+        TestTabContextualizationController::screenshot_color_ = SK_ColorBLUE;
+      }),
+
+      // Submit a third query.
+      InputText(kSidePanelWebContentsId, "third query"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+
+      // Verify Turn 3 query is sent, and because the screenshot changed,
+      // a new context upload was triggered, producing a webpage and image
+      // context.
+      VerifySubmitQueryMessage(
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, /*expected_message_index=*/2));
+}
 }  // namespace contextual_tasks
