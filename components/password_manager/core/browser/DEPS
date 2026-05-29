@@ -45,18 +45,18 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "hsts_query_unittest\.cc": [
+  "hsts_query_unittest\\.cc": [
     "+services/network",
   ],
-  "http_credentials_cleaner_unittest\.cc": [
+  "http_credentials_cleaner_unittest\\.cc": [
     "+services/network",
   ],
-  "password_manager_blocklist_policy\.(cc|h)": [
+  "password_manager_blocklist_policy\\.(cc|h)": [
     "+components/keyed_service/content",
     "+components/policy/core/browser",
     "+components/user_prefs",
   ],
-  ".*unit_test\.cc": [
+  ".*unit_test\\.cc": [
     "+components/autofill/core/browser/test_utils",
   ],
 }

@@ -4,7 +4,7 @@ include_rules = [
 
 # TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
 specific_include_rules = {
-  "field_trial_util_unittest\.cc" : [
+  "field_trial_util_unittest\\.cc" : [
       "+services/network/public/cpp/shared_url_loader_factory.h",
   ],
 }

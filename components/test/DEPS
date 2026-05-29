@@ -11,10 +11,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "components_test_suite\.cc": [
+  "components_test_suite\\.cc": [
     "+mojo/core/embedder",
   ],
-  "ios_components_test_initializer\.cc": [
+  "ios_components_test_initializer\\.cc": [
     "+services/network/test",
   ],
 }

@@ -22,7 +22,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  '(.*_[a-z]*test\.cc|test_.*\.h)': [
+  '(.*_[a-z]*test\\.cc|test_.*\\.h)': [
     "+content/public/test",
   ],
 }

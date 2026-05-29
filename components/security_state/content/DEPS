@@ -13,10 +13,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "content_utils_browsertest\.cc": [
+  "content_utils_browsertest\\.cc": [
     "+content/shell",
   ],
-  "content_utils_unittest\.cc": [
+  "content_utils_unittest\\.cc": [
     "+crypto",
   ]
 }

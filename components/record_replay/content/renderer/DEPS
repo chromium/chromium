@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "record_replay_agent_browsertest\.cc": [
+  "record_replay_agent_browsertest\\.cc": [
     "+content/public/test/render_view_test.h",
   ],
 }

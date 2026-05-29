@@ -32,7 +32,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "renderer_settings_creation\.cc": [
+  "renderer_settings_creation\\.cc": [
     "+components/viz/common/switches.h",
   ],
 }

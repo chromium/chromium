@@ -10,12 +10,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "translation_manager_util\.(cc|h)": [
+  "translation_manager_util\\.(cc|h)": [
     "+components/language/core/browser/pref_names.h",
     "+components/user_prefs/user_prefs.h",
     "+ui/base/l10n/l10n_util.h",
   ],
-  "translator\.(cc|h)": [
+  "translator\\.(cc|h)": [
     "+third_party/blink/public/mojom",
   ],
 }

@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "demo_main\.cc": [
+  "demo_main\\.cc": [
     "+components/viz/demo/common",
     "+components/viz/demo/host",
     "+components/viz/demo/service",

@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ShareImageFileUtils\.java": [
+  "ShareImageFileUtils\\.java": [
     # TODO(crbug.com/40411113): remove this exemption.
     "+base/android/java/src/org/chromium/base/ApplicationStatus.java",
   ]

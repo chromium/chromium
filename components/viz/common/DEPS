@@ -15,14 +15,14 @@ include_rules = [
 
 specific_include_rules = {
   # DEPS for GLHelper and friends which are in the root common/ directory.
-  "(yuv_readback|gl_helper|gl_scaler).*\.(cc|h)": [
+  "(yuv_readback|gl_helper|gl_scaler).*\\.(cc|h)": [
     "+gpu/GLES2",
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
     "+gpu/command_buffer/service",
     "+gpu/ipc/common",
   ],
-  ".*(_unittest|_pixeltest|test_util)\.cc": [
+  ".*(_unittest|_pixeltest|test_util)\\.cc": [
     "+cc/test",
     "+components/viz/test",
     "+gpu/ipc/gl_in_process_context.h",
@@ -30,7 +30,7 @@ specific_include_rules = {
     "+media/base",
     "+ui/gl",
   ],
-  ".*_benchmark\.cc": [
+  ".*_benchmark\\.cc": [
     "+components/viz/test/test_gpu_service_holder.h",
     "+gpu/ipc/gl_in_process_context.h",
   ],

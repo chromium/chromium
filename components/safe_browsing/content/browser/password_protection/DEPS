@@ -18,7 +18,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_(unit|pixel|perf)?test.*\.(cc|h)": [
+  ".*_(unit|pixel|perf)?test.*\\.(cc|h)": [
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+content/public/test",
     "+services/network/test",

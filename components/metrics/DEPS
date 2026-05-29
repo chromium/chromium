@@ -28,7 +28,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "log_decoder\.cc": [
+  "log_decoder\\.cc": [
     "+third_party/protobuf/src/google/protobuf",
   ],
 }

@@ -15,7 +15,7 @@ include_rules = [
 
 # Allow the unit tests to depend on the network for testing purposes.
 specific_include_rules = {
-  "(test_configurator|.*_unittest\.(cc|h))" : [
+  "(test_configurator|.*_unittest\\.(cc|h))" : [
     "+net",
     "+services/network/public/cpp",
     "+services/network/public/mojom",

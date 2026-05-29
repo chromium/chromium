@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "inner_text_browsertest\.cc": [
+  "inner_text_browsertest\\.cc": [
     "+content/shell",
   ],
 }

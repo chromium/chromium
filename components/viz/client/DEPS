@@ -15,7 +15,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*unittest\.cc": [
+  ".*unittest\\.cc": [
     "+mojo/public/cpp",
   ],
 }

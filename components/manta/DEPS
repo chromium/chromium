@@ -14,11 +14,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_[a-z]*unittest\.cc": [
+  ".*_[a-z]*unittest\\.cc": [
     "+net/base/net_errors.h",
     "+services/network/test/test_url_loader_factory.h",
   ],
-  "base_provider_test_helper\.(cc|h)": [
+  "base_provider_test_helper\\.(cc|h)": [
     "+services/network/test/test_url_loader_factory.h",
   ],
 }

@@ -39,7 +39,7 @@ specific_include_rules = {
     "+components/autofill/core/common/autofill_regex_constants.h",
     "+components/autofill/core/common/autofill_regexes.h",
   ],
-  ".*test\.(cc|h)": [
+  ".*test\\.(cc|h)": [
     "+components/sync_preferences/testing_pref_service_syncable.h",
   ]
 }

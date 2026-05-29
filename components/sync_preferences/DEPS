@@ -17,7 +17,7 @@ include_rules = [
   "-ios",
 ]
 specific_include_rules = {
-  "common_syncable_prefs_database\.cc": [
+  "common_syncable_prefs_database\\.cc": [
     "+components/autofill",
     "+components/bookmarks",
     "+components/browsing_data",

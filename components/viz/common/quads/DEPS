@@ -14,13 +14,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "texture_mailbox\.cc": [
+  "texture_mailbox\\.cc": [
     "+third_party/khronos/GLES2",
   ],
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+cc/test",
   ],
-  "compositor_frame_metadata\.h" : [
+  "compositor_frame_metadata\\.h" : [
     "+third_party/blink/public/common/tokens/tokens.h",
   ]
 }

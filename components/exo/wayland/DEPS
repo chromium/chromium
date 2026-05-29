@@ -7,13 +7,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "zcr_remote_shell_impl_unittest\.cc": [
+  "zcr_remote_shell_impl_unittest\\.cc": [
     "+chromeos/ui/wm/features.h",
   ],
-  "zaura_shell\.cc": [
+  "zaura_shell\\.cc": [
     "+components/version_info/version_info.h",
   ],
-  "surface_augmentor_unittest\.cc": [
+  "surface_augmentor_unittest\\.cc": [
     "+ui/accessibility/aura/aura_window_properties.h",
   ],
 }

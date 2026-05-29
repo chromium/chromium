@@ -13,7 +13,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "site_isolation_policy_unittest\.cc": [
+  "site_isolation_policy_unittest\\.cc": [
     "+net/http/http_response_headers.h",
   ],
 }

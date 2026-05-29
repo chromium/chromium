@@ -40,29 +40,29 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_test_suite\.cc": [
+  ".*_test_suite\\.cc": [
     "+ui/gl/test",
   ],
 
-  "run_all_unittests\.cc": [
+  "run_all_unittests\\.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
 
-  "stub_gpu_service\.cc": [
+  "stub_gpu_service\\.cc": [
     "+components/persistent_cache/pending_backend.h",
   ],
 
-  "stub_gpu_service\.h": [
+  "stub_gpu_service\\.h": [
     "+components/vrp_flags/buildflags.h",
     "+media/media_buildflags.h",
   ],
 
-  "test_gpu_service_holder\.h": [
+  "test_gpu_service_holder\\.h": [
     "+gpu/ipc/gpu_in_process_thread_service.h",
     "+gpu/vulkan/buildflags.h",
   ],
 
-  "test_gpu_service_holder\.cc": [
+  "test_gpu_service_holder\\.cc": [
     "+gpu/command_buffer/service/dawn_context_provider.h",
     "+gpu/command_buffer/service/scheduler_sequence.h",
     "+gpu/command_buffer/service/service_utils.h",
@@ -72,7 +72,7 @@ specific_include_rules = {
     "+gpu/vulkan/vulkan_implementation.h",
   ],
 
-  "run_all_perftests\.cc": [
+  "run_all_perftests\\.cc": [
     "+mojo/core/embedder/embedder.h",
     "+skia/ext/event_tracer_impl.h",
   ],

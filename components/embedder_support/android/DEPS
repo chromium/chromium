@@ -23,13 +23,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  'PageContentProtoViewStructureBuilder\.java': [
+  'PageContentProtoViewStructureBuilder\\.java': [
     "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
   ],
-  'PageContentProtoViewStructureBuilderUnitTest\.java':[
+  'PageContentProtoViewStructureBuilderUnitTest\\.java':[
     "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
   ],
-  'PageContentProtoViewStructureBuilderTest\.java':[
+  'PageContentProtoViewStructureBuilderTest\\.java':[
      "+chrome/test/android",
   ],
 }

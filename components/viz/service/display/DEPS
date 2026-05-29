@@ -68,11 +68,11 @@ specific_include_rules = {
     # makes testing coverage harder/less clear, it should not be here.
     "+ui/gl/gl_switches.h",
   ],
-  "overlay_strategy_underlay_cast\.*" : [
+  "overlay_strategy_underlay_cast\\.*" : [
     "+chromecast/media/service/mojom/video_geometry_setter.mojom.h",
     "+mojo/public",
   ],
-  ".*_(unit|pixel|perf)test.*\.cc": [
+  ".*_(unit|pixel|perf)test.*\\.cc": [
     "+cc/test",
     "+components/viz/client",
     "+components/viz/service/display_embedder",
@@ -84,20 +84,20 @@ specific_include_rules = {
     "+ui/gl/gl_implementation.h",
     "+third_party/zlib/google",
   ],
-  "test_resource_factory\.*" : [
+  "test_resource_factory\\.*" : [
     "+components/viz/client",
     "+components/viz/test",
   ],
-  "delegated_ink_point_renderer\.*" : [
+  "delegated_ink_point_renderer\\.*" : [
     "+mojo/public/cpp/bindings",
   ],
-  "viz_pixel_test\.(cc|h)": [
+  "viz_pixel_test\\.(cc|h)": [
     "+components/viz/test",
   ],
-  "output_surface\.h": [
+  "output_surface\\.h": [
     "+mojo/public/cpp/bindings/pending_receiver.h",
   ],
-  "frame_interval_matchers_unittest\.cc": [
+  "frame_interval_matchers_unittest\\.cc": [
     "+perfetto/test/traced_value_test_support.h",
   ],
 }

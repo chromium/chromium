@@ -42,7 +42,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "android_app_communication_test_support_ash\.cc": [
+  "android_app_communication_test_support_ash\\.cc": [
     "+chromeos/ash/experiences/arc/test",
   ],
   "mock_payment_manifest_web_data_service.cc": [

@@ -26,10 +26,10 @@ include_rules = [
   "+ui/base/l10n",
 ]
 specific_include_rules = {
-  "sync_service_impl_unittest\.cc": [
+  "sync_service_impl_unittest\\.cc": [
     "+components/sync_preferences",
   ],
-  "device_statistics_request_impl\.cc": [
+  "device_statistics_request_impl\\.cc": [
     "+third_party/zlib/google",
   ]
 }

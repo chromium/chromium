@@ -14,7 +14,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "page_content_proto_provider_browsertest\.cc": [
+  "page_content_proto_provider_browsertest\\.cc": [
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
     "+components/page_content_annotations/content/page_context_fetcher.h",
@@ -22,16 +22,16 @@ specific_include_rules = {
     "+services/media_session/public/cpp/test/mock_media_session.h",
     "+services/metrics/public/cpp/ukm_builders.h",
   ],
-  "frame_metadata_observer_browsertest\.cc": [
+  "frame_metadata_observer_browsertest\\.cc": [
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
   ],
-  "page_content_metadata_observer_browsertest\.cc": [
+  "page_content_metadata_observer_browsertest\\.cc": [
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
     "+media/base/media_switches.h",
   ],
-  "page_content_proto_util_unittest\.cc": [
+  "page_content_proto_util_unittest\\.cc": [
     "+third_party/skia/include/core/SkColor.h",
   ],
   "page_content_metadata_observer.cc": [

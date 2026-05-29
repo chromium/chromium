@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "heap_profiler_controller_unittest\.cc": [
+  "heap_profiler_controller_unittest\\.cc": [
     "+components/metrics/public/mojom/call_stack_profile_collector.mojom.h",
     "+mojo/core/embedder",
     "+mojo/public/cpp",

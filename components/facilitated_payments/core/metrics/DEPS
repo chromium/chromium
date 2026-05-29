@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "facilitated_payments_metrics_unittest\.cc": [
+  "facilitated_payments_metrics_unittest\\.cc": [
     "+components/ukm",
   ],
 }

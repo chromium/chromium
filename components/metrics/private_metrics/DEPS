@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "puma_service\.cc": [
+  "puma_service\\.cc": [
     "+components/regional_capabilities/access/country_access_reason.h",
   ],
 }

@@ -9,15 +9,15 @@ include_rules = [
  ]
 
 specific_include_rules = {
-  "feed_stream\.(h|cc)": [
+  "feed_stream\\.(h|cc)": [
     "+components/feed/core/v2/tasks",
     "+components/feed/core/v2/stream",
     "+components/country_codes",
   ],
-  "stream_model\.(h|cc)": [
+  "stream_model\\.(h|cc)": [
     "+components/feed/core/v2/stream_model",
   ],
-  "web_feed_subscription_coordinator\.(h|cc)": [
+  "web_feed_subscription_coordinator\\.(h|cc)": [
     "+components/feed/core/v2/web_feed_subscriptions",
   ],
 }

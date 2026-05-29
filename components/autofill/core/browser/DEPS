@@ -72,48 +72,48 @@ specific_include_rules = {
     "+components/device_reauth",
     "+content/public/test",
   ],
-  "autofill_manager_unittest\.cc": [
+  "autofill_manager_unittest\\.cc": [
     "+components/ukm",
   ],
-  "autofill_metrics_unittest\.cc": [
+  "autofill_metrics_unittest\\.cc": [
     "+components/ukm",
   ],
-  "bnpl_manager_unittest\.cc": [
+  "bnpl_manager_unittest\\.cc": [
     "+components/ukm",
   ],
-  "(test_)?credit_card_fido_authenticator\.(cc|h)": [
+  "(test_)?credit_card_fido_authenticator\\.(cc|h)": [
     "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",
   ],
-  "(test_)?internal_authenticator\.h": [
+  "(test_)?internal_authenticator\\.h": [
     "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",
   ],
-  "autofill_driver\.h": [
+  "autofill_driver\\.h": [
     "+third_party/blink/public/mojom/webauthn",
   ],
-  "test_autofill_driver\.h": [
+  "test_autofill_driver\\.h": [
     "+components/autofill/content/browser/content_autofill_driver.h",
     "+components/autofill/core/browser/autofill_driver_router.h",
   ],
-  "credit_card_access_manager(_unittest)?\.cc": [
+  "credit_card_access_manager(_unittest)?\\.cc": [
     "+components/device_reauth",
     "+content/public/test",
   ],
-  "credit_card_save_manager_unittest\.cc": [
+  "credit_card_save_manager_unittest\\.cc": [
     "+components/ukm",
   ],
-  "test_autofill_client\.h": [
+  "test_autofill_client\\.h": [
     "+components/device_reauth",
     "+components/ukm",
   ],
-  "password_requirements_spec_fetcher_unittest\.cc": [
+  "password_requirements_spec_fetcher_unittest\\.cc": [
     "+services/network/test",
   ],
-  "autofill_image_fetcher(_unittest)?\.cc": [
+  "autofill_image_fetcher(_unittest)?\\.cc": [
     "+components/image_fetcher",
   ],
-  "autofill_optimization_guide(_unittest)?\.(cc|h)": [
+  "autofill_optimization_guide(_unittest)?\\.(cc|h)": [
     "+components/optimization_guide",
   ],
 }
