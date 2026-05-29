@@ -39,12 +39,6 @@ class ChromotingHostServicesClient final
       delete;
   ~ChromotingHostServicesClient() override;
 
-  // Configures the current process to allow it to communicate with the
-  // ChromotingHostServices server. Must be called once before using any
-  // instance of ChromotingHostServicesClient.
-  // Returns a boolean that indicates whether the initialization succeeded.
-  static bool Initialize();
-
   // Gets the ChromotingSessionServices. Always null-check before using it, as
   // nullptr will be returned if the connection could not be established.
   // Note that when the session is not remoted, you will still get a callable

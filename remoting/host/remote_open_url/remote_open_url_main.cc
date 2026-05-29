@@ -17,7 +17,6 @@
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
-#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/remote_open_url/remote_open_url_client.h"
 #include "remoting/host/resources.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -54,10 +53,6 @@ int RemoteOpenUrlMain(int argc, char** argv) {
 #endif  // BUILDFLAG(IS_LINUX)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
-
-  if (!ChromotingHostServicesClient::Initialize()) {
-    return kInitializationFailed;
-  }
 
   base::i18n::InitializeICU();
   LoadResources("");

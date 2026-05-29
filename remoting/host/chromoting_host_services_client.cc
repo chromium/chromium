@@ -22,16 +22,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "base/win/sid.h"
-#include "remoting/host/win/acl_util.h"
 #endif
 
 namespace remoting {
 
 namespace {
-
-bool g_initialized = false;
 
 mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
     const std::vector<mojo::NamedPlatformChannel::ServerName>& server_names) {
@@ -91,10 +86,7 @@ ChromotingHostServicesClient::ChromotingHostServicesClient(
     const std::vector<mojo::NamedPlatformChannel::ServerName>& server_names)
     : ChromotingHostServicesClient(
           base::Environment::Create(),
-          base::BindRepeating(&ConnectToServer, server_names)) {
-  DCHECK(g_initialized)
-      << "ChromotingHostServicesClient::Initialize() has not been called.";
-}
+          base::BindRepeating(&ConnectToServer, server_names)) {}
 
 ChromotingHostServicesClient::ChromotingHostServicesClient(
     std::unique_ptr<base::Environment> environment,
@@ -104,23 +96,6 @@ ChromotingHostServicesClient::ChromotingHostServicesClient(
 
 ChromotingHostServicesClient::~ChromotingHostServicesClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-// static
-bool ChromotingHostServicesClient::Initialize() {
-  DCHECK(!g_initialized);
-#if BUILDFLAG(IS_WIN)
-  // The network process running under the LocalService account verifies the
-  // session ID of the client process, which normally isn't allowed since the
-  // network process has reduced trust level, so we add an ACL to allow it.
-  g_initialized = AddProcessAccessRightForWellKnownSid(
-      base::win::WellKnownSid::kLocalService,
-      PROCESS_QUERY_LIMITED_INFORMATION);
-#else
-  // Other platforms don't need initialization.
-  g_initialized = true;
-#endif
-  return g_initialized;
 }
 
 mojom::ChromotingSessionServices*

@@ -19,7 +19,6 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
-#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
 #include "remoting/host/security_key/security_key_message_handler.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -32,16 +31,11 @@
 #include <windows.h>
 
 #include "remoting/base/crash/crash_reporting_breakpad.h"
-#include "remoting/host/win/acl_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
 int StartRemoteSecurityKey() {
-  if (!ChromotingHostServicesClient::Initialize()) {
-    return kInitializationFailed;
-  }
-
 #if BUILDFLAG(IS_WIN)
   // GetStdHandle() returns pseudo-handles for stdin and stdout even if
   // the hosting executable specifies "Windows" subsystem. However the returned

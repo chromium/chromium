@@ -385,7 +385,6 @@ MULTIPROCESS_TEST_MAIN(RemotingTestChromotingHostServicesClientProcess) {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   mojo::NamedPlatformChannel::ServerName server_name =
       cmd_line->GetSwitchValueNative(kServerNameSwitch);
-  ChromotingHostServicesClient::Initialize();
   ChromotingHostServicesClient client{server_name};
   client.GetSessionServices();
   base::RunLoop().Run();
