@@ -246,3 +246,59 @@ TEST_F(PasswordChangePageStabilityWaiterTest, MonitorDisconnects) {
   mock_page_stability_monitor_.Close();
   EXPECT_TRUE(future.Wait());
 }
+
+TEST_F(PasswordChangePageStabilityWaiterTest, DisconnectDuringNavigation) {
+  base::test::TestFuture<void> future;
+
+  // We expect two calls to CreatePageStabilityMonitor: one for the initial
+  // page and one after the navigation completes.
+  EXPECT_CALL(mock_chrome_render_frame_, CreatePageStabilityMonitor)
+      .Times(2)
+      .WillRepeatedly([&](mojo::PendingReceiver<PageStabilityMonitor> receiver,
+                          const actor::TaskId&, bool) {
+        mock_page_stability_monitor_.Close();
+        mock_page_stability_monitor_.Bind(std::move(receiver));
+      });
+
+  PageStabilityMonitor::NotifyWhenStableCallback monitor_callback1;
+  PageStabilityMonitor::NotifyWhenStableCallback monitor_callback2;
+
+  EXPECT_CALL(mock_page_stability_monitor_, NotifyWhenStable)
+      .WillOnce([&](base::TimeDelta,
+                    PageStabilityMonitor::NotifyWhenStableCallback cb) {
+        monitor_callback1 = std::move(cb);
+      })
+      .WillOnce([&](base::TimeDelta,
+                    PageStabilityMonitor::NotifyWhenStableCallback cb) {
+        monitor_callback2 = std::move(cb);
+      });
+
+  PasswordChangePageStabilityWaiter waiter(web_contents(), &stub_client_,
+                                           future.GetCallback());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !!monitor_callback1; }));
+
+  // Emulate a navigation starting.
+  waiter.DidStartNavigation(nullptr);
+
+  // Close the monitor to simulate disconnect due to navigation.
+  mock_page_stability_monitor_.Close();
+
+  // Spin the message loop to allow Mojo disconnect handlers to run.
+  base::RunLoop().RunUntilIdle();
+
+  // The callback should NOT have run yet since we are in the middle of a
+  // navigation.
+  EXPECT_FALSE(future.IsReady());
+
+  // Emulate navigation completion.
+  waiter.DidFinishNavigation(nullptr);
+
+  // A new monitor should be created.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !!monitor_callback2; }));
+
+  // Resolve the new monitor.
+  std::move(monitor_callback2).Run();
+
+  // Now the waiter should complete.
+  EXPECT_TRUE(future.Wait());
+}

@@ -48,6 +48,8 @@ class PasswordChangePageStabilityWaiter : public content::WebContentsObserver {
   ~PasswordChangePageStabilityWaiter() override;
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;

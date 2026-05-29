@@ -101,6 +101,18 @@ void PasswordChangePageStabilityWaiter::CheckPageStability() {
 PasswordChangePageStabilityWaiter::~PasswordChangePageStabilityWaiter() =
     default;
 
+void PasswordChangePageStabilityWaiter::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle && !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // Reset weak pointers to cancel pending checks since there is a navigation
+  // starting.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  monitor_.reset();
+}
+
 void PasswordChangePageStabilityWaiter::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle && (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -124,6 +136,14 @@ void PasswordChangePageStabilityWaiter::DidStopLoading() {
 }
 
 void PasswordChangePageStabilityWaiter::CheckVisualState() {
+  if (web_contents()->IsLoading()) {
+    // Reset weak pointers to cancel pending checks since there is a page
+    // loading.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    monitor_.reset();
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kUseDetachedWidget)) {
     OnAllChecksCompleted();
