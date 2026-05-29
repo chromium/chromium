@@ -1516,7 +1516,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   Shell::Get()->rapid_key_sequence_recorder()->Initialize();
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
-  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {
+  if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     event_rewriter_controller->SetKeyboardDrivenEventRewriterEnabled(true);
   }
 

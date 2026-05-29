@@ -422,7 +422,8 @@ void Preferences::RegisterProfilePrefs(
   // explicitly enabled for the signin screen (usually by policy).
   if (local_state.GetAllPrefStoresInitializationStatus() ==
           PrefService::INITIALIZATION_STATUS_WAITING ||
-      system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {
+      system::InputDeviceSettings::ForceKeyboardDrivenUINavigation(
+          local_state)) {
     allow_time_zone_resolve_by_default = false;
   }
 

@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -120,8 +121,10 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
           ash::prefs::kResolveDeviceTimezoneByGeolocationMethod);
   if (!device_pref || device_pref->IsDefaultValue()) {
     // CfM devices default to static timezone.
+    // TODO(crbug.com/404133899): Avoid using g_browser_process.
     bool keyboard_driven_oobe =
-        system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation();
+        system::InputDeviceSettings::ForceKeyboardDrivenUINavigation(
+            CHECK_DEREF(g_browser_process->local_state()));
     return keyboard_driven_oobe ? SHOULD_STOP : SHOULD_START;
   }
 

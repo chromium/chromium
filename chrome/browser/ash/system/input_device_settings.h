@@ -9,6 +9,8 @@
 
 #include "base/functional/callback_forward.h"
 
+class PrefService;
+
 namespace ash {
 namespace system {
 
@@ -215,7 +217,7 @@ class InputDeviceSettings {
 
   // Returns true if UI should implement enhanced keyboard support for cases
   // where other input devices like mouse are absent.
-  static bool ForceKeyboardDrivenUINavigation();
+  static bool ForceKeyboardDrivenUINavigation(const PrefService& local_state);
 
   // Calls |callback|, possibly asynchronously, after determining if a touchpad
   // is connected.

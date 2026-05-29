@@ -997,7 +997,8 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
     return;
   }
 
-  if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation()) {
+  if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation(
+          local_state_.get())) {
     arrow_key_traversal_enabler_.emplace();
     focus_ring_controller_ = std::make_unique<FocusRingController>();
     focus_ring_controller_->SetVisible(true);

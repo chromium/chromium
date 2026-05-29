@@ -15,6 +15,8 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_source.h"
 
+class PrefService;
+
 namespace display {
 enum class TabletState;
 }  // namespace display
@@ -71,7 +73,8 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
                  public ChromeKeyboardControllerClient::Observer {
  public:
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
-  CoreOobe(policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+  CoreOobe(const PrefService& local_state,
+           policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
            const std::string& display_type,
            base::WeakPtr<CoreOobeView> view);
   ~CoreOobe() override;

@@ -23,6 +23,7 @@
 namespace ash {
 
 CoreOobe::CoreOobe(
+    const PrefService& local_state,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     const std::string& display_type,
     base::WeakPtr<CoreOobeView> view)
@@ -53,8 +54,8 @@ CoreOobe::CoreOobe(
     }
   }
 
-  if (ash::system::InputDeviceSettings::Get()
-          ->ForceKeyboardDrivenUINavigation()) {
+  if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation(
+          local_state)) {
     if (view_) {
       view_->EnableKeyboardFlow();
     }
