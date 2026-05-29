@@ -364,6 +364,14 @@ void LensOverlaySnapshotController::FullscreenDidTransition(
 // snapshot is taken.
 UIEdgeInsets
 LensOverlaySnapshotController::GetContentInsetsOnSnapshotCapture() {
+  if (IsFullscreenRefactoringEnabled()) {
+    if (!is_bottom_omnibox_ || is_NTP_) {
+      return fullscreen_agent_->max_insets();
+    }
+    return fullscreen_agent_->IsEnabled() ? fullscreen_agent_->min_insets()
+                                          : fullscreen_agent_->max_insets();
+  }
+
   if (!is_bottom_omnibox_ || is_NTP_) {
     return fullscreen_controller_->GetMaxViewportInsets();
   }
@@ -377,6 +385,10 @@ UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
   // The NTP does not require snapshot insetting.
   if (is_NTP_) {
     return UIEdgeInsetsZero;
+  }
+
+  if (IsFullscreenRefactoringEnabled()) {
+    return GetContentInsetsOnSnapshotCapture();
   }
 
   // If the fullscreen mode is achieved by adjusting the size of the scroll

@@ -50,15 +50,19 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     result->set_content(R"(<html>
 <head>
   <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
     .green {
       background-color: #00ff00;
       width: 100%;
-      height: 100%;
+      height: 100lvh;
     }
     .blue {
       background-color: #0000ff;
       width: 100%;
-      height: 100%;
+      height: 150lvh;
     }
   </style>
 </head>
@@ -217,13 +221,15 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+      performAction:grey_scrollToContentEdgeWithStartPoint(
+                        kGREYContentEdgeBottom, 0.5, 0.5)];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Scroll up a little bit to make the tab grid button visible.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionUp, 50)];
+      performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionDown,
+                                                            0.5, 0.8)];
 
   // Go back to the tab grid.
   [ChromeEarlGreyUI openTabGrid];

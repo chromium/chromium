@@ -169,6 +169,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/first_run/omnibox_position/test:eg_app_support+eg2",
     "//ios/chrome/browser/first_run/public:utils",
     "//ios/chrome/browser/first_run/test:eg_app_support+eg2",
+    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test:eg_app_support+eg2",
     "//ios/chrome/browser/google_one/test:eg_app_support+eg2",
     "//ios/chrome/browser/history/ui_bundled:constants",

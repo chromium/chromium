@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/composebox/eg_tests/inttest/composebox_inttest_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/stub_history_coordinator_delegate.h"
 #import "ios/chrome/browser/main/model/browser_impl.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/stub_snackbar_coordinator_delegate.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -325,6 +327,9 @@
   StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
   BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser);
   DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser);
+  if (IsFullscreenRefactoringEnabled()) {
+    FullscreenBrowserAgent::CreateForBrowser(browser);
+  }
 
   // Insert a New Tab Page.
   std::unique_ptr<web::FakeWebState> webState =

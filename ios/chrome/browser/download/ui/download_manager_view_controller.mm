@@ -273,18 +273,29 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   UIView* view = self.view;
   UILayoutGuide* bottomMarginGuide = self.bottomMarginGuide;
   UIView* downloadRow = self.downloadControlsRow;
-  UILayoutGuide* secondaryToolbarGuide =
-      [self.layoutGuideCenter makeLayoutGuideNamed:kSecondaryToolbarGuide];
-  [view addLayoutGuide:secondaryToolbarGuide];
+  UIView* secondaryToolbar =
+      [self.layoutGuideCenter referencedViewUnderName:kSecondaryToolbarGuide];
+
+  if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [bottomMarginGuide.bottomAnchor
+          constraintEqualToAnchor:view.bottomAnchor],
+      [bottomMarginGuide.topAnchor
+          constraintEqualToAnchor:secondaryToolbar.topAnchor],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [bottomMarginGuide.bottomAnchor
+          constraintEqualToAnchor:view.bottomAnchor],
+      [bottomMarginGuide.heightAnchor
+          constraintGreaterThanOrEqualToAnchor:secondaryToolbar.heightAnchor],
+      [bottomMarginGuide.topAnchor
+          constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide
+                                                .bottomAnchor],
+    ]];
+  }
 
   [NSLayoutConstraint activateConstraints:@[
-    [bottomMarginGuide.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
-    [bottomMarginGuide.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:secondaryToolbarGuide
-                                                 .heightAnchor],
-    [bottomMarginGuide.topAnchor
-        constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide
-                                              .bottomAnchor],
     [downloadRow.bottomAnchor
         constraintEqualToAnchor:bottomMarginGuide.topAnchor
                        constant:-kRowVerticalMargins],

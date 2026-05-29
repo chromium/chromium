@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -96,6 +97,10 @@ void OpenManualFallback() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  // TODO(crbug.com/517130372): Re-enable when FullscreenRefactoring is fixed.
+  if ([self isRunningTest:@selector(testBrandingTwoImpressions)]) {
+    config.features_disabled.push_back(kFullscreenRefactoring);
+  }
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;

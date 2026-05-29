@@ -11202,6 +11202,21 @@
             ]
         }
     ],
+    "FullscreenRefactoring": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenRefactoring"
+                    ]
+                }
+            ]
+        }
+    ],
     "FullscreenSignInPromoUseDate": [
         {
             "platforms": [

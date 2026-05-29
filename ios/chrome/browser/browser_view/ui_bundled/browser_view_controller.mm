@@ -927,6 +927,9 @@ bool IsFullscreenNextIAEnabled() {
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  if (IsFullscreenRefactoringEnabled()) {
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  }
   [self registerNotifications];
 
   CGRect initialViewsRect = self.view.bounds;

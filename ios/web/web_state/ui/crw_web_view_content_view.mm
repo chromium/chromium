@@ -152,10 +152,12 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
       break;
     case WebViewResizingType::kFrame:
       // Update the scroll offset to account for the changing frame.
-      CGFloat topDelta = obscuredInsets.top - _obscuredInsets.top;
       CGPoint offset = _scrollView.contentOffset;
-      offset.y = std::max<CGFloat>(0, offset.y + topDelta);
-      _scrollView.contentOffset = offset;
+      if (offset.y > 0) {
+        CGFloat topDelta = obscuredInsets.top - _obscuredInsets.top;
+        offset.y = std::max<CGFloat>(0, offset.y + topDelta);
+        _scrollView.contentOffset = offset;
+      }
       // Update the frame.
       _webView.frame = UIEdgeInsetsInsetRect(self.frame, obscuredInsets);
       break;

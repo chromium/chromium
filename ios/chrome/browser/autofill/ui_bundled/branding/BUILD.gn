@@ -44,6 +44,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/autofill/manual_fill/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
