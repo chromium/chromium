@@ -11,10 +11,5 @@ sys.path.append(
 
 from fetch_archive import main
 
-_GIT_HOST = 'https://chromium.googlesource.com/chromium/src.git/'
-
 if __name__ == '__main__':
-  main(
-      _GIT_HOST +
-      '+log/refs/heads/main/third_party/fuchsia-gn-sdk?n=1&format=json',
-      _GIT_HOST + '+archive/{}/third_party/fuchsia-gn-sdk.tar.gz')
+  main('third_party/fuchsia-gn-sdk')

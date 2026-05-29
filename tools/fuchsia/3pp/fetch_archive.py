@@ -8,6 +8,8 @@ import json
 import os
 import urllib.request
 
+_GIT_HOST = 'https://chromium.googlesource.com/chromium/src.git'
+
 
 def _get_last_commit(commit_url):
   """Returns the last commit of build/fuchsia.
@@ -33,7 +35,16 @@ def _get_download_url(sha, archive_url):
   print(json.dumps(partial_manifest))
 
 
-def main(commit_url, archive_url):
+def main(path):
+  # Getting the last commit of the subfolder is now disallowed by
+  # chromium.googlesource.com/chromium/ without authentication. We retrieve
+  # the log from the root of the repository instead.
+  # See crbug.com/517362685.
+  # TODO(crbug.com/517362685): Revert to "+log/refs/heads/main/{path}"
+  # once the authentication requirement is removed.
+  commit_url = f'{_GIT_HOST}/+log?n=1&format=json'
+  archive_url = f'{_GIT_HOST}/+archive/{{}}/{path}.tar.gz'
+
   ap = argparse.ArgumentParser()
   sub = ap.add_subparsers()
 
