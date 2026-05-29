@@ -79,7 +79,6 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   bool HasFocus() override;
   void Hide() override;
   bool IsShowing() override;
-  void WasUnOccluded() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
 #if BUILDFLAG(IS_MAC)

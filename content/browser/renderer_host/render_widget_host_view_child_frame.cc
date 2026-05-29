@@ -298,10 +298,6 @@ void RenderWidgetHostViewChildFrame::WasOccluded() {
   Hide();
 }
 
-void RenderWidgetHostViewChildFrame::WasUnOccluded() {
-  Show();
-}
-
 gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
   gfx::Rect screen_space_rect;
   if (frame_connector_) {

@@ -98,7 +98,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void EnsureSurfaceSynchronizedForWebTest() override;
   void Hide() override;
   bool IsShowing() override;
-  void WasUnOccluded() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
   gfx::Size GetVisibleViewportSize() override;

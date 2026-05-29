@@ -5227,12 +5227,12 @@ void WebContentsImpl::SetPrimaryMainFrameViewVisibility(Visibility visibility) {
   // removes the |GetRenderViewHost()|; then when we actually destroy the
   // window, OnWindowPosChanged() notices and calls WasHidden() (which
   // calls us).
-  if (auto* view = GetRenderWidgetHostView()) {
+  if (auto* view =
+          static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())) {
     if (view_is_visible) {
-      static_cast<RenderWidgetHostViewBase*>(view)->ShowWithVisibility(
-          page_visibility);
+      view->ShowWithVisibility(page_visibility);
     } else if (visibility == Visibility::HIDDEN) {
-      static_cast<RenderWidgetHostViewBase*>(view)->Hide();
+      view->Hide();
     } else {
       view->WasOccluded();
     }

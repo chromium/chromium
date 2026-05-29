@@ -511,10 +511,6 @@ void RenderWidgetHostViewMac::Hide() {
   }
 }
 
-void RenderWidgetHostViewMac::WasUnOccluded() {
-  OnShowWithPageVisibility(PageVisibilityState::kVisible);
-}
-
 void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
     std::optional<blink::RecordContentToVisibleTimeRequest>
         tab_switch_start_state) {

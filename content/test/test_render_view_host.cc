@@ -137,13 +137,6 @@ bool TestRenderWidgetHostView::IsShowing() {
   return is_showing_;
 }
 
-void TestRenderWidgetHostView::WasUnOccluded() {
-  // Can't be unoccluded unless the page is visible.
-  page_visibility_ = PageVisibilityState::kVisible;
-  OnShowWithPageVisibility(page_visibility_);
-  is_occluded_ = false;
-}
-
 void TestRenderWidgetHostView::WasOccluded() {
   if (!host()->IsHidden()) {
     host()->WasHidden();

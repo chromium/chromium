@@ -678,10 +678,6 @@ bool RenderWidgetHostViewAura::IsShowing() {
   return window_->IsVisible();
 }
 
-void RenderWidgetHostViewAura::WasUnOccluded() {
-  ShowImpl(PageVisibilityState::kVisible);
-}
-
 void RenderWidgetHostViewAura::ShowImpl(PageVisibilityState page_visibility) {
   // OnShowWithPageVisibility will not call NotifyHostAndDelegateOnWasShown,
   // which updates `visibility_`, unless the host is hidden. Make sure no update

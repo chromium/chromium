@@ -1458,17 +1458,10 @@ TEST_F(RenderWidgetHostViewAuraTest, FinishCompositionByMouse) {
   EXPECT_TRUE(ime_message->keep_selection());
 }
 
-// Checks that WasOcculded/WasUnOccluded notifies RenderWidgetHostImpl.
+// Checks that WasOcculded/Show notifies RenderWidgetHostImpl.
 TEST_F(RenderWidgetHostViewAuraTest, WasOccluded) {
   InitViewForFrame(nullptr);
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
-  EXPECT_FALSE(widget_host_->IsHidden());
-
-  // Verifies WasOccluded sets RenderWidgetHostImpl as hidden and WasUnOccluded
-  // resets the state.
-  view_->WasOccluded();
-  EXPECT_TRUE(widget_host_->IsHidden());
-  view_->WasUnOccluded();
   EXPECT_FALSE(widget_host_->IsHidden());
 
   // Verifies WasOccluded sets RenderWidgetHostImpl as hidden and Show resets
@@ -1478,17 +1471,17 @@ TEST_F(RenderWidgetHostViewAuraTest, WasOccluded) {
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_FALSE(widget_host_->IsHidden());
 
-  // WasOccluded and WasUnOccluded are not in pairs. The last one dictates
+  // WasOccluded and Show are not in pairs. The last one dictates
   // the final state.
   for (int i = 0; i < 2; ++i) {
     view_->WasOccluded();
     EXPECT_TRUE(widget_host_->IsHidden());
   }
-  view_->WasUnOccluded();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_FALSE(widget_host_->IsHidden());
 
   for (int i = 0; i < 4; ++i) {
-    view_->WasUnOccluded();
+    view_->ShowWithVisibility(PageVisibilityState::kVisible);
     EXPECT_FALSE(widget_host_->IsHidden());
   }
   view_->WasOccluded();

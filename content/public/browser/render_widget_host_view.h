@@ -148,12 +148,6 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Whether the view is showing.
   virtual bool IsShowing() = 0;
 
-  // Indicates if the view is currently occluded (e.g, not visible because it's
-  // covered up by other windows), and as a result the view's renderer may be
-  // suspended. Calling Show()/Hide() overrides the state set by these methods.
-  virtual void WasUnOccluded() = 0;
-  virtual void WasOccluded() = 0;
-
   // Retrieve the bounds of the View, in screen coordinates.
   virtual gfx::Rect GetViewBounds() = 0;
 

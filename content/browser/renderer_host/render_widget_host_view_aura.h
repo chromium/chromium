@@ -131,7 +131,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool HasFocus() override;
   void Hide() override;
   bool IsShowing() override;
-  void WasUnOccluded() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
   bool IsPointerLocked() override;
