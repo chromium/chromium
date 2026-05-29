@@ -2964,6 +2964,125 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
   }
 }
 
+TEST_P(PageContentProtoUtilAutofillRedactionTest,
+       ConvertFormControlDataWithAutofill_RedactsOrphanFrameNestedLocalIframe) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitializeFeatureList(scoped_feature_list);
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto browser_context = std::make_unique<content::TestBrowserContext>();
+  content::WebContents::CreateParams create_params(browser_context.get());
+  std::unique_ptr<content::TestWebContents> web_contents(
+      content::TestWebContents::Create(create_params));
+  web_contents->NavigateAndCommit(GURL("https://example.com"));
+
+  auto* main_rfh = web_contents->GetPrimaryMainFrame();
+  auto main_frame_token = main_rfh->GetGlobalFrameToken();
+
+  // Create an orphan frame using a real subframe RFH.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("subframe");
+  auto orphan_frame_token = subframe->GetGlobalFrameToken();
+
+  // Create a nested subframe inside the orphan frame.
+  content::RenderFrameHost* nested_subframe =
+      content::RenderFrameHostTester::For(subframe)->AppendChild(
+          "nested_subframe");
+  auto nested_frame_token = nested_subframe->GetGlobalFrameToken();
+
+  auto provider =
+      std::make_unique<testing::NiceMock<MockAutofillAnnotationsProvider>>();
+  AutofillFieldMetadata metadata;
+  metadata.redaction_reason =
+      AutofillFieldRedactionReason::kShouldRedactForPayments;
+  // We use dom_node_id 123. Crucially, the AutofillAnnotationsProvider must be
+  // called with the nested subframe's token context, NOT the orphan root
+  // frame's token context.
+  EXPECT_CALL(*provider, GetAutofillFieldData(
+                             testing::Property(
+                                 &content::RenderFrameHost::GetGlobalFrameToken,
+                                 nested_frame_token),
+                             123, testing::_))
+      .WillRepeatedly(testing::Return(metadata));
+  AutofillAnnotationsProvider::SetFor(web_contents.get(), std::move(provider));
+
+  auto root_content = CreatePageContent();
+  // root_content is empty (no children), simulating a compromised main frame.
+
+  auto orphan_content = CreatePageContent();
+  // Inside the orphan_content root node, we add an iframe node pointing to the
+  // nested subframe.
+  auto iframe_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe);
+  iframe_node->content_attributes->iframe_data =
+      blink::mojom::AIPageContentIframeData::New();
+  // Using a RemoteFrameToken for simplicity of layout representation
+  iframe_node->content_attributes->iframe_data->frame_token =
+      blink::RemoteFrameToken(nested_frame_token.frame_token.value());
+
+  // The child elements of the iframe represent the document content of the
+  // nested subframe
+  auto form_control_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kFormControl);
+  form_control_node->content_attributes->dom_node_id = 123;
+  form_control_node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  form_control_node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(10, 20, 30, 40);
+  form_control_node->content_attributes->form_control_data =
+      blink::mojom::AIPageContentFormControlData::New();
+  form_control_node->content_attributes->form_control_data->field_value =
+      "sensitive value";
+
+  iframe_node->children_nodes.emplace_back(std::move(form_control_node));
+  orphan_content->root_node->children_nodes.emplace_back(
+      std::move(iframe_node));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[orphan_frame_token] = std::move(orphan_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        if (token.value() == main_frame_token.frame_token.value()) {
+          render_frame_info.global_frame_token = main_frame_token;
+        } else if (token.value() == orphan_frame_token.frame_token.value()) {
+          render_frame_info.global_frame_token = orphan_frame_token;
+        } else if (token.value() == nested_frame_token.frame_token.value()) {
+          render_frame_info.global_frame_token = nested_frame_token;
+        } else {
+          return std::nullopt;
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode = blink::mojom::AIPageContentMode::kActionableElements;
+  options->include_sensitive_payments_for_redaction =
+      ShouldEnableCreditCardRedaction();
+  options->include_otps_for_redaction = ShouldEnableOtpRedaction();
+
+  AIPageContentResult result;
+  FrameTokenSet frame_token_set;
+  ASSERT_TRUE(ConvertAIPageContentToProto(
+                  std::move(options), main_frame_token, page_content_map,
+                  get_render_frame_info, frame_token_set, result)
+                  .has_value());
+
+  if (ShouldEnableCreditCardRedaction()) {
+    ASSERT_EQ(result.visible_bounding_boxes_for_redaction.size(), 1u);
+    EXPECT_EQ(result.visible_bounding_boxes_for_redaction[0],
+              gfx::Rect(10, 20, 30, 40));
+  } else {
+    EXPECT_TRUE(result.visible_bounding_boxes_for_redaction.empty());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContentProtoUtilAutofillRedactionTest,
                          testing::Values(

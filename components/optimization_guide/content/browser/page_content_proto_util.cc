@@ -1410,9 +1410,21 @@ class Converter {
       }
     }
 
+    content::GlobalRenderFrameHostToken child_frame_token = frame_token;
+    if (mojom_attributes.attribute_type ==
+        blink::mojom::AIPageContentAttributeType::kIframe) {
+      if (mojom_attributes.iframe_data) {
+        if (auto render_frame_info = get_render_frame_info_.Run(
+                frame_token.child_id,
+                mojom_attributes.iframe_data->frame_token)) {
+          child_frame_token = render_frame_info->global_frame_token;
+        }
+      }
+    }
+
     // Recurse into children.
     for (const auto& child : mojom_node.children_nodes) {
-      CollectRedactionBoxesForOrphanNode(frame_token, *child);
+      CollectRedactionBoxesForOrphanNode(child_frame_token, *child);
     }
   }
 
