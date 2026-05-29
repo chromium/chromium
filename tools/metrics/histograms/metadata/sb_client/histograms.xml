@@ -1571,6 +1571,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.Viewport.PixelsPerInch" units="ppi"
+    expires_after="2027-05-27">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The pixels per inch (PPI) of the display where the viewport is located. It
+    is recorded whenever CSD checks if visual features can be extracted.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.Viewport.Width" units="pixels"
     expires_after="2026-12-19">
   <owner>andysjlim@chromium.org</owner>

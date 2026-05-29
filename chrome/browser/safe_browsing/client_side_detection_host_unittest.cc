@@ -933,6 +933,8 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
       false, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.Viewport.PixelsPerInch",
+                                    1);
 }
 
 TEST_F(ClientSideDetectionHostTest, UserReportSkipsAllowlist) {

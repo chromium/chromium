@@ -78,6 +78,8 @@
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1685,10 +1687,10 @@ ClientSideDetectionHost::DetermineVisualFeaturesExtraction() {
   int viewport_height = -1;
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result;
-#if BUILDFLAG(IS_ANDROID)
-  gfx::Size size;
   content::RenderWidgetHostView* view =
       web_contents()->GetRenderWidgetHostView();
+#if BUILDFLAG(IS_ANDROID)
+  gfx::Size size;
   // native view can be null in tests.
   if (view && view->GetNativeView()) {
     gfx::SizeF viewport = view->GetNativeView()->viewport_size();
@@ -1701,8 +1703,6 @@ ClientSideDetectionHost::DetermineVisualFeaturesExtraction() {
       web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
 #else
   gfx::Size size;
-  content::RenderWidgetHostView* view =
-      web_contents()->GetRenderWidgetHostView();
   if (view) {
     size = view->GetVisibleViewportSize();
     viewport_width = size.width();
@@ -1715,6 +1715,16 @@ ClientSideDetectionHost::DetermineVisualFeaturesExtraction() {
 #endif
   base::UmaHistogramSparse("SBClientPhishing.Viewport.Width", viewport_width);
   base::UmaHistogramSparse("SBClientPhishing.Viewport.Height", viewport_height);
+
+  float ppi = 0;
+  if (view && view->GetNativeView() && display::Screen::Get()) {
+    ppi = display::Screen::Get()
+              ->GetDisplayNearestView(view->GetNativeView())
+              .GetPixelsPerInchX();
+  }
+  base::UmaHistogramSparse("SBClientPhishing.Viewport.PixelsPerInch",
+                           static_cast<int>(ppi));
+
   if (viewport_width <= 0xFFFF && viewport_width >= 0 &&
       viewport_height <= 0xFFFF && viewport_height >= 0) {
     int32_t encoded_resolution = (viewport_width << 16) | viewport_height;
