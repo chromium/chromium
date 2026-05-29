@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_card_cell.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -819,8 +820,12 @@ CGFloat GPayIconTopAnchorOffset() {
   UIImage* icon;
   // `kGooglePaySymbol` only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  icon = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kGPayIconWidth));
+  NSString* symbol = base::FeatureList::IsEnabled(
+                         autofill::features::kAutofillEnableGradientGoogleLogos)
+                         ? kGooglePayV2Symbol
+                         : kGooglePaySymbol;
+  icon =
+      MakeSymbolMulticolor(CustomSymbolWithPointSize(symbol, kGPayIconWidth));
 #else
   icon = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

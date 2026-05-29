@@ -505,12 +505,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UIImage*)logoIconImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableWalletBranding)
-          ? kGoogleWalletSymbol
-          : kGooglePaySymbol,
-      kGoogleWalletLogoHeight));
+  NSString* symbol = base::FeatureList::IsEnabled(
+                         autofill::features::kAutofillEnableGradientGoogleLogos)
+                         ? kGoogleWalletV2Symbol
+                         : kGoogleWalletSymbol;
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(symbol, kGoogleWalletLogoHeight));
 #else
   return self.logoIcon;
 #endif

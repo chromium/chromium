@@ -27,10 +27,14 @@ extern NSString* const kGoogleIconSymbol;
 extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kGoogleMapsSymbol;
 extern NSString* const kGooglePaySymbol;
+extern NSString* const kGooglePayV2Symbol;
 extern NSString* const kGooglePhotosSymbol;
 extern NSString* const kGoogleWalletIconSymbol;
+extern NSString* const kGoogleWalletIconV2Symbol;
 extern NSString* const kGoogleWalletSymbol;
+extern NSString* const kGoogleWalletV2Symbol;
 extern NSString* const kGPayPillIconSymbol;
+extern NSString* const kGPayPillIconV2Symbol;
 extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kPageInsightsSymbol;
 #else

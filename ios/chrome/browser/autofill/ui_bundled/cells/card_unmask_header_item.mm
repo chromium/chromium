@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/cells/card_unmask_header_item.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
@@ -176,8 +177,12 @@ const CGFloat kGooglePayBadgeHeight = 16;
 // UIUserInterfaceStyle (light/dark mode).
 - (UIImage*)googlePayBadgeImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  NSString* symbol = base::FeatureList::IsEnabled(
+                         autofill::features::kAutofillEnableGradientGoogleLogos)
+                         ? kGooglePayV2Symbol
+                         : kGooglePaySymbol;
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayBadgeHeight));
+      CustomSymbolWithPointSize(symbol, kGooglePayBadgeHeight));
 #else
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

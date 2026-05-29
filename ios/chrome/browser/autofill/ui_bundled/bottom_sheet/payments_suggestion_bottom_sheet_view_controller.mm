@@ -300,9 +300,15 @@ CGFloat const kTitleLogoHeight = 32;
 - (UIImage*)titleImage {
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      self.showGooglePayLogo ? kGooglePaySymbol : kMulticolorChromeballSymbol,
-      kTitleLogoHeight));
+  NSString* symbol = kMulticolorChromeballSymbol;
+  if (self.showGooglePayLogo) {
+    symbol = base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillEnableGradientGoogleLogos)
+                 ? kGooglePayV2Symbol
+                 : kGooglePaySymbol;
+  }
+  image =
+      MakeSymbolMulticolor(CustomSymbolWithPointSize(symbol, kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);

@@ -16,10 +16,14 @@ NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kGoogleMapsSymbol = @"google_maps";
 NSString* const kGooglePaySymbol = @"google_pay";
+NSString* const kGooglePayV2Symbol = @"google_pay_v2";
 NSString* const kGoogleWalletIconSymbol = @"google_wallet_icon";
+NSString* const kGoogleWalletIconV2Symbol = @"google_wallet_icon_v2";
 NSString* const kGoogleWalletSymbol = @"google_wallet";
+NSString* const kGoogleWalletV2Symbol = @"google_wallet_v2";
 NSString* const kGooglePhotosSymbol = @"google_photos";
 NSString* const kGPayPillIconSymbol = @"gpay_pill_icon";
+NSString* const kGPayPillIconV2Symbol = @"gpay_pill_icon_v2";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kPageInsightsSymbol = @"page_insights";
 #else
