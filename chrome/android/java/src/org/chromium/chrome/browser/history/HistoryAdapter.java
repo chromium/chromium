@@ -477,8 +477,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 && mProfile != null
                 && FindsFeatures.sEnableHistoryPageOptIn.getValue()) {
             checkFindsPromoShowCriteriaAsync(mProfile);
-        } else if (FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
-            updateFindsPromoVisibility();
         }
     }
 
@@ -784,7 +782,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 profile,
                 (show) -> {
                     mFindsPromoShowEligible = show;
-                    if (show) {
+                    if (show || FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
                         // Only update the Finds Promo visibility here since there is no need to
                         // rerun this logic if there are any dynamic changes to other promos.
                         updateFindsPromoVisibility();
