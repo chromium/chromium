@@ -1544,6 +1544,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManagerTest.java",
       "src/org/chromium/chrome/browser/messages/ChromeMessageAutodismissDurationProviderTest.java",
       "src/org/chromium/chrome/browser/messages/ChromeMessageQueueMediatorTest.java",
+      "src/org/chromium/chrome/browser/messages/MessageContainerCoordinatorTest.java",
       "src/org/chromium/chrome/browser/metrics/UmaUtilsTest.java",
       "src/org/chromium/chrome/browser/metrics/VariationsSessionTest.java",
       "src/org/chromium/chrome/browser/modaldialog/ChromeTabModalPresenterUnitTest.java",
