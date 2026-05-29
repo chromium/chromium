@@ -32,6 +32,6 @@ found in the LICENSE file.
         android:src="@drawable/ic_close"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/close"
-        android:scaleType="fitCenter"/>
+        android:scaleType="center"/>
 
 </LinearLayout>

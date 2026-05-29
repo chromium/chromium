@@ -18,7 +18,7 @@ found in the LICENSE file.
     <dimen name="extensions_menu_request_access_padding">12dp</dimen>
     <dimen name="extensions_menu_request_access_corner_radius">12dp</dimen>
     <dimen name="extensions_menu_header_icon_size">24dp</dimen>
-    <dimen name="extensions_menu_header_button_size">24dp</dimen>
+    <dimen name="extensions_menu_header_button_size">@dimen/min_touch_target_size</dimen>
     <dimen name="extensions_menu_divider_vertical_margin">0dp</dimen>
     <dimen name="extensions_menu_footer_min_height">40dp</dimen>
     <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
