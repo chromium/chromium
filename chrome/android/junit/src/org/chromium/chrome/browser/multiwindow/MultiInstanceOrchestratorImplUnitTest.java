@@ -77,6 +77,7 @@ import java.util.List;
 /** Unit tests for {@link MultiInstanceOrchestratorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
+@EnableFeatures(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
 public class MultiInstanceOrchestratorImplUnitTest {
     private static final int SOURCE_WINDOW_ID = 0;
     private static final int DEST_WINDOW_ID = 1;

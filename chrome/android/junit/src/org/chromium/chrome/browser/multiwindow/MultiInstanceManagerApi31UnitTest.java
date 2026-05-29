@@ -134,6 +134,7 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
 @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
@@ -1603,6 +1604,107 @@ public class MultiInstanceManagerApi31UnitTest {
         int flags = intent.getFlags();
         assertFalse(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be set.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testOpenWindow_opensFullScreen_DifferentModel_RegularToIncognito() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setupTwoInstances();
+        ChromeMultiInstancePersistentStore.writeProfileType(0, SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_2);
+        ChromeMultiInstancePersistentStore.writeProfileType(
+                INSTANCE_ID_2, SupportedProfileType.OFF_THE_RECORD);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertNotEquals("Intent should not be null.", null, intent);
+        int flags = intent.getFlags();
+        assertFalse(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be set for different models.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testOpenWindow_opensFullScreen_DifferentModel_IncognitoToRegular() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setupActivityForCreateNewWindowIntent(mTabbedActivityTask62);
+        when(mTabbedActivityTask62.isIncognitoWindow()).thenReturn(true);
+        var manager = spy(createTestMultiInstanceManager(mTabbedActivityTask62));
+        manager.mTestBuildInstancesList = true;
+
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62, true));
+        manager.initialize(0, TASK_ID_62, SupportedProfileType.OFF_THE_RECORD);
+
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_2);
+        ChromeMultiInstancePersistentStore.writeProfileType(
+                INSTANCE_ID_2, SupportedProfileType.REGULAR);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        manager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
+
+        verify(mTabbedActivityTask62).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertNotEquals("Intent should not be null.", null, intent);
+        int flags = intent.getFlags();
+        assertFalse(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be set for different models.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testOpenWindow_opensAdjacently_SameModel_IncognitoToIncognito() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setupActivityForCreateNewWindowIntent(mTabbedActivityTask62);
+        when(mTabbedActivityTask62.isIncognitoWindow()).thenReturn(true);
+        var manager = spy(createTestMultiInstanceManager(mTabbedActivityTask62));
+        manager.mTestBuildInstancesList = true;
+
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62, true));
+        manager.initialize(0, TASK_ID_62, SupportedProfileType.OFF_THE_RECORD);
+
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_2);
+        ChromeMultiInstancePersistentStore.writeProfileType(
+                INSTANCE_ID_2, SupportedProfileType.OFF_THE_RECORD);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        manager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
+
+        verify(mTabbedActivityTask62).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertNotEquals("Intent should not be null.", null, intent);
+        int flags = intent.getFlags();
+        assertTrue(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should be set for same models.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
+    public void testOpenWindow_opensAdjacently_DifferentModel_WhenFeatureDisabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setupTwoInstances();
+        ChromeMultiInstancePersistentStore.writeProfileType(0, SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_2);
+        ChromeMultiInstancePersistentStore.writeProfileType(
+                INSTANCE_ID_2, SupportedProfileType.OFF_THE_RECORD);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertNotEquals("Intent should not be null.", null, intent);
+        int flags = intent.getFlags();
+        assertTrue(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should be set when feature is disabled.",
                 (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
     }
 
