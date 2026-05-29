@@ -336,7 +336,11 @@ void WebAppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
 void WebAppBrowserController::CreateMetadataAndTriggerAppMigrationDialog(
     bool is_forced_migration_on_startup,
     base::TimeTicks start_time) const {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
+  // This can be reached with app migration disabled when syncing a forced
+  // migration.
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    return;
+  }
   auto pending_migration_info =
       registrar().GetAppById(app_id())->pending_migration_info();
   CHECK(pending_migration_info);
