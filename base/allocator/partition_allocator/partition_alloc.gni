@@ -270,6 +270,11 @@ declare_args() {
   # with enable_backup_ref_ptr_support instead.
   use_raw_ptr_backup_ref_impl = enable_backup_ref_ptr_support
 
+  # Enable BRP protection for unprotected-in-release raw_ptrs.
+  # If false, these pointers will use the no-op implementation with no protection.
+  enable_brp_for_unprotected_in_release_raw_ptr =
+      partition_alloc_is_debug || partition_alloc_dcheck_always_on
+
   # Make explicit calls to ASAN at runtime, e.g. to mark quarrantined memory
   # as poisoned. Allows ASAN to tell if a particular memory error is protected
   # by BRP in its reports.

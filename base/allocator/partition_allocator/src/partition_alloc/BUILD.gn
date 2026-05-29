@@ -154,6 +154,7 @@ pa_buildflag_header("buildflags") {
     "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
     "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
+    "ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR=$enable_brp_for_unprotected_in_release_raw_ptr",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_GWP_ASAN_SUPPORT=$enable_gwp_asan_support",

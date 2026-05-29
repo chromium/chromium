@@ -53,14 +53,14 @@
 #define PA_RAW_PTR_CHECK(condition)
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
+#include "partition_alloc/pointers/raw_ptr_noop_impl.h"
+
 #if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 #include "partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
 #elif PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL)
 #include "partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
 #elif PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 #include "partition_alloc/pointers/raw_ptr_hookable_impl.h"
-#else
-#include "partition_alloc/pointers/raw_ptr_noop_impl.h"
 #endif
 
 namespace cc {
@@ -132,6 +132,12 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowUninitialized instead.
   kAllowUninitialized = (1 << 5),
 
+  // Forces RawPtrNoOpImpl regardless of the compile-time raw_ptr
+  // implementation.
+  //
+  // Don't use directly, use kUnprotectedInRelease instead.
+  kNoOpImpl = (1 << 6),
+
   // *** ForTest traits below ***
 
   // Adds accounting, on top of the NoOp implementation, for test purposes.
@@ -148,7 +154,8 @@ enum class RawPtrTraits : unsigned {
   kDummyForTest = (1 << 11),
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kAllowUninitialized | kUseCountingImplForTest | kDummyForTest,
+             kAllowUninitialized | kNoOpImpl | kUseCountingImplForTest |
+             kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -275,12 +282,15 @@ constexpr bool IsPtrArithmeticAllowed([[maybe_unused]] RawPtrTraits Traits) {
 // may be different from UnderlyingImplForTraits, because it may select a
 // test impl instead.
 template <RawPtrTraits Traits>
-using ImplForTraits =
-    std::conditional_t<partition_alloc::internal::ContainsFlags(
-                           Traits,
-                           RawPtrTraits::kUseCountingImplForTest),
-                       test::RawPtrCountingImplForTest,
-                       UnderlyingImplForTraits<Traits>>;
+using ImplForTraits = std::conditional_t<
+    partition_alloc::internal::ContainsFlags(
+        Traits,
+        RawPtrTraits::kUseCountingImplForTest),
+    test::RawPtrCountingImplForTest,
+    std::conditional_t<partition_alloc::internal::
+                           ContainsFlags(Traits, RawPtrTraits::kNoOpImpl),
+                       internal::RawPtrNoOpImpl,
+                       UnderlyingImplForTraits<Traits>>>;
 
 // `kTypeTraits` is a customization interface to accosiate `T` with some
 // `RawPtrTraits`. Users may create specialization of this variable
@@ -1191,6 +1201,15 @@ constexpr inline auto SetExperimental = base::RawPtrTraits::kMayDangle;
 // will be removed gradually after the rewrite cl lands and will be replaced by
 // DanglingUntriaged where necessary.
 constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
+
+// Marks the pointer as unprotected-in-release. Behavior depends on the
+// ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR build flag.
+constexpr inline auto kUnprotectedInRelease =
+#if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
+    base::RawPtrTraits::kEmpty;
+#else
+    base::RawPtrTraits::kNoOpImpl;
+#endif
 
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please
