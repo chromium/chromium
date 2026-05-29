@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
