@@ -8,6 +8,7 @@
 #include "media/remoting/end2end_test_renderer.h"
 #include "media/test/pipeline_integration_test_base.h"
 #include "media/test/test_media_source.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace remoting {

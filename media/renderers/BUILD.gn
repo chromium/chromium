@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
+
 source_set("renderers") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -152,14 +154,17 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [
       "win/media_foundation_protection_manager_unittest.cc",
-      "win/media_foundation_renderer_integration_test.cc",
       "win/media_foundation_renderer_unittest.cc",
       "win/media_foundation_source_wrapper_unittest.cc",
       "win/media_foundation_stream_wrapper_unittest.cc",
     ]
-    deps += [ "//media/test:pipeline_integration_test_base" ]
     libs = [
       "mfuuid.lib",  # For MFMediaType_Video etc
     ]
+
+    if (media_use_ffmpeg) {
+      sources += [ "win/media_foundation_renderer_integration_test.cc" ]
+      deps += [ "//media/test:pipeline_integration_test_base" ]
+    }
   }
 }

@@ -29,6 +29,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
+#include "media/base/media.h"
 #include "media/cdm/api/content_decryption_module_ext.h"
 #include "media/cdm/cdm_type_conversion.h"
 #include "media/cdm/clear_key_cdm_common.h"
@@ -43,7 +44,6 @@
 #include "base/at_exit.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "media/base/media.h"
 #include "media/cdm/library_cdm/clear_key_cdm/ffmpeg_cdm_audio_decoder.h"
 
 #if !defined COMPONENT_BUILD

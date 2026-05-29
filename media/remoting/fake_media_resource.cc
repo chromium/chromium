@@ -11,6 +11,8 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 using testing::_;
 using testing::Invoke;

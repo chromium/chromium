@@ -26,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
+#include "ui/gfx/geometry/size.h"
 
 using openscreen::cast::RpcMessenger;
 using testing::_;

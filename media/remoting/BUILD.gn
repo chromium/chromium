@@ -113,20 +113,20 @@ source_set("media_remoting_tests") {
     sources += [
       "courier_renderer_unittest.cc",
       "demuxer_stream_adapter_unittest.cc",
-      "end2end_test_renderer.cc",
-      "end2end_test_renderer.h",
       "fake_media_resource.cc",
       "fake_media_resource.h",
-      "integration_test.cc",
       "metrics_unittest.cc",
     ]
+    deps += [ "//ui/gfx/geometry" ]
 
-    deps += [
-      "//media/test:pipeline_integration_test_base",
-      "//services/service_manager/public/cpp",
-      "//ui/gfx:test_support",
-      "//ui/gfx/geometry",
-    ]
+    if (media_use_ffmpeg) {
+      sources += [
+        "end2end_test_renderer.cc",
+        "end2end_test_renderer.h",
+        "integration_test.cc",
+      ]
+      deps += [ "//media/test:pipeline_integration_test_base" ]
+    }
   }
 }
 

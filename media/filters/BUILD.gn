@@ -344,13 +344,14 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "android/video_frame_extractor_unittest.cc" ]
     sources -= [
       "decrypting_audio_decoder_unittest.cc",
       "decrypting_video_decoder_unittest.cc",
     ]
 
-    deps += [ "//ui/gl" ]
+    if (media_use_ffmpeg) {
+      sources += [ "android/video_frame_extractor_unittest.cc" ]
+    }
   }
 
   # libvpx for running vpx test on chromecast doesn't support high bit depth.
