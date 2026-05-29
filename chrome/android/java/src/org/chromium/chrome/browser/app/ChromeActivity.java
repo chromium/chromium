@@ -3409,6 +3409,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         RecordHistogram.recordBooleanHistogram(
                 "Android.OpenInApp.Clicked.AppMenuItem", info != null);
+
+        var chipManager = mRootUiCoordinator.getOmniboxChipManager();
+        boolean chipVisible = chipManager != null && chipManager.isChipVisible();
+        RecordHistogram.recordBooleanHistogram(
+                "Android.OpenInApp.Clicked.AppMenuItem.ChipVisible", chipVisible);
     }
 
     /**

@@ -2860,6 +2860,10 @@ public class RootUiCoordinator
         return mOpenInAppEntryPoint;
     }
 
+    public @Nullable OmniboxChipManager getOmniboxChipManager() {
+        return mOmniboxChipManager;
+    }
+
     public @Nullable HandoffController getHandoffController() {
         return mHandoffController;
     }

@@ -14,6 +14,7 @@ import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -196,17 +197,19 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
 
         if (result instanceof ResolveResult.None) {
             updateOpenInAppInfo(delegate, null);
+            delegate.setLastLoggedPackage(null);
             return;
         }
 
         CharSequence name = null;
         Drawable icon = null;
+        String packageName = null;
         // Having actual resolve info means the intent is going to be handled by an app and not
         // ResolverActivity.
         if (result instanceof ResolveResult.Info info) {
             var resolveInfo = info.resolveInfo;
             var pm = mContext.getPackageManager();
-            String packageName = resolveInfo.activityInfo.packageName;
+            packageName = resolveInfo.activityInfo.packageName;
 
             var iconAndLabel =
                     ExternalNavigationHandler.getApplicationIconAndLabel(pm, packageName);
@@ -218,6 +221,9 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
             // We're setting the package explicitly to make sure the app that this intent launches
             // matches what's expected based on the other data in resolveActivity.
             targetIntent.setPackage(packageName);
+        } else if (result instanceof ResolveResult.ResolverActivity) {
+            String domain = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+            packageName = "multiple:" + (domain != null ? domain : "");
         }
 
         // The app should always launch in a new task.
@@ -261,7 +267,13 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                     }
                 };
 
-        updateOpenInAppInfo(delegate, new OpenInAppDelegate.OpenInAppInfo(openInApp, name, icon));
+        if (packageName != null && !packageName.equals(delegate.getLastLoggedPackage())) {
+            RecordHistogram.recordBooleanHistogram("Android.OpenInApp.Impression", true);
+            delegate.setLastLoggedPackage(packageName);
+        }
+
+        updateOpenInAppInfo(
+                delegate, new OpenInAppDelegate.OpenInAppInfo(openInApp, name, icon, packageName));
     }
 
     private void updateOpenInAppInfo(

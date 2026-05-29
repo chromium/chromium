@@ -4704,6 +4704,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.OpenInApp.Clicked.AppMenuItem.ChipVisible"
+    enum="Boolean" expires_after="2027-05-27">
+  <owner>sinansahin@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Recorded when the user clicks the Open in App item in the App Menu. Recorded
+    boolean denotes whether the Open in App chip in the omnibox was visible at
+    the time of the click.
+  </summary>
+</histogram>
+
+<histogram name="Android.OpenInApp.Clicked.OmniboxChip" enum="Boolean"
+    expires_after="2027-05-27">
+  <owner>sinansahin@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Recorded when the user clicks the Open in App chip in the omnibox. Always
+    recorded true.
+  </summary>
+</histogram>
+
+<histogram name="Android.OpenInApp.Impression" enum="Boolean"
+    expires_after="2027-05-27">
+  <owner>sinansahin@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Recorded when the Open in App option becomes available for a page (either as
+    a chip or in the app menu). It is recorded when the target app package
+    changes (e.g. navigating from a page with no app, or a different app). If
+    multiple apps are available, we compare by domain instead of package.
+    Navigations that resolve to the same package (or same domain if multiple
+    apps) do not emit this histogram again. Always recorded true.
+  </summary>
+</histogram>
+
 <histogram name="Android.OverscrollFromBottom.CanStart" enum="Boolean"
     expires_after="2026-11-01">
   <owner>wenyufu@chromium.org</owner>

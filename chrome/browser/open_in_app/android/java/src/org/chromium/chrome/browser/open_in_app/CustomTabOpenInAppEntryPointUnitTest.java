@@ -138,6 +138,7 @@ public class CustomTabOpenInAppEntryPointUnitTest {
         assertNonNull(appInfo);
         assertEquals(LABEL, appInfo.appName);
         assertEquals(mIcon, appInfo.appIcon);
+        assertEquals(PACKAGE, appInfo.packageName);
 
         // Check that delegate is also updated.
         assertEquals(appInfo, delegate.getCurrentOpenInAppInfo());

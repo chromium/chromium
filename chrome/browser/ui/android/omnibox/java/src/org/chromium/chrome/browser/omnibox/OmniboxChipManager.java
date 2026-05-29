@@ -207,6 +207,12 @@ public class OmniboxChipManager {
         return mChip != null;
     }
 
+    /** Returns whether the chip is currently visible. */
+    public boolean isChipVisible() {
+        return mChipVisibilityState == VisibilityState.COLLAPSED
+                || mChipVisibilityState == VisibilityState.EXPANDED;
+    }
+
     /**
      * Sets whether the omnibox is focused and the chip should be hidden.
      *

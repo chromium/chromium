@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -52,7 +53,14 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
                             ? mContext.getString(R.string.open_in_app_desc, openInAppInfo.appName)
                             : text;
 
-            mOmniboxChipManager.placeChip(text, icon, desc, openInAppInfo.action);
+            Runnable chipAction =
+                    () -> {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.OpenInApp.Clicked.OmniboxChip", true);
+                        openInAppInfo.action.run();
+                    };
+
+            mOmniboxChipManager.placeChip(text, icon, desc, chipAction);
         }
     }
 }

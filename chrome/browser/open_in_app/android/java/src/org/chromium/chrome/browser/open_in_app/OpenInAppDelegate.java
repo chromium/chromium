@@ -33,11 +33,21 @@ public class OpenInAppDelegate implements UserData {
          */
         public final @Nullable Drawable appIcon;
 
+        /**
+         * Package name of the app to launch. A string starting with "multiple:" followed by the
+         * domain if the URL can be opened in more than one app.
+         */
+        public final @Nullable String packageName;
+
         public OpenInAppInfo(
-                Runnable action, @Nullable CharSequence appName, @Nullable Drawable appIcon) {
+                Runnable action,
+                @Nullable CharSequence appName,
+                @Nullable Drawable appIcon,
+                @Nullable String packageName) {
             this.action = action;
             this.appName = appName;
             this.appIcon = appIcon;
+            this.packageName = packageName;
         }
     }
 
@@ -45,6 +55,7 @@ public class OpenInAppDelegate implements UserData {
     private @Nullable OpenInAppInfo mCurrentOpenInAppInfo;
     private @Nullable ExternalNavigationHelper mExternalNavigationHelper;
     private @Nullable GURL mLastNavigatedUrl;
+    private @Nullable String mLastLoggedPackage;
 
     public void updateOpenInAppInfo(@Nullable OpenInAppInfo openInAppInfo) {
         mCurrentOpenInAppInfo = openInAppInfo;
@@ -53,6 +64,16 @@ public class OpenInAppDelegate implements UserData {
     /** Returns the current {@link OpenInAppInfo}. */
     public @Nullable OpenInAppInfo getCurrentOpenInAppInfo() {
         return mCurrentOpenInAppInfo;
+    }
+
+    /** Sets the last logged package. */
+    public void setLastLoggedPackage(@Nullable String packageName) {
+        mLastLoggedPackage = packageName;
+    }
+
+    /** Returns the last logged package. */
+    public @Nullable String getLastLoggedPackage() {
+        return mLastLoggedPackage;
     }
 
     /** Sets the last navigated {@link GURL}. */
