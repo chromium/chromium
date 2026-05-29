@@ -15604,6 +15604,26 @@
             ]
         }
     ],
+    "MagiChromeBatch1": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "IllustrationAndPromoCardPhoneAndRemoveGuestMode_20260528",
+                    "params": {
+                        "magichrome_fre_exp_branch": "1"
+                    },
+                    "enable_features": [
+                        "MagiChromeSignInExperimentsBatch1"
+                    ]
+                }
+            ]
+        }
+    ],
     "MainNodeAnnotationsRollout": [
         {
             "platforms": [
