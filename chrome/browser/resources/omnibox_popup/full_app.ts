@@ -32,11 +32,18 @@ export class OmniboxFullAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      // TODO(b/517218130): Ensure Omnibox is laid out correctly when
+      //   `isTouchUi_` is true.
+      isTouchUi_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   protected accessor omniboxPopupDebugEnabled_ =
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
+  protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
 
   private isDebug_: boolean =
       new URLSearchParams(window.location.search).has('debug');

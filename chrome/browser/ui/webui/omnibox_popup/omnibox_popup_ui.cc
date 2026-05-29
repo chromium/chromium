@@ -39,6 +39,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -92,6 +93,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
        .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 
   source->AddBoolean("isTopChromeSearchbox", true);
+  source->AddBoolean("isTouchUi", ui::TouchUiController::Get()->touch_ui());
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());
   source->AddBoolean("omniboxShowContextButtonSuggestionLabel",

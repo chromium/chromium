@@ -2041,6 +2041,8 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
     return;
   }
 
+  // TODO(b/517240222): Re-enable popup state validation for the full popup
+  //   (`omnibox::kWebUIOmniboxFullPopupV2`).
   // Skip validation if the browser window widget is closing or not visible.
   // During shutdown, the widget is hidden which can trigger omnibox view blur
   // and autocomplete stop before child popup widgets are destroyed and the
@@ -2050,7 +2052,7 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
   if (views::Widget* widget = GetWidget();
       !widget || !widget->IsVisible() ||
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
-      omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
     return;
   }
 

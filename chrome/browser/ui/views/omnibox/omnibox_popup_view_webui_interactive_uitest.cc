@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
@@ -28,10 +29,13 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -272,6 +276,113 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
   browser()->tab_strip_model()->ActivateTabAt(new_tab_index);
   // 6. Verify the text is restored.
   EXPECT_EQ(u"test query", omnibox_view()->GetText());
+}
+
+class OmniboxPopupDimensionsTest : public OmniboxPopupViewWebUITest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  bool has_results() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, OmniboxPopupDimensionsTest, testing::Bool());
+
+// Tests that the popup has the correct dimensions and alignment, both with
+// and without results (for the base WebUI popup).
+// Note: This expects the height to include alignment and shadow insets.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupDimensionsTest, DimensionsAndAnchoring) {
+  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+      location_bar()->GetOmniboxPopupView());
+  ASSERT_TRUE(popup_view);
+
+  if (has_results()) {
+    // Creates a popup with results.
+    CreatePopupForTestQuery();
+  } else {
+    popup_view->presenter()->Show();
+  }
+
+  auto* presenter = popup_view->presenter();
+  ASSERT_TRUE(presenter);
+
+  views::Widget* widget = presenter->get_widget_for_testing();
+  ASSERT_TRUE(widget);
+
+  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
+  gfx::Rect location_bar_bounds = location_bar()->GetBoundsInScreen();
+
+  gfx::Rect expected_bounds = location_bar_bounds;
+  expected_bounds.Inset(
+      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+  expected_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
+
+  // Width and bounds should match exactly.
+  EXPECT_EQ(widget_bounds.width(), expected_bounds.width());
+  EXPECT_EQ(widget_bounds.x(), expected_bounds.x());
+  EXPECT_EQ(widget_bounds.y(), expected_bounds.y());
+  int min_expected_height =
+      location_bar_bounds.height() +
+      RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().height() +
+      RoundedOmniboxResultsFrame::GetShadowInsets().height();
+  EXPECT_GE(widget_bounds.height(), min_expected_height);
+
+  popup_view->presenter()->Hide();
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PopupResizeWindow DISABLED_PopupResizeWindow
+#else
+#define MAYBE_PopupResizeWindow PopupResizeWindow
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, MAYBE_PopupResizeWindow) {
+  CreatePopupForTestQuery();
+
+  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+      location_bar()->GetOmniboxPopupView());
+  ASSERT_TRUE(popup_view);
+
+  views::Widget* widget = popup_view->presenter()->get_widget_for_testing();
+  ASSERT_TRUE(widget);
+
+  // Resize window smaller.
+  gfx::Rect current_browser_bounds = browser()->window()->GetBounds();
+  gfx::Rect new_browser_bounds = current_browser_bounds;
+  new_browser_bounds.set_width(current_browser_bounds.width() - 200);
+  browser()->window()->SetBounds(new_browser_bounds);
+
+  // Give it a moment to layout.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()->window()->GetBounds().width() ==
+           new_browser_bounds.width();
+  }));
+
+  gfx::Rect new_widget_bounds = widget->GetWindowBoundsInScreen();
+  gfx::Rect location_bar_bounds = location_bar()->GetBoundsInScreen();
+  gfx::Rect expected_bounds = location_bar_bounds;
+  expected_bounds.Inset(
+      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+  expected_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
+
+  EXPECT_EQ(new_widget_bounds.width(), expected_bounds.width());
+  EXPECT_EQ(new_widget_bounds.x(), expected_bounds.x());
+
+  // Resize window larger.
+  new_browser_bounds.set_width(current_browser_bounds.width() + 200);
+  browser()->window()->SetBounds(new_browser_bounds);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()->window()->GetBounds().width() ==
+           current_browser_bounds.width() + 200;
+  }));
+
+  new_widget_bounds = widget->GetWindowBoundsInScreen();
+  location_bar_bounds = location_bar()->GetBoundsInScreen();
+  expected_bounds = location_bar_bounds;
+  expected_bounds.Inset(
+      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+  expected_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
+
+  EXPECT_EQ(new_widget_bounds.width(), expected_bounds.width());
+  EXPECT_EQ(new_widget_bounds.x(), expected_bounds.x());
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

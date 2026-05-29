@@ -128,6 +128,9 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // Returns whether or not the popup should include the location bar cutout.
   virtual bool ShouldShowLocationBarCutout() const;
 
+  // Returns whether or not the popup should trust the content height directly.
+  virtual bool ShouldUseWebContentHeight() const;
+
   // Returns whether the WebUI content view receive focus.
   virtual bool ShouldReceiveFocus() const;
 

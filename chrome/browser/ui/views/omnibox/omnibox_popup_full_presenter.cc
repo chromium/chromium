@@ -110,6 +110,10 @@ bool OmniboxPopupFullPresenter::ShouldDetachWebContentsOnHide() const {
       omnibox::kOmniboxAimDetachWebContentsOnHide);
 }
 
+bool OmniboxPopupFullPresenter::ShouldUseWebContentHeight() const {
+  return true;
+}
+
 void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                           bool active) {
   if (!active &&

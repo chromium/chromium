@@ -41,9 +41,6 @@
 
 namespace {
 
-// Value from the spec controlling appearance of the shadow.
-constexpr int kElevation = 16;
-
 #if !defined(USE_AURA)
 
 struct WidgetEventPair {
@@ -263,12 +260,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host->AddChildViewRaw(contents_.get());
 
   // Initialize the shadow.
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::Arrow::NONE,
-      views::BubbleBorder::Shadow::STANDARD_SHADOW);
-  border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
-  border->set_md_shadow_elevation(kElevation);
-  SetBorder(std::move(border));
+  SetElevation(kDefaultElevation);
 
   AddChildView(std::move(contents_host));
 }
@@ -314,7 +306,7 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
 
 // static
 gfx::Insets RoundedOmniboxResultsFrame::GetShadowInsets() {
-  return views::BubbleBorder::GetBorderAndShadowInsets(kElevation);
+  return views::BubbleBorder::GetBorderAndShadowInsets(kDefaultElevation);
 }
 
 std::unique_ptr<views::View> RoundedOmniboxResultsFrame::ExtractContents() {
@@ -331,6 +323,20 @@ void RoundedOmniboxResultsFrame::SetCutoutVisibility(bool visible) {
     return;
   }
   top_background_->SetVisible(visible);
+}
+
+void RoundedOmniboxResultsFrame::SetElevation(int elevation) {
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kOmniboxExpandedRadius);
+  auto border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::Arrow::NONE,
+      elevation == 0 ? views::BubbleBorder::Shadow::NO_SHADOW
+                     : views::BubbleBorder::Shadow::STANDARD_SHADOW);
+  border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
+  if (elevation > 0) {
+    border->set_md_shadow_elevation(elevation);
+  }
+  SetBorder(std::move(border));
 }
 
 void RoundedOmniboxResultsFrame::Layout(PassKey) {

@@ -49,6 +49,9 @@ class RoundedOmniboxResultsFrame : public views::View {
 
   void SetCutoutVisibility(bool visible);
 
+  static constexpr int kDefaultElevation = 16;
+  void SetElevation(int elevation);
+
   // views::View:
   void Layout(PassKey) override;
   void AddedToWidget() override;
