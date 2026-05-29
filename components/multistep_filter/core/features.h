@@ -24,6 +24,8 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kMultistepFilterIndexServerApiBaseUrl);
 
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kMultistepFilterSessionDuration);
 
+BASE_DECLARE_FEATURE_PARAM(std::string, kCueTemplatesMap);
+
 }  // namespace multistep_filter
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_FEATURES_H_

@@ -13,10 +13,17 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/command_line.h"
 #include "base/containers/extend.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
@@ -24,12 +31,17 @@
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
+#include "components/multistep_filter/core/suggestion/filter_suggestion_message_util.h"
+#include "components/multistep_filter/core/switches.h"
 
 namespace multistep_filter {
 
 namespace {
 
 constexpr size_t kDefaultMaxResults = 100;
+// TODO(b/514312241): Remove this fallback message when the JSON
+// configuration is being served properly.
+constexpr char16_t kTestingFallbackMessage[] = u"Continue where you left off?";
 
 void LogServerRequestSent(MultistepFilterLogRouter* log_router,
                           int64_t navigation_id,
@@ -95,7 +107,9 @@ FilterSuggestionGenerator::FilterSuggestionGenerator(
     MultistepFilterLogRouter* log_router)
     : annotation_index_client_(annotation_index_client),
       filter_store_(filter_store),
-      log_router_(log_router) {}
+      log_router_(log_router) {
+  LoadCueConfig();
+}
 
 FilterSuggestionGenerator::~FilterSuggestionGenerator() = default;
 
@@ -254,6 +268,21 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
     return;
   }
 
+  std::optional<std::u16string> message;
+  if (cue_config_.empty()) {
+    // TODO(b/514312241): Remove this fallback message when the JSON
+    // configuration is being served properly.
+    message = kTestingFallbackMessage;
+  } else {
+    message = GenerateMessageWithConfig(matching_annotation_it->task_type,
+                                        attribute_ui_labels, cue_config_);
+    if (!message || base::TrimWhitespace(*message, base::TRIM_ALL).empty()) {
+      LogSuggestionSuppressed(log_router_, navigation_id, domain,
+                              "message_generation_failed");
+      return;
+    }
+  }
+
   // Suggestion generation succeeded, reset `failure_callback` as to not notify
   // otherwise.
   failure_callback.ReplaceClosure(base::DoNothing());
@@ -265,9 +294,47 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
       .attribute_ui_labels = std::move(attribute_ui_labels),
       .triggering_navigation_id = navigation_id,
       .triggering_domain = std::string(domain),
-      .task_type = std::move(matching_annotation_it->task_type)});
+      .task_type = std::move(matching_annotation_it->task_type),
+      .suggestion_message = std::move(*message)});
   LogSuggestionGenerated(log_router_, navigation_id, domain, suggestion);
   std::move(success_callback).Run(std::move(suggestion));
+}
+
+void FilterSuggestionGenerator::LoadCueConfig() {
+  base::FilePath path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kMultistepFilterCueConfigPath);
+  if (!path.empty()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(
+            [](const base::FilePath& file_path) {
+              std::string json;
+              if (!base::ReadFileToString(file_path, &json)) {
+                VLOG(1) << "Failed to read config file: " << file_path.value();
+              }
+              return json;
+            },
+            path),
+        base::BindOnce(
+            [](base::WeakPtr<FilterSuggestionGenerator> generator,
+               std::string json) {
+              if (generator) {
+                std::optional<base::DictValue> root =
+                    base::JSONReader::ReadDict(json, 0);
+                if (root) {
+                  generator->cue_config_ = std::move(*root);
+                }
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    std::optional<base::DictValue> root =
+        base::JSONReader::ReadDict(kCueTemplatesMap.Get(), 0);
+    if (root) {
+      cue_config_ = std::move(*root);
+    }
+  }
 }
 
 }  // namespace multistep_filter

@@ -73,7 +73,9 @@ class MultistepFilterBrowserTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kMultistepFilter,
         {{kAllowedDomainsParam,
-          std::string(kTestAllowedDomain) + "," + kTestAllowedDomain2}});
+          std::string(kTestAllowedDomain) + "," + kTestAllowedDomain2},
+         {kCueTemplatesMap.name,
+          "{\"test_task\": {\"template\": \"Template\"}}"}});
   }
   ~MultistepFilterBrowserTest() override = default;
 
@@ -190,10 +192,13 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   base::Uuid annotation_id = std::move(extraction_result).value();
   EXPECT_FALSE(suggestion_future_.Take().has_value());
 
-  fake_server().SetExecutionStrategiesResponse(
+  GetTaskExecutionStrategiesResponse execution_strategies_response =
       CreateTaskExecutionStrategiesResponse(
           suggestion_url, {{kTestAttributeKey, kTestAttributeValue},
-                           {kTestAttributeKey2, kTestAttributeValue2}}));
+                           {kTestAttributeKey2, kTestAttributeValue2}});
+  execution_strategies_response.mutable_execution_strategies(0)
+      ->set_candidate_id(annotation_id.AsLowercaseString());
+  fake_server().SetExecutionStrategiesResponse(execution_strategies_response);
   fake_server().SetExtractResponse(ExtractTaskAttributesResponse());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), suggestion_trigger_url));

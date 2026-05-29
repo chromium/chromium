@@ -9,4 +9,6 @@ namespace multistep_filter::switches {
 const char kMultistepFilterIndexServerApiBaseUrl[] =
     "multistep-filter-index-server-api-base-url";
 
+const char kMultistepFilterCueConfigPath[] = "multistep-filter-cue-config-path";
+
 }  // namespace multistep_filter::switches

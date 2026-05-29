@@ -5,10 +5,12 @@
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 
 #include <optional>
+#include <vector>
 
-#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -17,6 +19,7 @@
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,6 +62,9 @@ class FilterSuggestionGeneratorTest : public testing::Test {
   ~FilterSuggestionGeneratorTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kMultistepFilter,
+        {{"CueTemplatesMap", "{\"SHOPPING\": {\"template\": \"Template\"}}"}});
     store_ = std::make_unique<FilterStore>();
     generator_ = std::make_unique<FilterSuggestionGenerator>(
         mock_client_, *store_, /*log_router=*/nullptr);
@@ -79,6 +85,7 @@ class FilterSuggestionGeneratorTest : public testing::Test {
   void DestroyGenerator() { generator_.reset(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockAnnotationIndexClient> mock_client_;
@@ -128,7 +135,8 @@ TEST_F(FilterSuggestionGeneratorTest,
       .attribute_ui_labels = std::move(attribute_ui_labels),
       .triggering_navigation_id = kTestNavigationId,
       .triggering_domain = "example.com",
-      .task_type = kShoppingTask});
+      .task_type = kShoppingTask,
+      .suggestion_message = u"Template"});
 
   EXPECT_CALL(mock_client(),
               GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))
@@ -738,6 +746,58 @@ TEST_F(FilterSuggestionGeneratorTest,
   captured_cb.Reset();
 
   ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_SuppressesWhenMessageFails) {
+  const GURL url(kTestUrl);
+
+  EXPECT_CALL(mock_client(),
+              GetSupportedTaskTypesForDomain(kTestDomain, _, kTestNavigationId))
+      .WillOnce(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 callback,
+             int64_t navigation_id) {
+            std::move(callback).Run(std::vector<std::string>{"NON_SHOPPING"});
+          });
+
+  std::vector<FilterAttribute> attributes = {
+      {kTestAttributeKey, kTestAttributeValue},
+      {kTestAttributeKey2, kTestAttributeValue2}};
+  FilterAnnotation annotation =
+      CreateDummyAnnotation("NON_SHOPPING", kTestDomain, attributes);
+
+  base::test::TestFuture<bool> store_future;
+  store()->StoreAnnotation(annotation, store_future.GetCallback());
+  ASSERT_TRUE(store_future.Get());
+
+  FilterSuggestionCandidate candidate(
+      annotation.id, GURL(kTestSuggestionUrl),
+      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
+                                          kTestAttributeValue16),
+       FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16)});
+
+  EXPECT_CALL(mock_client(),
+              GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))
+      .WillOnce([candidate](
+                    const GURL& u,
+                    base::span<const FilterAnnotation> filter_annotations,
+                    base::OnceCallback<void(
+                        std::optional<std::vector<FilterSuggestionCandidate>>)>
+                        callback,
+                    int64_t navigation_id) {
+        std::move(callback).Run(
+            std::vector<FilterSuggestionCandidate>{candidate});
+      });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+  generator()->GenerateSuggestion(url, future.GetCallback(), kTestNavigationId,
+                                  kTestDomain);
+
+  // Should be suppressed (returns nullopt) because message generation failed!
   EXPECT_EQ(future.Get(), std::nullopt);
 }
 

@@ -58,9 +58,9 @@ std::string UrlFilterSuggestion::ToString() const {
   }
 
   std::string message_suffix =
-      suggestion_message.has_value()
+      !suggestion_message.empty()
           ? base::StrCat({", suggestion_message=",
-                          base::UTF16ToUTF8(*suggestion_message)})
+                          base::UTF16ToUTF8(suggestion_message)})
           : "";
 
   return base::StrCat(

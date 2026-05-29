@@ -46,4 +46,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "filter_session_duration",
                    base::Minutes(30));
 
+// JSON map of task types to string templates for contextual cues.
+BASE_FEATURE_PARAM(std::string, kCueTemplatesMap, &kMultistepFilter, "{}");
+
 }  // namespace multistep_filter

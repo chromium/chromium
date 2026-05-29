@@ -50,7 +50,7 @@ struct UrlFilterSuggestion {
     int64_t triggering_navigation_id;
     std::string triggering_domain;
     std::string task_type;
-    std::optional<std::u16string> suggestion_message = std::nullopt;
+    std::u16string suggestion_message;
   };
 
   explicit UrlFilterSuggestion(Params params);
@@ -85,7 +85,7 @@ struct UrlFilterSuggestion {
   // The identifier classifying the purpose of the annotation.
   std::string task_type;
   // The localized message string to be shown to the user.
-  std::optional<std::u16string> suggestion_message;
+  std::u16string suggestion_message;
 };
 
 }  // namespace multistep_filter

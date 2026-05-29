@@ -12,6 +12,7 @@ source_set("suggestion") {
   deps = [
     "//base:i18n",
     "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:switches",
     "//components/multistep_filter/core:util",
     "//components/multistep_filter/core/annotation_index",
     "//components/multistep_filter/core/logging",
@@ -34,6 +35,7 @@ source_set("unit_tests") {
     ":suggestion",
     "//base",
     "//base/test:test_support",
+    "//components/multistep_filter/core:features",
     "//components/multistep_filter/core/annotation_index:test_support",
     "//components/multistep_filter/core/storage",
     "//testing/gmock",
