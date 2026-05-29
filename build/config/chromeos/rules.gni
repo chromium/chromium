@@ -49,7 +49,8 @@ if (cros_sdk_version != "") {
       # Tast harness & test data.
       rebase_path("${_cache_path_prefix}+autotest_server_package.tar.bz2"),
 
-      # Binutils (and other toolchain tools) used to deploy Chrome to the device.
+      # Binutils (and other toolchain tools) used to deploy Chrome to the
+      # device.
       rebase_path(
           "${_cache_path_prefix}+environment_chromeos-base_chromeos-chrome.tar.xz"),
       rebase_path("${_cache_path_prefix}+target_toolchain"),
