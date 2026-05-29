@@ -513,7 +513,7 @@ void TreeScope::SetAdoptedStyleSheetsForTesting(
   AppendAdoptedStyleSheets(std::move(adopted_style_sheets));
 }
 
-DOMSelection* TreeScope::GetSelection() const {
+DomSelection* TreeScope::GetSelection() const {
   if (!RootNode().GetDocument().GetFrame())
     return nullptr;
 
@@ -523,7 +523,7 @@ DOMSelection* TreeScope::GetSelection() const {
   // FIXME: The correct selection in Shadow DOM requires that Position can have
   // a ShadowRoot as a container.  See
   // https://bugs.webkit.org/show_bug.cgi?id=82697
-  selection_ = MakeGarbageCollected<DOMSelection>(this);
+  selection_ = MakeGarbageCollected<DomSelection>(this);
   return selection_.Get();
 }
 

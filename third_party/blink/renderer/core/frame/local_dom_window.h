@@ -70,7 +70,7 @@ class CustomElementRegistry;
 class ScrollResult;
 class Document;
 class DocumentInit;
-class DOMSelection;
+class DomSelection;
 class DOMViewport;
 class DOMVisualViewport;
 class CrashReportContext;
@@ -329,7 +329,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   //  90 is when rotated counter clockwise.
   int orientation() const;
 
-  DOMSelection* getSelection();
+  DomSelection* getSelection();
 
   void print(ScriptState*);
   void stop();

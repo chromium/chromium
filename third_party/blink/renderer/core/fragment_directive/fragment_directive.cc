@@ -88,7 +88,7 @@ ScriptPromise<SelectorDirective> FragmentDirective::createSelectorDirective(
   bool is_content_type_selection =
       arg->GetContentType() == V8UnionRangeOrSelection::ContentType::kSelection;
   if (is_content_type_selection) {
-    DOMSelection* selection = arg->GetAsSelection();
+    DomSelection* selection = arg->GetAsSelection();
     if (selection->rangeCount() == 0) {
       resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                        "Selection must contain a range");

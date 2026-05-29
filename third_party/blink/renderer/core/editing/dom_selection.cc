@@ -54,26 +54,26 @@
 
 namespace blink {
 
-DOMSelection::DOMSelection(const TreeScope* tree_scope)
+DomSelection::DomSelection(const TreeScope* tree_scope)
     : ExecutionContextClient(tree_scope->RootNode().GetExecutionContext()),
       tree_scope_(tree_scope) {}
 
-void DOMSelection::ClearTreeScope() {
+void DomSelection::ClearTreeScope() {
   tree_scope_ = nullptr;
 }
 
-FrameSelection& DOMSelection::Selection() const {
+FrameSelection& DomSelection::Selection() const {
   DCHECK(DomWindow());
   return DomWindow()->GetFrame()->Selection();
 }
 
 // TODO(editing-dev): The behavior after loosing browsing context is not
 // specified. https://github.com/w3c/selection-api/issues/82
-bool DOMSelection::IsAvailable() const {
+bool DomSelection::IsAvailable() const {
   return DomWindow() && Selection().IsAvailable();
 }
 
-void DOMSelection::UpdateFrameSelection(
+void DomSelection::UpdateFrameSelection(
     const SelectionInDOMTree& selection,
     Range* new_cached_range,
     const SetSelectionOptions& passed_options) const {
@@ -94,7 +94,7 @@ void DOMSelection::UpdateFrameSelection(
   }
 }
 
-VisibleSelection DOMSelection::GetVisibleSelection() const {
+VisibleSelection DomSelection::GetVisibleSelection() const {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   DomWindow()->document()->UpdateStyleAndLayout(
@@ -103,11 +103,11 @@ VisibleSelection DOMSelection::GetVisibleSelection() const {
   return Selection().ComputeVisibleSelectionInDOMTree();
 }
 
-bool DOMSelection::IsAnchorFirstInSelection() const {
+bool DomSelection::IsAnchorFirstInSelection() const {
   return Selection().GetSelectionInDOMTree().IsAnchorFirst();
 }
 
-Node* DOMSelection::anchorNode() const {
+Node* DomSelection::anchorNode() const {
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
@@ -118,7 +118,7 @@ Node* DOMSelection::anchorNode() const {
   return nullptr;
 }
 
-unsigned DOMSelection::anchorOffset() const {
+unsigned DomSelection::anchorOffset() const {
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
@@ -129,7 +129,7 @@ unsigned DOMSelection::anchorOffset() const {
   return 0;
 }
 
-Node* DOMSelection::focusNode() const {
+Node* DomSelection::focusNode() const {
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
@@ -140,7 +140,7 @@ Node* DOMSelection::focusNode() const {
   return nullptr;
 }
 
-unsigned DOMSelection::focusOffset() const {
+unsigned DomSelection::focusOffset() const {
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
@@ -151,23 +151,23 @@ unsigned DOMSelection::focusOffset() const {
   return 0;
 }
 
-Node* DOMSelection::baseNode() const {
+Node* DomSelection::baseNode() const {
   return anchorNode();
 }
 
-unsigned DOMSelection::baseOffset() const {
+unsigned DomSelection::baseOffset() const {
   return anchorOffset();
 }
 
-Node* DOMSelection::extentNode() const {
+Node* DomSelection::extentNode() const {
   return focusNode();
 }
 
-unsigned DOMSelection::extentOffset() const {
+unsigned DomSelection::extentOffset() const {
   return focusOffset();
 }
 
-bool DOMSelection::isCollapsed() const {
+bool DomSelection::isCollapsed() const {
   if (!IsAvailable())
     return true;
   // TODO(editing-dev): The use of UpdateStyleAndLayout
@@ -182,7 +182,7 @@ bool DOMSelection::isCollapsed() const {
   return true;
 }
 
-String DOMSelection::type() const {
+String DomSelection::type() const {
   if (!IsAvailable())
     return String();
   // This is a WebKit DOM extension, incompatible with an IE extension
@@ -197,7 +197,7 @@ String DOMSelection::type() const {
   return "Range";
 }
 
-String DOMSelection::direction() const {
+String DomSelection::direction() const {
   if (!IsAvailable()) {
     return "none";
   }
@@ -220,7 +220,7 @@ String DOMSelection::direction() const {
   return "backward";
 }
 
-unsigned DOMSelection::rangeCount() const {
+unsigned DomSelection::rangeCount() const {
   if (!IsAvailable())
     return 0;
   if (DocumentCachedRange())
@@ -244,7 +244,7 @@ unsigned DOMSelection::rangeCount() const {
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-collapse
-void DOMSelection::collapse(Node* node,
+void DomSelection::collapse(Node* node,
                             unsigned offset,
                             ExceptionState& exception_state) {
   if (!IsAvailable())
@@ -294,7 +294,7 @@ void DOMSelection::collapse(Node* node,
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-collapsetoend
-void DOMSelection::collapseToEnd(ExceptionState& exception_state) {
+void DomSelection::collapseToEnd(ExceptionState& exception_state) {
   if (!IsAvailable())
     return;
 
@@ -326,7 +326,7 @@ void DOMSelection::collapseToEnd(ExceptionState& exception_state) {
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-collapsetostart
-void DOMSelection::collapseToStart(ExceptionState& exception_state) {
+void DomSelection::collapseToStart(ExceptionState& exception_state) {
   if (!IsAvailable())
     return;
 
@@ -358,13 +358,13 @@ void DOMSelection::collapseToStart(ExceptionState& exception_state) {
   }
 }
 
-void DOMSelection::empty() {
+void DomSelection::empty() {
   if (IsAvailable())
     Selection().Clear();
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-setbaseandextent
-void DOMSelection::setBaseAndExtent(Node* base_node,
+void DomSelection::setBaseAndExtent(Node* base_node,
                                     unsigned base_offset,
                                     Node* extent_node,
                                     unsigned extent_offset,
@@ -447,7 +447,7 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
       new_range, SetSelectionOptions::Builder().SetIsDirectional(true).Build());
 }
 
-void DOMSelection::modify(const String& alter_string,
+void DomSelection::modify(const String& alter_string,
                           const String& direction_string,
                           const String& granularity_string) {
   if (!IsAvailable())
@@ -512,7 +512,7 @@ void DOMSelection::modify(const String& alter_string,
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-extend
-void DOMSelection::extend(Node* node,
+void DomSelection::extend(Node* node,
                           unsigned offset,
                           ExceptionState& exception_state) {
   DCHECK(node);
@@ -587,7 +587,7 @@ void DOMSelection::extend(Node* node,
       SetSelectionOptions::Builder().SetIsDirectional(true).Build());
 }
 
-Range* DOMSelection::getRangeAt(unsigned index,
+Range* DomSelection::getRangeAt(unsigned index,
                                 ExceptionState& exception_state) const {
   if (!IsAvailable())
     return nullptr;
@@ -611,7 +611,7 @@ Range* DOMSelection::getRangeAt(unsigned index,
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
-const StaticRangeVector DOMSelection::getComposedRanges(
+const StaticRangeVector DomSelection::getComposedRanges(
     const GetComposedRangesOptions* options) const {
   StaticRangeVector ranges;
   // 1. If this is empty, return an empty array.
@@ -651,7 +651,7 @@ const StaticRangeVector DOMSelection::getComposedRanges(
 // If isEnd is false, rescope following spec step 3.
 // Else, Rescope following sepc step 5.
 // https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
-void DOMSelection::Rescope(Node*& node,
+void DomSelection::Rescope(Node*& node,
                            unsigned& offset,
                            const HeapVector<Member<ShadowRoot>>& shadowRoots,
                            bool isEnd) const {
@@ -679,11 +679,11 @@ void DOMSelection::Rescope(Node*& node,
   }
 }
 
-Range* DOMSelection::PrimaryRangeOrNull() const {
+Range* DomSelection::PrimaryRangeOrNull() const {
   return rangeCount() > 0 ? getRangeAt(0, ASSERT_NO_EXCEPTION) : nullptr;
 }
 
-EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
+EphemeralRange DomSelection::CreateRangeFromSelectionEditor() const {
   const VisibleSelection& selection = GetVisibleSelection();
   const Position& anchor = selection.Anchor().ParentAnchoredEquivalent();
   if (IsSelectionOfDocument() && !anchor.AnchorNode()->IsInShadowTree())
@@ -704,11 +704,11 @@ EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   return EphemeralRange(shadow_adjusted_focus, shadow_adjusted_anchor);
 }
 
-bool DOMSelection::IsSelectionOfDocument() const {
+bool DomSelection::IsSelectionOfDocument() const {
   return tree_scope_ == tree_scope_->GetDocument();
 }
 
-void DOMSelection::CacheRangeIfSelectionOfDocument(Range* range) const {
+void DomSelection::CacheRangeIfSelectionOfDocument(Range* range) const {
   if (!IsSelectionOfDocument())
     return;
   if (!DomWindow())
@@ -716,16 +716,16 @@ void DOMSelection::CacheRangeIfSelectionOfDocument(Range* range) const {
   Selection().CacheRangeOfDocument(range);
 }
 
-Range* DOMSelection::DocumentCachedRange() const {
+Range* DomSelection::DocumentCachedRange() const {
   return IsSelectionOfDocument() ? Selection().DocumentCachedRange() : nullptr;
 }
 
-void DOMSelection::ClearCachedRangeIfSelectionOfDocument() {
+void DomSelection::ClearCachedRangeIfSelectionOfDocument() {
   if (IsSelectionOfDocument())
     Selection().ClearDocumentCachedRange();
 }
 
-void DOMSelection::removeRange(Range* range, ExceptionState& exception_state) {
+void DomSelection::removeRange(Range* range, ExceptionState& exception_state) {
   DCHECK(range);
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (IsAvailable() && range == temp_range.GetRange()) {
@@ -738,12 +738,12 @@ void DOMSelection::removeRange(Range* range, ExceptionState& exception_state) {
   }
 }
 
-void DOMSelection::removeAllRanges() {
+void DomSelection::removeAllRanges() {
   if (IsAvailable())
     Selection().Clear();
 }
 
-void DOMSelection::addRange(Range* new_range) {
+void DomSelection::addRange(Range* new_range) {
   DCHECK(new_range);
 
   if (!IsAvailable())
@@ -773,7 +773,7 @@ void DOMSelection::addRange(Range* new_range) {
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-deletefromdocument
-void DOMSelection::deleteFromDocument() {
+void DomSelection::deleteFromDocument() {
   if (!IsAvailable())
     return;
 
@@ -803,7 +803,7 @@ void DOMSelection::deleteFromDocument() {
   selected_range->deleteContents(ASSERT_NO_EXCEPTION);
 }
 
-bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
+bool DomSelection::containsNode(const Node* n, bool allow_partial) const {
   DCHECK(n);
 
   if (!IsAvailable())
@@ -864,14 +864,14 @@ bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
   return allow_partial || n->IsTextNode();
 }
 
-void DOMSelection::selectAllChildren(Node* n, ExceptionState& exception_state) {
+void DomSelection::selectAllChildren(Node* n, ExceptionState& exception_state) {
   DCHECK(n);
 
   // This doesn't (and shouldn't) select text node characters.
   setBaseAndExtent(n, 0, n, n->CountChildren(), exception_state);
 }
 
-String DOMSelection::toString() {
+String DomSelection::toString() {
   if (!IsAvailable())
     return String();
 
@@ -897,7 +897,7 @@ String DOMSelection::toString() {
   return PlainText(range, behavior_builder.Build());
 }
 
-Node* DOMSelection::ShadowAdjustedNode(const Position& position) const {
+Node* DomSelection::ShadowAdjustedNode(const Position& position) const {
   if (position.IsNull())
     return nullptr;
 
@@ -914,7 +914,7 @@ Node* DOMSelection::ShadowAdjustedNode(const Position& position) const {
   return adjusted_node->ParentOrShadowHostNode();
 }
 
-unsigned DOMSelection::ShadowAdjustedOffset(const Position& position) const {
+unsigned DomSelection::ShadowAdjustedOffset(const Position& position) const {
   if (position.IsNull())
     return 0;
 
@@ -930,14 +930,14 @@ unsigned DOMSelection::ShadowAdjustedOffset(const Position& position) const {
   return adjusted_node->NodeIndex();
 }
 
-bool DOMSelection::IsValidForPosition(Node* node) const {
+bool DomSelection::IsValidForPosition(Node* node) const {
   DCHECK(DomWindow());
   if (!node)
     return true;
   return node->GetDocument() == DomWindow()->document() && node->isConnected();
 }
 
-void DOMSelection::AddConsoleWarning(const String& message) {
+void DomSelection::AddConsoleWarning(const String& message) {
   if (tree_scope_) {
     tree_scope_->GetDocument().AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
@@ -946,25 +946,25 @@ void DOMSelection::AddConsoleWarning(const String& message) {
   }
 }
 
-void DOMSelection::Trace(Visitor* visitor) const {
+void DomSelection::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 
-DOMSelection::TemporaryRange::TemporaryRange(const DOMSelection* selection,
+DomSelection::TemporaryRange::TemporaryRange(const DomSelection* selection,
                                              Range* range) {
   owner_dom_selection_ = selection;
   range_ = range;
 }
 
-DOMSelection::TemporaryRange::~TemporaryRange() {
+DomSelection::TemporaryRange::~TemporaryRange() {
   if (range_ && range_ != owner_dom_selection_->DocumentCachedRange()) {
     range_->Dispose();
   }
 }
 
-Range* DOMSelection::TemporaryRange::GetRange() {
+Range* DomSelection::TemporaryRange::GetRange() {
   return range_;
 }
 

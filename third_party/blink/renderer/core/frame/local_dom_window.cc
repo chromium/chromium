@@ -1396,7 +1396,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
   }
 }
 
-DOMSelection* LocalDOMWindow::getSelection() {
+DomSelection* LocalDOMWindow::getSelection() {
   if (!IsCurrentlyDisplayedInFrame())
     return nullptr;
 

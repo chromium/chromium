@@ -51,12 +51,12 @@ class Range;
 class SetSelectionOptions;
 class TreeScope;
 
-class CORE_EXPORT DOMSelection final : public ScriptWrappable,
+class CORE_EXPORT DomSelection final : public ScriptWrappable,
                                        public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DOMSelection(const TreeScope*);
+  explicit DomSelection(const TreeScope*);
 
   void ClearTreeScope();
 
@@ -118,13 +118,13 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
     STACK_ALLOCATED();
 
    public:
-    TemporaryRange(const DOMSelection*, Range*);
+    TemporaryRange(const DomSelection*, Range*);
     ~TemporaryRange();
     Range* GetRange();
 
    private:
     Range* range_ = nullptr;
-    const DOMSelection* owner_dom_selection_ = nullptr;
+    const DomSelection* owner_dom_selection_ = nullptr;
   };
 
   FrameSelection& Selection() const;

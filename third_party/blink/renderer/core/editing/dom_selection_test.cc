@@ -18,39 +18,39 @@
 
 namespace blink {
 
-class DOMSelectionTest : public EditingTestBase {
+class DomSelectionTest : public EditingTestBase {
  protected:
-  DOMSelection* GetDOMSelection() {
+  DomSelection* GetDomSelection() {
     return GetDocument().domWindow()->getSelection();
   }
 };
 
-TEST_F(DOMSelectionTest, ToStringSkipsUserSelectNone) {
+TEST_F(DomSelectionTest, ToStringSkipsUserSelectNone) {
   SetBodyContent(
       "a"
       "<a href=\"#\" style=\"user-select: none; -webkit-user-select: "
       "none;\">b</a>"
       "c");
 
-  GetDOMSelection()->selectAllChildren(GetDocument().body(),
+  GetDomSelection()->selectAllChildren(GetDocument().body(),
                                        ASSERT_NO_EXCEPTION);
 
-  String selection_text = GetDOMSelection()->toString();
+  String selection_text = GetDomSelection()->toString();
 
   EXPECT_EQ("ac", selection_text);
 }
 
-TEST_F(DOMSelectionTest, ToStringSkipsNestedUserSelectNone) {
+TEST_F(DomSelectionTest, ToStringSkipsNestedUserSelectNone) {
   SetBodyContent(
       "<div>start "
       "<span style=\"user-select: none;\">unselectable <strong>nested</strong> "
       "text</span>"
       " end</div>");
 
-  GetDOMSelection()->selectAllChildren(GetDocument().body(),
+  GetDomSelection()->selectAllChildren(GetDocument().body(),
                                        ASSERT_NO_EXCEPTION);
 
-  String selection_text = GetDOMSelection()->toString();
+  String selection_text = GetDomSelection()->toString();
 
   EXPECT_EQ("start  end", selection_text);
 }

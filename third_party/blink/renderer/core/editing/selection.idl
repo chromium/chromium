@@ -30,7 +30,7 @@
 // https://w3c.github.io/selection-api/#selection-interface
 [
     Exposed=Window,
-    ImplementedAs=DOMSelection
+    ImplementedAs=DomSelection
 ] interface Selection {
     [MeasureAs=SelectionAnchorNode] readonly attribute Node? anchorNode;
     [MeasureAs=SelectionAnchorOffset] readonly attribute unsigned long anchorOffset;
