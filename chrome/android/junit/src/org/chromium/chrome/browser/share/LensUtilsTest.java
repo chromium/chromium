@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.share;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import android.content.pm.PackageInfo;
 
 import org.junit.Assert;
@@ -20,9 +17,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Tests of {@link LensUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -50,25 +45,5 @@ public class LensUtilsTest {
         Assert.assertTrue(
                 "Feature incorrectly enabled when non-incognito",
                 LensUtils.isGoogleLensFeatureEnabled(false));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS
-                    + ":disableOnIncognito/true/logUkm/true")
-    public void shouldLogUkm_translateChipUkmLoggingEnabled() {
-        assertTrue(
-                LensUtils.shouldLogUkmByFeature(
-                        ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS
-                    + ":disableOnIncognito/true/logUkm/false")
-    public void shouldLogUkm_translateChipUkmLoggingDisabled() {
-        assertFalse(
-                LensUtils.shouldLogUkmByFeature(
-                        ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS));
     }
 }

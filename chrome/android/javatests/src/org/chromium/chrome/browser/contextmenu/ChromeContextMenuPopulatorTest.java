@@ -124,10 +124,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
-@DisableFeatures({
-    ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS,
-    ChromeFeatureList.LENS_OVERLAY_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.LENS_OVERLAY_ANDROID})
 public class ChromeContextMenuPopulatorTest {
     private static final String DATA_URL = "data:encodedstringblahblah";
     private static final String PAGE_URL = "http://www.blah.com/page_url";

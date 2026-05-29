@@ -95,8 +95,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
-import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
-import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -174,35 +172,6 @@ public class ContextMenuTest {
     private static final String TEST_GIF_IMAGE_FILE_EXTENSION = ".gif";
     private static final String TEST_JPG_IMAGE_FILE_EXTENSION = ".jpg";
 
-    // Test chip delegate that always returns valid chip render params.
-    private static final ChipDelegate FAKE_CHIP_DELEGATE =
-            new ChipDelegate() {
-                @Override
-                public boolean isChipSupported() {
-                    return true;
-                }
-
-                @Override
-                public void getChipRenderParams(Callback<ChipRenderParams> callback) {
-                    // Do nothing.
-                }
-
-                @Override
-                public void onMenuClosed() {
-                    // Do nothing.
-                }
-
-                @Override
-                public boolean isValidChipRenderParams(ChipRenderParams chipRenderParams) {
-                    return true;
-                }
-            };
-
-    // Test Lens chip delegate that always returns valid chip render params.
-    private void setupLensChipDelegate() {
-        LensChipDelegate.setShouldSkipIsEnabledCheckForTesting(true);
-    }
-
     private static final String[] TEST_FILES =
             new String[] {FILENAME_GIF, FILENAME_PNG, FILENAME_WEBM};
 
@@ -234,7 +203,6 @@ public class ContextMenuTest {
         CriteriaHelper.pollUiThread(() -> tab.isUserInteractable() && !tab.isLoading());
         mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
 
-        setupLensChipDelegate();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
         DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
         when(mMenuModelBridge.populateModelList()).thenReturn(new MVCListAdapter.ModelList());
@@ -493,170 +461,6 @@ public class ContextMenuTest {
                 "Context menu did not have window focus");
 
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return mActivityTestRule.getActivity().hasWindowFocus();
-                },
-                "Activity did not regain focus.");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
-    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    public void testLensTranslateChipNotShowingIfNotEnabled() throws Throwable {
-        Tab tab = mActivityTestRule.getActivityTab();
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
-        // Needs to run on UI thread so creation happens on same thread as dismissal.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertNull(
-                            "Chip popoup was initialized.",
-                            mMenuCoordinator.getCurrentPopupWindowForTesting());
-                });
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Browser"})
-    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    public void testSelectLensTranslateChip() throws Throwable {
-        Tab tab = mActivityTestRule.getActivityTab();
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
-        // Needs to run on UI thread so creation happens on same thread as dismissal.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMenuCoordinator.simulateTranslateImageClassificationForTesting();
-                    Assert.assertTrue(
-                            "Chip popoup not showing.",
-                            mMenuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-                    mMenuCoordinator.clickChipForTesting();
-                });
-
-        Assert.assertFalse(
-                "Chip popoup still showing.",
-                mMenuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
-    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @DisabledTest(message = "https://crbug.com/430777988")
-    public void testLensChipNotShowingAfterMenuDismissed() throws Throwable {
-        Tab tab = mActivityTestRule.getActivityTab();
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
-        // Dismiss context menu.
-        TestTouchUtils.singleClickView(
-                InstrumentationRegistry.getInstrumentation(),
-                tab.getView(),
-                tab.getView().getWidth() - 5,
-                tab.getView().getHeight() - 5);
-        // Needs to run on UI thread so creation happens on same thread as dismissal.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ChipRenderParams chipRenderParams =
-                            mMenuCoordinator.simulateImageClassificationForTesting();
-                    mMenuCoordinator
-                            .getChipRenderParamsCallbackForTesting(FAKE_CHIP_DELEGATE)
-                            .bind(chipRenderParams)
-                            .run();
-                    Assert.assertNull(
-                            "Chip popoup was initialized.",
-                            mMenuCoordinator.getCurrentPopupWindowForTesting());
-                });
-    }
-
-    // Assert that focus is unchanged and that the chip popup does not block the dismissal of the
-    // context menu.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
-    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @DisabledTest(message = "https://crbug.com/430777988")
-    public void testDismissContextMenuOnClickLensTranslateChipEnabled() throws TimeoutException {
-        Tab tab = mActivityTestRule.getActivityTab();
-        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
-        // Needs to run on UI thread so creation happens on same thread as dismissal.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMenuCoordinator.simulateTranslateImageClassificationForTesting());
-        Assert.assertNotNull("Context menu was not properly created", mMenuCoordinator);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !mActivityTestRule.getActivity().hasWindowFocus();
-                },
-                "Context menu did not have window focus");
-
-        TestTouchUtils.singleClickView(
-                InstrumentationRegistry.getInstrumentation(),
-                tab.getView(),
-                tab.getView().getWidth() - 5,
-                tab.getView().getHeight() - 5);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return mActivityTestRule.getActivity().hasWindowFocus();
-                },
-                "Activity did not regain focus.");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Browser"})
-    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    public void testSelectLensShoppingChip() throws Throwable {
-        Tab tab = mActivityTestRule.getActivityTab();
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
-        // Needs to run on UI thread so creation happens on same thread as dismissal.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMenuCoordinator.simulateShoppyImageClassificationForTesting();
-                    Assert.assertTrue(
-                            "Chip popoup not showing.",
-                            mMenuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-                    mMenuCoordinator.clickChipForTesting();
-                });
-
-        Assert.assertFalse(
-                "Chip popoup still showing.",
-                mMenuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-    }
-
-    // Assert that focus is unchanged and that the chip popup does not block the dismissal of the
-    // context menu.
-    @Test
-    @MediumTest
-    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @DisabledTest(message = "https://crbug.com/430777988")
-    public void testDismissContextMenuOnClickShoppingLensChipEnabled() throws TimeoutException {
-        Tab tab = mActivityTestRule.getActivityTab();
-        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
-        // Needs to run on UI thread so creation happens on same thread as dismissal.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMenuCoordinator.simulateShoppyImageClassificationForTesting());
-        Assert.assertNotNull("Context menu was not properly created", mMenuCoordinator);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !mActivityTestRule.getActivity().hasWindowFocus();
-                },
-                "Context menu did not have window focus");
-
-        TestTouchUtils.singleClickView(
-                InstrumentationRegistry.getInstrumentation(),
-                tab.getView(),
-                tab.getView().getWidth() - 5,
-                tab.getView().getHeight() - 5);
-
         CriteriaHelper.pollUiThread(
                 () -> {
                     return mActivityTestRule.getActivity().hasWindowFocus();

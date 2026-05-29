@@ -121,9 +121,9 @@ public class LensQueryParams {
     }
 
     /**
-     * Sets the imageUri.
-     * With this setter method we can set the imageUri in a retrieve image callback.
-     * e.g., LensChipDelegate#getChipRenderParams.
+     * Sets the imageUri. With this setter method we can set the imageUri in a retrieve image
+     * callback.
+     *
      * @param imageUri The image URI to set as a parameter
      */
     public void setImageUri(Uri imageUri) {

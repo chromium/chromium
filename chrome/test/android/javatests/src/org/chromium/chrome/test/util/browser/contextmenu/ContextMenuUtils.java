@@ -157,19 +157,6 @@ public class ContextMenuUtils {
      * @param expectedIntentPackage If firing an external intent the expected package name of the
      *     target.
      */
-    public static void selectAlreadyOpenedContextMenuChipWithExpectedIntent(
-            Instrumentation instrumentation,
-            Activity expectedActivity,
-            ContextMenuCoordinator menuCoordinator,
-            String openerDOMNodeId,
-            final int itemId,
-            String expectedIntentPackage)
-            throws TimeoutException {
-        Assert.assertNotNull("Menu coordinator was not provided.", menuCoordinator);
-
-        selectAlreadyOpenedContextMenuChip(
-                instrumentation, expectedActivity, menuCoordinator, itemId, expectedIntentPackage);
-    }
 
     /**
      * Long presses to open and selects an item from a context menu.
@@ -254,30 +241,6 @@ public class ContextMenuUtils {
         }
 
         instrumentation.runOnMainSync(() -> menuCoordinator.clickListItemForTesting(itemId));
-
-        if (expectedActivity != null) {
-            CriteriaHelper.pollInstrumentationThread(expectedActivity::hasWindowFocus);
-        }
-
-        if (expectedIntentPackage != null) {
-            // This line must only execute after all test behavior has completed
-            // or it will intefere with the expected behavior.
-            intended(IntentMatchers.hasPackage(expectedIntentPackage));
-            Intents.release();
-        }
-    }
-
-    private static void selectAlreadyOpenedContextMenuChip(
-            Instrumentation instrumentation,
-            final Activity expectedActivity,
-            final ContextMenuCoordinator menuCoordinator,
-            final int itemId,
-            final String expectedIntentPackage) {
-        if (expectedIntentPackage != null) {
-            Intents.init();
-        }
-
-        instrumentation.runOnMainSync(() -> menuCoordinator.clickChipForTesting());
 
         if (expectedActivity != null) {
             CriteriaHelper.pollInstrumentationThread(expectedActivity::hasWindowFocus);

@@ -24,7 +24,12 @@ import org.chromium.build.annotations.NullMarked;
 public @interface LensEntryPoint {
     int CONTEXT_MENU_SEARCH_MENU_ITEM = 0;
     int CONTEXT_MENU_SHOP_MENU_ITEM = 1;
-    int CONTEXT_MENU_CHIP = 2;
+
+    /**
+     * @deprecated Dead entry point.
+     */
+    @Deprecated int CONTEXT_MENU_CHIP = 2;
+
     int OMNIBOX = 3;
     int NEW_TAB_PAGE = 4;
     int TASKS_SURFACE = 5;

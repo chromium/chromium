@@ -34,7 +34,6 @@ import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -83,7 +82,6 @@ import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
-import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
@@ -682,7 +680,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         maybeRecordUkmLensShown();
                     } else {
                         imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
-                        maybeRecordUkmSearchByImageShown();
                     }
                 } else {
                     LensMetrics.recordLensSupportStatus(
@@ -1394,43 +1391,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public @Nullable ChipDelegate getChipDelegate() {
-        if (LensChipDelegate.isEnabled(isIncognito(), isTabletScreen())) {
-            // TODO(crbug.com/40549331): Migrate LensChipDelegate to GURL.
-            return new LensChipDelegate(
-                    mParams.getPageUrl().getSpec(),
-                    mParams.getTitleText(),
-                    mParams.getSrcUrl().getSpec(),
-                    getPageTitle(),
-                    isIncognito(),
-                    isTabletScreen(),
-                    mItemDelegate.getWebContents(),
-                    mNativeDelegate,
-                    getOnChipClickedCallback(),
-                    getOnChipShownCallback());
-        }
         return null;
-    }
-
-    private Callback<Integer> getOnChipShownCallback() {
-        return (Integer result) -> {
-            int chipType = result.intValue();
-            maybeRecordUkmLensChipShown(chipType);
-        };
-    }
-
-    private Callback<Integer> getOnChipClickedCallback() {
-        return (Integer result) -> {
-            int chipType = result.intValue();
-            switch (chipType) {
-                case ChipRenderParams.ChipType.LENS_TRANSLATE_CHIP:
-                    recordContextMenuSelection(
-                            ContextMenuUma.Action.TRANSLATE_WITH_GOOGLE_LENS_CHIP);
-                    return;
-                default:
-                    // Unreachable value.
-                    throw new IllegalArgumentException("Invalid chip type provided to callback.");
-            }
-        };
     }
 
     private static boolean isDefaultBrowser() {
@@ -1455,15 +1416,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     /** Record a UMA ping and a UKM ping if enabled. */
     protected void recordContextMenuSelection(int actionId) {
         ContextMenuUma.record(mParams, actionId);
-        if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
-            maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
-        }
+
         if (mParams.getOpenedFromInterestFor()) {
-          // Additionally record `interestfor` activations in a separate category,
-          // "LinkWithInterestFor", which only records activations from links that
-          // have the `interestfor` attribute.
-          String histogramName = "ContextMenu.SelectedOptionAndroid.LinkWithInterestFor";
-          ContextMenuUma.recordWithManualName(histogramName, actionId);
+            // Additionally record `interestfor` activations in a separate category,
+            // "LinkWithInterestFor", which only records activations from links that
+            // have the `interestfor` attribute.
+            String histogramName = "ContextMenu.SelectedOptionAndroid.LinkWithInterestFor";
+            ContextMenuUma.recordWithManualName(histogramName, actionId);
         }
     }
 
@@ -1621,37 +1580,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return title;
     }
 
-    /**
-     * If not disabled record a UKM for opening the context menu with the search by image option.
-     */
-    private void maybeRecordUkmSearchByImageShown() {
-        if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
-            maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "SearchByImage");
-        }
-    }
-
     /** If not disabled record a UKM for opening the context menu with the lens item. */
     private void maybeRecordUkmLensShown() {
         maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "SearchWithGoogleLens");
-    }
-
-    private void maybeRecordUkmLensChipShown(int chipType) {
-        String actionName = null;
-        switch (chipType) {
-            case ChipRenderParams.ChipType.LENS_TRANSLATE_CHIP:
-                if (!LensUtils.shouldLogUkmByFeature(
-                        ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS)) {
-                    return;
-                }
-                actionName = "TranslateWithGoogleLensChip";
-                break;
-            default:
-                // Unreachable value.
-                assert false : "Invalid chip type provided to callback.";
-        }
-        // Required by NullAway.
-        assert actionName != null;
-        maybeRecordBooleanUkm("ContextMenuAndroid.Shown", actionName);
     }
 
     /**
@@ -1670,22 +1601,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     /**
-     * Record a UKM for a menu action if the lens feature is enabled.
-     *
-     * @param eventName The name of the boolean UKM event to record.
-     * @param actionId The id of the action corresponding the ContextMenuUma.Action enum.
-     */
-    private void maybeRecordActionUkm(String eventName, int actionId) {
-        // Disable UKM reporting when incognito.
-        if (mItemDelegate.isIncognito()) return;
-        WebContents webContents = mItemDelegate.getWebContents();
-        if (webContents != null) {
-            new UkmRecorder(webContents, eventName).addMetric("Action", actionId).record();
-        }
-    }
-
-    /**
      * Check if the search by image is supported.
+     *
      * @param isSrcDownloadableScheme Whether the source url has a downloadable scheme.
      * @return True if search by image is supported.
      */

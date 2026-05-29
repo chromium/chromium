@@ -9,15 +9,12 @@ import android.content.Context;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /** This class provides utilities for intenting into Google Lens. */
 @NullMarked
 public class LensUtils {
-    private static final String LOG_UKM_PARAM_NAME = "logUkm";
-
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 
     /** See function for details. */
@@ -86,23 +83,5 @@ public class LensUtils {
 
     public static boolean isGoogleLensFeatureEnabled(boolean isIncognito) {
         return !isIncognito;
-    }
-
-    public static boolean shouldLogUkmForLensContextMenuFeatures() {
-        return shouldLogUkmByFeature(ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS);
-    }
-
-    /**
-     * Whether to log UKM pings for lens-related behavior. If in the experiment will log by default
-     * and will only be disabled if the parameter is not absent and set to true.
-     *
-     * @param featureName The feature that uses the UKM reporting.
-     */
-    public static boolean shouldLogUkmByFeature(String featureName) {
-        if (ChromeFeatureList.isEnabled(featureName)) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    featureName, LOG_UKM_PARAM_NAME, true);
-        }
-        return false;
     }
 }

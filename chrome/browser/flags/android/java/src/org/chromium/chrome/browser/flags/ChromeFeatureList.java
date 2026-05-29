@@ -386,8 +386,6 @@ public abstract class ChromeFeatureList {
             "ContextMenuSaveVideoFrameAs";
     public static final String CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID =
             "ContextMenuPictureInPictureAndroid";
-    public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
-            "ContextMenuTranslateWithGoogleLens";
     public static final String CONTROLS_VISIBILITY_FROM_NAVIGATIONS =
             "ControlsVisibilityFromNavigations";
     public static final String CORMORANT = "Cormorant";
