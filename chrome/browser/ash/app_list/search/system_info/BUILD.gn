@@ -29,7 +29,6 @@ static_library("system_info") {
     "//ash/strings",
     "//ash/webui/diagnostics_ui:url_constants",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",

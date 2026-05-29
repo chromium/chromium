@@ -63,7 +63,6 @@ static_library("arc") {
     "//ash/constants",
     "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/arc:arc_util",

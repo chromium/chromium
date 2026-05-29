@@ -28,7 +28,6 @@ static_library("omnibox") {
     "//ash/public/cpp/app_list/vector_icons",
     "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",

@@ -32,7 +32,6 @@ static_library("sync") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/notifications",

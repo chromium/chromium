@@ -28,7 +28,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

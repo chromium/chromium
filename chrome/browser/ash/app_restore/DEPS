@@ -37,7 +37,7 @@ include_rules = [
   "+chrome/common/buildflags.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_switches.h",
-  "+chrome/grit",
+  "+chrome/common/pref_names.h",
 ]
 
 specific_include_rules = {

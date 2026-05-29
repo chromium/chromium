@@ -16,7 +16,6 @@ static_library("geolocation") {
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants",
     "//base",
-    "//chrome/app:branded_strings_grit",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/experiences/settings_ui",

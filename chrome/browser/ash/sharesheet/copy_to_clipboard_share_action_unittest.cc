@@ -10,7 +10,6 @@
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_test_util.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_util.h"

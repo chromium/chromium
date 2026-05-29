@@ -244,7 +244,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app:command_ids",
-    "//chrome/app:generated_resources_grit",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/publishers",

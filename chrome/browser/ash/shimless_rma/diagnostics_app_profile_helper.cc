@@ -36,7 +36,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"

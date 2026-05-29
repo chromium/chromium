@@ -35,7 +35,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/common/chromeos/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:

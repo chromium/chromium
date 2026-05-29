@@ -42,8 +42,6 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"

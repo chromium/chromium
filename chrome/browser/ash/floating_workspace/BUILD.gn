@@ -23,7 +23,6 @@ static_library("floating_workspace") {
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/floating_sso",

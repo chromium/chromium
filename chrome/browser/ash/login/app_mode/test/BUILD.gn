@@ -98,7 +98,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//base/version_info",
-    "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

@@ -34,7 +34,6 @@ static_library("lock") {
   deps = [
     "//ash/constants",
     "//base:i18n",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:global_features",

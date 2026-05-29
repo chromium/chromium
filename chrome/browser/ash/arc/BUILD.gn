@@ -262,7 +262,6 @@ source_set("arc_util_impl") {
   deps = [
     ":arc_util",
     "//ash/constants",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/arc/session",
