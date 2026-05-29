@@ -2986,6 +2986,18 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testDeleteButtonVisibility_hasDesktopExperience() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mMediator.onFinishNativeInitialization();
+        doReturn("google.com").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.beginInput(new AutocompleteInput().setUserText("google.com"));
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
+    }
+
+    @Test
     public void testIsKeyboardSuppressed() {
         SettableNonNullObservableSupplier<Integer> popupStateSupplier =
                 ObservableSuppliers.createNonNull(FuseboxCoordinator.PopupState.HIDDEN);

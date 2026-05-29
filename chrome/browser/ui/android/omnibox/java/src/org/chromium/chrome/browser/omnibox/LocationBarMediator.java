@@ -1876,7 +1876,9 @@ class LocationBarMediator
     // Note - the delete button is never restricted by the toolbar width availability, so the
     // embedder does not need to be updated after its visibility changes.
     private void updateDeleteButtonVisibility() {
-        boolean showDeleteButton = isUrlBarFocusedWithUserInput();
+        boolean showDeleteButton =
+                isUrlBarFocusedWithUserInput()
+                        && !OmniboxCapabilities.hasDesktopExperience(mContext);
         if (isParentedToSuggestionsContainer()) {
             showDeleteButton |=
                     (mCurrentInput != null && !mCurrentInput.isConventionalRequestType());

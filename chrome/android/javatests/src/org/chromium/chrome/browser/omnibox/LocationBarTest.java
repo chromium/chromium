@@ -699,7 +699,7 @@ public class LocationBarTest {
             onView(withId(R.id.lens_camera_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
             onView(withId(R.id.delete_button))
-                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         } else {
             onView(withId(R.id.mic_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -719,8 +719,13 @@ public class LocationBarTest {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.lens_camera_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.delete_button))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        if (expectDesktopMode) {
+            onView(withId(R.id.delete_button))
+                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        } else {
+            onView(withId(R.id.delete_button))
+                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        }
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
