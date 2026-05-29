@@ -666,6 +666,7 @@ void ContextualCueingController::ShowCue(
 
   RecordCueShownMetrics(GetActiveTabSourceId(), cue.suggested_cuj(),
                         tab_metrics, show_latency);
+  cue_hidden_time_ = base::TimeTicks();
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
       << "Contextual cueing anchored message UI is not implemented for Android";
@@ -731,6 +732,7 @@ void ContextualCueingController::ShowCue(
 }
 
 void ContextualCueingController::OnCueHidden() {
+  cue_hidden_time_ = base::TimeTicks();
   cue_shown_time_ = base::TimeTicks();
 }
 
@@ -745,6 +747,9 @@ void ContextualCueingController::OnCueFormFactorShown(
 void ContextualCueingController::OnCueFormFactorHidden(
     CueFormFactor form_factor) {
   RecordCueFormFactorHidden(form_factor);
+  if (form_factor == CueFormFactor::kAnchoredMessage) {
+    cue_hidden_time_ = base::TimeTicks::Now();
+  }
   // Resets the cue state and shown timer only when the entire page action
   // icon is hidden, preserving the original contextual cue lifecycle behavior.
   if (form_factor == CueFormFactor::kIcon) {
@@ -779,7 +784,12 @@ void ContextualCueingController::OnCueClicked(
             kActionAnchoredContextualCue,
             {.priority =
                  page_actions::PageActionPriorityCategory::kContextualCue});
-        // TODO(crbug.com/515099278): Record a metric for this.
+        if (!cue_hidden_time_.is_null()) {
+          base::TimeDelta collapsed_duration =
+              base::TimeTicks::Now() - cue_hidden_time_;
+          RecordChipClickedCollapsedDuration(collapsed_duration);
+          cue_hidden_time_ = base::TimeTicks();
+        }
       }
     }
     return;

@@ -156,6 +156,7 @@ class ContextualCueingController
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
   base::CallbackListSubscription side_panel_shown_subscription_;
   base::TimeTicks cue_shown_time_;
+  base::TimeTicks cue_hidden_time_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<page_actions::PageActionObserver> page_action_observer_;

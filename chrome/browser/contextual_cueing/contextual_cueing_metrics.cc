@@ -104,4 +104,9 @@ void RecordCueFormFactorHidden(CueFormFactor form_factor) {
                                 form_factor);
 }
 
+void RecordChipClickedCollapsedDuration(base::TimeDelta collapsed_duration) {
+  base::UmaHistogramLongTimes(
+      "ContextualCueing.V2.ChipClicked.CollapsedDuration", collapsed_duration);
+}
+
 }  // namespace contextual_cueing

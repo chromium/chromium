@@ -41,6 +41,7 @@ void RecordContextualCueingDecision(
 
 void RecordCueFormFactorShown(CueFormFactor form_factor);
 void RecordCueFormFactorHidden(CueFormFactor form_factor);
+void RecordChipClickedCollapsedDuration(base::TimeDelta collapsed_duration);
 
 }  // namespace contextual_cueing
 

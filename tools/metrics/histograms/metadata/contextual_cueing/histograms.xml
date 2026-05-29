@@ -174,6 +174,17 @@ chromium-metrics-reviews@google.com.
   <token key="CueType" variants="ContextualCueingCueType"/>
 </histogram>
 
+<histogram name="ContextualCueing.V2.ChipClicked.CollapsedDuration" units="ms"
+    expires_after="2026-11-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    The duration from when the contextual cueing anchored message collapsed into
+    the omnibox chip/icon until the user clicked the chip to expand it. Recorded
+    when the user clicks the omnibox chip.
+  </summary>
+</histogram>
+
 <histogram name="ContextualCueing.V2.CueFormFactor.Hidden" enum="CueFormFactor"
     expires_after="2026-11-15">
   <owner>sophiechang@chromium.org</owner>
