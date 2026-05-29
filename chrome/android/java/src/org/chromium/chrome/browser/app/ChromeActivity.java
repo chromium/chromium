@@ -511,13 +511,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     protected void onPostCreate() {
         incrementCounter(ChromePreferenceKeys.UMA_ON_POSTCREATE_COUNTER);
         super.onPostCreate();
-
-        // WindowAndroid is created in #onCreateInternal, happened before onPostCreate.
-        if (getWindowAndroid() != null) {
-            // EdgeToEdgeStateProvider is created in #onCreate.
-            assert getEdgeToEdgeStateProvider() != null;
-            getEdgeToEdgeStateProvider().attach(getWindowAndroid());
-        }
     }
 
     @Override
@@ -567,6 +560,17 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // Ensure that mConfig is initialized before tablet mode changes.
         mConfig = getResources().getConfiguration();
+
+        // WindowAndroid is created in #onCreateInternal, happened before
+        // performPreInflationStartup.
+        // Note: This needs to be called before creating the RootUiCoordinator, which checks whether
+        // edge-to-edge is enabled by calling
+        // NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(WindowAndroid, boolean).
+        if (getWindowAndroid() != null) {
+            // EdgeToEdgeStateProvider is created in #onCreate.
+            assert getEdgeToEdgeStateProvider() != null;
+            getEdgeToEdgeStateProvider().attach(getWindowAndroid());
+        }
 
         // Make sure the root coordinator is created prior to calling super to ensure all
         // the activity lifecycle events are called.

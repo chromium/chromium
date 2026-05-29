@@ -683,7 +683,8 @@ public class RootUiCoordinator
                         shouldAllowThemingInNightMode(),
                         shouldAllowBrightThemeColors(),
                         shouldAllowThemingOnTablets());
-        if (NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(mIsTablet)) {
+        if (NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                mWindowAndroid, mIsTablet)) {
             mAdjustedTopUiThemeColorProvider =
                     new AdjustedTopUiThemeColorProvider(
                             mActivity,

@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
@@ -146,15 +147,11 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param reloadButtonCoordinator The coordinator for the reload button.
      * @param backButtonCoordinator The coordinator for the back button.
      * @param forwardButtonCoordinator The coordinator for the forward button.
-     * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
-     *     home button(s). Should be null on custom tabs.
-     * @param extensionsToolbarCoordinator Provides an {@link ExtensionsToolbarCoordinator} for
-     *     interacting with extension-related toolbar UI.
-     * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} for observering incognito
      *     state.
      * @param incognitoWindowCountSupplier A supplier for the number of incognito windows, used by
      *     the Incognito Indicator Menu on LFF.
+     * @param windowAndroid The instance of {@link WindowAndroid}.
      */
     @CallSuper
     @Initializer
@@ -174,7 +171,8 @@ public abstract class ToolbarLayout extends FrameLayout
             @Nullable SigninButtonCoordinator signinButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
-            @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
+            @Nullable Supplier<Integer> incognitoWindowCountSupplier,
+            WindowAndroid windowAndroid) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;

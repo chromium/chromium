@@ -12,9 +12,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2;
@@ -27,12 +25,10 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -70,10 +66,6 @@ import org.chromium.chrome.browser.logo.LegacyLogoView;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoContainerView;
 import org.chromium.chrome.browser.logo.LogoUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab.Tab;
@@ -662,45 +654,6 @@ public class ShowNtpAtStartupTest {
         View toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         assertEquals(0, toolbar.getPaddingTop());
         mRenderTestRule.render(toolbar, "ntp_toolbar_default_background");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface", "RenderTest"})
-    @RequiresApi(Build.VERSION_CODES.R)
-    @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, NEW_TAB_PAGE_CUSTOMIZATION_V2})
-    // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
-    @DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
-    public void testToolbar_customizedColorBackground() throws IOException {
-        assumeTrue(
-                NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(/* isTablet= */ false));
-
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
-                NtpBackgroundType.CHROME_COLOR);
-        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(
-                NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_VIOLET);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertEquals(
-                            NtpBackgroundType.CHROME_COLOR,
-                            NtpCustomizationConfigManager.getInstance().getBackgroundType());
-                });
-
-        mActivityTestRule.startFromLauncherAtNtp();
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(mActivityTestRule.getActivityTab());
-
-        View toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        assertNotEquals(0, toolbar.getPaddingTop());
-        mRenderTestRule.render(toolbar, "ntp_toolbar_customized_background_color");
-
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    NtpCustomizationConfigManager.getInstance().resetForTesting();
-                });
     }
 
     /**

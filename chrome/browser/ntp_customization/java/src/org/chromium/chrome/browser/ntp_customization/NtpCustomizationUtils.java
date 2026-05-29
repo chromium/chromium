@@ -987,18 +987,10 @@ public class NtpCustomizationUtils {
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
     public static boolean canEnableEdgeToEdgeForCustomizedTheme(
             WindowAndroid windowAndroid, boolean isTablet) {
-        return canEnableEdgeToEdgeForCustomizedTheme(isTablet)
-                && EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
-    }
-
-    /**
-     * Returns whether all flags are enabled to allow edge-to-edge for customized theme. This method
-     * doesn't check EdgeToEdgeStateProvider.
-     */
-    public static boolean canEnableEdgeToEdgeForCustomizedTheme(boolean isTablet) {
         return !isTablet
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled()
+                && EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
     }
 
     /**
@@ -1154,10 +1146,12 @@ public class NtpCustomizationUtils {
      * Returns whether it is necessary to apply an adjusted icon tint for NTPs. Returns true if the
      * device is a phone, edge-to-edge is enabled and NTP has a customized background image.
      *
+     * @param windowAndroid The instance of {@link WindowAndroid}.
      * @param isTablet Whether the current device is a tablet.
      */
-    public static boolean shouldAdjustIconTintForNtp(boolean isTablet) {
-        if (!canEnableEdgeToEdgeForCustomizedTheme(isTablet)) return false;
+    public static boolean shouldAdjustIconTintForNtp(
+            WindowAndroid windowAndroid, boolean isTablet) {
+        if (!canEnableEdgeToEdgeForCustomizedTheme(windowAndroid, isTablet)) return false;
 
         @NtpBackgroundType
         int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundType();

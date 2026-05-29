@@ -3631,6 +3631,11 @@ public class ToolbarManager
         return mLocationBar;
     }
 
+    /** Returns {@link WindowAndroid} */
+    public WindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
+    }
+
     /** Returns {@link LocationBarModel} for access in tests. */
     public LocationBarModel getLocationBarModelForTesting() {
         return mLocationBarModel;

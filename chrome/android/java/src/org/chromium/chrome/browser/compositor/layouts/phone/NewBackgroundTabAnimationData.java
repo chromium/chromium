@@ -138,7 +138,8 @@ public class NewBackgroundTabAnimationData {
 
         if (isRegularNtp
                 && mAnimationType == AnimationType.DEFAULT
-                && NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false)
+                && NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mToolbarManager.getWindowAndroid(), /* isTablet= */ false)
                 && !mIsBottomBarVisible) {
             mBrandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
             mIconTint = ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);

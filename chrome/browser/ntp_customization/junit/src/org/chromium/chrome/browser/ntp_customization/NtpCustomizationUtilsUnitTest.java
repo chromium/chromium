@@ -119,6 +119,7 @@ public class NtpCustomizationUtilsUnitTest {
 
     private Context mContext;
     private Resources mResources;
+    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
 
     @Before
     public void setUp() {
@@ -128,6 +129,8 @@ public class NtpCustomizationUtilsUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
         NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
+
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
     }
 
     @After
@@ -140,6 +143,7 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationUtils.createBackgroundImageFile());
         NtpCustomizationUtils.deleteBackgroundImageFileImpl(
                 NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
+        mEdgeToEdgeStateProvider.detach();
     }
 
     @Test
@@ -233,18 +237,16 @@ public class NtpCustomizationUtilsUnitTest {
                         mWindowAndroid, /* isTablet= */ true));
 
         // Case 3: Phone - should return true if EdgeToEdge is enabled.
-        EdgeToEdgeStateProvider edgeToEdgeStateProvider =
-                NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
         assertTrue(
                 NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
                         mWindowAndroid, /* isTablet= */ false));
 
         // Case 4: Phone - should return false if EdgeToEdge is disabled.
-        edgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(0);
+        mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(0);
         assertFalse(
                 NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
                         mWindowAndroid, /* isTablet= */ false));
-        edgeToEdgeStateProvider.detach();
+        mEdgeToEdgeStateProvider.detach();
     }
 
     @Test
@@ -922,7 +924,9 @@ public class NtpCustomizationUtilsUnitTest {
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.IMAGE_FROM_DISK);
 
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         configManager.resetForTesting();
     }
@@ -934,10 +938,14 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationConfigManager.setInstanceForTesting(configManager);
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.IMAGE_FROM_DISK);
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ true));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ true));
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.THEME_COLLECTION);
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ true));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ true));
 
         configManager.resetForTesting();
     }
@@ -949,25 +957,37 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationConfigManager.setInstanceForTesting(configManager);
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.COLOR_FROM_HEX);
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.IMAGE_FROM_DISK);
-        assertTrue(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertTrue(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.THEME_COLLECTION);
-        assertTrue(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertTrue(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         // Verifies that false is returned if the NTP's custom background is disabled by policy.
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
         when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
-        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+        assertFalse(
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
+                        mWindowAndroid, /* isTablet= */ false));
 
         configManager.resetForTesting();
     }

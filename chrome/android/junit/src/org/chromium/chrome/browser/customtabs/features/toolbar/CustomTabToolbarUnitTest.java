@@ -172,7 +172,8 @@ public class CustomTabToolbarUnitTest {
                 /* signinButtonCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
-                /* incognitoWindowCountSupplier= */ null);
+                /* incognitoWindowCountSupplier= */ null,
+                mWindowAndroid);
         mLocationBar =
                 (CustomTabLocationBar)
                         mToolbar.createLocationBar(

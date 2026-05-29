@@ -594,6 +594,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusBarColorController.maybeInitializeForCustomizedNtp(
                 mActivity,
                 NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                        windowAndroid,
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)));
         mCanAnimateBrowserControls =
                 () -> {
