@@ -12,10 +12,10 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_siwg_controller_interface.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace password_manager {
@@ -33,7 +33,7 @@ class ActorLoginMetricsHelper;
 // intrinsically tied to a specific browser tab.
 class ActorLoginDelegateImpl
     : public ActorLoginDelegate,
-      public content::WebContentsObserver,
+      public ActorLoginWebContentInterface,
       public content::WebContentsUserData<ActorLoginDelegateImpl>,
       public password_manager::PasswordManagerInterface::Observer {
  public:
@@ -65,9 +65,9 @@ class ActorLoginDelegateImpl
   void OnLoginSuccessful(
       const password_manager::PasswordForm& pending_form) override;
 
-  // content::WebContentsObserver implementation:
-  void WebContentsDestroyed() override;
-  void PrimaryPageChanged(content::Page& page) override;
+  // ActorLoginWebContentInterface implementation:
+  void OnPrimaryPageChanged() override;
+  void OnContextDestroyed() override;
 
 #if defined(UNIT_TEST)
   // TODO(crbug.com/508169237): Utilize `WebContentsTester` instead.

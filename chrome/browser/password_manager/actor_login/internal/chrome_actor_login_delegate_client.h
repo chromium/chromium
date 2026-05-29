@@ -10,12 +10,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class PrefService;
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -28,6 +30,7 @@ namespace actor_login {
 // Chrome-specific implementation of `ActorLoginDelegateClient`.
 class ChromeActorLoginDelegateClient
     : public ActorLoginDelegateClient,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<ChromeActorLoginDelegateClient> {
  public:
   ~ChromeActorLoginDelegateClient() override;
@@ -65,6 +68,10 @@ class ChromeActorLoginDelegateClient
   void ObserveControlStateForCurrentTask(
       base::OnceClosure on_released_callback) override;
   base::WeakPtr<ActorLoginDelegateClient> AsWeakPtr() override;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+  void WebContentsDestroyed() override;
 
  private:
   friend class content::WebContentsUserData<ChromeActorLoginDelegateClient>;

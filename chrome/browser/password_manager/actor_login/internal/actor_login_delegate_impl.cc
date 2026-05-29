@@ -58,8 +58,7 @@ ActorLoginDelegateImpl::ActorLoginDelegateImpl(
     content::WebContents* web_contents,
     ActorLoginDelegateClient* actor_login_delegate_client,
     password_manager::PasswordManagerClient* password_manager_client)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ActorLoginDelegateImpl>(*web_contents),
+    : content::WebContentsUserData<ActorLoginDelegateImpl>(*web_contents),
       actor_login_delegate_client_(actor_login_delegate_client->AsWeakPtr()),
       password_manager_client_(password_manager_client) {}
 
@@ -246,21 +245,21 @@ void ActorLoginDelegateImpl::OnLoginSuccessful(const PasswordForm& form) {
   ResetState();
 }
 
-void ActorLoginDelegateImpl::WebContentsDestroyed() {
-  get_credentials_helper_.reset();
-  credential_filler_.reset();
-  password_manager_observation_.Reset();
-  password_manager_client_ = nullptr;
-  actor_login_delegate_client_ = nullptr;
-}
-
-void ActorLoginDelegateImpl::PrimaryPageChanged(content::Page& page) {
+void ActorLoginDelegateImpl::OnPrimaryPageChanged() {
   // If the page changed while trying to fill in passwords,
   // signal this to the filler so it can interrupt its processes and
   // terminate the operation.
   if (credential_filler_) {
     credential_filler_->OnPrimaryPageChanged();
   }
+}
+
+void ActorLoginDelegateImpl::OnContextDestroyed() {
+  get_credentials_helper_.reset();
+  credential_filler_.reset();
+  password_manager_observation_.Reset();
+  password_manager_client_ = nullptr;
+  actor_login_delegate_client_ = nullptr;
 }
 
 void ActorLoginDelegateImpl::OnFederatedLoginCompletedPostButtonClick(

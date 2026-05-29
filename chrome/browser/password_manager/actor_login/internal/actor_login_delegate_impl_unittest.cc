@@ -250,6 +250,9 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
     // Reset the raw pointer before it becomes dangling in
     // ChromeRenderViewHostTestHarness::TearDown()
+    if (delegate_) {
+      delegate_->OnContextDestroyed();
+    }
     delegate_ = nullptr;
     delegate_client_.reset();
     web_contents_.reset();
@@ -649,7 +652,7 @@ TEST_F(ActorLoginDelegateImplTest,
   ASSERT_TRUE(future.Get().has_value());
 }
 
-TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
+TEST_F(ActorLoginDelegateImplTest, ContextDestroyedDuringAttemptLogin) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
   GURL url = GURL(kTestUrl);
@@ -664,10 +667,8 @@ TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
                           base::TimeTicks::Now(), future.GetCallback(),
                           /*action_sequence_delegate=*/nullptr);
 
+  delegate_->OnContextDestroyed();
   delegate_ = nullptr;
-  delegate_client_.reset();
-  // This should invoke `WebContentsDestroyed`.
-  web_contents_.reset();
   task_environment()->RunUntilIdle();
   // The callback should never be invoked because the
   // delegate was destroyed.
@@ -1583,8 +1584,8 @@ TEST_F(ActorLoginDelegateImplTest,
   EXPECT_EQ(attempt_login_future.Get().value(),
             LoginStatusResult::kRequiresButtonClick);
 
-  auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
-      delegate_->web_contents());
+  auto* request =
+      content::webid::FederatedEmbedderLoginRequest::Get(web_contents_.get());
   ASSERT_TRUE(request);
   request->OnFederatedResultReceived(
       content::webid::FederatedLoginResult::kContinuation);
@@ -1701,8 +1702,8 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
   EXPECT_EQ(attempt_login_future.Get().value(),
             LoginStatusResult::kRequiresButtonClick);
 
-  auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
-      delegate_->web_contents());
+  auto* request =
+      content::webid::FederatedEmbedderLoginRequest::Get(web_contents_.get());
   ASSERT_TRUE(request);
   request->OnFederatedResultReceived(
       content::webid::FederatedLoginResult::kAccountIsSignUp);
@@ -1742,8 +1743,8 @@ TEST_F(ActorLoginDelegateImplTest,
                           base::TimeTicks::Now(), future.GetCallback(),
                           /*action_sequence_delegate=*/nullptr);
 
-  // Trigger `PrimaryPageChanged` before the message loop runs.
-  delegate_->PrimaryPageChanged(delegate_->web_contents()->GetPrimaryPage());
+  // Trigger page navigation event.
+  delegate_->OnPrimaryPageChanged();
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(),

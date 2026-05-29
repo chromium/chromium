@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +19,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -31,10 +33,31 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeActorLoginDelegateClient);
 
 ChromeActorLoginDelegateClient::ChromeActorLoginDelegateClient(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<ChromeActorLoginDelegateClient>(
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeActorLoginDelegateClient>(
           *web_contents) {}
 
 ChromeActorLoginDelegateClient::~ChromeActorLoginDelegateClient() = default;
+
+void ChromeActorLoginDelegateClient::PrimaryPageChanged(content::Page& page) {
+  // TODO(crbug.com/472291829): Instead of retrieving an
+  // `ActorLoginDelegateImpl` from the web contents, maintain an
+  // `ActorLoginWebContentInterface` and use it instead.
+  if (auto* delegate =
+          ActorLoginDelegateImpl::FromWebContents(&GetWebContents())) {
+    delegate->OnPrimaryPageChanged();
+  }
+}
+
+void ChromeActorLoginDelegateClient::WebContentsDestroyed() {
+  // TODO(crbug.com/472291829): Instead of retrieving an
+  // `ActorLoginDelegateImpl` from the web contents, maintain an
+  // `ActorLoginWebContentInterface` and use it instead.
+  if (auto* delegate =
+          ActorLoginDelegateImpl::FromWebContents(&GetWebContents())) {
+    delegate->OnContextDestroyed();
+  }
+}
 
 PrefService* ChromeActorLoginDelegateClient::GetPrefs() {
   return Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
