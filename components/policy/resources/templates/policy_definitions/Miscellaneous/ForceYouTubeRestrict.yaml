@@ -1,15 +1,15 @@
-arc_support: This policy has no effect on the Android YouTube app. If Safety Mode
-  on YouTube should be enforced, installation of the Android YouTube app should be
+arc_support: This policy has no effect on the <ph name="ANDROID_NAME">Android</ph> <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> app. If Safety Mode
+  on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> should be enforced, installation of the <ph name="ANDROID_NAME">Android</ph> <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> app should be
   disallowed.
-caption: Force minimum YouTube Restricted Mode
+caption: Force minimum <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> Restricted Mode
 desc: |-
-  Setting the policy enforces a minimum Restricted mode on YouTube and prevents users from picking a less restricted mode. If you set it to:
+  Setting the policy enforces a minimum Restricted mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> and prevents users from picking a less restricted mode. If you set it to:
 
-        * Strict, Strict Restricted mode on YouTube is always active.
+        * Strict, Strict Restricted mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> is always active.
 
-        * Moderate, the user may only pick Moderate Restricted mode and Strict Restricted mode on YouTube, but can't turn off Restricted mode.
+        * Moderate, the user may only pick Moderate Restricted mode and Strict Restricted mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph>, but can't turn off Restricted mode.
 
-        * Off or if no value is set, Restricted mode on YouTube isn't enforced by Chrome. External policies such as YouTube policies might still enforce Restricted mode.
+        * Off or if no value is set, Restricted mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> isn't enforced by Chrome. External policies such as <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> policies might still enforce Restricted mode.
 default: 0
 example_value: 0
 features:
@@ -19,13 +19,13 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Do not enforce Restricted Mode on YouTube
+- caption: Do not enforce Restricted Mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph>
   name: 'Off'
   value: 0
-- caption: Enforce at least Moderate Restricted Mode on YouTube
+- caption: Enforce at least Moderate Restricted Mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph>
   name: Moderate
   value: 1
-- caption: Enforce Strict Restricted Mode for YouTube
+- caption: Enforce Strict Restricted Mode for <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph>
   name: Strict
   value: 2
 owners:

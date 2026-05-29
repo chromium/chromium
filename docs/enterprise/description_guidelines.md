@@ -226,6 +226,7 @@ avoid validation errors.
 * Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
+* YouTube: `<ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph>`
 
 #### Operating System
 

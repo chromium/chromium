@@ -3,11 +3,11 @@ deprecated: true
 desc: |-
   This policy is deprecated, please use <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME">ForceGoogleSafeSearch</ph> and <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME">ForceYouTubeRestrict</ph> instead. This policy is ignored if either the <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME">ForceGoogleSafeSearch</ph>, the <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME">ForceYouTubeRestrict</ph> or the (deprecated) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME">ForceYouTubeSafetyMode</ph> policies are set.
 
-        Forces queries in Google Web Search to be done with SafeSearch set to active and prevents users from changing this setting. This setting also forces Moderate Restricted Mode on YouTube.
+        Forces queries in Google Web Search to be done with SafeSearch set to active and prevents users from changing this setting. This setting also forces Moderate Restricted Mode on <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph>.
 
-        If you enable this setting, SafeSearch in Google Search and Moderate Restricted Mode YouTube is always active.
+        If you enable this setting, SafeSearch in Google Search and Moderate Restricted Mode <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> is always active.
 
-        If you disable this setting or do not set a value, SafeSearch in Google Search and Restricted Mode in YouTube is not enforced.
+        If you disable this setting or do not set a value, SafeSearch in Google Search and Restricted Mode in <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> is not enforced.
 default: false
 example_value: false
 features:
@@ -15,10 +15,10 @@ features:
   dynamic_refresh: true
   per_profile: true
 items:
-- caption: Force the use of SafeSearch in Google Search and YouTube Restricted Mode
+- caption: Force the use of SafeSearch in Google Search and <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> Restricted Mode
     to be at least Moderate
   value: true
-- caption: Do not enforce the use of SafeSearch in Google Search or YouTube Restricted
+- caption: Do not enforce the use of SafeSearch in Google Search or <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> Restricted
     Mode
   value: false
 owners:

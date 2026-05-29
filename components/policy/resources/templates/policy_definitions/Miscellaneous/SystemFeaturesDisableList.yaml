@@ -86,7 +86,7 @@ items:
 - caption: Google Chat (supported since version 135)
   name: google_chat
   value: google_chat
-- caption: YouTube (supported since version 135)
+- caption: <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> (supported since version 135)
   name: youtube
   value: youtube
 - caption: Google Maps (supported since version 135)
