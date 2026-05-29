@@ -954,6 +954,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->DelegateAcceptToPasswordManager(suggestion, metadata,
                                                 query_field_);
       break;
+    case SuggestionType::kAtMemorySearchAffordance:
+      manager_->GetAtMemoryManager().OnSearchSubmitted(
+          suggestion.main_text.value);
+      break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -973,15 +977,17 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAtMemoryNoConnection:
-    case SuggestionType::kAtMemorySearchAffordance:
       NOTREACHED();  // Should be handled elsewhere.
   }
 
-  if (suggestion.type == SuggestionType::kBnplEntry &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnablePayNowPayLaterTabs)) {
-    // Return early to prevent the popup from hiding. Popup will instead be
-    // closed by `BnplManager`.
+  if (suggestion.type == SuggestionType::kAtMemorySearchAffordance ||
+      (suggestion.type == SuggestionType::kBnplEntry &&
+       base::FeatureList::IsEnabled(
+           features::kAutofillEnablePayNowPayLaterTabs))) {
+    // Return early to prevent the popup from hiding.
+    // For `kBnplEntry`, the popup will instead be closed by `BnplManager`.
+    // For `kAtMemorySearchAffordance`, the popup remains open to show search
+    // results once the query completes.
     return;
   }
 

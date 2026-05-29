@@ -491,7 +491,14 @@ bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
   if (!IsAtMemoryTriggerSource(trigger_source_)) {
     return false;
   }
-  ExecuteQuery(filter, /*full_search=*/false);
+  if (filter.empty()) {
+    CancelPendingQueries();
+    ClearSuggestions();
+    return true;
+  }
+  std::vector<Suggestion> suggestions;
+  suggestions.push_back(CreateSearchAffordanceSuggestion(filter));
+  SendSuggestions(std::move(suggestions));
   return true;
 }
 
@@ -512,10 +519,8 @@ void AtMemoryManager::OnPopupHidden() {
   if (at_memory_funnel_metrics_) {
     at_memory_funnel_metrics_.reset();
   }
-  is_searching_ = false;
-  is_full_search_running_ = false;
+  CancelPendingQueries();
   is_context_secure_ = false;
-  query_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void AtMemoryManager::FillOrPreviewSearchResult(
@@ -616,22 +621,23 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter,
 
   // Cancel stale updates from previous queries.
   // At any point in time, there can be only one pending query.
-  query_weak_ptr_factory_.InvalidateWeakPtrs();
+  CancelPendingQueries();
 
   if (filter.empty()) {
-    is_searching_ = false;
-    is_full_search_running_ = false;
-    update_callback_.Run({}, trigger_source_);
+    ClearSuggestions();
     return;
   }
 
   is_searching_ = true;
   is_full_search_running_ = full_search;
-  // Notify the UI that search has started. We repass the current suggestions
-  // to prevent them from disappearing while the search is in progress.
-  base::span<const Suggestion> current_suggestions =
-      owner_->client().GetAutofillSuggestions();
-  update_callback_.Run(base::ToVector(current_suggestions), trigger_source_);
+  // Notify the UI that search has started.
+  if (full_search) {
+    ClearSuggestions();
+  } else {
+    base::span<const Suggestion> current_suggestions =
+        owner_->client().GetAutofillSuggestions();
+    SendSuggestions(base::ToVector(current_suggestions));
+  }
   query_service->Query(
       filter, full_search,
       base::BindRepeating(&AtMemoryManager::OnSearchResultsReceived,
@@ -652,6 +658,32 @@ Suggestion AtMemoryManager::CreateUnsupportedQuerySuggestion(
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.payload = Suggestion::OpenGeminiPayload(query);
   return suggestion;
+}
+
+Suggestion AtMemoryManager::CreateSearchAffordanceSuggestion(
+    std::u16string query) {
+  Suggestion affordance(std::move(query),
+                        SuggestionType::kAtMemorySearchAffordance);
+  affordance.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE))}};
+  affordance.icon = Suggestion::Icon::kSpark;
+  return affordance;
+}
+
+void AtMemoryManager::CancelPendingQueries() {
+  query_weak_ptr_factory_.InvalidateWeakPtrs();
+  is_searching_ = false;
+  is_full_search_running_ = false;
+}
+
+void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
+  if (update_callback_) {
+    update_callback_.Run(std::move(suggestions), trigger_source_);
+  }
+}
+
+void AtMemoryManager::ClearSuggestions() {
+  SendSuggestions({});
 }
 
 void AtMemoryManager::OnSearchResultsReceived(
@@ -682,17 +714,14 @@ void AtMemoryManager::OnSearchResultsReceived(
       result.status ==
       accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess;
   if (!expecting_more_data) {
-    query_weak_ptr_factory_.InvalidateWeakPtrs();
-    is_searching_ = false;
-    is_full_search_running_ = false;
+    CancelPendingQueries();
   }
 
   // For incremental search or if there are results, just return the results
   // as-is.
   if (!full_search || !result.entries.empty()) {
-    update_callback_.Run(
-        base::ToVector(result.entries, TransformResultIntoSuggestion),
-        trigger_source_);
+    SendSuggestions(
+        base::ToVector(result.entries, TransformResultIntoSuggestion));
     return;
   }
 
@@ -714,7 +743,7 @@ void AtMemoryManager::OnSearchResultsReceived(
       suggestions.push_back(CreateNoConnectionSuggestion());
       break;
   }
-  update_callback_.Run(std::move(suggestions), trigger_source_);
+  SendSuggestions(std::move(suggestions));
 }
 
 void AtMemoryManager::FillIban(

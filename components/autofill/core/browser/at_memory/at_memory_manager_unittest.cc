@@ -38,8 +38,10 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -56,6 +58,7 @@ using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::ResultOf;
+using ::testing::Property;
 using ::testing::SaveArg;
 
 class MockAutofillClient : public TestAutofillClient {
@@ -167,42 +170,91 @@ Matcher<Suggestion> EqualsAtMemorySuggestion(
       Field(&Suggestion::children, children_matcher));
 }
 
-// Tests that attempting to start a subsequent incremental (type-ahead) search
-// does not cancel an ongoing full search query, and the full search can still
-// successfully complete.
-TEST_F(AtMemoryManagerTest, IncrementalSearchBlockedByOngoingFullSearch) {
+// Tests that OnFilterChanged with a non-empty filter generates the search
+// affordance suggestion and does NOT trigger QueryService::Query.
+TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
       update_callback;
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback.Get());
 
-  // Trigger a full search.
+  EXPECT_CALL(mock_query_service(), Query).Times(0);
+
+  // Expect that OnFilterChanged triggers the callback with the single
+  // affordance suggestion.
+  std::vector<Suggestion> suggestions;
+  EXPECT_CALL(update_callback,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillOnce(SaveArg<0>(&suggestions));
+
+  manager().OnFilterChanged(u"query");
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kAtMemorySearchAffordance);
+  EXPECT_EQ(suggestions[0].main_text.value, u"query");
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kSpark);
+  EXPECT_FALSE(suggestions[0].is_loading);
+  ASSERT_EQ(suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE));
+}
+
+// Tests that OnFilterChanged with an empty filter clears all suggestions.
+TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
+  base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
+      update_callback;
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback.Get());
+
+  EXPECT_CALL(update_callback, Run(testing::IsEmpty(),
+                                   AutofillSuggestionTriggerSource::kAtMemory));
+
+  manager().OnFilterChanged(u"");
+}
+
+// Tests that OnSearchSubmitted triggers full search, clears currently shown
+// suggestions, and successfully updates suggestions with the results once they
+// arrive.
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_TriggersQueryServiceAndClearsSuggestions) {
+  base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
+      update_callback;
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback.Get());
+
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
-      full_search_callback;
+      search_callback;
   EXPECT_CALL(mock_query_service(),
               Query(std::u16string_view(u"query"), /*full_search=*/true, _))
-      .WillOnce(SaveArg<2>(&full_search_callback));
+      .WillOnce(SaveArg<2>(&search_callback));
+
+  // Expect that executing the query immediately clears suggestions.
+  EXPECT_CALL(update_callback, Run(testing::IsEmpty(),
+                                   AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
 
-  // Attempt to start a subsequent incremental search while the full search is
-  // running - it should be blocked.
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query2"), _, _))
-      .Times(0);
-  manager().OnFilterChanged(u"query2");
-
-  // Simulate results arriving for the full search and verify it completes.
-  std::vector<accessibility_annotator::MemorySearchResult> full_entries;
-  full_entries.emplace_back(accessibility_annotator::EntryType::kAddressFull,
-                            u"Address", u"Full Address");
-  accessibility_annotator::MemorySearchResults full_results(
+  // Simulate search results returning from the query service.
+  std::vector<accessibility_annotator::MemorySearchResult> entries;
+  entries.emplace_back(accessibility_annotator::EntryType::kAddressFull,
+                       u"Address", u"Full Address");
+  accessibility_annotator::MemorySearchResults results(
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(full_entries));
+      std::move(entries));
 
+  // Expect that when search results arrive, suggestions are updated.
+  std::vector<Suggestion> final_suggestions;
   EXPECT_CALL(update_callback,
-              Run(_, AutofillSuggestionTriggerSource::kAtMemory));
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillOnce(SaveArg<0>(&final_suggestions));
 
-  full_search_callback.Run(std::move(full_results));
+  search_callback.Run(std::move(results));
+
+  ASSERT_EQ(final_suggestions.size(), 1u);
+  EXPECT_EQ(final_suggestions[0].type, SuggestionType::kAtMemorySearchResult);
+  EXPECT_EQ(final_suggestions[0].main_text.value, u"Full Address");
 }
 
 // Tests that when filling an attribute (e.g. Passport Number), the manager

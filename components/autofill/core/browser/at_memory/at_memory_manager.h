@@ -92,6 +92,18 @@ class AtMemoryManager {
   // Creates a suggestion to display when the query is not supported.
   Suggestion CreateUnsupportedQuerySuggestion(const std::u16string& query);
 
+  // Creates the search affordance suggestion.
+  Suggestion CreateSearchAffordanceSuggestion(std::u16string query);
+
+  // Cancels any pending search queries and resets searching states.
+  void CancelPendingQueries();
+
+  // Sends the given suggestions to the UI.
+  void SendSuggestions(std::vector<Suggestion> suggestions);
+
+  // Clears all currently shown suggestions in the UI.
+  void ClearSuggestions();
+
   // Fills the unmasked IBAN value after fetching it.
   void FillIban(const Suggestion::AtMemoryPayload::Identifier& identifier,
                 const FormData& form,

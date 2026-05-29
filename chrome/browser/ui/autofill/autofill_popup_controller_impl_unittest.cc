@@ -93,7 +93,8 @@ class AutofillPopupControllerImplTest
                     AutofillSuggestionTriggerSource::kAtMemory);
   }
 
-  // Simulates a user typing a query into the @memory search bar, mocking the
+  // Simulates a user typing a query into the @memory search bar and explicitly
+  // submitting the search (by accepting the search affordance), mocking the
   // backend response and updating the UI state.
   void SimulateAtMemoryQuery(const std::u16string& query,
                              const std::vector<std::u16string>& results) {
@@ -115,9 +116,18 @@ class AutofillPopupControllerImplTest
     }
 
     // 3. Trigger the search via the UI.
+    // First, simulate the user typing the query, which updates the input
+    // filter.
     client().suggestion_controller(manager()).SetFilter(
         AutofillPopupController::StringFilter(query),
         AutofillPopupController::FilterSource::kInputChanged);
+    // Explicitly submit the search (simulating hitting the Enter key in the
+    // search bar).
+    if (!query.empty()) {
+      client().suggestion_controller(manager()).SetFilter(
+          AutofillPopupController::StringFilter(query),
+          AutofillPopupController::FilterSource::kSearchSubmitted);
+    }
 
     // 4. Manually update the controller's suggestions to reflect the mock
     // results. This bypasses the full async callback chain to keep the test

@@ -712,6 +712,19 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
   OnSuggestionsReturned(queried_field().global_id(), {});
 }
 
+// Tests that accepting the AtMemory search affordance suggestion does not
+// hide the popup.
+TEST_F(AutofillExternalDelegateTest,
+       AtMemorySearchAffordanceAcceptanceDoesNotHidePopup) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(u"some query", SuggestionType::kAtMemorySearchAffordance),
+      SuggestionPosition{.row = 0});
+}
+
 // Tests that accessibility annotator trigger source uses the caret anchor
 // type when valid caret bounds are available.
 TEST_F(AutofillExternalDelegateTest, AtMemoryUsesCaretAnchorWithValidCaret) {
@@ -864,8 +877,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
               testing::AllOf(HasMainText(u"About"),
                              HasLabel(expected_label))))));
 
-  // The first call notifies the UI that search has started (showing the
-  // throbber). The second call provides the actual results.
+  // The first call notifies the UI that search has started (clearing current
+  // suggestions). The second call provides the actual results.
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions(matcher, _, _, _));
@@ -911,19 +924,20 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
                   testing::Field(&Suggestion::type,
                                  SuggestionType::kManageAddress))))));
 
-  // The first call notifies the UI that search has started (showing the
-  // throbber). The second call provides the actual results.
+  // The first call notifies the UI that search has started (clearing current
+  // suggestions). The second call provides the actual results.
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions(matcher, _, _, _));
 
-  external_delegate().OnFilterChanged(u"addr");
+  external_delegate().OnSearchSubmitted(u"addr");
 }
 
 // Tests that when a new search is triggered while a previous one is still
-// running, the current suggestions remain visible.
+// running, the current suggestions are cleared before showing the new search
+// results.
 TEST_F(AutofillExternalDelegateTest,
-       AtMemorySuggestionsDoNotDisappearOnSubsequentSearch) {
+       AtMemorySubsequentSearchClearsPreviousSuggestions) {
   IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
 
   autofill_client().set_suggestion_ui_session_id(
@@ -954,7 +968,7 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::SizeIs(1), _, _, _));
 
-  external_delegate().OnFilterChanged(u"addr");
+  external_delegate().OnSearchSubmitted(u"addr");
 
   std::vector<Suggestion> suggestions1 = {Suggestion(
       u"1600 Amphitheatre Pkwy", SuggestionType::kAtMemorySearchResult)};
@@ -968,12 +982,12 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr2"), _, _))
       .WillOnce(testing::SaveArg<2>(&received_callback));
 
-  // We expect that UpdateAutofillSuggestions IS called with the previous
-  // suggestions when the search starts.
+  // We expect that UpdateAutofillSuggestions IS called when the second search
+  // starts, which clears the suggestions list.
   EXPECT_CALL(autofill_client(),
-              UpdateAutofillSuggestions(testing::SizeIs(1), _, _, _));
+              UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
 
-  external_delegate().OnFilterChanged(u"addr2");
+  external_delegate().OnSearchSubmitted(u"addr2");
 
   // Verify that expectations are met before we proceed.
   testing::Mock::VerifyAndClearExpectations(&autofill_client());
@@ -1011,8 +1025,10 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
   EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
       .WillOnce(testing::SaveArg<2>(&received_callback));
 
-  // Trigger the search.
-  external_delegate().OnFilterChanged(u"addr");
+  // Trigger the search, which clears suggestions.
+  EXPECT_CALL(autofill_client(),
+              UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
+  external_delegate().OnSearchSubmitted(u"addr");
 
   // Simulate first result arriving with kPartialResponseSuccess.
   std::vector<accessibility_annotator::MemorySearchResult> entries1;
@@ -1067,8 +1083,10 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
   EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
       .WillOnce(testing::SaveArg<2>(&received_callback));
 
-  // Trigger the search.
-  external_delegate().OnFilterChanged(u"addr");
+  // Trigger the search, which clears suggestions.
+  EXPECT_CALL(autofill_client(),
+              UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
+  external_delegate().OnSearchSubmitted(u"addr");
 
   // Simulate first result arriving with kFinalResponseSuccess.
   std::vector<accessibility_annotator::MemorySearchResult> entries1;
@@ -1123,7 +1141,9 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
       .WillOnce(testing::SaveArg<2>(&received_callback));
 
-  external_delegate().OnFilterChanged(u"addr");
+  EXPECT_CALL(autofill_client(),
+              UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
+  external_delegate().OnSearchSubmitted(u"addr");
 
   // Now user clears the filter.
   EXPECT_CALL(autofill_client(),
@@ -1164,7 +1184,9 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
   EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr1"), _, _))
       .WillOnce(testing::SaveArg<2>(&received_callback1));
 
-  external_delegate().OnFilterChanged(u"addr1");
+  EXPECT_CALL(autofill_client(),
+              UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
+  external_delegate().OnSearchSubmitted(u"addr1");
 
   // Trigger second search before first one completes.
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
@@ -1175,7 +1197,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
 
-  external_delegate().OnFilterChanged(u"addr2");
+  external_delegate().OnSearchSubmitted(u"addr2");
 
   // Now simulate results arriving for the FIRST query.
   std::vector<accessibility_annotator::MemorySearchResult> entries1;
