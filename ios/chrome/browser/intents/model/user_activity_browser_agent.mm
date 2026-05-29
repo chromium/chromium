@@ -120,6 +120,14 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
           isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     // App was launched by iOS as a result of Handoff.
     base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::HANDOFF);
+    if (![connection_information_ startupParameters]) {
+      AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+           initWithExternalURL:net::GURLWithNSURL(webpage_url)
+                   completeURL:net::GURLWithNSURL(webpage_url)
+               applicationMode:ApplicationModeForTabOpening::NORMAL
+          forceApplicationMode:NO];
+      [connection_information_ setStartupParameters:startup_params];
+    }
   } else if (spotlight::IsSpotlightAvailable() &&
              [user_activity.activityType
                  isEqualToString:CSSearchableItemActionType]) {
