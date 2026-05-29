@@ -55,6 +55,13 @@
   --document-icon-size: 16px;
   --injected-input-icon-size: 24px;
   --lens-submit-icon-extra-spacing: 0;
+
+  /* Energy Effect Motion Curves */
+  --emphasized-curve: cubic-bezier(0.2, 0, 0, 1);
+  --emphasized-decelerate-curve: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --standard-accelerate-curve: cubic-bezier(0.3, 0, 1, 1);
+  --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
 }
 
 :host([energy-effect-enabled_]) {
@@ -199,6 +206,35 @@
   opacity: 0;
 }
 
+#composebox,
+#contextualTasksSuggestionsContainer {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:host([is-zero-state]) #composebox,
+:host([is-zero-state]) #contextualTasksSuggestionsContainer {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+
+@keyframes zero-state-enter-composebox {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host(.play-zero-state[is-zero-state]) #composebox,
+:host(.play-zero-state[is-zero-state]) #contextualTasksSuggestionsContainer {
+  animation: zero-state-enter-composebox 900ms var(--emphasized-curve) both;
+}
+
 #composebox {
   --cr-composebox-font-size: 16px;
   --expanded-border-radius: var(--composebox-border-radius);
@@ -312,8 +348,6 @@
 }
 
 :host([is-zero-state][energy-effect-enabled_]) #composebox::part(input-container) {
-  animation: zero-state-input-plate-ease-in 900ms
-    var(--emphasized-curve);
   height: 100%;
 }
 
@@ -686,17 +720,9 @@
   padding-inline-end: 10px;
 }
 
-:host([is-zero-state][energy-effect-animation-enabled_]) #contextualTasksSuggestionsContainer {
-  animation: zero-state-recommendations-enter 600ms
-    var(--emphasized-decelerate-curve) forwards;
-}
-
-:host([is-zero-state][energy-effect-animation-enabled_]) #contextualTasksSuggestionsContainer::part(match-wrapper) {
-  animation: zero-state-recommendations-enter 600ms
-    var(--emphasized-decelerate-curve) both;
+:host(.play-zero-state[is-zero-state]) #contextualTasksSuggestionsContainer::part(match-wrapper) {
+  animation: zero-state-recommendations-enter 600ms var(--emphasized-decelerate-curve) both;
   animation-delay: calc(var(--match-wrapper-index, 0) * 50ms);
-  opacity: 0;
-  will-change: transform, opacity;
 }
 
 @keyframes zero-state-recommendations-enter {

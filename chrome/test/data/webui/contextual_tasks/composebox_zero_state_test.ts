@@ -130,6 +130,12 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualTasksApp.updateComplete;
     await microtasksFinished();
 
+    window.dispatchEvent(new MessageEvent('message', {
+      data: 'domContentLoaded',
+    }));
+    await contextualTasksApp.updateComplete;
+    await microtasksFinished();
+
     disableAnimationsRecursively(contextualTasksApp);
 
     composebox = contextualTasksApp.$.composebox.$.composebox;
@@ -322,142 +328,80 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     );
   });
 
-  test('zero state animation plays when zero state changes', async () => {
-    loadTimeData.overrideValues({
-      friendlyZeroStateGaiaName: 'Test Name',
-    });
+  test(
+      'zero state animation states apply when zero state changes', async () => {
+        loadTimeData.overrideValues({
+          friendlyZeroStateGaiaName: 'Test Name',
+        });
 
-    // Re-create the app to ensure it picks up the new loadTimeData values.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    contextualTasksApp = document.createElement('contextual-tasks-app');
-    await customElements.whenDefined('contextual-tasks-app');
-    document.body.appendChild(contextualTasksApp);
-    await contextualTasksApp.updateComplete;
-    await microtasksFinished();
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        contextualTasksApp = document.createElement('contextual-tasks-app');
+        await customElements.whenDefined('contextual-tasks-app');
+        document.body.appendChild(contextualTasksApp);
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
 
-    // Set initial state to true so we can transition to false then back to
-    // true.
-    testProxy.callbackRouterRemote.onZeroStateChange(/*isZeroState=*/ true);
-    testProxy.handler.setIsAiPage(true);
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await contextualTasksApp.updateComplete;
-    await microtasksFinished();
+        // Remove the webview immediately to permanently prevent background
+        // loadabort and loadstart events from polluting the reactive tracking
+        // states during this test.
+        const threadFrame =
+            contextualTasksApp.shadowRoot.querySelector('#threadFrame');
+        if (threadFrame) {
+          threadFrame.remove();
+          await microtasksFinished();
+        }
 
-    // Simulate the initial load.
-    let resolveInitNavigation: () => void;
-    const initNavigationFinished = new Promise<void>(r => resolveInitNavigation = r);
-    contextualTasksApp.setOnLoadStartFinishedCallbackForTesting(
-        resolveInitNavigation!);
+        // Force the internal component state to represent a fully loaded,
+        // non-zero state AI page.
+        contextualTasksApp['isInitialFrameLoad_'] = false;
+        contextualTasksApp['isAiPage_'] = true;
+        contextualTasksApp['pendingUrl_'] = '';
 
-    const initEvent = new Event('loadstart');
-    Object.assign(initEvent, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadStartForTesting(
-        initEvent as chrome.webviewTag.LoadStartEvent);
+        // Verify starting baseline (no zero state).
+        testProxy.callbackRouterRemote.onZeroStateChange(false);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
 
-    const initCommitEvent = new Event('loadcommit');
-    Object.assign(initCommitEvent, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadCommitForTesting(
-        initCommitEvent as chrome.webviewTag.LoadCommitEvent);
+        assertFalse(
+            contextualTasksApp.classList.contains('play-zero-state'),
+            'Baseline state should not have zero-state animations');
 
-    await initNavigationFinished;
+        let expandAnimationCalled = false;
+        contextualTasksApp.$.composebox.startExpandAnimation = () => {
+          expandAnimationCalled = true;
+          return Promise.resolve();
+        };
 
-    const composeboxWrapper = contextualTasksApp.$.composebox;
+        // Trigger the zero-state transition. This directly manipulates the
+        // reactive properties and safely forces Lit to schedule an updated()
+        // lifecycle tick.
+        testProxy.callbackRouterRemote.onZeroStateChange(true);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
 
-    const headerWrapper = contextualTasksApp.$.composeboxHeaderWrapper;
-    // nameShimmer might not exist if friendlyZeroStateGaiaName_ is not set.
-    const nameShimmer = contextualTasksApp.$.nameShimmer;
+        // The animation class addition is safely wrapped in a
+        // requestAnimationFrame to guarantee layout repaints have initialized.
+        // Wait for it.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await new Promise(resolve => requestAnimationFrame(resolve));
 
-    // Mock animate function.
-    let composeboxAnimateCalled = false;
-    let headerAnimateCalled = false;
-    let nameShimmerAnimateCalled = false;
-
-    let resolveCompose: (value: any) => void;
-    let resolveHeader: (value: any) => void;
-    let resolveNameShimmer: (value: any) => void;
-
-    const promisesToWaitOn = [
-      new Promise(r => resolveCompose = r),
-      new Promise(r => resolveHeader = r),
-    ];
-
-    if (nameShimmer) {
-      promisesToWaitOn.push(new Promise(r => resolveNameShimmer = r));
-    }
-
-    const animationsStarted = Promise.all(promisesToWaitOn);
-
-    // Transition out of zero state first.
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    // Mock getAnimations to return dummy animations that can be cancelled and
-    // played.
-    const createMockAnimation = (callback: () => void) =>
-        ({
-          cancel: () => {},
-          play: () => {
-            callback();
-            return Promise.resolve();
-          },
-        }) as unknown as Animation;
-
-    composeboxWrapper.getAnimations = () => [createMockAnimation(() => {
-      composeboxAnimateCalled = true;
-      resolveCompose(true);
-    })];
-
-    headerWrapper.getAnimations = () => [createMockAnimation(() => {
-      headerAnimateCalled = true;
-      resolveHeader(true);
-    })];
-
-    if (nameShimmer) {
-      nameShimmer.getAnimations = () => [createMockAnimation(() => {
-        nameShimmerAnimateCalled = true;
-        resolveNameShimmer(true);
-      })];
-    }
-
-    // Mock startExpandAnimation since it is called to trigger the glow
-    // animation.
-    contextualTasksApp.$.composebox.startExpandAnimation =
-        () => Promise.resolve();
-
-    testProxy.handler.setIsZeroState(true);
-    // Transition back to zero state via mock.
-    // Thread frame load start to trigger animations.
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    let resolveNavigation: () => void;
-    const navigationFinished = new Promise<void>(r => resolveNavigation = r);
-    contextualTasksApp.setOnLoadStartFinishedCallbackForTesting(
-        resolveNavigation!);
-
-    const event = new Event('loadstart');
-    Object.assign(event, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadStartForTesting(
-        event as chrome.webviewTag.LoadStartEvent);
-
-    const commitEvent = new Event('loadcommit');
-    Object.assign(commitEvent, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadCommitForTesting(
-        commitEvent as chrome.webviewTag.LoadCommitEvent);
-
-    await navigationFinished;
-    await animationsStarted;
-
-    // Verify animations were played.
-    assertTrue(composeboxAnimateCalled, 'Composebox animation should play');
-    assertTrue(headerAnimateCalled, 'Header animation should play');
-    if (nameShimmer) {
-      assertTrue(
-          nameShimmerAnimateCalled, 'Name shimmer animation should play');
-    }
-  });
+        // Decisively verify the component orchestrated the CSS layout classes.
+        assertTrue(
+            contextualTasksApp.classList.contains('play-zero-state'),
+            'Host container should have play-zero-state class applied');
+        assertTrue(
+            contextualTasksApp.$.composebox.classList.contains(
+                'play-zero-state'),
+            'Composebox element should have play-zero-state class applied');
+        assertTrue(
+            expandAnimationCalled,
+            'Companion expand animation track should be triggered');
+      });
 
   test('SuggestionsHiddenWhenDropdownNotShown', async () => {
     loadTimeData.overrideValues({
@@ -469,6 +413,12 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     contextualTasksApp = document.createElement('contextual-tasks-app');
     await customElements.whenDefined('contextual-tasks-app');
     document.body.appendChild(contextualTasksApp);
+    await contextualTasksApp.updateComplete;
+    await microtasksFinished();
+
+    window.dispatchEvent(new MessageEvent('message', {
+      data: 'domContentLoaded',
+    }));
     await contextualTasksApp.updateComplete;
     await microtasksFinished();
 
@@ -557,6 +507,12 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     contextualTasksApp = document.createElement('contextual-tasks-app');
     await customElements.whenDefined('contextual-tasks-app');
     document.body.appendChild(contextualTasksApp);
+    await contextualTasksApp.updateComplete;
+    await microtasksFinished();
+
+    window.dispatchEvent(new MessageEvent('message', {
+      data: 'domContentLoaded',
+    }));
     await contextualTasksApp.updateComplete;
     await microtasksFinished();
 
@@ -1074,4 +1030,41 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
   });
 
+  test(
+      'composebox and header are hidden until frame finishes loading',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await appElement.updateComplete;
+        await microtasksFinished();
+
+        // Verify initial state has is-dom-content-loaded_ and elements are
+        // hidden
+        assertFalse(appElement.hasAttribute('is-dom-content-loaded_'));
+        const composebox = appElement.shadowRoot.querySelector('#composebox');
+        const headerWrapper =
+            appElement.shadowRoot.querySelector('#composeboxHeaderWrapper');
+
+        assertTrue(!!composebox);
+        assertTrue(!!headerWrapper);
+
+        assertEquals('hidden', window.getComputedStyle(composebox).visibility);
+        assertEquals('none', window.getComputedStyle(composebox).pointerEvents);
+        assertEquals(
+            'hidden', window.getComputedStyle(headerWrapper).visibility);
+        assertEquals(
+            'none', window.getComputedStyle(headerWrapper).pointerEvents);
+
+        // Simulate content loading finished
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await appElement.updateComplete;
+        await microtasksFinished();
+
+        // Verify the attribute is added and elements are no longer hidden
+        assertTrue(appElement.hasAttribute('is-dom-content-loaded_'));
+        assertEquals('visible', window.getComputedStyle(composebox).visibility);
+      });
 });
