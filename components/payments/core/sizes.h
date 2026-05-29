@@ -22,7 +22,7 @@ inline constexpr int kSecurePaymentConfirmationIconHeightPx = 20;
 inline constexpr int kSecurePaymentConfirmationDefaultHeaderLogoHeight = 80;
 
 // The width of the header logo in the SPC Transaction UX.
-inline constexpr int kSecurePaymentConfirmationHeaderLogoWidth = 63;
+inline constexpr int kSecurePaymentConfirmationHeaderLogoWidth = 130;
 
 // The height of the header logo in the SPC Transaction UX.
 inline constexpr int kSecurePaymentConfirmationHeaderLogoHeight = 30;

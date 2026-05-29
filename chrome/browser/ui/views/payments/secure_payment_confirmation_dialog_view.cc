@@ -119,6 +119,31 @@ void UpdateProgressBarVisiblity(views::BubbleFrameView* bubble_frame_view,
   }
 }
 
+gfx::Size GetHeaderLogoSize(const SkBitmap& bitmap) {
+  gfx::Size image_size(bitmap.width(), bitmap.height());
+  if (image_size.IsEmpty()) {
+    return gfx::Size();
+  }
+  float aspect_ratio =
+      static_cast<float>(image_size.width()) / image_size.height();
+  float max_aspect_ratio =
+      static_cast<float>(payments::kSecurePaymentConfirmationHeaderLogoWidth) /
+      payments::kSecurePaymentConfirmationHeaderLogoHeight;
+
+  int width;
+  int height;
+  if (aspect_ratio > max_aspect_ratio) {
+    // Width is the limiting factor.
+    width = payments::kSecurePaymentConfirmationHeaderLogoWidth;
+    height = image_size.height() * width / image_size.width();
+  } else {
+    // Height is the limiting factor.
+    height = payments::kSecurePaymentConfirmationHeaderLogoHeight;
+    width = image_size.width() * height / image_size.height();
+  }
+  return gfx::Size(std::max(1, width), std::max(1, height));
+}
+
 }  // namespace
 
 // static
@@ -481,9 +506,7 @@ SecurePaymentConfirmationDialogView::CreateHeaderView() {
     logo->SetImage(
         ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFrom1xBitmap(
             *model_->header_logos().at(0)->icon)));
-    logo->SetImageSize(
-        gfx::Size(payments::kSecurePaymentConfirmationHeaderLogoWidth,
-                  payments::kSecurePaymentConfirmationHeaderLogoHeight));
+    logo->SetImageSize(GetHeaderLogoSize(*model_->header_logos().at(0)->icon));
     logo->SetAccessibleName(model_->header_logos().at(0)->label);
 
     container->AddChildView(std::move(logo));
@@ -507,8 +530,7 @@ SecurePaymentConfirmationDialogView::CreateHeaderView() {
   left_logo->SetImage(ui::ImageModel::FromImageSkia(
       gfx::ImageSkia::CreateFrom1xBitmap(*model_->header_logos().at(0)->icon)));
   left_logo->SetImageSize(
-      gfx::Size(payments::kSecurePaymentConfirmationHeaderLogoWidth,
-                payments::kSecurePaymentConfirmationHeaderLogoHeight));
+      GetHeaderLogoSize(*model_->header_logos().at(0)->icon));
   left_logo->SetAccessibleName(model_->header_logos().at(0)->label);
 
   auto* right_logo_container =
@@ -527,8 +549,7 @@ SecurePaymentConfirmationDialogView::CreateHeaderView() {
   right_logo->SetImage(ui::ImageModel::FromImageSkia(
       gfx::ImageSkia::CreateFrom1xBitmap(*model_->header_logos().at(1)->icon)));
   right_logo->SetImageSize(
-      gfx::Size(payments::kSecurePaymentConfirmationHeaderLogoWidth,
-                payments::kSecurePaymentConfirmationHeaderLogoHeight));
+      GetHeaderLogoSize(*model_->header_logos().at(1)->icon));
   right_logo->SetAccessibleName(model_->header_logos().at(1)->label);
 
   return container;
