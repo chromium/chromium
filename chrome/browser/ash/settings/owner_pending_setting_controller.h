@@ -131,6 +131,7 @@ class OwnerPendingSettingController
 
  private:
   friend class StatsReportingControllerTest;
+  friend class MetricsReportingLevelControllerTest;
 
   // Gets the current ownership status - owned, unowned, or unknown.
   DeviceSettingsService::OwnershipStatus GetOwnershipStatus() const;

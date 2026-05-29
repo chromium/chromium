@@ -186,6 +186,7 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
+#include "chrome/browser/ash/settings/metrics_reporting_level_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
@@ -1224,6 +1225,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #if BUILDFLAG(IS_CHROMEOS)
   browser_process_->platform_part()->InitializeCrosSettings();
   ash::StatsReportingController::Initialize(local_state);
+  ash::MetricsReportingLevelController::Initialize(local_state);
   arc::StabilityMetricsManager::Initialize(local_state);
   ash::HWDataUsageController::Initialize(local_state);
 #endif
@@ -2247,6 +2249,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   // Shutting down in the reverse order of Initialize().
   ash::HWDataUsageController::Shutdown();
   arc::StabilityMetricsManager::Shutdown();
+  ash::MetricsReportingLevelController::Shutdown();
   ash::StatsReportingController::Shutdown();
   browser_process_->platform_part()->ShutdownCrosSettings();
 #endif

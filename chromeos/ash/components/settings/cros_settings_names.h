@@ -117,6 +117,8 @@ inline constexpr char kSystemUse24HourClock[] = "cros.system.use_24hour_clock";
 inline constexpr char kDeviceOwner[] = "cros.device.owner";
 
 inline constexpr char kStatsReportingPref[] = "cros.metrics.reportingEnabled";
+inline constexpr char kMetricsReportingLevelPref[] =
+    "cros.metrics.metricsReportingLevel";
 
 inline constexpr char kReleaseChannel[] = "cros.system.releaseChannel";
 inline constexpr char kReleaseChannelDelegated[] =

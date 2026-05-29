@@ -38,6 +38,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/device_settings_cache.h"
+#include "components/metrics/metrics_reporting_level.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/features.h"
@@ -179,6 +180,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
     kStatsReportingPref,
+    kMetricsReportingLevelPref,
     kSystemLogUploadEnabled,
     kSystemProxySettings,
     kSystemTimezonePolicy,
@@ -933,6 +935,18 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     // enrolled devices, c.f. crbug.com/41156165.
     new_values_cache->SetBoolean(
         kStatsReportingPref, InstallAttributes::Get()->IsEnterpriseManaged());
+  }
+
+  if (policy.has_devicemetricsreportinglevel() &&
+      policy.devicemetricsreportinglevel().has_value()) {
+    new_values_cache->SetInteger(kMetricsReportingLevelPref,
+                                 policy.devicemetricsreportinglevel().value());
+  } else {
+    new_values_cache->SetInteger(
+        kMetricsReportingLevelPref,
+        static_cast<int>(InstallAttributes::Get()->IsEnterpriseManaged()
+                             ? metrics::MetricsReportingLevel::kBasic
+                             : metrics::MetricsReportingLevel::kNone));
   }
 
   if (policy.has_device_system_aec_enabled() &&

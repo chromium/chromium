@@ -569,6 +569,12 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     } else {
       NOTREACHED();
     }
+  } else if (path == kMetricsReportingLevelPref) {
+    if (value.is_int()) {
+      settings.mutable_devicemetricsreportinglevel()->set_value(value.GetInt());
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kAccountsPrefUsers) {
     RepeatedPtrField<std::string>* list = nullptr;
     // Only use the whitelist if the allowlist isn't being used.
