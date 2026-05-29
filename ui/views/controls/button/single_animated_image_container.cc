@@ -62,6 +62,9 @@ SingleAnimatedImageContainer::SingleAnimatedImageContainer(
     LabelButton* button,
     base::TimeDelta animation_duration)
     : button_(button), slide_animation_(this) {
+  // Lottie animations have easing function embedded into them,
+  // so we use a linear tween for the slide animation.
+  slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   if (animation_duration.is_positive()) {
     slide_animation_.SetSlideDuration(animation_duration);
   }
