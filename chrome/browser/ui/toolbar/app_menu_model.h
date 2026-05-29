@@ -23,6 +23,7 @@
 class AppMenuIconController;
 class BookmarkSubMenuModel;
 class Browser;
+class BrowserWindowInterface;
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
 //
@@ -231,6 +232,13 @@ class AppMenuModel : public ui::SimpleMenuModel,
   static constexpr int kMinOtherProfileCommandId = kMinRecentTabsCommandId + 1;
   static constexpr int kMinTabGroupsCommandId = kMinOtherProfileCommandId + 1;
   static constexpr int kMinCompareCommandId = kMinTabGroupsCommandId + 1;
+
+  // TODO(mickeyburks): Highlight menu items dynamically through
+  // TutorialDescription instead of hardcoding specific tutorials here.
+  // Returns the alert menu item that should be highlighted if a tutorial
+  // is currently running in the given browser.
+  static AlertMenuItem GetAlertItemForRunningTutorial(
+      BrowserWindowInterface* browser);
 
   // Creates an app menu model for the given browser. Init() must be called
   // before passing this to an AppMenu. |app_menu_icon_controller|, if provided,

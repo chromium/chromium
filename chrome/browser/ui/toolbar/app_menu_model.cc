@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -89,7 +90,9 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1227,6 +1230,20 @@ void ExtensionsMenuModel::Build(Browser* browser) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppMenuModel
+
+// static
+AlertMenuItem AppMenuModel::GetAlertItemForRunningTutorial(
+    BrowserWindowInterface* browser) {
+  if (!browser || !browser->GetWindow()) {
+    return AlertMenuItem::kNone;
+  }
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(browser->GetProfile());
+  return service && service->tutorial_service().IsRunningTutorial(
+                        kPasswordManagerTutorialId)
+             ? AlertMenuItem::kPasswordManager
+             : AlertMenuItem::kNone;
+}
 
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
                            Browser* browser,

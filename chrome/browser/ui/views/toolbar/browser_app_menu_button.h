@@ -83,11 +83,6 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Sets the padding values depending on whether label is visible.
   void UpdateLayoutInsets();
 
-  // TODO(mickeyburks): Highlight menu items through TutorialDescription
-  // Returns an AlertMenuItem which indicates the app menu item that
-  // should be alerted while certain tutorials are running.
-  AlertMenuItem GetAlertItemForRunningTutorial();
-
   AppMenuIconController::TypeAndSeverity type_and_severity_{
       AppMenuIconController::IconType::kNone,
       AppMenuIconController::Severity::kNone};

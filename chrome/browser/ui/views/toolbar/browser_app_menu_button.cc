@@ -18,9 +18,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/user_education/tutorial_identifiers.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -100,30 +97,13 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
 
   // Allow highlighting menu items when the menu was opened while
   // certain tutorials are running.
-  AlertMenuItem alert_item = GetAlertItemForRunningTutorial();
+  AlertMenuItem alert_item =
+      AppMenuModel::GetAlertItemForRunningTutorial(browser);
 
   RunMenu(std::make_unique<AppMenuModel>(
               toolbar_view_, browser, toolbar_view_->app_menu_icon_controller(),
               alert_item),
           browser, run_types);
-}
-
-AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
-  Browser* browser = toolbar_view_->browser();
-  BrowserWindow* browser_window = browser->window();
-
-  if (browser_window == nullptr) {
-    return AlertMenuItem::kNone;
-  }
-
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(browser->profile());
-  if (service && service->tutorial_service().IsRunningTutorial(
-                     kPasswordManagerTutorialId)) {
-    return AlertMenuItem::kPasswordManager;
-  }
-
-  return AlertMenuItem::kNone;
 }
 
 void BrowserAppMenuButton::OnMenuClosed() {
