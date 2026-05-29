@@ -112,46 +112,58 @@ void Verify(base::WeakPtr<AutofillManager> manager,
           manager, email_field_id, email_utf8, token_field_id));
 }
 
-void OnEmailVerificationDecision(base::WeakPtr<AutofillManager> manager,
-                                 FieldGlobalId email_field_id,
-                                 std::string email_utf8,
-                                 FieldGlobalId token_field_id,
-                                 std::string nonce,
-                                 content::webid::EmailVerifier::Result result,
-                                 bool confirmed) {
+void OnEmailVerificationDecision(
+    base::WeakPtr<AutofillManager> manager,
+    FieldGlobalId email_field_id,
+    std::string email_utf8,
+    FieldGlobalId token_field_id,
+    std::string nonce,
+    content::webid::EmailVerifier::Result result,
+    AutofillClient::EmailVerificationPermissionUiResult ui_result) {
   if (!manager) {
     return;
   }
 
   PrefService* prefs = manager->client().GetPrefs();
-  if (prefs && confirmed) {
-    // Remember that the user allows this email address.
-    ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-    base::DictValue email_dict;
-    if (const auto* existing =
-            prefs->GetDict(prefs::kAutofillEmailVerificationState)
-                .FindDict(email_utf8)) {
-      email_dict = existing->Clone();
+  switch (ui_result) {
+    case AutofillClient::EmailVerificationPermissionUiResult::kAccepted: {
+      if (prefs) {
+        // Remember that the user allows this email address.
+        ScopedDictPrefUpdate update(prefs,
+                                    prefs::kAutofillEmailVerificationState);
+        base::DictValue email_dict;
+        if (const base::DictValue* existing =
+                prefs->GetDict(prefs::kAutofillEmailVerificationState)
+                    .FindDict(email_utf8)) {
+          email_dict = existing->Clone();
+        }
+        email_dict.Set("allowed", true);
+        email_dict.Set("issuer_site", result.issuer_site.Serialize());
+        email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+        update->Set(email_utf8, std::move(email_dict));
+      }
+
+      Verify(manager, email_field_id, email_utf8, token_field_id, nonce,
+             result);
+
+      if (manager->client().GetStrikeDatabase()) {
+        EmailVerificationStrikeDatabase strike_db(
+            manager->client().GetStrikeDatabase());
+        strike_db.ClearStrikes(
+            EmailVerificationStrikeDatabase::GetId(email_utf8));
+      }
+      break;
     }
-    email_dict.Set("allowed", true);
-    email_dict.Set("issuer_site", result.issuer_site.Serialize());
-    email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-    update->Set(email_utf8, std::move(email_dict));
-
-    Verify(manager, email_field_id, email_utf8, token_field_id, nonce, result);
-  }
-
-  // We update the strike database whether the user declined or not.
-  // If declined: Add a strike
-  // If accepted: Clear previous strikes.
-  if (manager->client().GetStrikeDatabase()) {
-    EmailVerificationStrikeDatabase strike_db(
-        manager->client().GetStrikeDatabase());
-    if (confirmed) {
-      strike_db.ClearStrikes(
-          EmailVerificationStrikeDatabase::GetId(email_utf8));
-    } else {
-      strike_db.AddStrike(EmailVerificationStrikeDatabase::GetId(email_utf8));
+    case AutofillClient::EmailVerificationPermissionUiResult::kDeclined: {
+      if (manager->client().GetStrikeDatabase()) {
+        EmailVerificationStrikeDatabase strike_db(
+            manager->client().GetStrikeDatabase());
+        strike_db.AddStrike(EmailVerificationStrikeDatabase::GetId(email_utf8));
+      }
+      break;
+    }
+    case AutofillClient::EmailVerificationPermissionUiResult::kIgnored: {
+      break;
     }
   }
 }

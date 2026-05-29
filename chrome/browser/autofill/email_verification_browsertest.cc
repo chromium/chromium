@@ -92,7 +92,8 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
                 (const gfx::RectF&,
                  const net::SchemefulSite&,
                  const std::u16string&,
-                 base::OnceCallback<void(bool)>),
+                 base::OnceCallback<void(
+                     AutofillClient::EmailVerificationPermissionUiResult)>),
                 (override));
 
     EmailVerifierDelegate& email_verifier_delegate() {
@@ -242,8 +243,11 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
-                    base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                    base::OnceCallback<void(
+                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        callback) {
+        std::move(callback).Run(
+            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
         popup_run_loop.Quit();
       });
   EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
@@ -329,8 +333,11 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
-                    base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                    base::OnceCallback<void(
+                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        callback) {
+        std::move(callback).Run(
+            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
         popup_run_loop1.Quit();
       });
 
@@ -358,8 +365,11 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
-                    base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                    base::OnceCallback<void(
+                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        callback) {
+        std::move(callback).Run(
+            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
         popup_run_loop2.Quit();
       });
 
@@ -451,8 +461,11 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
-                    base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                    base::OnceCallback<void(
+                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        callback) {
+        std::move(callback).Run(
+            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
         popup_run_loop.Quit();
       });
   EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);

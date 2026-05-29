@@ -89,7 +89,8 @@ class MockAutofillClient : public TestContentAutofillClient {
               (const gfx::RectF&,
                const net::SchemefulSite&,
                const std::u16string&,
-               base::OnceCallback<void(bool)>),
+               base::OnceCallback<
+                   void(AutofillClient::EmailVerificationPermissionUiResult)>),
               (override));
 
   EmailVerifierDelegate& delegate() { return *delegate_; }
@@ -173,7 +174,8 @@ class EmailVerifierDelegateTestBase
   void SetUpVerificationExpectations(
       const FormStructure& form,
       const std::string& email = "johndoe@hades.com",
-      bool accept_popup = true) {
+      AutofillClient::EmailVerificationPermissionUiResult popup_result =
+          AutofillClient::EmailVerificationPermissionUiResult::kAccepted) {
     EmailVerifier::Result verifiable_result;
     verifiable_result.email = email;
     verifiable_result.issuer_site =
@@ -182,9 +184,11 @@ class EmailVerifierDelegateTestBase
     EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _))
         .WillOnce(RunOnceCallback<1>(verifiable_result));
 
-    if (accept_popup) {
+    if (popup_result ==
+        AutofillClient::EmailVerificationPermissionUiResult::kAccepted) {
       EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
-          .WillOnce(RunOnceCallback<2>("test_token"));
+          .WillOnce(
+              RunOnceCallback<2>(std::optional<std::string>("test_token")));
 
       EXPECT_CALL(driver(), SendEmailVerificationToken(
                                 form.field(0)->global_id(), email,
@@ -197,7 +201,7 @@ class EmailVerifierDelegateTestBase
     EXPECT_CALL(client(), ShowEmailVerificationPopup)
         .WillOnce(
             DoAll(base::test::RunClosure(popup_shown_run_loop_.QuitClosure()),
-                  RunOnceCallback<3>(accept_popup)));
+                  RunOnceCallback<3>(popup_result)));
 
     EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
   }
@@ -246,8 +250,13 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
   FormStructure* form = SetUpValidForm();
 
-  SetUpVerificationExpectations(*form, "johndoe@hades.com",
-                                /*accept_popup=*/false);
+  SetUpVerificationExpectations(
+      *form, "johndoe@hades.com",
+      AutofillClient::EmailVerificationPermissionUiResult::kDeclined);
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationStrikeDatabase strike_db(client().GetStrikeDatabase());
+  std::string email_utf8 = "johndoe@hades.com";
 
   AutofillProfile profile = test::GetFullProfile();
 
@@ -258,6 +267,40 @@ TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 
   popup_shown_run_loop_.Run();
+
+  // Verify that 1 strike was added.
+  EXPECT_EQ(
+      strike_db.GetStrikes(EmailVerificationStrikeDatabase::GetId(email_utf8)),
+      1);
+}
+
+// Verifies that if the prompt is dismissed (not declined), no strikes are
+// added.
+TEST_F(EmailVerifierDelegateTest, VerificationDismissed) {
+  FormStructure* form = SetUpValidForm();
+
+  SetUpVerificationExpectations(
+      *form, "johndoe@hades.com",
+      AutofillClient::EmailVerificationPermissionUiResult::kIgnored);
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationStrikeDatabase strike_db(client().GetStrikeDatabase());
+  std::string email_utf8 = "johndoe@hades.com";
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id(), form->field(1)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  popup_shown_run_loop_.Run();
+
+  // Verify that no strike was added.
+  EXPECT_EQ(
+      strike_db.GetStrikes(EmailVerificationStrikeDatabase::GetId(email_utf8)),
+      0);
 }
 
 // Verifies that if the base feature is explicitly overridden to disabled,
@@ -387,11 +430,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
                 RunOnceCallback<2>(std::nullopt)));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
-                    const std::u16string&,
-                    base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiResult::kAccepted));
 
   // When the verification fails, the event is not dispatched.
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);

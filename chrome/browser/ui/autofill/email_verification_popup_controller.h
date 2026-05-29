@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -45,12 +46,13 @@ class EmailVerificationPopupController
   ~EmailVerificationPopupController() override;
 
   // Shows the email verification popup anchored to the element bounds.
-  // `callback` is invoked with the user's decision (true for confirmed, false
-  // otherwise).
+  // `callback` is invoked with the user's decision
+  // (AutofillClient::EmailVerificationPermissionUiResult).
   void Show(const gfx::RectF& element_bounds,
             const net::SchemefulSite& issuer,
             const std::u16string& email,
-            base::OnceCallback<void(bool)> callback);
+            base::OnceCallback<void(
+                AutofillClient::EmailVerificationPermissionUiResult)> callback);
 
   // autofill::AutofillPopupViewDelegate:
   void Hide(autofill::SuggestionHidingReason reason) override;
@@ -100,14 +102,16 @@ class EmailVerificationPopupController
  private:
   void OnConfirm();
   void OnCancel();
-  void HideImpl(bool confirmed, EvpPermissionUiStatus status);
+  void HideImpl(AutofillClient::EmailVerificationPermissionUiResult result,
+                EvpPermissionUiStatus status);
   bool OverlapsWithPictureInPictureWindow() const;
 
   // The bounds of the element that triggered the popup.
   gfx::RectF element_bounds_;
 
   // The callback to invoke with the user's decision.
-  base::OnceCallback<void(bool)> callback_;
+  base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiResult)>
+      callback_;
 
   // The view representing the popup.
   base::WeakPtr<EmailVerificationPopupView> view_;

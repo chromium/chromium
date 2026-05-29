@@ -276,7 +276,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const gfx::RectF& element_bounds,
       const net::SchemefulSite& issuer_site,
       const std::u16string& email,
-      base::OnceCallback<void(bool)> callback) final;
+      base::OnceCallback<void(EmailVerificationPermissionUiResult)> callback)
+      final;
 
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>

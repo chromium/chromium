@@ -381,8 +381,8 @@ void AutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
     const net::SchemefulSite& issuer_site,
     const std::u16string& email,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
+    base::OnceCallback<void(EmailVerificationPermissionUiResult)> callback) {
+  std::move(callback).Run(EmailVerificationPermissionUiResult::kIgnored);
 }
 
 OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
