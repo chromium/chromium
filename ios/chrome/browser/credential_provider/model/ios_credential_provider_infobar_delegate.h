@@ -11,11 +11,16 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "ui/base/models/image_model.h"
 
 @protocol SettingsCommands;
+
+namespace password_manager {
+struct CredentialUIEntry;
+}  // namespace password_manager
 
 class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
@@ -46,7 +51,10 @@ class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
 
  private:
-  void ShowPasskeyDetails() const;
+  void ShowPasskeyDetails();
+
+  void ShowPasskeyDetailsAfterAnimation(
+      password_manager::CredentialUIEntry credential);
 
   // User account identification string.
   std::string account_string_;
@@ -56,6 +64,9 @@ class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Settings handler to open the passkey details menu.
   __weak id<SettingsCommands> settings_handler_;
+
+  base::WeakPtrFactory<IOSCredentialProviderInfoBarDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_IOS_CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_H_

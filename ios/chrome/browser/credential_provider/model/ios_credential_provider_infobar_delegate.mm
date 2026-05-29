@@ -6,8 +6,10 @@
 
 #import <utility>
 
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -77,7 +79,7 @@ bool IOSCredentialProviderInfoBarDelegate::Accept() {
   return true;
 }
 
-void IOSCredentialProviderInfoBarDelegate::ShowPasskeyDetails() const {
+void IOSCredentialProviderInfoBarDelegate::ShowPasskeyDetails() {
   std::vector<sync_pb::WebauthnCredentialSpecifics> specifics({passkey_});
   std::vector<password_manager::PasskeyCredential> passkeyCredentials =
       password_manager::PasskeyCredential::FromCredentialSpecifics(specifics);
@@ -90,8 +92,13 @@ void IOSCredentialProviderInfoBarDelegate::ShowPasskeyDetails() const {
   // Attempting to show the passkey details right away can result in a race
   // condition between the reauthentication module and the infobar. Dispatching
   // this ensures it runs after the infobar animation completes.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [settings_handler_ showPasswordDetailsForCredential:credential
-                                             inEditMode:NO];
-  });
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&IOSCredentialProviderInfoBarDelegate::
+                                    ShowPasskeyDetailsAfterAnimation,
+                                weak_ptr_factory_.GetWeakPtr(), credential));
+}
+
+void IOSCredentialProviderInfoBarDelegate::ShowPasskeyDetailsAfterAnimation(
+    password_manager::CredentialUIEntry credential) {
+  [settings_handler_ showPasswordDetailsForCredential:credential inEditMode:NO];
 }
