@@ -17,6 +17,16 @@ struct HttpRequestHeaderKeyValuePair {
   mojo_base.mojom.ByteString value;
 };
 
+// Typemapped to `network::HttpRequestHeaders`.
 struct HttpRequestHeaders {
   array<HttpRequestHeaderKeyValuePair> headers;
+};
+
+// Typemapped to `network::HttpRequestHeadersUpdateParams`.
+// See the class comment of `network::HttpRequestHeadersUpdateParams` for
+// details.
+struct HttpRequestHeadersUpdateParams {
+  array<string> removed_headers;
+  HttpRequestHeaders modified_headers;
+  HttpRequestHeaders modified_cors_exempt_headers;
 };

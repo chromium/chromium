@@ -48,4 +48,15 @@ bool StructTraits<network::mojom::HttpRequestHeadersDataView,
   return true;
 }
 
+// static
+bool StructTraits<network::mojom::HttpRequestHeadersUpdateParamsDataView,
+                  network::HttpRequestHeadersUpdateParams>::
+    Read(network::mojom::HttpRequestHeadersUpdateParamsDataView data,
+         network::HttpRequestHeadersUpdateParams* headers_update_params) {
+  return data.ReadRemovedHeaders(&headers_update_params->removed_headers) &&
+         data.ReadModifiedHeaders(&headers_update_params->modified_headers) &&
+         data.ReadModifiedCorsExemptHeaders(
+             &headers_update_params->modified_cors_exempt_headers);
+}
+
 }  // namespace mojo

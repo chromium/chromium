@@ -850,6 +850,7 @@ source_set("tests") {
     "hash_value_mojom_traits_unittest.cc",
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
+    "http_request_headers_mojom_traits_unittest.cc",
     "http_response_headers_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",
     "integrity_policy_parser_unittest.cc",
