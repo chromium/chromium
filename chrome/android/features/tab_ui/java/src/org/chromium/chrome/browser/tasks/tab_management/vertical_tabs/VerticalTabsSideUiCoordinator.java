@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 
 /**
  * Coordinator that acts as a container for the Vertical Tab List within the Side UI framework. This
@@ -42,6 +43,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     @Override
     public View getView() {
         return mRootView;
+    }
+
+    @Override
+    public @SideUiId int getSideUiId() {
+        return SideUiId.VERTICAL_TABS;
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerProperties;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.ui.base.ViewUtils;
 
 /** Implementation of {@link SidePanelContainerCoordinator}. */
@@ -87,7 +88,8 @@ final class SidePanelContainerCoordinatorImpl
         // determineContainerWidth().
         @Px int sidePanelMaxWidth = ViewUtils.dpToPx(mParentActivity, WIDE_SIDE_PANEL_WIDTH_DP);
         mSideUiCoordinator.requestUpdateContainer(
-                new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, sidePanelMaxWidth),
+                new SideUiContainerProperties(
+                        SideUiId.SIDE_PANEL, SIDE_PANEL_DEFAULT_ANCHOR_SIDE, sidePanelMaxWidth),
                 suppressAnimations);
         // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
         //  finished.
@@ -100,7 +102,8 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "removeContentAndClose", suppressAnimations);
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.requestUpdateContainer(
-                new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0),
+                new SideUiContainerProperties(
+                        SideUiId.SIDE_PANEL, SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0),
                 suppressAnimations);
         // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
         //  finished.
@@ -132,6 +135,11 @@ final class SidePanelContainerCoordinatorImpl
     public @Nullable View getContentView() {
         ThreadUtils.assertOnUiThread();
         return mCurrentContent != null ? mCurrentContent.mView : null;
+    }
+
+    @Override
+    public @SideUiId int getSideUiId() {
+        return SideUiId.SIDE_PANEL;
     }
 
     @Override

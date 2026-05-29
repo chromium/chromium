@@ -14,6 +14,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
@@ -74,8 +75,8 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
     @Override
     public void onSideUiSpecsChanged(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
-        params.leftMargin = mBaseLeftMargin + sideUiSpecs.leftWidth();
-        params.rightMargin = mBaseRightMargin + sideUiSpecs.rightWidth();
+        params.leftMargin = mBaseLeftMargin + sideUiSpecs.getWidth(AnchorSide.LEFT);
+        params.rightMargin = mBaseRightMargin + sideUiSpecs.getWidth(AnchorSide.RIGHT);
         mView.setLayoutParams(params);
     }
 

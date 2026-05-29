@@ -11,6 +11,7 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 
 /**
  * Container for a side UI view that will be anchored to either the left or right side of the main
@@ -33,6 +34,13 @@ public interface SideUiContainer {
      * @return the {@link View} held by this container.
      */
     View getView();
+
+    /**
+     * Returns the unique ID assigned to this {@lin SideUiContainer}. The value should be one of the
+     * entries listed in {@link SideUiCoordinator#SideUiId}.
+     */
+    @SideUiId
+    int getSideUiId();
 
     /**
      * Called by {@link SideUiCoordinator} for this container to determine its final width given the

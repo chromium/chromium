@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -157,9 +158,8 @@ public class ActorOverlayCoordinator {
 
         @Override
         public void onSideUiSpecsChanged(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
-            // Note - start and end are being renamed to left and right.
-            mModel.set(ActorOverlayProperties.LEFT_MARGIN, sideUiSpecs.leftWidth());
-            mModel.set(ActorOverlayProperties.RIGHT_MARGIN, sideUiSpecs.rightWidth());
+            mModel.set(ActorOverlayProperties.LEFT_MARGIN, sideUiSpecs.getWidth(AnchorSide.LEFT));
+            mModel.set(ActorOverlayProperties.RIGHT_MARGIN, sideUiSpecs.getWidth(AnchorSide.RIGHT));
         }
     }
 

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.ui.accessibility.KeyboardFocusRow;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -198,7 +199,8 @@ import java.util.function.Supplier;
         // The next item in the focus cycle order is the SIDE_PANEL, if it is shown.
         if (AndroidSidePanelEnabledFn.isEnabled()) {
             var sideUiStateProvider = mSideUiStateProviderSupplier.get();
-            if (sideUiStateProvider != null && sideUiStateProvider.isRightContainerShowing()) {
+            if (sideUiStateProvider != null
+                    && sideUiStateProvider.isSideUiShowing(SideUiId.SIDE_PANEL)) {
                 keyboardFocusRows.add(KeyboardFocusRow.SIDE_PANEL);
             }
         }

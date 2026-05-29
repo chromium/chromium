@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
@@ -373,14 +374,10 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        int startMargin =
-                LocalizationUtils.isLayoutRtl()
-                        ? sideUiSpecs.rightWidth()
-                        : sideUiSpecs.leftWidth();
-        int endMargin =
-                LocalizationUtils.isLayoutRtl()
-                        ? sideUiSpecs.leftWidth()
-                        : sideUiSpecs.rightWidth();
+        int leftWidth = sideUiSpecs.getWidth(AnchorSide.LEFT);
+        int rightWidth = sideUiSpecs.getWidth(AnchorSide.RIGHT);
+        int startMargin = LocalizationUtils.isLayoutRtl() ? rightWidth : leftWidth;
+        int endMargin = LocalizationUtils.isLayoutRtl() ? leftWidth : rightWidth;
 
         setLayoutMargins(
                 /* layoutMarginStart= */ startMargin * mPxToDp,
