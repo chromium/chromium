@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebGPU copyElementImageToTexture error conditions tests</title>
+    <meta charset="utf-8" />
+    <link rel="help" href="https://github.com/WICG/html-in-canvas" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
+    <style>
+      #canvas {
+        width: 100px;
+        height: 100px;
+      }
+      #child {
+        width: 50px;
+        height: 50px;
+        background: green;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="100" height="100" layoutsubtree>
+      <div id="child"></div>
+    </canvas>
+
+    <script type="module">
+      import { resizeToPixelGrid } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+      promise_test(async t => {
+        const adapter = await navigator.gpu.requestAdapter();
+        const device = await adapter.requestDevice();
+        const queue = device.queue;
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('webgpu');
+        ctx.configure({
+          device: device,
+          format: navigator.gpu.getPreferredCanvasFormat(),
+          usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+        });
+
+        await resizeToPixelGrid(canvas);
+        await waitForCanvasPaint(canvas);
+        const child = document.getElementById('child');
+
+        const texture = device.createTexture({
+          size: [10, 10, 1],
+          format: 'rgba8unorm',
+          usage: GPUTextureUsage.COPY_DST
+        });
+
+        const destination = { texture: texture };
+
+        // Helper to generate a source dict.
+        function makeSource(src, sx, sy, swidth, sheight) {
+          const source = { source: src };
+          if (sx !== undefined) source.sx = sx;
+          if (sy !== undefined) source.sy = sy;
+          if (swidth !== undefined) source.swidth = swidth;
+          if (sheight !== undefined) source.sheight = sheight;
+          return source;
+        }
+
+        // Helper to generate a dest dict.
+        function makeDest(dest, width, height) {
+          const d = { destination: dest };
+          if (width !== undefined) d.width = width;
+          if (height !== undefined) d.height = height;
+          return d;
+        }
+
+        // 1. Verify (sx, sy, swidth, sheight) validation.
+        // Must specify all or none.
+
+        // None specified: should NOT throw.
+        queue.copyElementImageToTexture(makeSource(child), makeDest(destination));
+
+        // All specified: should NOT throw.
+        queue.copyElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination));
+
+        // Mismatched: should throw OperationError.
+        const mismatchSrcCases = [
+          makeSource(child, 0), // Only sx
+          makeSource(child, 0, 0), // sx, sy
+          makeSource(child, 0, 0, 10), // sx, sy, swidth
+          makeSource(child, undefined, 0, 10, 10), // sy, swidth, sheight
+          makeSource(child, 0, undefined, 10, 10), // sx, swidth, sheight
+          makeSource(child, 0, 0, undefined, 10), // sx, sy, sheight
+        ];
+
+        for (const src of mismatchSrcCases) {
+          assert_throws_dom("OperationError",
+            () => queue.copyElementImageToTexture(src, makeDest(destination)),
+            `Should throw OperationError for mismatched source params: ${JSON.stringify(src)}`
+          );
+        }
+
+        // 2. Verify (width, height) validation.
+        // Must specify neither or both.
+
+        // Neither specified: should NOT throw.
+        queue.copyElementImageToTexture(makeSource(child), makeDest(destination));
+
+        // Both specified: should NOT throw.
+        queue.copyElementImageToTexture(makeSource(child), makeDest(destination, 10, 10));
+
+        // Mismatched: should throw OperationError.
+        const mismatchDestCases = [
+          makeDest(destination, 10), // Only width
+          makeDest(destination, undefined, 10), // Only height
+        ];
+
+        for (const dest of mismatchDestCases) {
+          assert_throws_dom("OperationError",
+            () => queue.copyElementImageToTexture(makeSource(child), dest),
+            `Should throw OperationError for mismatched dest params: ${JSON.stringify(dest)}`
+          );
+        }
+
+        // 3. Mixed cases.
+        // Valid sx/sy/swidth/sheight (all) and valid width/height (both) -> should not throw.
+        queue.copyElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10, 10));
+
+        // Mismatched sx/sy/swidth/sheight (some) and valid width/height (both) -> should throw OperationError.
+        assert_throws_dom("OperationError",
+          () => queue.copyElementImageToTexture(makeSource(child, 0, 0, 10), makeDest(destination, 10, 10)),
+          "Should throw OperationError for mismatched source and valid dest"
+        );
+
+        // Valid sx/sy/swidth/sheight (all) and mismatched width/height (one) -> should throw OperationError.
+        assert_throws_dom("OperationError",
+          () => queue.copyElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10)),
+          "Should throw OperationError for valid source and mismatched dest"
+        );
+
+      }, "copyElementImageToTexture parameter group validation");
+    </script>
+  </body>
+</html>

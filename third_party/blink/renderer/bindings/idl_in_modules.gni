@@ -1074,6 +1074,8 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webgpu/gpu_compute_pass_timestamp_writes.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline_descriptor.idl",
+  "//third_party/blink/renderer/modules/webgpu/gpu_copy_element_image_destination.idl",
+  "//third_party/blink/renderer/modules/webgpu/gpu_copy_element_image_source.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_depth_stencil_state.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_device.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_device_descriptor.idl",

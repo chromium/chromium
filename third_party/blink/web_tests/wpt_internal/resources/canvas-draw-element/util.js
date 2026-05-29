@@ -261,28 +261,29 @@ void main(){
 
 function copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY,
                                         sx, sy, swidth, sheight) {
-  if (scaleX !== undefined && scaleY !== undefined &&
-      sx !== undefined && sy !== undefined &&
-      swidth !== undefined && sheight !== undefined) {
-    const cvs = ctx.canvas;
-    const destWidth = swidth * scaleX * (cvs.width / cvs.clientWidth);
-    const destHeight = sheight * scaleY * (cvs.height / cvs.clientHeight);
-    queue.copyElementImageToTexture(
-      target, sx, sy, swidth, sheight, destWidth, destHeight,
-      { texture: ctx.getCurrentTexture() });
-  } else if (scaleX !== undefined && scaleY !== undefined) {
-    const [destWidth, destHeight] =
-          computeScaledDestinationSize(ctx.canvas, target, scaleX, scaleY);
-    queue.copyElementImageToTexture(
-      target, destWidth, destHeight, { texture: ctx.getCurrentTexture() });
-  } else if (sx !== undefined && sy !== undefined &&
-             swidth !== undefined && sheight !== undefined) {
-    queue.copyElementImageToTexture(
-      target, sx, sy, swidth, sheight, { texture: ctx.getCurrentTexture() });
-  } else {
-    queue.copyElementImageToTexture(
-      target, { texture: ctx.getCurrentTexture() });
+  const sourceDict = { source: target };
+  if (sx !== undefined) sourceDict.sx = sx;
+  if (sy !== undefined) sourceDict.sy = sy;
+  if (swidth !== undefined) sourceDict.swidth = swidth;
+  if (sheight !== undefined) sourceDict.sheight = sheight;
+
+  const destDict = { destination: { texture: ctx.getCurrentTexture() } };
+
+  if (scaleX !== undefined && scaleY !== undefined) {
+    let destWidth, destHeight;
+    if (sx !== undefined && sy !== undefined && swidth !== undefined && sheight !== undefined) {
+      const cvs = ctx.canvas;
+      destWidth = swidth * scaleX * (cvs.width / cvs.clientWidth);
+      destHeight = sheight * scaleY * (cvs.height / cvs.clientHeight);
+    } else {
+      [destWidth, destHeight] =
+            computeScaledDestinationSize(ctx.canvas, target, scaleX, scaleY);
+    }
+    destDict.width = destWidth;
+    destDict.height = destHeight;
   }
+
+  queue.copyElementImageToTexture(sourceDict, destDict);
 }
 
 export { getPixelFromImageData,

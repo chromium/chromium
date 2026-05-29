@@ -34,18 +34,27 @@ self.onmessage = async function(e) {
       const target = e.data.elementImage;
       const destination = { texture: ctx.getCurrentTexture() };
 
+      const sourceDict = { source: target };
+      const destDict = { destination: destination };
+
       if (args.length === 6) {
-        // [sx, sy, swidth, sheight, destWidth, destHeight]
-        queue.copyElementImageToTexture(target, args[0], args[1], args[2], args[3], args[4], args[5], destination);
+        sourceDict.sx = args[0];
+        sourceDict.sy = args[1];
+        sourceDict.swidth = args[2];
+        sourceDict.sheight = args[3];
+        destDict.width = args[4];
+        destDict.height = args[5];
       } else if (args.length === 4) {
-        // [sx, sy, swidth, sheight]
-        queue.copyElementImageToTexture(target, args[0], args[1], args[2], args[3], destination);
+        sourceDict.sx = args[0];
+        sourceDict.sy = args[1];
+        sourceDict.swidth = args[2];
+        sourceDict.sheight = args[3];
       } else if (args.length === 2) {
-        // [destWidth, destHeight]
-        queue.copyElementImageToTexture(target, args[0], args[1], destination);
-      } else {
-        queue.copyElementImageToTexture(target, destination);
+        destDict.width = args[0];
+        destDict.height = args[1];
       }
+
+      queue.copyElementImageToTexture(sourceDict, destDict);
       self.postMessage('done');
     }
   } catch (err) {

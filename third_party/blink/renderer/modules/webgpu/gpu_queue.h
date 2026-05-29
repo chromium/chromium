@@ -21,6 +21,8 @@ namespace blink {
 class ExceptionState;
 class GPUBuffer;
 class GPUCommandBuffer;
+class GPUCopyElementImageDestination;
+class GPUCopyElementImageSource;
 class GPUImageCopyExternalImage;
 class GPUImageCopyTextureTagged;
 class GPUTexelCopyBufferLayout;
@@ -85,29 +87,8 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                   GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
-  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
-                                 GPUImageCopyTextureTagged* destination,
-                                 ExceptionState& exception_state);
-  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
-                                 uint32_t width,
-                                 uint32_t height,
-                                 GPUImageCopyTextureTagged* destination,
-                                 ExceptionState& exception_state);
-  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
-                                 float sx,
-                                 float sy,
-                                 float swidth,
-                                 float sheight,
-                                 GPUImageCopyTextureTagged* destination,
-                                 ExceptionState& exception_state);
-  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
-                                 float sx,
-                                 float sy,
-                                 float swidth,
-                                 float sheight,
-                                 uint32_t width,
-                                 uint32_t height,
-                                 GPUImageCopyTextureTagged* destination,
+  void copyElementImageToTexture(GPUCopyElementImageSource* source,
+                                 GPUCopyElementImageDestination* destination,
                                  ExceptionState& exception_state);
   // }}} End of WebIDL binding implementation.
 
