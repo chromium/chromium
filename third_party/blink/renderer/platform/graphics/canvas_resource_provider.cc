@@ -702,7 +702,7 @@ void Canvas2DResourceProviderSharedImage::OnContextDestroyed() {
   if (skia_canvas_) {
     skia_canvas_->reset_image_provider();
   }
-  canvas_2d_image_provider_.reset();
+  canvas_image_provider_.reset();
   if (image_pool_) {
     image_pool_->Clear();
   }
@@ -1074,11 +1074,11 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
 CanvasResourceProvider::CanvasImageProvider*
 Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
   if (!IsAccelerated()) {
-    return GetOrCreateSWCanvasImageProviderForCanvas2D();
+    return GetOrCreateSWCanvasImageProvider();
   }
 
-  if (canvas_2d_image_provider_) {
-    return canvas_2d_image_provider_.get();
+  if (canvas_image_provider_) {
+    return canvas_image_provider_.get();
   }
 
   // Callsites are responsible for checking this before invoking this
@@ -1097,11 +1097,11 @@ Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
       context_provider_wrapper_->ContextProvider().ImageDecodeCache(
           kN32_SkColorType);
 
-  canvas_2d_image_provider_ = std::make_unique<CanvasImageProvider>(
+  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
       cc::PlaybackImageProvider::RasterMode::kGpu);
 
-  return canvas_2d_image_provider_.get();
+  return canvas_image_provider_.get();
 }
 
 void Canvas2DResourceProviderSharedImage::RasterRecord(
@@ -1228,8 +1228,8 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
       new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
                                          delegate));
   if (provider->IsValid()) {
-    provider->ClearAtCreationForCanvas2D();
-    // The ClearAtCreationForCanvas2D() call cannot turn a CRPBitmap invalid.
+    provider->ClearAtCreation();
+    // The ClearAtCreation() call cannot turn a CRPBitmap invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1346,7 +1346,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
     return nullptr;
   }
 
-  provider->ClearAtCreationForCanvas2D();
+  provider->ClearAtCreation();
 
   // An error might have occurred while clearing.
   return provider->IsValid() ? std::move(provider) : nullptr;
@@ -1384,8 +1384,8 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
       size, format, alpha_type, color_space, shared_image_interface_provider,
       delegate);
   if (provider->IsValid()) {
-    provider->ClearAtCreationForCanvas2D();
-    // The ClearAtCreationForCanvas2D() call cannot turn a SW CRPSI invalid.
+    provider->ClearAtCreation();
+    // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1743,9 +1743,9 @@ void CanvasResourceProvider::NotifyWillTransfer(
 }
 
 CanvasResourceProvider::CanvasImageProvider*
-CanvasResourceProvider::GetOrCreateSWCanvasImageProviderForCanvas2D() {
-  if (canvas_2d_image_provider_) {
-    return canvas_2d_image_provider_.get();
+CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
+  if (canvas_image_provider_) {
+    return canvas_image_provider_.get();
   }
 
   // Create an ImageDecodeCache for half float images only if the canvas is
@@ -1758,11 +1758,11 @@ CanvasResourceProvider::GetOrCreateSWCanvasImageProviderForCanvas2D() {
   cc::ImageDecodeCache* cache_rgba8 =
       &Image::SharedCCDecodeCache(kN32_SkColorType);
 
-  canvas_2d_image_provider_ = std::make_unique<CanvasImageProvider>(
+  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
       cc::PlaybackImageProvider::RasterMode::kSoftware);
 
-  return canvas_2d_image_provider_.get();
+  return canvas_image_provider_.get();
 }
 
 void CanvasResourceProvider::InitializeForRecording(
@@ -1947,8 +1947,8 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   RasterRecord(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
-  if (canvas_2d_image_provider_) {
-    canvas_2d_image_provider_->ReleaseLockedImages();
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
   }
 
   last_recording_ =
@@ -1963,8 +1963,7 @@ void CanvasResourceProvider::UnacceleratedRasterRecord(
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(),
-        GetOrCreateSWCanvasImageProviderForCanvas2D());
+        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
   }
   skia_canvas_->drawPicture(std::move(last_recording));
 }
@@ -2519,8 +2518,7 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(),
-        GetOrCreateSWCanvasImageProviderForCanvas2D());
+        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
   }
 
   bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
@@ -2535,7 +2533,7 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
   return wrote_pixels;
 }
 
-void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
+void CanvasResourceProvider::ClearAtCreation() {
   // Clear the background transparent or opaque, as required. This should only
   // be called when a new resource provider is created to ensure that we're
   // not leaking data or displaying bad pixels (in the case of kOpaque
@@ -2553,9 +2551,7 @@ void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
   RasterRecord(recorder.ReleaseMainRecording());
 }
 
-void CanvasResourceProvider::RestoreBackBufferForCanvas2D(
-    const cc::PaintImage& image) {
-
+void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
 

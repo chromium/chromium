@@ -1261,8 +1261,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
 
-  resource_provider_->RestoreBackBufferForCanvas2D(
-      image->PaintImageForCurrentFrame());
+  resource_provider_->RestoreBackBuffer(image->PaintImageForCurrentFrame());
   resource_provider_->SetRecorder(std::move(recorder));
 
   canvas()->UpdateMemoryUsage();
@@ -1320,7 +1319,7 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
   builder.set_image(hibernation_handler->GetImage(),
                     PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
-  resource_provider_->RestoreBackBufferForCanvas2D(builder.TakePaintImage());
+  resource_provider_->RestoreBackBuffer(builder.TakePaintImage());
   resource_provider_->SetRecorder(hibernation_handler->ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler->Clear();

@@ -166,7 +166,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
   ~CanvasResourceProvider() override;
 
-  void RestoreBackBufferForCanvas2D(const cc::PaintImage&);
+  void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
 
@@ -217,7 +217,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void RasterRecord(cc::PaintRecord) = 0;
   void UnacceleratedRasterRecord(cc::PaintRecord);
 
-  CanvasImageProvider* GetOrCreateSWCanvasImageProviderForCanvas2D();
+  CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
@@ -252,14 +252,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Should only be called from static Create*() methods.
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
   // callsites.
-  void ClearAtCreationForCanvas2D();
+  void ClearAtCreation();
 
   gfx::Size size_;
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
 
-  std::unique_ptr<CanvasImageProvider> canvas_2d_image_provider_;
+  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<Delegate> delegate_ = nullptr;
