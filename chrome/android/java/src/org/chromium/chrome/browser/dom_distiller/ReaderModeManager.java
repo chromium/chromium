@@ -31,6 +31,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -733,28 +734,43 @@ public class ReaderModeManager extends EmptyTabObserver
     }
 
     public void activateReaderMode(@EntryPoint int entryPoint) {
-        // Contextual page action buttons can't be dismissed, instead we consider a shown but unused
-        // button as "dismissed" and mute the site on setReaderModeUiShown(). When the button gets
-        // clicked we un-mute the site to prevent the rate limiting logic from showing the CPA
-        // button for this site on other tabs.
-        removeUrlFromMutedSites(mDistillerUrl);
+        Runnable activateRunnable =
+                () -> {
+                    // Contextual page action buttons can't be dismissed, instead we consider a
+                    // shown but unused
+                    // button as "dismissed" and mute the site on setReaderModeUiShown(). When the
+                    // button gets
+                    // clicked we un-mute the site to prevent the rate limiting logic from showing
+                    // the CPA
+                    // button for this site on other tabs.
+                    removeUrlFromMutedSites(mDistillerUrl);
 
-        if (shouldDistillInCustomTab()) {
-            distillInCustomTab();
-        } else {
-            navigateToReaderMode();
+                    if (shouldDistillInCustomTab()) {
+                        distillInCustomTab();
+                    } else {
+                        navigateToReaderMode();
+                    }
+                    RecordUserAction.record("MobileReaderModeActivated");
+                    boolean isCpaFallbackMessage =
+                            !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                                    CPA_FALLBACK_MENU_PARAM,
+                                    false);
+                    if (mHasBeenNotifiedOfCpa
+                            && !mIsReaderModeButtonShowingOnToolbar
+                            && isCpaFallbackMessage) {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "CustomTab.AdaptiveToolbarButton.FallbackUi",
+                                AdaptiveToolbarButtonVariant.READER_MODE,
+                                AdaptiveToolbarButtonVariant.MAX_VALUE);
+                    }
+                    recordEntryPointMetric(entryPoint);
+                };
+
+        ActorUiTabController controller = ActorUiTabController.from(mTab);
+        if (controller == null || !controller.showTaskAbortConfirmationDialog(activateRunnable)) {
+            activateRunnable.run();
         }
-        RecordUserAction.record("MobileReaderModeActivated");
-        boolean isCpaFallbackMessage =
-                !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON, CPA_FALLBACK_MENU_PARAM, false);
-        if (mHasBeenNotifiedOfCpa && !mIsReaderModeButtonShowingOnToolbar && isCpaFallbackMessage) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTab.AdaptiveToolbarButton.FallbackUi",
-                    AdaptiveToolbarButtonVariant.READER_MODE,
-                    AdaptiveToolbarButtonVariant.MAX_VALUE);
-        }
-        recordEntryPointMetric(entryPoint);
     }
 
     private void recordEntryPointMetric(@EntryPoint int entryPoint) {

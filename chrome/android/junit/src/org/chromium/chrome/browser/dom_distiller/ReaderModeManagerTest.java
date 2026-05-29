@@ -51,6 +51,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationResult;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
@@ -89,6 +90,7 @@ import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.GLIC)
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
@@ -96,6 +98,7 @@ public class ReaderModeManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
+    @Mock private ActorUiTabController mActorUiTabController;
     @Mock private MockWebContents mWebContents;
     @Mock private TabDistillabilityProvider mDistillabilityProvider;
     @Mock private NavigationController mNavController;
@@ -821,6 +824,43 @@ public class ReaderModeManagerTest {
         assertTrue(
                 "Intent from Chrome should be considered Reader Mode created",
                 ReaderModeManager.isReaderModeCreatedIntent(intent));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testActivateReaderMode_WithActiveTask_Confirm() {
+        mUserDataHost.setUserData(ActorUiTabController.class, mActorUiTabController);
+        when(mActorUiTabController.isActorActive()).thenReturn(true);
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(any(Runnable.class)))
+                .thenAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return true;
+                        });
+
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
+
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mDistillerTabUtilsJniMock)
+                .distillCurrentPageAndViewIfSuccessful(eq(mWebContents), any());
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testActivateReaderMode_WithActiveTask_Cancel() {
+        mUserDataHost.setUserData(ActorUiTabController.class, mActorUiTabController);
+        when(mActorUiTabController.isActorActive()).thenReturn(true);
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(any(Runnable.class)))
+                .thenReturn(true);
+
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
+
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mDistillerTabUtilsJniMock, never())
+                .distillCurrentPageAndViewIfSuccessful(any(), any());
     }
 
     private NavigationEntry createNavigationEntry(int index, GURL url) {
