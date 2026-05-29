@@ -7,7 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -78,6 +80,11 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   static const char kClientIdKey[];
   static const char kClientNameKey[];
   static const char kSharedSecretKey[];
+
+  // Returns the canonical lowercase UUID string representation of |client_id|,
+  // or std::nullopt if the |client_id| is not a valid UUID.
+  static std::optional<std::string> GetCanonicalClientId(
+      std::string_view client_id);
 
   // Interface representing the persistent storage back-end.
   class Delegate {

@@ -83,7 +83,16 @@ base::ListValue PairingRegistryDelegateLinux::LoadAll() {
     } else {
       continue;
     }
-    client_ids.insert(client_id);
+
+    std::optional<std::string> canonical_id =
+        PairingRegistry::GetCanonicalClientId(client_id);
+    if (!canonical_id.has_value() || client_id != *canonical_id) {
+      LOG(WARNING)
+          << "Ignored pairing file with non-canonical or invalid client_id: "
+          << filename;
+      continue;
+    }
+    client_ids.insert(*canonical_id);
   }
 
   for (const auto& client_id : client_ids) {
@@ -113,8 +122,16 @@ bool PairingRegistryDelegateLinux::DeleteAll() {
 
 PairingRegistry::Pairing PairingRegistryDelegateLinux::Load(
     const std::string& client_id) {
+  std::optional<std::string> canonical_id =
+      PairingRegistry::GetCanonicalClientId(client_id);
+  if (!canonical_id.has_value()) {
+    LOG(ERROR) << "Refusing to load pairing with invalid client_id: "
+               << client_id;
+    return PairingRegistry::Pairing();
+  }
+
   base::FilePath pairing_file =
-      registry_path_.Append(client_id + kPrivilegedSuffix);
+      registry_path_.Append(*canonical_id + kPrivilegedSuffix);
 
   JSONFileValueDeserializer deserializer(pairing_file);
   int error_code;
@@ -128,7 +145,7 @@ PairingRegistry::Pairing PairingRegistryDelegateLinux::Load(
        error_code == JSONFileValueDeserializer::JSON_NO_SUCH_FILE)) {
     // If it is not readable, then try the unprivileged pairing file.
     base::FilePath unprivileged_pairing_file =
-        registry_path_.Append(client_id + kUnprivilegedSuffix);
+        registry_path_.Append(*canonical_id + kUnprivilegedSuffix);
     JSONFileValueDeserializer unprivileged_deserializer(
         unprivileged_pairing_file);
     pairing =
@@ -146,30 +163,60 @@ PairingRegistry::Pairing PairingRegistryDelegateLinux::Load(
     return PairingRegistry::Pairing();
   }
 
-  return PairingRegistry::Pairing::CreateFromValue(pairing->GetDict());
+  PairingRegistry::Pairing loaded_pairing =
+      PairingRegistry::Pairing::CreateFromValue(pairing->GetDict());
+
+  // Verify payload consistency (defense-in-depth).
+  std::optional<std::string> loaded_canonical_id =
+      PairingRegistry::GetCanonicalClientId(loaded_pairing.client_id());
+  if (!loaded_canonical_id.has_value() ||
+      *loaded_canonical_id != *canonical_id) {
+    LOG(ERROR) << "Mismatched or invalid client_id in pairing file. Expected: "
+               << *canonical_id << ", Got: " << loaded_pairing.client_id();
+    return PairingRegistry::Pairing();
+  }
+
+  // Ensure the returned Pairing object has the canonical lowercase ID.
+  if (loaded_pairing.client_id() != *canonical_id) {
+    loaded_pairing = PairingRegistry::Pairing(
+        loaded_pairing.created_time(), loaded_pairing.client_name(),
+        *canonical_id, loaded_pairing.shared_secret());
+  }
+
+  return loaded_pairing;
 }
 
 bool PairingRegistryDelegateLinux::Save(
     const PairingRegistry::Pairing& pairing) {
+  std::optional<std::string> canonical_id =
+      PairingRegistry::GetCanonicalClientId(pairing.client_id());
+  if (!canonical_id.has_value()) {
+    LOG(ERROR) << "Refusing to save pairing with invalid client_id: "
+               << pairing.client_id();
+    return false;
+  }
+
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(registry_path_, &error)) {
     LOG(ERROR) << "Could not create pairing registry directory: " << error;
     return false;
   }
 
+  // Force the serialized clientId to be the canonical lowercase UUID.
   base::DictValue pairing_value = pairing.ToValue();
+  pairing_value.Set(PairingRegistry::kClientIdKey, *canonical_id);
+
   std::optional<std::string> pairing_json = base::WriteJson(pairing_value);
   if (!pairing_json.has_value()) {
-    LOG(ERROR) << "Failed to serialize pairing data for "
-               << pairing.client_id();
+    LOG(ERROR) << "Failed to serialize pairing data for " << *canonical_id;
     return false;
   }
 
   base::FilePath pairing_file =
-      registry_path_.Append(pairing.client_id() + kPrivilegedSuffix);
+      registry_path_.Append(*canonical_id + kPrivilegedSuffix);
   if (!base::ImportantFileWriter::WriteFileAtomically(pairing_file,
                                                       *pairing_json)) {
-    LOG(ERROR) << "Could not save pairing data for " << pairing.client_id();
+    LOG(ERROR) << "Could not save pairing data for " << *canonical_id;
     return false;
   }
 
@@ -186,16 +233,16 @@ bool PairingRegistryDelegateLinux::Save(
         base::WriteJson(pairing_value);
     if (!unprivileged_pairing_json.has_value()) {
       LOG(ERROR) << "Failed to serialize unprivileged pairing data for "
-                 << pairing.client_id();
+                 << *canonical_id;
       return false;
     }
 
     base::FilePath unprivileged_pairing_file =
-        registry_path_.Append(pairing.client_id() + kUnprivilegedSuffix);
+        registry_path_.Append(*canonical_id + kUnprivilegedSuffix);
     if (!base::ImportantFileWriter::WriteFileAtomically(
             unprivileged_pairing_file, *unprivileged_pairing_json)) {
       LOG(ERROR) << "Could not save unprivileged pairing data for "
-                 << pairing.client_id();
+                 << *canonical_id;
       return false;
     }
 
@@ -208,10 +255,18 @@ bool PairingRegistryDelegateLinux::Save(
 }
 
 bool PairingRegistryDelegateLinux::Delete(const std::string& client_id) {
+  std::optional<std::string> canonical_id =
+      PairingRegistry::GetCanonicalClientId(client_id);
+  if (!canonical_id.has_value()) {
+    LOG(ERROR) << "Refusing to delete pairing with invalid client_id: "
+               << client_id;
+    return false;
+  }
+
   base::FilePath pairing_file =
-      registry_path_.Append(client_id + kPrivilegedSuffix);
+      registry_path_.Append(*canonical_id + kPrivilegedSuffix);
   base::FilePath unprivileged_pairing_file =
-      registry_path_.Append(client_id + kUnprivilegedSuffix);
+      registry_path_.Append(*canonical_id + kUnprivilegedSuffix);
 
   bool success = base::DeleteFile(pairing_file);
   success = base::DeleteFile(unprivileged_pairing_file) && success;

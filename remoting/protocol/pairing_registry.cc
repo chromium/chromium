@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -29,6 +30,16 @@ const char PairingRegistry::kCreatedTimeKey[] = "createdTime";
 const char PairingRegistry::kClientIdKey[] = "clientId";
 const char PairingRegistry::kClientNameKey[] = "clientName";
 const char PairingRegistry::kSharedSecretKey[] = "sharedSecret";
+
+// static
+std::optional<std::string> PairingRegistry::GetCanonicalClientId(
+    std::string_view client_id) {
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(client_id);
+  if (!uuid.is_valid()) {
+    return std::nullopt;
+  }
+  return uuid.AsLowercaseString();
+}
 
 PairingRegistry::Pairing::Pairing() = default;
 
@@ -122,7 +133,8 @@ void PairingRegistry::GetPairing(const std::string& client_id,
                                  GetPairingCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (!base::Uuid::ParseCaseInsensitive(client_id).is_valid()) {
+  std::optional<std::string> canonical_id = GetCanonicalClientId(client_id);
+  if (!canonical_id) {
     LOG(ERROR) << "Invalid client_id: " << client_id;
     PostTask(caller_task_runner_, FROM_HERE,
              base::BindOnce(std::move(callback), Pairing()));
@@ -133,7 +145,8 @@ void PairingRegistry::GetPairing(const std::string& client_id,
       base::BindOnce(&PairingRegistry::InvokeGetPairingCallbackAndScheduleNext,
                      this, std::move(callback));
   ServiceOrQueueRequest(base::BindOnce(&PairingRegistry::DoLoad, this,
-                                       client_id, std::move(wrapped_callback)));
+                                       *canonical_id,
+                                       std::move(wrapped_callback)));
 }
 
 void PairingRegistry::GetAllPairings(GetAllPairingsCallback callback) {
@@ -152,7 +165,8 @@ void PairingRegistry::DeletePairing(const std::string& client_id,
                                     DoneCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (!base::Uuid::ParseCaseInsensitive(client_id).is_valid()) {
+  std::optional<std::string> canonical_id = GetCanonicalClientId(client_id);
+  if (!canonical_id) {
     LOG(ERROR) << "Invalid client_id: " << client_id;
     PostTask(caller_task_runner_, FROM_HERE,
              base::BindOnce(std::move(callback), false));
@@ -163,7 +177,8 @@ void PairingRegistry::DeletePairing(const std::string& client_id,
       base::BindOnce(&PairingRegistry::InvokeDoneCallbackAndScheduleNext, this,
                      std::move(callback));
   ServiceOrQueueRequest(base::BindOnce(&PairingRegistry::DoDelete, this,
-                                       client_id, std::move(wrapped_callback)));
+                                       *canonical_id,
+                                       std::move(wrapped_callback)));
 }
 
 void PairingRegistry::ClearAllPairings(DoneCallback callback) {
