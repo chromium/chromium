@@ -359,6 +359,9 @@
       "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"   // PDF
     ]
   }, {
+    "channel": "dev",
+    "extension_types": ["extension"]
+  }, {
     "channel": "stable",
     "extension_types": ["extension"],
     "feature_flag": "ApiMimeHandler"

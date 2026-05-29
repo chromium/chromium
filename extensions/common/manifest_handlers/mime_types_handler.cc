@@ -15,12 +15,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "components/pdf/common/pdf_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/common/api/mime_handlers.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -225,7 +227,11 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
   const base::Value* handler_value =
       extension->manifest()->FindPath(keys::kMimeTypesHandler);
   if (handler_value && handler_value->is_dict()) {
-    if (!base::FeatureList::IsEnabled(extensions_features::kApiMimeHandler)) {
+    // Mirrors the availability of the `mime_types_handler` manifest feature in
+    // _manifest_features.json: parse on dev/canary/trunk unconditionally, gated
+    // by `kApiMimeHandler` on beta/stable.
+    if (!base::FeatureList::IsEnabled(extensions_features::kApiMimeHandler) &&
+        extensions::GetCurrentChannel() > version_info::Channel::DEV) {
       return true;
     }
 

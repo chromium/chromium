@@ -4,6 +4,8 @@
 
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
@@ -293,18 +295,40 @@ TEST_F(MimeHandlerRegistryTest, AllowlistedExtensionRegisteredWhenUsingDict) {
   EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
 }
 
-TEST_F(MimeHandlerRegistryTest, FlagDisabledNoRegistration) {
-  // Override the feature flag to disabled (the fixture enables it in
-  // SetUp, so we need a new ScopedFeatureList that takes precedence).
-  base::test::ScopedFeatureList disable_flag;
-  disable_flag.InitAndDisableFeature(extensions_features::kApiMimeHandler);
+TEST_F(MimeHandlerRegistryTest, FlagDisabledRegistrationByChannel) {
+  // With the kill-switch flag disabled, the dict format is still available on
+  // dev/canary/trunk via the `channel: "dev"` entry in
+  // `_manifest_features.json`; beta/stable fall back to the flag and parse
+  // nothing.
+  static constexpr std::array kCases =
+      std::to_array<std::pair<version_info::Channel, bool>>({
+          {version_info::Channel::UNKNOWN, true},  // Trunk.
+          {version_info::Channel::CANARY, true},
+          {version_info::Channel::DEV, true},
+          {version_info::Channel::BETA, false},
+          {version_info::Channel::STABLE, false},
+      });
 
-  // Create and load extension with flag disabled -- the manifest parser
-  // produces no handler data (graceful degradation).
-  auto ext = CreateMimeHandlerExtension("Disabled", kPdfMimeType, kViewerUrl);
-  LoadExtension(ext.get());
+  for (const auto& [channel, expect_registered] : kCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "channel=" << version_info::GetChannelString(channel));
+    ScopedCurrentChannel scoped_channel(channel);
+    base::test::ScopedFeatureList disable_flag;
+    disable_flag.InitAndDisableFeature(extensions_features::kApiMimeHandler);
 
-  EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+    auto ext = CreateMimeHandlerExtension(
+        std::string(version_info::GetChannelString(channel)), kPdfMimeType,
+        kViewerUrl);
+    LoadExtension(ext.get());
+
+    if (expect_registered) {
+      EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+    } else {
+      EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+    }
+
+    UnloadExtension(ext.get());
+  }
 }
 
 TEST_F(MimeHandlerRegistryTest, EnabledByDefaultUntilDisabled) {
