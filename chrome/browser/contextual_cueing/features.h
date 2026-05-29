@@ -46,9 +46,13 @@ extern const base::FeatureParam<int> kVisitedOriginsLimit;
 
 // The amount of time to wait when a nudge is dismissed following the
 // exponential back off rule. The amount of the time to back off each time can
-// be computed as: kBackoffTime * (kBackoffMultiplierBase ^ dismissCount).
-extern const base::FeatureParam<base::TimeDelta> kBackoffTime;
-extern const base::FeatureParam<double> kBackoffMultiplierBase;
+// be computed as: kDismissBackoffTime * (kDismissBackoffMultiplierBase ^
+// dismissCount).
+extern const base::FeatureParam<base::TimeDelta> kDismissBackoffTime;
+extern const base::FeatureParam<double> kDismissBackoffMultiplierBase;
+
+// The amount of time to wait when a nudge is clicked on.
+extern const base::FeatureParam<base::TimeDelta> kClickBackoffTime;
 
 // If true, uses private AI to generate cues.
 extern const base::FeatureParam<bool> kUsePrivateAi;

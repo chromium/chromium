@@ -112,6 +112,30 @@ TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastDismissal) {
             ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal);
 }
 
+TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastClick) {
+  GURL url("https://example.com");
+
+  EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
+  service()->OnCueShown(url);
+
+  // Simulate a click.
+  service()->OnCueClicked(CueTargetType::kGlic);
+
+  for (int j = 0; j < kMinPageCountBetweenNudges.Get() + 1; ++j) {
+    service()->ReportPageLoad();
+  }
+  task_environment_.FastForwardBy(kMinTimeBetweenNudges.Get() +
+                                  base::Minutes(1));
+
+  EXPECT_EQ(service()->CanShowCue(url),
+            ContextualCueingDecision::kNotEnoughTimeSinceLastClick);
+
+  // Fast forward past the click backoff time (default is 1 hour).
+  task_environment_.FastForwardBy(kClickBackoffTime.Get() + base::Minutes(1));
+
+  EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
+}
+
 class ContextualCueingServiceDisableBackoffTest
     : public ContextualCueingServiceV2Test {
  public:

@@ -71,15 +71,20 @@ const base::FeatureParam<int> kVisitedOriginsLimit(
     "ContextualCueingV2VisitedOriginsLimit",
     20);
 
-const base::FeatureParam<base::TimeDelta> kBackoffTime(
+const base::FeatureParam<base::TimeDelta> kDismissBackoffTime(
     &kContextualCueingV2,
-    "ContextualCueingV2BackoffTime",
+    "ContextualCueingV2DismissBackoffTime",
     base::Hours(24));
 
-const base::FeatureParam<double> kBackoffMultiplierBase(
+const base::FeatureParam<double> kDismissBackoffMultiplierBase(
     &kContextualCueingV2,
-    "ContextualCueingV2BackoffMultiplierBase",
+    "ContextualCueingV2DismissBackoffMultiplierBase",
     2.0);
+
+const base::FeatureParam<base::TimeDelta> kClickBackoffTime(
+    &kContextualCueingV2,
+    "ContextualCueingV2ClickBackoffTime",
+    base::Hours(1));
 
 const base::FeatureParam<bool> kUsePrivateAi(&kContextualCueingV2,
                                              "ContextualCueingV2UsePrivateAi",

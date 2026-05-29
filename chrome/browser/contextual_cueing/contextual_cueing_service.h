@@ -58,6 +58,9 @@ class ContextualCueingService : public KeyedService {
   // The end of the backoff period triggered by the last dismissed nudge.
   std::optional<base::TimeTicks> dismiss_backoff_end_time_;
 
+  // The end of the backoff period triggered by the last clicked nudge.
+  std::optional<base::TimeTicks> click_backoff_end_time_;
+
   // Tracker to limit the number of nudges shown over a certain duration.
   NudgeCapTracker recent_nudge_tracker_;
 

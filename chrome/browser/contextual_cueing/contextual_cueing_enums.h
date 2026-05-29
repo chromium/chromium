@@ -73,7 +73,10 @@ enum class ContextualCueingDecision {
   // No cue could be shown because the model execution response contained no cue
   // data.
   kNoCues = 28,
-  kMaxValue = kNoCues,
+  // The cue couldn't be shown because not enough time has passed since the
+  // last cue was clicked.
+  kNotEnoughTimeSinceLastClick = 29,
+  kMaxValue = kNotEnoughTimeSinceLastClick,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 
