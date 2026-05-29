@@ -210,6 +210,24 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   result.SetModifiers(
       ui::EventFlagsToWebEventModifiers(motion_event.GetFlags()));
 
+  switch (motion_event.GetAction()) {
+    case ui::MotionEvent::Action::DOWN:
+      result.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+      break;
+    case ui::MotionEvent::Action::MOVE:
+      result.phase = result.delta_x || result.delta_y
+                         ? blink::WebMouseWheelEvent::kPhaseChanged
+                         : blink::WebMouseWheelEvent::kPhaseStationary;
+      break;
+    case ui::MotionEvent::Action::UP:
+    case ui::MotionEvent::Action::CANCEL:
+      result.phase = blink::WebMouseWheelEvent::kPhaseEnded;
+      break;
+    default:
+      result.phase = blink::WebMouseWheelEvent::kPhaseNone;
+      break;
+  }
+
   return result;
 }
 

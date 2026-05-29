@@ -552,6 +552,7 @@ public class EventForwarderTest {
                         eq(NATIVE_EVENT_FORWARDER_ID),
                         eq(moveEvent),
                         eq(eventTime2 * 1_000_000L),
+                        eq(MotionEvent.ACTION_MOVE),
                         eq(10.0f), // startX
                         eq(20.0f), // startY
                         eq(10.0f), // startRawX

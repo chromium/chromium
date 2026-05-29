@@ -138,6 +138,7 @@ public class EventForwarderDeviceTest {
                         eq(EventForwarderDeviceTest.NATIVE_EVENT_FORWARDER_ID),
                         eq(trackpadScrollCurrentEvent),
                         eq(MotionEventUtils.getEventTimeNanos(trackpadScrollCurrentEvent)),
+                        eq(trackpadScrollCurrentEvent.getActionMasked()),
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),

@@ -125,7 +125,7 @@ void ContentUiEventHandler::SendMouseWheelEvent(
       /*ticks_y=*/source->GetAxisVscroll(0),
       /*tick_multiplier=*/pixels_per_tick,
       /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
-      /*android_action=*/0,
+      /*android_action=*/source->GetActionMasked(),
       /*pointer_count=*/1,
       /*history_size=*/0,
       /*action_index=*/0,
