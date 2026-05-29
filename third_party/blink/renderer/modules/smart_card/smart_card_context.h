@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -65,11 +66,26 @@ class SmartCardContext final : public ScriptWrappable,
   // Called also by SmartCardConnection instances in this context.
 
   bool EnsureNoOperationInProgress(ExceptionState& exception_state) const;
+  bool EnsureNoConnectionHasActiveTransactionOnReader(
+      const String& reader_name,
+      ExceptionState& exception_state) const;
+  bool EnsureNoOtherConnectionHasActiveTransactionOnReader(
+      const String& reader_name,
+      const SmartCardConnection* connection,
+      ExceptionState& exception_state) const;
 
   void SetConnectionOperationInProgress(ScriptPromiseResolverBase*);
   void ClearConnectionOperationInProgress(ScriptPromiseResolverBase*);
 
   bool IsOperationInProgress() const;
+
+  void SetActiveTransactionConnectionOnReader(const String& reader_name,
+                                              SmartCardConnection* connection);
+  void ClearActiveTransactionConnectionOnReader(
+      const String& reader_name,
+      SmartCardConnection* connection);
+  SmartCardConnection* GetActiveTransactionConnectionOnReader(
+      const String& reader_name) const;
 
  private:
   // Sets the PC/SC operation that is in progress in this context.
@@ -92,6 +108,7 @@ class SmartCardContext final : public ScriptWrappable,
       device::mojom::blink::SmartCardStatusChangeResultPtr result);
   void OnCancelDone(device::mojom::blink::SmartCardResultPtr result);
   void OnConnectDone(ScriptPromiseResolver<SmartCardConnectResult>* resolver,
+                     const String& reader_name,
                      device::mojom::blink::SmartCardConnectResultPtr result);
 
   HeapMojoRemote<device::mojom::blink::SmartCardContext> scard_context_;
@@ -103,6 +120,13 @@ class SmartCardContext final : public ScriptWrappable,
 
   // The connections created by this context.
   HeapHashSet<WeakMember<SmartCardConnection>> connections_;
+
+  // The connection that currently has an active transaction on a given reader.
+  // It uses WeakMember to avoid preventing garbage collection of connections
+  // that are no longer referenced by JS, although a pending transaction promise
+  // would typically keep them alive anyway.
+  HeapHashMap<String, WeakMember<SmartCardConnection>>
+      active_reader_transactions_;
 
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;

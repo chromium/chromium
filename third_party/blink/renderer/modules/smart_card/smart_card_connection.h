@@ -32,6 +32,7 @@ class SmartCardConnection final : public ScriptWrappable,
   explicit SmartCardConnection(
       mojo::PendingRemote<device::mojom::blink::SmartCardConnection>,
       device::mojom::blink::SmartCardProtocol active_protocol,
+      const String& reader_name,
       SmartCardContext* smart_card_context,
       ExecutionContext*);
 
@@ -95,12 +96,14 @@ class SmartCardConnection final : public ScriptWrappable,
       device::mojom::blink::SmartCardTransactionResultPtr result);
   void OnEndTransactionDone(device::mojom::blink::SmartCardResultPtr result);
   void CloseMojoConnection();
+  void CleanupTransactionState();
   void EndTransaction(device::mojom::blink::SmartCardDisposition);
 
   Member<ScriptPromiseResolverBase> ongoing_request_;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;
   device::mojom::blink::SmartCardProtocol active_protocol_;
   Member<SmartCardContext> smart_card_context_;
+  String reader_name_;
 
   class TransactionState;
   Member<TransactionState> transaction_state_;

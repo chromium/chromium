@@ -179,7 +179,9 @@ ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
     SmartCardConnectOptions* options,
     ExceptionState& exception_state) {
   if (!EnsureMojoConnection(exception_state) ||
-      !EnsureNoOperationInProgress(exception_state)) {
+      !EnsureNoOperationInProgress(exception_state) ||
+      !EnsureNoConnectionHasActiveTransactionOnReader(reader_name,
+                                                      exception_state)) {
     return EmptyPromise();
   }
 
@@ -195,7 +197,7 @@ ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
       reader_name, ToMojoSmartCardShareMode(access_mode),
       ToMojoSmartCardProtocols(preferred_protocols), mojo::NullRemote(),
       BindOnce(&SmartCardContext::OnConnectDone, WrapPersistent(this),
-               WrapPersistent(resolver)));
+               WrapPersistent(resolver), reader_name));
 
   return resolver->Promise();
 }
@@ -204,6 +206,7 @@ void SmartCardContext::Trace(Visitor* visitor) const {
   visitor->Trace(scard_context_);
   visitor->Trace(request_);
   visitor->Trace(connections_);
+  visitor->Trace(active_reader_transactions_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
@@ -224,6 +227,60 @@ bool SmartCardContext::EnsureNoOperationInProgress(
     return false;
   }
   return true;
+}
+
+bool SmartCardContext::EnsureNoConnectionHasActiveTransactionOnReader(
+    const String& reader_name,
+    ExceptionState& exception_state) const {
+  auto it = active_reader_transactions_.find(reader_name);
+  if (it != active_reader_transactions_.end() && it->value) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "A connection already holds an active transaction on this reader.");
+    return false;
+  }
+  return true;
+}
+
+bool SmartCardContext::EnsureNoOtherConnectionHasActiveTransactionOnReader(
+    const String& reader_name,
+    const SmartCardConnection* connection,
+    ExceptionState& exception_state) const {
+  auto it = active_reader_transactions_.find(reader_name);
+  if (it != active_reader_transactions_.end() && it->value &&
+      it->value != connection) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Another connection holds an active transaction on this reader.");
+    return false;
+  }
+  return true;
+}
+
+void SmartCardContext::SetActiveTransactionConnectionOnReader(
+    const String& reader_name,
+    SmartCardConnection* connection) {
+  auto it = active_reader_transactions_.find(reader_name);
+  CHECK(it == active_reader_transactions_.end() || !it->value);
+  active_reader_transactions_.Set(reader_name, connection);
+}
+
+void SmartCardContext::ClearActiveTransactionConnectionOnReader(
+    const String& reader_name,
+    SmartCardConnection* connection) {
+  auto it = active_reader_transactions_.find(reader_name);
+  CHECK(it != active_reader_transactions_.end());
+  CHECK_EQ(it->value, connection);
+  active_reader_transactions_.erase(it);
+}
+
+SmartCardConnection* SmartCardContext::GetActiveTransactionConnectionOnReader(
+    const String& reader_name) const {
+  auto it = active_reader_transactions_.find(reader_name);
+  if (it == active_reader_transactions_.end()) {
+    return nullptr;
+  }
+  return it->value.Get();
 }
 
 void SmartCardContext::SetConnectionOperationInProgress(
@@ -358,6 +415,7 @@ void SmartCardContext::OnCancelDone(
 
 void SmartCardContext::OnConnectDone(
     ScriptPromiseResolver<SmartCardConnectResult>* resolver,
+    const String& reader_name,
     device::mojom::blink::SmartCardConnectResultPtr result) {
   ClearOperationInProgress(resolver);
 
@@ -370,8 +428,8 @@ void SmartCardContext::OnConnectDone(
       result->get_success();
 
   auto* connection = MakeGarbageCollected<SmartCardConnection>(
-      std::move(success->connection), success->active_protocol, this,
-      GetExecutionContext());
+      std::move(success->connection), success->active_protocol, reader_name,
+      this, GetExecutionContext());
   // Being a weak member, it will be automatically removed from the set when
   // garbage-collected.
   connections_.insert(connection);
