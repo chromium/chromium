@@ -447,7 +447,18 @@ void LineBreaker::UpdateAvailableWidth() {
   // Available width must be smaller than |LayoutUnit::Max()| so that the
   // position can be larger.
   available_width = std::min(available_width, LayoutUnit::NearlyMax());
-  available_width_ = available_width;
+  base_available_width_ = available_width;
+  UpdateAvailableWidthFromBaseAvailableWidth();
+}
+
+inline void LineBreaker::UpdateAvailableWidthFromBaseAvailableWidth() {
+  if (RuntimeEnabledFeatures::BoxDecorationBreakCloneLineBreakingEnabled() &&
+      cloned_box_decorations_end_size_) [[unlikely]] {
+    available_width_ = std::max(
+        LayoutUnit(), base_available_width_ - cloned_box_decorations_end_size_);
+  } else {
+    available_width_ = base_available_width_;
+  }
 }
 
 LineBreaker::LineBreaker(InlineNode node,
@@ -689,7 +700,7 @@ void LineBreaker::RecalcClonedBoxDecorations() {
   position_ += cloned_box_decorations_initial_size_;
   // |cloned_box_decorations_initial_size_| may affect available width.
   UpdateAvailableWidth();
-  DCHECK_GE(available_width_, cloned_box_decorations_initial_size_);
+  DCHECK_GE(base_available_width_, cloned_box_decorations_initial_size_);
 }
 
 // Add a hyphen string to the |InlineItemResult|.
@@ -1116,7 +1127,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
 void LineBreaker::ComputeLineLocation(LineInfo* line_info) const {
   // Negative margins can make the position negative, but the inline size is
   // always positive or 0.
-  LayoutUnit available_width = AvailableWidth();
+  LayoutUnit available_width = base_available_width_;
   line_info->SetWidth(available_width + line_clamp_ellipsis_width_,
                       position_ + cloned_box_decorations_end_size_ +
                           line_clamp_ellipsis_width_);
@@ -3945,6 +3956,7 @@ void LineBreaker::HandleOpenTag(const InlineItem& item, LineInfo* line_info) {
     cloned_box_decorations_end_size_ += item_result->margins.inline_end +
                                         item_result->borders.inline_end +
                                         item_result->padding.inline_end;
+    UpdateAvailableWidthFromBaseAvailableWidth();
   }
 
   bool was_auto_wrap = auto_wrap_;
@@ -3978,6 +3990,7 @@ void LineBreaker::HandleCloseTag(const InlineItem& item, LineInfo* line_info) {
       --cloned_box_decorations_count_;
       DCHECK_GE(cloned_box_decorations_end_size_, item_result->inline_size);
       cloned_box_decorations_end_size_ -= item_result->inline_size;
+      UpdateAvailableWidthFromBaseAvailableWidth();
     }
   }
   DCHECK(item.GetLayoutObject() && item.GetLayoutObject()->Parent());
