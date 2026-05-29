@@ -5,9 +5,12 @@
 """Shared utility functions for iOS test runners."""
 
 import dataclasses
+import glob
 import json
+import os
 import re
 import subprocess
+import threading
 from typing import Any, Dict, List, Optional, Tuple
 import shlex
 
@@ -217,3 +220,87 @@ def find_and_boot_simulator(device_type: Optional[str],
             print(f"Error booting simulator: {e}")
             return None
     return simulator_to_use
+
+
+class SimulatorLogStreamer:
+    """Streams logs from the simulator in the background."""
+
+    def __init__(self,
+                 simulator_udid: str,
+                 out_dir: str,
+                 scheme: str,
+                 predicate: str,
+                 show_in_stdout: bool = False):
+        self.simulator_udid = simulator_udid
+        self.out_dir = out_dir
+        self.scheme = scheme
+        self.predicate = predicate
+        self.show_in_stdout = show_in_stdout
+        self.proc = None
+        self.safe_scheme = re.sub(r'[^a-zA-Z0-9_]', '_', scheme)
+        self.log_file_path = os.path.join(
+            out_dir, f'app_logs_{self.safe_scheme}_{os.getpid()}.log')
+        self.thread = None
+        self.log_file = None
+
+    def start(self):
+        os.makedirs(self.out_dir, exist_ok=True)
+
+        # Keep only the 5 most recent log files for this scheme to limit
+        # disk usage.
+        try:
+            pattern = os.path.join(self.out_dir,
+                                   f'app_logs_{self.safe_scheme}_*.log')
+            existing_logs = glob.glob(pattern)
+            if len(existing_logs) >= 5:
+                existing_logs.sort(key=os.path.getmtime)
+                for old_log in existing_logs[:-4]:
+                    os.remove(old_log)
+        except Exception:
+            pass
+
+        cmd = [
+            'xcrun', 'simctl', 'spawn', self.simulator_udid, 'log', 'stream',
+            '--level', 'debug', '--style', 'syslog', '--predicate',
+            self.predicate
+        ]
+
+        self.log_file = open(self.log_file_path,
+                             'w',
+                             encoding='utf-8',
+                             errors='replace')
+
+        self.proc = subprocess.Popen(cmd,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.STDOUT,
+                                     encoding='utf-8',
+                                     errors='replace')
+
+        def read_loop():
+            for line in self.proc.stdout:
+                self.log_file.write(line)
+                self.log_file.flush()
+                if self.show_in_stdout:
+                    print(f"{Colors.CYAN}[AppLog]{Colors.RESET} {line.strip()}")
+
+        self.thread = threading.Thread(target=read_loop, daemon=True)
+        self.thread.start()
+        print(
+            f"{Colors.BLUE}Streaming app logs to: "
+            f"{self.log_file_path}{Colors.RESET}"
+        )
+
+    def stop(self):
+        if self.proc:
+            self.proc.terminate()
+            try:
+                self.proc.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.proc.kill()
+                self.proc.wait()
+
+        if self.thread:
+            self.thread.join()
+
+        if self.log_file:
+            self.log_file.close()

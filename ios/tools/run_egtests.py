@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import shlex
 
 import shared_test_utils
-from shared_test_utils import Colors, Simulator, print_header, print_command
+from shared_test_utils import Colors, Simulator, print_header, print_command, SimulatorLogStreamer
 
 _EG2TESTS_MODULE_SUFFIX = '_eg2tests_module'
 _TEST_CASE_SUFFIX = 'TestCase'
@@ -210,18 +210,43 @@ def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
     if args.run_tests_until_failure:
         launch_command.append('-run-tests-until-failure')
     if args.test_repetition_relaunch_enabled:
-        launch_command.extend(['-test-repetition-relaunch-enabled', args.test_repetition_relaunch_enabled])
+        launch_command.extend([
+            '-test-repetition-relaunch-enabled',
+            args.test_repetition_relaunch_enabled
+        ])
 
     print_header("--- Running Tests ---")
     print_command(launch_command)
+
+    # Start log streaming
+    show_app_logs = args.show_app_logs
+    log_predicate = args.log_predicate
+    predicate = log_predicate or (
+        '(process == "Chromium" OR process == "Chrome" OR '
+        'process CONTAINS[c] "eg2tests") AND NOT subsystem '
+        'BEGINSWITH "com.apple"'
+    )
+    log_streamer = SimulatorLogStreamer(simulator_udid, out_dir, scheme,
+                                        predicate, show_app_logs)
+    log_streamer.start()
 
     try:
         # The command is expected to return a non-zero exit code on test
         # failure.
         subprocess.check_call(launch_command)
-        return 0
+        exit_code = 0
     except subprocess.CalledProcessError as e:
-        return e.returncode
+        exit_code = e.returncode
+    finally:
+        log_streamer.stop()
+
+    if exit_code != 0:
+        print(
+            f"\n{Colors.WARNING}App logs are available at: "
+            f"{log_streamer.log_file_path}{Colors.RESET}\n"
+        )
+
+    return exit_code
 
 
 def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
@@ -309,26 +334,35 @@ def main() -> int:
         '--scheme',
         help='The EG test scheme to build and run. If not provided, it will be '
         'inferred from --tests.')
-    parser.add_argument('--device',
-                        help='The device type to use for the test.')
-    parser.add_argument(
-        '--os', help='The OS version to use for the test (e.g., 17.5).')
-    parser.add_argument(
-        '--test-iterations',
-        type=int,
-        help='If specified, tests will run <number> times.')
-    parser.add_argument(
-        '--retry-tests-on-failure',
-        action='store_true',
-        help='If specified, tests will retry on failure.')
-    parser.add_argument(
-        '--run-tests-until-failure',
-        action='store_true',
-        help='If specified, tests will run until they fail.')
+    parser.add_argument('--device', help='The device type to use for the test.')
+    parser.add_argument('--os',
+                        help='The OS version to use for the test (e.g., 17.5).')
+    parser.add_argument('--test-iterations',
+                        type=int,
+                        help='If specified, tests will run <number> times.')
+    parser.add_argument('--retry-tests-on-failure',
+                        action='store_true',
+                        help='If specified, tests will retry on failure.')
+    parser.add_argument('--run-tests-until-failure',
+                        action='store_true',
+                        help='If specified, tests will run until they fail.')
     parser.add_argument(
         '--test-repetition-relaunch-enabled',
         action='store_true',
-        help='Enable or disable tests repeating in a new process for each repetition.')
+        help=
+        'Enable or disable tests repeating in a new process for '
+        'each repetition.'
+    )
+    parser.add_argument('--show-app-logs',
+                        action='store_true',
+                        help='Stream app logs to stdout in real-time.')
+    parser.add_argument(
+        '--log-predicate',
+        help=(
+            'Custom predicate to filter simulator logs (e.g., '
+            '\'composedMessage CONTAINS "my-tag"\').'
+        )
+    )
     args = parser.parse_args()
 
     return _build_and_run_eg_tests(args)
