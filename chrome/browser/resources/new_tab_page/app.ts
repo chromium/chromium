@@ -753,7 +753,8 @@ export class AppElement extends AppElementBase {
 
     if (this.ntpRealboxNextEnabled_) {
       this.registerHelpBubble(
-          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, ['#searchbox', '#context'],
+          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID,
+          ['#searchbox', '#context', '#entrypointButton', '#entrypoint'],
           {fixed: true});
     }
   }
