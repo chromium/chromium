@@ -231,6 +231,36 @@ TEST_F(PasswordReuseDetectorTest, NoPSLMatchReuseEvent) {
                             &mockConsumer);
 }
 
+TEST_F(PasswordReuseDetectorTest, EmptyRegistryControlledDomainReuseEvent) {
+  PasswordReuseDetectorImpl reuse_detector;
+  // Store a credential for a local IP address.
+  std::vector<StoredCredential> credentials_with_empty_registry = GetForms({
+      {"http://192.168.1.1/", "routerAdmin", "router_secret_password"},
+  });
+  reuse_detector.OnGetPasswordStoreResults(
+      std::move(credentials_with_empty_registry));
+  MockPasswordReuseDetectorConsumer mockConsumer;
+
+  // Typing the password on the same IP address should not raise a reuse event.
+  EXPECT_CALL(mockConsumer, OnReuseCheckDone(false, _, _, _, _, _, _));
+  reuse_detector.CheckReuse(u"router_secret_password", "http://192.168.1.1/",
+                            &mockConsumer);
+  testing::Mock::VerifyAndClearExpectations(&mockConsumer);
+
+  // Typing the password on a different IP address or intranet host should raise
+  // a reuse event.
+  const std::vector<MatchingReusedCredential> expected_credentials = {
+      {"http://192.168.1.1/", GURL("http://192.168.1.1/"), u"routerAdmin",
+       PasswordForm::Store::kProfileStore}};
+  EXPECT_CALL(mockConsumer,
+              OnReuseCheckDone(true, strlen("router_secret_password"),
+                               Matches(NO_GAIA_OR_ENTERPRISE_REUSE),
+                               UnorderedElementsAreArray(expected_credentials),
+                               1, _, _));
+  reuse_detector.CheckReuse(u"router_secret_password", "http://192.168.1.100/",
+                            &mockConsumer);
+}
+
 TEST_F(PasswordReuseDetectorTest, TooShortPasswordNoReuseEvent) {
   PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(

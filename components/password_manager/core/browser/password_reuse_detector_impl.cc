@@ -61,6 +61,40 @@ std::optional<PasswordHashData> FindPasswordReuse(
   return longest_match;
 }
 
+// Returns true if typing a password on `active_url` represents an authorized
+// reuse (e.g. because the domain or, in case of an empty domain, the host,
+// matches one of the saved credentials).
+bool IsAuthorizedReuse(const std::string& active_url_string,
+                       const std::set<MatchingReusedCredential>& credentials) {
+  const GURL active_url(active_url_string);
+  const std::string active_registry_controlled_domain =
+      GetRegistryControlledDomain(active_url);
+
+  // For IP addresses and single-label intranet hosts, the registry-controlled
+  // domain is empty. In this case, we compare the exact hosts to prevent
+  // distinct IP addresses or intranet sites from incorrectly matching each
+  // other as authorized domain exceptions.
+  if (active_registry_controlled_domain.empty()) {
+    std::string_view active_host = active_url.host();
+    for (const auto& credential : credentials) {
+      if (GetRegistryControlledDomain(credential.url).empty() &&
+          credential.url.host() == active_host) {
+        return true;
+      }
+    }
+  } else {
+    // For standard domains, we check if any credential matches the registry-
+    // controlled domain of the active page.
+    for (const auto& credential : credentials) {
+      if (GetRegistryControlledDomain(credential.url) ==
+          active_registry_controlled_domain) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 bool ReverseStringLess::operator()(const std::u16string& lhs,
@@ -249,9 +283,6 @@ PasswordReuseDetectorImpl::CheckSavedPasswordReuseBasedOnHash(
     pwd_lengths.insert(it.second.password_length);
   }
 
-  const std::string registry_controlled_domain =
-      GetRegistryControlledDomain(GURL(domain));
-
   // Goes over all possible password lengths and checks input suffix of that
   // length against known password hashes.
   for (auto len : pwd_lengths) {
@@ -273,13 +304,7 @@ PasswordReuseDetectorImpl::CheckSavedPasswordReuseBasedOnHash(
         passwords_iterator->second.matching_credentials;
     CHECK(!credentials.empty());
 
-    std::set<std::string> domains;
-    for (const auto& credential : credentials) {
-      domains.insert(GetRegistryControlledDomain(credential.url));
-    }
-    // If the page's URL matches a saved domain for this password,
-    // this isn't password-reuse.
-    if (domains.contains(registry_controlled_domain)) {
+    if (IsAuthorizedReuse(domain, credentials)) {
       continue;
     }
 
