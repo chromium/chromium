@@ -646,6 +646,7 @@ source_set("unit_tests") {
   sources = [
     "glic_settings_util_unittest.cc",
     "host/context/glic_sharing_utils_unittest.cc",
+    "host/glic_web_contents_warming_pool_unittest.cc",
     "public/glic_enabling_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
   ]
@@ -677,7 +678,6 @@ source_set("unit_tests") {
       "host/context/glic_share_image_handler_unittest.cc",
       "host/context/glic_tab_data_unittest.cc",
       "host/glic_cookie_synchronizer_unittest.cc",
-      "host/glic_web_contents_warming_pool_unittest.cc",
       "host/guest_util_unittest.cc",
       "public/glic_context_menu_invocation_helper_unittest.cc",
       "public/glic_enabling_metrics_unittest.cc",

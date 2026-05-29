@@ -925,6 +925,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Expired"/>
   <int value="2" label="Deleted on Chrome Closed"/>
   <int value="3" label="Crashed"/>
+  <int value="4" label="Deleted on Memory Pressure"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.cc:GlicWarmedContainerFate) -->

@@ -279,13 +279,17 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, Clear) {
+  base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   warming_pool.EnsurePreload();
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 
-  warming_pool.Clear();
+  warming_pool.Clear(GlicWebContentsWarmingPool::ClearReason::kMemoryPressure);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 4,
+                                      1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
@@ -342,8 +346,7 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
                                       1);
 }
 
-TEST_F(GlicWebContentsWarmingPoolTest,
-       WarmedContainerFate_DeletedOnChromeClosed) {
+TEST_F(GlicWebContentsWarmingPoolTest, ShutdownClearsContainer) {
   base::HistogramTester histogram_tester;
   {
     TestGlicWebContentsWarmingPool warming_pool(&profile_,

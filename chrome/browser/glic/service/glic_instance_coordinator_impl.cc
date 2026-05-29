@@ -334,7 +334,8 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
   for (auto& [instance_id, instance] : instances_) {
     instance->Shutdown();
   }
-  web_contents_warming_pool_->Clear();
+  web_contents_warming_pool_->Clear(
+      GlicWebContentsWarmingPool::ClearReason::kShutdown);
   hotkey_manager_.reset();
 }
 
@@ -1044,7 +1045,8 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     return;
   }
 
-  web_contents_warming_pool_->Clear();
+  web_contents_warming_pool_->Clear(
+      GlicWebContentsWarmingPool::ClearReason::kMemoryPressure);
 
   for (auto& [_, instance] : instances_) {
     if (instance->IsShowing() || instance->IsActuating() ||

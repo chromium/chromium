@@ -35,7 +35,8 @@ class GlicWebContentsWarmingPool::Metrics {
     kExpired = 1,
     kDeletedOnChromeClosed = 2,
     kCrashed = 3,
-    kMaxValue = kCrashed,
+    kDeletedOnMemoryPressure = 4,
+    kMaxValue = kDeletedOnMemoryPressure,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmedContainerFate)
 
@@ -82,16 +83,22 @@ class GlicWebContentsWarmingPool::Metrics {
     return status;
   }
 
-  void RecordWarmedContainerDestruction(
-      const std::unique_ptr<WebUIContentsContainer>& warmed_container) {
-    if (!warmed_container) {
+  void RecordClearWarmedContainer(
+      const std::unique_ptr<WebUIContentsContainer>& warmed_container,
+      std::optional<ClearReason> reason) {
+    if (!warmed_container || !reason) {
       return;
     }
-    if (warmed_container->web_contents()->IsCrashed()) {
-      RecordWarmedContainerFate(WarmedContainerFate::kCrashed);
-    } else {
-      RecordWarmedContainerFate(WarmedContainerFate::kDeletedOnChromeClosed);
+    WarmedContainerFate fate;
+    switch (*reason) {
+      case ClearReason::kShutdown:
+        fate = WarmedContainerFate::kDeletedOnChromeClosed;
+        break;
+      case ClearReason::kMemoryPressure:
+        fate = WarmedContainerFate::kDeletedOnMemoryPressure;
+        break;
     }
+    RecordWarmedContainerFate(fate);
   }
 
  private:
@@ -127,7 +134,7 @@ GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile)
 }
 
 GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() {
-  metrics_->RecordWarmedContainerDestruction(warmed_container_);
+  Clear(ClearReason::kShutdown);
 }
 
 std::unique_ptr<WebUIContentsContainer>
@@ -146,7 +153,7 @@ GlicWebContentsWarmingPool::TakeContainer() {
 
 void GlicWebContentsWarmingPool::EnsurePreload() {
   if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
-    metrics_->RecordWarmedContainerDestruction(warmed_container_);
+    metrics_->RecordWarmedContainerFate(Metrics::WarmedContainerFate::kCrashed);
     warmed_container_ = nullptr;
   }
 
@@ -174,7 +181,7 @@ void GlicWebContentsWarmingPool::OnContainerExpired() {
     TRACE_EVENT_INSTANT("glic",
                         "GlicWebContentsWarmingPool::OnContainerExpired");
     metrics_->OnContainerExpired();
-    Clear();
+    Clear(std::nullopt);
     // This only happens if there was a warmed contents at the time of expiry.
     // If the warmed contents had been removed because of memory pressure or
     // some other mechanism, we wouldn't rewarm.
@@ -197,7 +204,8 @@ void GlicWebContentsWarmingPool::OnContainerExpired() {
   }
 }
 
-void GlicWebContentsWarmingPool::Clear() {
+void GlicWebContentsWarmingPool::Clear(std::optional<ClearReason> reason) {
+  metrics_->RecordClearWarmedContainer(warmed_container_, reason);
   warmed_container_.reset();
   delay_timer_.Stop();
   expiry_timer_.Stop();
