@@ -16,22 +16,13 @@ from util import run_jj
 from util import join_revsets
 from util import percent_encode_for_git_ref
 from util import split_description
-
-_IMMUTABLE_PARENTS = 'parents.filter(|p| p.immutable()).map(|p| p.commit_id())'
-_MUTABLE_PARENTS = 'parents.filter(|p| !p.immutable()).map(|p| p.commit_id())'
+from util import IMMUTABLE_PARENTS
+from util import MUTABLE_PARENTS
 
 
 def fatal(*args, **kwargs):
   logging.critical(*args, **kwargs)
   exit(1)
-
-
-def _collect_ids(values):
-  ids = set()
-  for value in values:
-    if value:
-      ids.update(value.split(' '))
-  return ids
 
 
 def get_refspec_opts(args) -> list[str]:
@@ -84,7 +75,7 @@ def main(args, unknown_args):
           'commit_id': 'commit_id',
           'empty': 'empty',
           'desc': 'description',
-          'mutable_parents': _MUTABLE_PARENTS,
+          'mutable_parents': MUTABLE_PARENTS,
       },
       ignore_working_copy=snapshot_taken,
   )
@@ -131,15 +122,18 @@ def main(args, unknown_args):
         revisions=f'mutable()::@',
         templates={
             'empty': 'empty',
-            'immutable_parents': _IMMUTABLE_PARENTS
+            'immutable_parents': IMMUTABLE_PARENTS
         },
         ignore_working_copy=snapshot_taken,
     )
 
     # We could simplify this with another call to jj_log, but each call to
     # jj_log can take a nontrivial amount of time.
-    immutable_parents = _collect_ids(c['immutable_parents']
-                                     for c in got_presubmits)
+    immutable_parents = {
+        commit_id
+        for c in got_presubmits
+        for commit_id in c['immutable_parents']
+    }
     if len(immutable_parents) != 1:
       fatal(
           '%s has multiple different immutable parents of mutable ancestors. ' +

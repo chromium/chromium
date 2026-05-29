@@ -12,22 +12,14 @@ import subprocess
 import sys
 import util
 
-_FIND_TRAILER = '''self.trailers()
+_FIND_TRAILER = util.list_template('''self.trailers()
 .filter(|trailer| trailer.key().lower() == "{}")
-.map(|trailer| trailer.value())
-.join(",")'''
+.map(|trailer| trailer.value())''')
 
 _BUGGED_MISSING_ERR = '''\
 Searching for bugs requires the CLI tool "bugged" to be installed.
 This tool is only available to Googlers (see go/bugged for install instructions)
 '''
-
-
-def _calculate_bugs(bugs: str) -> set[str]:
-  bugs = set(bugs.split(','))
-  # The template produces ,, if some parents don't have bugs.
-  bugs.discard('')
-  return bugs
 
 
 def _search_bugs(query: str | None):
@@ -111,8 +103,8 @@ def _add_handler(args, revs: str):
   revs = {rev['change_id']: rev for rev in ancestors}
 
   for rev in ancestors:
-    rev['fixed'] = _calculate_bugs(rev['fixed'])
-    rev['bugs'] = _calculate_bugs(rev['bugs'])
+    rev['fixed'] = set(rev['fixed'])
+    rev['bugs'] = set(rev['bugs'])
 
   bugs = set(args.bug)
 
@@ -139,7 +131,7 @@ def _add_handler(args, revs: str):
       # This doesn't need to be done recursively because of the toposort
       # guaruntee of `jj log`
       if rev['parents']:
-        for change_id in rev['parents'].split(','):
+        for change_id in rev['parents']:
           bugs_to_add.update(revs[change_id]['bugs'])
 
     bugs_to_add -= rev['bugs']

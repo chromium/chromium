@@ -12,8 +12,9 @@ import subprocess
 # CSV-file like separators. The templating language doesn't support escaping,
 # so we use
 # https://en.wikipedia.org/wiki/C0_and_C1_control_codes#Field_separators
-_NEWLINE = '\x1e'
-_COMMA = '\x1f'
+_NEWLINE = '\x1c'
+_COMMA = '\x1d'
+_LIST = '\x1e'
 
 _TRAILER = re.compile(r'([a-zA-Z0-9\-_]+): (.*)')
 _CHANGE_PRETTY = '''change_id.short() ++
@@ -22,10 +23,22 @@ if(current_working_copy, " (@)") ++
 description.first_line()
 '''
 
-MUTABLE_PARENTS = '''parents
-.filter(|c| !c.immutable())
-.map(|p| p.change_id())
-.join(",")'''
+
+def list_template(expr: str) -> str:
+  """Wraps a list-valued expression so `jj_log` returns it as list[str].
+
+  Use this for any template which produces a list (eg. parents, bookmarks).
+  """
+  # List items are separated with _LIST. We also prefix the list with _LIST as a
+  # sentinel so that empty and single-item lists are also detected as lists.
+  return f'"{_LIST}" ++ ({expr}).join("{_LIST}")'
+
+
+MUTABLE_PARENTS = list_template(
+    'parents.filter(|c| !c.immutable()).map(|p| p.change_id())')
+
+IMMUTABLE_PARENTS = list_template(
+    'parents.filter(|p| p.immutable()).map(|p| p.commit_id())')
 
 
 def run_command(args: list[str],
@@ -61,14 +74,14 @@ def _log(args: list[str], templates: dict[str, str],
 
   The user will provide templates such as {
     'change_id': 'change_id',
-    'parents': 'parents.map(|c| c.change_id())',
+    'parents': list_template('parents.map(|c| c.change_id())'),
   }
 
   And a set of revisions to lookup (eg. 'a|b').
 
   And it would then return [
-     {'change_id': 'a', 'parents': '<parent of a's id>'}
-     {'change_id': 'b', 'parents': '<parent of b's id>'}
+     {'change_id': 'a', 'parents': ['<parent of a's id>', ..]}
+     {'change_id': 'b', 'parents': ['<parent of b's id>', ..]}
   ]
   """
   templates.setdefault('name', _CHANGE_PRETTY)
@@ -85,9 +98,18 @@ def _log(args: list[str], templates: dict[str, str],
       **kwargs,
   ).stdout
 
+  def _parse_field(value: str):
+    # Fields starting with _LIST are list-valued and split into list[str].
+    if value.startswith(_LIST):
+      rest = value[len(_LIST):]
+      return rest.split(_LIST) if rest else []
+
+    # Everything else is a str.
+    return value
+
   # Now we parse our CSV file.
   return [{
-      field: value
+      field: _parse_field(value)
       for field, value in zip(fields, change.split(_COMMA))
   } for change in stdout.rstrip(_NEWLINE).split(_NEWLINE)]
 
