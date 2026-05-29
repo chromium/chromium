@@ -2310,12 +2310,18 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       GaiaId("account_id"), "test@google.com");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
 
+  unexportable_keys::MockUnexportableKeyService& mock_uks =
+      SwitchToMockUnexportableKeyService();
+  EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync(
+                            Eq(kFakeWrappedBindingKey), _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          unexportable_keys::UnexportableSigningKeyId()));
+
   InitializeOAuth2ServiceDelegateWithTokenBinding();
-  oauth2_service_delegate_->UpdateCredentials(
-      account_id, "refresh_token",
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(kFakeWrappedBindingKey,
-                               /*mtls_token_binding=*/false));
+  AddAuthTokenManually("AccountId-" + account_id.ToString(), "refresh_token",
+                       kFakeWrappedBindingKey);
+  oauth2_service_delegate_->LoadCredentials(account_id);
+  WaitForRefreshTokensLoaded();
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
           account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
@@ -2330,6 +2336,40 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       TokenUpgradeEligibilityFlagFeatureEnabledKeyNotReady) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableChromeRefreshTokenBindingUpgrade);
+  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+
+  unexportable_keys::MockUnexportableKeyService& mock_uks =
+      SwitchToMockUnexportableKeyService();
+  EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync(
+                            Eq(kFakeWrappedBindingKey), _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kNoKeyProvider)));
+
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  AddAuthTokenManually("AccountId-" + account_id.ToString(), "refresh_token",
+                       kFakeWrappedBindingKey);
+  oauth2_service_delegate_->LoadCredentials(account_id);
+  WaitForRefreshTokensLoaded();
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+      oauth2_service_delegate_->CreateAccessTokenFetcher(
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          /*token_binding_challenge=*/"");
+  fetcher->Start("foo", "bar", {"scope"});
+  ASSERT_GE(client_->GetTestURLLoaderFactory()->pending_requests()->size(), 1u);
+  const std::string request_body = network::GetUploadData(
+      client_->GetTestURLLoaderFactory()->pending_requests()->back().request);
+  EXPECT_THAT(request_body,
+              Not(HasSubstr("&check_bound_token_upgrade_eligibility=true")));
+  ShutdownOAuth2ServiceDelegate();
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
        TokenUpgradeEligibilityFlagFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -2338,12 +2378,18 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       GaiaId("account_id"), "test@google.com");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
 
+  unexportable_keys::MockUnexportableKeyService& mock_uks =
+      SwitchToMockUnexportableKeyService();
+  EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync(
+                            Eq(kFakeWrappedBindingKey), _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          unexportable_keys::UnexportableSigningKeyId()));
+
   InitializeOAuth2ServiceDelegateWithTokenBinding();
-  oauth2_service_delegate_->UpdateCredentials(
-      account_id, "refresh_token",
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(kFakeWrappedBindingKey,
-                               /*mtls_token_binding=*/false));
+  AddAuthTokenManually("AccountId-" + account_id.ToString(), "refresh_token",
+                       kFakeWrappedBindingKey);
+  oauth2_service_delegate_->LoadCredentials(account_id);
+  WaitForRefreshTokensLoaded();
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
           account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,

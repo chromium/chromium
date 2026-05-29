@@ -412,10 +412,9 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
         std::string(
             version_info::GetChannelString(client_->GetClientChannel())));
     if (token_binding_helper_ &&
+        token_binding_helper_->IsRegistrationKeyReady() &&
         base::FeatureList::IsEnabled(
             switches::kEnableChromeRefreshTokenBindingUpgrade)) {
-      // TODO(crbug.com/514242898): Add an extra condition to check if an
-      // upgrade key was successfully pre-generated.
       fetcher->EnableTokenUpgradeEligibility(
           base::BindOnce(&TokenBindingHelper::PerformTokenBindingUpgrade,
                          token_binding_helper_->GetWeakPtr(), account_id,
@@ -1106,6 +1105,9 @@ bool MutableProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::FinishLoadingCredentials() {
+  if (token_binding_helper_) {
+    token_binding_helper_->OnAllCredentialsLoaded(!refresh_tokens_.empty());
+  }
   FireRefreshTokensLoaded();
 }
 

@@ -53,6 +53,10 @@ BindingKeyRegistrationTokenHelper::~BindingKeyRegistrationTokenHelper() {
   key_loader_.reset();
 }
 
+bool BindingKeyRegistrationTokenHelper::IsRegistrationKeyReady() const {
+  return key_loader_ && key_loader_->GetKeyIdOrError().has_value();
+}
+
 void BindingKeyRegistrationTokenHelper::GenerateForSessionBinding(
     std::string_view challenge,
     const GURL& registration_url,

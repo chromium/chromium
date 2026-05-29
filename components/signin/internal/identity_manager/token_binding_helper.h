@@ -96,6 +96,15 @@ class TokenBindingHelper {
   // key parameter.
   void ClearAllKeys();
 
+  // Initiates background generation or unwrapping of a binding key after all
+  // credentials are loaded on startup.
+  void OnAllCredentialsLoaded(bool has_refresh_tokens);
+
+  // Returns `true` if the binding key was successfully generated or unwrapped.
+  // Returns `false` if the key hasn't been created yet or if it failed to
+  // create/unwrap.
+  bool IsRegistrationKeyReady() const;
+
   // Asynchronously generates a registration token for binding a refresh token
   // to a binding key. If one of the accounts is already bound, reuses its
   // binding key. Otherwise, generates a new binding key.
@@ -163,6 +172,8 @@ class TokenBindingHelper {
   base::WeakPtr<TokenBindingHelper> GetWeakPtr();
 
  private:
+  void MaybeInitializeRegistrationTokenHelper(
+      std::string_view supported_algorithms);
   void OnUpgradeRegistrationTokenGenerated(
       const CoreAccountId& account_id,
       std::optional<signin::BindingKeyRegistrationTokenResult> result);

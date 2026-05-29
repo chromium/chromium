@@ -45,7 +45,6 @@
 namespace {
 
 constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
-// TODO(crbug.com/514242898): Use the supported algorithms from the server.
 constexpr std::string_view kAcceptableAlgorithmsForUpgrade = "ES256 RS256";
 
 constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
@@ -123,32 +122,53 @@ void TokenBindingHelper::ClearAllKeys() {
   registration_token_helper_.reset();
 }
 
+void TokenBindingHelper::MaybeInitializeRegistrationTokenHelper(
+    std::string_view supported_algorithms) {
+  if (registration_token_helper_) {
+    return;
+  }
+  std::vector<uint8_t> wrapped_binding_key_to_reuse;
+  if (!binding_keys_.empty()) {
+    // All bound tokens are supposed to use the same key, so we're taking an
+    // arbitrary key.
+    wrapped_binding_key_to_reuse = binding_keys_.begin()->second.wrapped_key;
+  }
+  if (!wrapped_binding_key_to_reuse.empty()) {
+    // Ignore the value of `supported_algorithms` in favor of an existing
+    // binding key.
+    registration_token_helper_ =
+        std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
+            *unexportable_key_service_,
+            std::move(wrapped_binding_key_to_reuse));
+  } else {
+    registration_token_helper_ =
+        std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
+            *unexportable_key_service_,
+            signin::ParseSignatureAlgorithmList(supported_algorithms));
+  }
+}
+
+void TokenBindingHelper::OnAllCredentialsLoaded(bool has_refresh_tokens) {
+  if (!has_refresh_tokens) {
+    return;
+  }
+  MaybeInitializeRegistrationTokenHelper(kAcceptableAlgorithmsForUpgrade);
+  CHECK(registration_token_helper_);
+  registration_token_helper_->CreateKeyLoaderIfNeeded();
+}
+
+bool TokenBindingHelper::IsRegistrationKeyReady() const {
+  return registration_token_helper_ &&
+         registration_token_helper_->IsRegistrationKeyReady();
+}
+
 void TokenBindingHelper::GenerateBindingKeyRegistrationToken(
     std::string_view supported_algorithms,
     std::string_view auth_code,
     base::OnceCallback<void(
         std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {
-  if (!registration_token_helper_) {
-    std::vector<uint8_t> wrapped_binding_key_to_reuse;
-    if (!binding_keys_.empty()) {
-      // All bound tokens are supposed to use the same key, so we're taking an
-      // arbitrary key.
-      wrapped_binding_key_to_reuse = binding_keys_.begin()->second.wrapped_key;
-    }
-    if (!wrapped_binding_key_to_reuse.empty()) {
-      // Ignore the value of `supported_algorithms` in favor of an existing
-      // binding key.
-      registration_token_helper_ =
-          std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
-              *unexportable_key_service_,
-              std::move(wrapped_binding_key_to_reuse));
-    } else {
-      registration_token_helper_ =
-          std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
-              *unexportable_key_service_,
-              signin::ParseSignatureAlgorithmList(supported_algorithms));
-    }
-  }
+  MaybeInitializeRegistrationTokenHelper(supported_algorithms);
+  CHECK(registration_token_helper_);
 
   registration_token_helper_->GenerateForTokenBinding(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(), auth_code,
@@ -256,6 +276,7 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
 
   // `base::Unretained()` is safe because `this` owns
   // `registration_token_helper_`.
+  // TODO(crbug.com/514242898): Use the supported algorithms from the server.
   GenerateBindingKeyRegistrationToken(
       kAcceptableAlgorithmsForUpgrade, challenge,
       base::BindOnce(&TokenBindingHelper::OnUpgradeRegistrationTokenGenerated,

@@ -85,6 +85,14 @@ class BindingKeyRegistrationTokenHelper {
 
   virtual ~BindingKeyRegistrationTokenHelper();
 
+  // Initiates loading or generation of the binding key if not already started.
+  void CreateKeyLoaderIfNeeded();
+
+  // Returns `true` if the binding key was successfully generated or unwrapped.
+  // Returns `false` if the key hasn't been created yet or if it failed to
+  // create/unwrap.
+  bool IsRegistrationKeyReady() const;
+
   // Invokes `callback` with a `Result` containing a new binding key ID and a
   // corresponding registration token on success. Otherwise, invokes `callback`
   // with `std::nullopt`.
@@ -106,7 +114,6 @@ class BindingKeyRegistrationTokenHelper {
           base::span<const uint8_t>,
           base::Time)>;
 
-  void CreateKeyLoaderIfNeeded();
   void SignHeaderAndPayload(
       HeaderAndPayloadGenerator header_and_payload_generator,
       base::OnceCallback<void(base::expected<Result, Error>)> callback,

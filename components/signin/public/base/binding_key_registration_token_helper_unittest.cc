@@ -293,4 +293,30 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, DeletionWhileInProgress) {
   EXPECT_FALSE(future.Get().has_value());
 }
 
+TEST_F(BindingKeyRegistrationTokenHelperTest, IsRegistrationKeyReady) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
+  EXPECT_FALSE(helper.IsRegistrationKeyReady());
+
+  helper.CreateKeyLoaderIfNeeded();
+  EXPECT_FALSE(helper.IsRegistrationKeyReady());
+
+  RunBackgroundTasks();
+  EXPECT_TRUE(helper.IsRegistrationKeyReady());
+}
+
+TEST_F(BindingKeyRegistrationTokenHelperTest, IsRegistrationKeyReadyFailure) {
+  crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider;
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
+  EXPECT_FALSE(helper.IsRegistrationKeyReady());
+
+  helper.CreateKeyLoaderIfNeeded();
+  EXPECT_FALSE(helper.IsRegistrationKeyReady());
+
+  RunBackgroundTasks();
+  EXPECT_FALSE(helper.IsRegistrationKeyReady());
+}
+
 }  // namespace signin
