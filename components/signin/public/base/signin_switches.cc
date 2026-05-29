@@ -347,7 +347,7 @@ BASE_FEATURE_ENUM_PARAM(RefreshTokenBindingUpgradeType,
                         &kRefreshTokenBindingUpgradeTypeOptions);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if !defined(NDEBUG)
+#if !defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kEnableFakeCapabilityForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

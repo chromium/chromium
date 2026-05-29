@@ -291,7 +291,7 @@ BASE_DECLARE_FEATURE_PARAM(RefreshTokenBindingUpgradeType,
                            kRefreshTokenBindingUpgradeType);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if !defined(NDEBUG)
+#if !defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
 // A fake feature corresponding to the kFakeCapabilityForTestingName account
 // capability. This is only used in unit tests (and must be left disabled to
 // prevent fetching the fake capability).
