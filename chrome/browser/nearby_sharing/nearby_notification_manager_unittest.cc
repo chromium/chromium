@@ -270,7 +270,7 @@ class NearbyNotificationManagerTest : public testing::Test {
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<NearbyNotificationManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<MockSettingsOpener, DanglingUntriaged> settings_opener_;
+  raw_ptr<MockSettingsOpener> settings_opener_;
 };
 
 struct AttachmentsTestParamInternal {
@@ -417,6 +417,8 @@ std::u16string FormatNotificationTitle(
 }  // namespace
 
 TEST_F(NearbyNotificationManagerTest, RegistersAsBackgroundSurfaces) {
+  // Clear `settings_opener_` before resetting to avoid dangling pointer.
+  settings_opener_ = nullptr;
   manager_.reset();
   TransferUpdateCallback* receive_transfer_callback = nullptr;
   TransferUpdateCallback* send_transfer_callback = nullptr;
@@ -447,6 +449,8 @@ TEST_F(NearbyNotificationManagerTest, RegistersAsBackgroundSurfaces) {
 TEST_F(NearbyNotificationManagerTest, UnregistersSurfaces) {
   EXPECT_CALL(*nearby_service_, UnregisterReceiveSurface(manager()));
   EXPECT_CALL(*nearby_service_, UnregisterSendSurface(manager(), manager()));
+  // Clear `settings_opener_` before resetting to avoid dangling pointer.
+  settings_opener_ = nullptr;
   manager_.reset();
 }
 
