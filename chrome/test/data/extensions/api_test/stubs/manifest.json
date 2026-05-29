@@ -1,9 +1,9 @@
 {
   "name": "Content Script Extension API Stubs Test",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {

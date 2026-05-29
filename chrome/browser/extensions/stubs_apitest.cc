@@ -6,14 +6,19 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // Tests that we throw errors when you try using extension APIs that aren't
-// supported in content scripts.
+// supported in content scripts. If this test causes a renderer crash on one
+// platform, you may be including that platform in _api_features.json but not
+// including your API JSON file in schema.gni for the right config.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Stubs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -29,6 +34,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Stubs) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 // Tests that all API features that are available to a platform app actually
 // can be used in an app. For example, this test will fail if a developer adds
 // an API feature without providing a schema. http://crbug.com/40363674
@@ -37,5 +43,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, StubsApp) {
                                {.ignore_manifest_warnings = true}))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 }  // namespace extensions

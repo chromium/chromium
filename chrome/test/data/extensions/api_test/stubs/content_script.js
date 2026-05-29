@@ -7,13 +7,14 @@
 // chrome.test.log() function.
 function logToConsoleAndStdout(msg) {
   console.info(msg);
-  chrome.extension.sendRequest(`log: ${msg}`);
+  chrome.runtime.sendMessage(`log: ${msg}`);
 }
 
 // We ask the background page to get the extension API to test against. When it
 // responds we start the test.
 console.info('asking for api ...');
-chrome.extension.sendRequest('getApi', function(apis) {
+chrome.runtime.sendMessage('getApi', function(apis) {
+  const manifestVersion = chrome.runtime.getManifest().manifest_version;
   const apiFeatures = chrome.test.getApiFeatures();
   // TODO(crbug.com/41478937): This really should support more than two levels
   // of inheritance.
@@ -41,13 +42,22 @@ chrome.extension.sendRequest('getApi', function(apis) {
     function searchFeature(feature) {
       if (!feature.length) {
         // Simple feature, not an array. Can return results.NULL,
-        // because feature.context may be undefined.
+        // because feature.context may be undefined. Don't return features
+        // that are not supported by the current manifest version.
+        if (feature.max_manifest_version &&
+            feature.max_manifest_version < manifestVersion) {
+          return results.NOT_FOUND;
+        }
         return searchContexts(feature.contexts);
       }
       // Complex feature. We need to return results.NULL if we didn't
       // find any contexts.
       let foundContext = false;
       for (let i = 0; i < feature.length; ++i) {
+        if (feature[i].max_manifest_version &&
+            feature[i].max_manifest_version < manifestVersion) {
+          continue;
+        }
         const currentResult = searchContexts(feature[i].contexts);
         if (currentResult === results.FOUND) {
           return results.FOUND;
@@ -87,7 +97,8 @@ chrome.extension.sendRequest('getApi', function(apis) {
       module[section].forEach(function(entry) {
         // Ignore entries that are not applicable to the manifest that we're
         // running under.
-        if (entry.maximumManifestVersion && entry.maximumManifestVersion < 2) {
+        if (entry.maximumManifestVersion &&
+            entry.maximumManifestVersion < manifestVersion) {
           return;
         }
 
@@ -103,8 +114,13 @@ chrome.extension.sendRequest('getApi', function(apis) {
 
     if (module.properties) {
       for (const propName in module.properties) {
+        const prop = module.properties[propName];
+        if (prop.maximumManifestVersion &&
+            prop.maximumManifestVersion < manifestVersion) {
+          continue;
+        }
         const path = `${namespace}.${propName}`;
-        if (module.unprivileged || module.properties[propName].unprivileged ||
+        if (module.unprivileged || prop.unprivileged ||
             isAvailableToContentScripts(namespace, path)) {
           unprivilegedPaths.push(path);
         } else {
@@ -137,7 +153,7 @@ function testPath(path, expectError) {
       // to throw an error on access.
       if (typeof (module[parts[i]]) === 'undefined' &&
           // lastError being defined depends on there being an error obviously.
-          path !== 'extension.lastError' && path !== 'runtime.lastError') {
+          path !== 'runtime.lastError') {
         if (expectError) {
           return true;
         } else {
@@ -161,7 +177,7 @@ function displayResult(status) {
 
 function reportSuccess() {
   displayResult('pass');
-  chrome.extension.sendRequest('pass');
+  chrome.runtime.sendMessage('pass');
 }
 
 function reportFailure() {
@@ -169,7 +185,7 @@ function reportFailure() {
   // Let the "fail" show for a little while so you can see it when running
   // browser_tests in the debugger.
   setTimeout(function() {
-    chrome.extension.sendRequest('fail');
+    chrome.runtime.sendMessage('fail');
   }, 1000);
 }
 
