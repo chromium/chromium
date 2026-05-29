@@ -550,4 +550,56 @@ TEST_F(DeskTemplateConversionTest,
   EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
+TEST_F(DeskTemplateConversionTest, PreserveEmptyUrlsInSyncProtoConversion) {
+  // Build an in-memory DeskTemplate containing an uncommitted blank tab.
+  //   - Tab 0: Valid URL (https://example.com)
+  //   - Tab 1: Pending/uncommitted blank tab (GURL(), spec is "")
+  //   - Both tabs grouped together -> Range [0, 2)
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app_constants::kChromeAppId, 999);
+  app_launch_info->browser_extra_info.urls = {GURL("https://example.com"),
+                                              GURL()};
+  tab_groups::TabGroupInfo group_info(
+      gfx::Range(0, 2), tab_groups::TabGroupVisualData(
+                            u"Test Group", tab_groups::TabGroupColorId::kBlue));
+  app_launch_info->browser_extra_info.tab_group_infos = {group_info};
+
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info));
+
+  auto desk_template = std::make_unique<ash::DeskTemplate>(
+      base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kUser,
+      "Sync Serialization Test", base::Time::Now(),
+      ash::DeskTemplateType::kTemplate);
+  desk_template->set_desk_restore_data(std::move(restore_data));
+
+  // Serialize the model into syncer Protocol Buffer (ToSyncProto)
+  sync_pb::WorkspaceDeskSpecifics pb_entry =
+      desk_template_conversion::ToSyncProto(desk_template.get(),
+                                            GetAppsCache(account_id_));
+  ASSERT_EQ(pb_entry.desk().apps(0).app().browser_app_window().tabs_size(), 2);
+  EXPECT_EQ(pb_entry.desk().apps(0).app().browser_app_window().tabs(0).url(),
+            "https://example.com/");
+  EXPECT_TRUE(
+      pb_entry.desk().apps(0).app().browser_app_window().tabs(1).url().empty());
+
+  // Deserialize the protobuf back to a DeskTemplate
+  std::unique_ptr<ash::DeskTemplate> deserialized_template =
+      desk_template_conversion::FromSyncProto(pb_entry);
+  ASSERT_TRUE(deserialized_template);
+  ASSERT_TRUE(deserialized_template->desk_restore_data());
+  const app_restore::AppRestoreData* restored_app_data =
+      deserialized_template->desk_restore_data()->GetAppRestoreData(
+          app_constants::kChromeAppId, 999);
+  ASSERT_TRUE(restored_app_data);
+  EXPECT_EQ(restored_app_data->browser_extra_info.urls.size(), 2u);
+  EXPECT_EQ(restored_app_data->browser_extra_info.urls[0],
+            GURL("https://example.com/"));
+  EXPECT_EQ(restored_app_data->browser_extra_info.urls[1],
+            GURL());  // Blank tab preserved!
+  ASSERT_EQ(restored_app_data->browser_extra_info.tab_group_infos.size(), 1u);
+  EXPECT_EQ(restored_app_data->browser_extra_info.tab_group_infos[0].tab_range,
+            gfx::Range(0, 2));
+}
+
 }  // namespace desks_storage

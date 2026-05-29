@@ -1509,13 +1509,8 @@ void FillBrowserAppTabGroupInfos(
 void FillBrowserAppTabs(const std::vector<GURL>& gurls,
                         BrowserAppWindow* out_browser_app_window) {
   for (const auto& gurl : gurls) {
-    const std::string& url = gurl.spec();
-    if (url.empty()) {
-      // Skip invalid URLs.
-      continue;
-    }
     BrowserAppTab* browser_app_tab = out_browser_app_window->add_tabs();
-    browser_app_tab->set_url(url);
+    browser_app_tab->set_url(gurl.spec());
   }
 }
 

@@ -640,6 +640,42 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
               testing::UnorderedElementsAreArray(expected_tab_groups));
 }
 
+// Tests that a template with inconsistent tab group data (range out of bounds)
+// is handled gracefully.
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
+                       LaunchBrowserWithInconsistentTabGroups) {
+  // Construct template with 1 URL but a tab group requiring 2 tabs.
+  tab_groups::TabGroupInfo group_info(
+      gfx::Range(0, 2), tab_groups::TabGroupVisualData(
+                            u"Group", tab_groups::TabGroupColorId::kBlue));
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app_constants::kChromeAppId, 123);
+  app_launch_info->container =
+      static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerWindow);
+  app_launch_info->disposition =
+      static_cast<int32_t>(WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  app_launch_info->browser_extra_info.urls = {GURL(kExampleUrl1)};
+  app_launch_info->browser_extra_info.tab_group_infos = {group_info};
+
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info));
+  auto desk_template = std::make_unique<ash::DeskTemplate>(
+      base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kUser,
+      "Inconsistent Template", base::Time::Now(),
+      ash::DeskTemplateType::kTemplate);
+  desk_template->set_desk_restore_data(std::move(restore_data));
+  SetAndLaunchTemplate(std::move(desk_template));
+
+  BrowserWindowInterface* launched_browser =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  ASSERT_TRUE(launched_browser);
+  const TabStripModel* const tab_strip_model =
+      launched_browser->GetTabStripModel();
+  EXPECT_EQ(tab_strip_model->count(), 1);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0)->GetVisibleURL(),
+            GURL(kExampleUrl1));
+}
+
 // Tests that a browser's pinned tabs can be captured correctly in a saved desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
