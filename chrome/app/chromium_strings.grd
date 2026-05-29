@@ -1506,13 +1506,6 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <!-- ChromeOS OOBE Terms of Service screen-->
-      <if expr="is_chromeos">
-        <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
-          <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the ChromiumOS Terms.
-        </message>
-      </if>
-
       <!-- MediaStream capture status tray icon -->
       <message name="IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_AUDIO_AND_VIDEO" desc="Tool tip for the capture status tray icon when microphone and camera are being used">
         Chromium is using your camera and microphone.

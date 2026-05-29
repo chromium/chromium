@@ -10657,6 +10657,50 @@ To shut down the device, press and hold the power button on the device again.
         Can’t connect to proxy, please sign in again
       </message>
 
+      <!-- Terms of Service screen -->
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+                <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google ChromeOS Flex Terms.
+              </message>
+            </then>
+            <else>
+              <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+                <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google ChromeOS Terms.
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the ChromiumOS Terms.
+          </message>
+        </else>
+      </if>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_HEADING" desc="Heading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+        <ph name="MANAGER">$1<ex>example.com</ex></ph> Terms of Service
+      </message>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_LOADING" desc="Message shown while the Terms of Service are being downloaded.">
+        Loading...
+      </message>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_ERROR" desc="Error message shown when the Terms of Service could not be loaded.">
+        Terms of Service could not be loaded
+      </message>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_TRY_AGAIN" desc="Message telling the user to try again later. Shown beneath the error message when the Terms of Service could not be loaded.">
+        Please check your network connection and try again.
+      </message>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_BACK_BUTTON" desc="Text of the back button on Terms of Service screen.">
+        Back
+      </message>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_RETRY_BUTTON" desc="Text of the retry button on Terms of Service screen.">
+        Retry
+      </message>
+      <message name="IDS_TERMS_OF_SERVICE_SCREEN_ACCEPT_BUTTON" desc="Text of the accept button on the Terms of Service screen.">
+        Accept and continue
+      </message>
+
       <!-- Strings shown within Tether notifications -->
       <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE" desc="Title of the notification shown to the user when an attempt to tether to another device has failed.">
         Instant hotspot connection failed

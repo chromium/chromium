@@ -1960,28 +1960,6 @@
   <message name="IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE" desc="Warning message shown on screen notifying about pending auto-enrollment check completion.">
     Determining device configuration...
   </message>
-
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_HEADING" desc="Heading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>example.com</ex></ph> Terms of Service
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_LOADING" desc="Message shown while the Terms of Service are being downloaded.">
-    Loading...
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_ERROR" desc="Error message shown when the Terms of Service could not be loaded.">
-    Terms of Service could not be loaded
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_TRY_AGAIN" desc="Message telling the user to try again later. Shown beneath the error message when the Terms of Service could not be loaded.">
-    Please check your network connection and try again.
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_BACK_BUTTON" desc="Text of the back button on Terms of Service screen.">
-    Back
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_RETRY_BUTTON" desc="Text of the retry button on Terms of Service screen.">
-    Retry
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_ACCEPT_BUTTON" desc="Text of the accept button on the Terms of Service screen.">
-    Accept and continue
-  </message>
   <message name="IDS_CONTROLLED_SETTING_WITH_OWNER" desc="Text displayed in the controlled settings bubble when a setting's value can be edited only by the owner.">
     This setting is managed by the device owner, <ph name="OWNER_EMAIL">$1<ex>john@google.com</ex></ph>.
   </message>
