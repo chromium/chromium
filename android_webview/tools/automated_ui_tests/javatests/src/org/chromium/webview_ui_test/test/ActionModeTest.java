@@ -69,6 +69,7 @@ import org.chromium.webview_ui_test.test.util.UseLayout;
 import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
 
 /** Tests for WebView ActionMode. */
+@DisabledTest(message = "https://crbug.com/947352")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ActionModeTest {
     private static final String TAG = "ActionModeTest";
@@ -153,7 +154,6 @@ public class ActionModeTest {
     }
 
     /** Test Web Search */
-    @DisabledTest(message = "https://crbug.com/947352")
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
