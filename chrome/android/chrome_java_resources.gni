@@ -576,6 +576,7 @@ chrome_java_resources = [
   "java/res/layout/reader_mode_prefs_bottom_content.xml",
   "java/res/layout/reader_mode_prefs_bottom_content_with_toggle_links.xml",
   "java/res/layout/reader_mode_prefs_view.xml",
+  "java/res/layout/realbox_layout.xml",
   "java/res/layout/recent_tabs_group_item.xml",
   "java/res/layout/recent_tabs_group_separator_invisible.xml",
   "java/res/layout/recent_tabs_group_separator_visible.xml",
