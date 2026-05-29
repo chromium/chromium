@@ -398,6 +398,7 @@ source_set("eg_test_support+eg2") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_content/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/partial_translate/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
