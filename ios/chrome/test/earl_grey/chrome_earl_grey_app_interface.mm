@@ -999,6 +999,16 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
       base::SysNSStringToUTF8(deviceName), lastUpdatedTimestamp);
 }
 
++ (void)addFakeSyncServerSendTabToSelfEntryWithURL:(NSString*)URL
+                                             title:(NSString*)title
+                                        deviceName:(NSString*)deviceName
+                                  targetDeviceGUID:(NSString*)targetDeviceGUID {
+  chrome_test_util::AddSendTabToSelfEntryToFakeSyncServer(
+      base::SysNSStringToUTF8(URL), base::SysNSStringToUTF8(title),
+      base::SysNSStringToUTF8(deviceName),
+      base::SysNSStringToUTF8(targetDeviceGUID));
+}
+
 + (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(

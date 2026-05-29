@@ -1008,6 +1008,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                      lastUpdatedTimestamp:lastUpdatedTimestamp];
 }
 
+- (void)addFakeSyncServerSendTabToSelfEntryWithURL:(NSString*)URL
+                                             title:(NSString*)title
+                                        deviceName:(NSString*)deviceName
+                                  targetDeviceGUID:(NSString*)targetDeviceGUID {
+  [ChromeEarlGreyAppInterface
+      addFakeSyncServerSendTabToSelfEntryWithURL:URL
+                                           title:title
+                                      deviceName:deviceName
+                                targetDeviceGUID:targetDeviceGUID];
+}
+
 - (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {
   return
       [ChromeEarlGreyAppInterface textFragmentForSendTabToSelfEntryWithURL:URL];

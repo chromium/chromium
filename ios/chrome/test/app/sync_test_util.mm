@@ -33,6 +33,7 @@
 #import "components/sync/base/time.h"
 #import "components/sync/engine/loopback_server/loopback_server_entity.h"
 #import "components/sync/protocol/device_info_specifics.pb.h"
+#import "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #import "components/sync/protocol/session_specifics.pb.h"
 #import "components/sync/protocol/sync_entity.pb.h"
 #import "components/sync/protocol/sync_enums.pb.h"
@@ -488,6 +489,34 @@ void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
           "non_unique_name",
           syncer::DeviceInfoUtil::SpecificsToTag(device_info), specifics,
           /*creation_time=*/mtime, mtime));
+}
+
+void AddSendTabToSelfEntryToFakeSyncServer(
+    const std::string& url,
+    const std::string& title,
+    const std::string& device_name,
+    const std::string& target_device_guid) {
+  DCHECK(IsFakeSyncServerSetUp());
+
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::SendTabToSelfSpecifics* send_tab =
+      specifics.mutable_send_tab_to_self();
+  const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  send_tab->set_guid(guid);
+  send_tab->set_title(title);
+  send_tab->set_url(url);
+  send_tab->set_shared_time_usec(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  send_tab->set_device_name(device_name);
+  send_tab->set_target_device_sync_cache_guid(target_device_guid);
+  send_tab->set_opened(false);
+  send_tab->set_notification_dismissed(false);
+
+  std::unique_ptr<syncer::LoopbackServerEntity> entity =
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/std::string(), /*client_tag=*/guid, specifics,
+          /*creation_time=*/12345, /*last_modified_time=*/12345);
+  gSyncFakeServer->InjectEntity(std::move(entity));
 }
 
 BOOL IsUrlPresentOnClient(const GURL& url,

@@ -138,6 +138,13 @@ void AddHistoryVisitToFakeSyncServer(const GURL& url);
 void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
                                    base::Time last_updated_timestamp);
 
+// Injects a send tab to self entry into the fake sync server.
+void AddSendTabToSelfEntryToFakeSyncServer(
+    const std::string& url,
+    const std::string& title,
+    const std::string& device_name,
+    const std::string& target_device_guid);
+
 // Returns YES if the provided `url` is present (or not) if `expected_present`
 // is YES (or NO).
 BOOL IsUrlPresentOnClient(const GURL& url,

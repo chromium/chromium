@@ -344,6 +344,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
 
+// Injects a send tab to self entry to sync FakeServer.
+- (void)addFakeSyncServerSendTabToSelfEntryWithURL:(NSString*)URL
+                                             title:(NSString*)title
+                                        deviceName:(NSString*)deviceName
+                                  targetDeviceGUID:(NSString*)targetDeviceGUID;
+
 // Returns the generated text fragment for the given URL, or nil if no entry
 // exists or no fragment is set.
 - (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
