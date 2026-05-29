@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import java.util.Map;
+
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
@@ -36,8 +38,8 @@ public class InputStateTest {
                                 InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
                         .withDisabledInputTypes(InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
                         .withMaxTotalInputs(16)
-                        .withMaxInstances(
-                                new int[] {InputType.INPUT_TYPE_LENS_IMAGE_VALUE}, new int[] {3})
+                        .withMaxInputsByType(
+                                Map.of(InputType.INPUT_TYPE_LENS_IMAGE_VALUE, 3))
                         .withInputTypeConfigs(
                                 new byte[][] {InputTypeConfig.getDefaultInstance().toByteArray()})
                         .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)

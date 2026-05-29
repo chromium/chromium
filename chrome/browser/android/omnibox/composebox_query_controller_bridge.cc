@@ -59,6 +59,24 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
+#include "third_party/jni_zero/default_conversions.h"
+
+namespace jni_zero {
+template <>
+inline omnibox::InputType FromJniType<omnibox::InputType>(
+    JNIEnv* env,
+    const JavaRef<jobject>& val) {
+  return static_cast<omnibox::InputType>(FromJavaInteger(env, val));
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<omnibox::InputType>(
+    JNIEnv* env,
+    const omnibox::InputType& val) {
+  return ToJavaInteger(env, std::to_underlying(val));
+}
+}  // namespace jni_zero
+
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/ComposeboxQueryControllerBridge_jni.h"
 #include "chrome/browser/ui/android/omnibox/jni_headers/SuggestedTabInfo_jni.h"
@@ -578,13 +596,6 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
     const contextual_search::InputState& state) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  std::vector<omnibox::InputType> max_inputs_by_types_keys;
-  std::vector<int> max_inputs_by_types_values;
-  for (const auto& [key, value] : state.max_inputs_by_type) {
-    max_inputs_by_types_keys.emplace_back(key);
-    max_inputs_by_types_values.emplace_back(value);
-  }
-
   std::vector<std::vector<uint8_t>> tool_configs;
   for (const auto& config : state.tool_configs) {
     std::string serialized;
@@ -627,7 +638,7 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
       contextual_search::Java_InputState_Constructor(
           env, state.hint_text, state.allowed_input_types,
           state.disabled_input_types, state.max_total_inputs,
-          max_inputs_by_types_keys, max_inputs_by_types_values,
+          state.max_inputs_by_type,
           base::android::ToJavaArrayOfByteArray(env, input_type_configs),
           state.active_tool, state.allowed_tools, state.disabled_tools,
           state.image_gen_upload_active,

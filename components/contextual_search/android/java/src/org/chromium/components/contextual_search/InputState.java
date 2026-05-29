@@ -22,6 +22,7 @@ import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,8 +41,7 @@ public class InputState {
     public final List<Integer> allowedInputTypes;
     public final List<Integer> disabledInputTypes;
     public final int maxTotalInputs;
-    public final List<Integer> maxInstancesKeys;
-    public final List<Integer> maxInstancesValues;
+    public final Map<Integer, Integer> maxInputsByType;
     public final List<InputTypeConfig> inputTypeConfigs;
 
     public final int activeTool;
@@ -58,18 +58,14 @@ public class InputState {
     public final List<ModelConfig> modelConfigs;
     public final SectionConfig modelSectionConfig;
 
-    // This constructor is extremely large and verbose. It's only acceptable right now because there
-    // is a single usage of this class, and then a small test file. If we find that multiple clients
-    // need to call this constructor, especially with default arguments, we should strongly consider
-    // a builder pattern and/or test default to make it more ergonomic.
+    // Use the inner Builder class to construct instances of InputState.
     @CalledByNative
-    public InputState(
+    InputState(
             @JniType("std::string") String hintText,
             @JniType("std::vector<omnibox::InputType>") int[] allowedInputTypes,
             @JniType("std::vector<omnibox::InputType>") int[] disabledInputTypes,
             int maxTotalInputs,
-            @JniType("std::vector<omnibox::InputType>") int[] maxInstancesKeys,
-            @JniType("std::vector<int>") int[] maxInstancesValues,
+            @JniType("std::map<omnibox::InputType, int>") Map<Integer, Integer> maxInputsByType,
             byte @Nullable [][] inputTypeConfigs,
             @JniType("omnibox::ToolMode") int activeTool,
             @JniType("std::vector<omnibox::ToolMode>") int[] allowedTools,
@@ -88,8 +84,7 @@ public class InputState {
         this.allowedInputTypes = toList(allowedInputTypes);
         this.disabledInputTypes = toList(disabledInputTypes);
         this.maxTotalInputs = maxTotalInputs;
-        this.maxInstancesKeys = toList(maxInstancesKeys);
-        this.maxInstancesValues = toList(maxInstancesValues);
+        this.maxInputsByType = Collections.unmodifiableMap(maxInputsByType);
         this.inputTypeConfigs = parseInputTypeConfigs(inputTypeConfigs);
 
         this.activeTool = activeTool;
@@ -116,8 +111,7 @@ public class InputState {
                 && maxTotalInputs == that.maxTotalInputs
                 && Objects.equals(allowedInputTypes, that.allowedInputTypes)
                 && Objects.equals(disabledInputTypes, that.disabledInputTypes)
-                && Objects.equals(maxInstancesKeys, that.maxInstancesKeys)
-                && Objects.equals(maxInstancesValues, that.maxInstancesValues)
+                && Objects.equals(maxInputsByType, that.maxInputsByType)
                 && Objects.equals(inputTypeConfigs, that.inputTypeConfigs)
                 && activeTool == that.activeTool
                 && Objects.equals(allowedTools, that.allowedTools)
@@ -140,8 +134,7 @@ public class InputState {
                 maxTotalInputs,
                 allowedInputTypes,
                 disabledInputTypes,
-                maxInstancesKeys,
-                maxInstancesValues,
+                maxInputsByType,
                 inputTypeConfigs,
                 activeTool,
                 allowedTools,
@@ -264,8 +257,7 @@ public class InputState {
         private int[] mAllowedInputTypes = new int[0];
         private int[] mDisabledInputTypes = new int[0];
         private int mMaxTotalInputs;
-        private int[] mMaxInstancesKeys = new int[0];
-        private int[] mMaxInstancesValues = new int[0];
+        private Map<Integer, Integer> mMaxInputsByType = Collections.emptyMap();
         private byte @Nullable [][] mInputTypeConfigs;
         private int mActiveTool;
         private int[] mAllowedTools = new int[0];
@@ -300,10 +292,8 @@ public class InputState {
             return this;
         }
 
-        public Builder withMaxInstances(int[] keys, int[] values) {
-            assert keys.length == values.length;
-            mMaxInstancesKeys = keys;
-            mMaxInstancesValues = values;
+        public Builder withMaxInputsByType(Map<Integer, Integer> maxInputsByType) {
+            mMaxInputsByType = maxInputsByType;
             return this;
         }
 
@@ -378,8 +368,7 @@ public class InputState {
                     mAllowedInputTypes,
                     mDisabledInputTypes,
                     mMaxTotalInputs,
-                    mMaxInstancesKeys,
-                    mMaxInstancesValues,
+                    mMaxInputsByType,
                     mInputTypeConfigs,
                     mActiveTool,
                     mAllowedTools,
