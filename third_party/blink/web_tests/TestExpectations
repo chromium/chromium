@@ -2839,13 +2839,13 @@ crbug.com/515679398 virtual/jxl-enabled/external/wpt/jpegxl/progressive-1.html [
 crbug.com/515679398 virtual/jxl-enabled/external/wpt/jpegxl/progressive-2.html [ Failure ]
 crbug.com/515679398 virtual/jxl-enabled/external/wpt/jpegxl/progressive-3.html [ Failure ]
 
-external/wpt/css/css-overflow/table-max-content-with-scrollable-descendant.html [ Failure ]
-external/wpt/html/rendering/replaced-elements/images/abs-pos-transferred-max-width-from-percentage-max-height-in-auto-height-containing-block.html [ Failure ]
-external/wpt/webrtc/RTCError.html?rest [ Timeout ]
+crbug.com/517981164 external/wpt/css/css-overflow/table-max-content-with-scrollable-descendant.html [ Failure ]
+crbug.com/517989159 external/wpt/html/rendering/replaced-elements/images/abs-pos-transferred-max-width-from-percentage-max-height-in-auto-height-containing-block.html [ Failure ]
+crbug.com/517972312 external/wpt/webrtc/RTCError.html?rest [ Timeout ]
 
 # Potentially unstable floats in `*-expected.txt`
-external/wpt/css/css-properties-values-api/font-property-unit-cycles.tentative.html [ Failure ]
-[ Win ] external/wpt/css/css-viewport/zoom/font-relative-units-with-zoom.html [ Failure ]
+crbug.com/517974980 external/wpt/css/css-properties-values-api/font-property-unit-cycles.tentative.html [ Failure ]
+crbug.com/517948353 [ Win ] external/wpt/css/css-viewport/zoom/font-relative-units-with-zoom.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/510924299 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-base-display.html [ Failure ]
