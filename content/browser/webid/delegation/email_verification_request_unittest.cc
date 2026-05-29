@@ -580,6 +580,81 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
                        EmailVerificationRequestResult::kUserLoggedOut));
 }
 
+TEST_F(EmailVerificationRequestTest, AccountsListEmpty) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
+
+  const std::string kEmail = "test@example.com";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+  const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_dns_request_,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.signing_alg_values_supported.push_back("RS256");
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            std::move(callback).Run(FetchStatus{ParseStatus::kEmptyListError},
+                                    std::move(response));
+            return true;
+          }));
+
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
+
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
+  email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kAccountsEmptyList, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       EmailVerificationRequestResult::kAccountsEmptyList));
+}
+
 TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
   base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("https://rp.example.com"));

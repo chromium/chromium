@@ -547,6 +547,17 @@ EmailVerificationRequestResultToProtocol(
     case EmailVerificationRequestResult::kWellKnownAccountsEndpointCrossOrigin:
       return EmailVerificationRequestIssueReasonEnum::
           WellKnownAccountsEndpointCrossOrigin;
+    case EmailVerificationRequestResult::kAccountsHttpNotFound:
+      return EmailVerificationRequestIssueReasonEnum::AccountsHttpNotFound;
+    case EmailVerificationRequestResult::kAccountsNoResponse:
+      return EmailVerificationRequestIssueReasonEnum::AccountsNoResponse;
+    case EmailVerificationRequestResult::kAccountsInvalidResponse:
+      return EmailVerificationRequestIssueReasonEnum::AccountsInvalidResponse;
+    case EmailVerificationRequestResult::kAccountsInvalidContentType:
+      return EmailVerificationRequestIssueReasonEnum::
+          AccountsInvalidContentType;
+    case EmailVerificationRequestResult::kAccountsEmptyList:
+      return EmailVerificationRequestIssueReasonEnum::AccountsEmptyList;
     case EmailVerificationRequestResult::kSuccess:
       NOTREACHED();
   }

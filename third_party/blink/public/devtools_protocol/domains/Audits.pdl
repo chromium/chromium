@@ -592,6 +592,11 @@ experimental domain Audits
       WellKnownMissingAccountsEndpoint
       UserLoggedOut
       WellKnownAccountsEndpointCrossOrigin
+      AccountsHttpNotFound
+      AccountsNoResponse
+      AccountsInvalidResponse
+      AccountsInvalidContentType
+      AccountsEmptyList
 
   # This issue tracks client hints related issues. It's used to deprecate old
   # features, encourage the use of new ones, and provide general guidance.

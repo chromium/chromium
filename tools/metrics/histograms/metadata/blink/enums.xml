@@ -299,6 +299,11 @@ Called by update_document_policy_enum.py.-->
   <int value="20" label="WellKnownMissingAccountsEndpoint"/>
   <int value="21" label="UserLoggedOut"/>
   <int value="22" label="WellKnownAccountsEndpointCrossOrigin"/>
+  <int value="23" label="AccountsHttpNotFound"/>
+  <int value="24" label="AccountsNoResponse"/>
+  <int value="25" label="AccountsInvalidResponse"/>
+  <int value="26" label="AccountsInvalidContentType"/>
+  <int value="27" label="AccountsEmptyList"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/email_verification_request.mojom:EmailVerificationRequestResult) -->

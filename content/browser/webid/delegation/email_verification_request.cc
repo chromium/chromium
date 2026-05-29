@@ -295,7 +295,7 @@ void EmailVerificationRequest::OnAccountsResponseReceived(
     IdpNetworkRequestManager::AccountsResponse response) {
   if (status.parse_status != ParseStatus::kSuccess) {
     accounts->data = base::unexpected(
-        WellKnownParseStatusToEvpRequestStatus(status.parse_status));
+        AccountsListParseStatusToEvpRequestStatus(status.parse_status));
   } else {
     accounts->data = std::move(response.accounts);
   }

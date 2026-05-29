@@ -107,6 +107,11 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status);
 CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
 WellKnownParseStatusToEvpRequestStatus(ParseStatus parse_status);
 
+// Converts a ParseStatus from an accounts list fetch to an EvpRequestStatus.
+// Should not be invoked when parse_status is ParseStatus::kSuccess.
+CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
+AccountsListParseStatusToEvpRequestStatus(ParseStatus parse_status);
+
 // Converts a ParseStatus from a token fetch to an EvpRequestStatus.
 // Should not be invoked when parse_status is ParseStatus::kSuccess.
 CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult

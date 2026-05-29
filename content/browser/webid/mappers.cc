@@ -301,6 +301,24 @@ EmailVerificationRequestResult WellKnownParseStatusToEvpRequestStatus(
   }
 }
 
+EmailVerificationRequestResult AccountsListParseStatusToEvpRequestStatus(
+    ParseStatus parse_status) {
+  switch (parse_status) {
+    case ParseStatus::kHttpNotFoundError:
+      return EmailVerificationRequestResult::kAccountsHttpNotFound;
+    case ParseStatus::kNoResponseError:
+      return EmailVerificationRequestResult::kAccountsNoResponse;
+    case ParseStatus::kInvalidResponseError:
+      return EmailVerificationRequestResult::kAccountsInvalidResponse;
+    case ParseStatus::kEmptyListError:
+      return EmailVerificationRequestResult::kAccountsEmptyList;
+    case ParseStatus::kInvalidContentTypeError:
+      return EmailVerificationRequestResult::kAccountsInvalidContentType;
+    case ParseStatus::kSuccess:
+      NOTREACHED();
+  }
+}
+
 EmailVerificationRequestResult TokenParseStatusToEvpRequestStatus(
     ParseStatus parse_status) {
   switch (parse_status) {

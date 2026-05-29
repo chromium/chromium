@@ -33,5 +33,10 @@ enum EmailVerificationRequestResult {
   kWellKnownMissingAccountsEndpoint = 20,
   kUserLoggedOut = 21,
   kWellKnownAccountsEndpointCrossOrigin = 22,
+  kAccountsHttpNotFound = 23,
+  kAccountsNoResponse = 24,
+  kAccountsInvalidResponse = 25,
+  kAccountsInvalidContentType = 26,
+  kAccountsEmptyList = 27,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpRequestStatus)
