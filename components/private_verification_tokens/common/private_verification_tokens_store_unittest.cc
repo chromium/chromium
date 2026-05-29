@@ -72,8 +72,7 @@ class PrivateVerificationTokensStoreTest : public testing::Test {
       std::map<std::string, PrivateVerificationTokensPublicKey>& keys,
       std::map<std::string, std::vector<PrivateVerificationTokensToken>>&
           tokens) {
-    const auto expiration =
-        base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(27));
+    const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
     keys = {
         {"a.com",
          PrivateVerificationTokensPublicKey("a.com", {1, 2, 3}, /*key_id=*/3,

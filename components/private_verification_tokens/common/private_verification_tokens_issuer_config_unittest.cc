@@ -340,7 +340,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
 
   PrivateVerificationTokensPublicKey expected_public_key{
       domain, serialized_public_key, key_id,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(12)), version};
+      base::Time::UnixEpoch() + base::Seconds(12), version};
   const auto& parsed_issuer_config = config->config().at(domain);
   EXPECT_EQ(parsed_issuer_config.batch_size, 3);
   EXPECT_EQ(parsed_issuer_config.public_key, expected_public_key);
@@ -384,14 +384,14 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
 
   PrivateVerificationTokensPublicKey expected_pk1{
       "a.com", serialized_public_key1, 2,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(49)), 1};
+      base::Time::UnixEpoch() + base::Seconds(49), 1};
   const auto& config1 = config->config().at("a.com");
   EXPECT_EQ(config1.batch_size, 3);
   EXPECT_EQ(config1.public_key, expected_pk1);
 
   PrivateVerificationTokensPublicKey expected_pk2{
       "b.com", serialized_public_key2, 5,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(53)), 1};
+      base::Time::UnixEpoch() + base::Seconds(53), 1};
   const auto& config2 = config->config().at("b.com");
   EXPECT_EQ(config2.batch_size, 5);
   EXPECT_EQ(config2.public_key, expected_pk2);
@@ -432,7 +432,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
 
   PrivateVerificationTokensPublicKey expected_pk1{
       "valid.com", serialized_public_key1, 2,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(49)), 1};
+      base::Time::UnixEpoch() + base::Seconds(49), 1};
   const auto& config1 = config->config().at("valid.com");
   EXPECT_EQ(config1.batch_size, 3);
   EXPECT_EQ(config1.public_key, expected_pk1);
@@ -486,14 +486,14 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   // Verify first a.com entry is picked
   PrivateVerificationTokensPublicKey expected_pk1{
       "a.com", serialized_public_key, 2,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(49)), 1};
+      base::Time::UnixEpoch() + base::Seconds(49), 1};
   const auto& config1 = config->config().at("a.com");
   EXPECT_EQ(config1.batch_size, 3);
   EXPECT_EQ(config1.public_key, expected_pk1);
 
   PrivateVerificationTokensPublicKey expected_pk2{
       "b.com", serialized_public_key, 5,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(53)), 1};
+      base::Time::UnixEpoch() + base::Seconds(53), 1};
   const auto& config2 = config->config().at("b.com");
   EXPECT_EQ(config2.batch_size, 5);
   EXPECT_EQ(config2.public_key, expected_pk2);
@@ -566,7 +566,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_ValidJson) {
 
   const PrivateVerificationTokensPublicKey expected_public_key{
       "example.com", serialized_public_key, 3,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(12)), 1};
+      base::Time::UnixEpoch() + base::Seconds(12), 1};
   EXPECT_EQ(result->config().at("example.com").public_key, expected_public_key);
 }
 

@@ -168,7 +168,7 @@ bool PrivateVerificationTokensDatabase::StoreTokens(
     statement.BindString(0, token.etld_plus_one());
     statement.BindInt64(1, token.key_id());
     statement.BindInt64(
-        2, token.expiration().ToDeltaSinceWindowsEpoch().InSeconds());
+        2, (token.expiration() - base::Time::UnixEpoch()).InSeconds());
     statement.BindBlob(3, token.token());
     statement.BindInt64(4, token.version());
     if (!statement.Run()) {
@@ -200,11 +200,9 @@ std::optional<TokenWithId> PrivateVerificationTokensDatabase::GetToken(
     uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
 
     return TokenWithId{
-        id,
-        PrivateVerificationTokensToken(
-            std::move(etld_plus_one_str), std::move(token), key_id,
-            base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
-            version)};
+        id, PrivateVerificationTokensToken(
+                std::move(etld_plus_one_str), std::move(token), key_id,
+                base::Time::UnixEpoch() + base::Seconds(expiration), version)};
   }
   if (!statement.Succeeded()) {
     return std::nullopt;
@@ -236,8 +234,7 @@ PrivateVerificationTokensDatabase::GetTokensFromEach() {
         etld_plus_one, id,
         PrivateVerificationTokensToken(
             etld_plus_one, std::move(token), key_id,
-            base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
-            version));
+            base::Time::UnixEpoch() + base::Seconds(expiration), version));
   }
   if (!statement.Succeeded()) {
     return {};
@@ -288,8 +285,8 @@ bool PrivateVerificationTokensDatabase::StoreKeys(
     statement.BindString(0, pk.etld_plus_one());
     statement.BindBlob(1, pk.public_key());
     statement.BindInt64(2, pk.key_id());
-    statement.BindInt64(3,
-                        pk.expiration().ToDeltaSinceWindowsEpoch().InSeconds());
+    statement.BindInt64(
+        3, (pk.expiration() - base::Time::UnixEpoch()).InSeconds());
     statement.BindInt64(4, pk.version());
     if (!statement.Run()) {
       return false;
@@ -315,10 +312,9 @@ PrivateVerificationTokensDatabase::GetKeys() {
     uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
     int64_t expiration = statement.ColumnInt64(3);
     uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(4));
-    keys.emplace_back(
-        std::move(etld_plus_one), std::move(public_key), key_id,
-        base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
-        version);
+    keys.emplace_back(std::move(etld_plus_one), std::move(public_key), key_id,
+                      base::Time::UnixEpoch() + base::Seconds(expiration),
+                      version);
   }
   return keys;
 }

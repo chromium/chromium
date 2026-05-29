@@ -95,10 +95,9 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
       uint32_t key_id = statement.ColumnInt64(2);
       int64_t expiration = statement.ColumnInt64(3);
       uint32_t version = statement.ColumnInt64(4);
-      tokens.emplace_back(
-          std::move(etld_plus_one), std::move(token), key_id,
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
-          version);
+      tokens.emplace_back(std::move(etld_plus_one), std::move(token), key_id,
+                          base::Time::UnixEpoch() + base::Seconds(expiration),
+                          version);
     }
     return tokens;
   }
@@ -225,13 +224,12 @@ TEST_F(PrivateVerificationTokensDatabaseTest, StoreTokens_SingleToken_Success) {
 
   const std::string etld_plus_one = "a.com";
   uint32_t key_id = 1;
-  uint64_t expiration = 7;
+  int64_t expiration = 7;
   uint32_t version = 1;
   std::vector<PrivateVerificationTokensToken> tokens = {
       PrivateVerificationTokensToken(
           etld_plus_one, {1, 2, 3}, key_id,
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
-          version),
+          base::Time::UnixEpoch() + base::Seconds(expiration), version),
   };
   EXPECT_TRUE(pvt_database_->StoreTokens(tokens));
   pvt_database_.reset();
@@ -264,7 +262,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   auto tokens_to_store =
       CreateTokens(all_tokens, /* key_id = */ 1,
                    /* expiration = */
-                   base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(7)),
+                   base::Time::UnixEpoch() + base::Seconds(7),
                    /* version = */ 1);
   EXPECT_TRUE(pvt_database_->StoreTokens(tokens_to_store));
   pvt_database_.reset();
@@ -284,8 +282,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, GetToken_ExistingToken_Success) {
   EXPECT_FALSE(base::PathExists(db_path_));
 
   uint32_t key_id = 1;
-  const base::Time expiration =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(7));
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
   uint32_t version = 1;
   std::map<std::string, std::vector<SerializedToken>> all_tokens = {
       {"a.com", {{1, 2, 3}, {11, 12, 13}, {14, 15, 16}}},
@@ -307,8 +304,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, GetToken_NoTokens_Failure) {
   CreateDatabase(db_path_);
   EXPECT_FALSE(base::PathExists(db_path_));
 
-  const base::Time expiration =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(7));
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
   std::vector<PrivateVerificationTokensToken> tokens = {
       PrivateVerificationTokensToken("a.com", {1, 2, 3},
                                      /* key_id = */ 1, expiration,
@@ -334,8 +330,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_ValidId_Success) {
   EXPECT_FALSE(base::PathExists(db_path_));
 
   uint32_t key_id = 678;
-  const base::Time expiration =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(7));
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
   uint32_t version = 1;
   std::map<std::string, std::vector<SerializedToken>> all_tokens = {
       {"a.com", {{1, 2, 3}, {11, 12, 13}, {14, 15, 16}}},
@@ -360,8 +355,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_ValidId_Success) {
 TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_NonExistentId_NoOp) {
   CreateDatabase(db_path_);
 
-  const base::Time expiration =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(7));
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
   std::vector<PrivateVerificationTokensToken> tokens = {
       PrivateVerificationTokensToken("a.com", {1, 2, 3},
                                      /* key_id = */ 678, expiration,
@@ -385,8 +379,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   CreateDatabase(db_path_);
 
   uint32_t key_id = 678;
-  const base::Time expiration =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(7));
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
   uint32_t version = 1;
   std::map<std::string, std::vector<SerializedToken>> all_tokens = {
       {"a.com", {{1, 2, 3}, {11, 12, 13}, {14, 15, 16}}},
@@ -430,7 +423,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   std::vector<uint8_t> key_a = {1, 2, 3};
   std::vector<uint8_t> key_b = {4, 5, 6};
-  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
+  const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, /*key_id=*/3,
                                          /*expiration=*/exp, /*version=*/1),
@@ -458,7 +451,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   EXPECT_FALSE(base::PathExists(db_path_));
 
   std::vector<uint8_t> key_a = {1, 2, 3};
-  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
+  const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, /*key_id=*/3,
                                          /*expiration=*/exp, /*version=*/1),
@@ -466,8 +459,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
 
   std::vector<uint8_t> key_a_new = {7, 8, 9};
-  const auto exp_new =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(10));
+  const auto exp_new = base::Time::UnixEpoch() + base::Seconds(10);
   std::vector<PrivateVerificationTokensPublicKey> keys_new{
       PrivateVerificationTokensPublicKey("a.com", key_a_new, /*key_id=*/3,
                                          /*expiration=*/exp_new, /*version=*/2),
@@ -502,27 +494,27 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
       PrivateVerificationTokensPublicKey(
           "a.com", key_a, /*key_id=*/3,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5)),
+          base::Time::UnixEpoch() + base::Seconds(5),
           /*version=*/1),
       PrivateVerificationTokensPublicKey(
           "b.tri", key_b_1, /*key_id=*/4,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
           "c.eee", key_c, /*key_id=*/4,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
           "b.tri", key_b_2, /*key_id=*/5,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
           "b.tri", key_b_3, /*key_id=*/6,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
@@ -552,17 +544,17 @@ TEST_F(PrivateVerificationTokensDatabaseTest, RemoveKey_ExistingId_KeyRemoved) {
       PrivateVerificationTokensPublicKey(
           "a.com", key_a, /*key_id=*/3,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5)),
+          base::Time::UnixEpoch() + base::Seconds(5),
           /*version=*/1),
       PrivateVerificationTokensPublicKey(
           "b.tri", key_b, /*key_id=*/4,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
           "c.eee", key_c, /*key_id=*/5,
           /*expiration=*/
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
@@ -586,7 +578,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, RemoveKey_NonExistentId_NoOp) {
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey(
           "a.com", key_a, /*key_id=*/3,
-          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5)), 1),
+          base::Time::UnixEpoch() + base::Seconds(5), 1),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
 
@@ -625,7 +617,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   // Trigger the lazy-initialization by attempting to store a key.
   std::vector<uint8_t> key_a = {1, 2, 3};
-  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
+  const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, /*key_id=*/3,
                                          /*expiration=*/exp, /*version=*/1),
@@ -701,7 +693,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   CreateDatabase(db_path_);
 
   std::vector<uint8_t> key_a = {1, 2, 3};
-  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
+  const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, 3, exp, 1),
   };
@@ -719,8 +711,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   CreateDatabase(db_path_);
 
   const uint32_t key_id = 3;
-  const base::Time expiration =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(5);
   const uint32_t version = 1;
 
   std::map<std::string, std::vector<SerializedToken>> all_tokens = {

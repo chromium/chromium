@@ -132,8 +132,7 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
 
   PrivateVerificationTokensPublicKey pk(
       *domain, std::move(*decoded_public_key), *key_id,
-      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*expiration)),
-      *version);
+      base::Time::UnixEpoch() + base::Seconds(*expiration), *version);
   return IssuerConfig(*batch_size, std::move(pk));
 }
 
