@@ -135,14 +135,13 @@ class OtherWindowCopyAnimation {
 class DragWindowFromShelfController::WindowsHider
     : public aura::WindowObserver {
  public:
-  WindowsHider(aura::Window* dragged_window, aura::Window* other_window)
-      : dragged_window_(dragged_window) {
+  WindowsHider(aura::Window* dragged_window, aura::Window* other_window) {
     std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
     auto* split_view_controller = SplitViewController::Get(dragged_window);
 
     for (aura::Window* window : windows) {
-      if (window == dragged_window_ || window == other_window ||
+      if (window == dragged_window || window == other_window ||
           window == split_view_controller->primary_window() ||
           window == split_view_controller->secondary_window()) {
         continue;
@@ -206,7 +205,6 @@ class DragWindowFromShelfController::WindowsHider
   }
 
  private:
-  raw_ptr<aura::Window, DanglingUntriaged> dragged_window_;
   std::vector<raw_ptr<aura::Window, VectorExperimental>> hidden_windows_;
 };
 
