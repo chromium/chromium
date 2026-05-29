@@ -2,7 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
+import("//build/config/gclient_args.gni")
+
+if (build_with_chromium) {
+  import("//testing/libfuzzer/fuzzer_test.gni")
+}
 
 if (is_win) {
   import("//build/config/win/visual_studio_version.gni")
@@ -227,8 +231,10 @@ if (current_toolchain == host_toolchain) {
   }
 }
 
-fuzzer_test("brotli_fuzzer") {
-  sources = [ "fuzz/decode_fuzzer.c" ]
-  deps = [ ":dec" ]
-  libfuzzer_options = [ "max_len=1280" ]
+if (build_with_chromium) {
+  fuzzer_test("brotli_fuzzer") {
+    sources = [ "fuzz/decode_fuzzer.c" ]
+    deps = [ ":dec" ]
+    libfuzzer_options = [ "max_len=1280" ]
+  }
 }
