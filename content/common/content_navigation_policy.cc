@@ -6,10 +6,8 @@
 
 #include <bitset>
 
-#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "content/common/features.h"
@@ -41,8 +39,8 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
         features::kBackForwardCacheMemoryControls,
         "memory_threshold_for_back_forward_cache_in_mb",
         default_memory_threshold_mb);
-    return base::SysInfo::AmountOfTotalPhysicalMemory() >
-           base::MiBU(base::saturated_cast<uint64_t>(memory_threshold_mb));
+    return base::SysInfo::AmountOfPhysicalMemory().InMiB() >
+           memory_threshold_mb;
   }
 
   // If the feature kBackForwardCacheMemoryControls is not enabled, all the
