@@ -13,12 +13,49 @@ import pathlib
 import pickle
 import shutil
 import sys
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.diff_util as diff_util
+import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.python.google.path_utils as path_utils
+
+
+def RunPythonScript(
+    input_api: Any,
+    output_api: Any,
+    script_path: pathlib.Path,
+    extra_args: Optional[List[str]] = None,
+    custom_error_msg_fn: Optional[Callable[[str],
+                                           str]] = None) -> Iterable[Any]:
+  """Runs a python script as a subprocess and yields presubmit errors.
+
+  Args:
+    input_api: The input API object.
+    output_api: The output API object.
+    script_path: Path object relative to METRICS_TOOLS_PATH.
+    extra_args: Optional list of extra arguments to pass to the script.
+    custom_error_msg_fn: Optional function that takes stdout and returns a custom error message.
+  """
+  full_script_path = path_util.METRICS_TOOLS_PATH / script_path
+
+  cmd = [input_api.python3_executable, str(full_script_path)]
+  if extra_args:
+    cmd.extend(extra_args)
+
+  try:
+    input_api.subprocess.check_output(cmd,
+                                      text=True,
+                                      stderr=input_api.subprocess.STDOUT,
+                                      cwd=str(path_util.CHROMIUM_SRC_PATH))
+  except input_api.subprocess.CalledProcessError as e:
+    error_msg = e.output.strip(
+    ) if e.output else f'Command \'{" ".join(cmd)}\' failed with exit code {e.returncode}.'
+    if custom_error_msg_fn:
+      yield output_api.PresubmitError(custom_error_msg_fn(error_msg))
+    else:
+      yield output_api.PresubmitError(error_msg)
 
 
 def DoPresubmit(argv,

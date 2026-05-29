@@ -196,7 +196,8 @@ def _is_script_affected_by(testable_script: TestableScript,
     return True
   all_dependencies = dependency_solver.get_all_dependencies(
       deps_graph, str(testable_script.file_path))
-  return any(file in all_dependencies for file in modified_files)
+  all_deps_paths = set(Path(d) for d in all_dependencies)
+  return any(file in all_deps_paths for file in modified_files)
 
 
 def get_affected_testable_scripts(
