@@ -50,7 +50,7 @@ BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableIframeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Pix code detection will be supported in Chrome Custom Tabs.
-BASE_FEATURE(kEnablePixInCct, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnablePixInCct, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.
