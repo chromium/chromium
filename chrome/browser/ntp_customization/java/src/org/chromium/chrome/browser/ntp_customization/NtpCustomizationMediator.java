@@ -145,7 +145,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
                                         ApplicationStatus.getTaskId(activity));
                             }
                             NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(
-                                    TimeUtils.uptimeMillis());
+                                    TimeUtils.currentTimeMillis());
                             NtpThemeStateProvider.getInstance().notifyApplyThemeChanges();
                         } else {
                             NtpCustomizationPromoManager

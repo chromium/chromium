@@ -84,7 +84,8 @@ public class NtpCustomizationPromoManager {
         }
 
         long lastApplyTime = NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference();
-        if (lastApplyTime > 0 && (TimeUtils.uptimeMillis() - lastApplyTime) < COOL_DOWN_PERIOD_MS) {
+        if (lastApplyTime > 0
+                && (TimeUtils.currentTimeMillis() - lastApplyTime) < COOL_DOWN_PERIOD_MS) {
             return false;
         }
 
@@ -117,7 +118,7 @@ public class NtpCustomizationPromoManager {
             long timestamp =
                     NtpCustomizationUtils
                             .getThemeTipBottomSheetShownTimestampFromSharedPreference();
-            if (timestamp > 0 && TimeUtils.uptimeMillis() - timestamp < COOL_DOWN_PERIOD_MS) {
+            if (timestamp > 0 && TimeUtils.currentTimeMillis() - timestamp < COOL_DOWN_PERIOD_MS) {
                 return false;
             }
         }

@@ -138,14 +138,14 @@ public class NtpCustomizationPromoManagerUnitTest {
                 .resetThemeTipBottomSheetShownTimestampFromSharedPreferenceForTesting();
 
         // Case 7: Within cool down period (last applied 6 days ago).
-        long sixDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(6).toMillis();
+        long sixDaysAgo = TimeUtils.currentTimeMillis() - Duration.ofDays(6).toMillis();
         NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(sixDaysAgo);
         assertFalse(
                 NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
                         mWindowAndroid, /* isTablet= */ false, /* ntpOpenedCount= */ 2));
 
         // Case 8: Outside cool down period (last applied 8 days ago).
-        long eightDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(8).toMillis();
+        long eightDaysAgo = TimeUtils.currentTimeMillis() - Duration.ofDays(8).toMillis();
         NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(eightDaysAgo);
 
         assertEquals(
@@ -216,14 +216,14 @@ public class NtpCustomizationPromoManagerUnitTest {
                         mTab, mWindowAndroid, /* isTablet= */ false));
 
         // Case 2: Bottom sheet shown, but within cool down period (e.g., 6 days ago).
-        long sixDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(6).toMillis();
+        long sixDaysAgo = TimeUtils.currentTimeMillis() - Duration.ofDays(6).toMillis();
         NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(sixDaysAgo);
         assertFalse(
                 NtpCustomizationPromoManager.canShowCustomizationIph(
                         mTab, mWindowAndroid, /* isTablet= */ false));
 
         // Case 3: Bottom sheet shown, outside cool down period (e.g., 8 days ago).
-        long eightDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(8).toMillis();
+        long eightDaysAgo = TimeUtils.currentTimeMillis() - Duration.ofDays(8).toMillis();
         NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(eightDaysAgo);
         assertTrue(
                 NtpCustomizationPromoManager.canShowCustomizationIph(

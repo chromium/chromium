@@ -1209,7 +1209,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                                 mSnackbarManager);
         mNtpCustomizationCoordinator.showBottomSheet();
         NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(
-                TimeUtils.uptimeMillis());
+                TimeUtils.currentTimeMillis());
     }
 
     // ModuleDelegateHost implementation
