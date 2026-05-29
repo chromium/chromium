@@ -663,8 +663,10 @@ OwnedLayerImplList LayerTreeImpl::SwapLayers(OwnedLayerImplList new_layers) {
   return result;
 }
 
-void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees,
-                                     bool preserve_change_tracking) {
+void LayerTreeImpl::SetPropertyTrees(
+    PropertyTrees& property_trees,
+    const ViewportPropertyIds& viewport_property_ids,
+    bool preserve_change_tracking) {
   if (preserve_change_tracking) {
     property_trees_.CollectChangeState();
     property_trees.ApplyChangeStateFrom(property_trees_);
@@ -720,6 +722,12 @@ void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees,
     scrolling_node = scroll_tree.FindNodeFromElementId(scrolling_element_id);
   }
   SetCurrentlyScrollingNode(scrolling_node);
+
+  // Viewport property IDs store indices pointing into property trees. Updating
+  // property trees above invalidates the old viewport property IDs, so they
+  // must be updated immediately to ensure they remain valid for any subsequent
+  // queries against the new trees.
+  SetViewportPropertyIds(viewport_property_ids);
 }
 
 void LayerTreeImpl::PullPropertiesFrom(
@@ -829,7 +837,9 @@ void LayerTreeImpl::PullPropertyTreesFrom(
     }
   }
 
-  SetPropertyTrees(commit_state.property_trees, preserve_change_tracking);
+  SetPropertyTrees(commit_state.property_trees,
+                   commit_state.viewport_property_ids,
+                   preserve_change_tracking);
 }
 
 void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
@@ -950,7 +960,8 @@ void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
   // This either overwrites active tree's property tree completely with pending
   // tree's property tree OR merge pending tree's property tree on active tree's
   // property tree depending upon |preserve_change_tracking| flag.
-  target_tree->SetPropertyTrees(property_trees_, preserve_change_tracking);
+  target_tree->SetPropertyTrees(property_trees_, viewport_property_ids_,
+                                preserve_change_tracking);
 
   EventMetrics::List events_metrics, raster_event_metrics;
   events_metrics.swap(events_metrics_from_main_thread_);

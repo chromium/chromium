@@ -200,6 +200,7 @@ class CC_EXPORT LayerTreeImpl {
   OwnedLayerImplList SwapLayers(OwnedLayerImplList new_layers);
 
   void SetPropertyTrees(PropertyTrees& property_trees,
+                        const ViewportPropertyIds& viewport_property_ids,
                         bool preserve_change_tracking = false);
 
   PropertyTrees* property_trees() {

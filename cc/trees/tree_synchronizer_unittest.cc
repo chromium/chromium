@@ -370,7 +370,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
                           host_->active_tree());
 
   host_->active_tree()->SetPropertyTrees(
-      *layer_tree_root->layer_tree_host()->property_trees());
+      *layer_tree_root->layer_tree_host()->property_trees(),
+      layer_tree_root->layer_tree_host()->viewport_property_ids());
   TreeSynchronizer::PushLayerProperties(
       *host_->GetPendingCommitState(),
       const_cast<const FakeLayerTreeHost*>(host_.get())

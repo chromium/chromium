@@ -15321,7 +15321,8 @@ TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
     // Setup pending tree
     setup_root_layer(host_impl_->pending_tree());
     host_impl_->pending_tree()->SetPropertyTrees(
-        *host_impl_->active_tree()->property_trees());
+        *host_impl_->active_tree()->property_trees(),
+        host_impl_->active_tree()->viewport_property_ids());
 
     auto transform_node_pending = [&, element_id = scroll_node->element_id]() {
       return host_impl_->pending_tree()

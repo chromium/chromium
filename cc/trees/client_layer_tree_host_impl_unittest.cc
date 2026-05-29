@@ -2601,7 +2601,8 @@ TEST_P(PendingTreeLayerTreeHostImplTest, ActivateTreeScrollingNodeDisappeared) {
   PropertyTrees pending_property_trees;
   pending_property_trees.set_sequence_number(
       host_impl_->active_tree()->property_trees()->sequence_number() + 1);
-  host_impl_->pending_tree()->SetPropertyTrees(pending_property_trees);
+  host_impl_->pending_tree()->SetPropertyTrees(pending_property_trees,
+                                               ViewportPropertyIds());
   SetupRootLayer<LayerImpl>(host_impl_->pending_tree(), gfx::Size(100, 100));
   host_impl_->ActivateSyncTree();
 
