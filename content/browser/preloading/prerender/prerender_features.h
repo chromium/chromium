@@ -69,6 +69,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate);
 // prerender when a matching prerender speculation rule is added.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerenderUntilScriptUpgrade);
 
+// If enabled, prerender activation beacon will be sent when a prerender is
+// activated.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerenderActivationBeacon);
+
 CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
 }  // namespace features
 
