@@ -66,7 +66,7 @@ void ContextualTasksPanelHostDesktopAndroid::Show(AnimationStyle animation) {
 
 void ContextualTasksPanelHostDesktopAndroid::Close(AnimationStyle animation) {
   auto* side_panel_ui = GetSidePanelUI();
-  if (!side_panel_ui) {
+  if (!side_panel_ui || !side_panel_ui->IsSidePanelShowing()) {
     return;
   }
   side_panel_ui->Close(

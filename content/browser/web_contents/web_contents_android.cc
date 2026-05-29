@@ -774,8 +774,10 @@ void WebContentsAndroid::SetOverscrollRefreshHandler(
   WebContentsViewAndroid* view =
       static_cast<WebContentsViewAndroid*>(web_contents_->GetView());
   view->SetOverscrollRefreshHandler(
-      std::make_unique<ui::OverscrollRefreshHandler>(
-          overscroll_refresh_handler));
+      overscroll_refresh_handler.is_null()
+          ? nullptr
+          : std::make_unique<ui::OverscrollRefreshHandler>(
+                overscroll_refresh_handler));
 }
 
 void WebContentsAndroid::SetSpatialNavigationDisabled(JNIEnv* env,

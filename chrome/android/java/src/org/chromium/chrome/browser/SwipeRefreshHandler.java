@@ -218,6 +218,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     @SuppressLint("NewApi")
     @Override
     public void cleanupWebContents(WebContents webContents) {
+        webContents.setOverscrollRefreshHandler(null);
         detachSwipeRefreshLayoutIfNecessary();
         mContainerView = null;
         mNavigationCoordinator = null;

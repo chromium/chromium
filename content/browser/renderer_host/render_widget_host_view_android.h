@@ -404,6 +404,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   }
 
   void OnOverscrollRefreshHandlerAvailable();
+  void ResetOverscrollController();
 
   // TextInputManager::Observer overrides.
   void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,

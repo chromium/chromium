@@ -479,10 +479,11 @@ public interface WebContents extends Parcelable {
      *
      * @param handler The handler to install.
      */
-    void setOverscrollRefreshHandler(OverscrollRefreshHandler handler);
+    void setOverscrollRefreshHandler(@Nullable OverscrollRefreshHandler handler);
 
     /**
      * Controls use of spatial-navigation mode.
+     *
      * @param disable True if spatial navigation should never be used.
      */
     void setSpatialNavigationDisabled(boolean disabled);

@@ -181,11 +181,18 @@ void WebContentsViewAndroid::SetContentUiEventHandler(
 
 void WebContentsViewAndroid::SetOverscrollRefreshHandler(
     std::unique_ptr<ui::OverscrollRefreshHandler> overscroll_refresh_handler) {
-  overscroll_refresh_handler_ = std::move(overscroll_refresh_handler);
   auto* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (rwhv) {
-    static_cast<RenderWidgetHostViewAndroid*>(rwhv)
-        ->OnOverscrollRefreshHandlerAvailable();
+  auto* rwhva =
+      rwhv ? static_cast<RenderWidgetHostViewAndroid*>(rwhv) : nullptr;
+
+  if (rwhva) {
+    rwhva->ResetOverscrollController();
+  }
+
+  overscroll_refresh_handler_ = std::move(overscroll_refresh_handler);
+
+  if (rwhva && overscroll_refresh_handler_) {
+    rwhva->OnOverscrollRefreshHandlerAvailable();
   }
 }
 
@@ -327,6 +334,7 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
     auto* rwhv = old_host->GetWidget()->GetView();
     if (rwhv && rwhv->GetNativeView()) {
       auto* rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhv);
+      rwhva->ResetOverscrollController();
       rwhva->UpdateNativeViewTree(/*parent_native_view=*/nullptr,
                                   /*parent_layer=*/nullptr);
       rwhva->UpdateTooltip(std::u16string());
@@ -335,9 +343,13 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
 
   auto* rwhv = new_host->GetWidget()->GetView();
   if (rwhv && rwhv->GetNativeView()) {
-    static_cast<RenderWidgetHostViewAndroid*>(rwhv)->UpdateNativeViewTree(
-        &view_, parent_for_web_page_widgets_.get());
+    auto* rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhv);
+    rwhva->UpdateNativeViewTree(&view_, parent_for_web_page_widgets_.get());
     SetFocus(view_.HasFocus());
+    rwhva->ResetOverscrollController();
+    if (overscroll_refresh_handler_) {
+      rwhva->OnOverscrollRefreshHandlerAvailable();
+    }
   }
 }
 

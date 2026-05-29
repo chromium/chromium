@@ -1902,6 +1902,9 @@ public class ImeAdapterImpl
             float insertionMarkerHorizontal,
             float insertionMarkerTop,
             float insertionMarkerBottom) {
+        View containerView = getContainerView();
+        if (containerView == null) return;
+
         mCursorAnchorInfoController.onUpdateFrameInfo(
                 scaleFactor,
                 contentOffsetYPix,
@@ -1910,7 +1913,7 @@ public class ImeAdapterImpl
                 insertionMarkerHorizontal,
                 insertionMarkerTop,
                 insertionMarkerBottom,
-                getContainerView());
+                containerView);
     }
 
     @CalledByNative

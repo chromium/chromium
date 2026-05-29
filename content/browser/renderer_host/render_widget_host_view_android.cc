@@ -2094,6 +2094,10 @@ void RenderWidgetHostViewAndroid::OnOverscrollRefreshHandlerAvailable() {
   CreateOverscrollControllerIfPossible();
 }
 
+void RenderWidgetHostViewAndroid::ResetOverscrollController() {
+  overscroll_controller_.reset();
+}
+
 bool RenderWidgetHostViewAndroid::SupportsAnimation() const {
   // The synchronous (WebView) compositor does not have a proper browser
   // compositor with which to drive animations.
