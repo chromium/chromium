@@ -1,6 +1,6 @@
 specific_include_rules = {
   # To compile base::Feature under EG2
-  "chrome_earl_grey_app_interface\.mm":[
+  "chrome_earl_grey_app_interface\\.mm":[
    "+components/autofill/core/common/autofill_features.h",
    "+components/collaboration/public/messaging/messaging_backend_service.h",
    "+components/safe_browsing/core/common/features.h",
@@ -13,45 +13,45 @@ specific_include_rules = {
    "+services/metrics/public/cpp/ukm_recorder.h",
   ],
 
-  "chrome_earl_grey_app_interface\.h":[
+  "chrome_earl_grey_app_interface\\.h":[
    "+third_party/metrics_proto",
   ],
 
-  "chrome_earl_grey\.h": [
+  "chrome_earl_grey\\.h": [
     "+third_party/metrics_proto",
     "+ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
   ],
 
-  "chrome_matchers_app_interface\.mm":[
+  "chrome_matchers_app_interface\\.mm":[
     "+components/password_manager/core/common/password_manager_features.h",
     "+components/safe_browsing/core/common/features.h",
   ],
 
-  "chrome_matchers\.mm":[
+  "chrome_matchers\\.mm":[
     "+components/url_formatter/elide_url.h",
   ],
 
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
-  "web_http_server_chrome_test_case\.mm": [
+  "web_http_server_chrome_test_case\\.mm": [
     "+ios/web/public/test/http_server",
   ],
 
-  "chrome_test_case\.mm": [
+  "chrome_test_case\\.mm": [
     "+ios/third_party/edo",
   ],
 
-  "chrome_earl_grey\.mm": [
+  "chrome_earl_grey\\.mm": [
     "+components/omnibox/browser/omnibox_pref_names.h",
     "+ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h",
   ],
 
-  "chrome_test_case_app_interface\.mm":[
+  "chrome_test_case_app_interface\\.mm":[
    "+components/feature_engagement/public/feature_constants.h",
    "+components/feature_engagement/public/tracker.h",
   ],
 
-  "eg_tests_hook\.mm": [
+  "eg_tests_hook\\.mm": [
    "+components/commerce/core",
    "+components/data_sharing/public",
    "+components/data_sharing/test_support",

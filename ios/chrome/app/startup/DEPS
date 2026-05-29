@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "sandbox_dump\.mm": [
+  "sandbox_dump\\.mm": [
     "+third_party/zlib/google/zip.h",
   ],
 }

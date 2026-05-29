@@ -18,14 +18,14 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "test_signin_resources\.mm": [
+  "test_signin_resources\\.mm": [
     "+ui/base/test/ios/ui_image_test_utils.h",
   ],
-  "fake_chrome_identity_service\.mm": [
+  "fake_chrome_identity_service\\.mm": [
     "+ios/chrome/browser/signin/model/fake_system_identity.h",
     "+ios/chrome/browser/signin/model/fake_account_details_view_controller.h",
   ],
-  "chrome_identity_service_unittest\.mm": [
+  "chrome_identity_service_unittest\\.mm": [
     "+ios/chrome/browser/signin/model/fake_system_identity.h",
   ],
 }

@@ -15,7 +15,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.mm": [
+  ".*test\\.mm": [
     "+components/saved_tab_groups/test_support",
   ]
 }

@@ -14,7 +14,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.mm": [
+  ".*test\\.mm": [
     "+services/network/public/cpp",
     "+services/network/test",
   ],

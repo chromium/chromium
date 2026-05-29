@@ -10,7 +10,7 @@ include_rules = [
 
 specific_include_rules = {
   # Implementations of common interfaces can depend on private web code.
-  "^.*\.(cc|mm)$": [
+  "^.*\\.(cc|mm)$": [
     "+ios/web",
   ],
 }

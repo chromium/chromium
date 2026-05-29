@@ -12,7 +12,7 @@ specific_include_rules = {
     "+components/sync_device_info",
     "+components/sync_preferences",
   ],
-  "welcome_back_screen_profile_agent\.mm": [
+  "welcome_back_screen_profile_agent\\.mm": [
     "+components/signin/public/base/consent_level.h",
   ],
 }

@@ -13,7 +13,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ios_contextual_tasks_service_factory\.mm": [
+  "ios_contextual_tasks_service_factory\\.mm": [
     "+components/contextual_tasks/internal/composite_context_decorator.h",
     "+components/contextual_tasks/internal/contextual_tasks_service_impl.h",
   ]

@@ -23,11 +23,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ios_feed_activity_metrics_provider.*\.mm": [
+  "ios_feed_activity_metrics_provider.*\\.mm": [
     "+ios/chrome/browser/ntp/shared/metrics",
   ],
 
-  "metrics_app_interface\.mm": [
+  "metrics_app_interface\\.mm": [
     "+third_party/zlib/google/compression_utils.h",
   ],
   "^ios_chrome_default_browser_metrics_provider.mm": [
