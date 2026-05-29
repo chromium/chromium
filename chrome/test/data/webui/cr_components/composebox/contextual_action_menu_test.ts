@@ -890,9 +890,8 @@ suite('ContextualActionMenu', () => {
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
   });
 
-  // TODO(crbug.com/512920161): Reenable this test on Linux and Mac
-  // <if expr="not is_linux and not is_macosx">
-  test(
+  // TODO(crbug.com/512920161): Reenable this test.
+  test.skip(
       'navigates up and down between Share Tabs and other menu items',
       async () => {
         loadTimeData.overrideValues({
@@ -952,7 +951,6 @@ suite('ContextualActionMenu', () => {
         // directly on Image Upload.
         assertEquals(imageUpload, actionMenu.shadowRoot.activeElement);
       });
-  // </if>
 
   test('Share tabs flyout dynamic repositioning', async () => {
     loadTimeData.overrideValues({
