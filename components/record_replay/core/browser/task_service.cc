@@ -68,10 +68,7 @@ void TaskService::OfferExecuting(const GURL& visited_url,
 }
 
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {
-  // TODO(crbug.com/): Persist the observation instead of the definition.
-  task_store_->SaveTaskDefinition(
-      /*task_definition_id=*/std::nullopt, observation.definition(),
-      base::DoNothing());
+  task_store_->SaveObservation(observation, base::DoNothing());
   observer_.reset();
 }
 

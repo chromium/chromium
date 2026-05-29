@@ -117,24 +117,22 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
 
   // 5. Complete the task and check that task completed details are propagated
   // correctly.
-  TaskDefinition completed_def;
-  completed_def.set_title("Test Journey");
-  completed_def.set_url("https://example.com/start");
-  completed_def.set_description("Completed successfully");
-
-  EXPECT_CALL(mock_task_store_, SaveTaskDefinition(::testing::Eq(std::nullopt),
-                                                   ::testing::_, ::testing::_))
-      .WillOnce([completed_def](std::optional<int64_t> task_definition_id,
-                                TaskDefinition task_definition,
-                                base::OnceCallback<void(int64_t)> callback) {
-        EXPECT_EQ(task_definition.description(), "Completed successfully");
-        EXPECT_EQ(task_definition.title(), "Test Journey");
-        EXPECT_EQ(task_definition.url(), "https://example.com/start");
-        std::move(callback).Run(42);
-      });
-
   TaskObservation completed_obs;
-  *completed_obs.mutable_definition() = completed_def;
+  completed_obs.set_id(42);
+  TaskDefinition* completed_def = completed_obs.mutable_definition();
+  completed_def->set_title("Test Journey");
+  completed_def->set_url("https://example.com/start");
+  completed_def->set_description("Completed successfully");
+
+  EXPECT_CALL(mock_task_store_, SaveObservation(::testing::_, ::testing::_))
+      .WillOnce([completed_obs](TaskObservation observation,
+                                base::OnceCallback<void(int64_t)> callback) {
+        EXPECT_EQ(observation.definition().title(), "Test Journey");
+        EXPECT_EQ(observation.definition().url(), "https://example.com/start");
+        EXPECT_EQ(observation.definition().description(),
+                  "Completed successfully");
+        std::move(callback).Run(completed_obs.id());
+      });
 
   task_service_.OnTaskCompleted(completed_obs);
   EXPECT_EQ(task_service_.getObserverForTesting(), nullptr);
@@ -179,18 +177,16 @@ TEST_F(TaskServiceTest, TaskFlowWithParametersExtractor) {
   extractor.StoreExtractedValue("key1", "value_from_dom");
 
   // 3. Visit final URL which triggers asynchronous parameters filling, then
-  // completion. Expect that mock_data_manager_.SaveTaskDefinition will be
+  // completion. Expect that mock_task_store_.SaveObservation will be
   // called.
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_task_store_, SaveTaskDefinition(::testing::Eq(std::nullopt),
-                                                   ::testing::_, ::testing::_))
-      .WillOnce([&run_loop](std::optional<int64_t> task_definition_id,
-                            TaskDefinition saved_definition,
+  EXPECT_CALL(mock_task_store_, SaveObservation(::testing::_, ::testing::_))
+      .WillOnce([&run_loop](TaskObservation observation,
                             base::OnceCallback<void(int64_t)> callback) {
         // Verify the value was correctly extracted and filled into the step
         // parameter!
-        ASSERT_EQ(saved_definition.task_steps_size(), 1);
-        EXPECT_EQ(saved_definition.task_steps(0).parameters(0).value(),
+        ASSERT_EQ(observation.definition().task_steps_size(), 1);
+        EXPECT_EQ(observation.definition().task_steps(0).parameters(0).value(),
                   "value_from_dom");
         std::move(callback).Run(101);
         run_loop.Quit();
