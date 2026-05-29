@@ -22,6 +22,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -56,7 +57,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
 
 namespace {
 
@@ -172,6 +172,12 @@ std::string ParamToTestSuffixForInterceptionAndSyncPromo(
   bool interception_enabled = info.param;
   return interception_enabled ? "Intercept" : "NoIntercept";
 }
+
+class TestScopedWebSigninInterceptionBubbleHandle
+    : public ScopedWebSigninInterceptionBubbleHandle {
+ public:
+  ~TestScopedWebSigninInterceptionBubbleHandle() override = default;
+};
 
 }  // namespace
 
@@ -317,6 +323,12 @@ class DiceWebSigninInterceptorTest : public testing::Test {
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &test_url_loader_factory_)});
+
+    // TemplateURLService is required by ProceedWithProfileCreation which copies
+    // search engine choice presets, otherwise it crashes in unit tests.
+    factories.push_back(
+        {TemplateURLServiceFactory::GetInstance(),
+         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)});
 
     factories.push_back(
         {DiceWebSigninInterceptorFactory::GetInstance(),
@@ -2336,4 +2348,115 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterceptionIfPrimaryAccountAlreadySet) {
 
   EXPECT_EQ(interceptor()->is_interception_in_progress(),
             SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_UserAcceptsBeforeCompletion) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_info);
+  initiator_info =
+      AccountInfo::Builder(initiator_info).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_info);
+
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&secondary_info);
+  secondary_info =
+      AccountInfo::Builder(secondary_info).SetGivenName("Bob").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(secondary_info);
+
+  // Setup mock delegate to capture the bubble callback.
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  // Start interception.
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  ASSERT_TRUE(bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Simulate user accepting the bubble.
+  // Since the background multi-account token fetches (DICE session) are not yet
+  // complete, this should not trigger the profile creator yet.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Now simulate session completion.
+  // This should trigger ProceedWithProfileCreation and create the creator.
+  std::vector<CoreAccountId> secondary_ids = {secondary_info.account_id};
+  interceptor()->OnDiceSigninSessionComplete(initiator_info.account_id,
+                                             secondary_ids);
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_UserAcceptsAfterCompletion) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_info);
+  initiator_info =
+      AccountInfo::Builder(initiator_info).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_info);
+
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&secondary_info);
+  secondary_info =
+      AccountInfo::Builder(secondary_info).SetGivenName("Bob").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(secondary_info);
+
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  ASSERT_TRUE(bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Simulate session completion first.
+  // This should NOT trigger profile creator because user hasn't accepted yet.
+  std::vector<CoreAccountId> secondary_ids = {secondary_info.account_id};
+  interceptor()->OnDiceSigninSessionComplete(initiator_info.account_id,
+                                             secondary_ids);
+  EXPECT_FALSE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Now simulate user accepting.
+  // This should immediately trigger ProceedWithProfileCreation.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
 }

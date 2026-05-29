@@ -222,6 +222,9 @@ Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  // Simulate the terminal session completion since the browser test bypasses
+  // the actual DiceResponseHandler token exchange flow.
+  interceptor->OnDiceSigninSessionComplete(account_id, {});
   // Wait for the interception to be complete.
   return profile_waiter.WaitForProfileAdded();
 }
@@ -479,6 +482,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // Add the account to the cookies (simulates the account reconcilor).
   signin::SetCookieAccounts(other_identity_manager, test_url_loader_factory(),
@@ -607,6 +611,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // Add the account to the cookies (simulates the account reconcilor).
   signin::SetCookieAccounts(other_identity_manager, test_url_loader_factory(),
@@ -655,6 +660,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
   // Close the source tab during the profile creation.
   contents->Close();
   // Wait for the interception to be complete.
@@ -1413,6 +1419,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(secondary_account_info.account_id, {});
 
   // New Profile created from accepting the signin interception.
   Profile* new_profile = waiter.WaitForProfileAdded();
@@ -1720,6 +1727,7 @@ IN_PROC_BROWSER_TEST_P(
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   if (params.expect_bubble_shown) {
     // Wait for the interception to be complete.
@@ -1786,6 +1794,7 @@ IN_PROC_BROWSER_TEST_P(
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   if (params.expect_bubble_shown) {
     // Wait for the interception to be complete.
@@ -2679,6 +2688,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // Add the account to the cookies (simulates the account reconcilor).
   signin::SetCookieAccounts(other_identity_manager, test_url_loader_factory(),
@@ -2997,6 +3007,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorLatePolicyCallbackUAFTest,
                                        signin_metrics::AccessPoint::kWebSignin,
                                        /*is_new_account=*/true,
                                        /*is_sync_signin=*/false);
+  interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // The fetcher was created (its access-token request is pending in the test
   // IdentityManager and is never answered, simulating a slow/stalled policy

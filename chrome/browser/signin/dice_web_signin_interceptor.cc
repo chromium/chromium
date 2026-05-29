@@ -662,7 +662,19 @@ void DiceWebSigninInterceptor::Shutdown() {
 void DiceWebSigninInterceptor::OnDiceSigninSessionComplete(
     const CoreAccountId& initiator_account_id,
     std::vector<CoreAccountId> secondary_accounts) {
-  // TODO(crbug.com/438165525): Remove stub.
+  if (!state_->is_interception_in_progress_ ||
+      state_->account_id_ != initiator_account_id) {
+    return;
+  }
+
+  state_->dice_signin_session_complete_ = true;
+  state_->secondary_accounts_ = std::move(secondary_accounts);
+
+  if (state_->waiting_for_dice_signin_session_completion_) {
+    state_->waiting_for_dice_signin_session_completion_ = false;
+    CHECK(state_->deferred_action_callback_);
+    std::move(state_->deferred_action_callback_).Run();
+  }
 }
 
 void DiceWebSigninInterceptor::Reset() {
@@ -1214,22 +1226,20 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
         base::NotFatalUntil::M144);
 
   DCHECK(state_->interception_bubble_handle_);
-  std::u16string profile_name =
-      profiles::GetDefaultNameForNewSignedInProfile(account_info);
-  ProfilePresets profile_presets(profile_color);
-  profile_presets.search_engine_choice_data =
-      SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
+  // base::Unretained(this) is safe here because the callback is owned by
+  // `state_` (which is owned by `this`), guaranteeing it will not outlive
+  // this interceptor instance.
+  auto proceed_with_profile_creation =
+      base::BindOnce(&DiceWebSigninInterceptor::ProceedWithProfileCreation,
+                     base::Unretained(this), account_info, profile_color);
 
-  DCHECK(!state_->dice_signed_in_profile_creator_);
-  // Unretained is fine because the profile creator is owned by this.
-  state_->dice_signed_in_profile_creator_ =
-      std::make_unique<DiceSignedInProfileCreator>(
-          profile_, state_->account_id_, profile_name,
-          profiles::GetPlaceholderAvatarIndex(),
-          base::BindOnce(
-              &DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
-              base::Unretained(this),
-              std::optional<ProfilePresets>(std::move(profile_presets))));
+  if (state_->dice_signin_session_complete_) {
+    std::move(proceed_with_profile_creation).Run();
+  } else {
+    state_->waiting_for_dice_signin_session_completion_ = true;
+    state_->deferred_action_callback_ =
+        std::move(proceed_with_profile_creation);
+  }
 }
 
 SigninInterceptionResult
@@ -1352,12 +1362,20 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
 
   DCHECK(state_->interception_bubble_handle_);
   DCHECK(!state_->dice_signed_in_profile_creator_);
-  // Unretained is fine because the profile creator is owned by this.
-  state_->dice_signed_in_profile_creator_ =
-      std::make_unique<DiceSignedInProfileCreator>(
-          profile_, state_->account_id_, profile_path,
-          base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
-                         base::Unretained(this), std::nullopt));
+
+  // base::Unretained(this) is safe here because the callback is owned by
+  // `state_` (which is owned by `this`), guaranteeing it will not outlive
+  // this interceptor instance.
+  auto proceed_with_profile_switch =
+      base::BindOnce(&DiceWebSigninInterceptor::ProceedWithProfileSwitch,
+                     base::Unretained(this), profile_path);
+
+  if (state_->dice_signin_session_complete_) {
+    std::move(proceed_with_profile_switch).Run();
+  } else {
+    state_->waiting_for_dice_signin_session_completion_ = true;
+    state_->deferred_action_callback_ = std::move(proceed_with_profile_switch);
+  }
 }
 
 void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
@@ -1417,6 +1435,38 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
           std::move(state_->interception_bubble_handle_), is_new_profile,
           *state_->interception_type_);
   Reset();
+}
+
+void DiceWebSigninInterceptor::ProceedWithProfileCreation(
+    const AccountInfo& account_info,
+    SkColor profile_color) {
+  std::u16string profile_name =
+      profiles::GetDefaultNameForNewSignedInProfile(account_info);
+  ProfilePresets profile_presets(profile_color);
+  profile_presets.search_engine_choice_data =
+      SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
+
+  DCHECK(!state_->dice_signed_in_profile_creator_);
+  // Unretained is fine because the profile creator is owned by this.
+  state_->dice_signed_in_profile_creator_ =
+      std::make_unique<DiceSignedInProfileCreator>(
+          profile_, state_->account_id_, profile_name,
+          profiles::GetPlaceholderAvatarIndex(),
+          base::BindOnce(
+              &DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
+              base::Unretained(this),
+              std::optional<ProfilePresets>(std::move(profile_presets))));
+}
+
+void DiceWebSigninInterceptor::ProceedWithProfileSwitch(
+    const base::FilePath& profile_path) {
+  DCHECK(!state_->dice_signed_in_profile_creator_);
+  // Unretained is fine because the profile creator is owned by this.
+  state_->dice_signed_in_profile_creator_ =
+      std::make_unique<DiceSignedInProfileCreator>(
+          profile_, state_->account_id_, profile_path,
+          base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
+                         base::Unretained(this), std::nullopt));
 }
 
 void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(

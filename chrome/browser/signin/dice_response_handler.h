@@ -126,7 +126,6 @@ class DiceResponseHandler : public KeyedService {
   void ProcessDiceHeader(signin::DiceResponseParams dice_params,
                          std::unique_ptr<ProcessDiceHeaderDelegate> delegate);
 
-
   // Returns the number of pending DiceTokenFetchers. Exposed for testing.
   size_t GetPendingDiceTokenFetchersCountForTesting() const;
 
@@ -223,7 +222,6 @@ class DiceResponseHandler : public KeyedService {
                                 const GoogleServiceAuthError& error);
 
     ProcessDiceHeaderDelegate* delegate() { return delegate_.get(); }
-
 
     // Exposed for testing.
     size_t GetPendingDiceTokenFetchersCountForTesting() const {
