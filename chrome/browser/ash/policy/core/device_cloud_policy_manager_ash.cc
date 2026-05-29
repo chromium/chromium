@@ -406,7 +406,7 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
 
   managed_session_service_ = std::make_unique<ManagedSessionService>();
   login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
-      managed_session_service_.get());
+      local_state_, managed_session_service_.get());
 
   user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
       std::move(users_to_be_removed_), managed_session_service_.get());

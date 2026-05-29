@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
@@ -34,14 +34,6 @@ namespace {
 constexpr char kLoginLogoutReporterDictionary[] =
     "reporting.login_logout_reporter_dictionary";
 constexpr char kKioskLoginFailureTimestamp[] = "kiosk_login_failure_timestamp";
-
-PrefService* GetLocalState() {
-  if (!g_browser_process || !g_browser_process->local_state()) {
-    DVLOG(1) << "Could not get local state.";
-    return nullptr;
-  }
-  return g_browser_process->local_state();
-}
 
 LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
   if (account_id == user_manager::GuestAccountId()) {
@@ -122,11 +114,13 @@ void LoginLogoutReporter::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 LoginLogoutReporter::LoginLogoutReporter(
+    PrefService* local_state,
     std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
     std::unique_ptr<Delegate> delegate,
     policy::ManagedSessionService* managed_session_service,
     base::Clock* clock)
-    : reporter_helper_(std::move(reporter_helper)),
+    : local_state_(CHECK_DEREF(local_state)),
+      reporter_helper_(std::move(reporter_helper)),
       delegate_(std::move(delegate)),
       clock_(clock) {
   if (managed_session_service) {
@@ -139,24 +133,26 @@ LoginLogoutReporter::~LoginLogoutReporter() = default;
 
 // static
 std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::Create(
+    PrefService* local_state,
     policy::ManagedSessionService* managed_session_service) {
   auto reporter_helper = std::make_unique<::reporting::UserEventReporterHelper>(
       ::reporting::Destination::LOGIN_LOGOUT_EVENTS);
   auto delegate = std::make_unique<LoginLogoutReporter::Delegate>();
-  return base::WrapUnique(new LoginLogoutReporter(std::move(reporter_helper),
-                                                  std::move(delegate),
-                                                  managed_session_service));
+  return base::WrapUnique(
+      new LoginLogoutReporter(local_state, std::move(reporter_helper),
+                              std::move(delegate), managed_session_service));
 }
 
 // static
 std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::CreateForTest(
+    PrefService* local_state,
     std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
     std::unique_ptr<LoginLogoutReporter::Delegate> delegate,
     policy::ManagedSessionService* managed_session_service,
     base::Clock* clock) {
-  return base::WrapUnique(
-      new LoginLogoutReporter(std::move(reporter_helper), std::move(delegate),
-                              managed_session_service, clock));
+  return base::WrapUnique(new LoginLogoutReporter(
+      local_state, std::move(reporter_helper), std::move(delegate),
+      managed_session_service, clock));
 }
 
 void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
@@ -217,12 +213,11 @@ void LoginLogoutReporter::OnLoginFailure(const AuthFailure& error) {
 void LoginLogoutReporter::OnKioskLoginFailure() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!reporter_helper_->ReportingEnabled(kReportDeviceLoginLogout) ||
-      !GetLocalState()) {
+  if (!reporter_helper_->ReportingEnabled(kReportDeviceLoginLogout)) {
     return;
   }
 
-  ScopedDictPrefUpdate dict_update(GetLocalState(),
+  ScopedDictPrefUpdate dict_update(&local_state_.get(),
                                    kLoginLogoutReporterDictionary);
   dict_update->Set(kKioskLoginFailureTimestamp,
                    static_cast<int>(clock_->Now().ToTimeT()));
@@ -231,12 +226,8 @@ void LoginLogoutReporter::OnKioskLoginFailure() {
 void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!GetLocalState()) {
-    return;
-  }
-
   const auto* pref =
-      GetLocalState()->FindPreference(kLoginLogoutReporterDictionary);
+      local_state_->FindPreference(kLoginLogoutReporterDictionary);
   if (!pref) {
     NOTREACHED() << "Cannot find pref.";
   }
@@ -253,20 +244,19 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   record->set_session_type(LoginLogoutSessionType::KIOSK_SESSION);
   record->mutable_login_event()->mutable_failure();
 
-  auto enqueue_cb = base::BindOnce([](::reporting::Status status) {
-    if (!status.ok()) {
-      DVLOG(1) << "Could not enqueue event to reporting queue because of: "
-               << status;
-      return;
-    }
+  auto enqueue_cb = base::BindOnce(
+      [](PrefService* local_state, ::reporting::Status status) {
+        if (!status.ok()) {
+          DVLOG(1) << "Could not enqueue event to reporting queue because of: "
+                   << status;
+          return;
+        }
 
-    if (!GetLocalState()) {
-      return;
-    }
-    ScopedDictPrefUpdate dict_update(GetLocalState(),
-                                     kLoginLogoutReporterDictionary);
-    dict_update->Remove(kKioskLoginFailureTimestamp);
-  });
+        ScopedDictPrefUpdate dict_update(local_state,
+                                         kLoginLogoutReporterDictionary);
+        dict_update->Remove(kKioskLoginFailureTimestamp);
+      },
+      &local_state_.get());
 
   // Enqueue callback should run on the UI thread (current thread) to access
   // pref service.

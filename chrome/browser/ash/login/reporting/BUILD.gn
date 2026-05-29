@@ -22,7 +22,6 @@ static_library("reporting") {
   ]
 
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting",
