@@ -478,6 +478,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // implementation.
   virtual bool CanUseDiskWhenOffTheRecord();
 
+  // Returns true if the session storage database should be cleared on startup
+  // instead of preserving data from the previous session.
+  // The default implementation returns false.
+  virtual bool ShouldClearSessionStorageOnStartup();
+
   // Returns the VariationsClient associated with the context if any, or
   // nullptr if there isn't one.
   virtual variations::VariationsClient* GetVariationsClient();

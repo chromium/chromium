@@ -55,7 +55,8 @@ TEST_F(StorageServiceImplTest,
   mojo::Remote<storage::mojom::SessionStorageControl> storage_control;
   const base::FilePath kTestRelativePath{FILE_PATH_LITERAL("invalid")};
   remote_service()->BindSessionStorageControl(
-      kTestRelativePath, storage_control.BindNewPipeAndPassReceiver());
+      kTestRelativePath, /*clear_on_open=*/false,
+      storage_control.BindNewPipeAndPassReceiver());
 
   // The BindSessionStorageControl request should be ignored by the service,
   // resulting in disconnection.

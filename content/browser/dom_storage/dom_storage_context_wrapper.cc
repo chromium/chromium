@@ -106,7 +106,11 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
     return;
   }
 
-  MaybeBindSessionStorageControl();
+  bool clear_session_storage = partition_->ShouldClearSessionStorageOnStartup();
+  base::UmaHistogramBoolean(
+      "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit",
+      clear_session_storage);
+  MaybeBindSessionStorageControl(clear_session_storage);
   MaybeBindLocalStorageControl();
 
   // Report on disk LocalStorage db size.
@@ -354,7 +358,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
 
 void DOMStorageContextWrapper::OnSessionStorageDisconnected() {
   DCHECK(partition_);
-  MaybeBindSessionStorageControl();
+  MaybeBindSessionStorageControl(/*clear_on_open=*/false);
 
   // Make sure the service is aware of namespaces we asked a previous instance
   // to create, so it can properly service renderers trying to manipulate those
@@ -367,12 +371,13 @@ void DOMStorageContextWrapper::OnSessionStorageDisconnected() {
   partition_->ResetSessionStorageConnections();
 }
 
-void DOMStorageContextWrapper::MaybeBindSessionStorageControl() {
+void DOMStorageContextWrapper::MaybeBindSessionStorageControl(
+    bool clear_on_open) {
   if (!partition_)
     return;
   session_storage_control_.reset();
   partition_->GetStorageService()->BindSessionStorageControl(
-      partition_->GetStoragePartitionPath(),
+      partition_->GetStoragePartitionPath(), clear_on_open,
       session_storage_control_.BindNewPipeAndPassReceiver());
   session_storage_control_.set_disconnect_handler(
       base::BindOnce(&DOMStorageContextWrapper::OnSessionStorageDisconnected,

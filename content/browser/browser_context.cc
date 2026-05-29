@@ -448,6 +448,10 @@ bool BrowserContext::CanUseDiskWhenOffTheRecord() {
   return false;
 }
 
+bool BrowserContext::ShouldClearSessionStorageOnStartup() {
+  return false;
+}
+
 variations::VariationsClient* BrowserContext::GetVariationsClient() {
   return nullptr;
 }

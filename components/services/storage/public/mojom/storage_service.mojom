@@ -48,7 +48,12 @@ interface StorageService {
   // directory within the user data directory. If `path` is null, the storage
   // will be in-memory and all data will be discarded when the client
   // disconnects.
+  //
+  // If `clear_on_open` is true, the existing database is destroyed and
+  // recreated fresh. Used on startups where no session data needs to be
+  // preserved.
   BindSessionStorageControl(mojo_base.mojom.FilePath? path,
+                            bool clear_on_open,
                             pending_receiver<SessionStorageControl> receiver);
 
   // Binds the main control interface for Local Storage associated with the

@@ -44,6 +44,7 @@ source_set("startup") {
   if (!is_android) {
     sources += [
       "automation_infobar_delegate.h",
+      "features.h",
       "google_api_keys_infobar_delegate.h",
       "google_chrome_scheme_util.h",
       "infobar_utils.h",
@@ -191,6 +192,7 @@ source_set("impl") {
   if (!is_android) {
     sources += [
       "automation_infobar_delegate.cc",
+      "features.cc",
       "google_api_keys_infobar_delegate.cc",
       "google_chrome_scheme_util.cc",
       "infobar_utils.cc",

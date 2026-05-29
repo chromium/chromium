@@ -1150,6 +1150,10 @@ StoragePartitionImpl::StoragePartitionImpl(
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 }
 
+bool StoragePartitionImpl::ShouldClearSessionStorageOnStartup() const {
+  return browser_context_->ShouldClearSessionStorageOnStartup();
+}
+
 StoragePartitionImpl::~StoragePartitionImpl() {
 #if DCHECK_IS_ON()
   DCHECK(on_browser_context_will_be_destroyed_called_);

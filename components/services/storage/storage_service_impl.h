@@ -53,6 +53,7 @@ class StorageServiceImpl : public mojom::StorageService {
       mojo::PendingReceiver<mojom::LocalStorageControl> receiver) override;
   void BindSessionStorageControl(
       const std::optional<base::FilePath>& path,
+      bool clear_on_open,
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver) override;
   void BindTestApi(mojo::ScopedMessagePipeHandle test_api_receiver) override;
 

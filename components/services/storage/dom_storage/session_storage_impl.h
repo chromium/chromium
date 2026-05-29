@@ -53,9 +53,10 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     // Use an in-memory database to store our state.
     kNoDisk,
     // Use disk for the database, but clear its contents before we open
-    // it. This is used for platforms like Android where the session restore
-    // code is never used, ScavengeUnusedNamespace is never called, and old
-    // session storage data will never be reused.
+    // it. Always set on Android where session restore is never used. On
+    // Desktop, this is set when the browser determines that all session
+    // storage data is stale (e.g., fresh non-recovery startup with no
+    // session restore needed).
     kClearDiskStateOnOpen,
     // Use disk for the database, restore all saved namespaces from
     // disk. This assumes that ScavengeUnusedNamespace will eventually be called
@@ -135,6 +136,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
  private:
   friend class DOMStorageBrowserTest;
+  FRIEND_TEST_ALL_PREFIXES(SessionStorageImplTest,
+                           ClearDiskStateOnOpenWithEmptyPathUsesInMemory);
 
   // Constructs an absolute path to the database using
   // `storage_partition_directory_`.

@@ -49,6 +49,25 @@ std::unique_ptr<FilesystemProxy> CreateRestrictedFilesystemProxy(
 }
 #endif
 
+SessionStorageImpl::BackingMode GetSessionStorageBackingMode(
+    bool has_path,
+    bool clear_on_open) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android there is no support for session storage restoring, and since
+  // the restoring code is responsible for database cleanup, we must
+  // manually delete the old database here before we open a new one.
+  return SessionStorageImpl::BackingMode::kClearDiskStateOnOpen;
+#else
+  // In-memory profiles (e.g. incognito) have no path and must always use
+  // kNoDisk regardless of clear_on_open.
+  if (!has_path) {
+    return SessionStorageImpl::BackingMode::kNoDisk;
+  }
+  return clear_on_open ? SessionStorageImpl::BackingMode::kClearDiskStateOnOpen
+                       : SessionStorageImpl::BackingMode::kRestoreDiskState;
+#endif
+}
+
 }  // namespace
 
 StorageServiceImpl::StorageServiceImpl(
@@ -119,6 +138,7 @@ void StorageServiceImpl::BindLocalStorageControl(
 
 void StorageServiceImpl::BindSessionStorageControl(
     const std::optional<base::FilePath>& path,
+    bool clear_on_open,
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver) {
   if (path.has_value()) {
     if (!path->IsAbsolute()) {
@@ -136,15 +156,7 @@ void StorageServiceImpl::BindSessionStorageControl(
 
   auto new_session_storage = std::make_unique<SessionStorageImpl>(
       path.value_or(base::FilePath()),
-#if BUILDFLAG(IS_ANDROID)
-      // On Android there is no support for session storage restoring, and since
-      // the restoring code is responsible for database cleanup, we must
-      // manually delete the old database here before we open a new one.
-      SessionStorageImpl::BackingMode::kClearDiskStateOnOpen,
-#else
-      path.has_value() ? SessionStorageImpl::BackingMode::kRestoreDiskState
-                       : SessionStorageImpl::BackingMode::kNoDisk,
-#endif
+      GetSessionStorageBackingMode(path.has_value(), clear_on_open),
       base::OnceCallback<void(SessionStorageImpl*)>(
           base::BindOnce(&StorageServiceImpl::ShutDownAndRemoveSessionStorage,
                          weak_ptr_factory_.GetWeakPtr())),

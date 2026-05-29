@@ -136,7 +136,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   ~DOMStorageContextWrapper() override;
 
-  void MaybeBindSessionStorageControl();
+  void MaybeBindSessionStorageControl(bool clear_on_open);
   void MaybeBindLocalStorageControl();
   scoped_refptr<SessionStorageNamespaceImpl> MaybeGetExistingNamespace(
       const std::string& namespace_id) const;

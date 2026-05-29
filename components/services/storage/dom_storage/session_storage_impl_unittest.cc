@@ -27,6 +27,7 @@
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/features.h"
@@ -50,6 +51,7 @@ std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
+}  // namespace
 // Base test fixture for `SessionStorageImpl` tests. Provides common setup
 // including database initialization, storage area binding, and helper methods.
 // Subclasses can parameterize tests to run on SQLite or LevelDB using
@@ -1643,6 +1645,30 @@ TEST_P(SessionStorageImplTest, ClearDiskState) {
   EXPECT_EQ(0ul, data.size());
 }
 
+TEST_P(SessionStorageImplTest, ClearDiskStateOnOpenWithEmptyPathUsesInMemory) {
+  // When kClearDiskStateOnOpen is set but the path is empty (in-memory
+  // profile), the DB should be opened in-memory.
+  SetBackingMode(SessionStorageImpl::BackingMode::kNoDisk);
+
+  mojo::Remote<mojom::SessionStorageControl> remote;
+  auto impl = std::make_unique<SessionStorageImpl>(
+      base::FilePath(), SessionStorageImpl::BackingMode::kClearDiskStateOnOpen,
+      base::DoNothing(), remote.BindNewPipeAndPassReceiver());
+
+  // Trigger connection and verify data operations work.
+  std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  remote->CreateNamespace(namespace_id);
+  mojo::Remote<blink::mojom::StorageArea> area;
+  remote->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      namespace_id, area.BindNewPipeAndPassReceiver());
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area.get());
+  EXPECT_EQ(0ul, data.size());
+
+  // Verify in-memory mode was used despite kClearDiskStateOnOpen.
+  EXPECT_TRUE(impl->in_memory_);
+}
+
 TEST_P(SessionStorageImplTest, InterruptedCloneWithDelete) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -1768,8 +1794,6 @@ TEST_P(SessionStorageImplTest, TotalCloneChainDeletion) {
   session_storage()->DeleteNamespace(namespace_id1, false);
   session_storage()->DeleteNamespace(namespace_id4, false);
 }
-
-}  // namespace
 
 TEST_P(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   std::string namespace_id1 =

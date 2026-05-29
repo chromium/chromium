@@ -1781,6 +1781,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit"
+    enum="Boolean" expires_after="2027-05-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether the session storage database was cleared during storage
+    partition initialization. True means the database was destroyed and
+    recreated because no session restore was needed. Emitted once per storage
+    partition during initialization.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SessionStorage.RendererAreaCacheHit"
     enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2026-10-12">
   <owner>ayui@chromium.org</owner>

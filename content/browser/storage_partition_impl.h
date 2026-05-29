@@ -137,6 +137,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // (e.g. resource context).
   ~StoragePartitionImpl() override;
 
+  // Returns true if the session storage database should be cleared instead of
+  // preserving data from the previous session.
+  bool ShouldClearSessionStorageOnStartup() const;
+
   // Quota managed data uses a different representation for storage types than
   // StoragePartition uses. This method generates that representation.
   static storage::QuotaClientTypes GenerateQuotaClientTypes(

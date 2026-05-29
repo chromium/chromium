@@ -225,6 +225,7 @@
 #else
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/ui/startup/features.h"
 #include "content/public/common/page_zoom.h"
 #include "ui/accessibility/accessibility_features.h"
 #endif
@@ -1263,6 +1264,27 @@ bool ProfileImpl::ShouldRestoreOldSessionCookies() {
 
 bool ProfileImpl::ShouldPersistSessionCookies() const {
   return true;
+}
+
+bool ProfileImpl::ShouldClearSessionStorageOnStartup() {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, Session Storage doesn't support restore. So, we always clear
+  // session storage on open. As such, we don't need to signal it from the
+  // browser process.
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(
+          features::kClearSessionStorageDiskStateOnStartup)) {
+    return false;
+  }
+  SessionStartupPref startup_pref =
+      StartupBrowserCreator::GetSessionStartupPref(
+          *base::CommandLine::ForCurrentProcess(), this);
+  // Clear the session storage database when no crash recovery and no session
+  // restore is needed.
+  return ExitTypeService::GetLastSessionExitType(this) != ExitType::kCrashed &&
+         !startup_pref.ShouldRestoreLastSession();
+#endif
 }
 
 PrefService* ProfileImpl::GetPrefs() {
