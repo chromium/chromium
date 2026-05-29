@@ -941,16 +941,22 @@ HRESULT WASAPIAudioOutputStream::RenderAudioFromSource(
         BoundedDelay(delay), delay_timestamp,
         glitch_info_accumulator.GetAndReset(), audio_bus_.get());
     uint32_t num_filled_bytes = frames_filled * format_.Format.nBlockAlign;
-    DCHECK_LE(num_filled_bytes, packet_size_bytes_);
+    CHECK_LE(num_filled_bytes, packet_size_bytes_);
     audio_bus_->Scale(volume_);
 
+    // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+    // `packet_size_bytes_` bytes. `num_filled_bytes` is guaranteed to be <=
+    // `packet_size_bytes_` by the check above.
+    auto dest_span = UNSAFE_BUFFERS(
+        base::span<uint8_t>(audio_data, static_cast<size_t>(num_filled_bytes)));
+
     if (enable_audio_offload_) {
-      audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
-          frames_filled, reinterpret_cast<short*>(audio_data));
+      audio_bus_->ToInterleavedBytesPartial<SignedInt16SampleTypeTraits>(
+          0, dest_span);
     } else {
       // We skip clipping since that occurs at the shared memory boundary.
-      audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
-          frames_filled, reinterpret_cast<float*>(audio_data));
+      audio_bus_->ToInterleavedBytesPartial<Float32SampleTypeTraitsNoClip>(
+          0, dest_span);
     }
 
     peak_detector_->FindPeak(audio_bus_.get());
