@@ -259,7 +259,9 @@ void EmailVerifierDelegate::OnFillOrPreviewField(
   }
 
   const AutofillField* triggering_email_field = form->GetFieldById(field_id);
-  if (!triggering_email_field || field_type_used != EMAIL_ADDRESS) {
+  if (!triggering_email_field ||
+      (field_type_used != EMAIL_ADDRESS &&
+       triggering_email_field->Type().GetAddressType() != EMAIL_ADDRESS)) {
     return;
   }
 

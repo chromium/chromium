@@ -401,5 +401,88 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
       content::EvalJs(web_contents(), "window.tokenPromise").ExtractString());
 }
 
+// Tests that the email verification popup triggers successfully when the email
+// field is filled using Autocomplete (where the field type used is
+// std::nullopt, but the field itself is classified as EMAIL_ADDRESS).
+IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
+  GURL url =
+      embedded_test_server()->GetURL("/autofill/email_verification.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  EnableEmailVerificationFeatureForFrame(main_frame);
+
+  // 1. Setup the EmailVerifierDelegate with our mock.
+  const std::string kTestToken = "renderer_side_token_abc";
+  MockEmailVerifier* verifier_ptr = SetupMockEmailVerifier(main_frame);
+
+  EmailVerifier::Result result;
+  result.email = "test@example.com";
+  result.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  result.issuance_endpoint = GURL("https://example.com/issuance");
+  result.signing_alg_values_supported.push_back("RS256");
+
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(result));
+
+  EXPECT_CALL(
+      *verifier_ptr,
+      Verify(testing::Field(&EmailVerifier::Result::email, "test@example.com"),
+             "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(kTestToken));
+
+  BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
+
+  // Wait for forms to be processed.
+  const FormStructure* form_structure = WaitForMatchingForm(
+      manager, base::BindRepeating([](const FormStructure& form) {
+        return std::ranges::any_of(
+            form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+              return field->nonce() == u"test_nonce";
+            });
+      }));
+  ASSERT_TRUE(form_structure);
+
+  // Simulate autocomplete suggestion selection.
+  TestEmailVerificationAutofillClient* mock_client = client();
+  ASSERT_EQ(&manager->client(), mock_client);
+
+  base::RunLoop popup_run_loop;
+  EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
+      .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
+                    const std::u16string&,
+                    base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+        popup_run_loop.Quit();
+      });
+  EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
+
+  FormData form_data = form_structure->ToFormData();
+  FormFieldData field_data = form_data.fields()[0];
+
+  // In autocomplete filling, field_type_used is std::nullopt and product is
+  // kAutocomplete.
+  manager->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                              mojom::FieldActionType::kReplaceAll, form_data,
+                              field_data, u"test@example.com",
+                              FillingProduct::kAutocomplete, std::nullopt);
+
+  // Wait for the deferred browser task to execute and trigger the popup
+  // callback.
+  popup_run_loop.Run();
+
+  // Submit the form.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('email').value = 'test@example.com';"));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('testform').requestSubmit();"));
+
+  // Verify the token was found in onsubmit.
+  EXPECT_EQ(
+      kTestToken,
+      content::EvalJs(web_contents(), "window.tokenPromise").ExtractString());
+}
+
 }  // namespace
 }  // namespace autofill
