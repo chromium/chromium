@@ -63,7 +63,9 @@ void UiResourceManager::ReclaimResources(
     std::vector<viz::ReturnedResource>& resources) {
   for (auto& entry : resources) {
     auto it = exported_resources_pool_.find(entry.id);
-    DCHECK(it != exported_resources_pool_.end());
+    if (it == exported_resources_pool_.end()) {
+      continue;
+    }
 
     std::unique_ptr<UiResource> resource = std::move(it->second);
     resource->sync_token = resource->client_shared_image()->EndExport(
