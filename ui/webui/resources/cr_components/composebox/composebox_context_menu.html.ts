@@ -8,6 +8,10 @@ import {hasAllowedInputs} from './common.js';
 import type {ComposeboxElement} from './composebox.js';
 
 export function getHtml(this: ComposeboxElement) {
+  // Show `contextual-entrypoint-and-menu` if should show menu; otherwise
+  // just show button. `restoredTabIds` are required for
+  // `context-entrypoint-and-menu` while just the entrypoint button takes
+  // `restoredTabs`.
   // clang-format off
   return html`
 <div class="context-menu-container" id="contextMenuContainer"

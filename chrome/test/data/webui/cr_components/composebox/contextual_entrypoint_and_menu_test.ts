@@ -8,9 +8,10 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_me
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createValidInputState} from './composebox_test_utils.js';
@@ -235,5 +236,80 @@ suite('ContextualEntrypointAndMenu', () => {
     assertFalse(innerActionMenu.disableAutoReposition);
     assertTrue(innerActionMenu.$.menu.hasAttribute('auto-reposition'));
     assertTrue(innerActionMenu.$.menu.autoReposition);
+  });
+
+  suite('restoredTabs_', () => {
+    test('returns empty array when restoredTabIds is empty', async () => {
+      entrypointAndMenu.restoredTabIds = [];
+      entrypointAndMenu.tabSuggestions = [
+        {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'about:blank',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        },
+      ];
+      await entrypointAndMenu.updateComplete;
+      assertEquals(0, (entrypointAndMenu as any).getRestoredTabs_().length);
+    });
+
+    test(
+        'returns matched tabs sorted by restoredTabIds in normal order',
+        async () => {
+          const tab1: TabInfo = {
+            tabId: 1,
+            title: 'Tab 1',
+            url: 'about:blank',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          };
+          const tab2: TabInfo = {
+            tabId: 2,
+            title: 'Tab 2',
+            url: 'about:blank',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          };
+          const tab3: TabInfo = {
+            tabId: 3,
+            title: 'Tab 3',
+            url: 'about:blank',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          };
+
+          entrypointAndMenu.tabSuggestions = [tab1, tab2, tab3];
+          entrypointAndMenu.restoredTabIds = [2, 3];
+          await entrypointAndMenu.updateComplete;
+
+          const restoredTabs = (entrypointAndMenu as any).getRestoredTabs_();
+          assertEquals(2, restoredTabs.length);
+          assertEquals(tab2, restoredTabs[0]);
+          assertEquals(tab3, restoredTabs[1]);
+        });
+
+    test('filters out tab IDs not found in tabSuggestions', async () => {
+      const tab1: TabInfo = {
+        tabId: 1,
+        title: 'Tab 1',
+        url: 'about:blank',
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      };
+      entrypointAndMenu.tabSuggestions = [tab1];
+      entrypointAndMenu.restoredTabIds = [1, 4];
+      await entrypointAndMenu.updateComplete;
+
+      const restoredTabs = (entrypointAndMenu as any).getRestoredTabs_();
+      // Only currently valid TabIDs should be returned by `getRestoredTabs`.
+      assertEquals(1, restoredTabs.length);
+      assertEquals(tab1, restoredTabs[0]);
+    });
   });
 });

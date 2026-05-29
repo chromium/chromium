@@ -2187,9 +2187,16 @@ export const ComposeboxEmbedderMixin =
                    } as TabInfo));
         }
 
+        // Returns historical tabs (restored tabs) that are in
+        // the tab suggestions. Passes it down to the entrypoint button.
+        // `restoredTabIds` is passed to `contextual-entrypoint-and-menu`.
+        // TODO(crbug.com/517991943) - choose one source of truth for
+        // `restoredTabs`, only keeping one `getRestoredTabs`.
         getRestoredTabs(): TabInfo[] {
-          return this.tabSuggestions.filter(
-              tab => this.restoredTabIds.includes(tab.tabId));
+          const suggestionsMap =
+              new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
+          return this.restoredTabIds.map(id => suggestionsMap.get(id))
+              .filter((tab): tab is TabInfo => !!tab);
         }
 
         hasTabs(): boolean {

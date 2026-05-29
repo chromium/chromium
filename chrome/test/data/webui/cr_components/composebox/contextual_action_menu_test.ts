@@ -1616,4 +1616,95 @@ suite('ContextualActionMenu', () => {
           assertFalse(!!trigger);
         });
   });
+
+  suite('getSelectedTabs_', () => {
+    test(
+        'returns empty array when disabledTabIds and restoredTabIds are empty',
+        () => {
+          actionMenu.disabledTabIds = new Map();
+          actionMenu.restoredTabIds = [];
+          actionMenu.tabSuggestions = [
+            {
+              tabId: 1,
+              title: 'Tab 1',
+              url: 'about:blank',
+              showInCurrentTabChip: false,
+              showInPreviousTabChip: false,
+              lastActive: {internalValue: 0n},
+            },
+          ];
+          const selectedTabs = (actionMenu as any).getSelectedTabs_();
+          assertEquals(0, selectedTabs.length);
+        });
+
+    test(
+        'returns matched tabs in reverse order of' +
+            ' addition to restoredTabIds and disabledTabIds',
+        () => {
+          const tab1: TabInfo = {
+            tabId: 1,
+            title: 'Tab 1',
+            url: 'about:blank',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          };
+          const tab2: TabInfo = {
+            tabId: 2,
+            title: 'Tab 2',
+            url: 'about:blank',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          };
+          const tab3: TabInfo = {
+            tabId: 3,
+            title: 'Tab 3',
+            url: 'about:blank',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          };
+
+          actionMenu.tabSuggestions = [tab1, tab2, tab3];
+
+          actionMenu.restoredTabIds = [1];
+          const disabledTabIds = new Map();
+          disabledTabIds.set(2, 'token2');
+          disabledTabIds.set(3, 'token3');
+          actionMenu.disabledTabIds = disabledTabIds;
+
+          const selectedTabs = (actionMenu as any).getSelectedTabs_();
+          assertEquals(3, selectedTabs.length);
+          // Given the displayed tabs are reversed (least to most recent),
+          // tab3 should be first, then tab2, then tab1.
+          assertEquals(tab3, selectedTabs[0]);
+          assertEquals(tab2, selectedTabs[1]);
+          assertEquals(tab1, selectedTabs[2]);
+        });
+
+    test('filters out tab IDs not found in tabSuggestions', () => {
+      const tab1: TabInfo = {
+        tabId: 1,
+        title: 'Tab 1',
+        url: 'about:blank',
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      };
+      actionMenu.tabSuggestions = [tab1];
+
+      actionMenu.restoredTabIds = [4];
+      const disabledTabIds = new Map();
+      disabledTabIds.set(1, 'token1');
+      disabledTabIds.set(5, 'token5');
+      actionMenu.disabledTabIds = disabledTabIds;
+
+      const selectedTabs = (actionMenu as any).getSelectedTabs_();
+      // Tabs 4 and 5 are filtered out because they are not found in
+      // tabSuggestions.
+      assertEquals(1, selectedTabs.length);
+      assertEquals(tab1, selectedTabs[0]);
+    });
+  });
 });

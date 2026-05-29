@@ -35,6 +35,7 @@ export function getHtml(this: NtpComposeboxElement) {
       .tabSuggestions="${this.tabSuggestions}"
       .hasImageFiles="${this.hasImageFiles()}"
       .disabledTabIds="${this.addedTabsIds}"
+      .restoredTabIds="${this.restoredTabIds}"
       .fileNum="${this.files.size}"
       .sharedTabs="${this.getSharedTabs()}"
       ?upload-button-disabled="${this.uploadButtonDisabled}"

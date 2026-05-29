@@ -417,9 +417,23 @@ export class ContextualActionMenuElement extends
   }
 
   protected getSelectedTabs_(): TabInfo[] {
-    return this.tabSuggestions.filter(
-        tab => this.isTabSelected_(tab.tabId) ||
-            this.restoredTabIds.includes(tab.tabId));
+    // Get the selected tab IDs from the `disabledTabIds` map and
+    // `restoredTabIds`. Because of how maps work in JS, the order when
+    // converting to an array is least recently added to most recently added.
+    const suggestionsMap =
+        new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
+    const allSelectedIds = [
+      ...this.restoredTabIds,
+      ...this.disabledTabIds.keys(),
+    ];
+
+    // Get selected tabs in the order they were added. But because the selected
+    // IDs lists have tabIds, and not the TabInfo, convert them back to an array
+    // of non-empty TabInfos. Then, reverse it to get most recent item first so
+    // its favicon is always leftmost.
+    return allSelectedIds.map(id => suggestionsMap.get(id))
+        .filter((tab): tab is TabInfo => !!tab)
+        .reverse();
   }
 
   protected isRecentTab_(tabId: number): boolean {

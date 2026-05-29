@@ -80,7 +80,6 @@ export class ContextualEntrypointAndMenuElement extends
         type: Boolean,
       },
       sharedTabs: {type: Array},
-      restoredTabs_: {type: Array},
     };
   }
 
@@ -108,7 +107,16 @@ export class ContextualEntrypointAndMenuElement extends
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
 
-  protected accessor restoredTabs_: TabInfo[] = [];
+
+  // Returns historical tabs (restored tabs) that are in
+  // the tab suggestions. Passes it down to the entrypoint button
+  // and context menu.
+  protected getRestoredTabs_(): TabInfo[] {
+    const suggestionsMap =
+        new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
+    return this.restoredTabIds.map(id => suggestionsMap.get(id))
+        .filter((tab): tab is TabInfo => !!tab);
+  }
 
   // TODO(crbug.com/499310611): Explore avoiding/removing this local property.
   private shouldOpenMenuForMultiSelection_: boolean = false;
@@ -127,16 +135,6 @@ export class ContextualEntrypointAndMenuElement extends
     const entrypoint =
         entrypointButton?.shadowRoot?.querySelector<HTMLElement>('#entrypoint');
     return {entrypointButton, entrypoint};
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('tabSuggestions') ||
-        changedProperties.has('restoredTabIds')) {
-      this.restoredTabs_ = this.tabSuggestions.filter(
-          tab => this.restoredTabIds.includes(tab.tabId));
-    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {

@@ -98,11 +98,15 @@ export class ContextualEntrypointButtonElement extends
     super();
   }
 
+  // Return reversed lists of restored (historical) and
+  // shared tabs (selected tabs).
   protected getTabs_(): TabInfo[] {
     if (this.smartTabSharingActive) {
       return [];
     }
-    return this.sharedTabs.concat(this.restoredTabs || []);
+    const reversedShared = [...this.sharedTabs].reverse();
+    const reversedRestored = [...(this.restoredTabs || [])].reverse();
+    return reversedShared.concat(reversedRestored);
   }
 
   override connectedCallback() {
