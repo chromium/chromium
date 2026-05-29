@@ -201,6 +201,7 @@ source_set("browser_tests") {
     "//ash/app_list/model:app_list_model",
     "//base",
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/accessibility",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/accessibility/live_caption:browser_tests",

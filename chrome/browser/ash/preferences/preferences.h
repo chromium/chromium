@@ -37,6 +37,10 @@ class PrefRegistrySyncable;
 
 namespace ash {
 
+namespace system {
+class TimeZoneResolverManager;
+}
+
 namespace input_method {
 class InputMethodSyncer;
 }
@@ -51,11 +55,15 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
  public:
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
+  // `timezone_resolver_manager` must outlive `this`. It must be non-null in
+  // production, but may be null in unit tests.
   Preferences(PrefService* local_state,
-              ApplicationLocaleStorage* application_locale_storage);
+              ApplicationLocaleStorage* application_locale_storage,
+              system::TimeZoneResolverManager* timezone_resolver_manager);
   // for testing
   Preferences(PrefService* local_state,
               ApplicationLocaleStorage* application_locale_storage,
+              system::TimeZoneResolverManager* timezone_resolver_manager,
               input_method::InputMethodManager* input_method_manager);
 
   Preferences(const Preferences&) = delete;
@@ -149,6 +157,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ptr<system::TimeZoneResolverManager> timezone_resolver_manager_;
 
   raw_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 

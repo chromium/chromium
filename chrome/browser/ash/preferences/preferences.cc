@@ -24,6 +24,7 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -48,8 +49,6 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -118,21 +117,31 @@ const char* const kCopyToKnownUserPrefs[] = {
 
 }  // namespace
 
-Preferences::Preferences(PrefService* local_state,
-                         ApplicationLocaleStorage* application_locale_storage)
+Preferences::Preferences(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    system::TimeZoneResolverManager* timezone_resolver_manager)
     : Preferences(local_state,
                   application_locale_storage,
+                  timezone_resolver_manager,
                   input_method::InputMethodManager::Get()) {}
 
-Preferences::Preferences(PrefService* local_state,
-                         ApplicationLocaleStorage* application_locale_storage,
-                         input_method::InputMethodManager* input_method_manager)
+Preferences::Preferences(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
+    input_method::InputMethodManager* input_method_manager)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      timezone_resolver_manager_(timezone_resolver_manager),
       prefs_(nullptr),
       input_method_manager_(input_method_manager),
       user_(nullptr),
-      user_is_primary_(false) {}
+      user_is_primary_(false) {
+  if (!timezone_resolver_manager_) {
+    CHECK_IS_TEST();
+  }
+}
 
 Preferences::~Preferences() {
   prefs_->RemoveObserver(this);
@@ -813,9 +822,8 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   ime_state_ = session_manager->GetDefaultIMEState(profile);
 
   if (user_is_primary_) {
-    g_browser_process->platform_part()
-        ->GetTimezoneResolverManager()
-        ->SetPrimaryUserPrefs(prefs_);
+    CHECK(timezone_resolver_manager_);
+    timezone_resolver_manager_->SetPrimaryUserPrefs(prefs_);
   }
 
   // Initialize preferences to currently saved state.
@@ -1311,9 +1319,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                                    prefs_, false /* check_policy */)));
     }
     if (user_is_primary_) {
-      g_browser_process->platform_part()
-          ->GetTimezoneResolverManager()
-          ->UpdateTimezoneResolver();
+      CHECK(timezone_resolver_manager_);
+      timezone_resolver_manager_->UpdateTimezoneResolver();
       if (system::TimeZoneResolverManager::
                   GetEffectiveUserTimeZoneResolveMethod(
                       prefs_, true /* check_policy */) ==

@@ -101,6 +101,7 @@
 #include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/global_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"
@@ -612,7 +613,8 @@ class GuestSessionProfile : public OffTheRecordProfileImpl {
   void InitChromeOSPreferences() override {
     chromeos_preferences_ = std::make_unique<ash::Preferences>(
         g_browser_process->local_state(),
-        g_browser_process->GetFeatures()->application_locale_storage());
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        g_browser_process->platform_part()->GetTimezoneResolverManager());
     chromeos_preferences_->Init(
         this, user_manager::UserManager::Get()->GetActiveUser());
   }

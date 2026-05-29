@@ -204,7 +204,7 @@ class PreferencesTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        mock_manager_);
+        /*timezone_resolver_manager=*/nullptr, mock_manager_);
   }
 
   void TearDown() override {

@@ -239,6 +239,7 @@ source_set("misc") {
 
   if (is_chromeos) {
     deps += [
+      "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/arc/session:service_launcher",

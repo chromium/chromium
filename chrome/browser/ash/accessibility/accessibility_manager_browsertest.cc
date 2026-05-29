@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/global_features.h"
@@ -2037,7 +2038,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   // the IME framework state.
   Preferences prefs(
       g_browser_process->local_state(),
-      g_browser_process->GetFeatures()->application_locale_storage());
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->platform_part()->GetTimezoneResolverManager());
   prefs.InitUserPrefsForTesting(
       PrefServiceSyncableFromProfile(GetActiveUserProfile()),
       user_manager::UserManager::Get()->GetActiveUser(),
