@@ -1122,10 +1122,6 @@ BASE_FEATURE(kContextMenuPictureInPictureAndroid,
 BASE_FEATURE(kFullscreenVideoPictureInPicture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the use of a Surface (ANativeWindow) as the input for the
-// NdkVideoEncodeAccelerator on Android.
-BASE_FEATURE(kSurfaceInputForAndroidVEA, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables zero-copy video capture on Android.
 BASE_FEATURE(kAndroidZeroCopyVideoCapture, base::FEATURE_DISABLED_BY_DEFAULT);
 

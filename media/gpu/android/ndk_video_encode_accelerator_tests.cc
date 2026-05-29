@@ -55,6 +55,7 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -92,7 +93,6 @@ class MockCommandBufferHelper : public CommandBufferHelper {
 struct VideoParams {
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
-  bool use_gl_surface = false;
   bool use_shared_image = false;
 };
 
@@ -120,20 +120,9 @@ class NdkVideoEncoderAcceleratorTest
     enabled_features.push_back(kPlatformHEVCEncoderSupport);
 #endif
 
-    if (args.use_gl_surface) {
-      if (__builtin_available(android 35, *)) {
-        SetupSharedImages();
-      } else {
-        GTEST_SKIP() << "Not supported Android version. "
-                     << "Surface input needs Android 15 or newer.";
-      }
-      enabled_features.push_back(kSurfaceInputForAndroidVEA);
-    } else {
-      disabled_features.push_back(kSurfaceInputForAndroidVEA);
-      if (args.use_shared_image) {
-        enabled_features.push_back(media::kAndroidZeroCopyVideoCapture);
-        SetupSharedImages();
-      }
+    if (args.use_shared_image) {
+      enabled_features.push_back(media::kAndroidZeroCopyVideoCapture);
+      SetupSharedImages();
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -154,17 +143,7 @@ class NdkVideoEncoderAcceleratorTest
   void TearDown() override {
     accelerator_.reset();
     RunUntilIdle();
-    auto args = GetParam();
     si_refs.clear();
-    if (args.use_gl_surface) {
-      if (context_state_) {
-        context_state_->MakeCurrent(gl_surface_.get(), true);
-        context_state_.reset();
-        gl_context_.reset();
-        gl_surface_.reset();
-      }
-      gl::init::ShutdownGL(nullptr, false);
-    }
   }
 
   // Implementation for VEA::Client
@@ -573,7 +552,6 @@ class NdkVideoEncoderAcceleratorTest
   VideoCodec codec_;
   VideoCodecProfile profile_;
   VideoPixelFormat pixel_format_;
-  bool use_gl_surface_ = false;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS};
@@ -691,8 +669,8 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
 }
 
 TEST_P(NdkVideoEncoderAcceleratorTest, WorkaroundDisablesZeroCopy) {
-  if (!GetParam().use_shared_image || GetParam().use_gl_surface) {
-    GTEST_SKIP() << "Test only relevant for shared image input without surface";
+  if (!GetParam().use_shared_image) {
+    GTEST_SKIP() << "Test only relevant for shared image input";
   }
 
   std::vector<int32_t> workaround_list;
@@ -976,9 +954,6 @@ TEST_P(NdkVideoEncoderAcceleratorE2ETest, EncodeAndDecode) {
 std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
   auto result = GetProfileName(info.param.profile) + "__" +
                 VideoPixelFormatToString(info.param.pixel_format);
-  if (info.param.use_gl_surface) {
-    result += "__Surface";
-  }
   if (info.param.use_shared_image) {
     result += "__SharedImage";
   }
@@ -1065,33 +1040,18 @@ std::vector<VideoParams> GenerateVariants(
     switch (param.pixel_format) {
       case PIXEL_FORMAT_I420:
         param.use_shared_image = false;
-        param.use_gl_surface = false;
         result.push_back(param);
         break;
       case PIXEL_FORMAT_NV12:
         param.use_shared_image = false;
-        param.use_gl_surface = false;
         result.push_back(param);
 
         param.use_shared_image = true;
-        param.use_gl_surface = false;
-        result.push_back(param);
-
-        param.use_shared_image = true;
-        param.use_gl_surface = true;
-        result.push_back(param);
-
-        param.use_shared_image = false;
-        param.use_gl_surface = true;
         result.push_back(param);
         break;
       case PIXEL_FORMAT_XBGR:
         // RGB always assumes shared image input
         param.use_shared_image = true;
-        param.use_gl_surface = false;
-        result.push_back(param);
-
-        param.use_gl_surface = true;
         result.push_back(param);
         break;
       default:

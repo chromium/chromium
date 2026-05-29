@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_ANDROID_NDK_VIDEO_ENCODE_ACCELERATOR_H_
 #define MEDIA_GPU_ANDROID_NDK_VIDEO_ENCODE_ACCELERATOR_H_
 
-#include <android/native_window.h>
 #include <media/NdkMediaCodec.h>
 #include <stdint.h>
 
@@ -28,10 +27,12 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_converter.h"
 #include "media/gpu/android/ndk_media_codec_wrapper.h"
-#include "media/gpu/android/video_frame_gl_surface_renderer.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
-#include "ui/gl/android/scoped_a_native_window.h"
+
+namespace gpu {
+class SharedImageManager;
+}
 
 namespace media {
 
@@ -79,9 +80,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   void OnOutputAvailable() override;
   void OnError(media_status_t error) override;
 
-  // Returns `true` if NdkVideoEncodeAccelerator will be using the Surface
-  // instead of input buffers as a way to send frames to the MediaCodec.
-  static bool ShouldUseSurfaceInput();
 
   // Returns per-layer bitrate allocation factors (summing to 1.0).
   static std::vector<double> GetDefaultSvcBitrateRatios(
@@ -141,10 +139,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // Called when the sync token for a shared image frame has been waited on.
   void OnSyncDone(VideoFrame::ID frame_id);
 
-  // Renders the `frame` onto the encoder's input surface using the
-  // `gl_renderer_` and passes the `timestamp` to the encoder.
-  void FeedGLSurface(scoped_refptr<VideoFrame> frame,
-                     base::TimeDelta timestamp);
   // Copies the `frame` into an available MediaCodec input buffer and
   // queues it for the encoder with the given `timestamp`.
   void FeedInputBuffer(scoped_refptr<VideoFrame> frame,
@@ -255,12 +249,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;
-
-  // Fields related to sending frame to the encoder via the Surface instead of
-  // input buffers.
-  const bool use_surface_as_input_;
-  std::unique_ptr<VideoFrameGLSurfaceRenderer> gl_renderer_;
-  gl::ScopedANativeWindow input_surface_;
 
   media::VideoEncoderInfo encoder_info_;
 

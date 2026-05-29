@@ -41,7 +41,6 @@
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
-#include "ui/gl/gl_switches.h"
 
 #pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
     NDK_MEDIA_CODEC_MIN_API)
@@ -685,7 +684,6 @@ NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
       // We just need an arbitrary non-zero value for the first timestamp
       // due to issues with EGL surface path.
       next_timestamp_(base::TimeTicks::Now().since_origin()),
-      use_surface_as_input_(ShouldUseSurfaceInput()),
       gpu_workarounds_(gpu_workarounds) {}
 
 NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
@@ -702,21 +700,6 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
 
 std::vector<VideoPixelFormat>
 NdkVideoEncodeAccelerator::GetSupportedSharedImagePixelFormats() {
-  if (use_surface_as_input_) {
-    if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
-      // If kVulkanFromANGLE = true (e.g. Desktop Android)
-      // we we get shared images with AngleVulkanImageBacking, NDK VEA can't
-      // handle such shared images yet.
-      if (media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_)) {
-        // If zero-copy camera capture is enabled, let's allow XBGR shared
-        // images for testing, even though it breaks the canvas copy case.
-        return {PIXEL_FORMAT_XBGR};
-      }
-      return {};
-    }
-    return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
-  }
-
   if (media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_)) {
     return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
   }
@@ -830,14 +813,9 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
       GetSupportedSharedImagePixelFormats();
   encoder_info_.supports_gpu_shared_images =
       !encoder_info_.gpu_supported_pixel_formats.empty();
-  const char* input_type_str = "buffer";
-  if (use_surface_as_input_) {
-    input_type_str = encoder_info_.supports_gpu_shared_images
-                         ? "surface_with_shared_images"
-                         : "surface";
-  } else if (encoder_info_.supports_gpu_shared_images) {
-    input_type_str = "buffer_with_shared_images";
-  }
+  const char* input_type_str = encoder_info_.supports_gpu_shared_images
+                                   ? "buffer_with_shared_images"
+                                   : "buffer";
   encoder_info_.implementation_name =
       base::StringPrintf("NdkVideoEncodeAccelerator(%s) input: %s",
                          codec_name.c_str(), input_type_str);
@@ -922,7 +900,6 @@ void NdkVideoEncodeAccelerator::Destroy() {
     // functions will use it via saved `userdata` pointers.
     media_codec_.reset();
   }
-  gl_renderer_.reset();
   metrics_helper_.reset();
   delete this;
 }
@@ -960,9 +937,6 @@ void NdkVideoEncodeAccelerator::OnCommandBufferHelperAvailable(
     return;
   }
   shared_image_manager_ = command_buffer_helper_->GetSharedImageManager();
-  if (gl_renderer_) {
-    gl_renderer_->SetSharedImageManager(shared_image_manager_);
-  }
 
   // Call FeedInput() in case we have pending frames waiting for
   // synchronization.
@@ -1062,7 +1036,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     return;
   }
 
-  if (!media_codec_->HasInput() && !use_surface_as_input_) {
+  if (!media_codec_->HasInput()) {
     // The encode is in a mode where it uses input buffers to feed new frames,
     // but we have no input buffers available.
     return;
@@ -1146,11 +1120,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   // timestamps.
   auto timestamp = RecordFrameTimestamps(frame->timestamp());
 
-  if (use_surface_as_input_) {
-    FeedGLSurface(std::move(frame), timestamp);
-  } else {
-    FeedInputBuffer(std::move(frame), timestamp);
-  }
+  FeedInputBuffer(std::move(frame), timestamp);
   have_encoded_frames_ = true;
   pending_frames_.pop_front();
 }
@@ -1434,9 +1404,6 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
 }
 
 media_status_t NdkVideoEncodeAccelerator::SendEndOfStream() {
-  if (use_surface_as_input_) {
-    return AMediaCodec_signalEndOfInputStream(media_codec_->codec());
-  }
   size_t buffer_idx = media_codec_->TakeInput();
   return AMediaCodec_queueInputBuffer(
       media_codec_->codec(), buffer_idx, /*offset=*/0, /*size=*/0,
@@ -1444,28 +1411,7 @@ media_status_t NdkVideoEncodeAccelerator::SendEndOfStream() {
       /*flags=*/AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM);
 }
 
-void NdkVideoEncodeAccelerator::FeedGLSurface(scoped_refptr<VideoFrame> frame,
-                                              base::TimeDelta timestamp) {
-  DCHECK(use_surface_as_input_);
-  TRACE_EVENT1("media", "NdkVideoEncodeAccelerator::FeedGLSurface", "timestamp",
-               timestamp);
-  if (!gl_renderer_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
-                       "GL renderer is not initialized"});
-    return;
-  }
 
-  // RenderVideoFrame() submits the rendered frame to the MediaCodec's input
-  // surface.
-  auto render_status =
-      gl_renderer_->RenderVideoFrame(frame, timestamp + base::TimeTicks());
-  if (!render_status.is_ok()) {
-    NotifyErrorStatus(std::move(render_status));
-    MEDIA_LOG(ERROR, log_) << "Most recent frame: "
-                           << frame->AsHumanReadableString();
-    return;
-  }
-}
 
 void NdkVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1491,11 +1437,6 @@ void NdkVideoEncodeAccelerator::OnInputAvailable() {
 void NdkVideoEncodeAccelerator::OnOutputAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DrainOutput();
-  // When using a surface as input, the `OnInputAvailable()` callback is not
-  // triggered because we are not using input buffers. Instead, we feed frames
-  // by rendering them to a surface. Backpressure is handled by the rendering
-  // pipeline, which means the `pending_frames_` queue is usually empty.
-  //
   // We call `FeedInput()` here to handle cases where we were waiting for the
   // encoder to reconfigure with a new color space. This call is unconditional
   // because `FeedInput()` already performs all the necessary checks.
@@ -1726,7 +1667,6 @@ EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
     media_codec_->Stop();
     media_codec_.reset();
   }
-  gl_renderer_.reset();
 
   auto name = FindMediaCodecFor(config_);
   if (!name) {
@@ -1736,9 +1676,7 @@ EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
   }
 
   auto configured_size = aligned_size_.value_or(config_.input_visible_size);
-  const PixelFormat pixel_format = use_surface_as_input_
-                                       ? COLOR_FORMAT_SURFACE
-                                       : COLOR_FORMAT_YUV420_SEMIPLANAR;
+  const PixelFormat pixel_format = COLOR_FORMAT_YUV420_SEMIPLANAR;
 
   // We do the following in a loop since we may need to recreate the MediaCodec
   // if it doesn't unaligned resolutions.
@@ -1770,34 +1708,7 @@ EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
       return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
-    if (use_surface_as_input_) {
-      ANativeWindow* surface;
-      status = AMediaCodec_createInputSurface(media_codec_->codec(), &surface);
-      if (status != AMEDIA_OK) {
-        MEDIA_LOG(ERROR, log_)
-            << "Can't create input surface. Error " << status;
-        return {EncoderStatus::Codes::kEncoderInitializationError};
-      }
 
-      input_surface_ = gl::ScopedANativeWindow::Adopt(surface);
-      gl_renderer_ = std::make_unique<VideoFrameGLSurfaceRenderer>(
-          std::move(input_surface_));
-      if (command_buffer_helper_) {
-        gl_renderer_->SetSharedImageManager(
-            command_buffer_helper_->GetSharedImageManager());
-      }
-      auto gl_renderer_status = gl_renderer_->Initialize();
-      if (!gl_renderer_status.is_ok()) {
-        MEDIA_LOG(ERROR, log_) << "Failed to initialize GL renderer: "
-                               << gl_renderer_status.message();
-        return gl_renderer_status;
-      }
-
-      // We exit the "loop", since the reset of the code below deals with
-      // the layout and workarounds for input buffers, which are unused
-      // for surface input.
-      break;
-    }
 
     if (!SetInputBufferLayout(configured_size)) {
       MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
@@ -1839,14 +1750,10 @@ EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
 
   MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
                         << ") for config: " << config_.AsHumanReadableString();
-  if (use_surface_as_input_) {
-    MEDIA_LOG(INFO, log_) << "MediaCodec codec uses surface for input";
-  } else {
-    MEDIA_LOG(INFO, log_) << "MediaCodec input buffer layout:"
-                          << " visible size: " << configured_size.ToString()
-                          << " stride: " << input_buffer_stride_ << " "
-                          << " y-height: " << input_buffer_yplane_height_;
-  }
+  MEDIA_LOG(INFO, log_) << "MediaCodec input buffer layout:"
+                        << " visible size: " << configured_size.ToString()
+                        << " stride: " << input_buffer_stride_ << " "
+                        << " y-height: " << input_buffer_yplane_height_;
 
   return {EncoderStatus::Codes::kOk};
 }
@@ -1871,18 +1778,6 @@ void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
   }
 
   DVLOG(1) << "Set color space to: " << encoder_color_space_->ToString();
-}
-
-// static
-bool NdkVideoEncodeAccelerator::ShouldUseSurfaceInput() {
-  if (__builtin_available(android 35, *)) {
-    // Limit surface input to Android 15+ (API Level: 35), because we see issues
-    // on older devices.
-    if (base::FeatureList::IsEnabled(media::kSurfaceInputForAndroidVEA)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace media

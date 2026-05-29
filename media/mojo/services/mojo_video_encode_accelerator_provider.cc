@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "media/gpu/android/ndk_video_encode_accelerator.h"
-#endif
-
 namespace {
 void BindVEAProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -125,14 +121,6 @@ void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
       {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 #elif BUILDFLAG(IS_APPLE)
   runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-#elif BUILDFLAG(IS_ANDROID)
-  if (media::NdkVideoEncodeAccelerator::ShouldUseSurfaceInput()) {
-    runner = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::MayBlock(), base::WithBaseSyncPrimitives()},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  } else {
-    runner = base::SequencedTaskRunner::GetCurrentDefault();
-  }
 #else
   runner = base::SequencedTaskRunner::GetCurrentDefault();
 #endif
