@@ -79,7 +79,11 @@ source_set("test_support") {
 
 action("generate_incognito_language_list_map") {
   script = "generate_incognito_language_list_map.py"
-  inputs = [ "//components/components_locale_settings.grd" ]
+  inputs = [
+    "//build/action_helpers.py",
+    "//build/gn_helpers.py",
+    "//components/components_locale_settings.grd",
+  ]
   outputs = [ "$target_gen_dir/incognito_language_list_map.h" ]
   depfile = "$target_gen_dir/$target_name.d"
   args = [
