@@ -129,6 +129,12 @@ BASE_FEATURE(kEnumerateDevicesUseNameInDeviceComparison,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
+enum class StopAudioEvent {
+  kStopAudioCallbackCalled = 0,
+  kApplicationAudioStopped = 1,
+  kMaxValue = kApplicationAudioStopped
+};
+
 // Turns off available audio effects (removes the flag) if the options
 // explicitly turn them off.
 void FilterAudioEffects(const StreamControls& controls, int* effects) {
@@ -4242,6 +4248,10 @@ void MediaStreamManager::StopApplicationAudioForPickerSessionId(
     DesktopMediaID::Id picker_session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  base::UmaHistogramEnumeration(
+      "Media.ScreenCaptureKit.SCContentSharingPicker.StopAudioEvent",
+      StopAudioEvent::kStopAudioCallbackCalled);
+
   for (const auto& [label, request] : requests_) {
     for (const auto& stream_devices_ptr :
          request->stream_devices_set.stream_devices) {
@@ -4250,10 +4260,17 @@ void MediaStreamManager::StopApplicationAudioForPickerSessionId(
               stream_devices_ptr->video_device->type) &&
           DesktopMediaID::Parse(stream_devices_ptr->video_device->id).id ==
               picker_session_id) {
-        if (stream_devices_ptr->audio_device.has_value() &&
+        const bool is_application_audio =
+            stream_devices_ptr->audio_device.has_value() &&
             request->audio_raw_id().has_value() &&
             media::AudioDeviceDescription::IsApplicationLoopbackDevice(
-                *request->audio_raw_id())) {
+                *request->audio_raw_id());
+
+        if (is_application_audio) {
+          base::UmaHistogramEnumeration(
+              "Media.ScreenCaptureKit.SCContentSharingPicker.StopAudioEvent",
+              StopAudioEvent::kApplicationAudioStopped);
+
           StopDevice(stream_devices_ptr->audio_device->type,
                      stream_devices_ptr->audio_device->session_id());
         }

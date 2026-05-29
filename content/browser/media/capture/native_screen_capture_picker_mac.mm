@@ -136,6 +136,21 @@ constexpr base::FeatureParam<int> kMaxContentShareCountValue = {
     &kMaxContentShareCount, "max_content_share_count", 50};
 
 namespace {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SCContentSharingPickerSessionEvent {
+  kPickerOpened = 0,
+  kWindowListUpdated = 1,
+  kPrimaryAppRemoved = 2,
+  kApplicationAudioRequested = 3,
+  kMaxValue = kApplicationAudioRequested
+};
+
+void LogSessionEvent(SCContentSharingPickerSessionEvent event) {
+  base::UmaHistogramEnumeration(
+      "Media.ScreenCaptureKit.SCContentSharingPicker.SessionEvent", event);
+}
+
 API_AVAILABLE(macos(14.0))
 NativeScreenCapturePickerMac::GetWindowOwnerPidCallback& GetTestingCallback() {
   static base::NoDestructor<
@@ -180,6 +195,7 @@ void NativeScreenCapturePickerMac::Open(
   if (@available(macOS 14.0, *)) {
     active_picker_source_id_++;
     active_picker_type_ = type;
+    LogSessionEvent(SCContentSharingPickerSessionEvent::kPickerOpened);
     picker_callback_ = std::move(picker_callback);
     cancel_callback_ = std::move(cancel_callback);
     error_callback_ = std::move(error_callback);
@@ -284,6 +300,11 @@ void NativeScreenCapturePickerMac::UpdateAudioStatusForSession(
         VLOG(1) << "NSCPM::UpdateAudioStatus: session " << session_id
                 << " Primary application no longer present. Triggering "
                    "stop_audio_callback.";
+        if (!session.primary_app_removed_logged) {
+          session.primary_app_removed_logged = true;
+          LogSessionEvent(
+              SCContentSharingPickerSessionEvent::kPrimaryAppRemoved);
+        }
         std::move(session.stop_audio_callback).Run(session_id);
       }
     }
@@ -326,6 +347,10 @@ void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
     VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
                "stream found in stream_to_id_map_ for source id "
             << session_id;
+    if (!session.window_list_updated_logged) {
+      session.window_list_updated_logged = true;
+      LogSessionEvent(SCContentSharingPickerSessionEvent::kWindowListUpdated);
+    }
     return;
   }
 
@@ -433,6 +458,11 @@ void NativeScreenCapturePickerMac::GetApplicationAudioCaptureId(
 
   auto it = sessions_.find(session_id);
   if (it != sessions_.end()) {
+    if (!it->second->application_audio_requested_logged) {
+      it->second->application_audio_requested_logged = true;
+      LogSessionEvent(
+          SCContentSharingPickerSessionEvent::kApplicationAudioRequested);
+    }
     application_audio_capture_id = it->second->primary_audio_capture_id;
   }
 

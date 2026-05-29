@@ -90,6 +90,10 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
     std::optional<desktop_capture::ApplicationAudioCaptureId>
         primary_audio_capture_id;
     base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback;
+
+    bool window_list_updated_logged = false;
+    bool primary_app_removed_logged = false;
+    bool application_audio_requested_logged = false;
   };
 
   // Callbacks called by PickerObserver when it receives an event from the OS.

@@ -7332,6 +7332,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.ScreenCaptureKit.SCContentSharingPicker.SessionEvent"
+    enum="ScreenCaptureKitSCContentSharingPickerSessionEvent"
+    expires_after="2027-01-04">
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <owner>brandstrom@chromium.org</owner>
+  <summary>
+    Records lifecycle and modification events for SCContentSharingPicker capture
+    sessions on macOS, including opening the picker, updating the window list,
+    removal of the primary app, and requests for application-audio. Each event
+    is only logged once per session, when it first happens.
+  </summary>
+</histogram>
+
+<histogram name="Media.ScreenCaptureKit.SCContentSharingPicker.StopAudioEvent"
+    enum="SCContentSharingPickerStopAudioEvent" expires_after="2027-01-04">
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <owner>brandstrom@chromium.org</owner>
+  <summary>
+    Records when the macOS native sharing picker triggers a stop_audio_callback
+    and when application audio capture is actually stopped.
+  </summary>
+</histogram>
+
 <histogram name="Media.ScreenCaptureKit.SCContentSharingPicker2"
     enum="ScreenCaptureKitSCContentSharingPicker" expires_after="2027-01-04">
   <owner>tovep@chromium.org</owner>
