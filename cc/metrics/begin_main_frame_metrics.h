@@ -20,13 +20,16 @@ enum class BeginMainFrameReason {
   kStyleInvalidation = 4,
   kScroll = 5,
   kInput = 6,
-  kMaxValue = kInput,
+  kServiceScriptedAnimations = 7,
+  kMaxValue = kServiceScriptedAnimations,
 };
 
 inline constexpr size_t BeginMainFrameReasonSize =
     static_cast<size_t>(BeginMainFrameReason::kMaxValue) + 1;
 
-static_assert(BeginMainFrameReasonSize <= 7);
+// We use this metric in a bitfield. UMA can only record 1000 buckets for a
+// histogram. So, assert that we do not go over this max size.
+static_assert(1 << BeginMainFrameReasonSize < 1000);
 
 // Latency timing data for Main Frame lifecycle updates triggered by cc.
 // The data is captured in LocalFrameViewUKMAggregator and passed back through

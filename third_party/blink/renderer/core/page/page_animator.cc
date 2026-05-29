@@ -298,7 +298,8 @@ void PageAnimator::ServiceScriptedAnimations(
       animator->SetNextFrameHasPendingRaf();
     }
     // See LocalFrameView::RunPostLifecycleSteps() for 14.
-    active_controllers[i]->ScheduleAnimationIfNeeded();
+    active_controllers[i]->ScheduleAnimationIfNeeded(
+        cc::BeginMainFrameReason::kServiceScriptedAnimations);
   });
 
   // Add task timings.
