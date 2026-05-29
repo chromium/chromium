@@ -60,7 +60,9 @@ D3D12CopyCommandQueueWrapper::D3D12CopyCommandQueueWrapper(
       command_list_(std::move(command_list)),
       fence_(base::MakeRefCounted<D3D12Fence>(fence)) {}
 
-D3D12CopyCommandQueueWrapper::~D3D12CopyCommandQueueWrapper() = default;
+D3D12CopyCommandQueueWrapper::~D3D12CopyCommandQueueWrapper() {
+  WaitSync();
+}
 
 bool D3D12CopyCommandQueueWrapper::CopyTextureRegion(
     const D3D12_TEXTURE_COPY_LOCATION& dst_location,
@@ -144,6 +146,14 @@ D3D12FenceAndValue D3D12CopyCommandQueueWrapper::Execute() {
     return {};
   }
   return {fence_->Get(), std::move(value_or_error).value()};
+}
+
+void D3D12CopyCommandQueueWrapper::WaitSync() {
+  // If we have successfully queued any GPU work, wait on the CPU for it to
+  // complete.
+  if (fence_->Value() > 0) {
+    fence_->WaitCPU(fence_->Value());
+  }
 }
 
 bool D3D12CopyCommandQueueWrapper::Reset() {

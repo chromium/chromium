@@ -44,6 +44,7 @@ class D3D12CopyCommandQueueWrapper {
                                uint32_t uv_stride);
 
   D3D12FenceAndValue Execute();
+  void WaitSync();
 
  private:
   // This will be automatically called before CopyTextureRegion().

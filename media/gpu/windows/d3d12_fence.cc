@@ -44,11 +44,13 @@ uint64_t D3D12Fence::GetCompletedValue() const {
 
 D3D11Status::Or<uint64_t> D3D12Fence::Signal(
     ID3D12CommandQueue& command_queue) {
-  HRESULT hr = command_queue.Signal(fence_.Get(), ++fence_value_);
+  uint64_t next_value = fence_value_ + 1;
+  HRESULT hr = command_queue.Signal(fence_.Get(), next_value);
   if (FAILED(hr)) {
     return D3D11Status{D3D11StatusCode::kFenceSignalFailed,
                        "ID3D12CommandQueue failed to signal fence", hr};
   }
+  fence_value_ = next_value;
   return fence_value_;
 }
 
