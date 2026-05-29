@@ -28,7 +28,10 @@
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace glic {
 
@@ -685,6 +688,126 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
       "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason."
       "Reengagement",
       PageContextIneligibilityType::kNone, 1);
+}
+
+// =============================================================================
+// POC: BFCached attacker page content joined with victim primary-page URL/title
+// =============================================================================
+//
+// ZeroStateSuggestionsPageData is a PageUserData. Its
+// ConstructPageContextProto()/GetUrl() read per-WebContents (primary-page)
+// state via WebContents::GetLastCommittedURL()/GetTitle() without checking
+// whether `page()` is still the primary page. When the bound page has been
+// BFCached and the tab now shows a different (victim) primary page, the
+// produced ZeroStatePageContext proto carries:
+//   url   = victim primary-page URL
+//   title = victim primary-page title
+//   inner_text / annotated_page_content = ATTACKER page content
+//
+// In production this fires on the late OptimizationGuide / inner-text callback
+// path (page_context_callbacks_.Notify -> ConstructPageContextProto) while the
+// attacker page sits in BFCache, and the mismatched proto is uploaded to the
+// ZSS model server attributed to the victim origin.
+class ZeroStateSuggestionsBFCacheConfusionBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ZeroStateSuggestionsBFCacheConfusionBrowserTest() {
+    // Default-on inner-text extraction; APC off to keep the test deterministic.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{glic::kContextualCueing, {}},
+             {glic::kGlicZeroStateSuggestions,
+              {{"ZSSExtractInnerText", "true"},
+               {"ZSSExtractAnnotatedPageContent", "false"}}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            {page_content_annotations::features::
+                 kPageContentExtractionUsingPageSettledMonitor}));
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    browser()->profile()->GetPrefs()->SetBoolean(
+        glic::prefs::kGlicTabContextEnabled, true);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kDisableCheckingUserPermissionsForTesting);
+  }
+
+  void SetUpHintsNoResult(const GURL& url) {
+    OptimizationGuideKeyedServiceFactory::GetInstance()
+        ->GetForProfile(browser()->profile())
+        ->AddHintForTesting(
+            url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+            std::nullopt);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsBFCacheConfusionBrowserTest,
+                       BFCacheRegressionTest) {
+  base::HistogramTester histogram_tester;
+
+  const GURL attacker_url = embedded_test_server()->GetURL(
+      "attacker.test", "/optimization_guide/zss_attacker_page.html");
+  const GURL victim_url = embedded_test_server()->GetURL(
+      "victim.test", "/optimization_guide/zss_victim_page.html");
+
+  // Allow the attacker URL's optimization-metadata callback to resolve so that
+  // work_done() becomes true and inner_text_result_ is captured (not cleared
+  // by the GiveUp() timeout).
+  SetUpHintsNoResult(attacker_url);
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Step 1: Load the attacker page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), attacker_url));
+  ASSERT_EQ(attacker_url, web_contents->GetLastCommittedURL());
+
+  content::RenderFrameHost* attacker_rfh = web_contents->GetPrimaryMainFrame();
+
+  // Step 2: Simulate the user opening Glic on the attacker tab. This is the
+  // exact call performed by ContextualCueingService::
+  // PrepareToFetchContextualGlicZeroStateSuggestions().
+  ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
+  base::WeakPtr<ZeroStateSuggestionsPageData> attacker_zss_data =
+      ZeroStateSuggestionsPageData::GetForPage(web_contents->GetPrimaryPage())
+          ->AsWeakPtr();
+  ASSERT_TRUE(attacker_zss_data);
+
+  // Wait for inner_text + optimization metadata to resolve so the attacker
+  // body text is captured into `inner_text_result_`.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 1);
+
+  // Step 3: Attacker navigates the tab cross-origin to the victim page (this
+  // is fully attacker-controlled via `location.href = ...`). Use a
+  // renderer-initiated navigation to mirror the real attack.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, victim_url));
+  ASSERT_EQ(victim_url, web_contents->GetLastCommittedURL());
+
+  // The attacker Page (and its PageUserData) survives in BFCache (or, when
+  // BFCache is unavailable, in the kPendingDeletion window).
+  ASSERT_TRUE(attacker_zss_data)
+      << "attacker ZeroStateSuggestionsPageData was destroyed; expected it to "
+         "survive in BFCache";
+  EXPECT_EQ(attacker_rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Ensure that GetPageContext() fails to return an eligible page context.
+  base::test::TestFuture<
+      base::expected<optimization_guide::proto::ZeroStatePageContext,
+                     PageContextIneligibilityType>>
+      proto_future;
+  attacker_zss_data->GetPageContext(proto_future.GetCallback());
+  ASSERT_FALSE(proto_future.Get().has_value());
 }
 
 }  // namespace glic

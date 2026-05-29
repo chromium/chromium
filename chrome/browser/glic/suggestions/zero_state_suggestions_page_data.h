@@ -111,6 +111,8 @@ class ZeroStateSuggestionsPageData
   // Returns the URL of the primary main frame associated with this page.
   const GURL GetUrl() const;
 
+  bool IsSamePrimaryPage(content::WebContents* web_contents) const;
+
   // Called when inner text is extracted.
   void OnReceivedInnerText(
       std::unique_ptr<content_extraction::InnerTextResult> result);
