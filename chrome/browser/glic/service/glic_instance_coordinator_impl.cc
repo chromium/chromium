@@ -268,6 +268,20 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   return GetInstanceImplForTab(tab);
 }
 
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceWithGlicWebContents(
+    content::WebContents* glic_web_contents) const {
+  if (!glic_web_contents) {
+    return nullptr;
+  }
+  for (const auto& [id, instance] : instances_) {
+    if (instance->host().IsWebContentPresentAndMatches(
+            glic_web_contents->GetPrimaryMainFrame())) {
+      return instance.get();
+    }
+  }
+  return nullptr;
+}
+
 void GlicInstanceCoordinatorImpl::CreateNewConversationForTabs(
     const std::vector<tabs::TabInterface*>& tabs) {
   if (tabs.empty()) {
@@ -402,6 +416,9 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
                            conv_id.conversation_id, conv_id.turn_id);
                      },
                      [&](NewConversation) { return CreateGlicInstance(); },
+                     [&](const InstanceId& id) {
+                       return GetInstanceImplFor(id);
+                     },
                      [&](DefaultConversation) {
                        return GetOrCreateGlicInstanceImplForTab(tab);
                      }},

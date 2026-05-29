@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
@@ -45,13 +46,16 @@ void CompletionCallback(
       !std::ranges::contains(result.text_results, false);
   bool all_file_results_allowed =
       !std::ranges::contains(result.paths_results, false);
-  if (all_text_results_allowed && all_file_results_allowed) {
+  bool all_image_results_allowed = result.image_result;
+
+  if (all_text_results_allowed && all_file_results_allowed &&
+      all_image_results_allowed) {
     std::move(callback).Run(std::move(drop_data));
     return;
   }
 
-  // For text drag-drops, block the drop if any result is negative.
-  if (!all_text_results_allowed) {
+  // For text or image drag-drops, block the drop if any result is negative.
+  if (!all_text_results_allowed || !all_image_results_allowed) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -158,7 +162,19 @@ void HandleOnPerformingDrop(
 
   content::WebContents* scan_target =
       glic::GetGlicGuestWebContents(web_contents);
-  if (!scan_target) {
+  if (scan_target) {
+    // For Glic-specific web sourced drag and drop operations, we bypass the
+    // standard Enterprise Cloud Content Analysis scanning (Safe Browsing/deep
+    // scanning) here. This is intended because we will run DLP scanning for
+    // the payload as part of the Glic invocation, and if that fails the user
+    // won't see the content anyway.
+    if (glic::IsGlicWebDrag(drop_data)) {
+      glic::StartDragAndDropInvoke(web_contents, drop_data);
+      drop_data.document_is_handling_drag = true;
+      std::move(callback).Run(std::move(drop_data));
+      return;
+    }
+  } else {
     scan_target = web_contents;
   }
 

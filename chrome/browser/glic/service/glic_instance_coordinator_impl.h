@@ -115,6 +115,8 @@ class GlicInstanceCoordinatorImpl
   bool IsConversationPresent(const std::string& conversation_id) const override;
   // GlicInstanceCoordinator implementation
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
+  GlicInstance* GetInstanceWithGlicWebContents(
+      content::WebContents* glic_web_contents) const override;
   // Sorts instances by recency and returns the instance id and
   // conversation title of each conversation.
   std::vector<ConversationInfo> GetRecentlyActiveInstances(

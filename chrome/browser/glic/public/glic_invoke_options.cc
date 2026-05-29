@@ -59,15 +59,17 @@ Target::Target(BrowserWindowInterface* window) : surface(NewTab{window}) {}
 
 Target::Target(NewTab new_tab) : surface(std::move(new_tab)) {}
 
-Target::Target(
-    tabs::TabInterface* tab,
-    std::variant<DefaultConversation, NewConversation, ConversationId>
-        conversation)
+Target::Target(tabs::TabInterface* tab,
+               std::variant<DefaultConversation,
+                            NewConversation,
+                            ConversationId,
+                            InstanceId> conversation)
     : surface(tab), conversation(std::move(conversation)) {}
 
-Target::Target(
-    std::variant<DefaultConversation, NewConversation, ConversationId>
-        conversation)
+Target::Target(std::variant<DefaultConversation,
+                            NewConversation,
+                            ConversationId,
+                            InstanceId> conversation)
     : conversation(std::move(conversation)) {}
 
 TabSharingOptions::TabSharingOptions()

@@ -28,6 +28,10 @@ class MockGlicInstanceCoordinator
               GetInstanceForTab,
               (const tabs::TabInterface*),
               (const, override));
+  MOCK_METHOD(GlicInstance*,
+              GetInstanceWithGlicWebContents,
+              (content::WebContents*),
+              (const, override));
 
   MOCK_METHOD(void,
               Toggle,

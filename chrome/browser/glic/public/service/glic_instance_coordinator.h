@@ -63,6 +63,8 @@ class GlicInstanceCoordinator {
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
   virtual GlicSharingManager& active_instance_sharing_manager() = 0;
+  virtual GlicInstance* GetInstanceWithGlicWebContents(
+      content::WebContents* glic_web_contents) const = 0;
   virtual void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) = 0;
   virtual void ShowInstanceForTabs(const std::vector<tabs::TabInterface*>& tabs,

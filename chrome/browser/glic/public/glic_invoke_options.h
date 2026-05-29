@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -61,11 +62,14 @@ struct Target {
   explicit Target(BrowserWindowInterface* window);
   explicit Target(NewTab new_tab);
   Target(tabs::TabInterface* tab,
-         std::variant<DefaultConversation, NewConversation, ConversationId>
-             conversation);
-  explicit Target(
-      std::variant<DefaultConversation, NewConversation, ConversationId>
-          conversation);
+         std::variant<DefaultConversation,
+                      NewConversation,
+                      ConversationId,
+                      InstanceId> conversation);
+  explicit Target(std::variant<DefaultConversation,
+                               NewConversation,
+                               ConversationId,
+                               InstanceId> conversation);
   Target(Target&&);
   Target& operator=(Target&&);
   ~Target();
@@ -84,7 +88,8 @@ struct Target {
   //   surface if available, otherwise creates a new one.
   // - NewConversation: Forces the creation of a new conversation.
   // - ConversationId: Reconnects to a specific existing conversation.
-  std::variant<DefaultConversation, NewConversation, ConversationId>
+  // - InstanceId: Targets a specific existing instance.
+  std::variant<DefaultConversation, NewConversation, ConversationId, InstanceId>
       conversation = DefaultConversation();
 
   // Specifies the target for actuation.
