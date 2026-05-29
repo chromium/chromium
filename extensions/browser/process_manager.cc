@@ -4,8 +4,10 @@
 
 #include "extensions/browser/process_manager.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
-#include <unordered_set>
+#include <set>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -876,7 +878,7 @@ void ProcessManager::CloseLazyBackgroundPageNow(const ExtensionId& extension_id,
       return;
     }
 
-    // Close remaining views.
+    // Close remaining views. First, collect frames to unregister.
     std::vector<content::RenderFrameHost*> frames_to_close;
     for (const auto& key_value : all_extension_frames_) {
       if (key_value.second.CanKeepalive() &&
@@ -885,13 +887,28 @@ void ProcessManager::CloseLazyBackgroundPageNow(const ExtensionId& extension_id,
         frames_to_close.push_back(key_value.first);
       }
     }
+    // Collect unique WebContents and unregister frames.
+    std::set<content::WebContents*> raw_web_contents;
     for (content::RenderFrameHost* frame : frames_to_close) {
-      content::WebContents::FromRenderFrameHost(frame)->ClosePage();
-      // WebContents::ClosePage() may result in calling
-      // UnregisterRenderFrameHost() asynchronously and may cause race
-      // conditions when the background page is reloaded.
-      // To avoid this, unregister the view now.
+      if (content::WebContents* web_contents =
+              content::WebContents::FromRenderFrameHost(frame)) {
+        raw_web_contents.insert(web_contents);
+      }
       UnregisterRenderFrameHost(frame);
+    }
+    // Safely close the collected pages using WeakPtrs. WebContents::ClosePage()
+    // can execute synchronously and destroy WebContents and frames, which would
+    // lead to a UAF if iterating over frames or raw pointers while calling
+    // ClosePage(). See crbug.com/513156160.
+    std::vector<base::WeakPtr<content::WebContents>> safe_web_contents;
+    safe_web_contents.reserve(raw_web_contents.size());
+    std::ranges::transform(
+        raw_web_contents, std::back_inserter(safe_web_contents),
+        [](content::WebContents* contents) { return contents->GetWeakPtr(); });
+    for (const auto& web_contents : safe_web_contents) {
+      if (web_contents) {
+        web_contents->ClosePage();
+      }
     }
 
     host = GetBackgroundHostForExtension(extension_id);
