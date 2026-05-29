@@ -56,7 +56,6 @@ BASE_DECLARE_FEATURE(kNewTabPageCustomizationThemeSync);
 // Enables syncing of usage metadata for loyalty cards.
 BASE_DECLARE_FEATURE(kSyncLoyaltyCardMetadata);
 
-
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:

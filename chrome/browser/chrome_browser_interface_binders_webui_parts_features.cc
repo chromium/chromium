@@ -30,13 +30,15 @@
 #include "chrome/common/compose/compose.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation.mojom.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
-#include "components/sync/base/features.h"
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
@@ -73,10 +75,12 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
       CertificateManagerUI>(map);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
   RegisterWebUIControllerInterfaceBinder<
       batch_upload::mojom::PageHandlerFactory, BatchUploadUI>(map);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   RegisterWebUIControllerInterfaceBinder<
       signout_confirmation::mojom::PageHandlerFactory, SignoutConfirmationUI>(
       map);

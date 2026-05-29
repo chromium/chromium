@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
@@ -162,19 +163,27 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
   EXPECT_TRUE(batch_upload()->IsDialogOpened());
 
   // Trigger Signin Pending.
-  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
-  EXPECT_FALSE(batch_upload()->IsDialogOpened());
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, primary_account.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !batch_upload()->IsDialogOpened(); }));
 
   // Opening the dialog again should fail as we are still in signin pending.
   EXPECT_FALSE(OpenBatchUpload(browser()));
   EXPECT_FALSE(batch_upload()->IsDialogOpened());
 
   // Resolve the signin pending state.
-  signin::SetRefreshTokenForPrimaryAccount(identity_manager);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, primary_account.account_id,
+      GoogleServiceAuthError::AuthErrorNone());
   // Opening the dialog should now be possible again.
   EXPECT_TRUE(OpenBatchUpload(browser()));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
   SigninWithFullInfo();
   test_helper().SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
@@ -201,7 +210,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
   // Opening the dialog should now be possible again.
   EXPECT_TRUE(OpenBatchUpload(browser()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Used to control the creation of the dialog (not actually creating it), and
 // the expected output without having to deal with the real dialog.
 class BatchUploadDelegateFake : public BatchUploadDelegate {
@@ -327,6 +338,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   EXPECT_EQ(avatar_accessor.GetText(), expected_avatar_text);
   EXPECT_EQ(announce_future.Get(), expected_avatar_text);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Test suite that makes the sync service unavailable to test the factory.
 class BatchUploadServiceFactorySyncServiceUnavailableTest

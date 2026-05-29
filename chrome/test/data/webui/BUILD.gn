@@ -138,11 +138,13 @@ source_set("browser_tests") {
     ]
   }
 
+  if (enable_dice_support || is_chromeos) {
+    sources += [ "signin/batch_upload_view_browsertest.cc" ]
+  }
   if (enable_dice_support) {
     sources += [
       "feature_showcase/feature_showcase_browsertest.cc",
       "intro/intro_browsertest.cc",
-      "signin/batch_upload_view_browsertest.cc",
     ]
   }
 
@@ -855,6 +857,7 @@ generate_grd("build_grd") {
       "chromeos/sys_internals:build_grdp",
       "chromeos/traffic_counters:build_grdp",
       "chromeos/vc_background_ui:build_grdp",
+      "signin:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
     ]
@@ -864,6 +867,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/ash_common/post_message_api/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/sea_pen/resources.grdp",
       "$target_gen_dir/chromeos/account_manager/resources.grdp",
+      "$target_gen_dir/signin/resources.grdp",
       "$target_gen_dir/chromeos/bluetooth/resources.grdp",
       "$target_gen_dir/chromeos/boca_ui/resources.grdp",
       "$target_gen_dir/chromeos/boca_receiver_app_ui/resources.grdp",

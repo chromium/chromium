@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
@@ -31,9 +32,11 @@
 
 namespace {
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Duration of displaying the saving to account text in the avatar button.
 constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
     base::Seconds(3);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // This list contains all the data types that are available for the Batch Upload
 // dialog. Data types should not be repeated and the list is ordered based on
@@ -162,6 +165,7 @@ bool HasLocalDataToShow(
       });
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void RecordBatchUploadTriggeredMetrics(
     BatchUploadService::EntryPoint entry_point,
     const GaiaId& gaia_id,
@@ -201,6 +205,7 @@ void RecordBatchUploadTriggeredMetrics(
   signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(promo_type, gaia_id,
                                                            prefs);
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -302,6 +307,7 @@ void BatchUploadService::OnBatchUploadDialogResult(
 
   sync_service_->TriggerLocalDataMigrationForItems(item_ids_to_move);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // `browser` may be null in tests.
   Browser* browser = state_.dialog_state_->browser_.get();
   if (browser) {
@@ -309,16 +315,19 @@ void BatchUploadService::OnBatchUploadDialogResult(
         std::make_unique<ResettableState::SavingBrowserState>();
     TriggerAvatarButtonSavingDataText(browser);
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // The callback has to be called after `TriggerLocalDataMigrationForItems()`
   // so that it reacts to the state after the migration.
   std::move(state_.dialog_state_->dialog_closed_callback_).Run();
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   GaiaId primary_gaia =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   RecordBatchUploadTriggeredMetrics(state_.dialog_state_->entry_point_,
                                     primary_gaia, prefs_.get());
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   ResetDialogState();
 }
 
@@ -340,6 +349,7 @@ bool BatchUploadService::IsUserEligibleToOpenDialog() const {
   return true;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
   CHECK(browser);
   CHECK(state_.saving_browser_state_);
@@ -363,13 +373,16 @@ void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
                      // member and will not fire if destroyed.
                      base::Unretained(this)));
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void BatchUploadService::OnAvatarOverrideTextTimeout() {
   CHECK(state_.saving_browser_state_ &&
         state_.saving_browser_state_->avatar_override_clear_callback_);
   state_.saving_browser_state_->avatar_override_clear_callback_.RunAndReset();
   state_.saving_browser_state_.reset();
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 bool BatchUploadService::IsDialogOpened() const {
   return state_.dialog_state_ != nullptr;

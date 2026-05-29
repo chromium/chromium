@@ -28,11 +28,9 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin} from '../router.js';
 
-// <if expr="not is_chromeos">
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {BatchUploadPromoProxyImpl} from 'chrome://resources/js/batch_upload_promo/batch_upload_promo_proxy.js';
-// </if>
 
 // clang-format on
 
@@ -116,13 +114,11 @@ export class SettingsSyncControlsElement extends
         value: false,
       },
 
-      // <if expr="not is_chromeos">
       batchUploadPromoHTML_: {
         type: String,
         value: window.trustedTypes!.emptyHTML as unknown as string,
         observer: 'attachOpenBatchUploadLinkClick_',
       },
-      // </if>
     };
   }
 
@@ -134,9 +130,7 @@ export class SettingsSyncControlsElement extends
   private cachedSyncPrefs_: Record<string, unknown>|null;
   declare showSyncDisabledInformation: boolean;
   declare private isAccountSettingsPage_: boolean;
-  // <if expr="not is_chromeos">
   declare private batchUploadPromoHTML_: TrustedHTML;
-  // </if>
 
   constructor() {
     super();
@@ -154,8 +148,11 @@ export class SettingsSyncControlsElement extends
     this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
-    // <if expr="not is_chromeos">
-    if (loadTimeData.getBoolean('unoPhase2FollowUp')) {
+    const showBatchUploadPromo = loadTimeData.valueExists('unoPhase2FollowUp') ?
+        loadTimeData.getBoolean('unoPhase2FollowUp') :
+        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+
+    if (showBatchUploadPromo) {
       BatchUploadPromoProxyImpl.getInstance()
           .callbackRouter.onLocalDataCountChanged.addListener(
               (localDataCount: number) => {
@@ -167,7 +164,6 @@ export class SettingsSyncControlsElement extends
             this.batchUploadPromoLocalDataCountChanged_(localDataCount);
           });
     }
-    // </if>
 
     const router = Router.getInstance();
     const currentRoute = router.getCurrentRoute();
@@ -188,10 +184,13 @@ export class SettingsSyncControlsElement extends
     this.syncPrefs = syncPrefs;
   }
 
-  // <if expr="not is_chromeos">
   private async batchUploadPromoLocalDataCountChanged_(localDataCount: number):
       Promise<void> {
-    if (!loadTimeData.getBoolean('unoPhase2FollowUp')) {
+    const showBatchUploadPromo = loadTimeData.valueExists('unoPhase2FollowUp') ?
+        loadTimeData.getBoolean('unoPhase2FollowUp') :
+        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+
+    if (!showBatchUploadPromo) {
       return;
     }
 
@@ -211,7 +210,11 @@ export class SettingsSyncControlsElement extends
   }
 
   private shouldShowBatchUploadPromo_(): boolean {
-    if (!loadTimeData.getBoolean('unoPhase2FollowUp')) {
+    const showBatchUploadPromo = loadTimeData.valueExists('unoPhase2FollowUp') ?
+        loadTimeData.getBoolean('unoPhase2FollowUp') :
+        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+
+    if (!showBatchUploadPromo) {
       return false;
     }
 
@@ -246,7 +249,6 @@ export class SettingsSyncControlsElement extends
     event.preventDefault();
     BatchUploadPromoProxyImpl.getInstance().handler.onBatchUploadPromoClicked();
   }
-  // </if>
 
   /**
    * @return Computed binding returning the selected sync data radio button.

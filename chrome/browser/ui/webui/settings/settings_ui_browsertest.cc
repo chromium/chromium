@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -69,10 +70,20 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, TriggerHappinessTrackingSurveys) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Test fixture for testing the kDisableSync flag.
 class SettingsUITestDisableSync : public SettingsUITest {
  public:
+  SettingsUITestDisableSync() {
+    std::vector<base::test::FeatureRef> enabled_features;
+#if !BUILDFLAG(IS_CHROMEOS)
+    enabled_features.push_back(syncer::kUnoPhase2FollowUp);
+#else
+    enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
+  }
+
   void SetUp() override {
     // Append the switch *before* the profile is built.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
@@ -80,8 +91,7 @@ class SettingsUITestDisableSync : public SettingsUITest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kUnoPhase2FollowUp};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Regression test for crbug.com/484893496.
@@ -109,4 +119,3 @@ IN_PROC_BROWSER_TEST_F(
             BatchUploadServiceFactory::GetForProfile(browser()->profile(),
                                                      /*create=*/false));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

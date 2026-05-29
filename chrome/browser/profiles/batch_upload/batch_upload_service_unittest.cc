@@ -463,6 +463,7 @@ TEST_F(BatchUploadServiceTest,
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 struct AvatarEntryPointParam {
   signin::ProfileMenuAvatarButtonPromoInfo::Type promo_type;
   BatchUploadService::EntryPoint batch_upload_entry_point;
@@ -570,3 +571,4 @@ TEST_P(BatchUploadServiceWithAvatarPromoEntryPointTest,
 INSTANTIATE_TEST_SUITE_P(,
                          BatchUploadServiceWithAvatarPromoEntryPointTest,
                          testing::ValuesIn(kAvatarEntryPointTestParams));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

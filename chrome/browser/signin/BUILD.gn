@@ -263,8 +263,6 @@ source_set("impl") {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
-      "//chrome/browser/profiles/batch_upload",
-      "//chrome/browser/profiles/batch_upload:impl",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
       "//chrome/browser/themes",
@@ -294,6 +292,13 @@ source_set("impl") {
     if (!is_android) {
       deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
     }
+  }
+
+  if (enable_dice_support || is_chromeos) {
+    deps += [
+      "//chrome/browser/profiles/batch_upload",
+      "//chrome/browser/profiles/batch_upload:impl",
+    ]
   }
 
   if (is_android) {

@@ -210,8 +210,9 @@
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_ui.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
-#include "ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#include "ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/default_browser/default_browser_features.h"
@@ -355,9 +356,10 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       feature_showcase::mojom::FeatureShowcasePageHandlerFactory,
       FeatureShowcaseUI>(map);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
   RegisterWebUIControllerInterfaceBinder<
       batch_upload_promo::mojom::PageHandlerFactory, settings::SettingsUI>(map);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   RegisterWebUIControllerInterfaceBinder<
       browser_command::mojom::CommandHandlerFactory,
@@ -682,9 +684,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
 #if !BUILDFLAG(IS_CHROMEOS)
       .Add<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>()
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       .Add<batch_upload_promo::mojom::PageHandlerFactory>()
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       .Add<customize_color_scheme_mode::mojom::
                CustomizeColorSchemeModeHandlerFactory>()
       .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();

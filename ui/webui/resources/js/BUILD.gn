@@ -50,7 +50,7 @@ build_webui("build") {
     ]
   }
 
-  if (enable_dice_support) {
+  if (enable_dice_support || is_chromeos) {
     ts_files += [ "batch_upload_promo/batch_upload_promo_proxy.ts" ]
   }
 
@@ -63,7 +63,7 @@ build_webui("build") {
     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]
   }
 
-  if (enable_dice_support) {
+  if (enable_dice_support || is_chromeos) {
     mojo_files_deps += [ "./batch_upload_promo:mojo_bindings_ts__generator" ]
     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom-webui.ts" ]
   }

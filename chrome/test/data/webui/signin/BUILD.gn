@@ -5,42 +5,50 @@
 import("//components/signin/features.gni")
 import("../build_webui_tests.gni")
 
-assert(!is_chromeos)
-
 build_webui_tests("build") {
-  cc_test_files = [
-    "batch_upload_view_browsertest.cc",
-    "profile_picker_browsertest.cc",
-    "signin_browsertest.cc",
-  ]
+  cc_test_files = [ "batch_upload_view_browsertest.cc" ]
+  if (!is_chromeos) {
+    cc_test_files += [
+      "profile_picker_browsertest.cc",
+      "signin_browsertest.cc",
+    ]
+  }
 
-  files = [
-    "history_sync_optin_app_refresh_test.ts",
-    "history_sync_optin_test.ts",
-    "managed_user_profile_notice_test.ts",
-    "managed_user_profile_notice_app_refresh_test.ts",
-    "profile_card_menu_test.ts",
-    "profile_customization_test.ts",
-    "profile_picker_app_test.ts",
-    "profile_picker_main_view_test.ts",
-    "profile_switch_test.ts",
-    "profile_type_choice_test.ts",
-    "sync_confirmation_refresh_test.ts",
-    "sync_confirmation_test.ts",
-    "test_history_sync_optin_browser_proxy.ts",
-    "test_manage_profiles_browser_proxy.ts",
-    "test_managed_user_profile_notice_browser_proxy.ts",
-    "test_profile_customization_browser_proxy.ts",
-    "test_sync_confirmation_browser_proxy.ts",
-  ]
+  files = []
+  if (!is_chromeos) {
+    files += [
+      "history_sync_optin_app_refresh_test.ts",
+      "history_sync_optin_test.ts",
+      "managed_user_profile_notice_test.ts",
+      "managed_user_profile_notice_app_refresh_test.ts",
+      "profile_card_menu_test.ts",
+      "profile_customization_test.ts",
+      "profile_picker_app_test.ts",
+      "profile_picker_main_view_test.ts",
+      "profile_switch_test.ts",
+      "profile_type_choice_test.ts",
+      "sync_confirmation_refresh_test.ts",
+      "sync_confirmation_test.ts",
+      "test_history_sync_optin_browser_proxy.ts",
+      "test_manage_profiles_browser_proxy.ts",
+      "test_managed_user_profile_notice_browser_proxy.ts",
+      "test_profile_customization_browser_proxy.ts",
+      "test_sync_confirmation_browser_proxy.ts",
+    ]
+  }
 
-  if (enable_dice_support) {
+  if (enable_dice_support || is_chromeos) {
     files += [
       "batch_upload_data_sections_test.ts",
       "batch_upload_view_test.ts",
+      "test_batch_upload_browser_proxy.ts",
+    ]
+  }
+
+  if (enable_dice_support) {
+    files += [
       "dice_web_signin_intercept_chrome_signin_test.ts",
       "dice_web_signin_intercept_test.ts",
-      "test_batch_upload_browser_proxy.ts",
       "test_dice_web_signin_intercept_browser_proxy.ts",
     ]
   }
@@ -75,10 +83,15 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/signin:build_ts",
     "//chrome/browser/resources/signin/batch_upload:build_ts",
-    "//chrome/browser/resources/signin/history_sync_optin:build_ts",
-    "//chrome/browser/resources/signin/profile_picker:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  if (!is_chromeos) {
+    ts_deps += [
+      "//chrome/browser/resources/signin/history_sync_optin:build_ts",
+      "//chrome/browser/resources/signin/profile_picker:build_ts",
+    ]
+  }
 }

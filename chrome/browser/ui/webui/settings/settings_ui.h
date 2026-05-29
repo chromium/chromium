@@ -24,9 +24,7 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom.h"
-#endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace content {
 class WebUIMessageHandler;
@@ -39,9 +37,7 @@ class PrefRegistrySyncable;
 #if !BUILDFLAG(IS_CHROMEOS)
 class ThemeColorPickerHandler;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class BatchUploadPromoHandler;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class CustomizeColorSchemeModeHandler;
 namespace settings {
@@ -67,10 +63,8 @@ class SettingsUI
       // requires mojo bindings.
       public theme_color_picker::mojom::ThemeColorPickerHandlerFactory
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     ,
       public batch_upload_promo::mojom::PageHandlerFactory
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -97,14 +91,12 @@ class SettingsUI
                          pending_receiver);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Instantiates the implementor of the
   // batch_upload_promo::mojom::PageHandlerFactory mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<batch_upload_promo::mojom::PageHandlerFactory>
           pending_receiver);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Implements support for help bubbles (IPH, tutorials, etc.) in settings
   // pages.
@@ -142,7 +134,6 @@ class SettingsUI
       theme_color_picker_handler_factory_receiver_{this};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // batch_upload_promo::mojom::PageHandlerFactory:
   void CreateBatchUploadPromoHandler(
       mojo::PendingRemote<batch_upload_promo::mojom::Page> pending_page,
@@ -152,7 +143,6 @@ class SettingsUI
   std::unique_ptr<BatchUploadPromoHandler> batch_upload_promo_handler_;
   mojo::Receiver<batch_upload_promo::mojom::PageHandlerFactory>
       batch_upload_promo_factory_receiver_{this};
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(

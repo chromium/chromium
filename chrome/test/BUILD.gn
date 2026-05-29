@@ -346,7 +346,7 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_dice_support) {
+  if (enable_dice_support || is_chromeos) {
     deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
   }
 
@@ -4760,7 +4760,6 @@ if (!is_android) {
         deps += [ "//chrome/browser/ui/webui/signin:profile" ]
       }
       deps += [
-        "//chrome/browser/profiles/batch_upload:browser_tests",
         "//chrome/browser/signin:signin_promo",
 
         # TODO(crubug.com/430804948): This dependency is needed because
@@ -4771,6 +4770,10 @@ if (!is_android) {
       ]
     } else {
       sources += [ "../browser/signin/mirror_browsertest.cc" ]
+    }
+
+    if (enable_dice_support || is_chromeos) {
+      deps += [ "//chrome/browser/profiles/batch_upload:browser_tests" ]
     }
 
     if (enable_bound_session_credentials) {
@@ -5377,9 +5380,11 @@ if (!is_android) {
         "../browser/ui/wallet/walletable_pass_save_bubble_view_browsertest.cc",
         "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
+      if (enable_dice_support || is_chromeos) {
+        deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
+      }
       if (enable_dice_support) {
         deps += [
-          "//chrome/browser/profiles/batch_upload:test_support",
           "//chrome/browser/ui/webui/signin/signout_confirmation",
           "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
           "//components/sync_bookmarks",
@@ -5441,8 +5446,6 @@ if (!is_android) {
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
           "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",
-          "../browser/ui/views/profiles/batch_upload_dialog_view_browsertest.cc",
-          "../browser/ui/views/profiles/batch_upload_dialog_view_pixel_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
         ]
@@ -5450,6 +5453,12 @@ if (!is_android) {
           "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils",
           "//chrome/browser/ui/views/relaunch_notification:browser_tests",
           "//chrome/browser/ui/views/shortcuts:browser_tests",
+        ]
+      }
+      if (enable_dice_support || is_chromeos) {
+        sources += [
+          "../browser/ui/views/profiles/batch_upload_dialog_view_browsertest.cc",
+          "../browser/ui/views/profiles/batch_upload_dialog_view_pixel_browsertest.cc",
         ]
       }
       deps += [
@@ -8078,6 +8087,9 @@ test("unit_tests") {
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
       "../browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker_unittest.cc",
     ]
+  }
+
+  if (enable_dice_support || is_chromeos) {
     deps += [ "//chrome/browser/profiles/batch_upload:unit_tests" ]
   }
 
@@ -8772,7 +8784,7 @@ test("unit_tests") {
     # `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
 
-    if (enable_dice_support) {
+    if (enable_dice_support || is_chromeos) {
       deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
     }
 
@@ -10110,7 +10122,6 @@ test("unit_tests") {
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/profiles/guest_mode_policy_handler_unittest.cc",
       "../browser/signin/accounts_policy_manager_unittest.cc",
-      "../browser/ui/webui/batch_upload_promo/batch_upload_promo_handler_unittest.cc",
     ]
 
     deps += [
@@ -10132,13 +10143,17 @@ test("unit_tests") {
       "//chrome/browser/browser_switcher",
       "//chrome/browser/browser_switcher:unit_tests",
       "//chrome/browser/enterprise:impl",
-      "//chrome/browser/ui/webui/batch_upload_promo",
       "//chrome/browser/ui/webui/browser_switch",
       "//chrome/browser/ui/webui/browser_switch:unit_tests",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
       "//components/soda",
       "//components/user_education/webui",
     ]
+  }
+
+  if (enable_dice_support || is_chromeos) {
+    sources += [ "../browser/ui/webui/batch_upload_promo/batch_upload_promo_handler_unittest.cc" ]
+    deps += [ "//chrome/browser/ui/webui/batch_upload_promo" ]
   }
 
   if (is_mac) {

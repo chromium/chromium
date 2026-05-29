@@ -5,7 +5,7 @@
 import("//components/signin/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(enable_dice_support)
+assert(enable_dice_support || is_chromeos)
 
 mojom("mojo_bindings") {
   sources = [ "batch_upload_promo.mojom" ]

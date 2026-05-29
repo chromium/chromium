@@ -4,7 +4,7 @@
 
 import("//components/signin/features.gni")
 
-assert(enable_dice_support)
+assert(enable_dice_support || is_chromeos)
 
 source_set("batch_upload") {
   sources = [
@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/service",

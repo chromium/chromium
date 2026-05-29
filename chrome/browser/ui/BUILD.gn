@@ -1959,19 +1959,23 @@ static_library("ui") {
       deps += [ "//chrome/browser/startup" ]
     }
 
-    if (enable_dice_support) {
+    if (enable_dice_support || is_chromeos) {
       deps += [
         "//chrome/browser/profiles/batch_upload",
         "//chrome/browser/profiles/batch_upload:impl",
         "//chrome/browser/ui/webui/batch_upload_promo",
-        "//chrome/browser/ui/webui/signin/signout_confirmation",
-        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
       ]
       allow_circular_includes_from += [
         "//chrome/browser/ui/webui/batch_upload_promo",
-        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
         "//chrome/browser/profiles/batch_upload:impl",
       ]
+    }
+    if (enable_dice_support) {
+      deps += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation",
+        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
+      ]
+      allow_circular_includes_from += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
     }
 
     if (enable_extensions) {
@@ -3147,8 +3151,6 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
-        "views/profiles/batch_upload_dialog_view.cc",
-        "views/profiles/batch_upload_dialog_view.h",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.cc",
@@ -3164,16 +3166,9 @@ static_library("ui") {
         "views/profiles/profile_picker_sign_in_provider.h",
         "views/profiles/profile_picker_toolbar.cc",
         "views/profiles/profile_picker_toolbar.h",
-        "webui/signin/batch_upload_handler.cc",
-        "webui/signin/batch_upload_handler.h",
-        "webui/signin/batch_upload_ui.cc",
-        "webui/signin/batch_upload_ui.h",
       ]
 
-      deps += [
-        "webui/signin/batch_upload:mojo_bindings",
-        "//chrome/browser/ui/webui/feature_showcase",
-      ]
+      deps += [ "//chrome/browser/ui/webui/feature_showcase" ]
     }
   }
 
@@ -3191,6 +3186,20 @@ static_library("ui") {
     if (enterprise_client_certificates) {
       deps += [ "//components/enterprise/client_certificates/core" ]
     }
+  }
+
+  if (enable_dice_support || is_chromeos) {
+    sources += [
+      "profiles/batch_upload_ui_delegate.cc",
+      "profiles/batch_upload_ui_delegate.h",
+      "views/profiles/batch_upload_dialog_view.cc",
+      "views/profiles/batch_upload_dialog_view.h",
+      "webui/signin/batch_upload_handler.cc",
+      "webui/signin/batch_upload_handler.h",
+      "webui/signin/batch_upload_ui.cc",
+      "webui/signin/batch_upload_ui.h",
+    ]
+    deps += [ "webui/signin/batch_upload:mojo_bindings" ]
   }
 
   if (is_win || is_mac || is_chromeos) {

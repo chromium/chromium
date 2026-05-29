@@ -4,7 +4,7 @@
 
 import("//components/signin/features.gni")
 
-assert(enable_dice_support)
+assert(enable_dice_support || is_chromeos)
 
 source_set("batch_upload_promo") {
   sources = [

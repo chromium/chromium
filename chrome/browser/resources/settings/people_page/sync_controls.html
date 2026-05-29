@@ -67,14 +67,12 @@
       <div class="cr-row continuation">
         <div class="cr-secondary-text flex">$i18n{accountDataTypesBody}</div>
       </div>
-<if expr="not is_chromeos">
       <div class="cr-row continuation" hidden="[[!shouldShowBatchUploadPromo_(
             batchUploadPromoHTML_, isAccountSettingsPage_)]]">
         <div class="cr-secondary-text flex" id="batchUploadPromo"
             inner-h-t-m-l="[[batchUploadPromoHTML_]]">
         </div>
       </div>
-</if>
     </div>
 
     <div class="list-frame" id="sync-data-types">

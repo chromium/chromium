@@ -911,11 +911,12 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/on_device_translation" ]
   }
 
+  if (enable_dice_support || is_chromeos) {
+    deps += [ "//chrome/browser/profiles/batch_upload" ]
+  }
+
   if (enable_dice_support) {
-    deps += [
-      "//chrome/browser/profiles/batch_upload",
-      "//chrome/browser/ui/signin",
-    ]
+    deps += [ "//chrome/browser/ui/signin" ]
   }
 
   if (enable_captive_portal_detection) {

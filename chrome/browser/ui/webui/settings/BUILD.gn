@@ -26,7 +26,7 @@ source_set("settings") {
     "//url",
   ]
 
-  if (enable_dice_support) {
+  if (enable_dice_support || is_chromeos) {
     public_deps +=
         [ "//ui/webui/resources/js/batch_upload_promo:mojo_bindings" ]
   }

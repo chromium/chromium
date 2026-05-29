@@ -123,7 +123,14 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
   void Signout() { signin::ClearPrimaryAccount(GetIdentityManager()); }
 
   void TriggerSigninPending() {
-    signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+    signin::IdentityManager* identity_manager = GetIdentityManager();
+    CoreAccountId account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+        identity_manager, account_id,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER));
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -255,6 +262,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 #define MAYBE_OpenBatchUploadDialogViewClosesOnSignout \
   OpenBatchUploadDialogViewClosesOnSignout
 #endif
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
                        MAYBE_OpenBatchUploadDialogViewClosesOnSignout) {
   SigninWithFullInfo();
@@ -292,6 +300,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
                                         BatchUploadDialogCloseReason::kSignout,
                                         1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Fails on Mac only.  http://crbug.com/372194892
 #if BUILDFLAG(IS_MAC)
@@ -317,11 +326,14 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   BatchUploadDialogView* dialog_view =
       CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
                                   entry_point, mock_callback.Get());
-  ASSERT_TRUE(dialog_view->GetWidget()->IsVisible());
+  views::Widget* widget = dialog_view->GetWidget();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(widget->IsVisible());
+  views::test::WidgetDestroyedWaiter waiter(widget);
 
   // Signing out should close the dialog.
   TriggerSigninPending();
-  views::test::WidgetDestroyedWaiter(dialog_view->GetWidget()).Wait();
+  waiter.Wait();
 
   base::HistogramTester::CountsMap expected_histograms_count = {
       {"Sync.BatchUpload.Opened", 1},

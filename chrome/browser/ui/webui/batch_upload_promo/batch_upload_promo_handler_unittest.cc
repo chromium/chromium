@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
@@ -65,10 +66,12 @@ class BatchUploadPromoHandlerTest : public testing::Test {
   BatchUploadPromoHandlerTest()
       : profile_(MakeTestingProfile()),
         web_contents_(web_contents_factory_.CreateWebContents(profile_.get())) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              syncer::kUnoPhase2FollowUp},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kReplaceSyncPromosWithSignInPromos};
+#if !BUILDFLAG(IS_CHROMEOS)
+    enabled_features.push_back(syncer::kUnoPhase2FollowUp);
+#endif
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
   void SetUp() override {

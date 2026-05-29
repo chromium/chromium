@@ -59,7 +59,7 @@ inline constexpr char kChromeUIAppsWithForceInstalledDeprecationDialogURL[] =
 inline constexpr char kChromeUIAutofillAiPath[] = "/enhancedAutofill";
 inline constexpr char kChromeUIAutofillPath[] = "/autofill";
 inline constexpr char kChromeUIAutofillInternalsHost[] = "autofill-internals";
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kChromeUIBatchUploadHost[] = "batch-upload";
 inline constexpr char kChromeUIBatchUploadURL[] = "chrome://batch-upload/";
 #endif

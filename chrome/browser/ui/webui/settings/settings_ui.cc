@@ -207,9 +207,7 @@
 #include "device/vr/public/cpp/features.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/batch_upload_promo/batch_upload_promo_handler.h"
-#endif
 
 namespace settings {
 
@@ -470,10 +468,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "safetyHubNotificationPermissionsSecondaryLabel",
       IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   plural_string_handler->AddLocalizedString(
       "batchUploadPromoLabel", IDS_BATCH_UPLOAD_PROMO_SUBTITLE_ITEMS_WITH_LINK);
-#endif
   plural_string_handler->AddLocalizedString("cpuPerformanceCores",
                                             IDS_SETTINGS_CPU_PERFORMANCE_CORES);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
@@ -761,7 +757,6 @@ void SettingsUI::BindInterface(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SettingsUI::BindInterface(
     mojo::PendingReceiver<batch_upload_promo::mojom::PageHandlerFactory>
         pending_receiver) {
@@ -770,7 +765,6 @@ void SettingsUI::BindInterface(
   }
   batch_upload_promo_factory_receiver_.Bind(std::move(pending_receiver));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SettingsUI::BindInterface(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
@@ -815,7 +809,6 @@ void SettingsUI::CreateThemeColorPickerHandler(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SettingsUI::CreateBatchUploadPromoHandler(
     mojo::PendingRemote<batch_upload_promo::mojom::Page> pending_page,
     mojo::PendingReceiver<batch_upload_promo::mojom::PageHandler>
@@ -832,7 +825,6 @@ void SettingsUI::CreateBatchUploadPromoHandler(
       std::move(pending_page_handler), std::move(pending_page),
       Profile::FromWebUI(web_ui()), web_ui()->GetWebContents());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SettingsUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,

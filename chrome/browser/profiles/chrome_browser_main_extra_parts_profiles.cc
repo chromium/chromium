@@ -796,7 +796,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   badging::BadgeManagerFactory::GetInstance();
 #endif
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
   BatchUploadServiceFactory::GetInstance();
 #endif
   BitmapFetcherServiceFactory::GetInstance();
