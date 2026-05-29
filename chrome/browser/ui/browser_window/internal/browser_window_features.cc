@@ -472,6 +472,42 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<BookmarksSidePanelCoordinator>(
           *browser, *browser);
 
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    contextual_tasks_active_task_context_provider_ =
+        std::make_unique<contextual_tasks::ActiveTaskContextProviderImpl>(
+            browser_,
+            contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+                browser_->GetProfile()));
+    contextual_tasks_entry_point_eligibility_manager_ =
+        GetUserDataFactory()
+            .CreateInstance<contextual_tasks::EntryPointEligibilityManager>(
+                *browser_, browser_);
+    contextual_tasks_side_panel_coordinator_ =
+        GetUserDataFactory()
+            .CreateInstance<
+                contextual_tasks::ContextualTasksSidePanelCoordinator>(
+                *browser_, browser_,
+                contextual_tasks_active_task_context_provider_.get(),
+                contextual_tasks_entry_point_eligibility_manager_.get());
+
+    if (contextual_tasks::kShowEntryPoint.Get() ==
+            contextual_tasks::EntryPointOption::kToolbarRevisit ||
+        contextual_tasks::kShowEntryPoint.Get() ==
+            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+      contextual_tasks_ephemeral_button_controller_ =
+          GetUserDataFactory()
+              .CreateInstance<ContextualTasksEphemeralButtonController>(
+                  *browser_, browser_);
+    }
+
+    contextual_tasks_close_button_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<ContextualTasksCloseButtonController>(
+                *browser_, browser_,
+                contextual_tasks_entry_point_eligibility_manager_.get(),
+                contextual_tasks_side_panel_coordinator_.get());
+  }
+
   signin_view_controller_ = std::make_unique<SigninViewController>(
       browser, profile, tab_strip_model_);
 
@@ -874,42 +910,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     comments_side_panel_coordinator_ =
         GetUserDataFactory().CreateInstance<CommentsSidePanelCoordinator>(
             *browser_view->browser(), browser_view->browser());
-  }
-
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
-    contextual_tasks_active_task_context_provider_ =
-        std::make_unique<contextual_tasks::ActiveTaskContextProviderImpl>(
-            browser_,
-            contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-                browser_->GetProfile()));
-    contextual_tasks_entry_point_eligibility_manager_ =
-        GetUserDataFactory()
-            .CreateInstance<contextual_tasks::EntryPointEligibilityManager>(
-                *browser_, browser_);
-    contextual_tasks_side_panel_coordinator_ =
-        GetUserDataFactory()
-            .CreateInstance<
-                contextual_tasks::ContextualTasksSidePanelCoordinator>(
-                *browser_, browser_,
-                contextual_tasks_active_task_context_provider_.get(),
-                contextual_tasks_entry_point_eligibility_manager_.get());
-
-    if (contextual_tasks::kShowEntryPoint.Get() ==
-            contextual_tasks::EntryPointOption::kToolbarRevisit ||
-        contextual_tasks::kShowEntryPoint.Get() ==
-            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-      contextual_tasks_ephemeral_button_controller_ =
-          GetUserDataFactory()
-              .CreateInstance<ContextualTasksEphemeralButtonController>(
-                  *browser_, browser_);
-    }
-
-    contextual_tasks_close_button_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<ContextualTasksCloseButtonController>(
-                *browser_, browser_,
-                contextual_tasks_entry_point_eligibility_manager_.get(),
-                contextual_tasks_side_panel_coordinator_.get());
   }
 
   side_panel_coordinator_->Init(browser_view->browser());
