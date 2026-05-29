@@ -8618,6 +8618,8 @@ from previous Chrome versions.
   <int value="-1818122802" label="GlicActorTransientTasks:disabled"/>
   <int value="-1817721380" label="RemoveCanceledTasksInTaskQueue2:disabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
+  <int value="-1817014232"
+      label="IPH_DesktopRealboxContextualSearchFeature:enabled"/>
   <int value="-1816838390"
       label="AllowEapDefaultCasWithoutSubjectVerification:enabled"/>
   <int value="-1816654207" label="SharedZstd:disabled"/>
@@ -17002,6 +17004,8 @@ from previous Chrome versions.
   <int value="930830185" label="EnableNearbyBleV2:enabled"/>
   <int value="931603226" label="ArcTouchscreenEmulation:enabled"/>
   <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>
+  <int value="932734432"
+      label="IPH_DesktopRealboxContextualSearchFeature:disabled"/>
   <int value="933696491" label="TailoredSecurityDesktopNotice:enabled"/>
   <int value="934102728" label="FedCmErrorAttribute:enabled"/>
   <int value="934139985" label="WallpaperWebUI:enabled"/>

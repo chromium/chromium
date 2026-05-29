@@ -5992,6 +5992,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "iph-desktop-realbox-contextual-search",
+    "owners": [ "dhruvkathpalia@chromium.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "iph-extensions-menu-feature",
     "owners": [
       "emiliapaz@chromium.org"

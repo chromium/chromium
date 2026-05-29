@@ -987,6 +987,11 @@ inline constexpr char kIPHAutofillCreditCardBenefitFeatureDescription[] =
     "Enables In-Product-Help that appears when at least one autofill credit "
     "card suggestion includes card benefits.";
 
+inline constexpr char kIPHDesktopRealboxContextualSearchFeatureName[] =
+    "IPH Desktop Realbox Contextual Search";
+inline constexpr char kIPHDesktopRealboxContextualSearchFeatureDescription[] =
+    "Enables In-Product Help for Desktop Realbox Contextual Search.";
+
 inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalName[] =
     "Enable retrieval of card info(with CVC) from issuer for enrolled cards";
 inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =

@@ -7063,6 +7063,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxCyclingPlaceholdersDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxCyclingPlaceholders)},
 
+    {"iph-desktop-realbox-contextual-search",
+     flag_descriptions::kIPHDesktopRealboxContextualSearchFeatureName,
+     flag_descriptions::kIPHDesktopRealboxContextualSearchFeatureDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHDesktopRealboxContextualSearchFeature)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
     {"ntp-customize-chrome-auto-open",
