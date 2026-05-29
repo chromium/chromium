@@ -300,6 +300,7 @@ public class ToolbarTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Omnibox"})
+    @DisabledTest(message = "crbug.com/517995930")
     public void testFindInPageDismissedOnOmniboxFocus() {
         findInPageFromMenu();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivity);
