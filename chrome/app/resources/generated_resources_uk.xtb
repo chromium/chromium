@@ -1908,7 +1908,7 @@
 <translation id="2291452790265535215">Спробуйте скористатися бічною панеллю, щоб переглянути закладки, сеанси тощо</translation>
 <translation id="229182044471402145">Немає шрифтів, що відповідають запиту.</translation>
 <translation id="2292590498047171967">Щоб ділитися вкладками й працювати разом з іншими користувачами, синхронізуйте свою історію і вкладки в обліковому записі <ph name="EMAIL" />.</translation>
-<translation id="2292848386125228270">Почніть роботу з <ph name="PRODUCT_NAME" /> як звичайний користувач. Щоб запустити програму для розробки з кореневого каталогу, перезапустіть її, поставивши прапорець біля опції "--не в ізольованому програмному середовищі".</translation>
+<translation id="2292848386125228270">Запустіть <ph name="PRODUCT_NAME" /> як звичайний користувач. Щоб отримати кореневий доступ для потреб розробки, перезапустіть додаток з експериментальним параметром "--no-sandbox".</translation>
 <translation id="2292862094862078674">Перевірте інтернет-з’єднання й повторіть спробу. Ви також можете вибрати одну з раніше створених тем нижче.</translation>
 <translation id="2294081976975808113">Конфіденційність даних на екрані</translation>
 <translation id="2294358108254308676">Установити <ph name="PRODUCT_NAME" />?</translation>
@@ -2831,7 +2831,7 @@
 <translation id="2901348420151309559">Нещодавні фотографії та додатки</translation>
 <translation id="2901431118738474110">Цей ключ доступу більше не працює. Його видалено із сайту <ph name="RPID" />. Невдовзі він зникне й звідси. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;Про ключі доступу&lt;/a&gt;</translation>
 <translation id="2902127500170292085">Розширення <ph name="EXTENSION_NAME" /> не може зв’язатися з цим принтером. Перевірте, чи принтер підключено, і повторіть спробу.</translation>
-<translation id="2902265136119311513">Перегляд веб-сторінок у режимі гостя</translation>
+<translation id="2902265136119311513">Перегляд вебсторінок у режимі гостя</translation>
 <translation id="2902312830803030883">Додаткові дії</translation>
 <translation id="2903457445916429186">Відкрити вибрані елементи</translation>
 <translation id="2903882649406874750">Завжди блокувати доступ до датчиків для хосту <ph name="HOST" /></translation>
@@ -4084,7 +4084,7 @@
 <translation id="3771294271822695279">Відеофайли</translation>
 <translation id="3771721161825963003">Показувати вкладки вертикально</translation>
 <translation id="3771851622616482156">Ви вийдете з облікового запису на цьому сайті, зокрема у відкритих вкладках</translation>
-<translation id="3772046291955677288">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
+<translation id="3772046291955677288">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення й умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774059845329307709">Серійний номер</translation>
 <translation id="3774166835015494435">Нещодавні фотографії та сповіщення</translation>
 <translation id="3775432569830822555">Сертифікат SSL-сервера</translation>
@@ -4188,7 +4188,7 @@
 <translation id="3827548509471720579">Яскравість дисплея</translation>
 <translation id="3827774300009121996">&amp;На весь екран</translation>
 <translation id="3828029223314399057">Пошук закладок</translation>
-<translation id="3828953470056652895">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ОС Chrome<ph name="END_LINK2" />, а також <ph name="BEGIN_LINK3" />Умови використання Play<ph name="END_LINK3" />.</translation>
+<translation id="3828953470056652895">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення й умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ChromeOS<ph name="END_LINK2" />, а також <ph name="BEGIN_LINK3" />Умови використання Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – надмірне використання пам’яті – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Файлообмінник SMB</translation>
 <translation id="3830470485672984938">Використати інший ключ доступу</translation>
@@ -8299,7 +8299,7 @@
 <translation id="6746124502594467657">Вниз</translation>
 <translation id="67465227497040338">Показати пароль для <ph name="DOMAIN" /></translation>
 <translation id="6746834324024491643">Щоб отримати доступ до паролів і інших даних на всіх пристроях, увійдіть в обліковий запис <ph name="EMAIL" /></translation>
-<translation id="6748980958975836188">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
+<translation id="6748980958975836188">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення й умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Скинути дозволи?</translation>
 <translation id="6749473226660745022">Фото</translation>
 <translation id="6750757184909117990">Вимкнути мобільну мережу</translation>
@@ -9900,9 +9900,9 @@
 <translation id="7849264908733290972">Відкрити &amp;зображення в новій вкладці</translation>
 <translation id="784934925303690534">Період часу</translation>
 <translation id="7850320739366109486">Не турбувати</translation>
-<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Дозволивши пристроям з ОС Chrome автоматично надсилати звіти, ви допомагаєте нам визначити найважливіші проблеми та напрямки покращення операційної системи. Ці звіти можуть містити відомості про збої ОС Chrome, застосовані функції, обсяг пам’яті, який ви зазвичай використовуєте, а також дані про використання та діагностику додатків для Android. Крім того, деякі зведені дані корисні для додатків і партнерів Google, наприклад розробників Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ви можете будь-коли ввімкнути чи вимкнути надсилання цих звітів у налаштуваннях пристрою з ОС Chrome. Адміністратори доменів можуть змінювати це налаштування в Консолі адміністратора.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Якщо ввімкнено запис Історії додатків і вебпошуку, дані Android можуть зберігатися в обліковому записі Google. На сторінці account.google.com можна переглядати й видаляти дані, а також змінювати налаштування облікового запису.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Дозволивши пристроям із ChromeOS автоматично надсилати звіти, ви допомагаєте нам визначити найважливіші проблеми й напрямки покращення операційної системи. Ці звіти можуть містити відомості про збої ChromeOS, застосовані функції, обсяг пам’яті, який ви зазвичай використовуєте, а також дані про використання й діагностику додатків для Android. Крім того, деякі зведені дані корисні для додатків і партнерів Google, наприклад розробників Android.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ви можете будь-коли ввімкнути чи вимкнути надсилання цих звітів у налаштуваннях пристрою з ChromeOS. Адміністратори доменів можуть змінювати це налаштування в Консолі адміністратора.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Якщо ввімкнено запис історії додатків і вебпошуку, дані Android можуть зберігатися в обліковому записі Google. На сторінці account.google.com можна переглядати й видаляти дані, а також змінювати налаштування облікового запису.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851457902707056880">Вхід дозволено лише для облікового запису власника. Перезавантажте комп’ютер та увійдіть, використовуючи дані облікового запису власника. Автоматичне перезавантаження відбудеться за 30 секунд.</translation>
 <translation id="7851716364080026749">Завжди блокувати доступ до камери та мікрофона</translation>
 <translation id="78526636422538552">Не можна додавати інші облікові записи Google</translation>

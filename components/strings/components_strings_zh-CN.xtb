@@ -2485,7 +2485,7 @@
 <translation id="4877422487531841831">搜索<ph name="TEXT" /></translation>
 <translation id="4877521229462766300">允许嵌入内容？</translation>
 <translation id="4879491255372875719">自动（默认）</translation>
-<translation id="4880827082731008257">搜索历史记录</translation>
+<translation id="4880827082731008257">搜索记录</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4881808915112408168">24 x 31.5 英寸</translation>
 <translation id="4882314601499260499">未应用任何用户政策。若要添加用户政策，贵组织必须<ph name="LINK_BEGIN" />验证您的域名<ph name="LINK_END" />。</translation>
@@ -4026,7 +4026,7 @@
 <translation id="7251437084390964440">网络配置不符合 ONC 标准，因此它的某些部分可能会无法导入。
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7252424535852086046">如需删除以下数据，请前往相应的管理设置</translation>
+<translation id="7252424535852086046">如需删除这些数据，请前往相应的管理设置</translation>
 <translation id="7255540419660272073">“不喜欢”按钮，按 Enter 键可打开一个反馈表单，您可以在表单中详细说明不喜欢<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />的原因</translation>
 <translation id="7256634549594854023">后端纸匣</translation>
 <translation id="7257453341537973799">职业资源与规划</translation>

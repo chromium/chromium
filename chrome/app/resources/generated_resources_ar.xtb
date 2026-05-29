@@ -9079,7 +9079,7 @@
 <translation id="7292067737327289208">تتولّى مؤسستك <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" />، ويتولّى <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />إدارة ملفك الشخصي<ph name="END_LINK" />.</translation>
 <translation id="7292147651179697920">اطلب من أحد والدَيك السماح بالوصول في "الإعدادات"</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7293774463163321848">‏يمكنك حذف سجلّ البحث على Google وسجلّ Gemini وكلمات المرور في إعدادات الإدارة</translation>
+<translation id="7293774463163321848">‏يمكنك حذف سجلّ البحث وسجلّ Gemini وكلمات المرور في إعدادات الإدارة الخاصة بكل منها</translation>
 <translation id="7296503797589217366">اختيار المجلد "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297228218361240128">‏حفظ المعلومات في "محفظة Google" من الصفحات التي تتم زيارتها</translation>
 <translation id="7297726121602187087">أخضر داكن</translation>
@@ -9680,7 +9680,7 @@
 <translation id="7698507637739331665">تم حظر بعض العناصر</translation>
 <translation id="7700516433658473670">الطابعات والماسحات الضوئية</translation>
 <translation id="7700873336634517379">لا، أريد مواصلة استخدام ملف المؤسسة التعليمية هذا</translation>
-<translation id="7701040980221191251">لا يوجد</translation>
+<translation id="7701040980221191251">ما مِن بيانات</translation>
 <translation id="7701869757853594372">معالجات المستخدم</translation>
 <translation id="7702463352133825032">إيقاف البث على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7704305437604973648">المهمة</translation>

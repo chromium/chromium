@@ -2905,6 +2905,7 @@ Les niveaux de complexité sont basés sur les métriques de qualité des mots d
 
 Consultez l'article du centre d'aide pour obtenir des explications détaillées sur ce qu'implique chaque niveau pour les codes et les mots de passe.</translation>
 <translation id="2926813071464307947">Désactiver le bac à sable du conteneur d'appli de moteur de rendu</translation>
+<translation id="2930792103747180259">Désactivée : la récupération en arrière-plan à partir des service workers est autorisée sans restriction.</translation>
 <translation id="2931888116345994552">Active la mise à jour de tous les composants de <ph name="PRODUCT_NAME" /> si la règle n'est pas configurée ou qu'elle est activée.
 
       Si elle est désactivée, la mise à jour des composants l'est aussi. Toutefois, certains composants échappent à cette règle : les mises à jour des composants sans code exécutable et qui sont essentiels à la sécurité du navigateur ne seront pas désactivées.
@@ -3019,6 +3020,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="2976033779241323433">Activer le clavier virtuel tactile en fonction de l'heuristique système par défaut</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Forcer l'ancienne implémentation</translation>
+<translation id="2984696342503554732">Activée : la récupération en arrière-plan depuis les service workers est restreinte.</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
@@ -8928,6 +8930,7 @@ Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLI
 Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> à partir du menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir cette option dans le menu contextuel.
 Elle ne les empêche pas d'enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> par d'autres moyens que le menu contextuel.</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
+<translation id="6828918560681256273">Restreindre l'API Background Fetch lorsqu'elle est appelée à partir d'un service worker</translation>
 <translation id="6829632070341067746">Cette règle contrôle la refactorisation récente des API Graphics3D dans le plug-in PPAPI.
 
 La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.

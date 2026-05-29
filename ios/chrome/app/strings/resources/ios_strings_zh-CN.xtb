@@ -703,7 +703,7 @@
 <translation id="35083190962747987">打开 ${url}</translation>
 <translation id="3511519535430890904">添加浏览保护功能</translation>
 <translation id="3512572904898385012">现在，您可以使用摄像头拍照购物和进行翻译了。点按即可试用。</translation>
-<translation id="3517216995152707259">删除浏览数据不会让您退出 Google 账号。若要退出账号，请<ph name="BEGIN_LINK" />从 Chrome 中退出<ph name="END_LINK" />。</translation>
+<translation id="3517216995152707259">删除浏览数据不会导致您退出 Google 账号。若要退出账号，请<ph name="BEGIN_LINK" />从 Chrome 中退出<ph name="END_LINK" />。</translation>
 <translation id="3519792890877853853">此卡片会显示您打开的标签页中商品的评价</translation>
 <translation id="3519905498307021260">{count,plural, =1{打开标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="3523513363815970085">隐藏“您最常访问的网站”</translation>

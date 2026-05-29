@@ -2972,6 +2972,7 @@ Karmaşıklık seviyeleri, Android'in <ph name="PRODUCT_OS_NAME" /> için uyarla
 
 Her seviyenin PIN'ler ve şifreler açısından ne anlama geldiğiyle ilgili ayrıntılı açıklamaları Yardım Merkezi makalesinde bulabilirsiniz.</translation>
 <translation id="2926813071464307947">Oluşturucu uygulama kapsayıcısı korumalı alanını devre dışı bırak</translation>
+<translation id="2930792103747180259">Devre dışı: Hizmet çalışanlarından gelen arka planda getirme isteklerine kısıtlama olmadan izin verilir.</translation>
 <translation id="2931888116345994552">Ayarlanmazsa veya etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ürünündeki tüm bileşenler için bileşen güncellemelerini etkinleştirir.
 
       Devre dışı değerine ayarlanırsa bileşen güncellemeleri devre dışı bırakılır. Ancak bazı bileşenler bu politikadan muaf tutulur: Yürütülebilir kod içermeyen ve tarayıcının güvenliği açısından kritik öneme sahip olan bileşen güncellemeleri devre dışı bırakılmaz.
@@ -3086,6 +3087,7 @@ Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</
 <translation id="2976033779241323433">Varsayılan buluşsal sistem yöntemlerine göre dokunmatik sanal klavyeyi etkinleştir</translation>
 <translation id="2976429807269247880">Eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarları</translation>
 <translation id="2979696534869541158">Eski uygulamayı zorunlu kıl</translation>
+<translation id="2984696342503554732">Etkin: Hizmet çalışanlarından gelen arka planda getirme istekleri kısıtlanır.</translation>
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
 <translation id="2987155890997901449">ARC'yi etkinleştir</translation>
 <translation id="2987227569419001736">Web Bluetooth API'sının kullanımını kontrol et</translation>
@@ -9088,6 +9090,7 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
 Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcının, resimleri içerik menüsünden <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> hedefine kaydetmesine izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcıların içerik menüsünde bu seçeneği görmesi engellenir.
 Bu politika, kullanıcıların içerik menüsü dışında başka yöntemler kullanarak <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> hedefine resim kaydetmelerini engellemez.</translation>
 <translation id="6823711520976094072">1 MB'tan daha düşük bir değere ayarlandığında veya ayarlanmamış olarak bırakıldığında, <ph name="PRODUCT_OS_NAME" /> tek bir cihazın birden fazla kullanıcısı tarafından yüklenmek üzere uygulamaları ve uzantıları önbelleğe almak için 256 MiB olan varsayılan boyutu kullanır. Bu şekilde, uygulamaları ve uzantıları her kullanıcı için yeniden indirme ihtiyacını ortadan kaldırır.</translation>
+<translation id="6828918560681256273">Bir hizmet çalışanı tarafından çağrıldığında Restrict Background Fetch API'yi kısıtla</translation>
 <translation id="6829632070341067746">Bu politika, PPAPI eklentisindeki Graphics3D API'leri için kısa süre önce yapılan yeni düzenlemeyi kontrol eder.
 
 Taşıma işlemi yalnızca dahili uygulama ayrıntılarını etkiler ve hiçbir davranışı değiştirmez. Ancak bu politika, PPAPI uygulamalarının beklendiği gibi çalışmaması durumunda kullanılabilir.
