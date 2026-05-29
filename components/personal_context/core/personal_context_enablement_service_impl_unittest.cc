@@ -85,8 +85,14 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   void SetPrefs() {
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.SetBoolean(
+        personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
+        true);
+    pref_service_.SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
         false);
+    pref_service_.SetBoolean(
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+        true);
     subscription_eligibility::prefs::RegisterProfilePrefs(
         pref_service_.registry());
     pref_service_.SetInteger(
@@ -149,6 +155,25 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "3"}});
     EXPECT_EQ(service().GetEnablementState(),
+              PersonalContextEnablementState::
+                  kDisabledViaPersonalIntelligenceInAutofillToggle);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "4"}});
+    EXPECT_EQ(service().GetEnablementState(),
+              PersonalContextEnablementState::kEnabledShouldShowNotice);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "5"}});
+    EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::kEnabled);
   }
 }
@@ -185,10 +210,77 @@ TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
             PersonalContextEnablementState::kEnabled);
 }
 
-// Verifies that the state correctly transitions to `kDisabledShouldShowNotice`
-// when the user hasn't acknowledged the introductory notice yet.
+// Verifies that the state is `kEnabled` when the notice has been shown and
+// acknowledged, and the toggle is "on".
 TEST_F(PersonalContextEnablementServiceImplTest,
-       DisabledShouldShowNoticeWhenNoticeNotAcknowledged) {
+       EnabledWhenNoticeWasShownAndAcknowledgedAndToggleIsOn) {
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
+      true);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      false);
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::kEnabled);
+}
+
+// Verifies that the state is `kEnabledShouldShowNotice` when the notice has
+// been shown (which also enables the toggle), but not yet acknowledged.
+TEST_F(PersonalContextEnablementServiceImplTest,
+       EnabledShouldShowNoticeWhenNoticeShouldBeShown) {
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
+      true);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      true);
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::kEnabledShouldShowNotice);
+}
+
+// Verifies that the state is `kDisabledViaPersonalIntelligenceInAutofillToggle`
+// when the notice has been shown but the toggle is off.
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledViaToggle) {
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
+      true);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+
+  // Even if the notice should still be shown (which is impossible), the toggle
+  // would take precedence.
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      true);
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::
+                kDisabledViaPersonalIntelligenceInAutofillToggle);
+
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      false);
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::
+                kDisabledViaPersonalIntelligenceInAutofillToggle);
+}
+
+// Verifies that the state is `kDisabledShouldShowNotice` when the notice
+// has never been shown and the toggle is "off".
+TEST_F(PersonalContextEnablementServiceImplTest,
+       DisabledShouldShowNoticeWhenNoticeHasNeverBeenShown) {
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
+      false);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
   pref_service_.SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
       true);
@@ -359,7 +451,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   // Trigger a change to `kDisabledShouldShowNotice` by setting a pref.
   EXPECT_CALL(observer,
               OnEnablementStateChanged(
-                  PersonalContextEnablementState::kDisabledShouldShowNotice));
+                  PersonalContextEnablementState::kEnabledShouldShowNotice));
   pref_service_.SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
       true);

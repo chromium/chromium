@@ -22,7 +22,9 @@ enum class PersonalContextEnablementState {
   kDisabledNotEligible = 0,       // Feature disabled, user not eligible.
   kDisabledShouldShowNotice = 1,  // Feature disabled pending Notice.
   kDisabledNeedsOptIn = 2,        // Feature disabled pending OptIn.
-  kEnabled = 3                    // Feature enabled, first run completed.
+  kDisabledViaPersonalIntelligenceInAutofillToggle = 3,  // User toggled it off.
+  kEnabledShouldShowNotice = 4,  // Feature enabled but notice should be shown.
+  kEnabled = 5                   // Feature enabled, first run completed.
 };
 
 // Defines the result of a PersonalContextService::FetchContext operation.
