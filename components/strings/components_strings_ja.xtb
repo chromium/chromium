@@ -2761,7 +2761,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />デフォルトの検索エンジンではウェブ検索ができるだけでなく、Chromium の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索エンジンでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="5323043727018853753">埋め込みコンテンツは許可されています</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />、<ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
-<translation id="5323501626199324454">Google アカウントで情報を管理する</translation>
+<translation id="5323501626199324454">Google アカウントで管理する</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5331585574693522196">デフォルトに設定</translation>
