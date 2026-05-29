@@ -16,6 +16,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -715,6 +716,30 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
         &command_map);
     EXPECT_EQ(0u, command_map.count(kBasicNamedCommand));
   }
+}
+
+// Tests that removing a keybinding does not cause a crash if the extension's
+// "commands" preference has been corrupted into a non-dictionary type.
+// This ensures ClearSuggestedKeyWasAssignedPrefs safely handles a nullptr
+// when attempting to retrieve and update the command dictionary.
+IN_PROC_BROWSER_TEST_F(CommandServiceTest, CorruptedCommandsPrefDoesNotCrash) {
+  base::FilePath extension_dir =
+      test_data_dir_.AppendASCII("keybinding").AppendASCII("basics");
+  const Extension* extension = InstallExtension(extension_dir, 1);
+  ASSERT_TRUE(extension);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+
+  // Break preferences by setting an invalid data type so updater.Get() returns
+  // nullptr.
+  prefs->UpdateExtensionPref(extension->id(), "commands",
+                             base::Value(base::Value::Type::LIST));
+
+  CommandService* command_service = CommandService::Get(profile());
+
+  // Trigger ClearSuggestedKeyWasAssignedPrefs.
+  command_service->RemoveKeybindingPrefs(extension->id(), kBasicNamedCommand);
 }
 
 // Test both browser and page actions for these tests.
