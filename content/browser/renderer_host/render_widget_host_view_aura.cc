@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -74,6 +75,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura_extra/window_position_in_root_monitor.h"
+#include "ui/base/class_property.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
@@ -156,6 +158,13 @@ using blink::WebInputEvent;
 using blink::WebGestureEvent;
 using blink::WebTouchEvent;
 
+#if BUILDFLAG(IS_WIN)
+DEFINE_UI_CLASS_PROPERTY_TYPE(InputScope)
+DEFINE_UI_CLASS_PROPERTY_KEY(InputScope,
+                             kLastInputScopeKey,
+                             static_cast<InputScope>(-1))
+#endif
+
 namespace content {
 
 namespace {
@@ -166,6 +175,8 @@ namespace {
 BASE_FEATURE(kRenderWidgetHostHiddenCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kDeduplicateSetInputScope, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Arabic (101) HKL: 00000401
 const std::wstring_view kArabic101KeyboardLayoutName = L"00000401";
 
@@ -224,6 +235,7 @@ bool ShouldInputArabicIndicDigits(const ui::KeyEvent& event) {
          event.key_code() >= ui::VKEY_0 && event.key_code() <= ui::VKEY_9;
 }
 #endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
@@ -416,8 +428,19 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
   // once for each hwnd.
   if (window_->GetHost() && GetInputMethod()) {
     InputScope input_scope = ShouldDoLearning() ? IS_DEFAULT : IS_PRIVATE;
-    ui::tsf_inputscope::SetInputScope(
-        RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
+    if (base::FeatureList::IsEnabled(kDeduplicateSetInputScope)) {
+      aura::WindowTreeHost* host = window_->GetHost();
+      InputScope last_input_scope =
+          host->window()->GetProperty(kLastInputScopeKey);
+      if (last_input_scope != input_scope) {
+        ui::tsf_inputscope::SetInputScope(
+            RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
+        host->window()->SetProperty(kLastInputScopeKey, input_scope);
+      }
+    } else {
+      ui::tsf_inputscope::SetInputScope(
+          RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
+    }
   }
 #endif
 }
