@@ -143,7 +143,9 @@ ModelAssets::ModelAssets(const ModelAssets& other)
       cache(other.cache.Duplicate()),
       encoder_cache(other.encoder_cache.Duplicate()),
       adapter_cache(other.adapter_cache.Duplicate()),
-      program_cache(other.program_cache.Duplicate()) {}
+      program_cache(other.program_cache.Duplicate()),
+      encoder_program_cache(other.encoder_program_cache.Duplicate()),
+      adapter_program_cache(other.adapter_program_cache.Duplicate()) {}
 
 ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
   weights = other.weights;
@@ -152,6 +154,8 @@ ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
   encoder_cache = other.encoder_cache.Duplicate();
   adapter_cache = other.adapter_cache.Duplicate();
   program_cache = other.program_cache.Duplicate();
+  encoder_program_cache = other.encoder_program_cache.Duplicate();
+  adapter_program_cache = other.adapter_program_cache.Duplicate();
   return *this;
 }
 
@@ -188,6 +192,18 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
   if (!paths.program_cache.empty()) {
     PrefetchFile(paths.program_cache);
     assets.program_cache = base::File(paths.program_cache, kCacheFlags);
+  }
+
+  if (!paths.encoder_program_cache.empty()) {
+    PrefetchFile(paths.encoder_program_cache);
+    assets.encoder_program_cache =
+        base::File(paths.encoder_program_cache, kCacheFlags);
+  }
+
+  if (!paths.adapter_program_cache.empty()) {
+    PrefetchFile(paths.adapter_program_cache);
+    assets.adapter_program_cache =
+        base::File(paths.adapter_program_cache, kCacheFlags);
   }
 
   return assets;
