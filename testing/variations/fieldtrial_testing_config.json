@@ -12786,6 +12786,28 @@
             ]
         }
     ],
+    "HatsReadingModeSurvey": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "QLxTthukW0ugnJ3q1cK0UBFVdFX4",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HatsReadingModeSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeatmapPalmDetectionStudy": [
         {
             "platforms": [
