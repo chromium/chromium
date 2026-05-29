@@ -2281,7 +2281,12 @@ void Widget::OnMouseCaptureLost() {
 
   View* root_view = GetRootView();
   if (root_view) {
+    auto weak_this = GetWeakPtr();
     root_view->OnMouseCaptureLost();
+    // Widget may be deleted upon the capture lost event.
+    if (!weak_this) {
+      return;
+    }
   }
   is_mouse_button_pressed_ = false;
 }
