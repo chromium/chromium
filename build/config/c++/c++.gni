@@ -55,7 +55,7 @@ declare_args() {
 
   # Unified modules controls whether we unify sysroot, libc++, and builtins
   # into a single module.
-  use_unified_system_module = false
+  use_unified_system_module = is_linux
 }
 
 if (enable_strict_deps) {
