@@ -51,6 +51,14 @@ public class PrivacyPreferencesManagerImplTest {
     private static final boolean CRASH_NETWORK_AVAILABLE = true;
     private static final boolean CRASH_NETWORK_UNAVAILABLE = false;
 
+    private PrivacyPreferencesManagerImpl.Natives mNativeMock;
+
+    @org.junit.Before
+    public void setUp() {
+        mNativeMock = mock(PrivacyPreferencesManagerImpl.Natives.class);
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(mNativeMock);
+    }
+
     @Test
     public void testUsageAndCrashReportingAccessors() {
         // TODO(yolandyan): Use Junit4 parameters to clean up this test structure.
@@ -99,14 +107,8 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
-
         // Ensure not enforced by policy.
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(
-                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
 
         preferenceManager.setMetricsReportingLevel(MetricsReportingLevel.BASIC);
 
@@ -114,8 +116,7 @@ public class PrivacyPreferencesManagerImplTest {
                 MetricsReportingLevel.BASIC,
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, -1));
-        verify(preferenceManagerNatives)
-                .setMetricsReportingLevelInLocalState(MetricsReportingLevel.BASIC);
+        verify(mNativeMock).setMetricsReportingLevelInLocalState(MetricsReportingLevel.BASIC);
     }
 
     @Test
@@ -124,18 +125,11 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
-
         // Enforce by policy.
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(
-                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, true);
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
-                        MetricsReportingLevel.ADVANCED);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, true);
+        writeInt(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
+                MetricsReportingLevel.ADVANCED);
 
         preferenceManager.setMetricsReportingLevel(MetricsReportingLevel.BASIC);
 
@@ -145,8 +139,7 @@ public class PrivacyPreferencesManagerImplTest {
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, -1));
         // Native call IS made.
-        verify(preferenceManagerNatives)
-                .setMetricsReportingLevelInLocalState(MetricsReportingLevel.BASIC);
+        verify(mNativeMock).setMetricsReportingLevelInLocalState(MetricsReportingLevel.BASIC);
     }
 
     @Test
@@ -183,14 +176,11 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        when(preferenceManagerNatives.isBasicMetricsReportingEnabled()).thenReturn(true);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+        when(mNativeMock.isBasicMetricsReportingEnabled()).thenReturn(true);
 
         assertTrue(preferenceManager.isMetricsReportingEnabled());
 
-        when(preferenceManagerNatives.isBasicMetricsReportingEnabled()).thenReturn(false);
+        when(mNativeMock.isBasicMetricsReportingEnabled()).thenReturn(false);
         assertFalse(preferenceManager.isMetricsReportingEnabled());
     }
 
@@ -237,10 +227,7 @@ public class PrivacyPreferencesManagerImplTest {
         PolicyServiceFactory.setPolicyServiceForTest(policyService);
 
         // Mock MetricsReportingEnabled=true.
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        when(preferenceManagerNatives.isMetricsReportingDisabledByPolicy()).thenReturn(false);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+        when(mNativeMock.isMetricsReportingDisabledByPolicy()).thenReturn(false);
 
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
@@ -261,10 +248,7 @@ public class PrivacyPreferencesManagerImplTest {
         PolicyServiceFactory.setPolicyServiceForTest(policyService);
 
         // Mock MetricsReportingEnabled=false.
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        when(preferenceManagerNatives.isMetricsReportingDisabledByPolicy()).thenReturn(true);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+        when(mNativeMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
 
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
@@ -279,15 +263,93 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        when(preferenceManagerNatives.shouldUseMetricsChoiceRestructure()).thenReturn(true);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(true);
 
         assertTrue(preferenceManager.shouldUseMetricsChoiceRestructure());
 
-        when(preferenceManagerNatives.shouldUseMetricsChoiceRestructure()).thenReturn(false);
+        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(false);
         assertFalse(preferenceManager.shouldUseMetricsChoiceRestructure());
+    }
+
+    @Test
+    public void testIsUsageAndCrashReportingPermittedByUser_RestructureDisabled() {
+        Context context = mock(Context.class);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new TestPrivacyPreferencesManager(context);
+
+        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(false);
+
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, true);
+        assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByUser());
+
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
+        assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByUser());
+    }
+
+    @Test
+    public void testIsUsageAndCrashReportingPermittedByUser_RestructureEnabled() {
+        Context context = mock(Context.class);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new TestPrivacyPreferencesManager(context);
+
+        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(true);
+
+        // Level NONE -> Permitted false
+        writeInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, MetricsReportingLevel.NONE);
+        assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByUser());
+
+        // Level BASIC -> Permitted true
+        writeInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, MetricsReportingLevel.BASIC);
+        assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByUser());
+
+        // Level ADVANCED -> Permitted true
+        writeInt(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
+                MetricsReportingLevel.ADVANCED);
+        assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByUser());
+    }
+
+    @Test
+    public void testIsUsageAndCrashReportingPermittedByPolicy_RestructureDisabled() {
+        Context context = mock(Context.class);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new TestPrivacyPreferencesManager(context);
+
+        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(false);
+
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, true);
+        assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
+
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, false);
+        assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
+    }
+
+    @Test
+    public void testIsUsageAndCrashReportingPermittedByPolicy_RestructureEnabled() {
+        Context context = mock(Context.class);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new TestPrivacyPreferencesManager(context);
+
+        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(true);
+
+        // Not enforced by policy -> Always true
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
+        assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
+
+        // Enforced by policy -> Always false
+        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, true);
+        assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
+
+        // Level BASIC or ADVANCED should not change the result if enforced by policy.
+        // In reality, if it's BASIC or ADVANCED it wouldn't be "enforced" (managed),
+        // but downgraded to "recommended".
+        writeInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, MetricsReportingLevel.BASIC);
+        assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
+
+        writeInt(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
+                MetricsReportingLevel.ADVANCED);
+        assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
     private void runTest(
@@ -333,6 +395,14 @@ public class PrivacyPreferencesManagerImplTest {
                 msg,
                 expectedNetworkAvailableForCrashUploads,
                 preferenceManager.isNetworkAvailableForCrashUploads());
+    }
+
+    private void writeBoolean(String key, boolean value) {
+        ChromeSharedPreferences.getInstance().writeBoolean(key, value);
+    }
+
+    private void writeInt(String key, int value) {
+        ChromeSharedPreferences.getInstance().writeInt(key, value);
     }
 
     private static class TestPrivacyPreferencesManager extends PrivacyPreferencesManagerImpl {

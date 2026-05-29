@@ -215,12 +215,32 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @Override
     public boolean isUsageAndCrashReportingPermittedByPolicy() {
+        if (shouldUseMetricsChoiceRestructure()) {
+            return !mPrefs.readBoolean(
+                    ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
+        }
         return mPrefs.readBoolean(
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, true);
     }
 
     @Override
     public boolean isUsageAndCrashReportingPermittedByUser() {
+        if (shouldUseMetricsChoiceRestructure()) {
+            @MetricsReportingLevel
+            int level =
+                    mPrefs.readInt(
+                            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
+                            MetricsReportingLevel.NONE);
+            switch (level) {
+                case MetricsReportingLevel.NONE:
+                    return false;
+                case MetricsReportingLevel.BASIC:
+                case MetricsReportingLevel.ADVANCED:
+                    return true;
+                default:
+                    return false;
+            }
+        }
         return mPrefs.readBoolean(
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
     }
