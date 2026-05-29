@@ -829,6 +829,21 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
       file_data = [pboard dataForType:content_type_id];
     }
   }
+  // If no file promises or regular files were found on the pasteboard, try to
+  // scavenge any generic images that might be present.
+  if (file_data.length == 0 && drop_data.filenames.empty()) {
+    for (NSString* type in types) {
+      UTType* utType = [UTType typeWithIdentifier:type];
+      if (utType && [utType conformsToType:UTTypeImage]) {
+        NSData* data = [pboard dataForType:type];
+        if (data) {
+          file_data = data;
+          content_type_id = type;
+          break;
+        }
+      }
+    }
+  }
   constexpr base::ByteSize kMaxDragBinarySize = base::MiBU(256);
   if (file_data.length > 0 &&
       file_data.length <= kMaxDragBinarySize.InBytes()) {

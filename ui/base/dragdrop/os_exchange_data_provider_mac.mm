@@ -5,6 +5,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_mac.h"
 
 #import <Cocoa/Cocoa.h>
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include <algorithm>
 #include <optional>
@@ -292,12 +293,45 @@ void OSExchangeDataProviderMac::SetFileContents(
 
 std::optional<OSExchangeDataProvider::FileContentsInfo>
 OSExchangeDataProviderMac::GetFileContents() const {
-  NOTIMPLEMENTED();
+  NSPasteboard* pboard = GetPasteboard();
+  if (!pboard) {
+    return std::nullopt;
+  }
+
+  NSArray* types = [pboard types];
+  for (NSString* type in types) {
+    UTType* utType = [UTType typeWithIdentifier:type];
+    if ([utType conformsToType:UTTypeImage]) {
+      NSData* data = [pboard dataForType:type];
+      if (data) {
+        base::span<const uint8_t> span = base::apple::NSDataToSpan(data);
+        std::vector<uint8_t> file_contents(span.begin(), span.end());
+        base::FilePath filename;
+        NSString* ext = utType.preferredFilenameExtension;
+        if (ext) {
+          filename = base::FilePath(base::SysNSStringToUTF8(ext));
+        }
+        return FileContentsInfo{.filename = filename,
+                                .file_contents = std::move(file_contents)};
+      }
+    }
+  }
   return std::nullopt;
 }
 
 bool OSExchangeDataProviderMac::HasFileContents() const {
-  NOTIMPLEMENTED();
+  NSPasteboard* pboard = GetPasteboard();
+  if (!pboard) {
+    return false;
+  }
+
+  NSArray* types = [pboard types];
+  for (NSString* type in types) {
+    UTType* utType = [UTType typeWithIdentifier:type];
+    if ([utType conformsToType:UTTypeImage]) {
+      return true;
+    }
+  }
   return false;
 }
 

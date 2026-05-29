@@ -89,6 +89,21 @@ TEST_F(WebDragDestTest, Data) {
   EXPECT_EQ(base::SysNSStringToUTF16(html_string), data.html);
 }
 
+TEST_F(WebDragDestTest, UTTypeImageFallback) {
+  scoped_refptr<ui::UniquePasteboard> pboard = new ui::UniquePasteboard;
+  std::string image_bytes = "fake image data";
+  NSData* raw_data = [NSData dataWithBytes:image_bytes.data()
+                                    length:image_bytes.size()];
+  [pboard->get() setData:raw_data forType:@"public.jpeg"];
+
+  content::DropData data =
+      content::PopulateDropDataFromPasteboard(pboard->get());
+
+  EXPECT_EQ(std::string(data.file_contents.begin(), data.file_contents.end()),
+            image_bytes);
+  EXPECT_EQ(data.file_contents_filename_extension, "jpeg");
+}
+
 TEST_F(WebDragDestTest, FilePermissions) {
   // Set up a temporary directory
   base::ScopedTempDir temp_dir;
