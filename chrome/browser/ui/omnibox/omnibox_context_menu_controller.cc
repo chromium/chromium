@@ -383,7 +383,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   // Add submenu name and icon.
   if (include_tabs_submenu) {
     menu_model_->AddSubMenuWithStringIdAndIcon(
-        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU, IDS_NTP_COMPOSEBOX_SHARE_TABS,
+        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU, IDS_COMPOSE_ADD_TABS,
         shared_tabs_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
