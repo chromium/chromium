@@ -235,7 +235,7 @@ import java.util.Map;
                                     inputStart,
                                     params.getNavigationUIDataSupplier() == null
                                             ? 0
-                                            : params.getNavigationUIDataSupplier().get(),
+                                            : params.getNavigationUIDataSupplier().getAsLong(),
                                     params.getIsPdf(),
                                     params.getRemoveExtraHeadersOnCrossOriginRedirect(),
                                     params.getInternalScrollToTextFragment());

@@ -23,7 +23,7 @@ import org.chromium.url.Origin;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.LongSupplier;
 
 /**
  * Holds parameters for NavigationController.LoadUrl. Parameters should match counterparts in
@@ -54,7 +54,7 @@ public class LoadUrlParams {
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
     private @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
-    private @Nullable Supplier<Long> mNavigationUIDataSupplier;
+    private @Nullable LongSupplier mNavigationUIDataSupplier;
     private boolean mIsPdf;
     private boolean mRemoveExtraHeadersOnCrossOriginRedirect;
     private @Nullable String mInternalScrollToTextFragment;
@@ -630,12 +630,12 @@ public class LoadUrlParams {
     }
 
     /** Set the {@link NavigationUIData}. */
-    public void setNavigationUIDataSupplier(Supplier<Long> navigationUIDataSupplier) {
+    public void setNavigationUIDataSupplier(LongSupplier navigationUIDataSupplier) {
         mNavigationUIDataSupplier = navigationUIDataSupplier;
     }
 
     /** Returns the supplier for {@link NavigationUIData} or null. */
-    public @Nullable Supplier<Long> getNavigationUIDataSupplier() {
+    public @Nullable LongSupplier getNavigationUIDataSupplier() {
         return mNavigationUIDataSupplier;
     }
 

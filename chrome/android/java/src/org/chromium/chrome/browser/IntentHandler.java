@@ -1869,10 +1869,10 @@ public class IntentHandler {
                             intent, IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID);
             if (!TextUtils.isEmpty(bookmarkIdString)) {
                 BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(bookmarkIdString);
-                ChromeNavigationUiData navData = new ChromeNavigationUiData();
-                navData.setBookmarkId(
-                        bookmarkId.getType() == BookmarkType.NORMAL ? bookmarkId.getId() : -1);
-                loadUrlParams.setNavigationUIDataSupplier(navData::createUnownedNativeCopy);
+                if (bookmarkId.getType() == BookmarkType.NORMAL) {
+                    ChromeNavigationUiData.getOrCreate(loadUrlParams)
+                            .setBookmarkId(bookmarkId.getId());
+                }
             }
         } else {
             // Intent is not coming from Chrome, the sender can't be trusted.
