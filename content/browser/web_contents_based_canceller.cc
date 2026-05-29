@@ -47,7 +47,7 @@ bool WebContentsBasedCanceller::CanShow() {
 
 bool WebContentsBasedCanceller::CanShowForVisibility(Visibility visibility) {
   return condition_ != CancelCondition::kVisibility ||
-         visibility != Visibility::HIDDEN;
+         visibility == Visibility::VISIBLE;
 }
 
 bool WebContentsBasedCanceller::CanShowForRFHActiveState() {

@@ -66,6 +66,19 @@ TEST_P(WebContentsBasedCancellerTest, CreateHidden) {
   }
 }
 
+TEST_P(WebContentsBasedCancellerTest, CreateOccluded) {
+  web_contents()->WasOccluded();
+  switch (GetParam()) {
+    case WebContentsBasedCanceller::CancelCondition::kActiveState:
+      EXPECT_NE(nullptr, CreateWebContentsBasedCanceller());
+      break;
+    case WebContentsBasedCanceller::CancelCondition::kVisibility:
+      EXPECT_EQ(nullptr, CreateWebContentsBasedCanceller())
+          << "Dialog was allowed for an OCCLUDED WebContents.";
+      break;
+  }
+}
+
 TEST_P(WebContentsBasedCancellerTest, BecomeInactive) {
   auto ac = CreateWebContentsBasedCanceller();
   base::test::TestFuture<void> future;
@@ -97,6 +110,32 @@ TEST_P(WebContentsBasedCancellerTest, BecomeHidden) {
   }
 }
 
+TEST_P(WebContentsBasedCancellerTest, BecomeOccluded) {
+  auto ac = CreateWebContentsBasedCanceller();
+  ASSERT_NE(nullptr, ac);
+  base::test::TestFuture<void> future;
+  ac->SetCancelCallback(future.GetCallback());
+  web_contents()->WasOccluded();
+  switch (GetParam()) {
+    case WebContentsBasedCanceller::CancelCondition::kActiveState:
+      EXPECT_FALSE(future.IsReady());
+      break;
+    case WebContentsBasedCanceller::CancelCondition::kVisibility:
+#if BUILDFLAG(IS_ANDROID)
+      // Android sends HIDDEN when picking a file. We should not cancel in this
+      // case.
+      // TODO(crbug.com/457495639): Figure out how to handle Android.
+      EXPECT_FALSE(future.IsReady());
+#else
+      EXPECT_TRUE(future.IsReady())
+          << "Dialog was NOT cancelled when WebContents became OCCLUDED. "
+          << "The file picker remains visible over a foreign foreground "
+          << "window, enabling origin spoofing.";
+#endif
+      break;
+  }
+}
+
 TEST_P(WebContentsBasedCancellerTest, InactiveBeforeSettingCallback) {
   auto ac = CreateWebContentsBasedCanceller();
   main_rfh_impl()->SetLifecycleState(
@@ -109,6 +148,22 @@ TEST_P(WebContentsBasedCancellerTest, InactiveBeforeSettingCallback) {
 TEST_P(WebContentsBasedCancellerTest, HiddenBeforeSettingCallback) {
   auto ac = CreateWebContentsBasedCanceller();
   web_contents()->WasHidden();
+  base::test::TestFuture<void> future;
+  ac->SetCancelCallback(future.GetCallback());
+  switch (GetParam()) {
+    case WebContentsBasedCanceller::CancelCondition::kActiveState:
+      EXPECT_FALSE(future.IsReady());
+      break;
+    case WebContentsBasedCanceller::CancelCondition::kVisibility:
+      EXPECT_TRUE(future.IsReady());
+      break;
+  }
+}
+
+TEST_P(WebContentsBasedCancellerTest, OccludedBeforeSettingCallback) {
+  auto ac = CreateWebContentsBasedCanceller();
+  ASSERT_NE(nullptr, ac);
+  web_contents()->WasOccluded();
   base::test::TestFuture<void> future;
   ac->SetCancelCallback(future.GetCallback());
   switch (GetParam()) {
