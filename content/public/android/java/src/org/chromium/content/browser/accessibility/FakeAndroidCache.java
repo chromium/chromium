@@ -135,7 +135,7 @@ public class FakeAndroidCache {
                 childIdList.add(id);
             }
         }
-        if (mCache.put(virtualViewId, new CachedNodeState(nodeInfo, childIdList)) != null
+        if (mCache.put(virtualViewId, new CachedNodeState(nodeInfo, childIdList)) == null
                 && mHistogramRecorder != null) {
             mHistogramRecorder.reportNodeAddedToFakeCache(virtualViewId);
         }

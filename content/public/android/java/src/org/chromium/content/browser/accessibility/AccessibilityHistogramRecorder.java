@@ -619,6 +619,8 @@ public class AccessibilityHistogramRecorder {
 
             RecordHistogram.recordPercentageHistogram(
                     ACCESSIBILITY_FAKE_CACHE_HEALTH_INDEX, cacheHealthIndex);
+        }
+        if (mNodesRemovedFromFakeCacheSet.size() > 0) {
             mNodesAddedToFakeCacheSet.clear();
             mNodesRemovedFromFakeCacheSet.clear();
         }
@@ -667,5 +669,11 @@ public class AccessibilityHistogramRecorder {
                 /* numBuckets= */ 80);
 
         mTimeScrollToMakeVisible = -1;
+    }
+
+    public int getPreviousCacheSizeForTesting() {
+        return mTotalFakeCacheNodesCount
+                - mNodesAddedToFakeCacheSet.size()
+                + mNodesRemovedFromFakeCacheSet.size();
     }
 }
