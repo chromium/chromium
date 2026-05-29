@@ -4,6 +4,8 @@
 
 #include "cc/trees/sticky_position_constraint.h"
 
+#include <algorithm>
+
 namespace cc {
 
 StickyPositionConstraint::StickyPositionConstraint() = default;
@@ -58,6 +60,81 @@ bool StickyPositionConstraint::CanMerge(
   }
 
   return true;
+}
+
+gfx::Vector2dF StickyPositionConstraint::StickyPositionOffset(
+    gfx::PointF scroll_position,
+    gfx::Vector2dF constraint_box_expansion,
+    gfx::Vector2dF ancestor_sticky_box_offset,
+    gfx::Vector2dF ancestor_containing_block_offset) const {
+  gfx::RectF clip = constraint_box_rect;
+  clip.Offset(scroll_position.x(), scroll_position.y());
+  clip.set_width(clip.width() + constraint_box_expansion.x());
+  clip.set_height(clip.height() + constraint_box_expansion.y());
+
+  // Compute the current position of the constraint rects based on the original
+  // positions and the offsets from ancestor sticky elements.
+  gfx::RectF sticky_box_rect = scroll_container_relative_sticky_box_rect +
+                               ancestor_sticky_box_offset +
+                               ancestor_containing_block_offset;
+  gfx::RectF containing_block_rect =
+      scroll_container_relative_containing_block_rect +
+      ancestor_containing_block_offset;
+
+  // In each of the following cases, we measure the limit which is the point
+  // that the element should stick to, clamping on one side to 0 (because sticky
+  // only pushes elements in one direction). Then we clamp to how far we can
+  // push the element in that direction without being pushed outside of its
+  // containing block.
+  //
+  // Note: The order of applying the sticky constraints is applied such that
+  // left offset takes precedence over right offset, and top takes precedence
+  // over bottom offset.
+  gfx::Vector2dF sticky_offset;
+  if (is_anchored_right) {
+    float right_limit = clip.right() - right_offset;
+    float right_delta =
+        std::min<float>(0, right_limit - sticky_box_rect.right());
+    float available_space =
+        std::min<float>(0, containing_block_rect.x() - sticky_box_rect.x());
+    if (right_delta < available_space) {
+      right_delta = available_space;
+    }
+    sticky_offset.set_x(sticky_offset.x() + right_delta);
+  }
+  if (is_anchored_left) {
+    float left_limit = clip.x() + left_offset;
+    float left_delta = std::max<float>(0, left_limit - sticky_box_rect.x());
+    float available_space = std::max<float>(
+        0, containing_block_rect.right() - sticky_box_rect.right());
+    if (left_delta > available_space) {
+      left_delta = available_space;
+    }
+    sticky_offset.set_x(sticky_offset.x() + left_delta);
+  }
+  if (is_anchored_bottom) {
+    float bottom_limit = clip.bottom() - bottom_offset;
+    float bottom_delta =
+        std::min<float>(0, bottom_limit - sticky_box_rect.bottom());
+    float available_space =
+        std::min<float>(0, containing_block_rect.y() - sticky_box_rect.y());
+    if (bottom_delta < available_space) {
+      bottom_delta = available_space;
+    }
+    sticky_offset.set_y(sticky_offset.y() + bottom_delta);
+  }
+  if (is_anchored_top) {
+    float top_limit = clip.y() + top_offset;
+    float top_delta = std::max<float>(0, top_limit - sticky_box_rect.y());
+    float available_space = std::max<float>(
+        0, containing_block_rect.bottom() - sticky_box_rect.bottom());
+    if (top_delta > available_space) {
+      top_delta = available_space;
+    }
+    sticky_offset.set_y(sticky_offset.y() + top_delta);
+  }
+
+  return sticky_offset;
 }
 
 bool StickyPositionConstraint::operator==(

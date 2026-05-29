@@ -516,25 +516,21 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(const TransformNode& node) {
   }
   scroll_position -= snap_offset;
 
-  gfx::RectF clip = constraint.constraint_box_rect;
-  clip.Offset(scroll_position.x(), scroll_position.y());
-
   // The clip region may need to be offset by the outer viewport bounds, e.g. if
   // the top bar hides/shows. Position sticky should never attach to the inner
   // viewport since it shouldn't be affected by pinch-zoom.
+  gfx::Vector2dF constraint_box_expansion;
   if (scroll_node_x) {
     DCHECK(!scroll_node_x->scrolls_inner_viewport);
     if (scroll_node_x->scrolls_outer_viewport) {
-      clip.set_width(
-          clip.width() +
+      constraint_box_expansion.set_x(
           property_trees()->outer_viewport_container_bounds_delta().x());
     }
   }
   if (scroll_node_y) {
     DCHECK(!scroll_node_y->scrolls_inner_viewport);
     if (scroll_node_y->scrolls_outer_viewport) {
-      clip.set_height(
-          clip.height() +
+      constraint_box_expansion.set_y(
           property_trees()->outer_viewport_container_bounds_delta().y());
     }
   }
@@ -596,64 +592,9 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(const TransformNode& node) {
     }
   }
 
-  // Compute the current position of the constraint rects based on the original
-  // positions and the offsets from ancestor sticky elements.
-  gfx::RectF sticky_box_rect =
-      gfx::RectF(constraint.scroll_container_relative_sticky_box_rect) +
-      ancestor_sticky_box_offset + ancestor_containing_block_offset;
-  gfx::RectF containing_block_rect =
-      gfx::RectF(constraint.scroll_container_relative_containing_block_rect) +
-      ancestor_containing_block_offset;
-
-  gfx::Vector2dF sticky_offset;
-
-  // In each of the following cases, we measure the limit which is the point
-  // that the element should stick to, clamping on one side to 0 (because sticky
-  // only pushes elements in one direction). Then we clamp to how far we can
-  // push the element in that direction without being pushed outside of its
-  // containing block.
-  //
-  // Note: The order of applying the sticky constraints is applied such that
-  // left offset takes precedence over right offset, and top takes precedence
-  // over bottom offset.
-  if (constraint.is_anchored_right) {
-    float right_limit = clip.right() - constraint.right_offset;
-    float right_delta =
-        std::min<float>(0, right_limit - sticky_box_rect.right());
-    float available_space =
-        std::min<float>(0, containing_block_rect.x() - sticky_box_rect.x());
-    if (right_delta < available_space)
-      right_delta = available_space;
-    sticky_offset.set_x(sticky_offset.x() + right_delta);
-  }
-  if (constraint.is_anchored_left) {
-    float left_limit = clip.x() + constraint.left_offset;
-    float left_delta = std::max<float>(0, left_limit - sticky_box_rect.x());
-    float available_space = std::max<float>(
-        0, containing_block_rect.right() - sticky_box_rect.right());
-    if (left_delta > available_space)
-      left_delta = available_space;
-    sticky_offset.set_x(sticky_offset.x() + left_delta);
-  }
-  if (constraint.is_anchored_bottom) {
-    float bottom_limit = clip.bottom() - constraint.bottom_offset;
-    float bottom_delta =
-        std::min<float>(0, bottom_limit - sticky_box_rect.bottom());
-    float available_space =
-        std::min<float>(0, containing_block_rect.y() - sticky_box_rect.y());
-    if (bottom_delta < available_space)
-      bottom_delta = available_space;
-    sticky_offset.set_y(sticky_offset.y() + bottom_delta);
-  }
-  if (constraint.is_anchored_top) {
-    float top_limit = clip.y() + constraint.top_offset;
-    float top_delta = std::max<float>(0, top_limit - sticky_box_rect.y());
-    float available_space = std::max<float>(
-        0, containing_block_rect.bottom() - sticky_box_rect.bottom());
-    if (top_delta > available_space)
-      top_delta = available_space;
-    sticky_offset.set_y(sticky_offset.y() + top_delta);
-  }
+  gfx::Vector2dF sticky_offset = constraint.StickyPositionOffset(
+      scroll_position, constraint_box_expansion, ancestor_sticky_box_offset,
+      ancestor_containing_block_offset);
 
   sticky_data->total_sticky_box_sticky_offset =
       ancestor_sticky_box_offset + sticky_offset;
@@ -661,9 +602,7 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(const TransformNode& node) {
       ancestor_sticky_box_offset + ancestor_containing_block_offset +
       sticky_offset;
 
-  sticky_offset += constraint.pixel_snap_offset;
-
-  return gfx::ToRoundedVector2d(sticky_offset);
+  return gfx::ToRoundedVector2d(sticky_offset + constraint.pixel_snap_offset);
 }
 
 AnchorPositionScrollData& TransformTree::EnsureAnchorPositionScrollData(

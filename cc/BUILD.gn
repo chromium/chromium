@@ -949,6 +949,7 @@ cc_test("cc_unittests") {
     "trees/presentation_time_callback_buffer_unittest.cc",
     "trees/property_tree_builder_unittest.cc",
     "trees/property_tree_unittest.cc",
+    "trees/sticky_position_constraint_unittest.cc",
     "trees/swap_promise_manager_unittest.cc",
     "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",

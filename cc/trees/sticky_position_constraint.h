@@ -69,6 +69,15 @@ struct CC_EXPORT StickyPositionConstraint {
   // used to get the same rendering result.
   bool CanMerge(const StickyPositionConstraint& other) const;
 
+  // Returns the offset that should be applied to the sticky box based on the
+  // current scroll position and the constraint. Pixel snapping is not applied
+  // to the returned offset.
+  gfx::Vector2dF StickyPositionOffset(
+      gfx::PointF scroll_position,
+      gfx::Vector2dF constraint_box_expansion,
+      gfx::Vector2dF ancestor_sticky_box_offset,
+      gfx::Vector2dF ancestor_containing_block_offset) const;
+
   bool operator==(const StickyPositionConstraint&) const;
 };
 
