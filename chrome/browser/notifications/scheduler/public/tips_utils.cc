@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/notifications/scheduler/public/tips_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -80,23 +80,28 @@ NotificationData GetTipsNotificationData(
 std::string GetFeatureTypePref(TipsNotificationsFeatureType feature_type) {
   switch (feature_type) {
     case TipsNotificationsFeatureType::kEnhancedSafeBrowsing:
-      return prefs::kAndroidTipNotificationShownESB;
+      return notifications::tips::prefs::kAndroidTipNotificationShownESB;
     case TipsNotificationsFeatureType::kQuickDelete:
-      return prefs::kAndroidTipNotificationShownQuickDelete;
+      return notifications::tips::prefs::
+          kAndroidTipNotificationShownQuickDelete;
     case TipsNotificationsFeatureType::kGoogleLens:
-      return prefs::kAndroidTipNotificationShownLens;
+      return notifications::tips::prefs::kAndroidTipNotificationShownLens;
     case TipsNotificationsFeatureType::kBottomOmnibox:
-      return prefs::kAndroidTipNotificationShownBottomOmnibox;
+      return notifications::tips::prefs::
+          kAndroidTipNotificationShownBottomOmnibox;
     case TipsNotificationsFeatureType::kPasswordAutofill:
-      return prefs::kAndroidTipNotificationShownPasswordAutofill;
+      return notifications::tips::prefs::
+          kAndroidTipNotificationShownPasswordAutofill;
     case TipsNotificationsFeatureType::kSignin:
-      return prefs::kAndroidTipNotificationShownSignin;
+      return notifications::tips::prefs::kAndroidTipNotificationShownSignin;
     case TipsNotificationsFeatureType::kCreateTabGroups:
-      return prefs::kAndroidTipNotificationShownCreateTabGroups;
+      return notifications::tips::prefs::
+          kAndroidTipNotificationShownCreateTabGroups;
     case TipsNotificationsFeatureType::kCustomizeMVT:
-      return prefs::kAndroidTipNotificationShownCustomizeMVT;
+      return notifications::tips::prefs::
+          kAndroidTipNotificationShownCustomizeMVT;
     case TipsNotificationsFeatureType::kRecentTabs:
-      return prefs::kAndroidTipNotificationShownRecentTabs;
+      return notifications::tips::prefs::kAndroidTipNotificationShownRecentTabs;
     default:
       NOTREACHED();
   }

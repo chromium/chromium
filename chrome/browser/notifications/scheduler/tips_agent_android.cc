@@ -8,12 +8,12 @@
 #include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
+#include "chrome/browser/notifications/scheduler/public/tips_prefs.h"
 #include "chrome/browser/notifications/scheduler/public/tips_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -149,28 +149,28 @@ void TipsAgentAndroid::ScheduleNewNotification(
       segmentation_platform::processing::ProcessedValue(
           bottom_omnibox_ever_used));
 
-  bool enhanced_safe_browsing_tip_shown =
-      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownESB);
+  bool enhanced_safe_browsing_tip_shown = pref_service->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownESB);
   input_context->metadata_args.emplace(
       segmentation_platform::kEnhancedSafeBrowsingTipShown,
       segmentation_platform::processing::ProcessedValue(
           enhanced_safe_browsing_tip_shown));
 
-  bool quick_delete_tip_shown =
-      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownQuickDelete);
+  bool quick_delete_tip_shown = pref_service->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownQuickDelete);
   input_context->metadata_args.emplace(
       segmentation_platform::kQuickDeleteTipShown,
       segmentation_platform::processing::ProcessedValue(
           quick_delete_tip_shown));
 
-  bool google_lens_tip_shown =
-      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownLens);
+  bool google_lens_tip_shown = pref_service->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownLens);
   input_context->metadata_args.emplace(
       segmentation_platform::kGoogleLensTipShown,
       segmentation_platform::processing::ProcessedValue(google_lens_tip_shown));
 
   bool bottom_omnibox_tip_shown = pref_service->GetBoolean(
-      prefs::kAndroidTipNotificationShownBottomOmnibox);
+      notifications::tips::prefs::kAndroidTipNotificationShownBottomOmnibox);
   input_context->metadata_args.emplace(
       segmentation_platform::kBottomOmniboxTipShown,
       segmentation_platform::processing::ProcessedValue(
@@ -187,34 +187,34 @@ void TipsAgentAndroid::ScheduleNewNotification(
           is_user_signed_in));
 
   bool password_autofill_tip_shown = pref_service->GetBoolean(
-      prefs::kAndroidTipNotificationShownPasswordAutofill);
+      notifications::tips::prefs::kAndroidTipNotificationShownPasswordAutofill);
   input_context->metadata_args.emplace(
       segmentation_platform::kPasswordAutofillTipShown,
       segmentation_platform::processing::ProcessedValue(
           password_autofill_tip_shown));
 
-  bool signin_tip_shown =
-      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownSignin);
+  bool signin_tip_shown = pref_service->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownSignin);
   input_context->metadata_args.emplace(
       segmentation_platform::kSigninTipShown,
       segmentation_platform::processing::ProcessedValue(signin_tip_shown));
 
   bool create_tab_groups_tip_shown = pref_service->GetBoolean(
-      prefs::kAndroidTipNotificationShownCreateTabGroups);
+      notifications::tips::prefs::kAndroidTipNotificationShownCreateTabGroups);
   input_context->metadata_args.emplace(
       segmentation_platform::kCreateTabGroupsTipShown,
       segmentation_platform::processing::ProcessedValue(
           create_tab_groups_tip_shown));
 
-  bool customize_mvt_tip_shown =
-      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownCustomizeMVT);
+  bool customize_mvt_tip_shown = pref_service->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownCustomizeMVT);
   input_context->metadata_args.emplace(
       segmentation_platform::kCustomizeMVTTipShown,
       segmentation_platform::processing::ProcessedValue(
           customize_mvt_tip_shown));
 
-  bool recent_tabs_tip_shown =
-      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownRecentTabs);
+  bool recent_tabs_tip_shown = pref_service->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownRecentTabs);
   input_context->metadata_args.emplace(
       segmentation_platform::kRecentTabsTipShown,
       segmentation_platform::processing::ProcessedValue(recent_tabs_tip_shown));

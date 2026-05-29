@@ -3278,31 +3278,6 @@ inline constexpr char kNonMilestoneUpdateToastVersion[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-
-// LINT.IfChange(TipsShownPrefs)
-// Boolean prefs indicating whether a tip notification has already been shown.
-inline constexpr char kAndroidTipNotificationShownESB[] =
-    "android.tips.notifications.esb_shown";
-inline constexpr char kAndroidTipNotificationShownQuickDelete[] =
-    "android.tips.notifications.quick_delete_shown";
-inline constexpr char kAndroidTipNotificationShownLens[] =
-    "android.tips.notifications.lens_shown";
-inline constexpr char kAndroidTipNotificationShownBottomOmnibox[] =
-    "android.tips.notifications.bottom_omnibox_shown";
-inline constexpr char kAndroidTipNotificationShownPasswordAutofill[] =
-    "android.tips.notifications.password_autofill_shown";
-inline constexpr char kAndroidTipNotificationShownSignin[] =
-    "android.tips.notifications.signin_shown";
-inline constexpr char kAndroidTipNotificationShownCreateTabGroups[] =
-    "android.tips.notifications.create_tab_group_shown";
-inline constexpr char kAndroidTipNotificationShownCustomizeMVT[] =
-    "android.tips.notifications.customize_mvt_shown";
-inline constexpr char kAndroidTipNotificationShownRecentTabs[] =
-    "android.tips.notifications.recent_tabs_shown";
-// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsUtils.java:TipsShownPrefs)
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // Time pref indicating the timestamp of the most recently visited browsing
 // history entry that is donated to AppSearch.
 inline constexpr char kAuxiliarySearchLastDonatedHistoryEntryVisitTime[] =

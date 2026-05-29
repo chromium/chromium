@@ -81,7 +81,7 @@ public class TipsUtils {
             "android.tips.notifications.customize_mvt_shown";
     public static final String RECENT_TABS_SHOWN = "android.tips.notifications.recent_tabs_shown";
 
-    // LINT.ThenChange(//chrome/common/pref_names.h:TipsShownPrefs)
+    // LINT.ThenChange(//chrome/browser/notifications/scheduler/public/tips_prefs.cc:TipsShownPrefs)
 
     /**
      * Assembles a {@link FeatureTipPromoData} object containing required UI and callback

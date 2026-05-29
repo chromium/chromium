@@ -55,6 +55,7 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/notifications/scheduler/public/tips_prefs.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/platform_experience/prefs.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
@@ -2129,22 +2130,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(ntp_tiles::prefs::kTipsHomeModuleEnabled, true);
 
 #if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownESB, false);
-  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownQuickDelete,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownLens, false);
-  registry->RegisterBooleanPref(
-      prefs::kAndroidTipNotificationShownBottomOmnibox, false);
-  registry->RegisterBooleanPref(
-      prefs::kAndroidTipNotificationShownPasswordAutofill, false);
-  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownSignin,
-                                false);
-  registry->RegisterBooleanPref(
-      prefs::kAndroidTipNotificationShownCreateTabGroups, false);
-  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownCustomizeMVT,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownRecentTabs,
-                                false);
+  notifications::tips::prefs::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(prefs::kStaticStorageQuotaEnabled, false);

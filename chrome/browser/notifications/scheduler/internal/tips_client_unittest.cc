@@ -9,7 +9,7 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/notifications/scheduler/public/tips_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,7 +33,7 @@ class TipsClientTest : public testing::Test {
   TipsClientTest() {
 #if BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kAndroidTipNotificationShownESB, false);
+        notifications::tips::prefs::kAndroidTipNotificationShownESB, false);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -98,15 +98,15 @@ TEST_F(TipsClientTest, BeforeShowNotification) {
   notification_data->custom_data[kTipsNotificationsFeatureType] =
       base::NumberToString(static_cast<int>(
           TipsNotificationsFeatureType::kEnhancedSafeBrowsing));
-  EXPECT_FALSE(
-      pref_service()->GetBoolean(prefs::kAndroidTipNotificationShownESB));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownESB));
   tips_client()->BeforeShowNotification(
       std::move(notification_data),
       base::BindOnce([](std::unique_ptr<NotificationData> notification_data) {
         EXPECT_TRUE(notification_data);
       }));
-  EXPECT_TRUE(
-      pref_service()->GetBoolean(prefs::kAndroidTipNotificationShownESB));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      notifications::tips::prefs::kAndroidTipNotificationShownESB));
   histograms.ExpectBucketCount(
       "Notifications.Scheduler.Tips.FeatureTypeShown",
       TipsNotificationsFeatureType::kEnhancedSafeBrowsing, 1);

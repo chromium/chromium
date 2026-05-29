@@ -42,6 +42,8 @@ source_set("public") {
     "throttle_config.h",
     "tips_agent.cc",
     "tips_agent.h",
+    "tips_prefs.cc",
+    "tips_prefs.h",
     "tips_utils.cc",
     "tips_utils.h",
     "user_action_handler.h",
@@ -52,6 +54,7 @@ source_set("public") {
     "//chrome/app:generated_resources",
     "//chrome/common",
     "//components/keyed_service/core",
+    "//components/pref_registry",
     "//skia",
     "//ui/base",
   ]
