@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 

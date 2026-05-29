@@ -15,7 +15,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/choice_made_location.h"

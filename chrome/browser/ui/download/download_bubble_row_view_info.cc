@@ -9,7 +9,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"

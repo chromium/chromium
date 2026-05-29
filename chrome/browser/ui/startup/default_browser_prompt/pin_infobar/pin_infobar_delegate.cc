@@ -13,7 +13,6 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/omnibox/browser/vector_icons.h"

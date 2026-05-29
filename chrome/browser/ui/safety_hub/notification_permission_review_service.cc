@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"

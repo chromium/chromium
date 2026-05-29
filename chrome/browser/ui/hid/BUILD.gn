@@ -37,7 +37,6 @@ source_set("unit_tests") {
   deps = [
     ":hid",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser/hid:test_support",
     "//chrome/test:test_support",
     "//components/permissions:test_support",

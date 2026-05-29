@@ -10,7 +10,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"

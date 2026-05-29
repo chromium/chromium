@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"

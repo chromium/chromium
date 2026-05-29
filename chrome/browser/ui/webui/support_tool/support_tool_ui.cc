@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/support_tool_resources.h"
 #include "chrome/grit/support_tool_resources_map.h"

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_message_model_test_api.h"
 #include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"

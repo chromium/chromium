@@ -8,7 +8,6 @@
 
 #include "base/json/values_util.h"
 #include "base/values.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

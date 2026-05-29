@@ -13,7 +13,6 @@ source_set("chrome_labs") {
   ]
 
   deps = [
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser/profiles:profile",

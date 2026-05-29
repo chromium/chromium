@@ -35,8 +35,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"

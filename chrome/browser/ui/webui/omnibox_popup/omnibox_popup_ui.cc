@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "chrome/grit/omnibox_popup_resources_map.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"

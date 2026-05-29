@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"

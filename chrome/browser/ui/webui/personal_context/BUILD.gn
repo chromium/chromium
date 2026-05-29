@@ -19,7 +19,6 @@ source_set("personal_context") {
 
   deps = [
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/personal_context_notice:resources",

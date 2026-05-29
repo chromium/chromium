@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"

@@ -29,7 +29,6 @@ source_set("impl") {
 
     deps += [
       ":bluetooth",
-      "//chrome/app:generated_resources",
       "//chrome/browser/chooser_controller",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/common",

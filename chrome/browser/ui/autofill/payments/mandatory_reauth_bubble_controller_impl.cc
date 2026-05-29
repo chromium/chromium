@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

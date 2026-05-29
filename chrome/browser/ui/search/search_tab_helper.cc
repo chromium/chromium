@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/google/core/common/google_util.h"
 #include "components/navigation_metrics/navigation_metrics.h"

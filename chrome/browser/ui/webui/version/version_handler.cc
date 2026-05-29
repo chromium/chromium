@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/net/variations_command_line.h"

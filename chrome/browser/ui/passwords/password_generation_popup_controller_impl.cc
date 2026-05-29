@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"

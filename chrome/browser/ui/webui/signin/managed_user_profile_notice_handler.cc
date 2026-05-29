@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/prefs/pref_service.h"

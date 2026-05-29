@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_commerce_resources.h"
 #include "chrome/grit/side_panel_commerce_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"

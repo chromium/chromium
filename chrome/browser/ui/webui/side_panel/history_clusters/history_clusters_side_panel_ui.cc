@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"

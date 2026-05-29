@@ -25,7 +25,6 @@ source_set("indigo_internals") {
   ]
   deps = [
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/indigo",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/indigo_internals:resources",

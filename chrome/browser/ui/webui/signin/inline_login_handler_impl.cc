@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/storage_partition.h"

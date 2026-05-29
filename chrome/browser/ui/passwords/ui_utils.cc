@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/autofill_features.h"

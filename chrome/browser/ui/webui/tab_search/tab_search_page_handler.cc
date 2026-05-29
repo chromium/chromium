@@ -51,7 +51,6 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/tab_strip/aggregation/tab_strip_service_aggregator.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"

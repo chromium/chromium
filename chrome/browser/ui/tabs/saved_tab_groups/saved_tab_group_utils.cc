@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"

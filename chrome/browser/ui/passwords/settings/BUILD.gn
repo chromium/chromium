@@ -24,7 +24,6 @@ source_set("impl") {
   sources = [ "password_manager_porter.cc" ]
   deps = [
     ":settings",
-    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/common:constants",

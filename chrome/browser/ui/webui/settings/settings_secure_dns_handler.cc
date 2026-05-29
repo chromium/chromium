@@ -19,7 +19,6 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/country_codes/country_codes.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

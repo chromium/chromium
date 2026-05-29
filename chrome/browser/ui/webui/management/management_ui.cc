@@ -40,7 +40,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/grit/branded_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else  // BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"

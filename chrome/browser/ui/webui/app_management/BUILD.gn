@@ -23,7 +23,6 @@ source_set("app_management") {
 
   deps = [
     "//base:i18n",
-    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources",
     "//chrome/browser/apps/app_service",

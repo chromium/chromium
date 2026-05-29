@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_buildflags.h"

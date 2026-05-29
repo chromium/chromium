@@ -26,7 +26,6 @@
 #include "base/version.h"
 #include "chrome/browser/updater/updater.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"

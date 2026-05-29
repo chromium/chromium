@@ -130,7 +130,6 @@ source_set("impl") {
   deps = [
     ":hats",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

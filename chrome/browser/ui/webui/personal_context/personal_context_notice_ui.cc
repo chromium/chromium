@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "chrome/browser/ui/webui/personal_context/personal_context_notice_page_handler.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/personal_context_notice_resources.h"
 #include "chrome/grit/personal_context_notice_resources_map.h"
 #include "components/accessibility_annotator/core/url_constants.h"

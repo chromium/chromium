@@ -306,7 +306,6 @@ source_set("plural_string_handler") {
   ]
   deps = [
     "//base",
-    "//chrome/app:generated_resources",
     "//content/public/browser",
     "//ui/base",
     "//ui/strings:ui_strings",

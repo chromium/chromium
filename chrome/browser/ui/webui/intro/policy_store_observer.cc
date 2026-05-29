@@ -16,7 +16,6 @@
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "ui/base/l10n/l10n_util.h"

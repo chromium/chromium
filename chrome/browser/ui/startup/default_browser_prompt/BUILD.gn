@@ -131,7 +131,6 @@ source_set("interactive_ui_tests") {
   deps = [
     ":default_browser_prompt",
     "//base/test:test_support",
-    "//chrome/app:branded_strings",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
     "//chrome/browser:chrome_browser_main",

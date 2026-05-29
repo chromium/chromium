@@ -36,7 +36,6 @@ source_set("impl") {
   deps = [
     ":pin_infobar",
     "//chrome/app:branded_strings",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/infobars",
     "//chrome/browser/profiles",

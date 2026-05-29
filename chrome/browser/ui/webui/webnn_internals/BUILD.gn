@@ -31,7 +31,6 @@ source_set("webnn_internals") {
   deps = [
     ":mojo_bindings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/webnn_internals:resources",
     "//chrome/common",

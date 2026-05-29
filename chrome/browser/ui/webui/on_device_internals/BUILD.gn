@@ -29,7 +29,6 @@ source_set("on_device_internals") {
   deps = [
     ":mojom",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/optimization_guide",

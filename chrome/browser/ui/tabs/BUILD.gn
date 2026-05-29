@@ -777,7 +777,6 @@ if (!is_android) {
       "tab_strip_api:unit_tests",
       "//base/test:test_support",
       "//chrome/app:command_ids",
-      "//chrome/app:generated_resources",
       "//chrome/browser",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",

@@ -12,7 +12,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/conflicts_resources.h"
 #include "chrome/grit/conflicts_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"

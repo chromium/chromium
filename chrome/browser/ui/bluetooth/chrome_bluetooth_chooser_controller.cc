@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"

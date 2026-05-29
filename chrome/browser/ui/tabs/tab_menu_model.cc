@@ -47,7 +47,6 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"

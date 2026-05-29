@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
