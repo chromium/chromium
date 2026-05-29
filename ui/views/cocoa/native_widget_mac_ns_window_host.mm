@@ -52,6 +52,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -1312,7 +1313,11 @@ bool NativeWidgetMacNSWindowHost::GetHitTestResult(
   // directly. It will eventually handled by the owner of that NSView, e.g.
   // RenderWidgetHostViewCocoa.
   if (views::IsViewClass<views::NativeViewHost>(target_view)) {
-    *hit_test_result = remote_cocoa::mojom::HitTestResult::kSubView;
+    if (target_view->GetProperty(kIsBlockedByModalKey)) {
+      *hit_test_result = remote_cocoa::mojom::HitTestResult::kBlockedSubView;
+    } else {
+      *hit_test_result = remote_cocoa::mojom::HitTestResult::kSubView;
+    }
     return true;
   }
 

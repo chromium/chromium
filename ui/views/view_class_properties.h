@@ -110,6 +110,10 @@ VIEWS_EXPORT extern const ui::ClassProperty<ui::ElementIdentifier>* const
 VIEWS_EXPORT extern const ui::ClassProperty<FocusManager*>* const
     kDetachedViewFocusManagerKey;
 
+// A property indicating whether a view (usually a WebView or NativeViewHost)
+// is currently blocked by a tab-modal dialog.
+VIEWS_EXPORT extern const ui::ClassProperty<bool>* const kIsBlockedByModalKey;
+
 }  // namespace views
 
 // Declare template specializations introduced by Views here to make sure that

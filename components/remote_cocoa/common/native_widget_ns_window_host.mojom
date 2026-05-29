@@ -49,6 +49,8 @@ enum HitTestResult {
   // Usually, this is a RenderWidgetHostViewCocoa which presents a content
   // area.
   kSubView,
+  // Hits a subview that is currently blocked by a modal dialog.
+  kBlockedSubView,
   // Hits other area. This includes resize handles, traffic lights, etc. The
   // NSWindow handles the event.
   kOther,

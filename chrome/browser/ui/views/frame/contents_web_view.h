@@ -51,6 +51,9 @@ class ContentsWebView : public views::WebView,
 
   void SetIsAnimatingBounds(bool is_animating);
 
+  // Update the blocked state based on the tab's modal dialog status.
+  void UpdateIsBlockedByModal();
+
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;

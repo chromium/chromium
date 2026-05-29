@@ -151,6 +151,9 @@ struct NSEdgeAndCornerThicknesses {
 - (BOOL)hasViewsMenuActive;
 - (id<NSAccessibility>)rootAccessibilityObject;
 
+// The child window with the highest z-order that is visible and modal, if any.
+- (NSWindow*)topmostVisibleChildModalWindow;
+
 // Private API on NSWindow, determines whether the title is drawn on the title
 // bar. The title is still visible in menus, Expose, etc.
 - (BOOL)_isTitleHidden;
@@ -438,6 +441,25 @@ struct NSEdgeAndCornerThicknesses {
   return [super constrainFrameRect:frameRect toScreen:screen];
 }
 
+- (NSWindow*)topmostVisibleChildModalWindow {
+  if (!_bridge) {
+    return nil;
+  }
+
+  for (remote_cocoa::NativeWidgetNSWindowBridge* child_bridge :
+       base::Reversed(_bridge->child_windows())) {
+    if (child_bridge->modal_type() == ui::mojom::ModalType::kNone) {
+      continue;
+    }
+    NSWindow* child_ns_window = child_bridge->ns_window();
+    if ([child_ns_window isVisible]) {
+      return child_ns_window;
+    }
+  }
+
+  return nil;
+}
+
 - (BOOL)_isTitleHidden {
   bool shouldShowWindowTitle = YES;
   if (_bridge)
@@ -588,6 +610,32 @@ struct NSEdgeAndCornerThicknesses {
   } else if (type == NSEventTypeRightMouseUp) {
     if ([[self contentView] hitTest:event.locationInWindow] == nil) {
       [[self contentView] rightMouseUp:event];
+      return;
+    }
+  } else if (type == NSEventTypeLeftMouseDown) {
+    // Check whether the click was in a blocked area via a hit test.
+    bool is_blocked_by_modal = false;
+    if (_bridge) {
+      NSView* content_view = [self contentView];
+      NSPoint point_in_view = [content_view convertPoint:event.locationInWindow
+                                                fromView:nil];
+      gfx::Point flipped_point(
+          point_in_view.x, NSHeight([content_view frame]) - point_in_view.y);
+      remote_cocoa::mojom::HitTestResult hit_test_result =
+          remote_cocoa::mojom::HitTestResult::kOther;
+      _bridge->host()->GetHitTestResult(flipped_point, &hit_test_result);
+      is_blocked_by_modal = hit_test_result ==
+                            remote_cocoa::mojom::HitTestResult::kBlockedSubView;
+    }
+
+    NSWindow* child_modal_window = [self topmostVisibleChildModalWindow];
+    // If the click was in a blocked area and we're displaying a child modal
+    // window, swallow the event to prevent the web contents from processing it
+    // (and potentially triggering new dialogs).
+    if (is_blocked_by_modal && child_modal_window) {
+      if (![child_modal_window isKeyWindow]) {
+        [child_modal_window makeKeyWindow];
+      }
       return;
     }
   } else if ([self hasViewsMenuActive]) {

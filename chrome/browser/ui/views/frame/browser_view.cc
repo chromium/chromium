@@ -3391,6 +3391,13 @@ void BrowserView::OnTabChangedAt(tabs::TabInterface* tab,
                                  TabChangeType change_type) {
   content::WebContents* contents = tab->GetContents();
 
+  if (change_type == TabChangeType::kBlockedOnly) {
+    if (auto* container =
+            multi_contents_view_->GetContentsContainerViewFor(contents)) {
+      container->contents_view()->UpdateIsBlockedByModal();
+    }
+  }
+
   if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
     return;
   }

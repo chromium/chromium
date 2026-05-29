@@ -56,5 +56,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::ElementIdentifier,
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusManager*,
                              kDetachedViewFocusManagerKey,
                              nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsBlockedByModalKey, false)
 
 }  // namespace views
