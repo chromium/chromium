@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadow.api.Shadow;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -61,6 +62,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
@@ -79,6 +81,7 @@ public class SearchEngineUtilsUnitTest {
     @Mock FaviconHelper mFaviconHelper;
     @Mock TemplateUrlService mTemplateUrlService;
     @Mock TemplateUrl mTemplateUrl;
+    @Mock Callback<StatusIconResource> mStarterPackCallback;
     @Mock LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock Resources mResources;
     @Mock Profile mProfile;
@@ -731,5 +734,41 @@ public class SearchEngineUtilsUnitTest {
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         assertFalse(searchEngineUtils.isDefaultSearchEngineGoogle());
+    }
+
+    @Test
+    public void testRetrieveFavicon_Gemini() {
+        checkStarterPackFavicon(StarterPackId.GEMINI, R.drawable.ic_spark_4c_16dp);
+    }
+
+    @Test
+    public void testRetrieveFavicon_Bookmarks() {
+        checkStarterPackFavicon(StarterPackId.BOOKMARKS, R.drawable.ic_star_24dp);
+    }
+
+    @Test
+    public void testRetrieveFavicon_History() {
+        checkStarterPackFavicon(StarterPackId.HISTORY, R.drawable.ic_history_24dp);
+    }
+
+    @Test
+    public void testRetrieveFavicon_Tabs() {
+        checkStarterPackFavicon(StarterPackId.TABS, R.drawable.switch_to_tab);
+    }
+
+    private void checkStarterPackFavicon(
+            @StarterPackId int starterPackId, int expectedDrawableRes) {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_SUCCESS)
+                        .build();
+        doReturn(starterPackId).when(mTemplateUrl).getStarterPackId();
+
+        searchEngineUtils.retrieveFavicon(mTemplateUrl, mStarterPackCallback);
+
+        verify(mStarterPackCallback).onResult(mStatusIconCaptor.capture());
+        assertEquals(expectedDrawableRes, mStatusIconCaptor.getValue().getIconRes());
+        histograms.assertExpected();
     }
 }

@@ -45,6 +45,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeUtils;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -354,6 +355,27 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
             }
         }
 
+        retrieveFaviconForStarterPack(templateUrl, callback);
+    }
+
+    private void retrieveFaviconForStarterPack(
+            TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
+        @Nullable StatusIconResource icon =
+                switch (templateUrl.getStarterPackId()) {
+                    case StarterPackId.BOOKMARKS ->
+                            new StatusIconResource(R.drawable.ic_star_24dp, 0);
+                    case StarterPackId.HISTORY ->
+                            new StatusIconResource(R.drawable.ic_history_24dp, 0);
+                    case StarterPackId.TABS -> new StatusIconResource(R.drawable.switch_to_tab, 0);
+                    case StarterPackId.GEMINI ->
+                            new StatusIconResource(R.drawable.ic_spark_4c_16dp, 0);
+                    default -> null;
+                };
+        if (icon != null) {
+            recordEvent(Events.FETCH_SUCCESS);
+            callback.onResult(icon);
+            return;
+        }
         retrieveFaviconFromDefaultResources(templateUrl, callback);
     }
 
