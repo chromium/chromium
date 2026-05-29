@@ -369,6 +369,15 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorSysOmniboxContainer] = {dark_mode ? kColorRefNeutral15
                                                 : kColorSysSurface4};
 
+  // TODO(crbug.com/517162116): Reconcile color token dark-mode swapping
+  // These tokens are temporarily added to solve a missing need. They need
+  // further work with UX to work these cases into the design system.
+  // Please DO NOT add additional usages of these tokens.
+  mixer[kColorSysSurfaceSection] = {dark_mode ? kColorSysSurface1
+                                              : kColorSysSurface};
+  mixer[kColorSysBaseContainerOnSurface] = {dark_mode ? kColorRefSecondary25
+                                                      : kColorSysSurface4};
+
   // Deprecated.
   // TODO(crbug.com/350783235): Remove remaining uses of these deprecated sys
   // tokens.

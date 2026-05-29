@@ -485,9 +485,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysInversePrimary};
 
   // General WebUI page colors.
-  mixer[kColorWebuiCardBackground] = {ui::kColorSysSurface};
+  mixer[kColorWebuiCardBackground] = {ui::kColorSysSurfaceSection};
   mixer[kColorWebuiDialogBackground] = {ui::kColorSysSurface};
-  mixer[kColorWebuiDialogContainerBackground] = {ui::kColorSysBaseContainer};
+  mixer[kColorWebuiDialogContainerBackground] = {
+      ui::kColorSysBaseContainerOnSurface};
   mixer[kColorWebuiPageBackground] = {ui::kColorSysSurface};
 
   ApplyChromeRefresh2026ColorOverrides(mixer);

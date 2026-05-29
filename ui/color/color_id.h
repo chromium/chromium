@@ -240,6 +240,8 @@
   E_CPONLY(kColorSysAiIllustrationShapeSurfaceGradientEnd) \
   /* Experimentation. */ \
   E_CPONLY(kColorSysOmniboxContainer) \
+  E_CPONLY(kColorSysSurfaceSection) \
+  E_CPONLY(kColorSysBaseContainerOnSurface) \
   /* Deprecated */ \
   E_CPONLY(kColorSysStateHover) \
   E_CPONLY(kColorSysStateFocus) \
