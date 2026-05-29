@@ -17,13 +17,6 @@
 
 @implementation OmniboxUtilTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey
@@ -74,7 +67,11 @@
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
-  [self assertIsBottomOmnibox:NO];
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [self assertIsBottomOmnibox:YES];
+  } else {
+    [self assertIsBottomOmnibox:NO];
+  }
 }
 
 // Tests `IsCurrentLayoutBottomOmnibox` on incognito NTP.
@@ -117,7 +114,11 @@
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
-  [self assertIsBottomOmnibox:NO];
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [self assertIsBottomOmnibox:YES];
+  } else {
+    [self assertIsBottomOmnibox:NO];
+  }
   [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
                                    error:nil];
   [self assertIsBottomOmnibox:YES];
