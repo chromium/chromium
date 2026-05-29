@@ -40,9 +40,9 @@ SidePanelUIBase::PanelData::PanelData()
 SidePanelUIBase::PanelData::~PanelData() = default;
 
 SidePanelUIBase::SidePanelUIBase(BrowserWindowInterface* browser)
-    : browser_(browser) {
-  panel_data_ = std::make_unique<PanelData>();
-}
+    : browser_(browser),
+      panel_data_(std::make_unique<PanelData>()),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
 
 SidePanelUIBase::~SidePanelUIBase() = default;
 

@@ -7778,6 +7778,7 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
       "//chrome/browser/record_replay:unit_tests",
       "//chrome/browser/ui/fullscreen",
+      "//chrome/browser/ui/side_panel:test_support",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
       "//chrome/browser/webapps/installable:unit_tests",

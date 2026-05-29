@@ -10,16 +10,27 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
+
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 // An abstract class of the side panel API. Get an instance of this class by
-// calling BrowserWindowInterface->GetFeatures().side_panel_ui()
+// calling SidePanelUI::From(browser).
 class SidePanelUI {
  public:
+  DECLARE_USER_DATA(SidePanelUI);
+
+  SidePanelUI() = default;
+  virtual ~SidePanelUI() = default;
+
+  static SidePanelUI* From(BrowserWindowInterface* browser);
+  static const SidePanelUI* From(const BrowserWindowInterface* browser);
+
   // Open side panel with entry_id.
   virtual void Show(SidePanelEntryId entry_id,
                     std::optional<SidePanelOpenTrigger> open_trigger,

@@ -346,8 +346,7 @@ bool SidePanel::ShouldRestrictMaxWidth() const {
   // TODO(crbug.com/394339052): Only restricting width for only non-read
   // anything content is a temporary solution and UX will investigate a better
   // long term solution.
-  SidePanelUI* side_panel_ui =
-      browser_view_->browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_view_->browser());
   if (!side_panel_ui) {
     return true;
   }
@@ -363,8 +362,7 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
 }
 
 void SidePanel::UpdateWidthOnEntryChanged() {
-  SidePanelUI* side_panel_ui =
-      browser_view_->browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_view_->browser());
   if (!side_panel_ui) {
     return;
   }
@@ -576,7 +574,7 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
   if (width() != proposed_width) {
     if (SidePanelUI* side_panel_ui =
-            browser_view_->browser()->GetFeatures().side_panel_ui()) {
+            SidePanelUI::From(browser_view_->browser())) {
       if (std::optional<SidePanelEntry::Id> entry =
               side_panel_ui->GetCurrentEntryId()) {
         std::string current_panel_id = SidePanelEntryIdToString(entry.value());
@@ -592,8 +590,7 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
 void SidePanel::RecordMetricsIfResized() {
   if (did_resize_) {
-    SidePanelUI* side_panel_ui =
-        browser_view_->browser()->GetFeatures().side_panel_ui();
+    SidePanelUI* side_panel_ui = SidePanelUI::From(browser_view_->browser());
     if (!side_panel_ui) {
       return;
     }

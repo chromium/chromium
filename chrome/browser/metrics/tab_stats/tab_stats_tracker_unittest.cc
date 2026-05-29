@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -562,6 +563,7 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
       mock_browser_user_education_interface_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   BrowserWindowFeatures browser_window_features_;
+  MockSidePanelUI side_panel_ui_{unowned_user_data_host_};
   std::unique_ptr<TestTabStripModelDelegate> test_tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<BrowserActions> browser_actions_;

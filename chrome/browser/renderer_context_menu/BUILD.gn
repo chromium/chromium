@@ -308,6 +308,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/side_panel:test_support",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
       "//components/proxy_config",

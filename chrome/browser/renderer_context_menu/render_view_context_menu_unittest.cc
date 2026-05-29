@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -506,6 +507,7 @@ class RenderViewContextMenuPrefsTest
   ui::UnownedUserDataHost unowned_user_data_host_;
   BrowserWindowFeatures features_;
   std::optional<lens::LensOverlayEntryPointController> lens_controller_;
+  MockSidePanelUI side_panel_ui_{unowned_user_data_host_};
   GURL last_preresolved_url_;
   base::OnceClosure preresolved_finished_closure_;
 

@@ -10,9 +10,9 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -28,68 +28,6 @@ using testing::ReturnRef;
 namespace contextual_tasks {
 
 namespace {
-
-class MockSidePanelUI : public SidePanelUI {
- public:
-  MOCK_METHOD(void,
-              Show,
-              (SidePanelEntryId entry_id,
-               std::optional<SidePanelOpenTrigger> open_trigger,
-               bool suppress_animations),
-              (override));
-  MOCK_METHOD(void,
-              Show,
-              (SidePanelEntryKey entry_key,
-               std::optional<SidePanelOpenTrigger> open_trigger,
-               bool suppress_animations),
-              (override));
-  MOCK_METHOD(void,
-              ShowFrom,
-              (SidePanelEntryKey entry_key,
-               gfx::Rect starting_bounds_in_browser_coordinates),
-              (override));
-  MOCK_METHOD(void,
-              Close,
-              (SidePanelEntryHideReason hide_reason, bool suppress_animations),
-              (override));
-  MOCK_METHOD(void,
-              Toggle,
-              (SidePanelEntryKey key, SidePanelOpenTrigger open_trigger),
-              (override));
-  MOCK_METHOD(std::optional<SidePanelEntryId>,
-              GetCurrentEntryId,
-              (),
-              (const, override));
-  MOCK_METHOD(int, GetCurrentEntryDefaultContentWidth, (), (const, override));
-  MOCK_METHOD(bool, IsSidePanelShowing, (), (const, override));
-  MOCK_METHOD(bool,
-              IsSidePanelEntryShowing,
-              (const SidePanelEntryKey& entry_key),
-              (const, override));
-  MOCK_METHOD(bool,
-              IsSidePanelEntryShowing,
-              (const SidePanelEntry::Key& entry_key, bool for_tab),
-              (const, override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterSidePanelShown,
-              (ShownCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              OnActiveTabChanged,
-              (content::WebContents * old_contents,
-               content::WebContents* new_contents,
-               bool tab_removed_for_deletion),
-              (override));
-  MOCK_METHOD(content::WebContents*,
-              GetWebContentsForTest,
-              (SidePanelEntryId id),
-              (override));
-  MOCK_METHOD(void, DisableAnimationsForTesting, (), (override));
-  MOCK_METHOD(void,
-              SetNoDelaysForTesting,
-              (bool no_delays_for_testing),
-              (override));
-};
 
 class MockContextualTasksPanelHostObserver
     : public ContextualTasksPanelHost::Observer {
@@ -140,7 +78,7 @@ class ContextualTasksPanelHostDesktopTest : public testing::Test {
   std::unique_ptr<NiceMock<MockBrowserWindowInterface>> browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
-  NiceMock<MockSidePanelUI> mock_side_panel_ui_;
+  NiceMock<MockSidePanelUI> mock_side_panel_ui_{unowned_user_data_host_};
   std::unique_ptr<ContextualTasksPanelHostDesktop> panel_host_;
 };
 

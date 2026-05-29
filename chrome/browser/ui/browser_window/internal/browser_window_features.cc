@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/sessions/session_service_browser_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tab_search_feature.h"
@@ -1179,11 +1180,9 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
-  if (webui_browser::IsWebUIBrowserEnabled() && webui_browser_side_panel_ui_) {
-    return webui_browser_side_panel_ui_.get();
-  }
-
-  return side_panel_coordinator_.get();
+  // TODO(crbug.com/428946261): Remove this and replace all clients with
+  // `SidePanelUI::From()`.
+  return browser_ ? SidePanelUI::From(browser_) : nullptr;
 }
 
 ToastController* BrowserWindowFeatures::toast_controller() {

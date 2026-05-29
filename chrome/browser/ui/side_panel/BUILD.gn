@@ -63,6 +63,7 @@ source_set("side_panel_views_dependent") {
     "side_panel_metrics.h",
     "side_panel_registry.cc",
     "side_panel_registry.h",
+    "side_panel_ui.cc",
     "side_panel_ui.h",
     "side_panel_ui_base.cc",
     "side_panel_ui_base.h",
@@ -105,6 +106,20 @@ source_set("side_panel_ui_provider") {
   } else {
     deps += [ "//chrome/browser/ui/views/side_panel" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_side_panel_ui.cc",
+    "mock_side_panel_ui.h",
+  ]
+
+  deps = [
+    ":side_panel_views_dependent",
+    "//testing/gmock",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 source_set("unit_tests") {
