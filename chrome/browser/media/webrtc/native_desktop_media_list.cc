@@ -216,7 +216,8 @@ content::DesktopMediaID::Id GetUpdatedWindowId(
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  if (remote_cocoa::ScopedCGWindowID::Get(desktop_media_id.id)) {
+  if (!is_source_list_delegated &&
+      remote_cocoa::ScopedCGWindowID::Get(desktop_media_id.id)) {
     window_id = desktop_media_id.id;
   }
 #endif
