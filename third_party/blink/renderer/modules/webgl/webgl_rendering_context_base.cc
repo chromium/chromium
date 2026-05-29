@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_copy_element_image_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -6932,63 +6933,55 @@ void WebGLRenderingContextBase::texElementImage2D(
     GLenum format,
     GLenum type,
     const V8UnionElementOrElementImage* element,
+    const WebGLCopyElementImageConfig* config,
     ExceptionState& exception_state) {
-  TexElementImage2DInternal(target, level, internalformat,
-                            /*sx*/ std::nullopt, /*sy*/ std::nullopt,
-                            /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
-                            /*width*/ std::nullopt, /*height*/ std::nullopt,
-                            format, type, element, exception_state);
-}
+  std::optional<GLfloat> sx;
+  std::optional<GLfloat> sy;
+  std::optional<GLfloat> swidth;
+  std::optional<GLfloat> sheight;
+  std::optional<GLsizei> width;
+  std::optional<GLsizei> height;
 
-void WebGLRenderingContextBase::texElementImage2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLsizei width,
-    GLsizei height,
-    GLenum format,
-    GLenum type,
-    const V8UnionElementOrElementImage* element,
-    ExceptionState& exception_state) {
-  TexElementImage2DInternal(target, level, internalformat,
-                            /*sx*/ std::nullopt, /*sy*/ std::nullopt,
-                            /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
-                            width, height, format, type, element,
-                            exception_state);
-}
+  size_t explicit_param_count = 0;
+  if (config) {
+    if (config->hasSx()) {
+      sx = config->sx();
+      explicit_param_count++;
+    }
+    if (config->hasSy()) {
+      sy = config->sy();
+      explicit_param_count++;
+    }
+    if (config->hasSwidth()) {
+      swidth = config->swidth();
+      explicit_param_count++;
+    }
+    if (config->hasSheight()) {
+      sheight = config->sheight();
+      explicit_param_count++;
+    }
+    if (explicit_param_count % 4 != 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "Must specify all or none of (sx,sy,swidth,sheight).");
+      return;
+    }
+    if (config->hasWidth()) {
+      width = config->width();
+      explicit_param_count++;
+    }
+    if (config->hasHeight()) {
+      height = config->height();
+      explicit_param_count++;
+    }
+    if (explicit_param_count % 2 != 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "Must specify neither or both of (width,height).");
+      return;
+    }
+  }
 
-void WebGLRenderingContextBase::texElementImage2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLfloat sx,
-    GLfloat sy,
-    GLfloat swidth,
-    GLfloat sheight,
-    GLenum format,
-    GLenum type,
-    const V8UnionElementOrElementImage* element,
-    ExceptionState& exception_state) {
-  TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
-                            sheight,
-                            /*width*/ std::nullopt, /*height*/ std::nullopt,
-                            format, type, element, exception_state);
-}
-
-void WebGLRenderingContextBase::texElementImage2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLfloat sx,
-    GLfloat sy,
-    GLfloat swidth,
-    GLfloat sheight,
-    GLsizei width,
-    GLsizei height,
-    GLenum format,
-    GLenum type,
-    const V8UnionElementOrElementImage* element,
-    ExceptionState& exception_state) {
   TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
                             sheight, width, height, format, type, element,
                             exception_state);

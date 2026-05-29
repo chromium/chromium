@@ -101,6 +101,7 @@ class WebGLCompressedTextureETC1;
 class WebGLCompressedTexturePVRTC;
 class WebGLCompressedTextureS3TC;
 class WebGLCompressedTextureS3TCsRGB;
+class WebGLCopyElementImageConfig;
 class WebGLDebugShaders;
 class WebGLDrawBuffers;
 class WebGLExtension;
@@ -430,42 +431,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                          GLenum format,
                          GLenum type,
                          const V8UnionElementOrElementImage* element,
-                         ExceptionState& exception_state);
-
-  void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLsizei width,
-                         GLsizei height,
-                         GLenum format,
-                         GLenum type,
-                         const V8UnionElementOrElementImage* element,
-                         ExceptionState& exception_state);
-
-  void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLfloat sx,
-                         GLfloat sy,
-                         GLfloat swidth,
-                         GLfloat sheight,
-                         GLenum format,
-                         GLenum type,
-                         const V8UnionElementOrElementImage* element,
-                         ExceptionState& exception_state);
-
-  void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLfloat sx,
-                         GLfloat sy,
-                         GLfloat swidth,
-                         GLfloat sheight,
-                         GLsizei width,
-                         GLsizei height,
-                         GLenum format,
-                         GLenum type,
-                         const V8UnionElementOrElementImage* element,
+                         const WebGLCopyElementImageConfig* config,
                          ExceptionState& exception_state);
 
   void texParameterf(GLenum target, GLenum pname, GLfloat param);

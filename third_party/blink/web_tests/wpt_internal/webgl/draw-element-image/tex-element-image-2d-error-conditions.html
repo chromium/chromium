@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebGL texElementImage2D error conditions tests</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+    <style>
+      #container {
+        width: 32px;
+        height: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvasHost" width="32" height="32" layoutsubtree>
+      <div id="container"></div>
+    </canvas>
+
+    <script>
+      promise_test(async t => {
+        const canvas = document.getElementById('canvasHost');
+        await waitForCanvasPaint(canvas);
+        const container = document.getElementById('container');
+
+        const gl = canvas.getContext('webgl2');
+        assert_true(gl !== null, "WebGL2 context should be available");
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        const level = 0;
+        const internalformat = gl.RGBA;
+        const format = gl.RGBA;
+        const type = gl.UNSIGNED_BYTE;
+
+        // Helper to run texElementImage2D with optional config.
+        function callTex(config) {
+          if (config === undefined) {
+            gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container);
+          } else {
+            gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container, config);
+          }
+        }
+
+        // Helper to generate config.
+        function makeConfig(sx, sy, swidth, sheight, width, height) {
+          const config = {};
+          if (sx !== undefined) config.sx = sx;
+          if (sy !== undefined) config.sy = sy;
+          if (swidth !== undefined) config.swidth = swidth;
+          if (sheight !== undefined) config.sheight = sheight;
+          if (width !== undefined) config.width = width;
+          if (height !== undefined) config.height = height;
+          return config;
+        }
+
+        // 1. Verify (sx, sy, swidth, sheight) validation.
+        // Must specify all or none.
+
+        // None specified (no config): should NOT throw.
+        callTex();
+
+        // None specified (empty config): should NOT throw.
+        callTex(makeConfig());
+
+        // All specified: should NOT throw.
+        callTex(makeConfig(0, 0, 10, 10));
+
+        // Mismatched: should throw OperationError.
+        const mismatchSrcCases = [
+          makeConfig(0), // Only sx
+          makeConfig(0, 0), // sx, sy
+          makeConfig(0, 0, 10), // sx, sy, swidth
+          makeConfig(undefined, 0, 10, 10), // sy, swidth, sheight
+          makeConfig(0, undefined, 10, 10), // sx, swidth, sheight
+          makeConfig(0, 0, undefined, 10), // sx, sy, sheight
+        ];
+
+        for (const config of mismatchSrcCases) {
+          assert_throws_dom("OperationError",
+            () => callTex(config),
+            `Should throw OperationError for mismatched source params: ${JSON.stringify(config)}`
+          );
+        }
+
+        // 2. Verify (width, height) validation.
+        // Must specify neither or both.
+
+        // Neither specified: should NOT throw (already verified above, but let's be explicit).
+        callTex(makeConfig());
+
+        // Both specified: should NOT throw.
+        callTex(makeConfig(undefined, undefined, undefined, undefined, 10, 10));
+
+        // Mismatched: should throw OperationError.
+        const mismatchDestCases = [
+          makeConfig(undefined, undefined, undefined, undefined, 10), // Only width
+          makeConfig(undefined, undefined, undefined, undefined, undefined, 10), // Only height
+        ];
+
+        for (const config of mismatchDestCases) {
+          assert_throws_dom("OperationError",
+            () => callTex(config),
+            `Should throw OperationError for mismatched dest params: ${JSON.stringify(config)}`
+          );
+        }
+
+        // 3. Mixed cases.
+        // Valid sx/sy/swidth/sheight (all) and valid width/height (both) -> should not throw.
+        callTex(makeConfig(0, 0, 10, 10, 10, 10));
+
+        // Mismatched sx/sy/swidth/sheight (some) and valid width/height (both) -> should throw OperationError.
+        assert_throws_dom("OperationError",
+          () => callTex(makeConfig(0, 0, 10, undefined, 10, 10)),
+          "Should throw OperationError for mismatched source and valid dest"
+        );
+
+        // Valid sx/sy/swidth/sheight (all) and mismatched width/height (one) -> should throw OperationError.
+        assert_throws_dom("OperationError",
+          () => callTex(makeConfig(0, 0, 10, 10, 10, undefined)),
+          "Should throw OperationError for valid source and mismatched dest"
+        );
+
+      }, "texElementImage2D parameter group validation");
+    </script>
+  </body>
+</html>

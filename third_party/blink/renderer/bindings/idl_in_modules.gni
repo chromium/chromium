@@ -1010,6 +1010,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webgl/webgl_context_attributes.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_context_event.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_context_event_init.idl",
+  "//third_party/blink/renderer/modules/webgl/webgl_copy_element_image_config.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_debug_renderer_info.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_debug_shaders.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_depth_texture.idl",

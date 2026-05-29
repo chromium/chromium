@@ -81,8 +81,7 @@
 
           // Zero-area call should not crash and should not paint
           gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat,
-                               /*width*/ 100, /*height*/ 0,
-                               format, type, occluder);
+                               format, type, occluder, { width: 100, height: 0 });
 
           const fbo = gl.createFramebuffer();
           gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);

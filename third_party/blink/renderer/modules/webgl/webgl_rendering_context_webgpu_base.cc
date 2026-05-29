@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_copy_element_image_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -2310,51 +2311,7 @@ void WebGLRenderingContextWebGPUBase::texElementImage2D(
     GLenum format,
     GLenum type,
     const V8UnionElementOrElementImage* element,
-    ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-}
-
-void WebGLRenderingContextWebGPUBase::texElementImage2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLsizei width,
-    GLsizei height,
-    GLenum format,
-    GLenum type,
-    const V8UnionElementOrElementImage* element,
-    ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-}
-
-void WebGLRenderingContextWebGPUBase::texElementImage2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLfloat sx,
-    GLfloat sy,
-    GLfloat swidth,
-    GLfloat sheight,
-    GLenum format,
-    GLenum type,
-    const V8UnionElementOrElementImage* element,
-    ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-}
-
-void WebGLRenderingContextWebGPUBase::texElementImage2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLfloat sx,
-    GLfloat sy,
-    GLfloat swidth,
-    GLfloat sheight,
-    GLsizei width,
-    GLsizei height,
-    GLenum format,
-    GLenum type,
-    const V8UnionElementOrElementImage* element,
+    const WebGLCopyElementImageConfig* config,
     ExceptionState& exception_state) {
   NOTIMPLEMENTED();
 }

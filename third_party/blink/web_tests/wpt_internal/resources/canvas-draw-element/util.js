@@ -137,30 +137,28 @@ void main(){
     const format = gl.RGBA;
     const type = gl.UNSIGNED_BYTE;
 
+    const config = {};
+    let hasConfig = false;
     if (explicitSourceRect) {
-      if (explicitScale) {
-        gl.texElementImage2D(
-          gl.TEXTURE_2D, level, internalformat,
-          sx, sy, swidth, sheight,
-          destWidth, destHeight,
-          format, type, target);
-      } else {
-        gl.texElementImage2D(
-          gl.TEXTURE_2D, level, internalformat,
-          sx, sy, swidth, sheight,
-          format, type, target);
-      }
+      config.sx = sx;
+      config.sy = sy;
+      config.swidth = swidth;
+      config.sheight = sheight;
+      hasConfig = true;
+    }
+    if (explicitScale) {
+      config.width = destWidth;
+      config.height = destHeight;
+      hasConfig = true;
+    }
+    if (hasConfig) {
+      gl.texElementImage2D(
+        gl.TEXTURE_2D, level, internalformat,
+        format, type, target, config);
     } else {
-      if (explicitScale) {
-        gl.texElementImage2D(
-          gl.TEXTURE_2D, level, internalformat,
-          destWidth, destHeight,
-          format, type, target);
-      } else {
-        gl.texElementImage2D(
-          gl.TEXTURE_2D, level, internalformat,
-          format, type, target);
-      }
+      gl.texElementImage2D(
+        gl.TEXTURE_2D, level, internalformat,
+        format, type, target);
     }
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -218,30 +216,28 @@ void main(){
     const type = gl.UNSIGNED_BYTE;
 
     if (target instanceof Element) {
+      const config = {};
+      let hasConfig = false;
       if (explicitSourceRect) {
-        if (explicitScale) {
-          gl.texElementImage2D(
-            gl.TEXTURE_2D, level, internalformat,
-            sx, sy, swidth, sheight,
-            destWidth, destHeight,
-            format, type, target);
-        } else {
-          gl.texElementImage2D(
-            gl.TEXTURE_2D, level, internalformat,
-            sx, sy, swidth, sheight,
-            format, type, target);
-        }
+        config.sx = sx;
+        config.sy = sy;
+        config.swidth = swidth;
+        config.sheight = sheight;
+        hasConfig = true;
+      }
+      if (explicitScale) {
+        config.width = destWidth;
+        config.height = destHeight;
+        hasConfig = true;
+      }
+      if (hasConfig) {
+        gl.texElementImage2D(
+          gl.TEXTURE_2D, level, internalformat,
+          format, type, target, config);
       } else {
-        if (explicitScale) {
-          gl.texElementImage2D(
-            gl.TEXTURE_2D, level, internalformat,
-            destWidth, destHeight,
-            format, type, target);
-        } else {
-          gl.texElementImage2D(
-            gl.TEXTURE_2D, level, internalformat,
-            format, type, target);
-        }
+        gl.texElementImage2D(
+          gl.TEXTURE_2D, level, internalformat,
+          format, type, target);
       }
     }
 

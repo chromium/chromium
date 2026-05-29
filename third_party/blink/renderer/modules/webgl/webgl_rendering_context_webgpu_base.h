@@ -40,6 +40,7 @@ class VideoFrame;
 class WebGLActiveInfo;
 class WebGLObject;
 class WebGLBuffer;
+class WebGLCopyElementImageConfig;
 class WebGLFramebuffer;
 class WebGLProgram;
 class WebGLQuery;
@@ -608,42 +609,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          GLenum format,
                          GLenum type,
                          const V8UnionElementOrElementImage* element,
-                         ExceptionState& exception_state);
-
-  void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLsizei width,
-                         GLsizei height,
-                         GLenum format,
-                         GLenum type,
-                         const V8UnionElementOrElementImage* element,
-                         ExceptionState& exception_state);
-
-  void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLfloat sx,
-                         GLfloat sy,
-                         GLfloat swidth,
-                         GLfloat sheight,
-                         GLenum format,
-                         GLenum type,
-                         const V8UnionElementOrElementImage* element,
-                         ExceptionState& exception_state);
-
-  void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLfloat sx,
-                         GLfloat sy,
-                         GLfloat swidth,
-                         GLfloat sheight,
-                         GLsizei width,
-                         GLsizei height,
-                         GLenum format,
-                         GLenum type,
-                         const V8UnionElementOrElementImage* element,
+                         const WebGLCopyElementImageConfig* config,
                          ExceptionState& exception_state);
 
   void texSubImage2D(GLenum target,
