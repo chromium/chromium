@@ -83,11 +83,15 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsScheduled() override {}
 
-  void OnImplicitAnimationsCompleted() override { layer_->SetOpacity(0); }
+  void OnImplicitAnimationsCompleted() override {
+    CHECK(layer_);
+    layer_->SetOpacity(0);
+    layer_ = nullptr;
+  }
 
  private:
   // Unowned.
-  const raw_ptr<ui::Layer, DanglingUntriaged> layer_;
+  raw_ptr<ui::Layer> layer_;
 };
 
 class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
