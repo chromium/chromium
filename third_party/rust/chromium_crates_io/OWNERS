@@ -1,0 +1,7 @@
+# `harfrust` is an `allow_unsafe = false`, no-`build.rs` crate that needs
+# relatively frequent updates while it is being actively developed / improved.
+# Because of this, the crate owners are temporarily grand the ownership of
+# `Cargo.toml` / `Cargo.toml` to facilitate faster round-trips when updating
+# this crate (with an expectation that they can check and enforce
+# `third_party/rust/OWNERS-review-checklist.md`).
+per-file Cargo.*=file://third_party/harfbuzz/OWNERS
