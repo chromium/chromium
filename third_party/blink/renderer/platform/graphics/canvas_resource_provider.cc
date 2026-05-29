@@ -401,7 +401,7 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
 
     resource_ = NewOrRecycledResource();
     dst_access = resource_->BeginAccess(/*readonly=*/false);
-    if (must_preserve_content_on_copy_on_write_for_canvas_2d_) {
+    if (must_preserve_content_on_copy_on_write_) {
       auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
       auto mailbox = resource()->GetSharedImage()->mailbox();
       auto src_access = old_resource->BeginAccess(/*readonly=*/true);
@@ -414,12 +414,11 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
       is_cleared_ = false;
     }
 
-    UMA_HISTOGRAM_BOOLEAN(
-        "Blink.Canvas.ContentChangeMode",
-        must_preserve_content_on_copy_on_write_for_canvas_2d_);
+    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
+                          must_preserve_content_on_copy_on_write_);
     // By default, the contents of the new resource must be preserved on a
     // subsequent CopyOnWrite.
-    must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
+    must_preserve_content_on_copy_on_write_ = true;
   } else {
     dst_access = resource_->BeginAccess(/*readonly=*/false);
   }
@@ -550,7 +549,7 @@ bool Canvas2DResourceProviderSharedImage::WritePixels(
   // (see discussion here:
   // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
   // Verify that this is the case and update the code here.
-  must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
+  must_preserve_content_on_copy_on_write_ = true;
 
   auto client_si = resource()->GetSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
@@ -921,7 +920,7 @@ void Canvas2DResourceProviderSharedImage::EndWriteAccess() {
     // As a write operation has just completed on the current resource, it is
     // now necessary to preserve that resource's contents on a subsequent
     // CopyOnWrite.
-    must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
+    must_preserve_content_on_copy_on_write_ = true;
   } else {
     if (ShouldReplaceTargetBuffer()) {
       resource_ = NewOrRecycledResource();
@@ -1684,10 +1683,8 @@ CanvasResourceProvider::CanvasResourceProvider(
       color_space_(color_space),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_for_canvas_2d_ =
-      static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_for_canvas_2d_ =
-      static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
+  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
@@ -1717,13 +1714,12 @@ void CanvasResourceProvider::SetRecorder(
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
-  if (IsPrinting() && clear_frame_for_canvas2d_) {
+  if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (recorder_->ReleasableOpBytesUsed() >
-          max_recorded_op_bytes_for_canvas_2d_ ||
-      recorder_->ReleasableImageBytesUsed() >
-          max_pinned_image_bytes_for_canvas_2d_) [[unlikely]] {
+  if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
+      recorder_->ReleasableImageBytesUsed() > max_pinned_image_bytes_)
+      [[unlikely]] {
     Flush(FlushReason::kOther);
   }
 }
@@ -1777,8 +1773,8 @@ void CanvasResourceProvider::RecordingCleared() {
   // Since the recording has been cleared, it contains no draw commands and it
   // is now safe to discard the old copy of canvas content on a subsequent
   // CopyOnWrite.
-  must_preserve_content_on_copy_on_write_for_canvas_2d_ = false;
-  clear_frame_for_canvas2d_ = true;
+  must_preserve_content_on_copy_on_write_ = false;
+  clear_frame_ = true;
 }
 
 MemoryManagedPaintCanvas&
@@ -1936,12 +1932,12 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   auto timer = CreateScopedRasterTimerForCanvas2D();
   bool want_to_print = IsPrinting() || reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
-  bool preserve_recording = want_to_print && clear_frame_for_canvas2d_;
+  bool preserve_recording = want_to_print && clear_frame_;
 
   // If a previous flush rasterized some paint ops, we lost part of the
   // recording and must fallback to raster printing instead of vectorial
   // printing.
-  clear_frame_for_canvas2d_ = false;
+  clear_frame_ = false;
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
@@ -2016,7 +2012,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
             .GetGpuFeatureInfo()
             .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
         gpu::kGpuFeatureStatusEnabled) {
-      max_recorded_op_bytes_for_canvas_2d_ =
+      max_recorded_op_bytes_ =
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
       recorder_->DisableLineDrawingAsPaths();
     }

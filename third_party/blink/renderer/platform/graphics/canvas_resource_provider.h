@@ -226,7 +226,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // resource on CopyOnWrite. True by default, but can be set to false as an
   // optimization if the current resource is known to have been cleared.
   // This is only used for Canvas2D.
-  bool must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
+  bool must_preserve_content_on_copy_on_write_ = true;
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
@@ -276,10 +276,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool always_enable_raster_timers_for_testing_ = false;
 
   // Parameters for the auto-flushing heuristic.
-  size_t max_recorded_op_bytes_for_canvas_2d_;
-  size_t max_pinned_image_bytes_for_canvas_2d_;
+  size_t max_recorded_op_bytes_;
+  size_t max_pinned_image_bytes_;
 
-  bool clear_frame_for_canvas2d_ = true;
+  bool clear_frame_ = true;
   std::optional<cc::PaintRecord> last_recording_;
 };
 
