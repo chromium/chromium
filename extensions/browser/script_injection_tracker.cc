@@ -647,6 +647,15 @@ void ScriptInjectionTracker::
 }
 
 // static
+void ScriptInjectionTracker::AddExtensionThatRanUserScriptsInProcessForTesting(
+    const content::RenderProcessHost& process,
+    const ExtensionId& extension_id) {
+  RenderProcessHostUserData::GetOrCreate(
+      const_cast<content::RenderProcessHost&>(process))
+      .AddScript(ScriptType::kUserScript, extension_id);
+}
+
+// static
 ExtensionIdSet
 ScriptInjectionTracker::GetExtensionsThatRanContentScriptsInProcess(
     const content::RenderProcessHost& process) {

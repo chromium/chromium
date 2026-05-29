@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -41,6 +42,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
@@ -84,6 +86,21 @@ constexpr char kAddEventListenerWithInvalidWorkerScopeURL[] =
 constexpr char kAddEventListenerWithInvalidExtensionID[] =
     "Tried to add an event listener for a service worker without a valid "
     "extension ID.";
+
+// A message when mojom::EventRouter::AddListenerForMainThread() or
+// AddListenerForServiceWorker() is called with an unauthorized extension ID.
+constexpr char kAddEventListenerWithUnauthorizedExtensionID[] =
+    "Tried to add an event listener for an unauthorized extension ID.";
+
+// A message when mojom::EventRouter::AddListenerForMainThread() is called
+// with an unauthorized listener URL.
+constexpr char kAddEventListenerWithUnauthorizedListenerURL[] =
+    "Tried to add an event listener for an unauthorized listener URL.";
+
+// A message when mojom::EventRouter::AddListenerForServiceWorker() is called
+// with an unauthorized worker scope URL.
+constexpr char kAddEventListenerWithUnauthorizedWorkerScopeURL[] =
+    "Tried to add an event listener for an unauthorized worker scope URL.";
 
 // A message when mojom::EventRouter::RemoveListenerForMainThread() is called
 // with an invalid param.
@@ -388,13 +405,39 @@ void EventRouter::AddListenerForMainThread(
       // longer valid, so we return here.
       return;
     }
+
+    // The process must be authorized to host the extension. This includes
+    // regular extension processes, but also processes that have had a content
+    // script or user script injected into them (since those run in the
+    // web page's process).
+    bool is_authorized_extension_process =
+        ProcessMap::Get(browser_context_)
+            ->Contains(extension_id, process->GetDeprecatedID());
+    bool has_injected_content_script =
+        ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+            *process, extension_id);
+    bool has_injected_user_script =
+        ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+            *process, extension_id);
+    if (!is_authorized_extension_process && !has_injected_content_script &&
+        !has_injected_user_script) {
+      receivers_.ReportBadMessage(kAddEventListenerWithUnauthorizedExtensionID);
+      return;
+    }
+
     AddEventListener(event_listener->event_name, process, extension_id);
   } else if (listener_owner.is_listener_url() &&
              listener_owner.get_listener_url().is_valid()) {
-    AddEventListenerForURL(event_listener->event_name, process,
-                           listener_owner.get_listener_url());
+    const GURL& listener_url = listener_owner.get_listener_url();
+    if (!content::ChildProcessSecurityPolicy::GetInstance()
+             ->CanAccessDataForOrigin(process->GetDeprecatedID(),
+                                      url::Origin::Create(listener_url))) {
+      receivers_.ReportBadMessage(kAddEventListenerWithUnauthorizedListenerURL);
+      return;
+    }
+    AddEventListenerForURL(event_listener->event_name, process, listener_url);
   } else {
-    mojo::ReportBadMessage(kAddEventListenerWithInvalidParam);
+    receivers_.ReportBadMessage(kAddEventListenerWithInvalidParam);
   }
 }
 
@@ -408,12 +451,13 @@ void EventRouter::AddListenerForServiceWorker(
   const mojom::EventListenerOwner& listener_owner =
       *event_listener->listener_owner;
   if (!listener_owner.is_extension_id()) {
-    mojo::ReportBadMessage(kAddEventListenerWithInvalidExtensionID);
+    receivers_.ReportBadMessage(kAddEventListenerWithInvalidExtensionID);
     return;
   }
 
-  if (!event_listener->service_worker_context->scope_url.is_valid()) {
-    mojo::ReportBadMessage(kAddEventListenerWithInvalidWorkerScopeURL);
+  const GURL& scope_url = event_listener->service_worker_context->scope_url;
+  if (!scope_url.is_valid()) {
+    receivers_.ReportBadMessage(kAddEventListenerWithInvalidWorkerScopeURL);
     return;
   }
 
@@ -423,6 +467,20 @@ void EventRouter::AddListenerForServiceWorker(
     // in the browser process before the renderer has fully shut down. We
     // don't want non-lazy listeners to be added for contexts that are no
     // longer valid, so we return here.
+    return;
+  }
+
+  if (!ProcessMap::Get(browser_context_)
+           ->Contains(extension_id, process->GetDeprecatedID())) {
+    receivers_.ReportBadMessage(kAddEventListenerWithUnauthorizedExtensionID);
+    return;
+  }
+
+  if (!content::ChildProcessSecurityPolicy::GetInstance()
+           ->CanAccessDataForOrigin(process->GetDeprecatedID(),
+                                    url::Origin::Create(scope_url))) {
+    receivers_.ReportBadMessage(
+        kAddEventListenerWithUnauthorizedWorkerScopeURL);
     return;
   }
 
