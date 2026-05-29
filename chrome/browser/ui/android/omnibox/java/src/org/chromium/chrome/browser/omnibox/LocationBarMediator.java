@@ -384,6 +384,7 @@ class LocationBarMediator
                 .addSyncObserverAndPostIfNonNull(
                         mCallbackController.makeCancelable(this::onFuseboxStateChanged));
         mFuseboxCoordinator.setOnInteractionCompletedCallback(this::onFuseboxInteractionCompleted);
+        mFuseboxCoordinator.setOnFirstPickerInteractionCanceledCallback(this::endInput);
         mOmniboxChipManager = omniboxChipManager;
     }
 

@@ -127,6 +127,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
     private boolean mDestroyed;
     private @Nullable Callback<Boolean> mOnInteractionCompletedCallback;
+    private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -271,7 +272,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         Clipboard.getInstance(),
                         mScrimManager,
                         mScrimAnchorViewSupplier,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mOnFirstPickerInteractionCanceledCallback);
         mMediator.onContextualTaskFocusChanged(mHasContextualTasksFocus);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
@@ -491,6 +493,14 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     /** Set callback to be invoked when the popup is dismissed. */
     public void setOnInteractionCompletedCallback(Callback<Boolean> callback) {
         mOnInteractionCompletedCallback = callback;
+    }
+
+    /** Set callback to be invoked when the first picker interaction is canceled. */
+    public void setOnFirstPickerInteractionCanceledCallback(Runnable callback) {
+        mOnFirstPickerInteractionCanceledCallback = callback;
+        if (mMediator != null) {
+            mMediator.setOnFirstPickerInteractionCanceledCallback(callback);
+        }
     }
 
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {

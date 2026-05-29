@@ -128,6 +128,8 @@ import java.util.function.Supplier;
     private @Nullable FuseboxMetrics mMetrics;
     private @Nullable PropertyModel mScrimModel;
     private boolean mActionTaken;
+    private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
+    private boolean mNeedUnfocusOnCancel;
 
     private final ListObserver<Void> mListObserver =
             new ListObserver<>() {
@@ -154,7 +156,8 @@ import java.util.function.Supplier;
             Clipboard clipboard,
             ScrimManager scrimManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            @Nullable Runnable onFirstPickerInteractionCanceledCallback) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -169,6 +172,7 @@ import java.util.function.Supplier;
         mScrimManager = scrimManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
         mBackPressManager = backPressManager;
+        mOnFirstPickerInteractionCanceledCallback = onFirstPickerInteractionCanceledCallback;
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -218,6 +222,10 @@ import java.util.function.Supplier;
 
     public boolean wasActionTaken() {
         return mActionTaken;
+    }
+
+    public void setOnFirstPickerInteractionCanceledCallback(Runnable callback) {
+        mOnFirstPickerInteractionCanceledCallback = callback;
     }
 
     @EnsuresNonNullIf(
@@ -357,6 +365,9 @@ import java.util.function.Supplier;
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
         }
         mInput = input;
+        if (mInput == null) {
+            mNeedUnfocusOnCancel = false;
+        }
 
         if (mInput != null) {
             // TODO(crbug.com/481365131): there must be a better way to do that.
@@ -364,6 +375,7 @@ import java.util.function.Supplier;
                     && mInput.getFocusReason() == OmniboxFocusReason.NTP_AI_MODE) {
                 FuseboxMetrics.notifyAiModeActivated(AiModeActivationSource.NTP_BUTTON);
             } else if (mInput.getFocusReason() == OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP) {
+                mNeedUnfocusOnCancel = true;
                 showPopup();
             }
 
@@ -704,6 +716,16 @@ import java.util.function.Supplier;
         mModelList.add(attachment);
     }
 
+    private boolean hasUserAddedAttachments() {
+        if (mModelList == null) return false;
+        for (int i = 0; i < mModelList.size(); i++) {
+            if (!mModelList.get(i).isSuggestedTab) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void onAttachmentsChanged() {
         if (!isInInputSession()) return;
         updateFuseboxState();
@@ -711,6 +733,10 @@ import java.util.function.Supplier;
         if (!OmniboxFeatures.sShowModelPicker.getValue()) {
             updateClientControlledToolButtonList();
             updatePopupButtonEnabledStates();
+        }
+
+        if (mNeedUnfocusOnCancel && hasUserAddedAttachments()) {
+            mNeedUnfocusOnCancel = false;
         }
     }
 
@@ -758,6 +784,16 @@ import java.util.function.Supplier;
                 intent, this::onTabPickerResult, R.string.low_memory_error);
     }
 
+    private void handlePickerCanceled() {
+        if (!isInInputSession()) return;
+        if (mNeedUnfocusOnCancel) {
+            mNeedUnfocusOnCancel = false;
+            if (mOnFirstPickerInteractionCanceledCallback != null) {
+                mOnFirstPickerInteractionCanceledCallback.run();
+            }
+        }
+    }
+
     @VisibleForTesting
     /* package */ void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (!isInInputSession()) return;
@@ -766,6 +802,7 @@ import java.util.function.Supplier;
             if (data != null && data.hasExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR)) {
                 onAttachmentUploadFailed();
             }
+            handlePickerCanceled();
             return;
         }
 
@@ -972,11 +1009,15 @@ import java.util.function.Supplier;
                     if (resultCode != Activity.RESULT_OK
                             || data == null
                             || data.getExtras() == null) {
+                        handlePickerCanceled();
                         return;
                     }
 
                     var bitmap = (Bitmap) data.getExtras().get("data");
-                    if (bitmap == null) return;
+                    if (bitmap == null) {
+                        handlePickerCanceled();
+                        return;
+                    }
 
                     long startTime = SystemClock.elapsedRealtime();
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -1023,11 +1064,18 @@ import java.util.function.Supplier;
         mWindowAndroid.showCancelableIntent(
                 intent,
                 (resultCode, data) -> {
+                    if (resultCode != Activity.RESULT_OK || data == null) {
+                        handlePickerCanceled();
+                        return;
+                    }
                     if (!isInInputSession()) return;
-                    if (resultCode != Activity.RESULT_OK || data == null) return;
 
                     try (var batchToken = mModelList.beginBatchEdit()) {
                         var uris = extractUrisFromResult(data);
+                        if (uris.isEmpty()) {
+                            handlePickerCanceled();
+                            return;
+                        }
                         for (var uri : uris) {
                             fetchAttachmentDetails(
                                     uri,
@@ -1062,11 +1110,18 @@ import java.util.function.Supplier;
         mWindowAndroid.showCancelableIntent(
                 i,
                 (resultCode, data) -> {
-                    if (resultCode != Activity.RESULT_OK || data == null) return;
+                    if (resultCode != Activity.RESULT_OK || data == null) {
+                        handlePickerCanceled();
+                        return;
+                    }
                     if (!isInInputSession()) return;
 
                     try (var batchToken = mModelList.beginBatchEdit()) {
                         var uris = extractUrisFromResult(data);
+                        if (uris.isEmpty()) {
+                            handlePickerCanceled();
+                            return;
+                        }
                         for (var uri : uris) {
                             fetchAttachmentDetails(
                                     uri,
@@ -1290,6 +1345,7 @@ import java.util.function.Supplier;
 
     private void onDynamicButtonClicked(PopupButtonData data) {
         mActionTaken = true;
+        mNeedUnfocusOnCancel = false;
         if (data.type == PopupButtonType.MODEL) {
             FuseboxMetrics.notifyModelButtonSelected(data.protoId);
             setModelMode(data.protoId);

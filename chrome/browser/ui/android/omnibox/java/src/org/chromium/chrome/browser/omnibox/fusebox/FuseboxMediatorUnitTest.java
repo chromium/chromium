@@ -155,8 +155,10 @@ public class FuseboxMediatorUnitTest {
     @Mock private ScrimManager mScrimManager;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private BackPressManager mBackPressManager;
+    @Mock private Runnable mOnFirstPickerInteractionCanceledCallback;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
+    @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private Context mContext;
@@ -252,7 +254,8 @@ public class FuseboxMediatorUnitTest {
                         mClipboard,
                         mScrimManager,
                         () -> null,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mOnFirstPickerInteractionCanceledCallback);
         mMediator.beginInput(createSession());
     }
 
@@ -1751,6 +1754,117 @@ public class FuseboxMediatorUnitTest {
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, intent);
 
         verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testOnTabPickerResult_canceled_unfocuses_whenFakeBoxPlusButtonTap() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+
+        verify(mOnFirstPickerInteractionCanceledCallback).run();
+    }
+
+    @Test
+    public void testOnTabPickerResult_canceled_doesNotUnfocus_whenNotFakeBoxPlusButtonTap() {
+        mInput.setFocusReason(OmniboxFocusReason.OMNIBOX_TAP);
+        recreateMediator();
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+
+        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+    }
+
+    @Test
+    public void testOnTabPickerResult_canceled_doesNotUnfocus_afterAttachmentAdded() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_TAB);
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+
+        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+    }
+
+    @Test
+    public void testOnTabPickerResult_canceled_doesNotUnfocus_afterToolButtonClicked() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+
+        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+    }
+
+    @Test
+    public void testOnTabPickerResult_canceled_doesNotUnfocus_afterModelButtonClicked() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        ModelConfig config1 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+        ModelConfig config2 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Flash")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {config1.toByteArray(), config2.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
+
+        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertFalse(models.isEmpty());
+        models.get(0).onClicked.run();
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+
+        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+    }
+
+    @Test
+    public void testCameraResult_nullBitmap_unfocuses_whenFakeBoxPlusButtonTap() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
+
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        Intent mockIntent = new Intent();
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, mockIntent);
+
+        verify(mOnFirstPickerInteractionCanceledCallback).run();
+    }
+
+    @Test
+    public void testImagePickerResult_emptyUris_unfocuses_whenFakeBoxPlusButtonTap() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
+
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        Intent mockIntent = new Intent();
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, mockIntent);
+
+        verify(mOnFirstPickerInteractionCanceledCallback).run();
     }
 
     @Test
