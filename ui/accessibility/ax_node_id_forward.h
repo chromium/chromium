@@ -35,6 +35,12 @@ static constexpr AXNodeID kInitialEmptyDocumentRootNodeID = -1000000000;
 static constexpr AXNodeID kFirstGeneratedRendererNodeID = -1000000001;
 static constexpr AXNodeID kLastGeneratedRendererNodeID = INT_MIN;
 
+// Validation for AXNodeID from a renderer.
+// Browser reserves [-1,000,000,000, -1] for internal nodes.
+constexpr bool IsValidAXNodeIDFromRenderer(int32_t id) {
+  return id >= kInvalidAXNodeID || id <= ui::kFirstGeneratedRendererNodeID;
+}
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_NODE_ID_FORWARD_H_

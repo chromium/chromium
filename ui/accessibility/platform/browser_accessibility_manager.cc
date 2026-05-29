@@ -254,7 +254,9 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
     return;
   }
 
-  auto* wrapper = GetFromAXNode(node);
+  // Mitigation for b/498205735. Using raw_ptr on the stack as defense-in-depth
+  // to ensure memory is quarantined if freed during the loop below.
+  raw_ptr<BrowserAccessibility> wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
 
   const auto& node_data = wrapper->GetData();
