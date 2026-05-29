@@ -40,7 +40,8 @@ source_set("relaunch_notification") {
     ]
   } else {
     public_deps += [
-      # RelaunchRecommendedBubbleView inherits from LocationBarBubbleDelegateView.
+      # RelaunchRecommendedBubbleView inherits from
+      # LocationBarBubbleDelegateView.
       "//chrome/browser/ui/views/location_bar",
     ]
   }
@@ -72,7 +73,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
-    "//chrome/browser/lifetime:lifetime",
+    "//chrome/browser/lifetime",
     "//chrome/common:constants",
     "//components/prefs",
     "//components/strings:components_strings_grit",
