@@ -699,10 +699,17 @@ StructTraits<UsedInputStateDataView, omnibox::InputState>::max_total_inputs(
 }
 
 // static
+bool StructTraits<UsedInputStateDataView, omnibox::InputState>::
+    is_canvas_query_submitted(const omnibox::InputState& input) {
+  return input.is_canvas_query_submitted;
+}
+
+// static
 bool StructTraits<UsedInputStateDataView, omnibox::InputState>::Read(
     UsedInputStateDataView data,
     omnibox::InputState* output) {
   output->max_total_inputs = data.max_total_inputs();
+  output->is_canvas_query_submitted = data.is_canvas_query_submitted();
   return data.ReadAllowedModels(&output->allowed_models) &&
          data.ReadAllowedTools(&output->allowed_tools) &&
          data.ReadAllowedInputTypes(&output->allowed_input_types) &&

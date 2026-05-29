@@ -697,9 +697,9 @@ void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
   }
 }
 
-void ComposeboxQueryControllerBridge::UpdateModelFromUrl(const GURL& url) {
+void ComposeboxQueryControllerBridge::UpdateStateFromUrl(const GURL& url) {
   if (input_state_model_) {
-    input_state_model_->UpdateModelFromUrl(url);
+    input_state_model_->UpdateStateFromUrl(url);
   }
 }
 

@@ -94,6 +94,7 @@ export class MockInputState implements InputState {
   inputTypeConfigs: any[] = [];
   maxInputsByType: {[key: number]: number} = {};
   maxTotalInputs: number = 0;
+  isCanvasQuerySubmitted: boolean = false;
 
   hintText: string = '';
 

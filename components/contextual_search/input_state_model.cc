@@ -102,7 +102,7 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
     if (!std::ranges::contains(allowed_models, model_config.model())) {
       continue;
     }
-    if (model_config.aim_url_params().size() == 0) {
+    if (model_config.aim_url_params().empty()) {
       continue;
     }
     bool all_params_match = true;
@@ -127,6 +127,48 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
   }
 
   return best_model;
+}
+
+std::optional<omnibox::ToolMode> GetActiveToolFromUrl(
+    const GURL& active_url,
+    const std::vector<omnibox::ToolConfig>& tool_configs,
+    const std::vector<omnibox::ToolMode>& allowed_tools) {
+  if (!active_url.is_valid() || !active_url.has_query()) {
+    return std::nullopt;
+  }
+
+  std::optional<omnibox::ToolMode> best_tool = std::nullopt;
+  size_t max_matched_params = 0;
+
+  for (const auto& tool_config : tool_configs) {
+    if (!std::ranges::contains(allowed_tools, tool_config.tool())) {
+      continue;
+    }
+    if (tool_config.aim_url_params().empty()) {
+      continue;
+    }
+    bool all_params_match = true;
+    size_t matched_count = tool_config.aim_url_params().size();
+    for (const auto& url_param : tool_config.aim_url_params()) {
+      std::string value;
+      bool found =
+          net::GetValueForKeyInQuery(active_url, url_param.param_key(), &value);
+      if (!found || value != url_param.param_value()) {
+        all_params_match = false;
+        break;
+      }
+    }
+    if (all_params_match) {
+      if (!best_tool.has_value() || matched_count > max_matched_params) {
+        best_tool = tool_config.tool();
+        max_matched_params = matched_count;
+      } else if (matched_count == max_matched_params) {
+        DLOG(WARNING) << "Ambiguous tool match tie!";
+      }
+    }
+  }
+
+  return best_tool;
 }
 
 // Checks if a set of items are all present in an allowed list.
@@ -235,6 +277,15 @@ InputStateModel::InputStateModel(
   }
 
   state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  state_.is_canvas_query_submitted = false;
+  if (auto parsed_tool = GetActiveToolFromUrl(active_url, state_.tool_configs,
+                                              state_.allowed_tools);
+      parsed_tool.has_value()) {
+    state_.active_tool = *parsed_tool;
+    if (*parsed_tool == omnibox::ToolMode::TOOL_MODE_CANVAS) {
+      state_.is_canvas_query_submitted = true;
+    }
+  }
   // the initial model should be the first allowed model, but can be
   // overridden by parameters in the active web contents URL.
   state_.active_model = state_.GetDefaultModel();
@@ -318,11 +369,24 @@ void InputStateModel::setActiveModel(ModelMode model) {
   updateSelectedState(state_.active_tool, model);
 }
 
-void InputStateModel::UpdateModelFromUrl(const GURL& url) {
-  if (auto matched_model = GetActiveModelFromUrl(url, state_.model_configs,
-                                                 state_.allowed_models);
-      matched_model.has_value()) {
-    setActiveModel(*matched_model);
+void InputStateModel::UpdateStateFromUrl(const GURL& url) {
+  auto matched_tool =
+      GetActiveToolFromUrl(url, state_.tool_configs, state_.allowed_tools);
+  ToolMode new_tool = matched_tool.value_or(state_.active_tool);
+
+  bool new_canvas_submitted = state_.is_canvas_query_submitted;
+  if (matched_tool.has_value()) {
+    new_canvas_submitted = (*matched_tool == ToolMode::TOOL_MODE_CANVAS);
+  }
+
+  auto matched_model =
+      GetActiveModelFromUrl(url, state_.model_configs, state_.allowed_models);
+  ModelMode new_model = matched_model.value_or(state_.active_model);
+
+  if (new_model != state_.active_model || new_tool != state_.active_tool ||
+      new_canvas_submitted != state_.is_canvas_query_submitted) {
+    state_.is_canvas_query_submitted = new_canvas_submitted;
+    updateSelectedState(new_tool, new_model);
   }
 }
 

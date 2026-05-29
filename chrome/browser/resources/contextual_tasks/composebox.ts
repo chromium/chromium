@@ -146,14 +146,12 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       selectedMatchIndex_: {type: Number},
       enableFileHint_: {type: Boolean},
       lensButtonDisabled_: {type: Boolean},
-      isCanvasQuerySubmitted: {type: Boolean},
       caretAnimationsEnabled_: {type: Boolean},
       usePecApi_: {type: Boolean},
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
     };
   }
-
   accessor enableNativeZeroStateSuggestions: boolean = false;
   accessor inNlm: boolean = false;
   accessor inToolMode_: boolean = false;
@@ -162,7 +160,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   accessor isLensOverlayShowing: boolean = false;
   accessor isOverlayOpenForAimVisualSearch: boolean = false;
   accessor inputEnabled: boolean = true;
-  accessor isCanvasQuerySubmitted: boolean = false;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
     input: '',
@@ -352,13 +349,12 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   // Must have `$` access in updated to avoid violating Lit contract since
-  // since `willUpdate` runs before `render`, which will cause `$`
-  // to not be populated yet.
+  // `willUpdate` runs before `render`, which will cause `$` to not be
+  // populated yet.
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isZeroState')) {
       if (this.isZeroState) {
-        this.isCanvasQuerySubmitted = false;
         // Opening zero state triggers animation.
         this.$.composebox.animationState = GlowAnimationState.SUBMITTING;
       }
@@ -553,36 +549,15 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.$.composebox.deleteFile(fileToken);
   }
 
+  isCanvasQuerySubmitted(): boolean {
+    return !this.isZeroState &&
+        (this.inputState?.isCanvasQuerySubmitted ?? false);
+  }
+
   getComposebox() {
     return this.$.composebox;
   }
 
-  setActiveTool(toolMode: ToolMode) {
-    this.searchboxHandler_.setActiveToolMode(toolMode);
-  }
-  setToolFromUrl(urlString: string) {
-    const urlObj = new URL(urlString);
-    const inputState = this.inputState;
-    if (inputState && inputState.toolConfigs) {
-      for (const config of inputState.toolConfigs) {
-        if (config.aimUrlParams && config.aimUrlParams.length > 0) {
-          const hasParam = config.aimUrlParams.some(p => {
-            const value = urlObj.searchParams.get(p.paramKey);
-            return value === p.paramValue;
-          });
-          if (hasParam) {
-            if (config.tool === 2 /* ToolMode.kCanvas */) {
-              this.isCanvasQuerySubmitted = true;
-            }
-            if (inputState.activeTool !== config.tool) {
-              this.setActiveTool(config.tool);
-            }
-            break;
-          }
-        }
-      }
-    }
-  }
 
   get isComposeboxFocusedForTesting() {
     return this.isComposeboxFocused_;

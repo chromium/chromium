@@ -686,9 +686,9 @@ void ContextualTasksUI::SetAimUrl(const GURL& url) {
 #endif
 }
 
-void ContextualTasksUI::UpdateModelModeFromUrl(const GURL& url) {
+void ContextualTasksUI::UpdateStateFromUrl(const GURL& url) {
   if (composebox_handler_) {
-    composebox_handler_->UpdateModelFromUrl(url);
+    composebox_handler_->UpdateStateFromUrl(url);
   }
 }
 
@@ -1337,10 +1337,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   }
   task_info_delegate_->SetInNlm(in_nlm);
 
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksUpdateModelOnNavigation)) {
-    task_info_delegate_->UpdateModelModeFromUrl(url);
-  }
+  task_info_delegate_->UpdateStateFromUrl(url);
 
   OMNIBOX_LOG("embedded_page_nav") << navigation_handle->GetURL().spec();
 

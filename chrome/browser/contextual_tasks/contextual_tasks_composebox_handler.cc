@@ -204,9 +204,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
           &ContextualTasksComposeboxHandler::GetSuggestInputs,
           base::Unretained(this)));
 
-  if (contextual_tasks::GetIsContextualTasksUpdateModeOnNavigationEnabled()) {
-    InitializeInputStateModel();
-  }
+  InitializeInputStateModel();
 }
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() {
@@ -402,9 +400,9 @@ void ContextualTasksComposeboxHandler::ResetInputStateModel() {
   ComposeboxHandler::ResetInputStateModel();
 }
 
-void ContextualTasksComposeboxHandler::UpdateModelFromUrl(const GURL& url) {
+void ContextualTasksComposeboxHandler::UpdateStateFromUrl(const GURL& url) {
   if (input_state_model()) {
-    input_state_model()->UpdateModelFromUrl(url);
+    input_state_model()->UpdateStateFromUrl(url);
   }
 }
 

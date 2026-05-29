@@ -827,7 +827,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     const wasAiPage = this.isAiPage_;
     const wasZeroState = this.isZeroState_;
 
-    this.composebox_?.setToolFromUrl(ev.url);
 
     const {isAiPage} = await this.browserProxy_.handler.isAiPage(ev.url);
     const {isZeroState} = await this.browserProxy_.handler.isZeroState(ev.url);

@@ -151,6 +151,7 @@ struct StructTraits<composebox_query::mojom::InputStateDataView,
   static const std::map<omnibox::InputType, int>& max_inputs_by_type(
       const omnibox::InputState& input);
   static int32_t max_total_inputs(const omnibox::InputState& input);
+  static bool is_canvas_query_submitted(const omnibox::InputState& input);
 
   static bool Read(composebox_query::mojom::InputStateDataView data,
                    omnibox::InputState* output);

@@ -3453,3 +3453,64 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
   ASSERT_EQ(handler_->GetNumContextUploading(), 0);
 }
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       UpdateStateFromUrl_SoftNavigation) {
+  // Arrange: Setup local config with Canvas tool and its url params.
+  omnibox::SearchboxConfig config;
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  // Create composebox handler using a custom callback that binds the local
+  // config.
+  auto mock_callback = base::BindRepeating(
+      [](contextual_search::ContextualSearchSessionHandle* session_handle,
+         const omnibox::SearchboxConfig config) {
+        return std::make_unique<contextual_search::InputStateModel>(
+            *session_handle, config, GURL(), /*is_off_the_record=*/false,
+            /*browser_identity_matches_aim_identity=*/false);
+      },
+      session_handle_.get(), config);
+
+  mojo::PendingRemote<composebox::mojom::Page> page_remote;
+  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
+      page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
+  mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
+      searchbox_page_remote.InitWithNewPipeAndPassReceiver();
+  auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
+      mock_ui_.get(), profile(), web_contents(),
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      std::move(page_remote),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      std::move(searchbox_page_remote),
+      base::BindRepeating(
+          &ContextualTasksUI::GetOrCreateContextualSessionHandle,
+          base::Unretained(mock_ui_.get())),
+      base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
+                          base::Unretained(mock_ui_.get())),
+      std::move(mock_callback));
+
+  custom_handler->InitializeInputStateModel();
+
+  contextual_search::InputStateModel* model =
+      custom_handler->TakeInputStateModelForTesting();
+  ASSERT_NE(model, nullptr);
+
+  // Default tool is unspecified.
+  EXPECT_EQ(model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+
+  // Act: Simulate soft navigation by calling UpdateStateFromUrl with Canvas
+  // GURL.
+  GURL canvas_url("https://example.com/?rc=1");
+  custom_handler->UpdateStateFromUrl(canvas_url);
+
+  // Assert: Verify the tool successfully restored/persisted to Canvas.
+  EXPECT_EQ(model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_TRUE(model->get_state_for_testing().is_canvas_query_submitted);
+}

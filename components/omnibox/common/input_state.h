@@ -58,6 +58,7 @@ struct InputState {
   // Returns whether both `TOOL_MODE_IMAGE_GEN` and `INPUT_TYPE_LENS_IMAGE` are
   // active. Needed for suggest requests with `TOOL_MODE_IMAGE_GEN_UPLOAD`.
   bool image_gen_upload_active = false;
+  bool is_canvas_query_submitted = false;
 };
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputState)
 

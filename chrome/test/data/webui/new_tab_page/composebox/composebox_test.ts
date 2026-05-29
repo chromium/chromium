@@ -1089,6 +1089,7 @@ suite('NewTabPageComposeboxTest', () => {
         hintText: '',
         maxInputsByType: {},
         maxTotalInputs: 0,
+        isCanvasQuerySubmitted: false,
       } as InputState;
       testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
       await microtasksFinished();

@@ -67,7 +67,7 @@ class MockContextualTasksComposeboxHandler
               (override));
   MOCK_METHOD(void, OnTaskChanged, (), (override));
   MOCK_METHOD(void, InitializeInputStateModel, (), (override));
-  MOCK_METHOD(void, UpdateModelFromUrl, (const GURL&), (override));
+  MOCK_METHOD(void, UpdateStateFromUrl, (const GURL&), (override));
 };
 
 class MockTaskInfoDelegate : public TaskInfoDelegate {
@@ -91,7 +91,7 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
   }
 
   void SetAimUrl(const GURL& url) override { url_ = url; }
-  MOCK_METHOD(void, UpdateModelModeFromUrl, (const GURL& url), (override));
+  MOCK_METHOD(void, UpdateStateFromUrl, (const GURL& url), (override));
 
   bool IsShownInTab() override { return is_shown_in_tab_; }
 
@@ -246,7 +246,7 @@ TEST_F(ContextualTasksUiTest, ContextualTasksServiceUpdatedOnUrlChange) {
                           Optional(turn_id), Optional(std::string("test"))))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(delegate, UpdateModelModeFromUrl(updated_url)).Times(1);
+  EXPECT_CALL(delegate, UpdateStateFromUrl(updated_url)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -554,7 +554,7 @@ TEST_F(ContextualTasksUiTest, ThreadUpdatedOnSameDocumentNav) {
   ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
       .WillByDefault(Return(task));
 
-  EXPECT_CALL(delegate, UpdateModelModeFromUrl(url)).Times(1);
+  EXPECT_CALL(delegate, UpdateStateFromUrl(url)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -765,7 +765,7 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_FiresOnReload) {
       .Times(1)
       .WillRepeatedly(Return(task));
 
-  EXPECT_CALL(delegate, UpdateModelModeFromUrl(zero_state_url)).Times(2);
+  EXPECT_CALL(delegate, UpdateStateFromUrl(zero_state_url)).Times(2);
 
   // First load.
   auto handle1 = CreateMockNavigationHandle(zero_state_url);

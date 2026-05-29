@@ -253,6 +253,80 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 }
 
+TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
+  omnibox::SearchboxConfig config;
+
+  auto* deep_search_config = config.add_tool_configs();
+  deep_search_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  auto* ds_param = deep_search_config->add_aim_url_params();
+  ds_param->set_param_key("dr");
+  ds_param->set_param_value("1");
+
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  GURL ds_url("https://example.com/?dr=1");
+  auto state_model_ds = std::make_unique<InputStateModel>(
+      session_handle_, config, ds_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false);
+
+  EXPECT_EQ(state_model_ds->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  GURL canvas_url("https://example.com/?rc=1");
+  auto state_model_canvas = std::make_unique<InputStateModel>(
+      session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false);
+
+  EXPECT_EQ(state_model_canvas->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  GURL unknown_url("https://example.com/?qwe=1");
+  auto state_model_unknown = std::make_unique<InputStateModel>(
+      session_handle_, config, unknown_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false);
+
+  // Defaults to ToolMode::TOOL_MODE_UNSPECIFIED if not in the URL.
+  EXPECT_EQ(state_model_unknown->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+}
+
+TEST_F(InputStateModelTest, UpdateToolFromUrl) {
+  omnibox::SearchboxConfig config;
+
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  auto state_model = std::make_unique<InputStateModel>(
+      session_handle_, config, GURL(), /*is_off_the_record=*/false,
+      /*is_signed_in=*/false);
+
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+
+  GURL canvas_url("https://example.com/?rc=1");
+  state_model->UpdateStateFromUrl(canvas_url);
+
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_TRUE(state_model->get_state_for_testing().is_canvas_query_submitted);
+
+  // Verify: If we update with an unrelated URL, it preserves the current tool
+  // (does not reset it).
+  GURL other_url("https://example.com/?other=1");
+  state_model->UpdateStateFromUrl(other_url);
+
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_TRUE(state_model->get_state_for_testing().is_canvas_query_submitted);
+}
+
 TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
   omnibox::SearchboxConfig config;
 
@@ -1040,39 +1114,39 @@ TEST_F(InputStateModelTest, UpdateModelFromUrl) {
 
   // Update with Regular URL.
   GURL regular_url("https://example.com/?udm=50");
-  input_state_model_->UpdateModelFromUrl(regular_url);
+  input_state_model_->UpdateStateFromUrl(regular_url);
 
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 
   // Permutation Reversal: Order of params shouldn't affect match.
   GURL reversed_pro_url("https://example.com/?arv=1&udm=50");
-  input_state_model_->UpdateModelFromUrl(reversed_pro_url);
+  input_state_model_->UpdateStateFromUrl(reversed_pro_url);
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
   // Noise subset: Extra parameters don't break match if required are present.
   GURL noisy_regular_url("https://example.com/?udm=50&noise=x");
-  input_state_model_->UpdateModelFromUrl(noisy_regular_url);
+  input_state_model_->UpdateStateFromUrl(noisy_regular_url);
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 
   // Sibling ambiguity rank: Both match with count 2. Deterministic precedence
   // (first achieves higher max wins or stable keep).
   GURL ambiguous_url("https://example.com/?udm=50&arv=1&xyz=1");
-  input_state_model_->UpdateModelFromUrl(ambiguous_url);
+  input_state_model_->UpdateStateFromUrl(ambiguous_url);
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
   // Differentiating sibling specificity: Match sibling rule keys.
   GURL sibling_url("https://example.com/?udm=50&xyz=1");
-  input_state_model_->UpdateModelFromUrl(sibling_url);
+  input_state_model_->UpdateStateFromUrl(sibling_url);
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
 
   // Default fallback: Missing required keys.
   GURL missing_keys_url("https://example.com/?arv=1");
-  input_state_model_->UpdateModelFromUrl(missing_keys_url);
+  input_state_model_->UpdateStateFromUrl(missing_keys_url);
   // Default fallback: No match retains previous active model.
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);

@@ -202,5 +202,7 @@ struct InputState {
   map<InputType, int32> max_inputs_by_type;
   // The max total number of inputs.
   int32 max_total_inputs;
+  // Whether a Canvas query has been submitted in this thread.
+  bool is_canvas_query_submitted;
 };
 // LINT.ThenChange(//components/omnibox/common/input_state.h:InputState)

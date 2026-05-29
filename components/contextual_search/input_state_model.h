@@ -66,7 +66,7 @@ class InputStateModel {
 
   // Set a new model.
   void setActiveModel(ModelMode model);
-  void UpdateModelFromUrl(const GURL& url);
+  void UpdateStateFromUrl(const GURL& url);
 
   // Called when an input of type `InputType` is added or deleted.
   void OnContextChanged();
