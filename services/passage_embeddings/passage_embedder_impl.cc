@@ -72,17 +72,12 @@ PassageEmbedderImpl::PassageEmbedderImpl(
 
 PassageEmbedderImpl::~PassageEmbedderImpl() = default;
 
-bool PassageEmbedderImpl::LoadModels(
-    base::File embeddings_model_file,
-    base::File sp_file,
-    uint32_t embeddings_input_window_size,
-    std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
+bool PassageEmbedderImpl::LoadModels(base::File embeddings_model_file,
+                                     base::File sp_file,
+                                     uint32_t embeddings_input_window_size) {
   UnloadModelFiles();
 
   embeddings_model_file_ = std::move(embeddings_model_file);
-
-  tflite_engine_overridden_ = !!tflite_engine;
-  override_tflite_engine_ = std::move(tflite_engine);
 
   base::ElapsedTimer sp_timer;
   bool sp_load_success = LoadSentencePieceModelFile(std::move(sp_file));
@@ -120,20 +115,8 @@ bool PassageEmbedderImpl::LoadSentencePieceModelFile(base::File sp_file) {
 
 bool PassageEmbedderImpl::BuildExecutionTask() {
   CHECK_NE(current_priority_, mojom::PassagePriority::kUnknown);
-  // Do nothing if an override model has been loaded.
-  if (tflite_engine_overridden_ && !override_tflite_engine_) {
-    return true;
-  }
 
   loaded_model_.reset();
-
-  // Load the override model if it is set but not loaded yet.
-  if (tflite_engine_overridden_) {
-    loaded_model_ = std::make_unique<PassageEmbedderExecutionTask>(
-        std::move(override_tflite_engine_));
-    override_tflite_engine_.reset();
-    return true;
-  }
 
   // Build a new task from the model bytes and the task priority.
   auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(

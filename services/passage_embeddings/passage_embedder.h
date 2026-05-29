@@ -13,7 +13,6 @@
 #include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace passage_embeddings {
 
@@ -33,14 +32,10 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   // Loads the given text embeddings model and the sentencepiece file for text
   // embedding generation. Invokes `callback` with the success state.
-  //
-  // A TfLiteEngine can be provided to override any defaults.
   void LoadModels(base::File embeddings_model_file,
                   base::File sp_file,
                   uint32_t embeddings_input_window_size,
-                  base::OnceCallback<void(bool)> callback,
-                  std::unique_ptr<tflite::task::core::TfLiteEngine>
-                      tflite_engine = nullptr);
+                  base::OnceCallback<void(bool)> callback);
 
   // mojom::PassageEmbedder:
   void GenerateEmbeddings(const std::vector<std::string>& inputs,

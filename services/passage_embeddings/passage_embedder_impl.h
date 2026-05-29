@@ -32,13 +32,9 @@ class PassageEmbedderImpl {
 
   // Loads the given text embeddings model and the sentencepiece file for text
   // embedding generation. Return true if successful.
-  //
-  // A TfLiteEngine can be provided to override any defaults.
   bool LoadModels(base::File embeddings_model_file,
                   base::File sp_file,
-                  uint32_t embeddings_input_window_size,
-                  std::unique_ptr<tflite::task::core::TfLiteEngine>
-                      tflite_engine = nullptr);
+                  uint32_t embeddings_input_window_size);
 
   // Executes the model to generate text embeddings result for the input.
   std::vector<mojom::PassageEmbeddingsResultPtr> GenerateEmbeddings(
@@ -73,13 +69,6 @@ class PassageEmbedderImpl {
 
   // The priority that the active tflite_engine is set up for.
   mojom::PassagePriority current_priority_ = mojom::PassagePriority::kUnknown;
-
-  // Whether the tflite engine has been overridden by caller during setup.
-  bool tflite_engine_overridden_ = false;
-
-  // Temporarily stores the pointer to the override engine. Will be null when
-  // it is loaded into an execution task.
-  std::unique_ptr<tflite::task::core::TfLiteEngine> override_tflite_engine_;
 
   base::LRUCache<std::string, std::vector<float>> embeddings_cache_;
 

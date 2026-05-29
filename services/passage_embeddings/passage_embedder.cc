@@ -24,15 +24,13 @@ PassageEmbedder::PassageEmbedder(
 
 PassageEmbedder::~PassageEmbedder() = default;
 
-void PassageEmbedder::LoadModels(
-    base::File embeddings_model_file,
-    base::File sp_file,
-    uint32_t embeddings_input_window_size,
-    base::OnceCallback<void(bool)> callback,
-    std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
+void PassageEmbedder::LoadModels(base::File embeddings_model_file,
+                                 base::File sp_file,
+                                 uint32_t embeddings_input_window_size,
+                                 base::OnceCallback<void(bool)> callback) {
   internal_embedder_.AsyncCall(&PassageEmbedderImpl::LoadModels)
       .WithArgs(std::move(embeddings_model_file), std::move(sp_file),
-                embeddings_input_window_size, std::move(tflite_engine))
+                embeddings_input_window_size)
       .Then(std::move(callback));
 }
 
