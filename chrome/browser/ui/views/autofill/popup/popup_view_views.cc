@@ -910,7 +910,11 @@ void PopupViewViews::SetSelectedCell(
   }
 
   if (old_index) {
-    GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
+    if (!TrackAndRun(this, [this, old_index]() {
+          GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
+        })) {
+      return;
+    }
   }
 
   // New selected cell invalidates this scheduling (if it's running), cancel it.
@@ -921,7 +925,10 @@ void PopupViewViews::SetSelectedCell(
       // Since cell selection is based on virtual focus and not real focus,
       // we need to manually unfocus the settings link when updating virtual
       // focus.
-      footnote->UnfocusSettingsLink();
+      if (!TrackAndRun(this,
+                       [footnote]() { footnote->UnfocusSettingsLink(); })) {
+        return;
+      }
     }
     has_keyboard_focus_ = true;
     // The sub-popup hiding is canceled because the newly selected cell will
@@ -930,7 +937,11 @@ void PopupViewViews::SetSelectedCell(
 
     row_with_selected_cell_ = cell_index->first;
     PopupRowView& new_selected_row = GetPopupRowViewAt(cell_index->first);
-    new_selected_row.SetSelectedCell(cell_index->second);
+    if (!TrackAndRun(&new_selected_row, [&new_selected_row, cell_index]() {
+          new_selected_row.SetSelectedCell(cell_index->second);
+        })) {
+      return;
+    }
     new_selected_row.ScrollViewToVisible();
 
     if (!controller_) {
@@ -1663,9 +1674,13 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
 
   if (auto* warning_view = std::get_if<PopupWarningView*>(&rows_[0]);
       warning_view && *warning_view) {
-    NotifyAXSelection(**warning_view);
-    (*warning_view)
-        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+    PopupWarningView* view_ptr = *warning_view;
+    TrackAndRun(
+        view_ptr, [this, view_ptr]() { NotifyAXSelection(*view_ptr); },
+        [view_ptr]() {
+          view_ptr->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
+                                                       true);
+        });
   }
 }
 
