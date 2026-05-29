@@ -325,8 +325,7 @@ bool MatchesBool(const std::optional<bool>& boolean, bool value) {
 // support on desktop android.
 bool IsLockedFullscreen(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return platform_util::IsBrowserLockedFullscreen(
-      browser->GetBrowserForMigrationOnly());
+  return platform_util::IsBrowserLockedFullscreen(browser);
 #else
   return false;
 #endif
@@ -1673,9 +1672,9 @@ ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
   // TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
   // support on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (window_controller->GetBrowser() &&
+  if (window_controller->GetBrowserWindowInterface() &&
       platform_util::IsBrowserLockedFullscreen(
-          window_controller->GetBrowser()) &&
+          window_controller->GetBrowserWindowInterface()) &&
       !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
     return RespondNow(
         Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));

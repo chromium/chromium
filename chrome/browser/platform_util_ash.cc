@@ -19,6 +19,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
@@ -105,8 +106,11 @@ void OpenExternal(Profile* profile, const GURL& url) {
   }
 }
 
-bool IsBrowserLockedFullscreen(const Browser* browser) {
-  aura::Window* window = browser->window()->GetNativeWindow();
+bool IsBrowserLockedFullscreen(const BrowserWindowInterface* browser) {
+  if (!browser || !browser->GetWindow()) {
+    return false;
+  }
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
   // |window| can be nullptr inside of unit tests.
   if (!window)
     return false;

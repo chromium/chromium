@@ -3208,15 +3208,15 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   // NOTE: If new commands are being added, please disable them by default and
   // notify the ChromeOS team by filing a bug under this component --
   // b/?q=componentid:1389107.
-  Browser* const browser =
-      GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
+  BrowserWindowInterface* const browser_window = GetBrowser();
   bool should_disable_command_for_locked_fullscreen_or_on_task = false;
-  if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
+  if (browser_window &&
+      platform_util::IsBrowserLockedFullscreen(browser_window)) {
     should_disable_command_for_locked_fullscreen_or_on_task = true;
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  if (browser && ash::boca::OnTaskLockedController::From(browser)
-                     ->is_locked_for_on_task()) {
+  if (browser_window && ash::boca::OnTaskLockedController::From(browser_window)
+                            ->is_locked_for_on_task()) {
     bool is_page_nav_command =
         (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
     bool is_allowed_content_context_command =
