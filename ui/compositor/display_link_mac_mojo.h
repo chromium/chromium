@@ -5,6 +5,8 @@
 #ifndef UI_COMPOSITOR_DISPLAY_LINK_MAC_MOJO_H_
 #define UI_COMPOSITOR_DISPLAY_LINK_MAC_MOJO_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -84,7 +86,8 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
  private:
   // VSyncIpc is connected when DisplayLinkMacMojo is created, and it's
   // reconnected after the GPU process is lost.
-  void ConnectVSyncIpc(viz::HostFrameSinkManager* host_frame_sink_manager);
+  void ConnectVSyncIpcAndAddDisplayObserver(
+      viz::HostFrameSinkManager* host_frame_sink_manager);
 
   void InitDisplaysOnVSyncThread();
 
@@ -93,6 +96,31 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
   void DisplayAddedOnVSyncThread(int64_t vsync_display_id);
 
   void DisplaysRemovedOnVSyncThread(std::vector<int64_t> display_ids);
+
+  // This sequence is called to prevent race conditions during GPU process loss.
+  // The flow is:
+  // OnGpuProcessLost() (Main thread) ->
+  // OnGpuProcessLostOnVSyncThread() (VSync thread) ->
+  // ContinueGpuProcessLostOnMainThread() (Main thread)
+  //
+  // Note: OnGpuProcessLostOnVSyncThread() must use base::Unretained(this) to
+  // ensure that thread-affine Mojo objects are always cleaned up on the VSync
+  // thread, even if this class is being destroyed. The recovery task
+  // (ContinueGpuProcessLostOnMainThread) uses a WeakPtr because recovery
+  // should only proceed if this instance has not been destroyed.
+  void ContinueGpuProcessLostOnMainThread(
+      viz::HostFrameSinkManager* host_frame_sink_manager);
+  void OnGpuProcessLostOnVSyncThread(
+      viz::HostFrameSinkManager* host_frame_sink_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      base::WeakPtr<DisplayLinkMacMojo> weak_ptr);
+
+  void ResetStateOnVSyncThread();
+
+  // To prevent AddObserver from being called multiple times
+  std::optional<display::ScopedDisplayObserver> display_observer_;
+
+  int pending_gpu_lost_count_ = 0;
 
   std::map<int64_t, scoped_refptr<DisplayLinkMac>> display_links_;
   std::map<int64_t, std::unique_ptr<VSyncCallbackMac>> vsync_callbacks_;
