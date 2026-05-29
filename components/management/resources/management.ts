@@ -26,7 +26,10 @@ function populateConnectorsSection() {
 
   const pageVisitEnabled = loadTimeData.getBoolean('pageVisitEventEnabled');
   const securityEventEnabled = loadTimeData.getBoolean('securityEventEnabled');
-  const connectorsSectionVisible = pageVisitEnabled || securityEventEnabled;
+  const fileDownloadEnabled =
+      loadTimeData.getBoolean('fileDownloadEventEnabled');
+  const connectorsSectionVisible =
+      pageVisitEnabled || securityEventEnabled || fileDownloadEnabled;
 
   // Check if there are connectors enabled.
   if (connectorsSectionVisible) {
@@ -38,6 +41,11 @@ function populateConnectorsSection() {
 
     if (pageVisitEnabled) {
       getRequiredElement('page-visit-event-section').classList.remove('hidden');
+    }
+
+    if (fileDownloadEnabled) {
+      getRequiredElement('file-download-event-section')
+          .classList.remove('hidden');
     }
   }
 }
