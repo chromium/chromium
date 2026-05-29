@@ -4569,7 +4569,7 @@ const FeatureEntry::Choice kAIClassifierChoices[] = {
 const FeatureEntry::Choice kGemma4Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend"
+     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend,"
      "AIApiFoundationalModel:model_version/v4"}};
 
 const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
