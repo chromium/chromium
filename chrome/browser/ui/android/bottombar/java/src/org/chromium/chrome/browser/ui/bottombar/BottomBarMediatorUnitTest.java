@@ -110,18 +110,10 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testInitialization_WithoutHomeButton_DoesNotObserveHomepage() {
-        createMediator(/* shouldIncludeHomeButton= */ false, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ false);
 
         mHomepageEnabledSupplier.set(true);
         verify(mButtonManager, never()).setButtonVisibility(ActionId.HOME_BUTTON, true);
-    }
-
-    @Test
-    public void testInitialization_WithoutGlic_DoesNotObserveProfile() {
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ false);
-
-        mProfileSupplier.set(mProfile);
-        verify(mGlicEnablingJniMock, never()).isEnabledForProfile(any());
     }
 
     private void setupTab(GURL url, boolean isIncognito) {
@@ -132,7 +124,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testConstructor() {
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -141,7 +133,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testTabObserverCleanup_OnTabRemoved() {
         setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
@@ -153,7 +145,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testVisibilityChange_EmptyUrl() {
         setupTab(GURL.emptyGURL(), false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor.getValue().onUrlUpdated(mTab);
@@ -164,7 +156,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testVisibilityChange_Ntp_Incognito() {
         setupTab(JUnitTestGURLs.NTP_URL, true);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -178,7 +170,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testVisibilityChange_NotNtp() {
         setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -193,7 +185,7 @@ public class BottomBarMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false"})
     public void testVisibilityChange_DisableOnNtpDisabled_NtpTab() {
         setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -208,7 +200,7 @@ public class BottomBarMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true"})
     public void testVisibilityChange_NtpToNonNtp() {
         setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -226,7 +218,7 @@ public class BottomBarMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true"})
     public void testVisibilityChange_NonNtpToNtp() {
         setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -244,7 +236,7 @@ public class BottomBarMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false"})
     public void testVisibilityChange_DisableOnNtpDisabled_NtpToNonNtp() {
         setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -265,7 +257,7 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
 
         mTabSupplier.set(mTab);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -282,7 +274,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testHomeButtonVisibility_Enabled() {
         mHomepageEnabledSupplier.set(true);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager).setButtonVisibility(ActionId.HOME_BUTTON, true);
     }
@@ -290,7 +282,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testHomeButtonVisibility_Disabled() {
         mHomepageEnabledSupplier.set(false);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager).setButtonVisibility(ActionId.HOME_BUTTON, false);
     }
@@ -298,7 +290,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testHomeButtonVisibility_Toggle() {
         mHomepageEnabledSupplier.set(true);
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager).setButtonVisibility(ActionId.HOME_BUTTON, true);
 
@@ -311,7 +303,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testTintChanged() {
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
         assert mMediator != null;
         verify(mThemeColorProvider).addTintObserver(mMediator);
 
@@ -327,7 +319,7 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, false);
     }
@@ -342,7 +334,7 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
     }
@@ -362,7 +354,7 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
     }
@@ -377,7 +369,7 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mIdentityManager).addObserver(mIdentityObserverCaptor.capture());
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
@@ -400,7 +392,7 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, true);
     }
@@ -413,14 +405,14 @@ public class BottomBarMediatorUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(true);
         mTabSupplier.set(mTab);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, true);
     }
 
     @Test
     public void testVisibilityChange_OmniboxFocus() {
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         // Initially visible.
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -439,7 +431,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testUpdateNewTabButtonBackground_OnlyUpdatesModelOnStateChange() {
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         verify(mButtonManager).setListener(mButtonManagerListenerCaptor.capture());
         BottomBarButtonManager.Listener listener = mButtonManagerListenerCaptor.getValue();
@@ -464,7 +456,7 @@ public class BottomBarMediatorUnitTest {
                         .expectAnyRecord("Android.BottomBar.GlicVisibilityDecisionTime")
                         .build();
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         watcher.assertExpected();
     }
@@ -477,7 +469,7 @@ public class BottomBarMediatorUnitTest {
         // Initially hide GLIC by making user not signed in.
         when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
 
-        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+        createMediator(/* shouldIncludeHomeButton= */ true);
 
         // Bottom bar is visible by default in constructor.
         // Now make GLIC appear by signing in.
@@ -518,7 +510,7 @@ public class BottomBarMediatorUnitTest {
         noRecordWatcher.assertExpected();
     }
 
-    private void createMediator(boolean shouldIncludeHomeButton, boolean shouldIncludeGlic) {
+    private void createMediator(boolean shouldIncludeHomeButton) {
         mMediator =
                 new BottomBarMediator(
                         mModel,
@@ -528,7 +520,6 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         shouldIncludeHomeButton,
-                        shouldIncludeGlic,
                         mProfileSupplier,
                         mOmniboxFocusStateSupplier);
     }

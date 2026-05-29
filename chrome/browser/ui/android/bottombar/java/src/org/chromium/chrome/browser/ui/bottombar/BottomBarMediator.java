@@ -67,7 +67,6 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
     private final Callback<Boolean> mOmniboxFocusObserver = this::onOmniboxFocusChanged;
     private final boolean mShouldIncludeHomeButton;
-    private final boolean mShouldIncludeGlic;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<@Nullable Profile> mProfileObserver = this::updateGlicVisibility;
     private final IdentityManager.Observer mIdentityManagerObserver =
@@ -110,7 +109,6 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
             boolean shouldIncludeHomeButton,
-            boolean shouldIncludeGlic,
             NullableObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mModel = model;
@@ -120,7 +118,6 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
         mShouldIncludeHomeButton = shouldIncludeHomeButton;
-        mShouldIncludeGlic = shouldIncludeGlic;
         mProfileSupplier = profileSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mGlicTimeToAppearRecorded = false;
@@ -135,9 +132,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
 
         mThemeColorProvider.addTintObserver(this);
         mModel.set(BottomBarProperties.COLOR_SCHEME, mThemeColorProvider.getBrandedColorScheme());
-        if (mShouldIncludeGlic) {
-            mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
-        }
+        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
         mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
         if (mShouldIncludeHomeButton) {
@@ -312,9 +307,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
-        if (mShouldIncludeGlic) {
-            mProfileSupplier.removeObserver(mProfileObserver);
-        }
+        mProfileSupplier.removeObserver(mProfileObserver);
         if (mIdentityManager != null) {
             mIdentityManager.removeObserver(mIdentityManagerObserver);
             mIdentityManager = null;

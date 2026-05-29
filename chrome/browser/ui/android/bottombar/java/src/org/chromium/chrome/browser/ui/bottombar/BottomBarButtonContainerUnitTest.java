@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageView;
@@ -77,6 +79,21 @@ public class BottomBarButtonContainerUnitTest {
     public void testGetTargetView_noChild() {
         mContainer.onFinishInflate();
         mContainer.getTargetView();
+    }
+
+    @Test
+    public void testSetTargetBackground_beforeInflation() {
+        ViewStub stub = new ViewStub(mActivity);
+        stub.setLayoutResource(R.layout.bottom_bar_generic_template);
+        mContainer.addView(stub);
+        mContainer.onFinishInflate();
+
+        Drawable background = new ColorDrawable(Color.RED);
+        mContainer.setTargetBackground(background);
+
+        mContainer.inflateStub();
+        View targetView = mContainer.getTargetView();
+        assertSame(background, targetView.getBackground());
     }
 
     @Test

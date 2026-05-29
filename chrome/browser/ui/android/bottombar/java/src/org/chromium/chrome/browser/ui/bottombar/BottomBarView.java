@@ -93,9 +93,7 @@ public class BottomBarView extends LinearLayout {
             mIsIncognito = isIncognito;
             for (int i = 0; i < mOtherContainers.length; i++) {
                 mOtherRipples[i] = createHoverableRipple(isIncognito);
-                if (mOtherContainers[i].hasTargetView()) {
-                    mOtherContainers[i].setTargetBackground(mOtherRipples[i]);
-                }
+                mOtherContainers[i].setTargetBackground(mOtherRipples[i]);
             }
             mNewTabRippleNoBackground = createHoverableRipple(isIncognito);
             if (!mNewTabBackgroundVisible) {

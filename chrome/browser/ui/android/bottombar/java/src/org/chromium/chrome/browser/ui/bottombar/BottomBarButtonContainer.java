@@ -33,6 +33,7 @@ public class BottomBarButtonContainer extends FrameLayout
 
     private @Nullable ColorStateList mIconTint;
     private @Nullable View mTargetView;
+    private @Nullable Drawable mTargetBackground;
 
     public BottomBarButtonContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,7 +51,10 @@ public class BottomBarButtonContainer extends FrameLayout
 
     @Override
     public View getTargetView() {
-        assert mTargetView != null : "Target view wasn't set.";
+        if (mTargetView == null) {
+            inflateStub();
+        }
+        assert mTargetView != null;
         return mTargetView;
     }
 
@@ -66,6 +70,12 @@ public class BottomBarButtonContainer extends FrameLayout
         View child = getChildAt(0);
         if (child instanceof ViewStub stub) {
             mTargetView = stub.inflate();
+            if (mTargetView instanceof ImageView imageView && mIconTint != null) {
+                imageView.setImageTintList(mIconTint);
+            }
+            if (mTargetBackground != null) {
+                mTargetView.setBackground(mTargetBackground);
+            }
         }
         assert mTargetView != null : "Stub inflation failed.";
     }
@@ -104,7 +114,9 @@ public class BottomBarButtonContainer extends FrameLayout
      * @param drawable The drawable to set as background.
      */
     /*package*/ void setTargetBackground(Drawable drawable) {
-        assert mTargetView != null;
-        mTargetView.setBackground(drawable);
+        mTargetBackground = drawable;
+        if (mTargetView != null) {
+            mTargetView.setBackground(drawable);
+        }
     }
 }

@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
@@ -97,9 +96,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                                 .inflate(R.layout.bottom_bar_layout, parent, false);
 
         boolean shouldIncludeHomeButton = BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled();
-        boolean shouldIncludeGlicButton = AdaptiveToolbarFeatures.isGlicActionEnabled();
-        List<ActionConfig> configs =
-                createActionConfigs(mView, shouldIncludeHomeButton, shouldIncludeGlicButton);
+        List<ActionConfig> configs = createActionConfigs(mView, shouldIncludeHomeButton);
 
         mModel = new PropertyModel.Builder(BottomBarProperties.ALL_KEYS).build();
 
@@ -115,7 +112,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         homepageEnabledSupplier,
                         visibilityDelegate,
                         shouldIncludeHomeButton,
-                        shouldIncludeGlicButton,
                         profileSupplier,
                         omniboxFocusStateSupplier);
 
@@ -123,7 +119,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
     }
 
     private List<ActionConfig> createActionConfigs(
-            BottomBarView view, boolean shouldIncludeHomeButton, boolean shouldIncludeGlicButton) {
+            BottomBarView view, boolean shouldIncludeHomeButton) {
         List<ActionConfig> configs = new ArrayList<>();
 
         if (shouldIncludeHomeButton) {
@@ -139,17 +135,14 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                             BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
         }
 
-        if (shouldIncludeGlicButton) {
-            BottomBarButtonContainer extraContainer = view.getContainerForAction(ActionId.GLIC);
-            assert extraContainer != null : "Extra button container not found";
-            extraContainer.inflateStub();
-            configs.add(
-                    new ActionConfig(
-                            ActionId.GLIC,
-                            extraContainer,
-                            GlicActionButtonBinder::bind,
-                            BottomBarProperties.IS_GLIC_BUTTON_VISIBLE));
-        }
+        BottomBarButtonContainer extraContainer = view.getContainerForAction(ActionId.GLIC);
+        assert extraContainer != null : "Extra button container not found";
+        configs.add(
+                new ActionConfig(
+                        ActionId.GLIC,
+                        extraContainer,
+                        GlicActionButtonBinder::bind,
+                        BottomBarProperties.IS_GLIC_BUTTON_VISIBLE));
 
         BottomBarButtonContainer newTabContainer = view.getContainerForAction(ActionId.NEW_TAB);
         assert newTabContainer != null : "New tab container not found";
