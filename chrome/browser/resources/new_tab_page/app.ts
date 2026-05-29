@@ -1358,15 +1358,12 @@ export class AppElement extends AppElementBase {
   private onWindowClick_(e: Event) {
     if (this.ntpRealboxNextEnabled_) {
       const searchbox = this.shadowRoot.querySelector('ntp-searchbox');
-      const helpBubble =
-          searchbox ? searchbox.shadowRoot.querySelector('help-bubble') : null;
-      if (helpBubble) {
-        const isClickOnBubble = e.composedPath().includes(helpBubble);
-        const isClickOnSearchbox =
-            searchbox && e.composedPath().includes(searchbox);
-        if (!isClickOnBubble && isClickOnSearchbox) {
-          this.hideHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID);
-        }
+      const isClickOnBubble = e.composedPath().some(
+          el => (el as HTMLElement)?.tagName === 'HELP-BUBBLE');
+      const isClickOnSearchbox =
+          searchbox && e.composedPath().includes(searchbox);
+      if (!isClickOnBubble && isClickOnSearchbox) {
+        this.hideHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID);
       }
     }
 
