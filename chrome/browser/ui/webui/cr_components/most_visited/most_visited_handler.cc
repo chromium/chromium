@@ -23,7 +23,12 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+// Android uses a different implementation of tab features.
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_features.h"
+#else
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#endif
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
