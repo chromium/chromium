@@ -680,7 +680,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,
-      VisualRectFlags = kDefaultVisualRectFlags) const override;
+      VisualRectFlags) const override;
 
   LayoutUnit ContainingBlockLogicalHeightForRelPositioned() const;
 

@@ -73,7 +73,7 @@ class CORE_EXPORT SVGLayoutSupport {
       const LayoutBoxModelObject* ancestor,
       const gfx::RectF& local_visual_rect,
       PhysicalRect& result_rect,
-      VisualRectFlags = kDefaultVisualRectFlags);
+      VisualRectFlags);
   static void MapLocalToAncestor(const LayoutObject*,
                                  const LayoutBoxModelObject* ancestor,
                                  TransformState&,

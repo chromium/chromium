@@ -306,7 +306,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,
-      VisualRectFlags = kDefaultVisualRectFlags) const final;
+      VisualRectFlags) const final;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 

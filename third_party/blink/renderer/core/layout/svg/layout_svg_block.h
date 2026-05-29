@@ -70,7 +70,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,
-      VisualRectFlags = kDefaultVisualRectFlags) const final;
+      VisualRectFlags) const final;
 
   AffineTransform local_transform_;
   bool needs_transform_update_ : 1;

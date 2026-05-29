@@ -142,7 +142,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,
-      VisualRectFlags = kDefaultVisualRectFlags) const override;
+      VisualRectFlags) const override;
 
   PhysicalOffset OffsetForFixedPosition() const;
 

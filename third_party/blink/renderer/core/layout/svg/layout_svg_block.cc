@@ -193,7 +193,7 @@ void LayoutSVGBlock::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
 bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,
-    VisualRectFlags) const {
+    VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
   transform_state.Flatten();
   PhysicalRect rect = PhysicalRect::FastAndLossyFromRectF(
@@ -202,7 +202,7 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
   rect.Move(PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
   bool retval = SVGLayoutSupport::MapToVisualRectInAncestorSpace(
-      *this, ancestor, gfx::RectF(rect), rect);
+      *this, ancestor, gfx::RectF(rect), rect, visual_rect_flags);
   transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return retval;
 }

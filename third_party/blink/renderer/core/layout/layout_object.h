@@ -2537,7 +2537,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,
-      VisualRectFlags = kDefaultVisualRectFlags) const;
+      VisualRectFlags) const;
 
   // Returns the nearest ancestor in the containing block chain that
   // HasLocalBorderBoxProperties. If AncestorSkipInfo* is non-null and the
