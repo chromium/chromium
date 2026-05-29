@@ -2441,7 +2441,12 @@ void X11Window::OnWindowMapped() {
   // Some WMs only respect maximize hints after the window has been mapped.
   // Check whether we need to re-do a maximization.
   if (should_maximize_after_map_) {
+    // Maximize() may synchronously delete `this` via OnBoundsChanged().
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     Maximize();
+    if (!weak_this) {
+      return;
+    }
     should_maximize_after_map_ = false;
   }
   if (should_grab_pointer_after_map_) {
