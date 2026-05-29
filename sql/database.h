@@ -20,6 +20,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/feature.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -68,6 +69,9 @@ class StreamingBlobHandle;
 namespace test {
 class ScopedErrorExpecter;
 }  // namespace test
+
+COMPONENT_EXPORT(SQL)
+BASE_DECLARE_FEATURE(kCheckAutoCommitInCommitAndRollback);
 
 struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Default page size for newly created databases.

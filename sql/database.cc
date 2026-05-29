@@ -81,6 +81,11 @@
 
 namespace sql {
 
+// When enabled, don't commit or rollback transactions if they have already been
+// rolled back by a statement error (e.g. SQLITE_FULL).
+BASE_FEATURE(kCheckAutoCommitInCommitAndRollback,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // Features to evaluate the hypothesis that preloading sql::Database causes
@@ -1432,8 +1437,8 @@ bool Database::BeginTransaction(InternalApiToken) {
 
 void Database::RollbackTransaction(InternalApiToken) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   TRACE_EVENT0("sql", "Database::RollbackTransaction");
+  CHECK(is_open(), base::NotFatalUntil::M155);
 
   DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
@@ -1455,8 +1460,8 @@ void Database::RollbackTransaction(InternalApiToken) {
 
 bool Database::CommitTransaction(InternalApiToken) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   TRACE_EVENT0("sql", "Database::CommitTransaction");
+  CHECK(is_open(), base::NotFatalUntil::M155);
 
   DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
@@ -1474,6 +1479,14 @@ bool Database::CommitTransaction(InternalApiToken) {
 
   if (needs_rollback_) {
     DoRollback();
+    return false;
+  }
+
+  if (sqlite3_get_autocommit(db_) != 0 &&
+      base::FeatureList::IsEnabled(kCheckAutoCommitInCommitAndRollback)) {
+    // The current explicit transaction was already automatically rolled-back by
+    // SQLite in response to a statement error (e.g. SQLITE_FULL). There is
+    // nothing left to commit.
     return false;
   }
 
@@ -1535,8 +1548,8 @@ void Database::RollbackTransactionDeprecated() {
 
 void Database::RollbackAllTransactions(InternalApiToken) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   TRACE_EVENT0("sql", "Database::RollbackAllTransactions");
+  CHECK(is_open(), base::NotFatalUntil::M155);
 
   DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
@@ -2541,6 +2554,15 @@ void Database::ConfigureSqliteDatabaseObject() {
 
 void Database::DoRollback() {
   TRACE_EVENT0("sql", "Database::DoRollback");
+
+  if (sqlite3_get_autocommit(db_) != 0 &&
+      base::FeatureList::IsEnabled(kCheckAutoCommitInCommitAndRollback)) {
+    // The current explicit transaction was already automatically rolled-back by
+    // SQLite in response to a statement error (e.g. SQLITE_FULL). There is
+    // nothing left to rollback.
+    needs_rollback_ = false;
+    return;
+  }
 
   Statement rollback(GetCachedStatement(rollback_statement_id_, "ROLLBACK"));
   // A valid "ROLLBACK" statement was cached by `BeginTransaction`. That

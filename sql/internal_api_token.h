@@ -33,6 +33,11 @@ class InternalApiToken {
   friend struct test::ColumnInfo;
   friend bool test::CorruptSizeInHeader(const base::FilePath&);
 
+  FRIEND_TEST_ALL_PREFIXES(DatabaseDiskFullTest, SqliteFullAbortsTransactions);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseDiskFullTest,
+                           CommitInTransactionAbortedByRawSqliteCalls);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseDiskFullTest,
+                           RollbackInTransactionAbortedByRawSqliteCalls);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
 };
 
