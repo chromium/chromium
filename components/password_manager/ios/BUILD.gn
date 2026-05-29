@@ -4,6 +4,19 @@
 
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
+bundle_data("auto_submit_test_bundle_data") {
+  testonly = true
+  sources = [
+    "//components/test/data/password_manager/auto_submit_disabled_field_after.html",
+    "//components/test/data/password_manager/auto_submit_disabled_field_between.html",
+    "//components/test/data/password_manager/auto_submit_synthetic_form.html",
+    "//components/test/data/password_manager/auto_submit_test.html",
+    "//components/test/data/password_manager/auto_submit_with_preceding_field.html",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 component("ios") {
   public_deps = [ ":password_manager_feature_header" ]
 

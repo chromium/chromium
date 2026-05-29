@@ -201,12 +201,12 @@ void PasswordManagerJavaScriptFeature::PreventKeyboardOnElement(
 void PasswordManagerJavaScriptFeature::RestoreKeyboardOnElement(
     web::WebFrame* frame,
     autofill::FieldRendererId field_identifier,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(BOOL)> callback) {
   CHECK(callback);
   CallJavaScriptFunction(
       frame, "passwords.restoreKeyboardOnElement",
       base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
-      base::IgnoreArgs<const base::Value*>(std::move(callback)),
+      autofill::CreateBoolCallback(std::move(callback)),
       kJavaScriptExecutionTimeout);
 }
 
@@ -225,12 +225,12 @@ void PasswordManagerJavaScriptFeature::FocusElement(
 void PasswordManagerJavaScriptFeature::SetUpRendererKeystrokeShield(
     web::WebFrame* frame,
     autofill::FieldRendererId field_identifier,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(BOOL)> callback) {
   CHECK(callback);
   CallJavaScriptFunction(
       frame, "passwords.setUpRendererKeystrokeShield",
       base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
-      base::IgnoreArgs<const base::Value*>(std::move(callback)),
+      autofill::CreateBoolCallback(std::move(callback)),
       kJavaScriptExecutionTimeout);
 }
 

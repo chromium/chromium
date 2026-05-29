@@ -14,6 +14,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/password_manager/ios/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
@@ -45,6 +46,12 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
+@interface CredentialSuggestionBottomSheetCoordinator ()
+
+@property(nonatomic, strong) UINavigationController* navigationController;
+
+@end
+
 @implementation CredentialSuggestionBottomSheetCoordinator {
   // The password controller delegate used to open the password manager.
   __weak id<PasswordControllerDelegate> _passwordControllerDelegate;
@@ -57,9 +64,6 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // This view controller is used to display the bottom sheet.
   CredentialSuggestionBottomSheetViewController* _viewController;
-
-  // The navigation controller containing the Suggestion.
-  UINavigationController* _navigationController;
 
   // Form activity parameters giving the context around the sheet trigger.
   std::optional<autofill::FormActivityParams> _params;
@@ -272,20 +276,39 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   _dismissing = YES;
   [_mediator logExitReason:kUsePasswordSuggestion];
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlock completion = ^{
-    [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
-  };
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf didSelectSuggestion:formSuggestion
-                                                 atIndex:index
-                                              completion:completion];
-                         }];
 
-  // Dismiss the soft keyboard right after starting the animation so it doesn't
-  // flicker.
-  [self dismissSoftKeyboard];
+  if (password_manager::features::kAutoSubmissionTypeParam.Get() ==
+      password_manager::features::AutoSubmissionType::kSubmitThenDismiss) {
+    // When using kSubmitThenDismiss auto-submit, do not dismiss the sheet yet.
+    // Pass the dismissal logic to the mediator to be executed after the
+    // auto-submission sequence is complete.
+    ProceduralBlock completion = ^{
+      [weakSelf.navigationController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf.browserCoordinatorCommandsHandler
+                                       dismissPasswordSuggestions];
+                             }];
+    };
+    [self didSelectSuggestion:formSuggestion
+                      atIndex:index
+                   completion:completion];
+  } else {
+    ProceduralBlock completion = ^{
+      [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+    };
+    [_navigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf didSelectSuggestion:formSuggestion
+                                                   atIndex:index
+                                                completion:completion];
+                           }];
+
+    // Dismiss the soft keyboard right after starting the animation so it
+    // doesn't flicker.
+    [self dismissSoftKeyboard];
+  }
 
   // Records the usage of password autofill. This notifies the Tips Manager,
   // which may trigger tips or guidance related to password management features.

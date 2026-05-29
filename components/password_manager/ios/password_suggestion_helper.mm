@@ -8,7 +8,6 @@
 #import <utility>
 
 #import "base/feature_list.h"
-#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/common/form_data.h"

@@ -23,7 +23,7 @@ const base::FeatureParam<AutoSubmissionType> kAutoSubmissionTypeParam{
     &kIOSPasswordAutoSubmission, "auto-submission-type",
     AutoSubmissionType::kDismissThenSubmit, &kAutoSubmissionTypeOptions};
 
-const base::FeatureParam<bool> kAutoSubmissionUseWaitPeriodParam{
-    &kIOSPasswordAutoSubmission, "auto-submission-use-wait-period", false};
+const base::FeatureParam<int> kAutoSubmissionWaitPeriodMsParam{
+    &kIOSPasswordAutoSubmission, "auto-submission-wait-period-ms", 0};
 
 }  // namespace password_manager::features

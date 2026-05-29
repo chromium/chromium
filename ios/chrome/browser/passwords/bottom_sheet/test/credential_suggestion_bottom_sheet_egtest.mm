@@ -13,7 +13,6 @@
 #import "components/url_formatter/elide_url.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -26,7 +25,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -48,8 +46,10 @@ using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::kDefaultUserDisplayName;
 using password_manager_test_utils::SaveExamplePasskeyToStore;
 
-static constexpr char kFormUsername[] = "un";
-static constexpr char kFormPassword[] = "pw";
+static constexpr char kFormUsernameId1[] = "un";
+static constexpr char kFormPasswordId1[] = "pw";
+static constexpr char kFormUsernameId2[] = "username";
+static constexpr char kFormPasswordId2[] = "password";
 static constexpr char kLocalhost[] = "localhost";
 
 namespace {
@@ -209,7 +209,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 @end
 
-@implementation CredentialSuggestionBottomSheetEGTest
+@implementation CredentialSuggestionBottomSheetEGTest {
+  BOOL _hasSignedInForTest;
+}
 
 - (bool)useNewBlur {
   return NO;
@@ -217,9 +219,12 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 - (void)setUp {
   [super setUp];
+  _hasSignedInForTest = NO;
 
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
+  self.testServer->ServeFilesFromSourceDirectory(
+      "components/test/data/password_manager");
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
@@ -229,9 +234,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
-
-  // Sign in.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Set up reauth module.
   [CredentialSuggestionBottomSheetAppInterface
@@ -273,6 +275,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
     config.features_disabled.push_back(kAutofillBottomSheetNewBlur);
   }
 
+  if ([self isRunningTest:@selector(DISABLED_testAutoSubmission)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAutoSubmission);
+  }
+
   return config;
 }
 
@@ -305,6 +312,13 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 - (void)loadLoginPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:[self loginPageURL]];
+  // Sign in after loading the page to prevent EarlGrey timeouts caused by
+  // asynchronous UI updates (like the "Signed in as..." snackbar) overlapping
+  // with the page load.
+  if (!_hasSignedInForTest) {
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    _hasSignedInForTest = YES;
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:WebViewMatcher()];
 }
@@ -312,18 +326,39 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 - (void)loadLoginAutofocusPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:[self loginAutofocusPageURL]];
+  // Sign in after loading the page to prevent EarlGrey timeouts caused by
+  // asynchronous UI updates (like the "Signed in as..." snackbar) overlapping
+  // with the page load.
+  if (!_hasSignedInForTest) {
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    _hasSignedInForTest = YES;
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
 - (void)loadConditionalPasskeyLoginPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:[self conditionalPasskeyLoginPageURL]];
+  // Sign in after loading the page to prevent EarlGrey timeouts caused by
+  // asynchronous UI updates (like the "Signed in as..." snackbar) overlapping
+  // with the page load.
+  if (!_hasSignedInForTest) {
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    _hasSignedInForTest = YES;
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
 - (void)loadModalPasskeyLoginPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:[self modalPasskeyLoginPageURL]];
+  // Sign in after loading the page to prevent EarlGrey timeouts caused by
+  // asynchronous UI updates (like the "Signed in as..." snackbar) overlapping
+  // with the page load.
+  if (!_hasSignedInForTest) {
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    _hasSignedInForTest = YES;
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:WebViewMatcher()];
 }
@@ -363,15 +398,19 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 - (void)verifyPasswordFieldsHaveBeenFilled:(NSString*)username {
   // Verify that the username has been filled.
+  // The test pages use either 'un' or 'username' as the ID for the username
+  // field.
   NSString* condition = [NSString
-      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
-                       kFormUsername, username];
+      stringWithFormat:@"document.getElementById('%s')?.value === '%@' || "
+                       @"document.getElementById('%s')?.value === '%@'",
+                       kFormUsernameId1, username, kFormUsernameId2, username];
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
 
   // Verify that the password field is not empty.
   NSString* filledFieldCondition =
-      [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
-                                 kFormPassword];
+      [NSString stringWithFormat:@"!!document.getElementById('%s')?.value || "
+                                 @"!!document.getElementById('%s')?.value",
+                                 kFormPasswordId1, kFormPasswordId2];
   [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
 }
 
@@ -386,7 +425,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -422,7 +461,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -458,7 +497,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -507,7 +546,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadConditionalPasskeyLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
@@ -529,7 +568,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadConditionalPasskeyLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -580,7 +619,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -601,7 +640,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self saveGenericPasswordAndLoadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -625,7 +664,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   TapElementOnceVisible(grey_accessibilityID(@"user"));
 
@@ -667,7 +706,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   TapElementOnceVisible(grey_accessibilityID(@"user"));
 
@@ -743,7 +782,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   TapElementOnceVisible(grey_accessibilityID(@"user"));
 
@@ -804,7 +843,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   TapElementOnceVisible(grey_accessibilityID(@"user"));
 
@@ -834,7 +873,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // Verify that user2 is not available anymore.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
   // Since the bottom sheet was dismissed, now suggestions are shown in the
   // keyboard acessory.
   NSString* accessorySuggestionURL =
@@ -858,7 +897,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   // Tapping the single item doesn't change anything.
   TapElementOnceVisible(grey_accessibilityID(@"user"));
@@ -879,7 +918,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   // Select the first item.
   TapElementOnceVisible(grey_accessibilityID(@"user"));
@@ -922,7 +961,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   // Tap to expand.
   TapElementOnceVisible(grey_accessibilityID(@"user1"));
@@ -951,7 +990,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self saveGenericPasswordAndLoadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -965,7 +1004,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -979,7 +1018,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -992,7 +1031,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   // Verify that keyboard is shown.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
@@ -1005,7 +1044,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(l10n_util::GetNSString(
@@ -1022,7 +1061,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   // Verify that selecting credentials with no username disables the bottom
   // sheet.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
@@ -1034,7 +1073,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self saveGenericPasswordAndLoadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
@@ -1080,7 +1119,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
 
@@ -1107,7 +1146,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   // displayed.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
@@ -1135,7 +1174,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
@@ -1172,7 +1211,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
@@ -1194,7 +1233,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
@@ -1244,7 +1283,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // Tap on a field to trigger the bottom sheet.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   // Select the backup password and use it to fill the form.
   TapElementOnceVisible(BackupPasswordSuggestion(@"user"));
@@ -1265,7 +1304,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // Tap on a field to trigger the bottom sheet.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
 
   // Long press the backup password suggestion to open the context menu.
   LongPressElementOnceVisible(BackupPasswordSuggestion(@"user"));
@@ -1277,21 +1316,45 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       assertWithMatcher:grey_nil()];
 }
 
-@end
+// Tests that a standard, clean login form successfully auto-submits.
+// Form Structure:
+// [ Username ]
+// [ Checkbox ] (Ignored by heuristic)
+// [ Password ]
+// [ Submit   ]
+- (void)DISABLED_testAutoSubmission {
+  GURL URL = self.testServer->GetURL("/auto_submit_test.html");
 
-// Test suite for testing the new blur approach.
-@interface CredentialSuggestionBottomSheetNewBlurEGTest
-    : CredentialSuggestionBottomSheetEGTest
-@end
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(URL)];
+  [ChromeEarlGrey loadURL:URL];
+  // Sign in after loading the page to prevent EarlGrey timeouts caused by
+  // asynchronous UI updates (like the "Signed in as..." snackbar) overlapping
+  // with the page load.
+  if (!_hasSignedInForTest) {
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    _hasSignedInForTest = YES;
+  }
 
-@implementation CredentialSuggestionBottomSheetNewBlurEGTest
+  [ChromeEarlGrey waitForWebStateContainingText:"Auto-Submit Test Page"];
 
-- (BOOL)useNewBlur {
-  return YES;
-}
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("password")];
 
-// No Op test to have the test fixture visible.
-- (void)testVoid {
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Form Submitted!"];
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"PasswordManager.TouchToFill.SubmissionReadiness"],
+      @"Failed to record SubmissionReadiness histogram.");
 }
 
 @end

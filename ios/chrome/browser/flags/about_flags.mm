@@ -1362,11 +1362,11 @@ const FeatureEntry::FeatureParam kAutoSubmissionDismissThenBlockThenSubmit[] = {
 const FeatureEntry::FeatureParam
     kAutoSubmissionDismissThenBlockThenSubmitWithWait[] = {
         {"auto-submission-type", "DismissThenBlockThenSubmit"},
-        {"auto-submission-use-wait-period", "true"},
+        {"auto-submission-use-wait-period", "100"},
 };
 const FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmitWithWait[] = {
     {"auto-submission-type", "DismissThenSubmit"},
-    {"auto-submission-use-wait-period", "true"},
+    {"auto-submission-use-wait-period", "100"},
 };
 const FeatureEntry::FeatureParam kAutoSubmissionScriptSubmit[] = {
     {"auto-submission-type", "ScriptSubmit"},

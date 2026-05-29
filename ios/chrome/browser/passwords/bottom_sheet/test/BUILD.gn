@@ -10,6 +10,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
+    "//components/password_manager/ios:auto_submit_test_bundle_data",
     "//components/password_manager/ios:features",
     "//components/url_formatter",
     "//components/webauthn/ios:features",

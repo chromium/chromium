@@ -511,14 +511,15 @@ function preventKeyboardOnElement(elementId: number): boolean {
   element.setAttribute('inputmode', 'none');
   return true;
 }
-
 /**
  * Restores the original inputmode of the element.
+ * @param elementId Unique ID of the element to restore.
+ * @return Whether the inputmode was successfully restored.
  */
-function restoreKeyboardOnElement(elementId: number): void {
+function restoreKeyboardOnElement(elementId: number): boolean {
   const element = getElementByUniqueID(elementId) as HTMLElement;
   if (!element) {
-    return;
+    return false;
   }
 
   if (originalInputModes.has(element)) {
@@ -527,12 +528,15 @@ function restoreKeyboardOnElement(elementId: number): void {
   } else {
     element.removeAttribute('inputmode');
   }
+
   // Blur the element right away to prevent the keyboard from showing up after
   // restoring the inputmode.
   element.blur();
+
+  return true;
 }
 
-let activeShieldTargetId: number|null = null;
+let activeShieldTargetRef: WeakRef<HTMLElement>|null = null;
 let activeShieldTimeoutId: number|null = null;
 
 /**
@@ -541,11 +545,7 @@ let activeShieldTimeoutId: number|null = null;
  * that do not target the currently active shield target element.
  */
 function keystrokeShieldListener(e: Event): void {
-  if (activeShieldTargetId === null) {
-    return;
-  }
-  const targetElement =
-      getElementByUniqueID(activeShieldTargetId) as HTMLElement;
+  const targetElement = activeShieldTargetRef?.deref();
   if (!targetElement) {
     return;
   }
@@ -559,13 +559,20 @@ function keystrokeShieldListener(e: Event): void {
 const RENDERER_SHIELD_TIMEOUT_MS = 1000;
 
 /**
- * Sets up a keystroke interaction shield that prevents any keystrokes from
- * being processed if they are not targeted at the specified element.
+ * Sets up a keystroke interaction shield in the renderer to prevent
+ * keystrokes from affecting elements other than the targeted element.
+ * @param elementId Unique ID of the element to protect.
+ * @return Whether the shield was successfully set up.
  */
-function setUpRendererKeystrokeShield(elementId: number): void {
+function setUpRendererKeystrokeShield(elementId: number): boolean {
   removeRendererKeystrokeShield();  // Ensure any existing shield is cleaned up
 
-  activeShieldTargetId = elementId;
+  const element = getElementByUniqueID(elementId) as HTMLElement;
+  if (!element) {
+    return false;
+  }
+
+  activeShieldTargetRef = new WeakRef(element);
 
   // Use capture phase to intercept the event before it reaches other elements.
   document.addEventListener('keydown', keystrokeShieldListener, true);
@@ -576,6 +583,8 @@ function setUpRendererKeystrokeShield(elementId: number): void {
   activeShieldTimeoutId = window.setTimeout(() => {
     removeRendererKeystrokeShield();
   }, RENDERER_SHIELD_TIMEOUT_MS);
+
+  return true;
 }
 
 /**
@@ -587,7 +596,7 @@ function removeRendererKeystrokeShield(): void {
     activeShieldTimeoutId = null;
   }
 
-  activeShieldTargetId = null;
+  activeShieldTargetRef = null;
 
   document.removeEventListener('keydown', keystrokeShieldListener, true);
   document.removeEventListener('keypress', keystrokeShieldListener, true);

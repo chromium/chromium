@@ -89,10 +89,10 @@ class PasswordManagerJavaScriptFeature : public web::JavaScriptFeature {
                                 base::OnceCallback<void(BOOL)> callback);
 
   // Restores the inputmode of the element.
-  // |callback| is called after the operation has completed.
+  // |callback| is called with a boolean indicating success.
   void RestoreKeyboardOnElement(web::WebFrame* frame,
                                 autofill::FieldRendererId field_identifier,
-                                base::OnceClosure callback);
+                                base::OnceCallback<void(BOOL)> callback);
 
   // Focuses the element.
   // |callback| is called with a boolean indicating if the element was found
@@ -103,10 +103,10 @@ class PasswordManagerJavaScriptFeature : public web::JavaScriptFeature {
 
   // Sets up a keystroke interaction shield in the renderer to prevent
   // keystrokes from affecting elements other than the targeted element.
-  // |callback| is called after the operation has completed.
+  // |callback| is called with a boolean indicating success.
   void SetUpRendererKeystrokeShield(web::WebFrame* frame,
                                     autofill::FieldRendererId field_identifier,
-                                    base::OnceClosure callback);
+                                    base::OnceCallback<void(BOOL)> callback);
 
   // Removes the keystroke interaction shield from the renderer.
   // |callback| is called after the operation has completed.

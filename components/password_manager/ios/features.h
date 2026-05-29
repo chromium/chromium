@@ -52,7 +52,8 @@ extern const base::FeatureParam<AutoSubmissionType>::Option
 
 // Feature param to control whether to wait some period of time between the
 // moment the field is focused and the moment the submission is triggered.
-extern const base::FeatureParam<bool> kAutoSubmissionUseWaitPeriodParam;
+// A value of 0 means no wait period.
+extern const base::FeatureParam<int> kAutoSubmissionWaitPeriodMsParam;
 
 }  // namespace password_manager::features
 
