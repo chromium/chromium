@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_requirements_service.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -11,6 +13,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_printer.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -43,6 +46,19 @@ PasswordRequirementsSpec GetSanitizedSpec(
           autofill::password_generation::kMinimumPasswordLength) {
     return PasswordRequirementsSpec();
   }
+  if (spec.has_symbols() && spec.symbols().has_character_set() &&
+      !std::ranges::all_of(spec.symbols().character_set(),
+                           password_manager_util::IsSpecialSymbol)) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_lower_case() && spec.lower_case().has_max() &&
+      spec.lower_case().max() == 0 && spec.has_upper_case() &&
+      spec.upper_case().has_max() && spec.upper_case().max() == 0 &&
+      spec.has_numeric() && spec.numeric().has_max() &&
+      spec.numeric().max() == 0) {
+    return PasswordRequirementsSpec();
+  }
+
   return spec;
 }
 

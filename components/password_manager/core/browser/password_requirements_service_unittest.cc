@@ -243,6 +243,17 @@ TEST_F(PasswordRequirementsServiceTest, SanitizeMaliciousSpecs) {
   malicious_spec_short.set_max_length(3u);  // Less than kMinimumPasswordLength
   malicious_spec_short.set_priority(100);
 
+  autofill::PasswordRequirementsSpec malicious_spec_symbols_alphanumeric;
+  malicious_spec_symbols_alphanumeric.mutable_symbols()->set_character_set(
+      "!@#a");
+  malicious_spec_symbols_alphanumeric.set_priority(100);
+
+  autofill::PasswordRequirementsSpec malicious_spec_no_alphanumeric;
+  malicious_spec_no_alphanumeric.mutable_lower_case()->set_max(0u);
+  malicious_spec_no_alphanumeric.mutable_upper_case()->set_max(0u);
+  malicious_spec_no_alphanumeric.mutable_numeric()->set_max(0u);
+  malicious_spec_no_alphanumeric.set_priority(100);
+
   struct {
     const char* test_name;
     raw_ptr<const autofill::PasswordRequirementsSpec> malicious_spec;
@@ -252,6 +263,8 @@ TEST_F(PasswordRequirementsServiceTest, SanitizeMaliciousSpecs) {
       {"Alphabetic override", &malicious_spec_alphabetic},
       {"Numeric override", &malicious_spec_numeric},
       {"Too short max length", &malicious_spec_short},
+      {"Symbols contain non-symbol", &malicious_spec_symbols_alphanumeric},
+      {"No alphanumeric allowed", &malicious_spec_no_alphanumeric},
   };
 
   for (const auto& test : tests) {
