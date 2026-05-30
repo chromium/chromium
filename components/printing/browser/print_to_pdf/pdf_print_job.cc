@@ -98,7 +98,6 @@ void PdfPrintJob::OnDidPrintWithParams(
           params->document_cookie, printing_rfh_, content,
           result.value()->accessibility_tree,
           result.value()->generate_document_outline,
-          printing::mojom::PrintCompositor::DocumentType::kPDF,
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr()));
 }

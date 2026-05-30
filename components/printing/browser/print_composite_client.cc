@@ -234,16 +234,13 @@ void PrintCompositeClient::CompositePage(
 void PrintCompositeClient::PrepareToCompositeDocument(
     int document_cookie,
     content::RenderFrameHost* render_frame_host,
-    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto* compositor =
-      CreateCompositeRequest(document_cookie, render_frame_host, document_type);
+  auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
   is_doc_concurrently_composited_ = true;
   compositor->PrepareToCompositeDocument(
-      document_type,
       base::BindOnce(&PrintCompositeClient::OnDidPrepareToCompositeDocument,
                      std::move(callback)));
 }
@@ -276,13 +273,11 @@ void PrintCompositeClient::CompositeDocument(
     const mojom::DidPrintContentParams& content,
     const ui::AXTreeUpdate& accessibility_tree,
     mojom::GenerateDocumentOutline generate_document_outline,
-    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto* compositor =
-      CreateCompositeRequest(document_cookie, render_frame_host, document_type);
+  auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
   compositor->SetAccessibilityTree(accessibility_tree);
   compositor->SetGenerateDocumentOutline(generate_document_outline);
 
@@ -307,7 +302,6 @@ void PrintCompositeClient::CompositeDocument(
   compositor->CompositeDocument(
       GenerateFrameGuid(render_frame_host), std::move(region),
       ConvertContentInfoMap(render_frame_host, content.subframe_content_info),
-      document_type,
       base::BindOnce(&PrintCompositeClient::OnDidCompositeDocument,
                      base::Unretained(this), document_cookie,
                      std::move(callback)));
@@ -353,8 +347,7 @@ bool PrintCompositeClient::GetIsDocumentConcurrentlyComposited(
 
 mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
     int cookie,
-    content::RenderFrameHost* initiator_frame,
-    mojom::PrintCompositor::DocumentType document_type) {
+    content::RenderFrameHost* initiator_frame) {
   DCHECK(initiator_frame);
 
   if (document_cookie_ != 0) {

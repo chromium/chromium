@@ -61,19 +61,15 @@ class PrintCompositeClient
                      mojom::PrintCompositor::CompositePageCallback callback);
 
   // Notifies compositor to collect individual pages into a document
-  // when processing the individual pages for preview.  The `document_type`
-  // specified determines the format of the document passed back in the
-  // `callback` from `FinishDocumentComposition()`.
+  // when processing the individual pages for preview.
   void PrepareToCompositeDocument(
       int document_cookie,
       content::RenderFrameHost* render_frame_host,
-      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback);
 
   // Notifies compositor of the total number of pages being concurrently
   // collected into the document, allowing for completion of the composition
-  // when all pages have been received.  The format of the provided document
-  // is of the `document_type` specified in `PrepareToCompositeDocument()`.
+  // when all pages have been received.
   void FinishDocumentComposition(
       int document_cookie,
       uint32_t pages_count,
@@ -87,7 +83,6 @@ class PrintCompositeClient
       const mojom::DidPrintContentParams& content,
       const ui::AXTreeUpdate& accessibility_tree,
       mojom::GenerateDocumentOutline generate_document_outline,
-      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::CompositeDocumentCallback callback);
 
   // Get the concurrent composition status for a document.  Identifies if the
@@ -135,8 +130,7 @@ class PrintCompositeClient
   // Returns the created composite request.
   mojom::PrintCompositor* CreateCompositeRequest(
       int cookie,
-      content::RenderFrameHost* initiator_frame,
-      mojom::PrintCompositor::DocumentType document_type);
+      content::RenderFrameHost* initiator_frame);
 
   // Remove the existing composite request.
   void RemoveCompositeRequest(int cookie);

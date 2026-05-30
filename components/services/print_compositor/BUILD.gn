@@ -27,10 +27,6 @@ static_library("print_compositor") {
     deps += [ "//content/public/child" ]
   }
 
-  if (is_win) {
-    deps += [ "//printing:printing_base" ]
-  }
-
   public_deps = [
     "//components/enterprise/buildflags",
     "//components/services/print_compositor/public/cpp",

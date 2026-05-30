@@ -16,7 +16,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
@@ -46,10 +45,6 @@ class ClientDiscardableSharedMemoryManager;
 }
 
 namespace printing {
-
-#if BUILDFLAG(IS_WIN)
-class ScopedXPSInitializer;
-#endif
 
 class PrintCompositorImpl : public mojom::PrintCompositor {
  public:
@@ -86,10 +81,8 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::CompositeDocumentCallback callback) override;
   void PrepareToCompositeDocument(
-      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback)
       override;
   void FinishDocumentComposition(
@@ -121,20 +114,18 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
                               base::ReadOnlySharedMemoryRegion)>;
 
   // The core function for content composition and conversion to a PDF file,
-  // and possibly also into a full document PDF/XPS file.
+  // and possibly also into a full document PDF file.
   // Make this function virtual so tests can override it.
   virtual mojom::PrintCompositor::Status CompositePages(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      base::ReadOnlySharedMemoryRegion* region,
-      mojom::PrintCompositor::DocumentType document_type);
+      base::ReadOnlySharedMemoryRegion* region);
 
   // Make these functions virtual so tests can override them.
   virtual void DrawPage(SkDocument* doc, const SkDocumentPage& page);
   virtual void FulfillRequest(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      mojom::PrintCompositor::DocumentType document_type,
       CompositePagesCallback callback);
   virtual void FinishDocumentRequest(
       FinishDocumentCompositionCallback callback);
@@ -203,7 +194,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     RequestInfo(base::span<const uint8_t> content,
                 const ContentToFrameMap& content_info,
                 const base::flat_set<uint64_t>& pending_subframes,
-                mojom::PrintCompositor::DocumentType document_type,
                 CompositePagesCallback callback);
     ~RequestInfo();
 
@@ -211,7 +201,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     // for composition.
     base::flat_set<uint64_t> pending_subframes;
 
-    mojom::PrintCompositor::DocumentType document_type;
     CompositePagesCallback callback;
   };
 
@@ -222,12 +211,11 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // full document with all pages. Only used when PrepareToCompositeDocument()
   // gets called.
   struct DocumentInfo {
-    explicit DocumentInfo(mojom::PrintCompositor::DocumentType document_type);
+    DocumentInfo();
     ~DocumentInfo();
 
     SkDynamicMemoryWStream compositor_stream;
     sk_sp<SkDocument> doc;
-    mojom::PrintCompositor::DocumentType document_type;
     uint32_t pages_written = 0;
     uint32_t page_count = 0;
     FinishDocumentCompositionCallback callback;
@@ -258,7 +246,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_ids,
-      mojom::PrintCompositor::DocumentType document_type,
       CompositePagesCallback callback);
   void HandleDocumentCompletionRequest();
 
@@ -269,10 +256,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       const ContentToFrameMap& subframe_content_map);
 
   mojo::Receiver<mojom::PrintCompositor> receiver_{this};
-
-#if BUILDFLAG(IS_WIN)
-  std::unique_ptr<ScopedXPSInitializer> xps_initializer_;
-#endif
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>

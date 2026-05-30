@@ -60,7 +60,6 @@ class MockPrintCompositorImpl : public PrintCompositorImpl {
  protected:
   void FulfillRequest(base::span<const uint8_t> serialized_content,
                       const ContentToFrameMap& subframe_content_map,
-                      mojom::PrintCompositor::DocumentType document_type,
                       CompositePageCallback callback) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
@@ -85,8 +84,7 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
   mojom::PrintCompositor::Status CompositePages(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      base::ReadOnlySharedMemoryRegion* region,
-      mojom::PrintCompositor::DocumentType document_type) override {
+      base::ReadOnlySharedMemoryRegion* region) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
     if (doc_info_) {
@@ -370,7 +368,6 @@ TEST_F(PrintCompositorImplTest, MultiRequestsBasic) {
 
   impl.CompositeDocument(
       3, CreateTestData(3, -1), subframe_content_map,
-      mojom::PrintCompositor::DocumentType::kPDF,
       base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 }
 
@@ -392,7 +389,6 @@ TEST_F(PrintCompositorImplTest, MultiRequestsOrder) {
 
   impl.CompositeDocument(
       3, CreateTestData(3, -1), subframe_content_map,
-      mojom::PrintCompositor::DocumentType::kPDF,
       base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
@@ -474,7 +470,6 @@ TEST_F(PrintCompositorImplTest, MultiRequestsBasicFinishDocument) {
   // When the content is not available, the request is not fulfilled.
   const ContentToFrameMap subframe_content_map = {{1, 8}};
   impl.PrepareToCompositeDocument(
-      mojom::PrintCompositor::DocumentType::kPDF,
       base::BindOnce(
           &PrintCompositorImplTest::OnPrepareToCompositeDocumentCallback));
   EXPECT_CALL(impl, OnCompositePage(testing::_, testing::_)).Times(0);
