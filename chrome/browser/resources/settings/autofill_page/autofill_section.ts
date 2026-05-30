@@ -26,6 +26,7 @@ import './your_saved_info_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
@@ -71,12 +72,13 @@ declare global {
 
 export interface SettingsAutofillSectionElement {
   $: {
-    autofillProfileToggle: SettingsToggleButtonElement,
-    autofillSyncToggleWrapper: HTMLElement,
-    autofillSyncToggle: CrToggleElement,
-    addressSharedMenu: CrActionMenuElement,
     addAddress: CrButtonElement,
     addressList: HTMLElement,
+    addressSharedMenu: CrActionMenuElement,
+    autofillProfileToggle: SettingsToggleButtonElement,
+    autofillSyncToggle: CrToggleElement,
+    autofillSyncToggleWrapper: HTMLElement,
+    emailSharedMenu: CrActionMenuElement,
     menuEditAddress: HTMLElement,
     menuRemoveAddress: HTMLElement,
     noAddressesLabel: HTMLElement,
@@ -84,7 +86,7 @@ export interface SettingsAutofillSectionElement {
 }
 
 const SettingsAutofillSectionElementBase =
-    SettingsViewMixin(I18nMixin(PolymerElement));
+    PrefsMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAutofillSectionElement extends
     SettingsAutofillSectionElementBase {
@@ -130,6 +132,12 @@ export class SettingsAutofillSectionElement extends
             loadTimeData.getBoolean('emailVerificationProtocolEnabled'),
       },
 
+      emailVerificationAddresses_: {
+        type: Array,
+        computed: 'computeEmailVerificationAddresses_(' +
+            'prefs.autofill.email_verification_state.value)',
+      },
+
       /**
        * Indicates if this element is used as a Your saved info subpage. Causes
        * slight adjustments like different title, no page shadow, cards being
@@ -152,6 +160,8 @@ export class SettingsAutofillSectionElement extends
   declare private isPlusAddressEnabled_: boolean;
   declare private isEmailVerificationProtocolEnabled_: boolean;
   declare private isYourSavedInfoSubpage_: boolean;
+  declare private emailVerificationAddresses_: string[];
+  private emailSharedMenuModel_: string = '';
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
@@ -368,6 +378,11 @@ export class SettingsAutofillSectionElement extends
         this.isAccountNameEmailAddress_(address);
   }
 
+  private computeEmailVerificationAddresses_(state: Record<string, unknown>):
+      string[] {
+    return Object.keys(state);
+  }
+
   private onAccountHomeAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('googleAccountHomeAddressUrl'));
@@ -381,6 +396,22 @@ export class SettingsAutofillSectionElement extends
   private onAccountNameEmailAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('googleAccountNameEmailAddressEditUrl'));
+  }
+
+  private onEmailMenuClick_(e: DomRepeatEvent<string>) {
+    this.emailSharedMenuModel_ = e.model.item;
+    const dotsButton = e.target as HTMLElement;
+    this.$.emailSharedMenu.showAt(dotsButton);
+  }
+
+  private onMenuRemoveEmailClick_() {
+    this.$.emailSharedMenu.close();
+    const email = this.emailSharedMenuModel_;
+    const currentPrefs = this.getPref<Record<string, unknown>>(
+                                 'autofill.email_verification_state')
+                             .value;
+    assert(currentPrefs && email in currentPrefs);
+    this.deletePrefDictEntry('autofill.email_verification_state', email);
   }
 
   private isCloudOffVisible_(

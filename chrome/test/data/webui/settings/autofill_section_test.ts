@@ -6,6 +6,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrActionMenuElement} from 'chrome://settings/settings.js';
 import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {AutofillAddressOptInChange, AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -149,7 +150,15 @@ suite('AutofillSectionUiTest', function() {
   test('AutofillExtensionIndicator', function() {
     // Initializing with fake prefs
     const section = document.createElement('settings-autofill-section');
-    section.prefs = {autofill: {profile_enabled: {}}};
+    section.prefs = {
+      autofill: {
+        profile_enabled: {},
+        email_verification_state: {
+          type: chrome.settingsPrivate.PrefType.DICTIONARY,
+          value: {},
+        },
+      },
+    };
     document.body.appendChild(section);
 
     assertFalse(
@@ -171,6 +180,83 @@ suite('AutofillSectionUiTest', function() {
     const toggle =
         section.shadowRoot!.querySelector('#autofillEmailVerificationToggle');
     assertTrue(!!toggle);
+
+    const noEmailsLabel = section.shadowRoot!.querySelector('#noEmailsLabel');
+    assertTrue(!!noEmailsLabel);
+    assertFalse((noEmailsLabel as HTMLElement).hidden);
+  });
+
+  test('EmailVerificationList', async function() {
+    loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
+
+    const emailState = {
+      'test1@example.com': {allowed: true},
+      'test2@example.com': {allowed: false},
+    };
+
+    const section = await createAutofillSection([], {
+      profile_enabled: {value: true},
+      email_verification_enabled: {value: true},
+      email_verification_state: {
+        type: chrome.settingsPrivate.PrefType.DICTIONARY,
+        value: emailState,
+      },
+    });
+
+    flush();
+
+    const menuButtons =
+        section.shadowRoot!.querySelectorAll<HTMLElement>('.email-menu');
+    assertEquals(2, menuButtons.length);
+
+    const button0 = menuButtons[0]!;
+    const button1 = menuButtons[1]!;
+
+    const item0 = button0.parentElement;
+    const item1 = button1.parentElement;
+    assertTrue(!!item0);
+    assertTrue(!!item1);
+
+    const start0 = item0.querySelector('.start');
+    assertTrue(!!start0);
+    assertEquals('test1@example.com', start0.textContent.trim());
+
+    const start1 = item1.querySelector('.start');
+    assertTrue(!!start1);
+    assertEquals('test2@example.com', start1.textContent.trim());
+
+    // Click menu on first item.
+    button0.click();
+    flush();
+
+    const actionMenu = section.shadowRoot!.querySelector<CrActionMenuElement>(
+        '#emailSharedMenu')!;
+    assertTrue(actionMenu.open);
+
+    // Click remove.
+    const removeButton =
+        actionMenu.querySelector<HTMLElement>('#menuRemoveEmail');
+    assertTrue(!!removeButton);
+    removeButton.click();
+    flush();
+
+    // Verify pref was updated.
+    const updatedPrefs = section
+                             .getPref<Record<string, unknown>>(
+                                 'autofill.email_verification_state')
+                             .value;
+    assertFalse('test1@example.com' in updatedPrefs);
+    assertTrue('test2@example.com' in updatedPrefs);
+
+    // Verify UI updated.
+    const newMenuButtons = section.shadowRoot!.querySelectorAll('.email-menu');
+    assertEquals(1, newMenuButtons.length);
+    const newButton0 = newMenuButtons[0]!;
+    const newItem0 = newButton0.parentElement!;
+    assertTrue(!!newItem0);
+    const newStart0 = newItem0.querySelector('.start');
+    assertTrue(!!newStart0);
+    assertEquals('test2@example.com', newStart0.textContent.trim());
   });
 
   test('verifyAddressDeleteRecordTypeNotice', async () => {

@@ -95,7 +95,11 @@ suite('PasswordsAndForms', function() {
         key: 'autofill.payment_methods_mandatory_reauth',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
-
+      },
+      {
+        key: 'autofill.email_verification_state',
+        type: chrome.settingsPrivate.PrefType.DICTIONARY,
+        value: {},
       },
     ]));
     document.body.appendChild(prefs);
@@ -285,6 +289,9 @@ function createAutofillPageSection() {
     credentials_enable_service: {
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       value: false,
+    },
+    autofill: {
+      email_verification_state: {value: {}},
     },
   };
   document.body.innerHTML = window.trustedTypes!.emptyHTML;

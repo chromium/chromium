@@ -175,6 +175,28 @@
             no-extension-indicator label="$i18n{emailVerificationLabel}"
             pref="{{prefs.autofill.email_verification_enabled}}">
         </settings-toggle-button>
+        <div class="list-frame">
+          <div class="vertical-list">
+            <template is="dom-repeat" items="[[emailVerificationAddresses_]]">
+              <div class="list-item">
+                <div class="start">[[item]]</div>
+                <cr-icon-button class="icon-more-vert email-menu"
+                    on-click="onEmailMenuClick_">
+                </cr-icon-button>
+              </div>
+            </template>
+          </div>
+          <div id="noEmailsLabel" class="list-item"
+              hidden$="[[hasSome_(emailVerificationAddresses_)]]">
+            $i18n{emailVerificationEmptyLabel}
+          </div>
+        </div>
       </template>
+      <cr-action-menu id="emailSharedMenu" role-description="$i18n{menu}">
+        <button id="menuRemoveEmail" class="dropdown-item"
+            on-click="onMenuRemoveEmailClick_">
+          $i18n{removeVerifiedEmailPermission}
+        </button>
+      </cr-action-menu>
     </div>
   </settings-subpage>

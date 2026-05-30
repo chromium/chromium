@@ -30,7 +30,8 @@ export function expectEvent(
  * Creates the autofill section for the given list.
  */
 export async function createAutofillSection(
-    addresses: chrome.autofillPrivate.AddressEntry[], prefValues: unknown,
+    addresses: chrome.autofillPrivate.AddressEntry[],
+    prefValues: Record<string, unknown>,
     accountInfo?: chrome.autofillPrivate.AccountInfo):
     Promise<SettingsAutofillSectionElement> {
   // Override the AutofillManagerImpl for testing.
@@ -42,7 +43,15 @@ export async function createAutofillSection(
   AutofillManagerImpl.setInstance(autofillManager);
 
   const section = document.createElement('settings-autofill-section');
-  section.prefs = {autofill: prefValues};
+  section.prefs = {
+    autofill: {
+      email_verification_state: {
+        type: chrome.settingsPrivate.PrefType.DICTIONARY,
+        value: {},
+      },
+      ...prefValues,
+    },
+  };
   document.body.appendChild(section);
   await autofillManager.whenCalled('getAddressList');
 
