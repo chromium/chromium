@@ -16715,6 +16715,21 @@
             ]
         }
     ],
+    "NoResetMetricsUploadBackoffOnForeground": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260528",
+                    "enable_features": [
+                        "NoResetMetricsUploadBackoffOnForeground"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoSelectionMenuCaching": [
         {
             "platforms": [
