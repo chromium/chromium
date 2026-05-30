@@ -170,6 +170,8 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
+}  // namespace
+
 bool IsGlicGuest(content::WebContents* web_contents) {
   if (!web_contents ||
       GlicGuestMarker::FromWebContents(web_contents) == nullptr) {
@@ -178,7 +180,6 @@ bool IsGlicGuest(content::WebContents* web_contents) {
   auto* guest_view = guest_view::GuestViewBase::FromWebContents(web_contents);
   return guest_view && guest_view->attached();
 }
-}  // namespace
 
 void MarkProcessAsGlic(content::RenderProcessHost* rph) {
   GlicProcessUserData::MarkProcess(rph);

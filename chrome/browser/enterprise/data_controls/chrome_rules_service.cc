@@ -9,6 +9,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/guest_util.h"
+#endif
+
 namespace data_controls {
 
 // ---------------------------------
@@ -71,6 +75,12 @@ ActionSourceOrDestination ChromeRulesService::ExtractPasteActionContext(
                            ->IsIncognitoProfile();
     action.other_profile = endpoint.browser_context() != profile_;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (endpoint.web_contents() && (glic::IsGlicGuest(endpoint.web_contents()) ||
+                                  glic::IsGlicWebUI(endpoint.web_contents()))) {
+    action.gemini_in_chrome = true;
+  }
+#endif
   return action;
 }
 

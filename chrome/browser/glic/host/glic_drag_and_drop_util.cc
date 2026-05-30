@@ -102,7 +102,7 @@ void TriggerDragDropInvoke(content::WebContents* target_web_contents,
 
   GlicInvokeOptions invoke_options(mojom::InvocationSource::kWebDragDrop);
   invoke_options.additional_context = AdditionalTabContext(
-      std::move(context), source_rfh->GetGlobalId(), PolicyCheck::kNone);
+      std::move(context), source_rfh->GetGlobalId(), PolicyCheck::kClipboard);
 
   // We specify the panel's Glic WebContents as the target surface.
   // TODO(b/481036078): Use GlicInstance::GetInvokeTarget here when it's

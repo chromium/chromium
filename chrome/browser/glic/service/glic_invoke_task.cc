@@ -327,6 +327,7 @@ SendToClientTask::~SendToClientTask() = default;
 
 void SendToClientTask::Start(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
+
   if (auto_submit_passkey_) {
     instance_->host().InvokeWithAutoSubmit(
         *auto_submit_passkey_, std::move(mojo_options_),
