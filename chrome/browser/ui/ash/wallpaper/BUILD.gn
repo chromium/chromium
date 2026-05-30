@@ -41,6 +41,7 @@ static_library("wallpaper") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
