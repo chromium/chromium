@@ -715,6 +715,9 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 base::FilePath GetSanitizedFileName(const std::u16string& name) {
   std::wstring file_name = base::AsWString(name);
   base::i18n::ReplaceIllegalCharactersInPath(&file_name, ' ');
+  // Also remove '%' to avoid ShellExecute expansion issues if the filename
+  // is used in registry commands.
+  base::ReplaceChars(file_name, L"%", L" ", &file_name);
   if (net::IsReservedNameOnWindows(file_name)) {
     file_name.insert(0, 1, FILE_PATH_LITERAL('_'));
   }

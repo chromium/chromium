@@ -115,6 +115,27 @@ TEST_F(WebAppShortcutWinTest, GetSanitizedFileName) {
   // Test reserved names with extension (only base filename is checked).
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_COM1.lnk")),
             GetSanitizedFileName(u"COM1.lnk"));
+  // Test sanitization of '%' character.
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("percent 1")),
+            GetSanitizedFileName(u"percent%1"));
+
+  // Test sanitization of exploit strings from b/513893425.
+  // Case 1: %1 and NUL byte.
+  std::u16string input1 = u"Updated PoC %1";
+  input1.push_back(u'\0');
+  input1.append(
+      u" --single-argument --headless --utility-cmd-prefix=calc.exe inert");
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL(
+                "Updated PoC  1  --single-argument --headless "
+                "--utility-cmd-prefix=calc.exe inert")),
+            GetSanitizedFileName(input1));
+
+  // Case 2: %1 and no NUL byte, but multiple %1.
+  EXPECT_EQ(
+      base::FilePath(FILE_PATH_LITERAL(
+          "Victim  1 --headless --utility-cmd-prefix=calc.exe  1 inert")),
+      GetSanitizedFileName(
+          u"Victim %1 --headless --utility-cmd-prefix=calc.exe %1 inert"));
 }
 
 TEST_F(WebAppShortcutWinTest, GetShortcutPaths) {

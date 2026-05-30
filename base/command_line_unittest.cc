@@ -932,6 +932,80 @@ TEST(CommandLineTest, ParseAsSingleArgument) {
             cl_without_arg.GetProgram());
   EXPECT_TRUE(cl_without_arg.GetArgs().empty());
 }
+
+TEST(CommandLineTest, ParseAsSingleArgumentWithSameSwitchInProgramPath) {
+  // This test verifies that:
+  // 1. `--single-argument` embedded within the quoted program path is correctly
+  //    ignored and not treated as the trigger switch.
+  // 2. Legitimate switches placed before the actual `--single-argument` switch
+  //    (like `--switch_before`) are still correctly parsed and preserved.
+  // 3. The actual `--single-argument` switch is correctly identified, and
+  //    everything after it is treated as the single argument.
+  CommandLine cl = CommandLine::FromString(FILE_PATH_LITERAL(
+      "\"program --single-argument\" --switch_before=arg_before "
+      "--single-argument actual_arg"));
+  EXPECT_EQ(cl.GetProgram().value(),
+            FILE_PATH_LITERAL("program --single-argument"));
+  EXPECT_EQ(cl.GetArgs(),
+            CommandLine::StringVector({FILE_PATH_LITERAL("actual_arg")}));
+  EXPECT_TRUE(cl.HasSwitch("switch_before"));
+  EXPECT_EQ(cl.GetSwitchValueASCII("switch_before"), "arg_before");
+}
+
+TEST(CommandLineTest, ParseAsSingleArgumentWithSwitchAfter) {
+  // This test verifies that once `--single-argument` is encountered, any
+  // subsequent switch-like strings (e.g., `--switch_after`) are treated as part
+  // of the single argument payload and are not parsed as separate switches.
+  CommandLine cl = CommandLine::FromString(FILE_PATH_LITERAL(
+      "program --single-argument actual_arg --switch_after=arg_after"));
+  EXPECT_EQ(cl.GetProgram(), FilePath(FILE_PATH_LITERAL("program")));
+  EXPECT_EQ(cl.GetArgs(), CommandLine::StringVector({FILE_PATH_LITERAL(
+                              "actual_arg --switch_after=arg_after")}));
+  EXPECT_FALSE(cl.HasSwitch("switch_after"));
+}
+
+TEST(CommandLineTest, ParseAsSingleArgumentWithLeadingSpaces) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("  \"program\" --single-argument actual_arg"));
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program")), cl.GetProgram());
+  EXPECT_EQ(cl.GetArgs(),
+            CommandLine::StringVector({FILE_PATH_LITERAL("actual_arg")}));
+}
+
+TEST(CommandLineTest, ParseAsSingleArgumentWithLeadingSpacesNoQuotes) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("  program --single-argument actual_arg"));
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program")), cl.GetProgram());
+  EXPECT_EQ(cl.GetArgs(),
+            CommandLine::StringVector({FILE_PATH_LITERAL("actual_arg")}));
+}
+
+TEST(CommandLineTest,
+     ParseAsSingleArgumentWithLeadingSpacesAndSameSwitchInProgramPath) {
+  CommandLine cl = CommandLine::FromString(FILE_PATH_LITERAL(
+      "  \"program --single-argument\" --single-argument actual_arg"));
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program --single-argument")),
+            cl.GetProgram());
+  EXPECT_EQ(cl.GetArgs(),
+            CommandLine::StringVector({FILE_PATH_LITERAL("actual_arg")}));
+}
+
+TEST(CommandLineTest, ParseAsSingleArgumentWithUnmatchedQuote) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("\"program --single-argument actual_arg"));
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program --single-argument actual_arg")),
+            cl.GetProgram());
+  EXPECT_TRUE(cl.GetArgs().empty());
+}
+
+TEST(CommandLineTest, ParseAsSingleArgumentWithUnquotedSpaces) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("program path --single-argument actual_arg"));
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program")), cl.GetProgram());
+  EXPECT_EQ(cl.GetArgs(),
+            CommandLine::StringVector({FILE_PATH_LITERAL("actual_arg")}));
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
