@@ -766,6 +766,24 @@ TEST_F(EventListenerMapTest,
   delegate.SetListeners(nullptr);  // Avoid dangling raw_ptr.
 }
 
+// Tests that adding a listener with a malformed filter fails and does not
+// poison the map. Regression test for crbug.com/501631475.
+TEST_F(EventListenerMapTest, AddListenerWithMalformedFilter) {
+  base::DictValue filter_dict;
+  base::ListValue url_list;
+  base::DictValue url_dict;
+  url_dict.Set("invalid_key", "x");
+  url_list.Append(std::move(url_dict));
+  filter_dict.Set("url", std::move(url_list));
+
+  std::unique_ptr<EventListener> listener = EventListener::ForExtension(
+      kEvent1Name, kExt1Id, process_.get(), std::move(filter_dict));
+
+  bool added = listeners_->AddListener(std::move(listener));
+  EXPECT_FALSE(added);
+  EXPECT_FALSE(listeners_->HasListenerForEvent(kEvent1Name));
+}
+
 }  // namespace
 
 }  // namespace extensions

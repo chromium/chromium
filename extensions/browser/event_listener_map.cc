@@ -180,6 +180,9 @@ bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
         ParseEventMatcher(*listener->filter()));
     MatcherID id = event_filter_.AddEventMatcher(listener->event_name(),
                                                  std::move(matcher));
+    if (id == -1) {
+      return false;
+    }
     listener->set_matcher_id(id);
     listeners_by_matcher_id_[id] = listener.get();
     filtered_events_.insert(listener->event_name());
@@ -278,6 +281,9 @@ bool EventListenerMap::UpdateFilter(const EventListener& listener) {
       MatcherID id = event_filter_.AddEventMatcher(
           listener_ptr->event_name(),
           ParseEventMatcher(*listener_ptr->filter()));
+      if (id == -1) {
+        return false;
+      }
       listener_ptr->set_matcher_id(id);
       listeners_by_matcher_id_[id] = listener_ptr;
       filtered_events_.insert(listener_ptr->event_name());
