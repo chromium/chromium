@@ -87,12 +87,11 @@ public class SidePanelContainerCoordinatorImplUnitTest {
                 SidePanelContainerCoordinatorImpl.determineContainerWidthDp(
                         availableWidthDp, windowWidthDp));
 
-        // 4. Special logic for tests:
-        // Return half the window width if available width is less than MIN_SIDE_PANEL_WIDTH_DP.
+        // 4. Not enough space to accommodate MIN_SIDE_PANEL_WIDTH_DP.
         availableWidthDp = MIN_SIDE_PANEL_WIDTH_DP - 10;
         windowWidthDp = MIN_WEB_CONTENTS_WIDTH_DP + availableWidthDp;
         assertEquals(
-                windowWidthDp / 2,
+                0,
                 SidePanelContainerCoordinatorImpl.determineContainerWidthDp(
                         availableWidthDp, windowWidthDp));
     }

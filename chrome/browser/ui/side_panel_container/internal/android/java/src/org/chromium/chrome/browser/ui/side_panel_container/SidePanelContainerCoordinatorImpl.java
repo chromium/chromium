@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
@@ -28,8 +27,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerProperties;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.ui.base.ViewUtils;
-
-import java.util.Locale;
 
 /** Implementation of {@link SidePanelContainerCoordinator}. */
 @NullMarked
@@ -241,24 +238,7 @@ final class SidePanelContainerCoordinatorImpl
             return availableWidthDp;
         }
 
-        // 4. Special logic for tests.
-        //
-        // As of May 1, 2026, there were side panel tests running on small-screen bots categorized
-        // as tablets, where there may not be enough space for MIN_SIDE_PANEL_WIDTH_DP. So we just
-        // give side panel half the available width to make the tests happy.
-        // TODO(crbug.com/510044610): Only run side panel tests on large-screen bots, then delete
-        //  this logic.
-        if (BuildConfig.IS_FOR_TEST) {
-            log(
-                    TAG,
-                    String.format(
-                            Locale.US,
-                            "availableWidth < %d dp ; returning half the window width",
-                            MIN_SIDE_PANEL_WIDTH_DP));
-            return windowWidthDp / 2;
-        }
-
-        // 5. Return 0 if there is no available space.
+        // 4. Return 0 if available space can't accommodate the minimum side panel width.
         return 0;
     }
 }
