@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 
-#import "base/metrics/histogram_base.h"
-#import "base/test/ios/wait_util.h"
-#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -22,13 +19,10 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -66,6 +60,16 @@ void PostKeyboardWillShowNotifications(int count = 1) {
         postNotificationName:UIKeyboardWillShowNotification
                       object:nil];
   }
+}
+
+FormSuggestion* CreateFormSuggestion(NSString* value) {
+  return [FormSuggestion
+      suggestionWithValue:value
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kAutocompleteEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
 }
 
 }  // namespace
@@ -170,6 +174,65 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  void CaptureAccessorySuggestions() {
+    OCMStub(
+        [consumer_ showAccessorySuggestions:[OCMArg checkWithBlock:^BOOL(
+                                                        NSArray* suggestions) {
+                     received_suggestions_ = suggestions;
+                     return YES;
+                   }]]);
+  }
+
+  void SetUpProviderWithSuggestions(const FormActivityParams& params,
+                                    NSArray<FormSuggestion*>* suggestions) {
+    provider_ = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
+    [mediator_ injectProvider:provider_];
+
+    OCMStub(
+        [provider_
+            retrieveSuggestionsForForm:params
+                              webState:web_state_list_.GetActiveWebState()
+              accessoryViewUpdateBlock:[OCMArg
+                                           checkWithBlock:^BOOL(
+                                               FormSuggestionsReadyCompletion
+                                                   completion) {
+                                             completion(suggestions, provider_);
+                                             return YES;
+                                           }]])
+        .ignoringNonObjectArgs();
+    OCMStub([provider_ mainFillingProduct])
+        .andReturn(autofill::FillingProduct::kAutocomplete);
+  }
+
+  NSMutableArray<FormSuggestionsReadyCompletion>*
+  SetUpProviderWithPendingSuggestionQueries(const FormActivityParams& params) {
+    provider_ = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
+    [mediator_ injectProvider:provider_];
+
+    NSMutableArray<FormSuggestionsReadyCompletion>* completions =
+        [NSMutableArray array];
+    OCMStub(
+        [provider_
+            retrieveSuggestionsForForm:params
+                              webState:web_state_list_.GetActiveWebState()
+              accessoryViewUpdateBlock:[OCMArg
+                                           checkWithBlock:^BOOL(
+                                               FormSuggestionsReadyCompletion
+                                                   completion) {
+                                             [completions
+                                                 addObject:[completion copy]];
+                                             return YES;
+                                           }]])
+        .ignoringNonObjectArgs();
+    OCMStub([provider_ mainFillingProduct])
+        .andReturn(autofill::FillingProduct::kAutocomplete);
+    return completions;
+  }
+
+  web::FakeWebState* GetActiveFakeWebState() {
+    return static_cast<web::FakeWebState*>(web_state_list_.GetActiveWebState());
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -179,6 +242,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
   WebStateList web_state_list_;
   id consumer_;
   id handler_;
+  id provider_;
+  NSArray* received_suggestions_ = nil;
   autofill::TestFormActivityTabHelper test_form_activity_tab_helper_;
   FormInputAccessoryMediator* mediator_;
 };
@@ -233,6 +298,92 @@ TEST_F(FormInputAccessoryMediatorTest, TextDoesNotReset) {
   [[handler_ reject] resetFormInputView];
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
                                                         params);
+}
+
+// Tests that form activities on pages whose URLs don't have a web scheme are
+// ignored and reset the accessory.
+TEST_F(FormInputAccessoryMediatorTest,
+       FormActivityShouldBeIgnoredWhenNotWebScheme) {
+  CaptureAccessorySuggestions();
+  GetActiveFakeWebState()->SetCurrentURL(GURL("about:blank"));
+
+  OCMExpect([handler_ resetFormInputView]);
+  test_form_activity_tab_helper_.FormActivityRegistered(
+      main_frame_.get(), CreateFormActivityParams(/*field_type=*/"text"));
+
+  EXPECT_FALSE(received_suggestions_.count);
+}
+
+// Tests that form activities on non-HTML pages are ignored and reset the
+// accessory.
+TEST_F(FormInputAccessoryMediatorTest, FormActivityShouldBeIgnoredWhenNotHtml) {
+  CaptureAccessorySuggestions();
+  GetActiveFakeWebState()->SetContentIsHTML(false);
+
+  OCMExpect([handler_ resetFormInputView]);
+  test_form_activity_tab_helper_.FormActivityRegistered(
+      main_frame_.get(), CreateFormActivityParams(/*field_type=*/"text"));
+
+  EXPECT_FALSE(received_suggestions_.count);
+}
+
+// Tests that the suggestions are reset when a navigation is finished.
+TEST_F(FormInputAccessoryMediatorTest,
+       NavigationShouldRestoreKeyboardAccessoryView) {
+  CaptureAccessorySuggestions();
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  SetUpProviderWithSuggestions(params, @[ CreateFormSuggestion(@"foo") ]);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  ASSERT_TRUE(received_suggestions_.count);
+
+  OCMExpect([handler_ resetFormInputView]);
+  web::FakeNavigationContext navigation_context;
+  GetActiveFakeWebState()->OnNavigationFinished(&navigation_context);
+
+  EXPECT_FALSE(received_suggestions_.count);
+}
+
+// Tests that the suggestions are not reset when a finished navigation happened
+// within the same document.
+TEST_F(FormInputAccessoryMediatorTest,
+       SameDocumentNavigationShouldNotResetKeyboardAccessorySuggestions) {
+  CaptureAccessorySuggestions();
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  SetUpProviderWithSuggestions(params, @[ CreateFormSuggestion(@"foo") ]);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  NSUInteger initial_suggestion_count = received_suggestions_.count;
+  ASSERT_TRUE(initial_suggestion_count);
+
+  [[handler_ reject] resetFormInputView];
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetIsSameDocument(true);
+  GetActiveFakeWebState()->OnNavigationFinished(&navigation_context);
+
+  EXPECT_EQ(received_suggestions_.count, initial_suggestion_count);
+}
+
+// Tests that "blur" events are ignored.
+TEST_F(FormInputAccessoryMediatorTest, FormActivityBlurShouldBeIgnored) {
+  CaptureAccessorySuggestions();
+  provider_ = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
+  [mediator_ injectProvider:provider_];
+
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  params.type = "blur";
+  [[handler_ reject] resetFormInputView];
+  [[provider_ reject] retrieveSuggestionsForForm:params
+                                        webState:static_cast<web::WebState*>(
+                                                     [OCMArg anyPointer])
+                        accessoryViewUpdateBlock:[OCMArg any]];
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+
+  EXPECT_FALSE(received_suggestions_.count);
+  EXPECT_OCMOCK_VERIFY(provider_);
 }
 
 // Tests that suggestions are updated and shown.
@@ -334,26 +485,38 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   EXPECT_OCMOCK_VERIFY(providerMock);
 }
 
+// Tests that the autofill suggestion IPH is triggered when suggesting an
+// address if the suggestion's `featureForiPH` property is set.
+TEST_F(FormInputAccessoryMediatorTest, AutofillSuggestionIPH) {
+  TestFormSuggestionProvider* testSuggestionProvider =
+      [[TestFormSuggestionProvider alloc] init];
+  [testSuggestionProvider
+      setType:SuggestionProviderType::SuggestionProviderTypeAutofill];
+
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  FormSuggestion* suggestion = CreateFormSuggestion(@"foo");
+  suggestion.featureForIPH =
+      SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
+  suggestion = [FormSuggestion copy:suggestion
+                       andSetParams:params
+                           provider:testSuggestionProvider];
+  SetUpProviderWithSuggestions(params, @[ suggestion ]);
+  id<FormInputSuggestionsProvider> typed_provider = provider_;
+  OCMStub([typed_provider type]).andReturn(SuggestionProviderTypeAutofill);
+
+  OCMExpect(
+      [handler_ showAutofillSuggestionIPHIfNeededFor:suggestion.featureForIPH]);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  EXPECT_OCMOCK_VERIFY(handler_);
+}
+
 // Tests that only the suggestions from the latest query in concurrent queries
 // are updated and shown.
 TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
-  id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
-  [mediator_ injectProvider:providerMock];
-
   FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
-
-  __block NSMutableArray<FormSuggestionsReadyCompletion>*
-      suggestionsCompletionsQueue = [NSMutableArray array];
-
-  OCMStub([providerMock
-      retrieveSuggestionsForForm:params
-                        webState:web_state_list_.GetActiveWebState()
-        accessoryViewUpdateBlock:[OCMArg checkWithBlock:^BOOL(
-                                             FormSuggestionsReadyCompletion
-                                                 completion) {
-          [suggestionsCompletionsQueue addObject:[completion copy]];
-          return YES;
-        }]]);
+  NSMutableArray<FormSuggestionsReadyCompletion>* suggestionsCompletionsQueue =
+      SetUpProviderWithPendingSuggestionQueries(params);
 
   // Emit a form registration event to trigger the suggestions update code path.
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
@@ -393,11 +556,37 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
   // Run the completion block to trigger the code path that updates suggestions
   // in the view model.
   [suggestionsCompletionsQueue
-   objectAtIndex:0](suggestions_from_first_query, providerMock);
+   objectAtIndex:0](suggestions_from_first_query, provider_);
   [suggestionsCompletionsQueue
-   objectAtIndex:1](suggestions_from_second_query, providerMock);
+   objectAtIndex:1](suggestions_from_second_query, provider_);
 
-  EXPECT_OCMOCK_VERIFY(providerMock);
+  EXPECT_OCMOCK_VERIFY(provider_);
+}
+
+// Tests that only the latest query can update the consumer when concurrent
+// queries return no suggestions.
+TEST_F(FormInputAccessoryMediatorTest,
+       ShowEmptySuggestions_WithConcurrentQueries) {
+  CaptureAccessorySuggestions();
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  NSMutableArray<FormSuggestionsReadyCompletion>* suggestionsCompletionsQueue =
+      SetUpProviderWithPendingSuggestionQueries(params);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+
+  ASSERT_EQ([suggestionsCompletionsQueue count], 2ul);
+
+  [suggestionsCompletionsQueue objectAtIndex:0](@[], provider_);
+  EXPECT_FALSE(received_suggestions_);
+
+  [suggestionsCompletionsQueue objectAtIndex:1](@[], provider_);
+  ASSERT_TRUE(received_suggestions_);
+  EXPECT_EQ(0U, received_suggestions_.count);
+
+  EXPECT_OCMOCK_VERIFY(provider_);
 }
 
 // Tests that selecting a suggestion when Stateless is enabled is correctly
