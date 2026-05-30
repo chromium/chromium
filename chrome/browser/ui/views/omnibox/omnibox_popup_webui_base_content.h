@@ -14,6 +14,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -90,6 +91,12 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+  bool top_rounded_corners() const { return top_rounded_corners_; }
+
+  // Returns the corner radii of this WebUI content view to match the popup
+  // frame.
+  gfx::RoundedCornersF GetRoundedCornerRadii() const;
+
  protected:
   // Callback for cleaning up the `context_menu_` field.
   void OnMenuClosed();
@@ -104,8 +111,6 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   OmniboxController* controller() { return controller_.get(); }
 
   LocationBar* location_bar() { return location_bar_.get(); }
-
-  bool top_rounded_corners() const { return top_rounded_corners_; }
 
   // Detaches the WebContents and cleans up.
   void Detach();

@@ -40,6 +40,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 OmniboxPopupWebUIBaseContent::OmniboxPopupWebUIBaseContent(
@@ -62,13 +63,17 @@ OmniboxPopupWebUIBaseContent::~OmniboxPopupWebUIBaseContent() {
 
 void OmniboxPopupWebUIBaseContent::AddedToWidget() {
   views::WebView::AddedToWidget();
+  holder()->SetCornerRadii(GetRoundedCornerRadii());
+}
+
+gfx::RoundedCornersF OmniboxPopupWebUIBaseContent::GetRoundedCornerRadii()
+    const {
   const float corner_radius =
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kOmniboxExpandedRadius);
-  gfx::RoundedCornersF rounded_corner_radii = gfx::RoundedCornersF(
-      top_rounded_corners_ ? corner_radius : 0,
-      top_rounded_corners_ ? corner_radius : 0, corner_radius, corner_radius);
-  holder()->SetCornerRadii(rounded_corner_radii);
+  return gfx::RoundedCornersF(top_rounded_corners_ ? corner_radius : 0,
+                              top_rounded_corners_ ? corner_radius : 0,
+                              corner_radius, corner_radius);
 }
 
 void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
@@ -93,9 +98,11 @@ void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
   // than intended.
   gfx::Size min_size(width, 1);
   gfx::Size max_size(width, INT_MAX);
-  if (auto* render_widget_host_view =
-          GetWrappedWebContents()->GetRenderWidgetHostView()) {
-    render_widget_host_view->EnableAutoResize(min_size, max_size);
+  if (auto* web_contents = GetWrappedWebContents()) {
+    if (auto* render_widget_host_view =
+            web_contents->GetRenderWidgetHostView()) {
+      render_widget_host_view->EnableAutoResize(min_size, max_size);
+    }
   }
 
   // Defer synchronizing the View popup widget (the actual visible popup)
@@ -295,7 +302,7 @@ void OmniboxPopupWebUIBaseContent::Detach() {
 }
 
 content::WebContents* OmniboxPopupWebUIBaseContent::GetWrappedWebContents() {
-  return contents_wrapper_->web_contents();
+  return contents_wrapper_ ? contents_wrapper_->web_contents() : nullptr;
 }
 
 void OmniboxPopupWebUIBaseContent::OnMenuClosed() {
