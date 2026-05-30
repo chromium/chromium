@@ -125,8 +125,8 @@ bool LocationBarModelDelegateIOS::IsOfflinePage() const {
   if (!web_state) {
     return false;
   }
-  return OfflinePageTabHelper::FromWebState(web_state)
-      ->presenting_offline_page();
+  OfflinePageTabHelper* helper = OfflinePageTabHelper::FromWebState(web_state);
+  return helper && helper->presenting_offline_page();
 }
 
 bool LocationBarModelDelegateIOS::IsNewTabPage() const {

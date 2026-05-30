@@ -242,9 +242,11 @@ source_set("unit_tests") {
   sources = [
     "location_bar_coordinator_unittest.mm",
     "location_bar_mediator_unittest.mm",
+    "location_bar_model_delegate_ios_unittest.mm",
     "location_bar_steady_view_mediator_unittest.mm",
   ]
   deps = [
+    ":location_bar_model_delegate",
     ":ui_bundled",
     "//base",
     "//base/test:test_support",
