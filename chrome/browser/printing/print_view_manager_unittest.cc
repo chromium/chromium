@@ -342,6 +342,9 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
                            number_pages());
     return true;
   }
+  void GetPrintPreviewParams(GetPrintPreviewParamsCallback callback) override {
+    NOTREACHED();
+  }
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override {
     NOTREACHED();

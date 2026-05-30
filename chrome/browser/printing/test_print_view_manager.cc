@@ -158,7 +158,7 @@ void TestPrintViewManager::PrintPreviewAllowedForTesting() {
 
 void TestPrintViewManager::GetPrintPreviewParams(
     GetPrintPreviewParamsCallback callback) {
-  PrintViewManagerBase::GetPrintPreviewParams(
+  PrintViewManager::GetPrintPreviewParams(
       base::BindOnce(&OnDidGetPrintPreviewParams, std::ref(snooped_params_),
                      std::move(callback)));
 }
