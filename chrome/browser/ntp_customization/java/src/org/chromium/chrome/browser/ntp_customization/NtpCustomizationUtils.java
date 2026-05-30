@@ -984,8 +984,11 @@ public class NtpCustomizationUtils {
         }
     }
 
-    /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
-    public static boolean canEnableEdgeToEdgeForCustomizedTheme(
+    /**
+     * Returns whether all flags are enabled to support truly edge-to-edge for customized theme on
+     * top.
+     */
+    public static boolean supportsEnableEdgeToEdgeOnTop(
             WindowAndroid windowAndroid, boolean isTablet) {
         return !isTablet
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
@@ -1151,7 +1154,7 @@ public class NtpCustomizationUtils {
      */
     public static boolean shouldAdjustIconTintForNtp(
             WindowAndroid windowAndroid, boolean isTablet) {
-        if (!canEnableEdgeToEdgeForCustomizedTheme(windowAndroid, isTablet)) return false;
+        if (!supportsEnableEdgeToEdgeOnTop(windowAndroid, isTablet)) return false;
 
         @NtpBackgroundType
         int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundType();

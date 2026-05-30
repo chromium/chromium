@@ -593,7 +593,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mStatusBarColorController.maybeInitializeForCustomizedNtp(
                 mActivity,
-                NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(
                         windowAndroid,
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)));
         mCanAnimateBrowserControls =
@@ -1293,7 +1293,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         boolean isNewTabPageCustomizationV2Enabled =
                 isTablet
-                        || NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                        || NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(
                                 mWindowAndroid, isTablet);
         if (isNewTabPageCustomizationV2Enabled) {
             mNtpSyncedThemeManager = new NtpSyncedThemeManager(mActivity, originalProfile);

@@ -683,8 +683,7 @@ public class RootUiCoordinator
                         shouldAllowThemingInNightMode(),
                         shouldAllowBrightThemeColors(),
                         shouldAllowThemingOnTablets());
-        if (NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
-                mWindowAndroid, mIsTablet)) {
+        if (NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mWindowAndroid, mIsTablet)) {
             mAdjustedTopUiThemeColorProvider =
                     new AdjustedTopUiThemeColorProvider(
                             mActivity,
@@ -1390,8 +1389,7 @@ public class RootUiCoordinator
         }
 
         if (mWindowAndroid.getInsetObserver() != null
-                && NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
-                        mWindowAndroid, mIsTablet)) {
+                && NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mWindowAndroid, mIsTablet)) {
             // Only create TopInsetCoordinator if there's a valid TransitiveTopInsetProvider
             // available. TopInsetCoordinator registers a listener with the singleton
             // NtpCustomizationConfigManager, which must be removed via destroy(). The destroy()

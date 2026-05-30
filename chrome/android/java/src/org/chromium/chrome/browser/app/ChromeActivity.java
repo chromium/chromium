@@ -565,7 +565,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // performPreInflationStartup.
         // Note: This needs to be called before creating the RootUiCoordinator, which checks whether
         // edge-to-edge is enabled by calling
-        // NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(WindowAndroid, boolean).
+        // NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(WindowAndroid, boolean).
         if (getWindowAndroid() != null) {
             // EdgeToEdgeStateProvider is created in #onCreate.
             assert getEdgeToEdgeStateProvider() != null;

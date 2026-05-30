@@ -312,10 +312,10 @@ public class StatusBarColorController
      * Initializes to support customized NTP's background color if supportEdgeToEdge is true.
      *
      * @param context The application context.
-     * @param supportEdgeToEdge Whether to support making NTPs edge-to-edge.
+     * @param supportEdgeToEdgeOnTop Whether to support making NTPs edge-to-edge.
      */
-    public void maybeInitializeForCustomizedNtp(Context context, boolean supportEdgeToEdge) {
-        if (!supportEdgeToEdge) return;
+    public void maybeInitializeForCustomizedNtp(Context context, boolean supportEdgeToEdgeOnTop) {
+        if (!supportEdgeToEdgeOnTop) return;
 
         var ntpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
         mBackgroundColorForNtp = ntpCustomizationConfigManager.getBackgroundColor(context);

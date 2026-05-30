@@ -187,7 +187,7 @@ public class NewTabPage
     private final Activity mActivity;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsInNightMode;
-    private final boolean mCanSupportEdgeToEdgeForCustomizedTheme;
+    private final boolean mSupportsEnableEdgeToEdgeOnTop;
     private final TopInsetProvider mTopInsetProvider;
     private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
     private boolean mIsUseEdgeToEdgeForCustomizedTheme;
@@ -557,10 +557,9 @@ public class NewTabPage
         mToolbarHeight =
                 activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
-        mCanSupportEdgeToEdgeForCustomizedTheme =
-                NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
-                        windowAndroid, mIsTablet);
-        if (mCanSupportEdgeToEdgeForCustomizedTheme) {
+        mSupportsEnableEdgeToEdgeOnTop =
+                NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(windowAndroid, mIsTablet);
+        if (mSupportsEnableEdgeToEdgeOnTop) {
             // Apply edge-to-edge adjustments exclusively to phones. These are not required for LFF
             // devices.
             initTopInsetProviderObserver();
@@ -1241,7 +1240,7 @@ public class NewTabPage
     /** Sets whether the NTP is currently set as edge-to-edge. */
     private void setIsUseEdgeToEdgeForCustomizedTheme() {
         mIsUseEdgeToEdgeForCustomizedTheme =
-                mCanSupportEdgeToEdgeForCustomizedTheme
+                mSupportsEnableEdgeToEdgeOnTop
                         && !mIsTablet
                         && NtpCustomizationConfigManager.getInstance().getBackgroundType()
                                 != NtpBackgroundType.DEFAULT;
