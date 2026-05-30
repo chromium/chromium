@@ -123,6 +123,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
     private ButtonSpec createReviewSpec() {
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setActionChipLabelResId(R.string.glic_button_status_review)
+                .setContentDescription(
+                        mActivity.getString(R.string.glic_button_status_review_a11y_label))
                 .setShouldSuppressCpa(true)
                 .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                 .setActionChipBackgroundColorResId(R.attr.colorSecondaryContainer)
@@ -133,6 +135,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
     private ButtonSpec createDoneSpec() {
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setActionChipLabelResId(R.string.glic_button_status_done)
+                .setContentDescription(
+                        mActivity.getString(R.string.glic_button_status_done_a11y_label))
                 .setShouldSuppressCpa(true)
                 .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                 .setActionChipBackgroundColorResId(R.attr.colorTertiaryContainer)
