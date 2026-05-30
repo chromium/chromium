@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Dynamic direction switch negative to positive honors duration
+  assert_equals: Frame 0 (negative rate) expected 255 but got 0
+[FAIL] Dynamic direction switch positive to negative honors duration
+  assert_equals: Frame 255 (negative rate) expected 1 but got 128
+Harness: the test ran to completion.
+

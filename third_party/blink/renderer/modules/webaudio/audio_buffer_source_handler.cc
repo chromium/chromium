@@ -338,30 +338,12 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   uint32_t buffer_length = shared_buffer_->length();
   double buffer_sample_rate = shared_buffer_->sampleRate();
 
-  // Calculate the end_frame, the physical read boundary within the buffer.
-  // We only restrict the read boundary if a specific duration was requested
-  // and we are NOT looping. (In the looping case, the duration acts only
-  // as a stopwatch for when to stop playing, not a boundary for reading).
-  unsigned end_frame;
-  if (is_grain_ && is_duration_given_ && !Loop()) {
-    end_frame =
-        base::saturated_cast<uint32_t>(audio_utilities::TimeToSampleFrame(
-            grain_offset_ + grain_duration_, buffer_sample_rate));
-  } else {
-    end_frame = buffer_length;
-  }
-
-  // Do some sanity checking.
-  if (end_frame > buffer_length) {
-    end_frame = buffer_length;
-  }
-
   // If the .loop attribute is true, then values of
   // m_loopStart == 0 && m_loopEnd == 0 implies that we should use the entire
   // buffer as the loop, otherwise use the loop values in m_loopStart and
   // m_loopEnd.
-  double virtual_end_frame = end_frame;
-  double virtual_delta_frames = end_frame;
+  double virtual_end_frame = buffer_length;
+  double virtual_delta_frames = buffer_length;
 
   if (Loop() && (loop_start_ || loop_end_) && loop_start_ >= 0 &&
       loop_end_ > 0 && loop_start_ < loop_end_) {
@@ -383,9 +365,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
         std::min(virtual_read_index_, static_cast<double>(buffer_length - 1));
   }
 
-  double computed_playback_rate = ComputePlaybackRate();
-
   // Check that our playback rate isn't larger than the loop size.
+  double computed_playback_rate = ComputePlaybackRate();
   if (computed_playback_rate > virtual_delta_frames) {
     return false;
   }
@@ -410,7 +391,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   int frames_to_process = number_of_frames;
   bool is_stopping_this_quantum = false;
 
-  if (is_duration_given_ && Loop()) {
+  if (is_duration_given_) {
     double max_source_frames = grain_duration_ * buffer_sample_rate;
     double source_frames_left = max_source_frames - buffer_played_frames_;
     if (source_frames_left <= 0.0) {
@@ -564,17 +545,12 @@ void AudioBufferSourceHandler::ClampGrainParameters(
   // the grain duration. Otherwise, we want to use the user-specified value, of
   // course.
   if (!is_duration_given_) {
-    grain_duration_ = buffer_duration - grain_offset_;
-  }
-
-  if (is_duration_given_ && Loop()) {
-    // We're looping a grain with a grain duration specified. The node will stop
-    // after playing for grain_duration_ seconds.
+    grain_duration_ = std::numeric_limits<double>::infinity();
+  } else {
+    // We want to use the user-specified value. The node will stop after
+    // playing for grain_duration_ seconds.
     grain_duration_ =
         ClampTo(grain_duration_, 0.0, std::numeric_limits<double>::infinity());
-  } else {
-    grain_duration_ =
-        ClampTo(grain_duration_, 0.0, buffer_duration - grain_offset_);
   }
 
   // We call timeToSampleFrame here since at playbackRate == 1 we don't want to
