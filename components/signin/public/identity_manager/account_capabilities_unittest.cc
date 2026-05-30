@@ -160,6 +160,23 @@ TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
   EXPECT_EQ(capabilities.can_sign_in_to_chrome(), signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, MustFetchAppleAgeRangeInChrome) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnforceMustFetchAppleAgeRangeInChromeCapability};
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.must_fetch_apple_age_range_in_chrome(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_must_fetch_apple_age_range_in_chrome(true);
+  EXPECT_EQ(capabilities.must_fetch_apple_age_range_in_chrome(),
+            signin::Tribool::kTrue);
+
+  mutator.set_must_fetch_apple_age_range_in_chrome(false);
+  EXPECT_EQ(capabilities.must_fetch_apple_age_range_in_chrome(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, MustSkipAppleAgeRangeInChrome) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnforceMustSkipAppleAgeRangeInChromeCapability};

@@ -378,6 +378,14 @@ extern const base::FeatureParam<base::TimeDelta>
 #endif
 
 #if BUILDFLAG(IS_IOS)
+// Feature flag controlling whether the MustFetchAppleAgeRangeInChrome account
+// capability should be used to determine whether the client must fetch Apple's
+// age range.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnforceMustFetchAppleAgeRangeInChromeCapability);
+#endif
+
+#if BUILDFLAG(IS_IOS)
 // Feature flag controlling whether the MustSkipAppleAgeRangeInChrome account
 // capability should be used to determine whether the client must skip Apple's
 // age range check.

@@ -167,6 +167,11 @@ class AccountCapabilities {
   signin::Tribool is_subject_to_parental_controls() const;
 
 #if BUILDFLAG(IS_IOS)
+  // Whether the client must fetch Apple's age range in Chrome.
+  signin::Tribool must_fetch_apple_age_range_in_chrome() const;
+#endif
+
+#if BUILDFLAG(IS_IOS)
   // Whether the client must skip Apple's age range check in Chrome.
   signin::Tribool must_skip_apple_age_range_in_chrome() const;
 #endif

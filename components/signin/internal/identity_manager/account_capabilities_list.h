@@ -198,6 +198,13 @@ ACCOUNT_CAPABILITY_F(kFakeCapabilityForTestingName,
 #endif
 
 #if BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(kMustFetchAppleAgeRangeInChromeCapabilityName,
+                     MUST_FETCH_APPLE_AGE_RANGE_IN_CHROME_CAPABILITY_NAME,
+                     "accountcapabilities/gi3dkmbnmnqxa",
+                     switches::kEnforceMustFetchAppleAgeRangeInChromeCapability)
+#endif
+
+#if BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY_F(kMustSkipAppleAgeRangeInChromeCapabilityName,
                      MUST_SKIP_APPLE_AGE_RANGE_IN_CHROME_CAPABILITY_NAME,
                      "accountcapabilities/gi2tqnbnmnqxa",

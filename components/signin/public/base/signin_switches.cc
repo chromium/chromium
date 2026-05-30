@@ -474,6 +474,11 @@ const base::FeatureParam<base::TimeDelta>
 #endif
 
 #if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kEnforceMustFetchAppleAgeRangeInChromeCapability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnforceMustSkipAppleAgeRangeInChromeCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
