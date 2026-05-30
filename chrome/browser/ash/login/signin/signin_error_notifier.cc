@@ -47,6 +47,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -145,14 +146,24 @@ std::u16string GetMessageBodyForSecondaryAccountErrors() {
       IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_MESSAGE);
 }
 
+bool IsNewSignInNonSyncingUser(
+    const signin::IdentityManager* identity_manager) {
+  return identity_manager &&
+         !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+         syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+}
+
 std::u16string GetMessageBodyForDeviceAccountErrors(
+    const signin::IdentityManager* identity_manager,
     const GoogleServiceAuthError::State& error_state) {
   switch (error_state) {
     // User credentials are invalid (bad acct, etc).
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
     case GoogleServiceAuthError::SERVICE_ERROR:
       return l10n_util::GetStringUTF16(
-          IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
+          IsNewSignInNonSyncingUser(identity_manager)
+              ? IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2
+              : IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
 
     // Sync service is not available for this account's domain.
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
@@ -162,7 +173,9 @@ std::u16string GetMessageBodyForDeviceAccountErrors(
     // Generic message for "other" errors.
     default:
       return l10n_util::GetStringUTF16(
-          IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
+          IsNewSignInNonSyncingUser(identity_manager)
+              ? IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2
+              : IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
   }
 }
 
@@ -288,6 +301,7 @@ void SigninErrorNotifier::OnErrorChanged() {
                        ReauthReason::kSyncFailed);
     HandleDeviceAccountError(
         /*error_message=*/GetMessageBodyForDeviceAccountErrors(
+            identity_manager_,
             /*error=*/error_controller_->auth_error().state()));
     return;
   }
@@ -300,6 +314,7 @@ void SigninErrorNotifier::OnErrorChanged() {
                        ReauthReason::kSyncFailed);
     HandleDeviceAccountError(
         /*error_message=*/GetMessageBodyForDeviceAccountErrors(
+            identity_manager_,
             /*error=*/error_controller_->auth_error().state()));
   } else {
     HandleSecondaryAccountError(error_account_id);

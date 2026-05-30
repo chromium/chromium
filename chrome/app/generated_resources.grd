@@ -15082,6 +15082,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification.">
         Sync isn't working
       </message>
+      <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE_2" desc="Title in the sync error bubble view/notification.">
+        Verify it's you
+      </message>
       <message name="IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification for the case where the error only affects sync-ed passwords.">
         Password sync isn't working
       </message>
@@ -15133,6 +15136,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys, required to resume syncing of passwords specifically (other sync data works normally).">
           To sync your passwords, verify it's you
         </message>
+        <message name="IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys, required to resume syncing of passwords specifically (other sync data works normally).">
+          To use and save passwords in your Google Account, verify it's you
+        </message>
         <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
           To start sync, verify it's you
         </message>
@@ -15141,6 +15147,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting passwords only.">
           To make sure you can always access your saved passwords, verify it's you
+        </message>
+        <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting passwords only.">
+          To make sure you can always use the passwords in your Google Account, verify it's you
         </message>
       </if>
 

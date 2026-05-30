@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/account_id/account_id.h"
@@ -111,8 +112,12 @@ BubbleViewParameters GetBubbleViewParameters(
 
   if (ShouldShowSyncPassphraseError(sync_service)) {
     BubbleViewParameters params;
-    params.title_id = IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE;
-    params.message_id = IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
+    params.title_id = IsNewSignInNonSyncingUser(sync_service)
+                          ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE_2
+                          : IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE;
+    params.message_id = IsNewSignInNonSyncingUser(sync_service)
+                            ? IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2
+                            : IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
     // |profile| is guaranteed to outlive the callback because the ownership of
     // the notification gets transferred to NotificationDisplayService, which is
     // a keyed service that cannot outlive the profile.
@@ -125,13 +130,19 @@ BubbleViewParameters GetBubbleViewParameters(
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
     BubbleViewParameters params;
     params.title_id =
-        sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-            ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE
-            : IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE;
+        IsNewSignInNonSyncingUser(sync_service)
+            ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE_2
+            : (sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
+                   ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE
+                   : IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE);
     params.message_id =
         sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-            ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
-            : IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
+            ? (IsNewSignInNonSyncingUser(sync_service)
+                   ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2
+                   : IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE)
+            : (IsNewSignInNonSyncingUser(sync_service)
+                   ? IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE_2
+                   : IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE);
 
     params.click_action = base::BindRepeating(&TriggerSyncKeyRetrieval,
                                               base::Unretained(profile));
@@ -142,11 +153,17 @@ BubbleViewParameters GetBubbleViewParameters(
       sync_service->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded());
 
   BubbleViewParameters params;
-  params.title_id = IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE;
+  params.title_id = IsNewSignInNonSyncingUser(sync_service)
+                        ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE_2
+                        : IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE;
   params.message_id =
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-          ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
-          : IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
+          ? (IsNewSignInNonSyncingUser(sync_service)
+                 ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2
+                 : IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE)
+          : (IsNewSignInNonSyncingUser(sync_service)
+                 ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE_2
+                 : IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE);
 
   params.click_action = base::BindRepeating(
       &TriggerSyncRecoverabilityDegradedFix, base::Unretained(profile));
