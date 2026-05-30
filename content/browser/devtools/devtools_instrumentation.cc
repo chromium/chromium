@@ -573,6 +573,10 @@ EmailVerificationRequestResultToProtocol(
         kEmailVerificationWellKnownInvalidContentType:
       return EmailVerificationRequestIssueReasonEnum::
           EmailVerificationWellKnownInvalidContentType;
+    case EmailVerificationRequestResult::kJwksHttpNotFound:
+      return EmailVerificationRequestIssueReasonEnum::JwksHttpNotFound;
+    case EmailVerificationRequestResult::kJwksInvalidResponse:
+      return EmailVerificationRequestIssueReasonEnum::JwksInvalidResponse;
     case EmailVerificationRequestResult::kSuccess:
       NOTREACHED();
   }

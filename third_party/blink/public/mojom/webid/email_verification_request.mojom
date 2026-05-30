@@ -42,5 +42,7 @@ enum EmailVerificationRequestResult {
   kEmailVerificationWellKnownNoResponse = 29,
   kEmailVerificationWellKnownInvalidResponse = 30,
   kEmailVerificationWellKnownInvalidContentType = 31,
+  kJwksHttpNotFound = 32,
+  kJwksInvalidResponse = 33,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpRequestStatus)

@@ -26,6 +26,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "crypto/sha2.h"
 #include "net/base/schemeful_site.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,6 +77,10 @@ class MockEmailVerifierNetworkRequestManager
               SendTokenRequest,
               (const GURL&, const std::string&, TokenRequestCallback),
               (override));
+  MOCK_METHOD(void,
+              DownloadAndParseUncredentialedUrl,
+              (const GURL&, ParseJsonCallback),
+              (override));
 };
 
 class EmailVerificationRequestTest : public RenderViewHostTestHarness {
@@ -85,6 +90,7 @@ class EmailVerificationRequestTest : public RenderViewHostTestHarness {
  protected:
   const url::Origin kRpOrigin =
       url::Origin::Create(GURL("https://rp.example.com"));
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
@@ -111,8 +117,23 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   const std::string kIssuer = "issuer.example.com";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+  const GURL kJwksUri = GURL("https://issuer.example.com/jwks");
 
   const std::string kToken = "test_token";
+
+  // Generate issuer key pair for signing and verification.
+  auto issuer_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+
+  // Construct JWKS.
+  base::DictValue jwks;
+  base::ListValue keys;
+  auto jwk = sdjwt::ExportPublicKey(issuer_key);
+  ASSERT_TRUE(jwk);
+  base::DictValue key_dict = jwk->ToDict();
+  key_dict.Set("kid", "test_kid");
+
+  keys.Append(std::move(key_dict));
+  jwks.Set("keys", std::move(keys));
 
   EXPECT_CALL(*mock_dns_request,
               SendRequest("_email-verification.example.com", _))
@@ -127,10 +148,18 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.jwks_uri = kJwksUri;
             well_known.signing_alg_values_supported.push_back("RS256");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
+
+  EXPECT_CALL(*mock_network_manager,
+              DownloadAndParseUncredentialedUrl(kJwksUri, _))
+      .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
+        std::move(callback).Run({ParseStatus::kSuccess},
+                                base::Value(std::move(jwks)));
+      }));
 
   const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
 
@@ -196,15 +225,17 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             sdjwt::Header h;
             h.typ = "web-identity+sd-jwt";
             h.alg = "RS256";
+            h.kid = "test_kid";
             sdjwt::Payload p;
             p.iss = url::Origin::Create(kIssuerUrl).Serialize();
             p.email = kEmail;
+            p.email_verified = true;
+            p.iat = base::Time::Now();
             sdjwt::ConfirmationKey cnf;
             cnf.jwk = *(header->jwk);
             p.cnf = cnf;
 
-            auto key = crypto::keypair::PrivateKey::GenerateRsa2048();
-            auto signer = sdjwt::CreateJwtSigner(key);
+            auto signer = sdjwt::CreateJwtSigner(issuer_key);
 
             sdjwt::Jwt issued_jwt;
             issued_jwt.header = *(h.ToJson());
@@ -290,15 +321,36 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       *static_cast<RenderFrameHostImpl*>(main_rfh()));
 
-  const std::string kEmail = "test@example.com";
-  const std::string kEmailUpper = "TEST@EXAMPLE.COM";
+  const std::string kEmail = "test@issuer.example.com";
+  const std::string kEmailUpper = "TEST@ISSUER.EXAMPLE.COM";
   const std::string kNonce = "test_nonce";
   const std::string kIssuer = "issuer.example.com";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+  // Generate issuer key pair for signing and verification.
+  auto issuer_key = crypto::keypair::PrivateKey::GenerateRsa2048();
 
+  // Construct JWKS.
+  base::DictValue jwks;
+  base::ListValue keys;
+  auto jwk = sdjwt::ExportPublicKey(issuer_key);
+  ASSERT_TRUE(jwk);
+  base::DictValue key_dict = jwk->ToDict();
+  key_dict.Set("kid", "test_kid");
+
+  keys.Append(std::move(key_dict));
+  jwks.Set("keys", std::move(keys));
+
+  const GURL kJwksUri = GURL("https://issuer.example.com/jwks");
+
+  EXPECT_CALL(*mock_network_manager,
+              DownloadAndParseUncredentialedUrl(kJwksUri, _))
+      .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
+        std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                base::Value(std::move(jwks)));
+      }));
   EXPECT_CALL(*mock_dns_request,
-              SendRequest("_email-verification.example.com", _))
+              SendRequest("_email-verification.issuer.example.com", _))
       .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
         std::move(callback).Run(
             std::vector<std::string>{"iss=issuer.example.com"});
@@ -310,6 +362,7 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.jwks_uri = kJwksUri;
             well_known.signing_alg_values_supported.push_back("RS256");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
@@ -381,12 +434,13 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
             sdjwt::Payload p;
             p.iss = url::Origin::Create(kIssuerUrl).Serialize();
             p.email = kEmail;
+            p.iat = base::Time::Now();
+            p.email_verified = true;
             sdjwt::ConfirmationKey cnf;
             cnf.jwk = *(header->jwk);
             p.cnf = cnf;
 
-            auto key = crypto::keypair::PrivateKey::GenerateRsa2048();
-            auto signer = sdjwt::CreateJwtSigner(key);
+            auto signer = sdjwt::CreateJwtSigner(issuer_key);
 
             sdjwt::Jwt issued_jwt;
             issued_jwt.header = *(h.ToJson());
@@ -984,24 +1038,32 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
-  const std::string kEmail = "test@example.com";
+  const std::string kEmail = "test@issuer.example.com";
   const std::string kNonce = "test_nonce";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+  const GURL kJwksUri = GURL("https://issuer.example.com/jwks");
 
+  EXPECT_CALL(*mock_network_manager, DownloadAndParseUncredentialedUrl(_, _))
+      .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
+        base::DictValue empty_dict;
+        std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                base::Value(std::move(empty_dict)));
+      }));
   EXPECT_CALL(*mock_dns_request,
-              SendRequest("_email-verification.example.com", _))
+              SendRequest("_email-verification.issuer.example.com", _))
       .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
         std::move(callback).Run(
             std::vector<std::string>{"iss=issuer.example.com"});
       }));
 
-  EXPECT_CALL(*mock_network_manager, FetchWellKnown(kIssuerUrl, _))
+  EXPECT_CALL(*mock_network_manager, FetchWellKnown(_, _))
       .WillOnce(WithArgs<1>(
           [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.jwks_uri = GURL("https://issuer.example.com/jwks");
             well_known.signing_alg_values_supported.push_back("RS256");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);

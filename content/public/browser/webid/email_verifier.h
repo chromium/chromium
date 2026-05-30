@@ -32,6 +32,9 @@ class EmailVerifier : public base::SupportsUserData::Data {
     // The endpoint to request tokens from.
     GURL issuance_endpoint;
 
+    // The JWKS URI to fetch public keys.
+    GURL jwks_uri;
+
     // The signing algorithms supported by the issuer.
     std::vector<std::string> signing_alg_values_supported;
 

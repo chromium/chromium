@@ -48,7 +48,7 @@ Jwk::Jwk(const Jwk& other) = default;
 
 bool Jwk::operator==(const Jwk& other) const {
   return kty == other.kty && crv == other.crv && x == other.x && y == other.y &&
-         d == other.d && alg == other.alg && n == other.n && e == other.e;
+         d == other.d && n == other.n && e == other.e;
 }
 
 // static

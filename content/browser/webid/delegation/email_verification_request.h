@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
+#include "content/browser/webid/delegation/evt_verifier.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
@@ -45,7 +46,11 @@ using WellKnownOrError = base::RefCountedData<
 using AccountsOrError = base::RefCountedData<
     base::expected<std::vector<IdentityRequestAccountPtr>,
                    blink::mojom::EmailVerificationRequestResult>>;
-
+using TokenResultOrError = base::RefCountedData<
+    base::expected<EmailVerifierNetworkRequestManager::TokenResult,
+                   blink::mojom::EmailVerificationRequestResult>>;
+using JwksResultOrError = base::RefCountedData<
+    base::expected<base::Value, blink::mojom::EmailVerificationRequestResult>>;
 // Performs the email verification process, which involves making a DNS TXT
 // record request to determine the issuer, and then fetching a token from the
 // issuer.
@@ -106,13 +111,14 @@ class CONTENT_EXPORT EmailVerificationRequest {
                               const url::Origin& issuer_origin,
                               const std::string& email,
                               EmailVerifier::IsVerifiableCallback callback);
-  void OnTokenRequestComplete(
-      const std::string& nonce,
+  void OnTokenAndKeysFetchComplete(
+      scoped_refptr<TokenResultOrError> token,
+      scoped_refptr<JwksResultOrError> jwks,
       const url::Origin& issuer,
+      const std::string& nonce,
       std::unique_ptr<crypto::keypair::PrivateKey> private_key,
-      EmailVerifier::OnEmailVerifiedCallback callback,
-      FetchStatus token_status,
-      EmailVerifierNetworkRequestManager::TokenResult&& result);
+      const std::string& email,
+      EmailVerifier::OnEmailVerifiedCallback callback);
 
   void CompleteIsVerifiableRequest(
       EmailVerifier::IsVerifiableCallback callback,
