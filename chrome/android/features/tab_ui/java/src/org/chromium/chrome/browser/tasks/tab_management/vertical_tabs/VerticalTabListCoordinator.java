@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
@@ -181,12 +182,19 @@ public class VerticalTabListCoordinator {
 
         mTabModelSelector = tabModelSelector;
 
-        // TODO(crbug.com/509226293): Refactor the shared TabListMediator to dynamically manage
-        // the display (inline vs. collapsed) and drag/drop reordering of tab group children.
-        // Instead of using static boolean flags or string checks, we should decide whether to
-        // act on a group or a single tab by checking the row's type (Group Header vs. Child Tab),
-        // and ask the TabGroupModelFilter if a group is collapsed to decide whether to show
-        // its child tabs inline.
+        TabListConfigDelegate tabListConfigDelegate =
+                new TabListConfigDelegate() {
+                    @Override
+                    public boolean supportsNestedTabGroups() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean shouldActOnRelatedTabs() {
+                        return true;
+                    }
+                };
+
         mMediator =
                 new TabListMediator(
                         activity,
@@ -196,9 +204,9 @@ public class VerticalTabListCoordinator {
                         tabModelSelector.getCurrentTabModelSupplier(),
                         /* thumbnailProvider */ null,
                         mTabListFaviconProvider,
-                        /* actionOnRelatedTabs */ true,
                         /* selectionDelegateProvider */ null,
                         new VerticalTabListClickHandler(),
+                        tabListConfigDelegate,
                         /* dialogHandler */ null,
                         /* priceWelcomeMessageControllerSupplier */ null,
                         TabComponentId.VERTICAL_TABS,

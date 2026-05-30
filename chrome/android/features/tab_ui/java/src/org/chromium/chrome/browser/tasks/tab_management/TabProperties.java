@@ -129,6 +129,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<Token> TAB_GROUP_ID =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<Token> TAB_GROUP_HEADER_ID =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
 
@@ -265,6 +268,7 @@ public class TabProperties {
                         IS_PINNED,
                         IS_COLLAPSED,
                         TAB_GROUP_ID,
+                        TAB_GROUP_HEADER_ID,
                         MEDIA_INDICATOR
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);

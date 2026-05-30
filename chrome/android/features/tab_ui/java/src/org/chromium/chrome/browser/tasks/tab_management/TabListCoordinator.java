@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.SelectionDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -344,6 +345,19 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     }
                 };
 
+        TabListConfigDelegate tabListConfigDelegate =
+                new TabListConfigDelegate() {
+                    @Override
+                    public boolean supportsNestedTabGroups() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean shouldActOnRelatedTabs() {
+                        return actionOnRelatedTabs;
+                    }
+                };
+
         mMediator =
                 new TabListMediator(
                         activity,
@@ -353,9 +367,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         tabModelSupplier,
                         thumbnailProvider,
                         mTabListFaviconProvider,
-                        actionOnRelatedTabs,
                         selectionDelegateProvider,
                         tabListItemOnClickListenerProvider,
+                        tabListConfigDelegate,
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
                         componentId,

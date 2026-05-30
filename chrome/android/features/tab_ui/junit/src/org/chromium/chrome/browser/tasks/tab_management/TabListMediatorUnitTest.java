@@ -154,6 +154,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetad
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -166,6 +167,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -384,6 +386,7 @@ public class TabListMediatorUnitTest {
     @Mock UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     @Mock MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
+    @Mock TabListConfigDelegate mTabListConfigDelegate;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -545,6 +548,9 @@ public class TabListMediatorUnitTest {
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+
+        when(mTabListConfigDelegate.supportsNestedTabGroups()).thenReturn(false);
+        when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(true);
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -1714,9 +1720,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         mTabListItemOnClickListenerProvider,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -3546,9 +3552,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -3584,9 +3590,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -3784,9 +3790,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.ARCHIVED_TABS_DIALOG,
@@ -4110,9 +4116,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -4161,9 +4167,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -4212,9 +4218,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -4946,9 +4952,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -5291,6 +5297,8 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testSingleTabClosure_ArchivedTab_ExplicitTriggerSnackbar() {
+        when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(false);
+
         mMediator =
                 new TabListMediator(
                         mActivity,
@@ -5300,9 +5308,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        false,
                         () -> mSelectionDelegate,
                         null,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.ARCHIVED_TABS_DIALOG,
@@ -5367,9 +5375,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        true,
                         () -> mSelectionDelegate,
                         mTabListItemOnClickListenerProvider,
+                        mTabListConfigDelegate,
                         null,
                         null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -5606,9 +5614,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
-                        /* actionOnRelatedTabs= */ true,
                         () -> mSelectionDelegate,
                         /* tabListItemOnClickListenerProvider= */ null,
+                        mTabListConfigDelegate,
                         /* dialogHandler= */ null,
                         /* priceWelcomeMessageControllerSupplier= */ null,
                         TabComponentId.GRID_TAB_SWITCHER,
@@ -6007,6 +6015,10 @@ public class TabListMediatorUnitTest {
                         ? TabComponentId.VERTICAL_TABS
                         : TabComponentId.GRID_TAB_SWITCHER;
 
+        when(mTabListConfigDelegate.supportsNestedTabGroups())
+                .thenReturn(type == TabListMediatorType.VERTICAL_TABS);
+        when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(actionOnRelatedTabs);
+
         mMediator =
                 new TabListMediator(
                         mActivity,
@@ -6016,9 +6028,9 @@ public class TabListMediatorUnitTest {
                         mCurrentTabModelSupplier,
                         thumbnailProvider,
                         mTabListFaviconProvider,
-                        actionOnRelatedTabs,
                         () -> mSelectionDelegate,
                         mTabListItemOnClickListenerProvider,
+                        mTabListConfigDelegate,
                         handler,
                         null,
                         componentId,
@@ -6381,5 +6393,53 @@ public class TabListMediatorUnitTest {
         // nested child webpage row index (index 1) over the parent Group Header Card (index 0)
         assertEquals(1, mModelList.indexFromTabId(TAB1_ID));
         assertEquals(2, mModelList.indexFromTabId(TAB3_ID));
+    }
+
+    @Test
+    public void testVerticalTabs_CloseLastTabInGroup_RemovesHeaderCard() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        // Initially, list contains: [0] Group Header, [1] First Child, [2] Second Child.
+        assertEquals(3, mModelList.size());
+
+        // Simulate closing the first child tab (mTab1).
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
+        // The group still exists because tab3 remains. The first child is removed.
+        assertEquals(2, mModelList.size());
+
+        // Update mocks to reflect only tab3 remaining in the group.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab3));
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+
+        // Simulate closing the last child tab (tab3).
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
+        // The child card is removed.
+        assertEquals(1, mModelList.size());
+
+        // Update mocks to reflect the group no longer existing.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(new ArrayList<>());
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(0);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+
+        // Simulate the TabGroupModelFilter triggering group removal didRemoveTabGroup observer.
+        mTabGroupObserverCaptor
+                .getValue()
+                .didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+
+        // Verify that the Group Header card is also removed, leaving the list empty.
+        assertEquals(0, mModelList.size());
     }
 }
