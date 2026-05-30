@@ -23,6 +23,13 @@ CWV_EXPORT
 // Defaults to `NO`.
 @property(nonatomic, readwrite) BOOL delayLoadingResources;
 
+// The initial nesting level of the main thread's run loop.
+// This is used to synchronize Chromium's run loop nesting state with the host
+// app's state if Chromium is initialized while the host app is already in a
+// nested run loop.
+// Must be greater than 0.
+@property(nonatomic, assign) NSInteger mainThreadInitialNestingLevel;
+
 @end
 
 // Manages internal global state that must be initialized before accessing any

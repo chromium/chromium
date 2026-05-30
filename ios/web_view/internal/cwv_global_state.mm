@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/message_loop/message_pump_apple.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "google_apis/google_api_keys.h"
@@ -29,6 +30,7 @@
   BOOL _isStarted;
   NSString* _customUserAgent;
   NSString* _userAgentProduct;
+  NSInteger _mainThreadInitialNestingLevel;
 }
 
 + (instancetype)sharedInstance {
@@ -94,6 +96,7 @@
   CHECK(flags);
   _autofillAcrossIframesEnabled = flags.autofillAcrossIframesEnabled;
   _delayLoadingResources = flags.delayLoadingResources;
+  _mainThreadInitialNestingLevel = flags.mainThreadInitialNestingLevel;
 
   DCHECK([NSThread isMainThread]);
 
@@ -108,6 +111,12 @@
     web::SetWebClient(_web_client.get());
     _web_main_delegate =
         std::make_unique<ios_web_view::WebViewWebMainDelegate>();
+
+    if (_mainThreadInitialNestingLevel > 1) {
+      base::MessagePumpUIApplication::SetNextInitialNestingLevelForCurrentThread(
+          _mainThreadInitialNestingLevel);
+    }
+
     web::WebMainParams params(_web_main_delegate.get());
     _web_main = std::make_unique<web::WebMain>(std::move(params));
 

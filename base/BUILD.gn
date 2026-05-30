@@ -4380,6 +4380,7 @@ test("base_unittests") {
       "ios/crb_protocol_observers_unittest.mm",
       "ios/device_util_unittest.mm",
       "ios/scoped_critical_action_unittest.mm",
+      "message_loop/message_pump_ios_unittest.mm",
     ]
 
     bundle_deps = [ ":base_test_proto_bundle_data" ]
