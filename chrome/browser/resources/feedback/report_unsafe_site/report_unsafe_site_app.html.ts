@@ -10,7 +10,7 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="main-content">
-  <h2 class="dialog-title">$i18n{reportUnsafeSiteDialogTitle}</h2>
+  <h2 class="dialog-title" tabindex="-1">$i18n{reportUnsafeSiteDialogTitle}</h2>
   $i18nRaw{reportUnsafeSiteDialogDescription}
   <label class="url-input-container">
     $i18n{reportUnsafeSiteDialogUrlLabel}

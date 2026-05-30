@@ -62,6 +62,11 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
     const pageHandler =
         ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
     pageHandler.showUi();
+
+    const title = this.shadowRoot.querySelector<HTMLElement>('.dialog-title');
+    if (title) {
+      title.focus();
+    }
   }
 
   protected onIncludeScreenshotCheckedChanged_(
