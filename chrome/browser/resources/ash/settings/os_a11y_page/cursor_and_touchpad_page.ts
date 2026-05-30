@@ -494,11 +494,13 @@ export class SettingsCursorAndTouchpadPageElement extends
 
   private onA11yCursorColorChange_(): void {
     // Custom cursor color is enabled when the color is not set to black.
-    const a11yCursorColorOn =
-        this.getPref<number>('settings.a11y.cursor_color').value !==
-        DEFAULT_BLACK_CURSOR_COLOR;
+    const color = this.getPref<number>('settings.a11y.cursor_color').value;
+    const a11yCursorColorOn = color !== DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
+
+    chrome.metricsPrivate.recordSparseValue(
+        'ChromeOS.Settings.Accessibility.CursorColor.Value', color);
   }
 
   private showTouchpadEnableMessage_(trackpadMode: number): boolean {

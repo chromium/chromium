@@ -101,6 +101,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Accessibility.CursorColor.Value"
+    enum="AccessibilityCursorColorValue" expires_after="2026-09-23">
+  <owner>katie@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
+  <summary>
+    The color of the Chrome OS accessibility cursor chosen by the user. Logged
+    on change from settings.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
     enum="BooleanToggled" expires_after="2026-09-23">

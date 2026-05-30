@@ -1972,9 +1972,15 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
     base::UmaHistogramSparse("Accessibility.CrosCaretBlinkInterval",
                              caret_blink_interval_ms);
 
-    base::UmaHistogramBoolean(
-        "Accessibility.CrosCursorColor",
-        prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled));
+    bool cursor_color_enabled =
+        prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled);
+    base::UmaHistogramBoolean("Accessibility.CrosCursorColor",
+                              cursor_color_enabled);
+
+    if (cursor_color_enabled) {
+      int color = prefs->GetInteger(prefs::kAccessibilityCursorColor);
+      base::UmaHistogramSparse("Accessibility.CrosCursorColor.Value", color);
+    }
 
     bool color_correction_enabled = IsColorCorrectionEnabled();
     base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",

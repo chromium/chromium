@@ -1065,6 +1065,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosCursorColor.Value"
+    enum="AccessibilityCursorColorValue" expires_after="2027-06-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The color of the Chrome OS accessibility cursor.
+
+    Note: This metric is logged once after startup.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosDictation.Language" enum="LocaleCodeBCP47"
     expires_after="2026-10-04">
   <owner>katie@chromium.org</owner>

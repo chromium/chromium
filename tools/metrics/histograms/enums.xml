@@ -38,6 +38,19 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Navigation restarted"/>
 </enum>
 
+<enum name="AccessibilityCursorColorValue">
+  <summary>List of possible cursor colors.</summary>
+  <int value="0" label="Black (Default)"/>
+  <int value="1" label="Inverted"/>
+  <int value="243390" label="Cyan"/>
+  <int value="1733608" label="Blue"/>
+  <int value="2002494" label="Green"/>
+  <int value="12983001" label="Magenta"/>
+  <int value="14233637" label="Red"/>
+  <int value="15898880" label="Yellow"/>
+  <int value="16056407" label="Pink"/>
+</enum>
+
 <enum name="AccessibilityHighContrastColorScheme">
   <summary>Tracks the color scheme used when high contrast is enabled.</summary>
   <int value="0" label="None"/>
