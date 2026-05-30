@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -285,7 +286,7 @@ public class NewTabPage
                     feedReliabilityLogger.onVoiceSearch();
                 }
                 mVoiceRecognitionHandler.startVoiceRecognition(
-                        VoiceRecognitionHandler.VoiceInteractionSource.NTP,
+                        VoiceRecognitionIntentHandler.VoiceInteractionSource.NTP,
                         CallbackUtils.emptyRunnable());
                 mTracker.notifyEvent(EventConstants.NTP_VOICE_SEARCH_BUTTON_CLICKED);
             } else if (mOmniboxStub != null) {

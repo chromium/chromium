@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -363,7 +363,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     /**
      * @see AutocompleteController#onVoiceResults(List)
      */
-    public void onVoiceResults(@Nullable List<VoiceRecognitionHandler.VoiceResult> results) {
+    public void onVoiceResults(@Nullable List<VoiceRecognitionIntentHandler.VoiceResult> results) {
         mMediator.onVoiceResults(results);
     }
 

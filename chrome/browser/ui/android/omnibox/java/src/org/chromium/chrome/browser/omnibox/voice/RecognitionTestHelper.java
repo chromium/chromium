@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;

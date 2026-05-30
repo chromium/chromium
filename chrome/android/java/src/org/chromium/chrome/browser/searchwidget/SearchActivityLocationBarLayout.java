@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
@@ -205,7 +205,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     @Override
     public int getVoiceRecognitionSource() {
         return mInteractionFromWidget
-                ? VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET
+                ? VoiceRecognitionIntentHandler.VoiceInteractionSource.SEARCH_WIDGET
                 : super.getVoiceRecognitionSource();
     }
 

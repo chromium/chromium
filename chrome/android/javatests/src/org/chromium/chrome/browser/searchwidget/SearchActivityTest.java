@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -286,7 +287,8 @@ public class SearchActivityTest {
         locationBar.beginQuery(IntentOrigin.SEARCH_WIDGET, SearchType.VOICE, null);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
-                        eq(VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET), any());
+                        eq(VoiceRecognitionIntentHandler.VoiceInteractionSource.SEARCH_WIDGET),
+                        any());
 
         mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
         Assert.assertEquals(0, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
@@ -303,7 +305,8 @@ public class SearchActivityTest {
 
         verify(mHandler)
                 .startVoiceRecognition(
-                        eq(VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET), any());
+                        eq(VoiceRecognitionIntentHandler.VoiceInteractionSource.SEARCH_WIDGET),
+                        any());
     }
 
     @Test

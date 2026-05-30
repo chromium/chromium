@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.Auto
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -711,7 +711,7 @@ class AutocompleteMediator
     /**
      * @see AutocompleteController#onVoiceResults(List)
      */
-    void onVoiceResults(@Nullable List<VoiceRecognitionHandler.VoiceResult> results) {
+    void onVoiceResults(@Nullable List<VoiceRecognitionIntentHandler.VoiceResult> results) {
         if (!isInInputSession()) return;
         mAutocomplete.onVoiceResults(results);
     }
