@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
@@ -43,6 +44,8 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/safe_browsing/core/common/threat_enums.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
@@ -4996,4 +4999,108 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesSilentFallbackDelayTest,
 
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+}
+
+// Fixture for testing interactions between HTTPS-Upgrades and Safe Browsing.
+class HttpsUpgradesSafeBrowsingTest : public InProcessBrowserTest {
+ public:
+  HttpsUpgradesSafeBrowsingTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kHttpsUpgrades,
+                              security_interstitials::features::
+                                  kHttpsFirstDialogUi},
+        /*disabled_features=*/{});
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    sb_factory_ =
+        std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
+    fake_db_manager_ =
+        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({}));
+    sb_factory_->SetTestDatabaseManager(fake_db_manager_.get());
+    sb_factory_->SetTestUIManager(
+        new safe_browsing::TestSafeBrowsingUIManager());
+    safe_browsing::SafeBrowsingService::RegisterFactory(sb_factory_.get());
+  }
+
+  void TearDown() override {
+    InProcessBrowserTest::TearDown();
+    safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
+  }
+
+  void SetUpOnMainThread() override {
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.Start());
+    ASSERT_TRUE(https_server_.Start());
+
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server_.port());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server_.port());
+
+    // Enable the HFM pref.
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                                 true);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory> sb_factory_;
+  scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
+      fake_db_manager_;
+  net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
+// Tests that if a navigation gets upgraded and the resulting URL is blocked by
+// Safe Browsing, we don't trigger fallback to HTTP and instead show the Safe
+// Browsing interstitial. Regression test for crbug.com/443741921.
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesSafeBrowsingTest,
+                       SafeBrowsingBlock_ShouldNotTriggerHFM) {
+  GURL http_url = http_server_.GetURL("malicious.com", "/simple.html");
+  GURL https_url = https_server_.GetURL("malicious.com", "/simple.html");
+
+  // Mark the HTTPS URL as dangerous (malware).
+  fake_db_manager_->AddDangerousUrl(
+      https_url, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(contents, 1);
+
+  // Navigate to the HTTP URL.
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  nav_observer.Wait();
+
+  // The navigation should have failed because of the SB block.
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+
+  // We should be showing an interstitial (the Safe Browsing one).
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify that we are NOT showing the HTTPS-First Mode interstitial.
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Verify that the browser stayed on the HTTPS URL and did not fallback to
+  // HTTP.
+  EXPECT_EQ(https_url, contents->GetVisibleURL());
 }

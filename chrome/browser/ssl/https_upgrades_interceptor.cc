@@ -708,6 +708,13 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     return false;
   }
 
+  // If the navigation was blocked by a client-side feature (e.g. Safe Browsing
+  // or an extension), do not attempt to fallback to HTTP. This is a local
+  // block, not a server-side HTTPS support failure.
+  if (status.error_code == net::ERR_BLOCKED_BY_CLIENT) {
+    return false;
+  }
+
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   if (!web_contents) {
