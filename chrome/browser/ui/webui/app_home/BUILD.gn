@@ -87,6 +87,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views/apps/app_info_dialog",
     "//chrome/browser/ui/webui/page_not_available_for_guest",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
