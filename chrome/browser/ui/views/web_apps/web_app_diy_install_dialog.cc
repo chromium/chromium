@@ -173,7 +173,8 @@ void ShowDiyAppInstallDialog(
   views::Widget* diy_dialog_widget =
       constrained_window::ShowWebModalDialogViews(dialog.release(),
                                                   web_contents);
-  if (IsWidgetCurrentSizeSmallerThanPreferredSize(diy_dialog_widget)) {
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(
+          diy_dialog_widget, kMinSimpleInstallDialogHeight)) {
     delegate_weak_ptr->CloseDialogAsIgnored();
     return;
   }

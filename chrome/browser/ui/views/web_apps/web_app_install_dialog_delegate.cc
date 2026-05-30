@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check_deref.h"
@@ -111,8 +112,6 @@ NewPageActionHighlight(content::WebContents& web_contents) {
 }
 }  // namespace
 
-constexpr int kMinBoundsForInstallDialog = 50;
-
 std::ostream& operator<<(std::ostream& os, InstallDialogType type) {
   switch (type) {
     case InstallDialogType::kSimple:
@@ -136,12 +135,21 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   return normalized;
 }
 
-bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget,
+                                                 int min_height_limit) {
   const gfx::Size& current_size = widget->GetSize();
   const gfx::Size& preferred_size =
       widget->GetContentsView()->GetPreferredSize();
-  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
-  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
+  int min_width =
+      preferred_size.width() - kMinInstallDialogBoundsDiffFromPreferred;
+  int min_height;
+  if (preferred_size.height() >= min_height_limit) {
+    min_height = std::max(
+        preferred_size.height() - kMinInstallDialogBoundsDiffFromPreferred,
+        min_height_limit);
+  } else {
+    min_height = preferred_size.height();
+  }
   return current_size.width() < min_width || current_size.height() < min_height;
 }
 
@@ -300,7 +308,10 @@ void WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
 void WebAppInstallDialogDelegate::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
+  int min_height = (dialog_type_ == InstallDialogType::kDetailed)
+                       ? kMinDetailedInstallDialogHeight
+                       : kMinSimpleInstallDialogHeight;
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget, min_height)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebAppInstallDialogDelegate::CloseDialogAsIgnored,

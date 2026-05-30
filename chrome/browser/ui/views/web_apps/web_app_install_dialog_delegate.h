@@ -46,6 +46,10 @@ enum InstallDialogType { kSimple, kDetailed, kDiy, kMaxValue = kDiy };
 std::ostream& operator<<(std::ostream& os, InstallDialogType type);
 
 inline constexpr int kIconSize = 32;
+inline constexpr int kMinInstallDialogBoundsDiffFromPreferred = 50;
+inline constexpr int kMinSimpleFlowInstallDialogHeight = 320;
+inline constexpr int kMinSimpleInstallDialogHeight = 220;
+inline constexpr int kMinDetailedInstallDialogHeight = 220;
 
 // When pre-populating the name field (using the web app title) we
 // should try to make some effort to not suggest things we know work extra
@@ -67,10 +71,13 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title);
 // current size is smaller than the preferred size, leading to important
 // security information being occluded. This function performs the comparison
 // between the sizes and prevents that from happening.
+// `min_height_limit` is the absolute minimum height required for this dialog
+// type to be considered safe to display.
 // This serves as a stop-gap fix for crbug.com/384962294.
 // TODO(crbug.com/346974105): Remove once tab modal dialogs can be sized
 // irrespective of the size of the browser window triggering it.
-bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget);
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget,
+                                                 int min_height_limit);
 
 class WebAppInstallDialogDelegate : public WebAppModalDialogDelegate {
  public:
