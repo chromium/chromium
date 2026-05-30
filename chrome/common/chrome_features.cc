@@ -1176,7 +1176,7 @@ BASE_FEATURE(kHttpsUpgrades, base::FEATURE_ENABLED_BY_DEFAULT);
 // Omnibox) that are upgraded to HTTPS will not fallback to HTTP if the HTTPS
 // navigation fails due to a timeout.
 BASE_FEATURE(kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kHttpsUpgradesFallbackDelay{
     &kHttpsUpgrades, "fallback-delay", base::Seconds(3)};

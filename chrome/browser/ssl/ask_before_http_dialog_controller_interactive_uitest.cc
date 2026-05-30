@@ -329,7 +329,9 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   RunTestSequence(
@@ -380,7 +382,9 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   RunTestSequence(
@@ -414,7 +418,9 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   RunTestSequence(
@@ -453,7 +459,9 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   RunTestSequence(
@@ -489,7 +497,9 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   RunTestSequence(InAnyContext(

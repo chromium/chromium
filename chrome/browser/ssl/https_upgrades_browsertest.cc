@@ -79,6 +79,39 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
+namespace {
+
+[[nodiscard]] bool NavigateToURLWithLinkTransition(
+    content::WebContents* web_contents,
+    const GURL& url,
+    const GURL& expected_commit_url) {
+  content::TestNavigationObserver nav_observer(web_contents, 1);
+  content::NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  web_contents->GetController().LoadURLWithParams(params);
+  nav_observer.Wait();
+  return nav_observer.last_navigation_succeeded() &&
+         web_contents->GetLastCommittedURL() == expected_commit_url;
+}
+
+[[nodiscard]] bool NavigateToURLWithLinkTransition(
+    content::WebContents* web_contents,
+    const GURL& url) {
+  return NavigateToURLWithLinkTransition(web_contents, url, url);
+}
+
+void NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
+    content::WebContents* web_contents,
+    const GURL& url,
+    int number_of_navigations) {
+  content::NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, params,
+                                                      number_of_navigations);
+}
+
+}  // namespace
+
 using chrome_browser_interstitials::
     DontProceedThroughHttpsFirstModeInterstitial;
 using chrome_browser_interstitials::GetHFMInterstitialType;
@@ -502,7 +535,7 @@ class HttpsUpgradesBrowserTest
   void NavigateAndWaitForFallback(content::WebContents* tab, const GURL& url) {
     // TODO(crbug.com/40248833): With fallback as part of the same navigation,
     // this helper is no longer particularly useful. Consider updating callers.
-    content::NavigateToURLBlockUntilNavigationsComplete(tab, url, 1);
+    NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(tab, url, 1);
   }
 
   // Whether HFM is enabled by the UI setting.
@@ -651,7 +684,7 @@ class HttpsUpgradesBrowserTest
     GURL http_url("http://bad-https2.com/simple.html");
     content::WebContents* contents =
         GetBrowser()->tab_strip_model()->GetActiveWebContents();
-    content::NavigateToURLBlockUntilNavigationsComplete(
+    NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
         contents, http_url, /*number_of_navigations=*/1);
     ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
 
@@ -779,14 +812,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
   GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
 
-  // The NavigateToURL() call returns `false` because the navigation is
-  // redirected to HTTPS.
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver nav_observer(contents, 1);
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
-  nav_observer.Wait();
-
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url, https_url));
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
@@ -810,7 +837,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        UrlWithHttpsScheme_ShouldLoad) {
   GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::NavigateToURL(contents, https_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, https_url));
 
   // Verify that navigation event metrics were not recorded as the navigation
   // was not upgraded.
@@ -829,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, Localhost_ShouldNotUpgrade) {
   GURL localhost_url = http_server()->GetURL("localhost", "/simple.html");
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::NavigateToURL(contents, localhost_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, localhost_url));
 
   // Verify that navigation event metrics were not recorded as the navigation
   // was not upgraded.
@@ -865,7 +892,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   if (IsStrictInterstitialEnabledForTest()) {
     // HFM should attempt the upgrade, fail, and fallback to the interstitial.
-    EXPECT_FALSE(content::NavigateToURL(contents, local_ip_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, local_ip_url));
     EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 
     // Verify that upgrade events were recorded because an upgrade was attempted
@@ -886,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   } else {
     // If HFM strict mode is not enabled, we should not attempt to upgrade the
     // navigation.
-    EXPECT_TRUE(content::NavigateToURL(contents, local_ip_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, local_ip_url));
     histograms()->ExpectTotalCount(kEventHistogram, 0);
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
@@ -910,12 +937,12 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   if (IsStrictInterstitialEnabledForTest()) {
     // HFM should attempt the upgrade, fail, and fallback to the interstitial.
-    EXPECT_FALSE(content::NavigateToURL(contents, singlelabel_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, singlelabel_url));
     EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
     histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
   } else {
     // Otherwise, the request should not be upgraded and just navigate to HTTP.
-    EXPECT_TRUE(content::NavigateToURL(contents, singlelabel_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, singlelabel_url));
     EXPECT_EQ(singlelabel_url, contents->GetLastCommittedURL());
     EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
     histograms()->ExpectBucketCount(
@@ -959,8 +986,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, NonUniqueHost_RecordsMetrics) {
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   if (IsStrictInterstitialEnabledForTest()) {
-    EXPECT_FALSE(content::NavigateToURL(contents, nonunique_url1));
-    EXPECT_FALSE(content::NavigateToURL(contents, nonunique_url2));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, nonunique_url1));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, nonunique_url2));
     // Other histograms are still recorded.
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kUpgraded,
@@ -970,8 +997,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, NonUniqueHost_RecordsMetrics) {
   } else {
     // When HFM strict mode is not enabled, Chrome does NOT upgrade, so other
     // histograms are not recorded.
-    EXPECT_TRUE(content::NavigateToURL(contents, nonunique_url1));
-    EXPECT_TRUE(content::NavigateToURL(contents, nonunique_url2));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, nonunique_url1));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, nonunique_url2));
     histograms()->ExpectUniqueSample(
         kNavigationRequestSecurityLevelHistogram,
         NavigationRequestSecurityLevel::kNonUniqueHostname, 2);
@@ -1000,12 +1027,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   if (IsStrictInterstitialEnabledForTest()) {
     // HFM should attempt the upgrade, fail, and fallback to the interstitial.
-    EXPECT_FALSE(content::NavigateToURL(contents, non_default_http_url));
+    EXPECT_FALSE(
+        NavigateToURLWithLinkTransition(contents, non_default_http_url));
     EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
     histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
   } else {
     // Otherwise, the request should not be upgraded and just navigate to HTTP.
-    EXPECT_TRUE(content::NavigateToURL(contents, non_default_http_url));
+    EXPECT_TRUE(
+        NavigateToURLWithLinkTransition(contents, non_default_http_url));
     EXPECT_EQ(non_default_http_url, contents->GetLastCommittedURL());
     EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
     histograms()->ExpectBucketCount(
@@ -1045,7 +1074,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(content::NavigateToURL(contents, https_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, https_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
   // The SSL error should show regardless of the HFM state.
@@ -1763,14 +1792,14 @@ IN_PROC_BROWSER_TEST_P(
   GURL http_url("http://bad-https.com/simple.html");
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
   MaybeExpectTypicallySecureInterstitial(contents);
 
   // Check that a non-unique hostname shouldn't show an interstitial due to the
   // heuristic.
   GURL nonunique_url("http://nonunique-hostname-bad-https/simple.html");
-  content::NavigateToURLBlockUntilNavigationsComplete(
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
       contents, nonunique_url, /*number_of_navigations=*/1);
   if (IsStrictInterstitialEnabledForTest()) {
     // Non-unique hostnames should only show an interstitial in strict mode.
@@ -1807,7 +1836,7 @@ IN_PROC_BROWSER_TEST_P(
   // hostname. This will result in an interstitial iff strict mode is enabled.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
       contents, GURL("http://nonunique-hostname-bad-https2/simple.html"),
       /*number_of_navigations=*/1);
   if (IsStrictInterstitialEnabledForTest()) {
@@ -1826,14 +1855,14 @@ IN_PROC_BROWSER_TEST_P(
   // Check that a bad HTTPS URL should show an interstitial due to the
   // heuristic.
   GURL http_url("http://bad-https.com/simple.html");
-  content::NavigateToURLBlockUntilNavigationsComplete(
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
   MaybeExpectTypicallySecureInterstitial(contents);
 
   // Check that a non-unique hostname shouldn't show an interstitial due to the
   // heuristic.
   GURL nonunique_url("http://nonunique-hostname-bad-https/simple.html");
-  content::NavigateToURLBlockUntilNavigationsComplete(
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
       contents, nonunique_url, /*number_of_navigations=*/1);
   if (IsHttpsFirstModePrefEnabled()) {
     // Non-unique hostnames should only show an interstitial in strict mode.
@@ -2001,7 +2030,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                   net::ERR_NAME_NOT_RESOLVED));
               return true;
             }));
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
     EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
@@ -2078,7 +2107,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   // Navigating to the HTTP URL should get upgraded to HTTPS, but fail with a
   // net error page on the HTTPS URL.
-  EXPECT_FALSE(content::NavigateToURL(contents, redirecting_http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, redirecting_http_url));
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
   EXPECT_EQ(url::kHttpsScheme, contents->GetLastCommittedURL().GetScheme());
   EXPECT_EQ(nonexistent_domain, contents->GetLastCommittedURL().GetHost());
@@ -2112,7 +2141,7 @@ IN_PROC_BROWSER_TEST_P(
                 network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
             return true;
           }));
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
   ProceedThroughHttpsFirstModeInterstitial(contents);
 
@@ -2156,7 +2185,7 @@ IN_PROC_BROWSER_TEST_P(
                 network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
             return true;
           }));
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
   ProceedThroughHttpsFirstModeInterstitial(contents);
 
@@ -2180,7 +2209,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   const GURL iframe_url(http_server()->GetURL("foo.com", "/simple.html"));
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::NavigateToURL(contents, parent_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, parent_url));
 
   content::TestNavigationObserver nav_observer(contents, 1);
   EXPECT_TRUE(content::NavigateIframeToURL(contents, "test", iframe_url));
@@ -2269,7 +2298,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
 
   // Navigate to the page hosting the form on "foo.com".
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  content::NavigateToURLBlockUntilNavigationsComplete(
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
       contents, http_server()->GetURL("bad-https.com", replacement_path), 1);
 
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
@@ -2312,7 +2341,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // match `url`. Separately ensure the navigation succeeded using a navigation
   // observer.
   content::TestNavigationObserver nav_observer(contents, 1);
-  EXPECT_FALSE(content::NavigateToURL(contents, url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, url));
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 
@@ -2754,7 +2783,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   EXPECT_TRUE(state->HasAllowException(
       http_url.GetHost(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
-  EXPECT_TRUE(content::NavigateToURL(tab, good_https_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(tab, good_https_url));
   EXPECT_FALSE(state->HasAllowException(
       http_url.GetHost(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
@@ -2958,7 +2987,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
 
   // Navigate to the host again; this will reset the allowlist expiration to
   // now + 7 days.
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
 
   // Simulate the clock advancing another ten days. This will be _after_ the
   // initial expiration date of the allowlist entry, but _before_ the bumped
@@ -2967,7 +2996,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
   EXPECT_TRUE(state->IsHttpAllowedForHost(
       http_url.GetHost(),
       contents->GetPrimaryMainFrame()->GetStoragePartition()));
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 }
 
@@ -3006,7 +3035,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
   // Navigate to the HTTP URL. It should get upgraded to HTTPS and trigger a
   // fatal certificate error (because of HTTPS) instead of falling back to the
   // HTTPS-First Mode interstitial.
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
 
@@ -3070,13 +3099,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate to a "good" HTTPS site.
-  EXPECT_TRUE(content::NavigateToURL(contents, good_https_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, good_https_url));
 
   // Navigate to the HTTP version of `downgrading_https_url`, which will get
   // upgraded to HTTPS and fail, triggering the HTTPS-First Mode
   // interstitial.
-  content::NavigateToURLBlockUntilNavigationsComplete(contents,
-                                                      downgrading_http_url, 1);
+  NavigateToURLWithLinkTransitionBlockUntilNavigationsComplete(
+      contents, downgrading_http_url, 1);
   EXPECT_EQ(downgrading_http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 
@@ -3120,7 +3149,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // get upgraded to HTTPS.
   auto http_url = http_server()->GetURL("foo.com", "/simple.html");
   auto https_url = https_server()->GetURL("foo.com", "/simple.html");
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
   // Artificially add the pref that gets mapped from the enterprise policy.
@@ -3140,14 +3169,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // no interstitial should be shown.
   http_url = http_server()->GetURL("foo.com", "/simple.html");
   https_url = https_server()->GetURL("foo.com", "/simple.html");
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 
   // Navigate to HTTP URL on bar.com. Same result.
   http_url = http_server()->GetURL("bar.com", "/simple.html");
   https_url = https_server()->GetURL("bar.com", "/simple.html");
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 
@@ -3155,7 +3184,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // was specified.
   http_url = http_server()->GetURL("bar.bar.com", "/simple.html");
   https_url = https_server()->GetURL("bar.bar.com", "/simple.html");
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 
@@ -3164,21 +3193,21 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // should get upgraded to HTTPS.
   http_url = http_server()->GetURL("foo.foo.com", "/simple.html");
   https_url = https_server()->GetURL("foo.foo.com", "/simple.html");
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
   // Navigate to HTTP URL on baz.com, which is not on the allowlist. Should get
   // upgraded to HTTPS.
   http_url = http_server()->GetURL("baz.com", "/simple.html");
   https_url = https_server()->GetURL("baz.com", "/simple.html");
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
   // Navigate to HTTP URL on the HTTP test server's IP address. It should not
   // get upgraded to HTTPS and no interstitial should be shown.
   http_url = http_server()->GetURL("/simple.html");
   https_url = https_server()->GetURL("/simple.html");
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 }
@@ -3214,7 +3243,7 @@ IN_PROC_BROWSER_TEST_P(
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(hfm_service);
 
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 
@@ -3226,7 +3255,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Navigate to the same URL. It should not get upgraded to HTTPS and
   // no interstitial should be shown.
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 }
@@ -3245,7 +3274,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // HTTPS-First Mode should supercede HTTPS-Upgrades and upgrade the
     // navigation despite the HttpsUpgradeMode policy setting.
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kUpgraded,
@@ -3253,7 +3282,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   } else {
     // If HTTPS-First Mode is not enabled but upgrading is, then the policy
     // should prevent the upgrade.
-    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
@@ -3288,14 +3317,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   if (IsStrictInterstitialEnabledForTest()) {
     // If HTTPS-First Mode is enabled, upgrades should still be applied.
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kUpgraded,
                                     1);
   } else {
     // Otherwise, the upgrades should be skipped.
-    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
@@ -3313,14 +3342,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                       CONTENT_SETTING_ALLOW);
   if (IsStrictInterstitialEnabledForTest()) {
     // If HTTPS-First Mode is enabled, upgrades should still be applied.
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kUpgraded,
                                     2);
   } else {
     // Otherwise, the upgrades should be skipped.
-    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
@@ -3364,14 +3393,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   if (IsStrictInterstitialEnabledForTest()) {
     // If HTTPS-First Mode is fully enabled, upgrades should still be applied.
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kUpgraded,
                                     1);
   } else {
     // Otherwise, the upgrades should be skipped.
-    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
@@ -3392,14 +3421,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                       CONTENT_SETTING_ALLOW);
   if (IsStrictInterstitialEnabledForTest()) {
     // If HTTPS-First Mode is enabled, upgrades should still be applied.
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kUpgraded,
                                     2);
   } else {
     // Otherwise, the upgrades should be skipped.
-    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
@@ -3433,8 +3462,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, crbug1431026) {
       base::StrCat({"/server-redirect-301?", redirecting_http_url.spec()}));
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(
-      content::NavigateToURL(contents, initial_redirecting_good_https_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(
+      contents, initial_redirecting_good_https_url));
 
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Should be showing interstitial on http://bad-https.com/.
@@ -3474,7 +3503,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   // Navigate to a URL that will fail upgrades, and click through the
   // interstitial to add it to the allowlist.
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
   ProceedThroughHttpsFirstModeInterstitial(contents);
 
@@ -3482,7 +3511,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   SetPref(false);
 
   if (InBalancedMode()) {
-    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 
     // Proceed through the interstitial and add the host to the allowlist.
@@ -3490,7 +3519,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   } else {
     // With HTTPS-Upgrades enabled, navigating again should cause the site to
     // get added back to the allowlist.
-    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
     EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
   }
 
@@ -3499,7 +3528,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   // Navigate to a URL that will fail upgrades, and the interstitial should be
   // shown again as the allowlist was cleared.
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 }
 
@@ -3518,13 +3547,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   SetPref(false);
   auto http_url = http_server()->GetURL("bad-https.com", "/simple.html");
   auto* normal_tab = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::NavigateToURL(normal_tab, http_url));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(normal_tab, http_url));
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(normal_tab));
 
   // In an Incognito window, navigating to that same host should still trigger
   // the HTTP interstitial, as the allowlist is not inherited.
   auto* incognito_tab = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(content::NavigateToURL(incognito_tab, http_url));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(incognito_tab, http_url));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(incognito_tab));
 }
 
@@ -4731,7 +4760,7 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesSecureOriginAllowlistBrowserTest,
       embedded_test_server()->GetURL("test.example.com", "/simple.html");
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::NavigateToURL(contents, url_in_allowlist));
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, url_in_allowlist));
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
 }
 
@@ -4741,7 +4770,7 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesSecureOriginAllowlistBrowserTest,
       embedded_test_server()->GetURL("not-example.com", "/simple.html");
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(content::NavigateToURL(contents, url_not_in_allowlist));
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, url_not_in_allowlist));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 }
 
@@ -4792,9 +4821,7 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesAdvancedProtectionBrowserTest,
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  content::TestNavigationObserver nav_observer(contents, 1);
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
-  nav_observer.Wait();
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 }
 
@@ -4877,7 +4904,7 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesAskBeforeHttpDelayTest,
   // Navigate to HTTP. It should upgrade to HTTPS and immediately fallback to
   // HTTP and show the interstitial because ask-before-http-fallback-delay is
   // 0ms.
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  EXPECT_FALSE(NavigateToURLWithLinkTransition(contents, http_url));
 
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
@@ -4965,7 +4992,7 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesSilentFallbackDelayTest,
 
   // Navigate to HTTP. It should upgrade to HTTPS and immediately fallback to
   // HTTP because fallback-delay is 0ms.
-  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  EXPECT_TRUE(NavigateToURLWithLinkTransition(contents, http_url));
 
   EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());

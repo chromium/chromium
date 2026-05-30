@@ -177,6 +177,8 @@ class TypedNavigationUpgradeThrottleBrowserTest
       disabled_features.push_back(omnibox::kDefaultTypedNavigationsToHttps);
     }
     disabled_features.push_back(features::kHttpsFirstBalancedModeAutoEnable);
+    disabled_features.push_back(
+        features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback);
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
