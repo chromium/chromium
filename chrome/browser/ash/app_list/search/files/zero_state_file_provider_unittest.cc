@@ -10,7 +10,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
@@ -60,7 +62,8 @@ class ZeroStateFileProviderTest : public testing::Test {
         file_manager::util::GetDownloadsFolderForProfile(profile_);
     ASSERT_TRUE(base::CreateDirectory(downloads_folder_));
 
-    Wait();
+    ASSERT_TRUE(base::test::RunUntil(
+        [this] { return LocalFileProvider()->IsInitialized(); }));
   }
 
   base::FilePath Path(const std::string& filename) {
@@ -74,7 +77,6 @@ class ZeroStateFileProviderTest : public testing::Test {
   void WriteFile(const base::FilePath& path) {
     CHECK(base::WriteFile(path, "abcd"));
     CHECK(base::PathExists(path));
-    Wait();
   }
 
   FileTasksObserver::FileOpenEvent OpenEvent(const base::FilePath& path) {
@@ -96,7 +98,12 @@ class ZeroStateFileProviderTest : public testing::Test {
     return search_controller_.last_results();
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
+  ash::LocalFileSuggestionProvider* LocalFileProvider() {
+    auto* keyed_service =
+        ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+            profile_);
+    return keyed_service->local_file_suggestion_provider_for_test();
+  }
 
   content::BrowserTaskEnvironment task_environment_;
 
@@ -111,7 +118,6 @@ class ZeroStateFileProviderTest : public testing::Test {
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
   StartSearch(u"query");
-  Wait();
   EXPECT_TRUE(LastResults().empty());
 }
 
@@ -129,8 +135,10 @@ TEST_F(ZeroStateFileProviderTest, FilterScreenshots) {
        OpenEvent(DownloadsPath("NotScreenshot.png")),
        OpenEvent(DownloadsPath("Screenshot123.png"))});
 
+  SearchResultsChangedWaiter results_waiter(
+      &search_controller_, {ash::AppListSearchResultType::kZeroStateFile});
   StartZeroStateSearch();
-  Wait();
+  results_waiter.Wait();
 
   // Screenshot123 matches the criteria for a screenshot and should be filtered
   // out.
