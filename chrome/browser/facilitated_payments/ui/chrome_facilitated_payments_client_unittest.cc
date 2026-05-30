@@ -44,7 +44,8 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
   MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void,
               ShowPixAccountLinkingPrompt,
-              (base::OnceCallback<void()> on_accepted,
+              (int strike_count,
+               base::OnceCallback<void()> on_accepted,
                base::OnceCallback<void()> on_declined),
               (override));
 };
@@ -290,8 +291,8 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, InitPixAccountLinkingFlow) {
 // Test that the client forwards call to show Pix account linking prompt to the
 // controller.
 TEST_F(ChromeFacilitatedPaymentsClientTest, ShowPixAccountLinkingPrompt) {
-  EXPECT_CALL(controller(), ShowPixAccountLinkingPrompt);
+  EXPECT_CALL(controller(), ShowPixAccountLinkingPrompt(0, _, _));
 
-  base_client().ShowPixAccountLinkingPrompt(base::DoNothing(),
-                                            base::DoNothing());
+  base_client().ShowPixAccountLinkingPrompt(
+      /*strike_count=*/0, base::DoNothing(), base::DoNothing());
 }

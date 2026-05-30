@@ -109,6 +109,7 @@ class ChromeFacilitatedPaymentsClient
   void InitPixAccountLinkingFlow(
       const url::Origin& pix_payment_page_origin) final;
   void ShowPixAccountLinkingPrompt(
+      int strike_count,
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) final;
   bool HasScreenlockOrBiometricSetup() final;

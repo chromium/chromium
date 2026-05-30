@@ -136,11 +136,12 @@ void FacilitatedPaymentsController::OnPaymentAppSelected(
 }
 
 void FacilitatedPaymentsController::ShowPixAccountLinkingPrompt(
+    int strike_count,
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {
   on_pix_account_linking_prompt_accepted_ = std::move(on_accepted);
   on_pix_account_linking_prompt_declined_ = std::move(on_declined);
-  view_->ShowPixAccountLinkingPrompt();
+  view_->ShowPixAccountLinkingPrompt(strike_count);
 }
 
 void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(

@@ -164,7 +164,12 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay() {
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
   is_prompt_showing_ = true;
+  int strike_count = 0;
+  if (auto* strike_database = GetOrCreateStrikeDatabase()) {
+    strike_count = strike_database->GetStrikes();
+  }
   client_->ShowPixAccountLinkingPrompt(
+      strike_count,
       base::BindOnce(&PixAccountLinkingManager::OnAccepted,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PixAccountLinkingManager::OnDeclined,

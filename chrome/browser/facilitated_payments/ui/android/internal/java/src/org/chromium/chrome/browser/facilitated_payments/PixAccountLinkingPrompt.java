@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 
@@ -78,6 +79,9 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
         } else if (propertyKey == DECLINE_BUTTON_CALLBACK) {
             ButtonCompat declineButton = view.findViewById(R.id.decline_button);
             declineButton.setOnClickListener(model.get(DECLINE_BUTTON_CALLBACK));
+        } else if (propertyKey == DECLINE_BUTTON_TEXT_ID) {
+            ButtonCompat declineButton = view.findViewById(R.id.decline_button);
+            declineButton.setText(model.get(DECLINE_BUTTON_TEXT_ID));
         } else if (propertyKey == SETTINGS_LINK_CALLBACK) {
             TextView settingsLink = view.findViewById(R.id.pix_code_detection_settings_link);
             if (settingsLink != null) {

@@ -35,6 +35,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
@@ -105,6 +106,7 @@ import java.util.Set;
 @NullMarked
 class FacilitatedPaymentsPaymentMethodsMediator {
     static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
+    static final int STRIKE_THRESHOLD_FOR_HARD_DECLINE = 2;
 
     // This histogram name should be in sync with the one in
     // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogPixFopSelected.
@@ -247,7 +249,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate.onUiEvent(uiEvent);
     }
 
-    void showPixAccountLinkingPrompt() {
+    void showPixAccountLinkingPrompt(int strikeCount) {
         // Set {@link VISIBLE_STATE} to the placeholder state which is a no-op, and then update the
         // screen to the Pix account linking prompt. Finally update {@link VISIBLE_STATE} to show
         // the new screen.
@@ -258,6 +260,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 .set(ACCEPT_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptAccepted());
         mModel.get(SCREEN_VIEW_MODEL)
                 .set(DECLINE_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptDeclined());
+        int declineStringId =
+                strikeCount < STRIKE_THRESHOLD_FOR_HARD_DECLINE
+                        ? R.string.pix_account_linking_prompt_decline_first_two_times
+                        : R.string.pix_account_linking_prompt_decline;
+        mModel.get(SCREEN_VIEW_MODEL).set(DECLINE_BUTTON_TEXT_ID, declineStringId);
         mModel.get(SCREEN_VIEW_MODEL)
                 .set(SETTINGS_LINK_CALLBACK, v -> startSettings(FINANCIAL_ACCOUNTS));
         mModel.get(SCREEN_VIEW_MODEL)

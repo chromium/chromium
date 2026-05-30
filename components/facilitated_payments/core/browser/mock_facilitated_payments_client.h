@@ -92,7 +92,8 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(void,
               ShowPixAccountLinkingPrompt,
-              (base::OnceCallback<void()> on_accepted,
+              (int strike_count,
+               base::OnceCallback<void()> on_accepted,
                base::OnceCallback<void()> on_declined),
               (override));
   MOCK_METHOD(bool, HasScreenlockOrBiometricSetup, (), (override));

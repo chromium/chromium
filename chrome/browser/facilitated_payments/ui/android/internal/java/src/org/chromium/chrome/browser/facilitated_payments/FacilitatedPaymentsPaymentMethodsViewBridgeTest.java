@@ -259,7 +259,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @SmallTest
     public void showPixAccountLinkingPrompt_callsControllerRequestShowContent() {
 
-        mViewBridge.showPixAccountLinkingPrompt();
+        mViewBridge.showPixAccountLinkingPrompt(/* strikeCount= */ 0);
 
         verify(mBottomSheetController)
                 .requestShowContent(

@@ -203,10 +203,11 @@ void ChromeFacilitatedPaymentsClient::InitPixAccountLinkingFlow(
 }
 
 void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
+    int strike_count,
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {
   facilitated_payments_controller_->ShowPixAccountLinkingPrompt(
-      std::move(on_accepted), std::move(on_declined));
+      strike_count, std::move(on_accepted), std::move(on_declined));
 }
 
 bool ChromeFacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {

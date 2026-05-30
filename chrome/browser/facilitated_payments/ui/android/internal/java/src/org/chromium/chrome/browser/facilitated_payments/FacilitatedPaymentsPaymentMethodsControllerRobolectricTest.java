@@ -44,6 +44,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
@@ -84,6 +85,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
@@ -1431,7 +1433,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testCreatesModelForPixAccountLinkingPrompt() {
-        mCoordinator.showPixAccountLinkingPrompt();
+        mCoordinator.showPixAccountLinkingPrompt(0);
 
         // Verify that the bottom sheet model is updated to show the PIX account linking screen.
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -1445,20 +1447,50 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         mFacilitatedPaymentsPaymentMethodsModel
                                 .get(SCREEN_VIEW_MODEL)
                                 .getAllProperties();
-        assertThat(propertyKeys, hasSize(4));
+        assertThat(propertyKeys, hasSize(5));
         assertThat(
                 propertyKeys,
                 containsInAnyOrder(
                         ACCEPT_BUTTON_CALLBACK,
                         DECLINE_BUTTON_CALLBACK,
                         SETTINGS_LINK_CALLBACK,
-                        VIDEO_LINK_CALLBACK));
+                        VIDEO_LINK_CALLBACK,
+                        DECLINE_BUTTON_TEXT_ID));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(true));
     }
 
     @Test
+    public void testPixAccountLinkingPrompt_DeclineButtonText() {
+        // Strike count 0 -> "Not now"
+        mCoordinator.showPixAccountLinkingPrompt(0);
+        assertThat(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .get(DECLINE_BUTTON_TEXT_ID),
+                is(R.string.pix_account_linking_prompt_decline_first_two_times));
+
+        // Strike count 1 -> "Not now"
+        mCoordinator.dismiss();
+        mCoordinator.showPixAccountLinkingPrompt(1);
+        assertThat(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .get(DECLINE_BUTTON_TEXT_ID),
+                is(R.string.pix_account_linking_prompt_decline_first_two_times));
+
+        // Strike count 2 -> "No thanks"
+        mCoordinator.dismiss();
+        mCoordinator.showPixAccountLinkingPrompt(2);
+        assertThat(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .get(DECLINE_BUTTON_TEXT_ID),
+                is(R.string.pix_account_linking_prompt_decline));
+    }
+
+    @Test
     public void testAcceptingPixAccountLinkingPromptInformsDelegate() {
-        mCoordinator.showPixAccountLinkingPrompt();
+        mCoordinator.showPixAccountLinkingPrompt(0);
 
         // Simulate clicking the accept button.
         mFacilitatedPaymentsPaymentMethodsModel
@@ -1471,7 +1503,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testDecliningPixAccountLinkingPromptInformsDelegate() {
-        mCoordinator.showPixAccountLinkingPrompt();
+        mCoordinator.showPixAccountLinkingPrompt(0);
 
         // Simulate clicking the accept button.
         mFacilitatedPaymentsPaymentMethodsModel
@@ -1484,7 +1516,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testClickingSettingsLinkInPixAccountLinkingPromptOpensSettings() {
-        mCoordinator.showPixAccountLinkingPrompt();
+        mCoordinator.showPixAccountLinkingPrompt(0);
 
         // Simulate clicking the settings link.
         mFacilitatedPaymentsPaymentMethodsModel

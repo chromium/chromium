@@ -133,6 +133,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
   // Shows the Pix account linking prompt.
   virtual void ShowPixAccountLinkingPrompt(
+      int strike_count,
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) = 0;
 

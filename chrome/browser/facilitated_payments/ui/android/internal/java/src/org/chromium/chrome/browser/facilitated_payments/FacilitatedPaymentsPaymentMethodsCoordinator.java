@@ -81,8 +81,8 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public void showPixAccountLinkingPrompt() {
-        mMediator.showPixAccountLinkingPrompt();
+    public void showPixAccountLinkingPrompt(int strikeCount) {
+        mMediator.showPixAccountLinkingPrompt(strikeCount);
     }
 
     /**

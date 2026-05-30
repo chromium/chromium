@@ -138,7 +138,7 @@ TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 
   // Expect the prompt to be shown then.
-  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt(0, testing::_, testing::_));
 
   // Fast-forward time by 3 seconds to trigger the delayed task.
   task_environment_.FastForwardBy(kShowPromptDelay);
@@ -158,7 +158,7 @@ TEST_F(PixAccountLinkingManagerTest, CustomDelayShowsPrompt) {
   task_environment_.FastForwardBy(base::Seconds(3));
 
   // Expect the prompt to be shown then.
-  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt(0, testing::_, testing::_));
 
   // Fast-forward time by another 4 seconds to reach 7 seconds.
   task_environment_.FastForwardBy(base::Seconds(4));
@@ -197,7 +197,7 @@ TEST_F(PixAccountLinkingManagerTest,
       *payments_network_interface(),
       GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
       .Times(0);
-  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt(0, testing::_, testing::_));
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   task_environment_.FastForwardBy(kShowPromptDelay);
@@ -705,7 +705,7 @@ TEST_F(PixAccountLinkingManagerTest,
   // Fast-forward time by 7 days to pass the required delay.
   task_environment_.FastForwardBy(base::Days(7));
 
-  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt(2, testing::_, testing::_));
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   task_environment_.FastForwardBy(kShowPromptDelay);

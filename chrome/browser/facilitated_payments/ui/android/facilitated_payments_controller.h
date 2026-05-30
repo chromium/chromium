@@ -84,6 +84,7 @@ class FacilitatedPaymentsController {
   // Asks the `view_` to show the PIX account linking prompt. Virtual for
   // overriding in tests.
   virtual void ShowPixAccountLinkingPrompt(
+      int strike_count,
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined);
 

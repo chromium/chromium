@@ -103,5 +103,5 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/pix_account_linking_prompt_decline_button_bottom_margin"
         android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_decline_button_top_margin"
         style="@style/TextButton"
-        android:text="@string/pix_account_linking_prompt_decline" />
+        android:text="@string/pix_account_linking_prompt_decline_first_two_times" />
 </LinearLayout>

@@ -60,7 +60,7 @@ class FacilitatedPaymentsBottomSheetBridge {
 
   // Triggers showing the Pix account linking prompt. Virtual for overriding in
   // tests.
-  virtual void ShowPixAccountLinkingPrompt();
+  virtual void ShowPixAccountLinkingPrompt(int strike_count);
 
   // Closes the bottom sheet. Virtual for overriding in tests.
   virtual void Dismiss();

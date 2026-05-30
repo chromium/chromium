@@ -96,5 +96,5 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     void dismiss();
 
     /** Show the Pix account linking prompt in a bottom sheet. */
-    void showPixAccountLinkingPrompt();
+    void showPixAccountLinkingPrompt(int strikeCount);
 }
