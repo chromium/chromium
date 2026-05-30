@@ -24,6 +24,7 @@
 namespace base {
 
 class FeatureList;
+class FeatureListTest;
 
 // Recommended macros for declaring and defining features and parameters:
 //
@@ -212,6 +213,7 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
 
  private:
   friend class FeatureList;
+  friend class FeatureListTest;
 
   // A packed value where the first 8 bits represent the `OverrideState` of this
   // feature, the next 8 bits are reserved for flags (e.g. logging), and the

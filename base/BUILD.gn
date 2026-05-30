@@ -2619,6 +2619,7 @@ component("base") {
 group("base_rust") {
   public_deps = [
     ":callback",
+    ":feature",
     ":run_loop",
     ":sequenced_task_runner",
   ]
@@ -2688,6 +2689,14 @@ rust_static_library("run_loop") {
     ":run_loop_shim",
     "//base",
   ]
+}
+
+rust_static_library("feature") {
+  sources = [ "feature.rs" ]
+  crate_root = "feature.rs"
+  cxx_bindings = [ "feature.rs" ]
+  allow_unsafe = true
+  deps = [ "//base" ]
 }
 
 rust_static_library("sequenced_task_runner") {
@@ -2762,6 +2771,19 @@ rust_static_library("rust_sequences_unittests") {
     ":sequenced_task_runner",
     ":sequenced_task_runner_test_bridge",
     "//base/test:task_environment",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+rust_static_library("rust_feature_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  allow_unsafe = true
+  sources = [ "feature_unittest.rs" ]
+  crate_root = "feature_unittest.rs"
+  deps = [
+    ":feature",
+    "//base/test:scoped_feature_list",
     "//testing/rust_gtest_interop",
   ]
 }
@@ -3993,6 +4015,7 @@ test("base_unittests") {
     ":hardening_tests",
     ":i18n",
     ":path_service_unittest",
+    ":rust_feature_unittests",
     ":rust_sequences_unittests",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",

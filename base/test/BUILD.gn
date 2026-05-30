@@ -48,6 +48,19 @@ rust_static_library("task_environment") {
   ]
 }
 
+rust_static_library("scoped_feature_list") {
+  testonly = true
+  sources = [ "scoped_feature_list.rs" ]
+  crate_root = "scoped_feature_list.rs"
+  cxx_bindings = [ "scoped_feature_list.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":scoped_feature_list_shim",
+    "//base:feature",
+    "//base/allocator/partition_allocator:raw_ptr",
+  ]
+}
+
 source_set("task_environment_shim") {
   testonly = true
   sources = [
@@ -60,9 +73,25 @@ source_set("task_environment_shim") {
   ]
 }
 
+source_set("scoped_feature_list_shim") {
+  testonly = true
+  sources = [
+    "scoped_feature_list_rust_shim.cc",
+    "scoped_feature_list_rust_shim.h",
+  ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/allocator/partition_allocator:raw_ptr",
+  ]
+}
+
 group("test_support_rust") {
   testonly = true
-  public_deps = [ ":task_environment" ]
+  public_deps = [
+    ":scoped_feature_list",
+    ":task_environment",
+  ]
 }
 
 static_library("test_support") {
