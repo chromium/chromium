@@ -413,3 +413,7 @@
 -PolicyLoggerTest.DeleteOldLogsMultithreaded
 -UmaPageLoadMetricsObserverTest.TestTracingDomContentLoadedEventStart
 -UmaPageLoadMetricsObserverTest.TestTracingLoadEventStart
+
+# TODO(crbug.com/517208683): The test is flaky on the ios-blink and tvos bots.
+# The test was updated by https://crrev.com/c/7676358.
+-SessionStorageImplFakeDbTest.TransientErrorsAfterRecovery
