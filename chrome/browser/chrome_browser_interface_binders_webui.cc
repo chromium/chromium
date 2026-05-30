@@ -47,16 +47,28 @@
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/webui/buildflags.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals.mojom.h"
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "chrome/browser/ui/webui/user_education_internals/user_education_internals_ui.h"
 #include "chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom.h"
 #include "chrome/browser/ui/webui/webnn_internals/webnn_internals_ui.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -99,6 +111,55 @@ void BindColorChangeListener(
   color_change_handler->Bind(std::move(pending_receiver));
 }
 #endif  // !BUILDFLAG(ENABLE_WEBUI_NTP)
+
+void BindTrackedElementHandler(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        pending_receiver) {
+  auto handler =
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(frame_host);
+  if (handler) {
+    handler->BindInterface(std::move(pending_receiver));
+  }
+}
+
+void BindTrackedElementHandlerRestricted(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        pending_receiver) {
+  auto* web_ui = frame_host->GetWebUI();
+  if (!web_ui) {
+    mojo::ReportBadMessage(
+        "TrackedElementHandler requested by non-WebUI frame.");
+    return;
+  }
+  auto* controller = web_ui->GetController();
+  DCHECK(controller);
+
+  const bool is_allowed =
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+      controller->GetAs<NewTabPageUI>() ||
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+      controller->GetAs<UserEducationInternalsUI>() ||
+      controller->GetAs<ReadingListUI>() ||
+      controller->GetAs<CustomizeChromeUI>() ||
+      controller->GetAs<PasswordManagerUI>() ||
+      controller->GetAs<HistoryUI>() ||
+#if !BUILDFLAG(IS_CHROMEOS)
+      controller->GetAs<ProfilePickerUI>() ||
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+      controller->GetAs<ContextualTasksUI>();
+
+  if (!is_allowed) {
+    mojo::ReportBadMessage(
+        "TrackedElementHandler requested by unauthorized WebUI.");
+    return;
+  }
+
+  BindTrackedElementHandler(frame_host, std::move(pending_receiver));
+}
 
 void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
@@ -238,6 +299,9 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
                                          >(map);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  map->Add<tracked_element::mojom::TrackedElementHandler>(
+      base::BindRepeating(&BindTrackedElementHandlerRestricted));
+
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().
   // Please do not add platform-specific logic to this function.
 }
@@ -299,6 +363,9 @@ void PopulateTrustedChromeWebUIFrameInterfaceBrokers(
       base::BindRepeating(&BindColorChangeListener));
 #endif
 
+  registry.AddGlobal<tracked_element::mojom::TrackedElementHandler>(
+      base::BindRepeating(&BindTrackedElementHandler));
+
   // When possible, please use one of the Parts functions above and avoid making
   // this function longer.
 }
@@ -319,6 +386,9 @@ void PopulateUntrustedChromeWebUIFrameInterfaceBrokers(
   registry.AddGlobal<color_change_listener::mojom::PageHandler>(
       base::BindRepeating(&BindColorChangeListener));
 #endif
+
+  registry.AddGlobal<tracked_element::mojom::TrackedElementHandler>(
+      base::BindRepeating(&BindTrackedElementHandler));
 
   // When possible, please use one of the Parts functions above and avoid making
   // this function longer.

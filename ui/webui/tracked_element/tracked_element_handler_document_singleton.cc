@@ -21,13 +21,15 @@ namespace ui {
 
 namespace {
 
+using ContextGetter = TrackedElementHandlerDocumentSingleton::ContextGetter;
+
 // Holds the configuration for TrackedElementHandlers in a WebContents.
 class TrackedElementHandlerConfig
     : public content::WebContentsUserData<TrackedElementHandlerConfig> {
  public:
   ~TrackedElementHandlerConfig() override = default;
 
-  ui::ElementContext context() const { return context_; }
+  ui::ElementContext context() { return context_getter_.Run(); }
   const std::vector<ui::ElementIdentifier>& identifiers() const {
     return identifiers_;
   }
@@ -35,15 +37,15 @@ class TrackedElementHandlerConfig
  private:
   friend class content::WebContentsUserData<TrackedElementHandlerConfig>;
   TrackedElementHandlerConfig(content::WebContents* web_contents,
-                              ui::ElementContext context,
+                              ContextGetter context_getter,
                               std::vector<ui::ElementIdentifier> identifiers)
       : content::WebContentsUserData<TrackedElementHandlerConfig>(
             *web_contents),
-        context_(context),
+        context_getter_(std::move(context_getter)),
         identifiers_(std::move(identifiers)) {}
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  const ui::ElementContext context_;
+  ContextGetter context_getter_;
   const std::vector<ui::ElementIdentifier> identifiers_;
 };
 
@@ -82,7 +84,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(TrackedElementHandlerUserData);
 void TrackedElementHandlerDocumentSingleton::Register(
     content::WebUIController* controller,
     std::vector<ui::ElementIdentifier> identifiers,
-    std::optional<ui::ElementContext> context) {
+    ContextGetter maybe_context_getter) {
   if (!controller || !controller->web_ui()) {
     return;
   }
@@ -92,12 +94,14 @@ void TrackedElementHandlerDocumentSingleton::Register(
     return;
   }
 
-  if (!context) {
-    context = ui::ElementContext(
+  if (!maybe_context_getter) {
+    ui::ElementContext context = ui::ElementContext(
         controller, base::PassKey<TrackedElementHandlerDocumentSingleton>());
+    maybe_context_getter = base::BindRepeating(
+        [](ui::ElementContext context) { return context; }, std::move(context));
   }
-  TrackedElementHandlerConfig::CreateForWebContents(web_contents, *context,
-                                                    std::move(identifiers));
+  TrackedElementHandlerConfig::CreateForWebContents(
+      web_contents, std::move(maybe_context_getter), std::move(identifiers));
 }
 
 // static

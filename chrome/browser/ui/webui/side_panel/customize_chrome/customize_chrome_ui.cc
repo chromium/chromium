@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -49,6 +48,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -336,6 +336,14 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::vector<ui::ElementIdentifier>{
+                CustomizeChromeUI::kChangeChromeThemeButtonElementId,
+                CustomizeChromeUI::kChangeChromeThemeClassicElementId,
+                CustomizeChromeUI::kChromeThemeCollectionElementId,
+                CustomizeChromeUI::kChromeThemeElementId,
+                CustomizeChromeUI::kChromeThemeBackElementId});
 }
 
 CustomizeChromeUI::~CustomizeChromeUI() = default;
@@ -457,13 +465,9 @@ void CustomizeChromeUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{
-          CustomizeChromeUI::kChangeChromeThemeButtonElementId,
-          CustomizeChromeUI::kChangeChromeThemeClassicElementId,
-          CustomizeChromeUI::kChromeThemeCollectionElementId,
-          CustomizeChromeUI::kChromeThemeElementId,
-          CustomizeChromeUI::kChromeThemeBackElementId});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }
 
 void CustomizeChromeUI::CreateCustomizeColorSchemeModeHandler(

@@ -33,6 +33,7 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 namespace lens {
@@ -258,6 +259,10 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui),
       std::make_unique<ThemeSource>(Profile::FromWebUI(web_ui),
                                     /*serve_untrusted=*/true));
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this,
+      std::vector<ui::ElementIdentifier>{kLensSidePanelSearchBoxElementId});
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
@@ -353,8 +358,9 @@ void LensSidePanelUntrustedUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{kLensSidePanelSearchBoxElementId});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }
 
 LensSidePanelUntrustedUI::~LensSidePanelUntrustedUI() = default;

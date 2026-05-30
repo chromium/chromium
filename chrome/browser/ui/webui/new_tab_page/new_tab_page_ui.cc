@@ -136,6 +136,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/resources/grit/webui_resources_map.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_util.h"
 #include "url/origin.h"
@@ -964,6 +965,14 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   OnColorProviderChanged();
   OnCustomBackgroundImageUpdated();
   OnLoad();
+
+  // TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::vector<ui::ElementIdentifier>{
+                CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
+                NewTabPageUI::kRealboxContextualEntrypointElementId});
+#endif
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
@@ -1352,10 +1361,9 @@ void NewTabPageUI::CreateHelpBubbleHandler(
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{
-          CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
-          NewTabPageUI::kRealboxContextualEntrypointElementId});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 #endif
 }
 

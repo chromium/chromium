@@ -54,6 +54,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -812,6 +813,14 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   ManagedUIHandler::Initialize(web_ui, source);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::vector<ui::ElementIdentifier>{
+                PasswordManagerUI::kSettingsMenuItemElementId,
+                PasswordManagerUI::kAddShortcutElementId,
+                PasswordManagerUI::kSharePasswordElementId,
+                PasswordManagerUI::kAccountStoreToggleElementId,
+                PasswordManagerUI::kOverflowMenuElementId});
 }
 
 PasswordManagerUI::~PasswordManagerUI() = default;
@@ -839,13 +848,9 @@ void PasswordManagerUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{
-          PasswordManagerUI::kSettingsMenuItemElementId,
-          PasswordManagerUI::kAddShortcutElementId,
-          PasswordManagerUI::kSharePasswordElementId,
-          PasswordManagerUI::kAccountStoreToggleElementId,
-          PasswordManagerUI::kOverflowMenuElementId});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }
 
 void PasswordManagerUI::BindInterface(

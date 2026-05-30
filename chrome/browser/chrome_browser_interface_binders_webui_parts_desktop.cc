@@ -149,7 +149,6 @@
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
-#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"  // nogncheck crbug.com/40147906
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
@@ -698,8 +697,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<tabs_api::mojom::TabDragService>()
         .Add<tabs_api::mojom::TabStripService>()
         .Add<tabs_api::mojom::TabStripExperimentService>()
-        .Add<tabs_api::mojom::TabStripUIController>()
-        .Add<tracked_element::mojom::TrackedElementHandler>();
+        .Add<tabs_api::mojom::TabStripUIController>();
   }
 
   if (features::IsWebUIToolbarEnabled() || base::FeatureList::IsEnabled(
@@ -707,7 +705,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
     registry.ForWebUI<WebUIToolbarUI>()
         .Add<browser_controls_api::mojom::BrowserControlsService>()
         .Add<toolbar_ui_api::mojom::ToolbarUIService>()
-        .Add<tracked_element::mojom::TrackedElementHandler>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
   }
 

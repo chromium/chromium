@@ -1015,6 +1015,7 @@ source_set("core") {
     "//ui/message_center",
     "//ui/webui",
     "//ui/webui:buildflags",
+    "//ui/webui/tracked_element",
   ]
 
   # The :impl targets and other circular-dep targets below include monolith
@@ -1167,6 +1168,7 @@ source_set("core") {
       "//chrome/browser/ui/webui/indigo_internals",
       "//chrome/browser/ui/webui/indigo_internals:mojo_bindings",
       "//chrome/browser/ui/webui/webnn_internals",
+      "//chrome/browser/ui/webui_browser",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:sub_apps_service",

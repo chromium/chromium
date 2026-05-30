@@ -85,9 +85,6 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<tabs_api::mojom::TabDragService> receiver);
   void BindInterface(
       mojo::PendingReceiver<tabs_api::mojom::TabStripUIController> receiver);
-  void BindInterface(
-      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-          receiver);
 
   void BookmarkBarStateChanged(BookmarkBar::AnimateChangeType change_type);
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);

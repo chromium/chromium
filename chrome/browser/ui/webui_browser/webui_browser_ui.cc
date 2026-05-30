@@ -44,6 +44,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -141,6 +142,20 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  if (browser_) {
+    // This use of unretained is safe because the
+    // TrackedElementHandlerDocumentSingleton only stores the callback for at
+    // most the lifetime of the WebContents, which is always shorter than the
+    // Browser.
+    ui::TrackedElementHandlerDocumentSingleton::Register(
+        this, GetKnownElementIdentifiers(),
+        base::BindRepeating(
+            [](Browser* browser) {
+              return BrowserElements::From(browser)->GetContext();
+            },
+            base::Unretained(browser_)));
+  }
 }
 
 WebUIBrowserUI::~WebUIBrowserUI() = default;
@@ -220,16 +235,6 @@ void WebUIBrowserUI::BindInterface(
       browser_->browser_window_features()->tab_strip_ui_controller();
   CHECK(ui_controller) << "Browser missing TabStripUIController";
   ui_controller->Bind(std::move(receiver));
-}
-
-void WebUIBrowserUI::BindInterface(
-    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-        receiver) {
-  const ui::ElementContext context =
-      BrowserElements::From(browser_)->GetContext();
-  tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-      web_ui()->GetWebContents(), context, GetKnownElementIdentifiers());
-  tracked_element_handler_->BindInterface(std::move(receiver));
 }
 
 base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {

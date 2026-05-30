@@ -20,6 +20,7 @@
 #include "chrome/grit/side_panel_read_anything_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
@@ -258,6 +259,11 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   // is opened.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
                                            profile, /*serve_untrusted=*/true));
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this,
+      std::vector<ui::ElementIdentifier>{kReadAnythingViewModeElementId,
+                                         kReadAnythingSettingsButtonElementId});
 }
 
 ReadAnythingUntrustedUI::~ReadAnythingUntrustedUI() = default;
@@ -282,11 +288,9 @@ void ReadAnythingUntrustedUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{
-          kReadAnythingViewModeElementId,
-          kReadAnythingSettingsButtonElementId,
-      });
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }
 
 void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(

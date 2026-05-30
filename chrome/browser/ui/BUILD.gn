@@ -2022,6 +2022,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/searchbox",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+      "//ui/webui/tracked_element",
     ]
     allow_circular_includes_from += [ "//chrome/browser/ui/search:impl" ]
   }

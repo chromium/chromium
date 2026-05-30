@@ -24,12 +24,16 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
-#include "ui/webui/tracked_element/tracked_element_handler.h"
 
 class CommandUpdater;
+
+namespace user_education {
+class HelpBubbleHandler;
+}  // namespace user_education
 
 // The webui controller for the webui toolbar. This class has a two part
 // initialization. The controller is not ready to use until after
@@ -71,10 +75,6 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> receiver);
-
-  void BindInterface(
-      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-          receiver);
 
   void BindInterface(
       mojo::PendingReceiver<extensions_bar::mojom::PageHandlerFactory>
@@ -143,7 +143,6 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   std::unique_ptr<browser_controls_api::BrowserControlsService>
       browser_controls_service_;
   std::unique_ptr<toolbar_ui_api::ToolbarUIService> toolbar_ui_service_;
-  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
   /////////////////////////////////////////////////////////////////////////////
   // There's a subtle edge case for WebUI toolbar, because it's hosted at the

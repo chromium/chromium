@@ -49,6 +49,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
@@ -335,16 +336,19 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(html_source, kProfilePickerResources,
                               IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::vector<ui::ElementIdentifier>{});
 }
 
 ProfilePickerUI::~ProfilePickerUI() = default;
-
 void ProfilePickerUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }
 
 void ProfilePickerUI::BindInterface(
