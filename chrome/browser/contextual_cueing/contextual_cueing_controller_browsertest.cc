@@ -387,6 +387,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       sessions::SessionTabHelper::IdForTab(active_web_contents);
   auto* valid_tab = cue->mutable_anchored_message_cue()->add_tabs_to_show();
   valid_tab->set_tab_id(active_tab_id.id());
+  valid_tab->set_url("https://www.example.com/abc");
 
   // Add an invalid tab to the response.
   auto* invalid_tab = cue->mutable_anchored_message_cue()->add_tabs_to_show();

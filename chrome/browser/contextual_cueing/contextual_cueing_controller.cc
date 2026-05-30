@@ -631,8 +631,18 @@ ContextualCueingController::GetTabsToShow(
     tabs::TabHandle handle(
         tab_handle_factory.GetHandleForSessionId(session_id.id()));
     // Ensure tab is valid and belongs to the current browser window.
-    if (handle.Get() && handle.Get()->GetBrowserWindowInterface() ==
-                            browser_window_interface_) {
+    if (handle.Get() && handle.Get()->GetContents() &&
+        handle.Get()->GetBrowserWindowInterface() ==
+            browser_window_interface_) {
+      // Check whether the tab's current URL still matches the URL from the
+      // response. If the tab has navigated away, skip it.
+      GURL response_url(tab.url());
+      const GURL& live_url = handle.Get()->GetContents()->GetLastCommittedURL();
+      if (!response_url.EqualsIgnoringRef(live_url)) {
+        ++tab_metrics.navigated_away_count;
+        continue;
+      }
+
       tabs_to_show.push_back(handle);
       ++tab_metrics.matched_count;
     } else {
