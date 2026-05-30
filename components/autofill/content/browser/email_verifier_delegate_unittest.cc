@@ -621,4 +621,43 @@ TEST_F(EmailVerifierDelegateTest, OnFillOrPreviewFieldVerificationTriggered) {
   popup_shown_run_loop_.Run();
 }
 
+// Verifies that ShowEmailVerificationPopup receives a valid `issuer_site`
+// that is not moved-from (which would trigger a SchemeHostPort::IsValid()
+// crash).
+TEST_F(EmailVerifierDelegateTest, Regression_ShowPopupReceivesValidIssuerSite) {
+  FormStructure* form = SetUpValidForm();
+
+  EmailVerifier::Result verifiable_result;
+  verifiable_result.email = "johndoe@hades.com";
+  verifiable_result.issuer_site =
+      net::SchemefulSite(GURL("https://example.com"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce(RunOnceCallback<1>(verifiable_result));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce([&](const gfx::RectF&, const net::SchemefulSite& issuer_site,
+                    const std::u16string&,
+                    base::OnceCallback<void(
+                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        callback) {
+        // Access issuer_site to verify it is not moved-from.
+        ASSERT_TRUE(issuer_site.GetURL().is_valid());
+        std::move(callback).Run(
+            AutofillClient::EmailVerificationPermissionUiResult::kDeclined);
+        run_loop.Quit();
+      });
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  run_loop.Run();
+}
+
 }  // namespace autofill
