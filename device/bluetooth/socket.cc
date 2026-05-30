@@ -6,15 +6,12 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_view_util.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -169,9 +166,11 @@ void Socket::SendMore() {
     return;
   }
 
-  std::string_view chars = base::as_string_view(pending_read_buffer);
-  bluetooth_socket_->Send(base::MakeRefCounted<net::WrappedIOBuffer>(chars),
-                          chars.size(),
+  auto io_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(pending_read_buffer.size());
+  io_buffer->span().copy_from(pending_read_buffer);
+  const int buffer_size = io_buffer->size();
+  bluetooth_socket_->Send(std::move(io_buffer), buffer_size,
                           base::BindOnce(&Socket::OnBluetoothSocketSend,
                                          weak_ptr_factory_.GetWeakPtr()),
                           base::BindOnce(&Socket::OnBluetoothSocketSendError,
