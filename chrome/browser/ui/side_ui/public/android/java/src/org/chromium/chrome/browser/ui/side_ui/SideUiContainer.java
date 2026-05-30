@@ -79,6 +79,15 @@ public interface SideUiContainer {
     void setWidth(@Px int width);
 
     /**
+     * Called after the container has been resized. This is called after any animations or static
+     * resizing have completed.
+     *
+     * <p>This can be used by the container to perform post-transition cleanup or trigger subsequent
+     * actions that should only occur after the UI has settled.
+     */
+    void onContainerResized(@Px int containerWidth);
+
+    /**
      * Called when a window size change affects this container's visibility.
      *
      * <p>For example, when the window becomes too small, we may need to hide this container. When

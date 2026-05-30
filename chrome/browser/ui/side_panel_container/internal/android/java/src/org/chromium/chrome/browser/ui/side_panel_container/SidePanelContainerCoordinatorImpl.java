@@ -211,6 +211,9 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public void onContainerResized(@Px int containerWidth) {}
+
+    @Override
     public void onWindowResized(boolean canShowSideUi) {
         assert mSidePanelCoordinatorAndroid != null;
         mSidePanelCoordinatorAndroid.onWindowResized(canShowSideUi);

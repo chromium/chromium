@@ -441,10 +441,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                     public void onTransitionEnd(Transition transition) {
                         // Detach and close the container after the transition is complete.
                         if (sideUiWidth == 0) {
-                            assert sideUiContainer != null;
                             detachSideUiContainerView(sideUiContainer);
                             sideUiContainer.setWidth(0);
                         }
+                        sideUiContainer.onContainerResized(sideUiWidth);
                         for (SideUiObserver observer : mSideUiObservers) {
                             observer.onTransitionEnded(sideUiSpecs);
                         }
@@ -490,6 +490,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             detachSideUiContainerView(sideUiContainer);
         }
         sideUiContainer.setWidth(sideUiWidth);
+        sideUiContainer.onContainerResized(sideUiWidth);
 
         notifySideUiSpecsChanged(sideUiSpecs);
     }

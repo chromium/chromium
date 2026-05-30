@@ -96,6 +96,9 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
+    public void onContainerResized(@Px int containerWidth) {}
+
+    @Override
     public void onWindowResized(boolean canShowSideUi) {
         @Px int requestedSideUiWidth = canShowSideUi ? TEST_SIDE_UI_WIDTH : 0;
         mSideUiCoordinator.requestUpdateContainer(

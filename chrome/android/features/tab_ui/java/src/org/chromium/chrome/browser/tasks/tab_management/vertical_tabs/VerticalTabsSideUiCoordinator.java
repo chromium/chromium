@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -80,6 +82,9 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
             mRootView.setLayoutParams(layoutParams);
         }
     }
+
+    @Override
+    public void onContainerResized(@Px int containerWidth) {}
 
     @Override
     public void onWindowResized(boolean canShowSideUi) {
