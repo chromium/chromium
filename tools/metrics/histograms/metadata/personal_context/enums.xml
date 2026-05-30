@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dismissed"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/accessibility_annotator/first_run/personal_context_first_run_types.h:NoticeShowRequestResult) -->
+<!-- LINT.ThenChange(//components/personal_context/first_run/personal_context_first_run_types.h:NoticeShowRequestResult) -->
 
 </enums>
 
