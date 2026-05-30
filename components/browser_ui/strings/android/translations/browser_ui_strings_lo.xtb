@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1000614056227025171">ຊີດລຸ່ມສຸດສຳລັບປັບແຕ່ງການສົ່ງເສີມໜ້າຫຼັກຂອງທ່ານເປີດຢູ່ແບບເຕັມຄວາມສູງ</translation>
 <translation id="1006017844123154345">ເປີດອອນລາຍ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1046742265332833834">ຮູບແບບສີສັນສີຟ້າ</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">ເວັບໄຊສາມາດຫຼິ້ນສຽງໄດ້</translation>
 <translation id="3065787901655140044">ການປົກປ້ອງຂັ້ນສູງເປີດຢູ່</translation>
 <translation id="3069226013421428034">ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
+<translation id="3084983642903364837">ແກ້ໄຂໜ້າຫຼັກຂອງທ່ານໃນພາຍຫຼັງຜ່ານເມນູ 3 ຈຸດ.</translation>
 <translation id="310297983047869047">ສະໄລ້ກ່ອນໜ້າ</translation>
 <translation id="3108122610701115301">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="310979712355504754">ລຶບ​ທັງ​ຫມົດ</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">ເຊື່ອມຕໍ່ຫາຜອດອະນຸກົມ</translation>
 <translation id="4223404254440398437">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="4226663524361240545">ການແຈ້ງເຕືອນອາດຈະເຮັດໃຫ້ອຸປະກອນສັ່ນ</translation>
+<translation id="4227965147357783918">ຊີດລຸ່ມສຸດສຳລັບປັບແຕ່ງການສົ່ງເສີມໜ້າຫຼັກຂອງທ່ານເປີດຢູ່ເຄິ່ງໜ້າຈໍ</translation>
 <translation id="4259722352634471385">ການນໍາທາງຖືກບລັອກໄວ້: <ph name="URL" /></translation>
 <translation id="4274673989874969668">ຫຼັງຈາກທ່ານອອກຈາກເວັບໄຊໃດໜຶ່ງແລ້ວ, ມັນສາມາດສືບຕໍ່ຊິ້ງຂໍ້ມູນເພື່ອເຮັດໜ້າວຽກຕ່າງໆໃຫ້ແລ້ວໄດ້ ເຊັ່ນ: ການອັບໂຫຼດຮູບພາບ ຫຼື ການສົ່ງຂໍ້ຄວາມການສົນທະນາ</translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>

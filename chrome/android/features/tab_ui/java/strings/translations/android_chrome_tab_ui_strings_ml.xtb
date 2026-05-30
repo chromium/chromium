@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ടാബ് ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1844381456014878100">7 ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ടാബ് ചേർക്കുക}other{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="1909810060368225529">അറിയിപ്പ്: പങ്കിട്ട ഈ ടാബ് ഗ്രൂപ്പിലെ മാറ്റങ്ങൾ എല്ലാവർക്കും ദൃശ്യമാണ്. നിങ്ങളുടെ പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ എല്ലാവർക്കും മാറ്റങ്ങൾ വരുത്താനാകും</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ടാബ് പിൻ ചെയ്യുക}other{ടാബുകൾ പിൻ ചെയ്യുക}}</translation>
 <translation id="1982637982196732906">നിഷ്‌ക്രിയ വിഭാഗത്തിലേക്ക് നീക്കുക</translation>

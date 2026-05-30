@@ -25,6 +25,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">When you open Image Search, the page title, URL and content, including PDFs, will be sent to the server automatically. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">While you're signed in, you can use your passwords and more from your Google Account in Chromium. To change this, go to 'Your account in Chromium'.</translation>
+<translation id="1257483544893909270">To select part of the screen in Gemini in Chromium, use keyboard shortcut.</translation>
 <translation id="1262876892872089030">While this tab was inactive, memory was freed up to keep Chromium fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="1265577313130862557">Chromium blocked this download because the file is dangerous</translation>
 <translation id="126567311906253476">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chromium with the same account</translation>
@@ -156,9 +157,11 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2620436844016719705">System</translation>
 <translation id="2629740064077610681">Your organisation can see and manage browsing data, such as your bookmarks, history and passwords. It can't see browsing data in other Chromium profiles</translation>
 <translation id="2635452620547538388">Verify that it's you to use and save Chromium data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">To leave or return to Gemini in Chromium, use keyboard shortcut.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Advanced Protection requires that you relaunch Chromium to apply an update}=1{Advanced Protection requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}other{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="2648074677641340862">An operating system error occurred during installation. Please download Chromium again.</translation>
 <translation id="2661879430930417727">If you share a device, friends and family can browse separately and set up Chromium just the way they want</translation>
+<translation id="2676569452213089702">Easy access to use Gemini in Chromium across your device, even if Chromium is minimised.</translation>
 <translation id="2711502716910134313">Chromium Tab</translation>
 <translation id="2718390899429598676">For added security, Chromium will encrypt your data.</translation>
 <translation id="2721354645805494590">To remove your Google Account from Chromium, sign out</translation>
@@ -311,7 +314,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4334241893986177674">Search this screenshot</translation>
 <translation id="4384331407722351213">Launch Chromium when Windows starts</translation>
 <translation id="4384993550046411228">Get easy access to the features that you know, love and trust by setting Chromium as your default browser. Chromium will be pinned to your taskbar for quick access.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS terms.</translation>
+<translation id="4400772909124543403">No update is available</translation>
 <translation id="4407044323746248786">Exit Chromium anyway?</translation>
 <translation id="4413205837991854510">Always show image search shortcut</translation>
 <translation id="4415566066719264597">Let Chromium Run in the Background</translation>
@@ -350,6 +353,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4746050847053251315">Quit Chromium anyway?</translation>
 <translation id="4748217263233248895">A special security update for Chromium was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="4771701986670315895">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more.</translation>
+<translation id="4786083865378785874">If Gemini in Chromium is open, the side panel stays open when creating new tabs</translation>
 <translation id="479167709087336770">This uses the same spell checker that's used in Google search. Text that you type in the browser is sent to Google. You can always change this behaviour in settings.</translation>
 <translation id="4814736265800133385">Use Chromium without an account</translation>
 <translation id="4888717733111232871">Inbound rule for Chromium to allow mDNS traffic.</translation>
@@ -401,6 +405,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="555970465369471303">For security, Chromium turns off JavaScript optimisation when you visit a site for the first time.
 
 If this page isn't working as expected, try allowing optimisation.</translation>
+<translation id="5575874067957905201">Show Gemini in Chromium in Mac menu bar and turn on keyboard shortcut</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5580770360767802657">Use Chromium by default and get it pinned</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -624,6 +629,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7867198900892795913">Chromium couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7873537467422636035">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Quickly open Gemini in Chromium whenever you need it</translation>
 <translation id="7877212753140190672">Ask about this image</translation>
 <translation id="7888981273428720788">Set Chromium as your default</translation>
 <translation id="7934340546140346950">Chromium upgrades insecure connections to HTTPS automatically when possible</translation>
@@ -645,6 +651,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
 <translation id="8133124826068723441">Chromium OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="813913629614996137">Initialising...</translation>
+<translation id="8161503455832158203">Open Gemini in Chromium with a keyboard shortcut.</translation>
 <translation id="8164014945047474187">Chromium additional terms of service</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
 <translation id="8177472873527554730">Can't find content in page</translation>
@@ -654,6 +661,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8232193495299001329">Chromium can't verify where this extension comes from, and it might be unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including personal info.</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="8254601181414348851">Sign in to Chromium in a new profile?</translation>
+<translation id="8277334259226003205">Show Gemini in Chromium in system tray and turn on keyboard shortcut</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium warns you<ph name="END_LINK" /> about unsafe sites and downloads</translation>
 <translation id="8295827201165805317">You haven't visited recently. Chromium removed <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Shop, translate and identify what you see with your camera on the Chromium iOS app</translation>
@@ -682,6 +690,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
 <translation id="850264194101621529">Thanks for choosing Chromium as your default browser!</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>
+<translation id="8525579356836940628">Installation stopped</translation>
 <translation id="8548787790260785208">Get warned if Chromium finds one of your passwords in a public data breach</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Some Chromium features and extensions come with shortcuts. You can choose to turn them back on.</translation>

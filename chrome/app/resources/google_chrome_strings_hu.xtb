@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Ha csak erről az eszközről szeretné törölni böngészési adatait, Google-fiókjából azonban nem, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Kattintson a Chrome bejelentkezési párbeszédpaneljének bezárásához</translation>
 <translation id="1051793555070215510">Segíthet nekünk az inkognitó mód továbbfejlesztésében, ha kitölti ezt az egyperces felmérést.</translation>
+<translation id="1055295352198814912">A Gemini a Chrome-ban szolgáltatás megjelenítése a Mac menüsorán, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="1059838145689930908">Ha ezt a bővítményt a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókban szeretné használni, jelentkezzen be a Chrome-ba.</translation>
 <translation id="1065672644894730302">A beállításait nem sikerült olvasni. Egyes funkciókat esetleg nem ér el, és a beállításaiban végrehajtott módosításokat nem menti a rendszer.</translation>
 <translation id="1070377999570795893">A számítógépén lévő egyik program olyan bővítményt adott hozzá, amely megváltoztathatja a Chrome működését.
@@ -32,7 +33,6 @@
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
 <translation id="1302523850133262269">Kérjük, várjon, amíg a Chrome telepíti a legutóbbi rendszerfrissítéseket.</translation>
 <translation id="1330562121671411446">Nyelvfelismerés</translation>
-<translation id="1335640173511558774">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa el, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Google ChromeOS Flex Általános Szerződési Feltételeit.</translation>
 <translation id="1341711321000856656">Átválthat másik Chrome-profilra, ha meg szeretné nézni annak jelszavait</translation>
 <translation id="1343830902827845050">Bejelentkezés a Chrome-ba</translation>
 <translation id="1356661055722410047">Új! A képernyőn megjelenő szöveget és képeket is lefordíthatja.</translation>
@@ -278,6 +278,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
 <translation id="395904275706073188">A védett oldalakat nem lehet olvasni. Próbálkozzon másik oldallal.</translation>
+<translation id="3965532487635448963">A Gemini a Chrome-ban szolgáltatás megjelenítése a tálcán, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3968962723676998462">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">A Google Chrome törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
@@ -320,6 +321,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="4367027658822022112">Az egyszerű hozzáférés érdekében kitűzheti a Google Lens funkciót. Ehhez kattintson az oldalsó panel tetején található Rögzítés gombra.</translation>
 <translation id="4372389195695053189">Mostantól a Chrome az alapértelmezett böngésző</translation>
 <translation id="4389991535395284064">Inkognitó módban való böngészéskor a Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
+<translation id="4400772909124543403">Nincs rendelkezésre álló frissítés</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
 <translation id="4434353761996769206">Telepítőhiba: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
@@ -358,6 +360,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="4891791193823137474">A Google Chrome futhat a háttérben</translation>
 <translation id="4895437082222824641">Link megnyi&amp;tása új Chrome-lapon</translation>
 <translation id="4896867431081882115">A Chrome alapértelmezett böngészőként való beállításával könnyen hozzáférhet a már ismert, szeretett és megbízható funkciókhoz. A Chrome a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
+<translation id="4904953848704395458">A Gemini a Chrome-ban szolgáltatás megnyitása billentyűparancs használatával.</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4918844574251943176">Kép másolva</translation>
 <translation id="4926882258455737990">Ha másik Google-fiókot szeretne használni a Gemini a Chrome-ban funkcióval, <ph name="BEGIN_LINK" />hozzon létre új profilt<ph name="END_LINK" />, és jelentkezzen be a kívánt fiókkal.</translation>
@@ -516,6 +519,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6434035853014503219">Köszönjük, hogy a Chrome-ot választotta alapértelmezett böngészőként!</translation>
 <translation id="6438015621983209660">A Biztonságos Böngészés fokozott védelemmel funkció használatának kiterjesztésre a telefonra a Chrome-mal</translation>
 <translation id="6442774133615368941">Vásárolhat, fordíthat, és azonosíthatja a látott dolgokat a kamera segítségével a Chrome iOS-alkalmazásban</translation>
+<translation id="6448835208126432197">Billentyűparancs használata a képernyő egy részének kiválasztásához a Gemini a Chrome-ban szolgáltatásban.</translation>
 <translation id="6473905796280459355">Ugrás A Chrome névjegye oldalra</translation>
 <translation id="6481963882741794338">A Chrome és más Google-szolgáltatások összekapcsolása személyre szabási és egyéb célokból</translation>
 <translation id="648319183876919572">A Biztonságos Böngészés fokozott védelemmel funkció többet tesz a veszélyes webhelyekkel és letöltésekkel szembeni védekezésért</translation>
@@ -528,6 +532,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6520670145826811516">A helyadatok használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Chrome-előzmények</translation>
 <translation id="6532945796722480006">A Gemini megnyitása a Chrome Canaryban</translation>
+<translation id="6539493053177300926">Könnyen hozzáférhet a Gemini a Chrome-ban szolgáltatáshoz az eszközén, még akkor is, ha a Chromium kis méretre van állítva.</translation>
 <translation id="6585124893636629274">A Gemini a Chrome-ban bezárása</translation>
 <translation id="659498884637196217">A Google Jelszókezelőben ezen az eszközön</translation>
 <translation id="6631524303639368205">Ott folytathatja, ahol abbahagyta: a Chrome visszaállította a lapokat az előző munkamenetből. Ezt a következő helyen kapcsolhatja ki:</translation>
@@ -587,6 +592,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7161904924553537242">Üdvözli Önt a Google Chrome!</translation>
 <translation id="7193885263065350793">Szervezete bezárja a Chrome-ot, ha nem használja a böngészőt ennyi ideig:<ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Google Chrome-profiljához. Chrome-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chrome-adatainak külön tárolásához. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Billentyűparancs használata a Gemini a Chrome-ban szolgáltatásból való kilépéshez vagy a Gemini a Chrome-ban szolgáltatásba való visszatéréshez.</translation>
 <translation id="7274402351400635015">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint. A tálcára is ki lesz tűzve.</translation>
 <translation id="7285616922384953075">A(z) <ph name="MANAGER" /> kezeli a Chrome-ot</translation>
 <translation id="7285990705317078173">Töltse le a Chrome-ot a telefonjára, hogy nyomon követhesse az árakat, és értesítést kapjon, ha valamelyik webhelyen csökkennek az árak.</translation>
@@ -625,7 +631,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa el, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Google ChromeOS Általános Szerződési Feltételeit.</translation>
 <translation id="7627609214560473136">Adatainak védelme érdekében engedélyezze, hogy a Chrome eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában.</translation>
 <translation id="7629695634924605473">A Chrome tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="7641148173327520642">Rendszergazdája úgy állította be a Google Chrome-ot, hogy a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőt nyissa meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
@@ -696,6 +701,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
 <translation id="8253851811470049684">Bármelyik alkalmazásból megnyithatja a linkeket a Chrome-ban, és a böngésző a tálcán is hozzáférhető marad</translation>
 <translation id="8255190535488645436">A Google Chrome használja a kamerát és a mikrofont.</translation>
+<translation id="8260086374035800939">Ha a Gemini a Chrome-ban szolgáltatás meg van nyitva, az oldalsó panel megnyitva marad új lapok létrehozásakor</translation>
 <translation id="8267953129876836456">A Chrome talált néhány áttekintésre érdemes biztonsági javaslatot</translation>
 <translation id="8286862437124483331">A Google Chrome megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="829923460755755423">Parancsikon hozzáadása Google Jelszókezelőhöz</translation>
@@ -707,6 +713,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8362914115861174987">Fordítás a következő nyelvre:</translation>
 <translation id="8366770919198174997">Csökkenti a teljesítményt, de ellenállóbbá teszi a Chrome-ot a támadásokkal szemben</translation>
 <translation id="8367705492654390392">Kérdezzen bármit</translation>
+<translation id="8367950957770994118">Gyorsan megnyithatja a Gemini a Chrome-ban szolgáltatást, amikor szüksége van rá</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="8377158135256176353">A Gemini a Chrome Canaryben be- vagy kikapcsolása</translation>
 <translation id="8387459386171870978">A Chrome használatának folytatása</translation>
@@ -724,6 +731,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8498858610309223613">A rendszer egy speciális biztonsági frissítést alkalmazott a Google Chrome-on. Indítsa újra a számítógépet, a lapokat majd mi visszaállítjuk.</translation>
 <translation id="8521348052903287641">Bejövő szabály a Google Chrome Devhez az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="852529348814672339">A Chrome megjelenítése ezen a nyelven</translation>
+<translation id="8525579356836940628">Telepítés leállítva</translation>
 <translation id="8533056045953418157">A Google Chrome beállítása alapértelmezett PDF-megtekintőként</translation>
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Keresés a nyelvek listájában</translation>

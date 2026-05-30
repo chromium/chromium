@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Padomu paziņojumu reklāma ir aizvērta</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1045899828449635435">Vai dzēst arī šo vietņu datus?</translation>
+<translation id="1049461303780085993">Izmēģiniet pakalpojumu Gemini pārlūkā Chrome, lai iegūtu atbildes, galvenos secinājumus un citu informāciju.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Dažas jūsu paroles nav pieejamas.</translation>
 <translation id="1057623954802068161">Ritināt līdz lapas augšdaļai</translation>
@@ -297,6 +298,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2318045970523081853">Pieskarieties, lai zvanītu</translation>
 <translation id="232137538351753795">Velciet no kreisās malas, lai pārietu atpakaļ.</translation>
 <translation id="2323763861024343754">Vietnes krātuve</translation>
+<translation id="2327445548174191329">No ierīces <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Visi uzreiz zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un visas uzaicinājuma saites tiks izslēgtas.</translation>
 <translation id="2330186936255788117">Vairāk grāmatzīmju</translation>
 <translation id="2332515770639153015">Droša pārlūkošana ar papildu aizsardzību ir ieslēgta</translation>
@@ -834,6 +836,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4595237294768457124">Atveriet jaunas cilnes lapu.</translation>
 <translation id="4595276580892809760">Pievienot attēlus no galerijas</translation>
 <translation id="4595805675102978678">Google konta kļūda</translation>
+<translation id="4599585406846903742">Vienas lapas skats</translation>
 <translation id="4601095002996233687">Detalizēta aizdomīgu lejupielāžu pārbaude.</translation>
 <translation id="4606559747793337066">Kad vietnē vai lietotnē tiek piedāvāts privāti iepriekš ielādēt saites tās lapā, Chrome bez sīkfailiem šifrē un iepriekš ielādē lapas, izmantojot Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem.</translation>
 <translation id="4616150815774728855">Atvērt <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="569536719314091526">Tulkojiet šīs lapas saturu jebkurā valodā, izmantojot pogu Vairāk opciju.</translation>
 <translation id="5696597120588531049">Chrome var palīdzēt aizsargāt jūs pret datu noplūdi, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="5698878456427040674">Pārbaudiet, vai atlasītais konts tiek atbalstīts.</translation>
+<translation id="5700415746238689851">Atvērt Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vēlas izveidot savienojumu ar seriālo portu</translation>
 <translation id="5715150588940290235">Vai dzēst saglabātos drošības kodus?</translation>
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
@@ -1769,6 +1773,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8271267069224406035">Ziņot par nevēlamu saturu</translation>
 <translation id="8277710303010772444">Sākt meklēšanu</translation>
 <translation id="8279945625179116733">Drošību garantē lietotne <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Saites ir saņemtas</translation>
 <translation id="8281886186245836920">Izlaist</translation>
 <translation id="8282297628636750033">Tumšā motīva lietošana vietnēs, kad iespējams</translation>
 <translation id="8282950411412455249">Pāriet uz drošības iestatījumiem</translation>
@@ -1904,6 +1909,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8863714995118816041">Vietnei <ph name="SITE_NAME" /> atkal ir piešķirtas atļaujas.</translation>
 <translation id="8865415417596392024">Chrome dati jūsu kontā</translation>
 <translation id="8872506776304248286">Atvērt lietotnē</translation>
+<translation id="8880275451109933094">Divu lapu skats</translation>
 <translation id="8890668505403261809">Meklējiet inkognito cilnēs</translation>
 <translation id="8892234476517513962">Jūs jau pierakstījāties</translation>
 <translation id="8894890673032951011">Atlasīta inkognito cilne <ph name="TAB_TITLE" />, kurā notiek ierakstīšana</translation>

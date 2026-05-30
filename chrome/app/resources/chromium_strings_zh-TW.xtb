@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1232234696885483911">開啟圖片搜尋時，系統會自動將網頁標題、網址和內容 (包括 PDF 檔案) 傳送到伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登入帳戶就能在 Chromium 使用 Google 帳戶儲存的密碼和其他資訊。如要變更，請前往「你在 Chromium 中的帳戶」。</translation>
+<translation id="1257483544893909270">如要在 Chromium 內建 Gemini 中選取部分畫面，請使用鍵盤快速鍵。</translation>
 <translation id="1262876892872089030">當這個分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。你可以選擇一律不讓這個網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">這個檔案有危險，因此 Chromium 已禁止下載</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chromium</translation>
@@ -153,9 +154,11 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2629740064077610681">貴機構可以查看及管理瀏覽資料 (例如書籤、歷史記錄和密碼)，但無法查看其他 Chromium 設定檔中的瀏覽資料</translation>
 <translation id="2635452620547538388">請驗證身分，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
+<translation id="2636783171884046627">使用鍵盤快速鍵離開或返回 Chromium 內建 Gemini。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{「進階保護」要求你重新啟動 Chromium，以套用更新}=1{「進階保護」要求你重新啟動 Chromium，以套用更新。無痕視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chromium，以套用更新。# 個無痕視窗不會重新開啟。}}</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
+<translation id="2676569452213089702">即使 Chromium 最小化，也能輕鬆在裝置上使用 Chromium 內建 Gemini。</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>
 <translation id="2718390899429598676">為了提升安全性，Chromium 會將您的資料加密保護。</translation>
 <translation id="2721354645805494590">如要從 Chromium 中移除 Google 帳戶，請登出 Chromium</translation>
@@ -308,7 +311,7 @@
 <translation id="4334241893986177674">搜尋這張螢幕截圖</translation>
 <translation id="4384331407722351213">在 Windows 啟動時執行 Chromium</translation>
 <translation id="4384993550046411228">將 Chromium 設為預設瀏覽器，輕鬆存取你熟悉、喜愛且信任的功能。Chromium 會釘選到工作列，方便你快速存取。</translation>
-<translation id="439358628917130594">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Chromium OS 條款》。</translation>
+<translation id="4400772909124543403">沒有可用的更新</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
 <translation id="4413205837991854510">一律顯示「圖片搜尋」捷徑</translation>
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
@@ -347,6 +350,7 @@
 <translation id="4746050847053251315">確定要關閉 Chromium 嗎？</translation>
 <translation id="4748217263233248895">Chromium 剛才套用了特殊的安全性更新。請立即重新啟動，系統會恢復你原先開啟的分頁。</translation>
 <translation id="4771701986670315895">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限。</translation>
+<translation id="4786083865378785874">建立新分頁時，如果 Chromium 內建 Gemini 已開啟，側邊面板也會保持開啟狀態</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
 <translation id="4814736265800133385">不登入帳戶使用 Chromium</translation>
 <translation id="4888717733111232871">允許 mDNS 流量的 Chromium 輸入規則。</translation>
@@ -396,6 +400,7 @@
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
 <translation id="5536164441519929134">詢問<ph name="LINE_BREAK" />這個分頁的內容</translation>
 <translation id="555970465369471303">你首次造訪個別網站時，Chromium 會關閉 JavaScript 最佳化，以策安全。如果網頁無法正常運作，建議允許最佳化。</translation>
+<translation id="5575874067957905201">在 Mac 選單列顯示 Chromium 內建 Gemini，並啟用鍵盤快速鍵</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者身分 (非系統管理員) 執行安裝程式。</translation>
 <translation id="5580770360767802657">預設使用 Chromium 並固定在工作列</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -619,6 +624,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7867198900892795913">Chromium 無法更新至最新版本，因此你並未取得最新功能和安全性問題修正。</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="7873537467422636035">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">需要時快速開啟 Chromium 內建 Gemini</translation>
 <translation id="7877212753140190672">詢問這張圖片的相關問題</translation>
 <translation id="7888981273428720788">將 Chromium 設為預設瀏覽器</translation>
 <translation id="7934340546140346950">Chromium 會盡可能自動將不安全的連線升級為 HTTPS</translation>
@@ -640,6 +646,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8118331347066725040">提供你對智慧鏡頭搜尋功能的意見</translation>
 <translation id="8133124826068723441">你的網域無法使用同步功能，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="813913629614996137">正在初始化...</translation>
+<translation id="8161503455832158203">使用鍵盤快速鍵開啟 Chromium 內建 Gemini。</translation>
 <translation id="8164014945047474187">Chromium 的《附加服務條款》</translation>
 <translation id="81770708095080097">這個檔案並不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="8177472873527554730">找不到網頁內容</translation>
@@ -649,6 +656,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8232193495299001329">Chromium 無法驗證擴充功能的來源，因此可能不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你瀏覽網站時留下的資料，包括個人資訊。</translation>
 <translation id="8248265253516264921">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="8254601181414348851">要在新設定檔中登入 Chromium 嗎？</translation>
+<translation id="8277334259226003205">在系統匣顯示 Chromium 內建 Gemini，並啟用鍵盤快速鍵</translation>
 <translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION" />權限。</translation>
 <translation id="8296236834352487533">在 Chromium iOS 應用程式使用相機購物、翻譯及辨識所見事物</translation>
@@ -677,6 +685,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="850264194101621529">感謝你選擇 Chromium 為預設瀏覽器！</translation>
 <translation id="8522801943730206384">Chromium 可以檢查你儲存的密碼</translation>
+<translation id="8525579356836940628">已停止安裝</translation>
 <translation id="8548787790260785208">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，會向你發出警告</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556055872671007529">部分 Chromium 功能和擴充功能設有捷徑。你可以選擇重新啟用。</translation>

@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Tắt Chế độ AI</translation>
 <translation id="1554477036522844996">Cửa sổ mới</translation>
 <translation id="1558391695376153246">Đóng các thẻ Ẩn danh</translation>
+<translation id="1560153516220021659">Nút trên thanh công cụ phụ được thu gọn</translation>
 <translation id="1565371473877914088">Thẻ ẩn danh mới</translation>
 <translation id="1567960978791353852">Hiện chế độ đọc</translation>
 <translation id="1571780780926010134">Tab ẩn danh</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Thư đã được gửi.</translation>
 <translation id="1582732959743469162">Thao tác này sẽ ngừng tất cả hoạt động tải xuống đang diễn ra.</translation>
 <translation id="1594034544529347967">Bắt đầu</translation>
+<translation id="1598485494295307681">Đang nghe</translation>
 <translation id="1598751033135758830">Mở trong ứng dụng…</translation>
 <translation id="1600571977391127696">Một số nội dung có thể không phù hợp với một số người.</translation>
 <translation id="1601560923496285236">Áp dụng</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Rất tiếc, đã xảy ra sự cố khi chia sẻ mục của bạn.</translation>
 <translation id="4944543191714094452">Tìm trong trang…</translation>
 <translation id="4945756290001680296">Truy cập vào phần cài đặt mật khẩu</translation>
+<translation id="4946307855175300628">Đang trả lời</translation>
 <translation id="4949302115427722371">Quản lý chế độ cài đặt…</translation>
 <translation id="4958444002117714549">Mở rộng danh sách</translation>
 <translation id="496392417432935267">Đã mở bằng cửa sổ khác</translation>
@@ -1552,6 +1555,7 @@
 <translation id="6355820183143562453">Ẩn thẻ theo dõi giá</translation>
 <translation id="6355820205320395730">Mật khẩu yếu thường dễ đoán. Hãy nhớ tạo mật khẩu mạnh. <ph name="BEGIN_LINK" />Xem các mẹo bảo mật khác.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Đăng nhập để sử dụng tất cả dữ liệu của bạn, chẳng hạn như mật khẩu, dấu trang và nhiều dữ liệu khác.</translation>
+<translation id="6364268785720100355">Đăng nhập để sử dụng mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn.</translation>
 <translation id="6368038301482806847">Chọn một công cụ tìm kiếm trong danh sách.</translation>
 <translation id="6368102751067608420">Để xoá tất cả dữ liệu khỏi trình quản lý mật khẩu</translation>
 <translation id="6372558618707314581">Chuyển đến trang bất kỳ mà bạn muốn.</translation>
@@ -1681,6 +1685,7 @@
 <translation id="6736243959894955139">Địa chỉ</translation>
 <translation id="6746338529702829275">Kiểm tra dữ liệu tài khoản của bạn</translation>
 <translation id="6750456911389438250">{count,plural, =1{Đã nhập {count} mục trong nhật ký}other{Đã nhập {count} mục trong nhật ký}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Có {count} lựa chọn về thông tin đăng nhập xuất hiện phía trên bàn phím.}other{Có {count} lựa chọn về thông tin đăng nhập xuất hiện phía trên bàn phím.}}</translation>
 <translation id="6755200887046212842">Quản lý tài khoản</translation>
 <translation id="6757899787818440812">Chiều cao trung bình</translation>
 <translation id="6759709389246683070">Bạn có thể chạm và giữ thẻ này để đặt lời nhắc xem lại sau</translation>

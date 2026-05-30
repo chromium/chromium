@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Aby usunąć dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Kliknij, aby zamknąć okno logowania się w Chrome</translation>
 <translation id="1051793555070215510">Pomóż nam ulepszać tryb incognito, wypełniając tę 1-minutową ankietę.</translation>
+<translation id="1055295352198814912">Pokaż Gemini w Chrome na pasku menu Maca i włącz skrót klawiszowy</translation>
 <translation id="1059838145689930908">Aby używać tego rozszerzenia jako <ph name="USER_EMAIL_ADDRESS" />, zaloguj się w Chrome.</translation>
 <translation id="1065672644894730302">Nie można odczytać ustawień. Niektóre funkcje mogą być niedostępne, a zmiany w ustawieniach nie zostaną zapisane.</translation>
 <translation id="1070377999570795893">Inny program na Twoim komputerze dodał rozszerzenie, które może zmieniać sposób działania Chrome.
@@ -32,7 +33,6 @@
 <translation id="1290883685122687410">Błąd konfiguracji: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Poczekaj, aż Chrome zainstaluje najnowsze aktualizacje systemu.</translation>
 <translation id="1330562121671411446">Wykryj język</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> wymaga, aby przed skorzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Możesz przełączyć się na wyświetlanie haseł z innego profilu Chrome</translation>
 <translation id="1343830902827845050">Zaloguj się w Chrome</translation>
 <translation id="1356661055722410047">Nowość! Możesz tłumaczyć tekst i obrazy na ekranie</translation>
@@ -277,6 +277,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3941890832296813527">Błąd instalacji: nazwa pliku instalatora jest nieprawidłowa lub nieobsługiwana.</translation>
 <translation id="395904275706073188">Zabezpieczonych stron nie można odczytywać. Wypróbuj inną stronę.</translation>
+<translation id="3965532487635448963">Pokaż Gemini w Chrome w obszarze powiadomień i włącz skrót klawiszowy</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3968962723676998462">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="3973161977468201858">Google Chrome chce usunąć Twoje dane z Menedżera haseł Google. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
@@ -319,6 +320,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4367027658822022112">Możesz przypiąć Obiektyw Google, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
 <translation id="4372389195695053189">Chrome jest teraz Twoją przeglądarką domyślną</translation>
 <translation id="4389991535395284064">Podczas przeglądania w trybie incognito Chrome będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
+<translation id="4400772909124543403">Brak dostępnych aktualizacji</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
@@ -357,6 +359,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4891791193823137474">Zezwalaj przeglądarce Google Chrome na działanie w tle</translation>
 <translation id="4895437082222824641">O&amp;twórz link w nowej karcie Chrome</translation>
 <translation id="4896867431081882115">Ustaw Chrome jako przeglądarkę domyślną, aby mieć łatwy dostęp do znanych, lubianych i zaufanych funkcji. Przeglądarka Chrome zostanie przypięta do paska zadań, aby była łatwo dostępna.</translation>
+<translation id="4904953848704395458">Otwieraj Gemini w Chrome za pomocą skrótu klawiszowego.</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
 <translation id="4918844574251943176">Zdjęcie zostało skopiowane</translation>
 <translation id="4926882258455737990">Aby korzystać z Gemini w Chrome na innym koncie Google, <ph name="BEGIN_LINK" />utwórz nowy profil<ph name="END_LINK" /> i zaloguj się na wybrane konto</translation>
@@ -515,6 +518,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6434035853014503219">Dziękujemy za wybranie Chrome jako przeglądarki domyślnej.</translation>
 <translation id="6438015621983209660">Korzystaj z Ulepszonego bezpiecznego przeglądania także na telefonie dzięki Chrome</translation>
 <translation id="6442774133615368941">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu w aplikacji Chrome na iOS</translation>
+<translation id="6448835208126432197">Aby zaznaczyć część ekranu w Gemini w Chrome, użyj skrótu klawiszowego.</translation>
 <translation id="6473905796280459355">Otwórz stronę Chrome – informacje</translation>
 <translation id="6481963882741794338">Połącz Chrome i inne usługi Google na potrzeby personalizacji oraz w innych celach</translation>
 <translation id="648319183876919572">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami i pobieranymi plikami</translation>
@@ -527,6 +531,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6520670145826811516">Aby używać lokalizacji, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historia Chrome</translation>
 <translation id="6532945796722480006">Otwórz Gemini w Chrome Canary</translation>
+<translation id="6539493053177300926">Łatwy dostęp do Gemini w Chrome na całym urządzeniu, nawet wtedy, gdy przeglądarka Chrome jest zminimalizowana.</translation>
 <translation id="6585124893636629274">Zamknij Gemini w Chrome</translation>
 <translation id="659498884637196217">W menedżerze haseł Google w przypadku tego urządzenia</translation>
 <translation id="6631524303639368205">Wznawianie przeglądania od tego samego miejsca: przeglądarka Chrome przywróciła karty z Twojej ostatniej sesji. Aby wyłączyć tę funkcję, otwórz</translation>
@@ -586,6 +591,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7161904924553537242">Witamy w Google Chrome</translation>
 <translation id="7193885263065350793">Twoja organizacja zamyka przeglądarkę Chrome, jeśli przez <ph name="TIMEOUT_DURATION" /> nie jest ona używana.</translation>
 <translation id="7242029209006116544">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chrome osobno. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Aby wyjść z Gemini w Chrome lub do niego wrócić, użyj skrótu klawiszowego.</translation>
 <translation id="7274402351400635015">Możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i innych aplikacjach Przeglądarka zostanie też przypięta do paska zadań.</translation>
 <translation id="7285616922384953075">Przeglądarką Chrome zarządza <ph name="MANAGER" /></translation>
 <translation id="7285990705317078173">Pobierz Chrome na telefon, aby śledzić ceny i otrzymywać alerty, gdy w którejś z witryn cena spadnie</translation>
@@ -624,7 +630,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> wymaga, aby przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Google Chrome OS.</translation>
 <translation id="7627609214560473136">Aby chronić swoje dane, zezwól Chrome na usunięcie uprawnień witryn, których ostatnio nie odwiedzasz.</translation>
 <translation id="7629695634924605473">Chrome poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="7641148173327520642">Administrator systemu skonfigurował Google Chrome tak, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -695,6 +700,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8221491193165283816">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na ich wysyłanie, kliknij tutaj.</translation>
 <translation id="8253851811470049684">Otwieraj linki w Chrome z dowolnej aplikacji i dodaj przeglądarkę do paska zadań, żeby mieć do niej łatwy dostęp</translation>
 <translation id="8255190535488645436">Google Chrome używa Twojej kamery i mikrofonu.</translation>
+<translation id="8260086374035800939">Jeśli Gemini w Chrome jest otwarty, panel boczny pozostaje otwarty podczas tworzenia nowych kart</translation>
 <translation id="8267953129876836456">Przeglądarka Chrome znalazła zalecenia dotyczące bezpieczeństwa do sprawdzenia</translation>
 <translation id="8286862437124483331">Google Chrome próbuje pokazać hasła. Podaj swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="829923460755755423">Dodawanie skrótu do Menedżera haseł Google</translation>
@@ -706,6 +712,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8362914115861174987">Tłumacz na</translation>
 <translation id="8366770919198174997">Zmniejsza wydajność, ale sprawia, że przeglądarka Chrome jest bardziej odporna na ataki</translation>
 <translation id="8367705492654390392">Zapytaj, o co chcesz</translation>
+<translation id="8367950957770994118">Szybko otwieraj Gemini w Chrome, kiedy tylko go potrzebujesz</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8377158135256176353">Włącz lub wyłącz Gemini w Chrome Canary</translation>
 <translation id="8387459386171870978">Nadal korzystaj z Chrome</translation>
@@ -723,6 +730,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="852529348814672339">Wyświetlaj Chrome w tym języku</translation>
+<translation id="8525579356836940628">Instalacja zatrzymana</translation>
 <translation id="8533056045953418157">Ustaw Google Chrome jako domyślną przeglądarkę plików PDF</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>

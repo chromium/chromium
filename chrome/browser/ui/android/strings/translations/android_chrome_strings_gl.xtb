@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Mensaxe promocional de notificacións de consellos pechada</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">Queres borrar tamén os datos destes sitios?</translation>
+<translation id="1049461303780085993">Proba Gemini en Chrome para obter respostas, extraer puntos clave e moito máis</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="1052842760770519282">Non se pode acceder a algúns dos teus contrasinais</translation>
 <translation id="1057623954802068161">Desprazarse á parte superior da páxina</translation>
@@ -297,6 +298,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2318045970523081853">Toca para chamar</translation>
 <translation id="232137538351753795">Pasa o dedo desde o bordo esquerdo para volver</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
+<translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"; ademais, desactivaranse todas as ligazóns de invitación</translation>
 <translation id="2330186936255788117">Máis marcadores</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
@@ -834,6 +836,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4595237294768457124">Abre unha páxina Nova pestana</translation>
 <translation id="4595276580892809760">Anexar imaxes da galería</translation>
 <translation id="4595805675102978678">Produciuse un erro na Conta de Google</translation>
+<translation id="4599585406846903742">Vista dunha soa páxina</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606559747793337066">Cando un sitio ou aplicación solicita precargar ligazóns da súa páxina de forma privada, Chrome encripta e precarga as páxinas correspondentes a través dos servidores de Google sen cookies. Deste xeito, ocúltaselle a túa identidade ao sitio precargado.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="569536719314091526">Traduce esta páxina a calquera idioma desde o botón Máis opcións</translation>
 <translation id="5696597120588531049">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis</translation>
 <translation id="5698878456427040674">Comproba se se admite a conta seleccionada.</translation>
+<translation id="5700415746238689851">Abrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> quere conectarse a un porto en serie</translation>
 <translation id="5715150588940290235">Queres eliminar os códigos de seguranza gardados?</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>
@@ -1769,6 +1773,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8271267069224406035">Informar de spam</translation>
 <translation id="8277710303010772444">Comezar a busca</translation>
 <translation id="8279945625179116733">Coa protección de <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Ligazóns recibidas</translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282297628636750033">Aplicar tema escuro aos sitios cando sexa posible</translation>
 <translation id="8282950411412455249">Ir á configuración de seguranza</translation>
@@ -1904,6 +1909,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8863714995118816041">Volvéronse conceder permisos a <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8872506776304248286">Abrir na aplicación</translation>
+<translation id="8880275451109933094">Vista de dúas páxinas</translation>
 <translation id="8890668505403261809">Busca as pestanas do modo de incógnito</translation>
 <translation id="8892234476517513962">Xa tes a sesión iniciada</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, pestana do modo de incógnito con gravación en curso seleccionada</translation>

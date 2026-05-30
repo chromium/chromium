@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Tarama verilerini yalnızca bu cihazdan silip Google Hesabınızda tutmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Chrome'da oturum açma iletişim kutusunu kapatmak için tıklayın</translation>
 <translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
+<translation id="1055295352198814912">Chrome'da Gemini'ı Mac menü çubuğunda göster ve klavye kısayolunu aç</translation>
 <translation id="1059838145689930908">Bu uzantıyı <ph name="USER_EMAIL_ADDRESS" /> olarak kullanmak için Chrome'da oturum açın.</translation>
 <translation id="1065672644894730302">Tercihleriniz okunamıyor. Bazı özellikler kullanılamayabilir. Tercihlerde yapılan değişiklikler kaydedilmeyecektir.</translation>
 <translation id="1070377999570795893">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
@@ -32,7 +33,6 @@
 <translation id="1290883685122687410">Kurulum hatası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome en son sistem güncellemelerini yüklerken lütfen bekleyin.</translation>
 <translation id="1330562121671411446">Dili algıla</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, Google ChromeOS Flex Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="1341711321000856656">Başka bir Chrome profilindeki şifreleri görmek için profil değiştirebilirsiniz</translation>
 <translation id="1343830902827845050">Chrome'da oturum açın</translation>
 <translation id="1356661055722410047">Yeni! Ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
@@ -277,6 +277,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="3941890832296813527">Yükleme hatası: Yükleyici dosya adı geçersiz veya desteklenmiyor.</translation>
 <translation id="395904275706073188">Korumalı sayfalar okunamaz. Farklı bir sayfa deneyin.</translation>
+<translation id="3965532487635448963">Chrome'da Gemini'ı sistem tepsisinde göster ve klavye kısayolunu aç</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3968962723676998462">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
 <translation id="3973161977468201858">Google Chrome, Google Şifre Yöneticisi verilerinizi silmek istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -319,6 +320,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4367027658822022112">Daha kolay erişmek için yan panelin üst kısmındaki Sabitle düğmesini tıklayarak Google Lens'i sabitleyebilirsiniz.</translation>
 <translation id="4372389195695053189">Chrome artık varsayılan tarayıcınız</translation>
 <translation id="4389991535395284064">Chrome, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
+<translation id="4400772909124543403">Kullanılabilir güncelleme yok.</translation>
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
 <translation id="4434353761996769206">Yükleyici hatası: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
@@ -357,6 +359,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4891791193823137474">Google Chrome'un arka planda çalışmasına izin ver</translation>
 <translation id="4895437082222824641">Bağlantıyı yeni Chrome &amp;sekmesinde aç</translation>
 <translation id="4896867431081882115">Chrome'u varsayılan tarayıcınız olarak ayarlayarak bildiğiniz, sevdiğiniz ve güvendiğiniz özelliklere kolayca erişin. Chrome, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
+<translation id="4904953848704395458">Chrome'da Gemini'ı klavye kısayoluyla açın.</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4918844574251943176">Resim kopyalandı</translation>
 <translation id="4926882258455737990">Chrome'da Gemini ile farklı bir Google Hesabı kullanmak için <ph name="BEGIN_LINK" />yeni bir profil oluşturun<ph name="END_LINK" /> ve istediğiniz hesapla oturum açın</translation>
@@ -517,6 +520,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6434035853014503219">Chrome'u varsayılan tarayıcınız olarak seçtiğiniz için teşekkür ederiz.</translation>
 <translation id="6438015621983209660">Telefonunuzda Chrome ile Gelişmiş Güvenli Tarama'yı genişletin</translation>
 <translation id="6442774133615368941">Chrome iOS uygulamasında kameranızı kullanarak gördüklerinizi satın alın, çevirin ve tanımlayın</translation>
+<translation id="6448835208126432197">Chrome'da Gemini'da ekranın bir bölümünü seçmek için klavye kısayolunu kullanın.</translation>
 <translation id="6473905796280459355">Chrome hakkında sayfasına gidin</translation>
 <translation id="6481963882741794338">Kişiselleştirme ve diğer amaçlar için Chrome ile diğer Google hizmetlerini bağlayın</translation>
 <translation id="648319183876919572">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden ve indirmelerden korumak için daha fazlasını yapar</translation>
@@ -529,6 +533,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6520670145826811516">Konumunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
 <translation id="652948702951888897">Chrome geçmişi</translation>
 <translation id="6532945796722480006">Chrome Canary'de Gemini'ı aç</translation>
+<translation id="6539493053177300926">Chrome simge durumuna küçültülmüş olsa bile Chrome'da Gemini'a cihazınızda kolayca erişebilirsiniz.</translation>
 <translation id="6585124893636629274">Chrome'da Gemini'ı kapat</translation>
 <translation id="659498884637196217">Bu cihazdaki Google Şifre Yöneticisi'nde</translation>
 <translation id="6631524303639368205">Kaldığınız yerden devam edin: Chrome, son oturumunuzdaki sekmeleri geri yükledi. Bu özelliği şu bölümde devre dışı bırakabilirsiniz:</translation>
@@ -588,6 +593,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7161904924553537242">Google Chrome'a Hoş Geldiniz</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chrome kuruluşunuz tarafından kapatılır.</translation>
 <translation id="7242029209006116544">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chrome verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz.<ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Chrome'da Gemini'dan çıkmak veya Gemini'a dönmek için klavye kısayolunu kullanın.</translation>
 <translation id="7274402351400635015">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz. Ayrıca görev çubuğunuza sabitlenir.</translation>
 <translation id="7285616922384953075">Chrome'u <ph name="MANAGER" /> yönetiyor</translation>
 <translation id="7285990705317078173">Fiyatları takip etmek ve herhangi bir sitede fiyat düştüğünde uyarı almak için telefonunuza Chrome'u indirin.</translation>
@@ -626,7 +632,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, Google ChromeOS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="7627609214560473136">Verilerinizin korunması için Chrome'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin.</translation>
 <translation id="7629695634924605473">Chrome, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
 <translation id="7641148173327520642">Sistem yöneticiniz Google Chrome'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısını açacak şekilde yapılandırmış.</translation>
@@ -697,6 +702,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8221491193165283816">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için burayı tıklayın.</translation>
 <translation id="8253851811470049684">Uygulamalardaki bağlantıları Chrome'da açın ve tarayıcıyı görev çubuğunuzda erişilebilir tutun</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı ve mikrofonunuzu kullanıyor.</translation>
+<translation id="8260086374035800939">Chrome'da Gemini açıksa yeni sekme oluştururken yan panel açık kalır.</translation>
 <translation id="8267953129876836456">Chrome, incelemeniz gereken bazı güvenlik önerileri tespit etti</translation>
 <translation id="8286862437124483331">Google Chrome şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="829923460755755423">Google Şifre Yöneticisi için kısayol ekleyin</translation>
@@ -708,6 +714,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8362914115861174987">Şu dile çevir:</translation>
 <translation id="8366770919198174997">Performansı düşürür ancak Chrome'u saldırılara karşı daha dirençli hale getirir</translation>
 <translation id="8367705492654390392">Soru sorun</translation>
+<translation id="8367950957770994118">İhtiyacınız olduğunda Chrome'da Gemini'ı hızlıca açın.</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="8377158135256176353">Chrome Canary'de Gemini'ı aç/kapat</translation>
 <translation id="8387459386171870978">Chrome'u kullanmaya devam et</translation>
@@ -725,6 +732,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8498858610309223613">Google Chrome için özel bir güvenlik güncellemesi uygulandı. Uygulamayı hemen yeniden başlatın; açık sekmeleriniz geri yüklenir.</translation>
 <translation id="8521348052903287641">Google Chrome Dev'in mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="852529348814672339">Chrome'u bu dilde görüntüle</translation>
+<translation id="8525579356836940628">Yükleme İşlemi Durduruldu</translation>
 <translation id="8533056045953418157">Google Chrome'u varsayılan PDF görüntüleyiciniz olarak ayarlayın</translation>
 <translation id="8555465886620020932">Hizmet hatası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Arama dili listesi</translation>

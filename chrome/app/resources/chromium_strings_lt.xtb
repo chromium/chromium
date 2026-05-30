@@ -25,6 +25,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="1232234696885483911">Kai atidarysite vaizdų paiešką, puslapio pavadinimas, URL ir turinys, įskaitant PDF failus, bus automatiškai siunčiami į serverį. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Prisijungus galima naudoti slaptažodžius ir daugiau iš „Google“ paskyros „Chromium“ įrenginyje. Jei norite tai pakeisti, eikite į skiltį „Jūsų paskyra sistemoje „Chromium“.</translation>
+<translation id="1257483544893909270">Jei norite pasirinkti ekrano dalį sistemoje „Gemini“ naršyklėje „Chromium“, naudokite sparčiuosius klavišus.</translation>
 <translation id="1262876892872089030">Kol šis skirtukas buvo neaktyvus, atmintis buvo atlaisvinta, kad „Chromium“ veiktų sparčiai. Galite pasirinkti visada išskirti šią svetainę, kad būtų aktyvi.</translation>
 <translation id="1265577313130862557">„Chromium“ užblokavo šį atsisiuntimą, nes failas pavojingas</translation>
 <translation id="126567311906253476">Prisijungdami prie „Google“ paslaugų, pvz., „Gmail“ ar „YouTube“, naudodami <ph name="USER_EMAIL" />, galite automatiškai prisijungti prie „Chromium“ naudodami tą pačią paskyrą</translation>
@@ -156,9 +157,11 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">Organizacija gali peržiūrėti ir tvarkyti naršymo duomenis, pvz., žymes, istoriją ir slaptažodžius. Ji negali peržiūrėti naršymo duomenų kituose „Chromium“ profiliuose</translation>
 <translation id="2635452620547538388">Patvirtinkite savo tapatybę, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Jei norite išeiti iš „Gemini“ naršyklėje „Chromium“ arba grįžti į jį, naudokite sparčiuosius klavišus.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Naudojant Papildomą apsaugą reikia paleisti „Chromium“ iš naujo, kad būtų galima pritaikyti naujinį}=1{Naudojant Papildomą apsaugą reikia paleisti „Chromium“ iš naujo, kad būtų galima pritaikyti naujinį. Inkognito langas nebus atidarytas iš naujo.}one{Naudojant Papildomą apsaugą reikia paleisti „Chromium“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito langas nebus atidarytas iš naujo.}few{Naudojant Papildomą apsaugą reikia paleisti „Chromium“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito langai nebus atidaryti iš naujo.}many{Naudojant Papildomą apsaugą reikia paleisti „Chromium“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito lango nebus atidaryta iš naujo.}other{Naudojant Papildomą apsaugą reikia paleisti „Chromium“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito langų nebus atidaryta iš naujo.}}</translation>
 <translation id="2648074677641340862">Diegiant įvyko operacinės sistemos klaida. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="2661879430930417727">Jei bendrinate įrenginį, šeimos nariai ir draugai gali naršyti atskirai ir nustatyti „Chromium“ pagal savo poreikius</translation>
+<translation id="2676569452213089702">Lengvai pasiekite ir naudokite „Gemini“ naršyklėje „Chromium“ įrenginyje, net jei „Chromium“ yra sumažinta.</translation>
 <translation id="2711502716910134313">„Chromium“ skirtukas</translation>
 <translation id="2718390899429598676">Kad būtų papildomai užtikrintas saugumas, „Chromium“ užšifruos jūsų duomenis.</translation>
 <translation id="2721354645805494590">Jei norite pašalinti „Google“ paskyrą iš „Chromium“, atsijunkite</translation>
@@ -311,7 +314,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4334241893986177674">Ieškoti šioje ekrano kopijoje</translation>
 <translation id="4384331407722351213">Paleisti „Chromium“ paleidus „Windows“</translation>
 <translation id="4384993550046411228">Lengvai pasiekite žinomas, mėgstamas ir patikimas funkcijas nustatę „Chromium“ kaip numatytąją naršyklę. „Chromium“ bus prisegta prie užduočių juostos, kad galėtumėte greitai ją pasiekti.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> reikia, kad prieš naudodami šį įrenginį perskaitytumėte toliau pateiktas paslaugų teikimo sąlygas ir su jomis sutiktumėte. Šios sąlygos neišplečia, nepakeičia ir neapriboja „Chromium“ OS sąlygų.</translation>
+<translation id="4400772909124543403">Naujinių nėra</translation>
 <translation id="4407044323746248786">Vis tiek išeiti iš „Chromium“?</translation>
 <translation id="4413205837991854510">Visada rodyti vaizdų paieškos šaukinį</translation>
 <translation id="4415566066719264597">„Chromium“ leidimas fone</translation>
@@ -350,6 +353,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4746050847053251315">Vis tiek išeiti iš „Chromium“?</translation>
 <translation id="4748217263233248895">Ką tik pritaikytas specialus „Chromium“ skirtas saugos naujinys. Paleiskite naršyklę iš naujo ir atkursime visus skirtukus.</translation>
 <translation id="4771701986670315895">Pastaruoju metu nesilankėte. „Chromium“ pašalino <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="COUNT" />.</translation>
+<translation id="4786083865378785874">Jei „Gemini“ naršyklėje „Chromium“ atidarytas, kuriant naujus skirtukus šoninis skydelis lieka atidarytas</translation>
 <translation id="479167709087336770">Naudojamas tas pats rašybos tikrinimas kaip ir „Google“ paieškoje. Tekstas, kurį įvedate naršyklėje, nusiunčiamas „Google“. Šį veikimą visada galite pakeisti nustatymuose.</translation>
 <translation id="4814736265800133385">Naudoti „Chromium“ be paskyros</translation>
 <translation id="4888717733111232871">„Chromium“ skirta taisyklė, pagal kurią leidžiamas mDNS srautas.</translation>
@@ -401,6 +405,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="555970465369471303">Siekiant užtikrinti saugą, „Chromium“ išjungia „JavaScript“ optimizavimą, kai pirmą kartą apsilankote svetainėje.
 
 Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optimizavimą.</translation>
+<translation id="5575874067957905201">Rodyti „Gemini“ naršyklėje „Chromium“ kompiuterio „Mac“ meniu juostoje ir įjungti sparčiuosius klavišus</translation>
 <translation id="5579324208890605088">Paleisties klaida: diegimo programą paleiskite kaip įprastas naudotojas, o ne administratorius.</translation>
 <translation id="5580770360767802657">„Chromium“ naudojimas pagal numatytuosius nustatymus ir jos prisegimas</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
@@ -624,6 +629,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="7867198900892795913">Nepavyko atnaujinti „Chromium“ į naujausią versiją, todėl nebus pasiekiamos naujos funkcijos ir saugos pataisos.</translation>
 <translation id="7872446069773932638">Atsisiunčiama... Liko <ph name="SECONDS" /> sek.</translation>
 <translation id="7873537467422636035">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chromium“ duomenis paskyroje<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Greitai atidaryti „Gemini“ naršyklėje „Chromium“, kai tik jo prireikia</translation>
 <translation id="7877212753140190672">Klausti apie šį vaizdą</translation>
 <translation id="7888981273428720788">„Chromium“ nustatymas kaip numatytosios naršyklės</translation>
 <translation id="7934340546140346950">„Chromium“ automatiškai naujovina nesaugius ryšius į HTTPS, kai tai įmanoma</translation>
@@ -645,6 +651,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8118331347066725040">Atsiliepimų apie paiešką siuntimas naudojant „Lens“</translation>
 <translation id="8133124826068723441">„Chromium“ OS nepavyko sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
+<translation id="8161503455832158203">Atidarykite „Gemini“ naršyklėje „Chromium“ naudodami sparčiuosius klavišus.</translation>
 <translation id="8164014945047474187">„Chromium“ papildomos paslaugų teikimo sąlygos</translation>
 <translation id="81770708095080097">Šis failas pavojingas, todėl „Chromium“ jį užblokavo.</translation>
 <translation id="8177472873527554730">Nepavyko rasti puslapio turinio</translation>
@@ -654,6 +661,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8232193495299001329">„Chromium“ negali patvirtinti, iš kur gaunamas šis plėtinys, ir jis gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="8248265253516264921">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="8254601181414348851">Prisijungti prie „Chromium“ naujame profilyje?</translation>
+<translation id="8277334259226003205">Rodyti „Gemini“ naršyklėje „Chromium“ sistemos juostelėje ir įjungti sparčiuosius klavišus</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />„Chromium“ jus įspėja<ph name="END_LINK" /> apie nesaugias svetaines ir atsisiuntimus</translation>
 <translation id="8295827201165805317">Pastaruoju metu nesilankėte. „Chromium“ pašalino <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Apsipirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą „Chromium“ „iOS“ programoje</translation>
@@ -682,6 +690,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8493179195440786826">„Chromium“ versija yra pasenusi</translation>
 <translation id="850264194101621529">Dėkojame, kad pasirinkote „Chromium“ kaip numatytąją naršyklę!</translation>
 <translation id="8522801943730206384">„Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
+<translation id="8525579356836940628">Diegimas sustabdytas</translation>
 <translation id="8548787790260785208">Gaukite įspėjimą, jei „Chromium“ aptinka vieną iš jūsų slaptažodžių viešajame duomenų saugos pažeidime</translation>
 <translation id="8555465886620020932">Paslaugos klaida: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Kai kurioms „Chromium“ funkcijoms ir plėtiniams priskirti šaukiniai. Galite pasirinkti vėl juos įjungti.</translation>

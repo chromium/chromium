@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promocija obaveštenja sa savetima je zatvorena</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1045899828449635435">Želite da obrišete podatke i za njih?</translation>
+<translation id="1049461303780085993">Isprobajte Gemini u Chrome-u da biste dobijali odgovore, ključne zaključke i drugo</translation>
 <translation id="1049743911850919806">Bez arhiviranja</translation>
 <translation id="1052842760770519282">Nekim lozinkama ne možete da pristupite</translation>
 <translation id="1057623954802068161">Skrolujte do vrha stranice</translation>
@@ -297,6 +298,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="232137538351753795">Prevucite od leve ivice da biste se vratili</translation>
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
+<translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i svi linkovi pozivnice će biti isključeni</translation>
 <translation id="2330186936255788117">Još obeleživača</translation>
 <translation id="2332515770639153015">Poboljšano bezbedno pregledanje je uključeno</translation>
@@ -834,6 +836,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4595237294768457124">Otvorite stranicu nove kartice</translation>
 <translation id="4595276580892809760">Priložite slike iz galerije</translation>
 <translation id="4595805675102978678">Greška u vezi sa Google nalogom</translation>
+<translation id="4599585406846903742">Prikaz na jednoj stranici</translation>
 <translation id="4601095002996233687">Detaljna skeniranja sumnjivih preuzimanja.</translation>
 <translation id="4606559747793337066">Kada sajt ili aplikacija zatraži da privatno predučitava linkove na stranici, Chrome šifruje i predučitava stranice preko Google servera bez kolačića. Na taj način se vaš identitet krije od predučitanog sajta.</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="569536719314091526">Prevedite ovu stranicu na bilo koji jezik pomoću dugmeta Još opcija</translation>
 <translation id="5696597120588531049">Chrome može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugo</translation>
 <translation id="5698878456427040674">Proverite da li je izabrani nalog podržan.</translation>
+<translation id="5700415746238689851">Otvori Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> želi da se poveže sa serijskim portom</translation>
 <translation id="5715150588940290235">Želite da izbrišete sačuvane bezbednosne kodove?</translation>
 <translation id="572328651809341494">Nedavno korišćene kartice</translation>
@@ -1769,6 +1773,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8271267069224406035">Prijavi kao nepoželjno</translation>
 <translation id="8277710303010772444">Započnite pretragu</translation>
 <translation id="8279945625179116733">Zaštitu pruža <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Linkovi su primljeni</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282297628636750033">Primeni tamnu temu za sajtove, kada je moguće</translation>
 <translation id="8282950411412455249">Idi u Bezbednosna podešavanja</translation>
@@ -1904,6 +1909,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8863714995118816041">Dozvole su ponovo omogućene za <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome podaci na nalogu</translation>
 <translation id="8872506776304248286">Otvori u aplikaciji</translation>
+<translation id="8880275451109933094">Prikaz na dve stranice</translation>
 <translation id="8890668505403261809">Pretražite kartice bez arhiviranja</translation>
 <translation id="8892234476517513962">Već ste prijavljeni</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, izabrana kartica bez arhiviranja za snimanje</translation>

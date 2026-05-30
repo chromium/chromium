@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Izklop načina umetne inteligence</translation>
 <translation id="1554477036522844996">Novo okno</translation>
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
+<translation id="1560153516220021659">Strnjen sekundarni gumb orodne vrstice</translation>
 <translation id="1565371473877914088">Nov anonimni zavihek</translation>
 <translation id="1567960978791353852">Prikaz načina za branje</translation>
 <translation id="1571780780926010134">Anonimni zavihki</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Pošta je poslana.</translation>
 <translation id="1582732959743469162">S tem boste prekinili trenutni prenos.</translation>
 <translation id="1594034544529347967">Se začne</translation>
+<translation id="1598485494295307681">Poslušanje</translation>
 <translation id="1598751033135758830">Odpiranje v aplikaciji …</translation>
 <translation id="1600571977391127696">Nekatera vsebina morda ni primerna za vse.</translation>
 <translation id="1601560923496285236">Uporabi</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Težava pri deljenju elementa z drugimi.</translation>
 <translation id="4944543191714094452">Najdi na strani …</translation>
 <translation id="4945756290001680296">Dostop do nastavitev gesel</translation>
+<translation id="4946307855175300628">Odgovarjanje</translation>
 <translation id="4949302115427722371">Upravljanje nastavitev …</translation>
 <translation id="4958444002117714549">Razširi seznam</translation>
 <translation id="496392417432935267">Odprto drugje</translation>
@@ -1552,6 +1555,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6355820183143562453">Skrivanje kartice s spremljanjem cen</translation>
 <translation id="6355820205320395730">Šibka gesla je preprosto ugotoviti. Vedno ustvarite zapletena gesla. <ph name="BEGIN_LINK" />Oglejte si več varnostnih nasvetov.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Prijavite se, da boste lahko dostopali do vseh svojih stvari, kot so gesla, zaznamki in drugo.</translation>
+<translation id="6364268785720100355">Prijavite se, da boste lahko dostopali do gesel in drugega v vseh napravah.</translation>
 <translation id="6368038301482806847">Na seznamu izberite iskalnik.</translation>
 <translation id="6368102751067608420">Če želite izbrisati vse podatke upravitelja gesel</translation>
 <translation id="6372558618707314581">Odprite katero koli stran</translation>
@@ -1681,6 +1685,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6736243959894955139">Naslov</translation>
 <translation id="6746338529702829275">Preglejte podatke o računu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Uvožen je {count} element zgodovine}one{Uvožen je {count} element zgodovine}two{Uvožena sta {count} elementa zgodovine}few{Uvoženi so {count} elementi zgodovine}other{Uvoženih je {count} elementov zgodovine}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za poverilnico.}one{Nad tipkovnico je na voljo {count} možnost za poverilnico.}two{Nad tipkovnico sta na voljo {count} možnosti za poverilnico.}few{Nad tipkovnico so na voljo {count} možnosti za poverilnico.}other{Nad tipkovnico je na voljo {count} možnosti za poverilnico.}}</translation>
 <translation id="6755200887046212842">Upravljanje računov</translation>
 <translation id="6757899787818440812">Srednja višina</translation>
 <translation id="6759709389246683070">Če želite nastaviti opomnik za vnovični obisk tega zavihka pozneje, se ga lahko dotaknete in ga pridržite</translation>

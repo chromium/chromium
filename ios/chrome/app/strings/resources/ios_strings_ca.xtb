@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Desactiva el mode IA</translation>
 <translation id="1554477036522844996">Finestra nova</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
+<translation id="1560153516220021659">Botó replegat de la barra d'eines secundària</translation>
 <translation id="1565371473877914088">Pestanya d'incògnit nova</translation>
 <translation id="1567960978791353852">Mostra el mode de lectura</translation>
 <translation id="1571780780926010134">Pestanyes d'incògnit</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Correu enviat.</translation>
 <translation id="1582732959743469162">S'aturarà completament la baixada actual.</translation>
 <translation id="1594034544529347967">Comença</translation>
+<translation id="1598485494295307681">S'està escoltant</translation>
 <translation id="1598751033135758830">Obre a l'aplicació…</translation>
 <translation id="1600571977391127696">És possible que alguns continguts no siguin adequats per a tothom.</translation>
 <translation id="1601560923496285236">Aplica</translation>
@@ -1127,6 +1129,7 @@
 <translation id="4941089862236492464">Hi ha hagut un problema en compartir el vostre element.</translation>
 <translation id="4944543191714094452">Cerca a la pàgina…</translation>
 <translation id="4945756290001680296">Accedeix a la configuració de la contrasenya</translation>
+<translation id="4946307855175300628">S'està responent</translation>
 <translation id="4949302115427722371">Gestiona la configuració…</translation>
 <translation id="4958444002117714549">Desplega la llista</translation>
 <translation id="496392417432935267">S'ha obert en un altre lloc</translation>
@@ -1548,6 +1551,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6355820183143562453">Amaga la targeta Seguiment de preus</translation>
 <translation id="6355820205320395730">Les contrasenyes poc segures són fàcils d'endevinar. Crea contrasenyes que siguin segures. <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Inicia la sessió per accedir a totes les teves coses, com ara contrasenyes, adreces d'interès i més.</translation>
+<translation id="6364268785720100355">Inicia la sessió per obtenir les teves contrasenyes i més en tots els teus dispositius.</translation>
 <translation id="6368038301482806847">Tria un motor de cerca de la llista.</translation>
 <translation id="6368102751067608420">Per suprimir totes les dades del gestor de contrasenyes</translation>
 <translation id="6372558618707314581">Ves a la pàgina que vulguis</translation>
@@ -1676,6 +1680,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6736243959894955139">Adreça</translation>
 <translation id="6746338529702829275">Revisa les dades del compte</translation>
 <translation id="6750456911389438250">{count,plural, =1{S'ha importat {count} element de l'historial}other{S'han importat {count} elements de l'historial}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Hi ha {count} opció de credencial disponible a sobre del teclat.}other{Hi ha {count} opcions de credencial disponibles a sobre del teclat.}}</translation>
 <translation id="6755200887046212842">Gestiona els comptes</translation>
 <translation id="6757899787818440812">Alçada mitjana</translation>
 <translation id="6759709389246683070">Pots mantenir premuda aquesta pestanya i configurar un recordatori per comprovar-la més tard</translation>

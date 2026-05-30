@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Nonaktifkan Mode AI</translation>
 <translation id="1554477036522844996">Jendela Baru</translation>
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
+<translation id="1560153516220021659">Tombol toolbar sekunder yang diciutkan</translation>
 <translation id="1565371473877914088">Tab Samaran Baru</translation>
 <translation id="1567960978791353852">Tampilkan Mode Baca</translation>
 <translation id="1571780780926010134">Tab Samaran</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Email terkirim.</translation>
 <translation id="1582732959743469162">Ini akan menghentikan semua progres download Anda saat ini.</translation>
 <translation id="1594034544529347967">Mulai</translation>
+<translation id="1598485494295307681">Mendengarkan</translation>
 <translation id="1598751033135758830">Buka di aplikasi…</translation>
 <translation id="1600571977391127696">Beberapa konten mungkin tidak sesuai untuk semua orang.</translation>
 <translation id="1601560923496285236">Terapkan</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Maaf, terjadi error saat berbagi item Anda.</translation>
 <translation id="4944543191714094452">Cari di Halaman…</translation>
 <translation id="4945756290001680296">Akses setelan sandi</translation>
+<translation id="4946307855175300628">Menanggapi</translation>
 <translation id="4949302115427722371">Kelola setelan…</translation>
 <translation id="4958444002117714549">Luaskan daftar</translation>
 <translation id="496392417432935267">Dibuka di tempat lain</translation>
@@ -1552,6 +1555,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6355820183143562453">Sembunyikan kartu pemantauan harga</translation>
 <translation id="6355820205320395730">Sandi yang lemah mudah ditebak. Pastikan Anda menggunakan sandi yang kuat. <ph name="BEGIN_LINK" />Lihat tips keamanan lainnya<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Login untuk mendapatkan semua data Anda seperti sandi, bookmark, dan lainnya.</translation>
+<translation id="6364268785720100355">Login untuk mendapatkan sandi dan lainnya di semua perangkat Anda.</translation>
 <translation id="6368038301482806847">Pilih mesin telusur dari daftar.</translation>
 <translation id="6368102751067608420">Untuk menghapus semua data pengelola sandi</translation>
 <translation id="6372558618707314581">Buka halaman apa pun yang Anda inginkan</translation>
@@ -1681,6 +1685,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6746338529702829275">Tinjau data akun Anda</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item histori diimpor}other{{count} item histori diimpor}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opsi untuk kredensial tersedia di atas keyboard Anda.}other{{count} opsi untuk kredensial tersedia di atas keyboard Anda.}}</translation>
 <translation id="6755200887046212842">Kelola Akun</translation>
 <translation id="6757899787818440812">Tinggi sedang</translation>
 <translation id="6759709389246683070">Anda dapat menyentuh lama tab ini guna menyetel pengingat untuk membukanya kembali nanti</translation>

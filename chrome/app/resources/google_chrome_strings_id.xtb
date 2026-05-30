@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Untuk menghapus data penjelajahan hanya dari perangkat ini dan tetap menyimpannya di Akun Google Anda, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Klik untuk menutup dialog login Chrome</translation>
 <translation id="1051793555070215510">Bantu kami meningkatkan mode Samaran dengan mengikuti survei 1 menit ini.</translation>
+<translation id="1055295352198814912">Tampilkan Gemini di Chrome di panel menu Mac dan aktifkan pintasan keyboard</translation>
 <translation id="1059838145689930908">Untuk menggunakan ekstensi ini sebagai <ph name="USER_EMAIL_ADDRESS" />, login ke Chrome.</translation>
 <translation id="1065672644894730302">Preferensi Anda tidak dapat dibaca. Beberapa fitur mungkin tidak tersedia dan perubahan pada preferensi tidak akan disimpan.</translation>
 <translation id="1070377999570795893">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chrome.
@@ -32,7 +33,6 @@
 <translation id="1290883685122687410">Kesalahan saat penyiapan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Harap tunggu selagi Chrome memasang pembaruan sistem terkini.</translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Anda dapat beralih untuk melihat sandi dari profil Chrome lainnya</translation>
 <translation id="1343830902827845050">Login ke Chrome</translation>
 <translation id="1356661055722410047">Baru! Anda dapat menerjemahkan teks dan gambar di layar</translation>
@@ -278,6 +278,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3941890832296813527">Error penginstalan: Nama file penginstal tidak valid atau tidak didukung.</translation>
 <translation id="395904275706073188">Halaman yang dilindungi tidak dapat dibaca. Coba halaman lain.</translation>
+<translation id="3965532487635448963">Tampilkan Gemini di Chrome di area notifikasi dan aktifkan pintasan keyboard</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3968962723676998462">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome ingin menghapus data Pengelola Sandi Google Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
@@ -320,6 +321,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4367027658822022112">Anda dapat menyematkan Google Lens agar mudah diakses; klik tombol Sematkan di bagian atas panel samping</translation>
 <translation id="4372389195695053189">Chrome kini menjadi browser default Anda</translation>
 <translation id="4389991535395284064">Jika menjelajah dalam mode Samaran, Chrome akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
+<translation id="4400772909124543403">Tidak ada update yang tersedia</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
@@ -358,6 +360,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4891791193823137474">Jalankan Google Chrome di latar belakang</translation>
 <translation id="4895437082222824641">Buka link di &amp;tab Chrome baru</translation>
 <translation id="4896867431081882115">Dapatkan akses mudah ke fitur yang Anda kenal, suka, dan percaya dengan menyetel Chrome sebagai browser default. Chrome akan disematkan ke taskbar agar dapat diakses dengan cepat.</translation>
+<translation id="4904953848704395458">Buka Gemini di Chrome dengan pintasan keyboard.</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4918844574251943176">Gambar disalin</translation>
 <translation id="4926882258455737990">Untuk menggunakan Akun Google lain dengan Gemini di Chrome, <ph name="BEGIN_LINK" />buat profil baru<ph name="END_LINK" /> dan login dengan akun yang Anda inginkan</translation>
@@ -516,6 +519,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6434035853014503219">Terima kasih telah memilih Chrome sebagai browser default Anda.</translation>
 <translation id="6438015621983209660">Manfaatkan Safe Browsing yang Disempurnakan dengan Chrome di ponsel</translation>
 <translation id="6442774133615368941">Gunakan kamera di aplikasi Chrome versi iOS untuk berbelanja, menerjemahkan teks, dan mengidentifikasi objek yang Anda lihat</translation>
+<translation id="6448835208126432197">Gunakan pintasan keyboard untuk memilih bagian tertentu dari layar di Gemini di Chrome.</translation>
 <translation id="6473905796280459355">Buka halaman Tentang Chrome</translation>
 <translation id="6481963882741794338">Tautkan Chrome dan layanan Google lainnya untuk personalisasi dan tujuan lainnya</translation>
 <translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
@@ -528,6 +532,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6520670145826811516">Untuk menggunakan lokasi, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Histori Chrome</translation>
 <translation id="6532945796722480006">Buka Gemini di Chrome Canary</translation>
+<translation id="6539493053177300926">Akses mudah untuk menggunakan Gemini di Chrome di berbagai perangkat Anda, bahkan saat Chrome diperkecil.</translation>
 <translation id="6585124893636629274">Tutup Gemini di Chrome</translation>
 <translation id="659498884637196217">Di Pengelola Sandi Google di perangkat ini</translation>
 <translation id="6631524303639368205">Lanjutkan dari halaman terakhir yang dibuka: Chrome memulihkan tab Anda dari sesi terakhir. Anda dapat menonaktifkannya di</translation>
@@ -587,6 +592,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7161904924553537242">Selamat Datang di Google Chrome</translation>
 <translation id="7193885263065350793">Organisasi Anda menutup Chrome saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. Anda dapat membuat profil baru secara opsional untuk menjaga agar data Chrome Anda tetap terpisah. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Untuk keluar dari atau kembali ke Gemini di Chrome, gunakan pintasan keyboard.</translation>
 <translation id="7274402351400635015">Anda dapat menggunakan Chrome kapan saja dengan mengklik link di pesan, dokumen, dan aplikasi lainnya. Chrome juga akan disematkan ke taskbar Anda.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> mengelola Chrome</translation>
 <translation id="7285990705317078173">Download Chrome di ponsel untuk memantau harga dan menerima notifikasi saat harga turun di situs mana pun</translation>
@@ -625,7 +631,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan Google ChromeOS.</translation>
 <translation id="7627609214560473136">Untuk melindungi data Anda, izinkan Chrome menghapus izin dari situs yang tidak Anda kunjungi baru-baru ini.</translation>
 <translation id="7629695634924605473">Chrome akan memberi tahu jika sandi Anda disusupi</translation>
 <translation id="7641148173327520642">Administrator sistem Anda telah mengonfigurasi Google Chrome untuk membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -694,6 +699,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8221491193165283816">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik di sini.</translation>
 <translation id="8253851811470049684">Buka link di Chrome dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon Anda.</translation>
+<translation id="8260086374035800939">Jika Gemini di Chrome terbuka, panel samping akan tetap terbuka saat membuat tab baru</translation>
 <translation id="8267953129876836456">Chrome menemukan beberapa rekomendasi keamanan untuk Anda tinjau</translation>
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="829923460755755423">Tambahkan pintasan ke Pengelola Sandi Google</translation>
@@ -705,6 +711,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8362914115861174987">Terjemahkan ke</translation>
 <translation id="8366770919198174997">Menurunkan performa tetapi membuat Chrome lebih tahan terhadap serangan</translation>
 <translation id="8367705492654390392">Tanyakan apa saja</translation>
+<translation id="8367950957770994118">Buka Gemini dengan cepat di Chrome kapan pun Anda membutuhkannya</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="8377158135256176353">Aktifkan/nonaktifkan Gemini di Chrome Canary</translation>
 <translation id="8387459386171870978">Terus gunakan Chrome</translation>
@@ -722,6 +729,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>
 <translation id="8521348052903287641">Inbound rule untuk Google Chrome Dev guna mengizinkan traffic mDNS.</translation>
 <translation id="852529348814672339">Tampilkan Chrome dalam bahasa ini</translation>
+<translation id="8525579356836940628">Penginstalan Dihentikan</translation>
 <translation id="8533056045953418157">Setel Google Chrome sebagai penampil PDF default Anda</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Telusuri daftar bahasa</translation>

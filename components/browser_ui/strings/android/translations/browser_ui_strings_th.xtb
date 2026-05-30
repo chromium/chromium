@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1000614056227025171">Bottom Sheet สำหรับโปรโมชันปรับแต่งหน้าแรกเปิดอยู่แบบเต็มความสูง</translation>
 <translation id="1006017844123154345">เปิดแบบออนไลน์</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1046742265332833834">ธีมสีน้ำเงิน</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">เว็บไซต์เล่นเสียงได้</translation>
 <translation id="3065787901655140044">การปกป้องขั้นสูงเปิดอยู่</translation>
 <translation id="3069226013421428034">อนุญาตการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
+<translation id="3084983642903364837">แก้ไขหน้าแรกในภายหลังผ่านเมนู 3 จุด</translation>
 <translation id="310297983047869047">สไลด์ก่อนหน้า</translation>
 <translation id="3108122610701115301">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="310979712355504754">ลบทั้งหมด</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">เชื่อมต่อกับพอร์ตอนุกรมแล้ว</translation>
 <translation id="4223404254440398437">ไม่อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4226663524361240545">การแจ้งเตือนอาจทำให้อุปกรณ์สั่น</translation>
+<translation id="4227965147357783918">Bottom Sheet สำหรับปรับแต่งโปรโมชันหน้าแรกเปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="4259722352634471385">มีการบล็อกการนำทาง: <ph name="URL" /></translation>
 <translation id="4274673989874969668">หลังจากที่คุณออกจากเว็บไซต์ไปแล้ว เว็บไซต์ยังสามารถทำการซิงค์ต่อได้จนกว่างานจะเสร็จ เช่น อัปโหลดรูปภาพหรือส่งข้อความแชท</translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>

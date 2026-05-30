@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promo upozornení na tipy je zavreté</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1045899828449635435">Chcete vymazať dáta aj z týchto webov?</translation>
+<translation id="1049461303780085993">Vyskúšajte Gemini v Chrome a získavajte odpovede, kľúčové poznatky a podobne</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Niektoré vaše heslá nie sú k dispozícii</translation>
 <translation id="1057623954802068161">Posunúť na začiatok stránky</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">Zavolajte klepnutím</translation>
 <translation id="232137538351753795">Vrátite sa potiahnutím z ľavého okraja</translation>
 <translation id="2323763861024343754">Úložisko webu</translation>
+<translation id="2327445548174191329">Zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" /> a všetky odkazy na pozvánku sa vypnú</translation>
 <translation id="2330186936255788117">Ďalšie záložky</translation>
 <translation id="2332515770639153015">Zlepšené bezpečné prehliadanie je zapnuté</translation>
@@ -834,6 +836,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4595237294768457124">Otvorte stránku na novej karte</translation>
 <translation id="4595276580892809760">Priložiť obrázky z galérie</translation>
 <translation id="4595805675102978678">Chyba účtu Google</translation>
+<translation id="4599585406846903742">Zobrazenie jednej strany</translation>
 <translation id="4601095002996233687">Hĺbkové kontroly s cieľom nájsť podozrivé stiahnuté súbory.</translation>
 <translation id="4606559747793337066">Keď nejaký web alebo aplikácia požiada o súkromné prednačítanie odkazov na svojej stránke, Chrome zašifruje a prednačíta stránky prostredníctvom serverov Googlu bez súborov cookie. Tým sa skryje vaša totožnosť pred prednačítavaným webom.</translation>
 <translation id="4616150815774728855">Otvoriť <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="569536719314091526">Preložte si túto stránku do ľubovoľného jazyka pomocou tlačidla Ďalšie možnosti</translation>
 <translation id="5696597120588531049">Chrome vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami</translation>
 <translation id="5698878456427040674">Skontrolujte, či je vybraný účet podporovaný.</translation>
+<translation id="5700415746238689851">Otvoriť Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> sa chce pripojiť k sériovému portu</translation>
 <translation id="5715150588940290235">Chcete odstrániť uložené bezpečnostné kódy?</translation>
 <translation id="572328651809341494">Nedávne karty</translation>
@@ -1769,6 +1773,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8271267069224406035">Nahlásiť spam</translation>
 <translation id="8277710303010772444">Spustenie vyhľadávania</translation>
 <translation id="8279945625179116733">Zabezpečené aplikáciou <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Prijaté odkazy</translation>
 <translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8282297628636750033">Ak je to možné, používať tmavý motív na weboch</translation>
 <translation id="8282950411412455249">Prejsť do nastavení zabezpečenia</translation>
@@ -1904,6 +1909,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8863714995118816041">Povolenia pre <ph name="SITE_NAME" /> boli znova udelené</translation>
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
 <translation id="8872506776304248286">Otvoriť v aplikácii</translation>
+<translation id="8880275451109933094">Zobrazenie dvoch strán</translation>
 <translation id="8890668505403261809">Vyhľadajte karty inkognito</translation>
 <translation id="8892234476517513962">Už ste sa prihlásili</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, vybraná karta inkognito s nahrávaním</translation>

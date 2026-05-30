@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Sİ rejimini deaktiv edin</translation>
 <translation id="1554477036522844996">Yeni Pəncərə</translation>
 <translation id="1558391695376153246">Anonim tabları qapadın</translation>
+<translation id="1560153516220021659">Yığcamlaşdırılmış ikinci dərəcəli alətlər paneli düyməsi</translation>
 <translation id="1565371473877914088">Yeni Anonim Tab</translation>
 <translation id="1567960978791353852">Oxu rejimini göstərin</translation>
 <translation id="1571780780926010134">Anonim tablar</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Məktub göndərildi.</translation>
 <translation id="1582732959743469162">Bu cari endirmə üçün bütün gedişatı dayandıracaq.</translation>
 <translation id="1594034544529347967">Başlayır</translation>
+<translation id="1598485494295307681">Dinləyir</translation>
 <translation id="1598751033135758830">Tətbiqdə açın…</translation>
 <translation id="1600571977391127696">Bəzi kontentlər hər kəs üçün uyğun olmaya bilər.</translation>
 <translation id="1601560923496285236">Tətbiq edin</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Üzr istəyirik, elementi paylaşarkən problem baş verdi.</translation>
 <translation id="4944543191714094452">Səhifədə tapın…</translation>
 <translation id="4945756290001680296">Parol ayarlarına daxil olun</translation>
+<translation id="4946307855175300628">Cavab verilir</translation>
 <translation id="4949302115427722371">Ayarları idarə edin…</translation>
 <translation id="4958444002117714549">Siyahını genişləndirin</translation>
 <translation id="496392417432935267">Başqa yerdə açılıb</translation>
@@ -1552,6 +1555,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6355820183143562453">Qiymət izləmə kartını gizlədin</translation>
 <translation id="6355820205320395730">Zəif parolları tapmaq asandır. Güclü parol yaratdığınızdan əmin olun. <ph name="BEGIN_LINK" />Daha çox təhlükəsizlik məsləhətinə baxın.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Parol, əlfəcin və s. kimi bütün kontentinizi əldə etmək üçün daxil olun.</translation>
+<translation id="6364268785720100355">Daxil olaraq bütün cihazlarda parolları və daha çoxunu əldə edin.</translation>
 <translation id="6368038301482806847">Siyahıdan axtarış mexanizmi seçin.</translation>
 <translation id="6368102751067608420">Bütün parol meneceri datasını silmək üçün</translation>
 <translation id="6372558618707314581">İstədiyiniz səhifəyə keçin</translation>
@@ -1681,6 +1685,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6736243959894955139">Ünvan:</translation>
 <translation id="6746338529702829275">Hesab datasını nəzərdən keçirin</translation>
 <translation id="6750456911389438250">{count,plural, =1{İmport edilmiş {count} tarixçə elementi}other{İmport edilmiş {count} tarixçə elementi}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Giriş məlumatları üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}other{Giriş məlumatları üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="6755200887046212842">Hesabları İdarə edin</translation>
 <translation id="6757899787818440812">Orta hündürlük</translation>
 <translation id="6759709389246683070">Daha sonra yenidən daxil olmaq üçün xatırladıcı ayarlamaq məqsədilə bu taba toxunub saxlaya bilərsiniz</translation>

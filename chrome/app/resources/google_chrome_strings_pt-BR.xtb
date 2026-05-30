@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Aguarde enquanto o Chrome instala as últimas atualizações do sistema.</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Mude para outro perfil do Chrome para conferir as senhas dele</translation>
 <translation id="1343830902827845050">Faça login no Chrome</translation>
 <translation id="1356661055722410047">Novidade! Agora é possível traduzir textos e imagens na tela.</translation>
@@ -239,6 +238,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="345171907106878721">Cadastrar-se no Chrome</translation>
 <translation id="3453763134178591239">Termos do ChromeOS</translation>
 <translation id="3503306920980160878">O Chrome precisa acessar seu local para compartilhá-lo com este site</translation>
+<translation id="3539955434060988644">Abrir link em janela anô&amp;nima do Chrome</translation>
 <translation id="3576528680708590453">O administrador do seu sistema configurou o Google Chrome para abrir um navegador alternativo ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincronize e personalize o Chrome em todos os seus dispositivos</translation>
 <translation id="3583751698304738917">A conta <ph name="USER_EMAIL_ADDRESS" /> já está conectada em outro perfil do Chrome</translation>
@@ -632,7 +632,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para proteger seus dados, permita que o Chrome remova permissões de sites que você não visitou recentemente.</translation>
 <translation id="7629695634924605473">O Chrome avisa se suas senhas forem comprometidas</translation>
 <translation id="7641148173327520642">O administrador do seu sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>

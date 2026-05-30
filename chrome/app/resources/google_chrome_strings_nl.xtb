@@ -35,7 +35,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Wacht terwijl Chrome de nieuwste systeemupdates installeert.</translation>
 <translation id="1330562121671411446">Taal herkennen</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> vereist dat je de volgende Servicevoorwaarden leest en accepteert voordat je dit apparaat gebruikt. Deze voorwaarden zijn geen uitbreiding, aanpassing of beperking van de Voorwaarden van Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Je kunt schakelen om wachtwoorden van een ander Chrome-profiel te bekijken</translation>
 <translation id="1343830902827845050">Inloggen bij Chrome</translation>
 <translation id="1356661055722410047">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen</translation>
@@ -637,7 +636,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> vereist dat je de volgende Servicevoorwaarden leest en accepteert voordat je dit apparaat gebruikt. Deze voorwaarden zijn geen uitbreiding, aanpassing of beperking van de Voorwaarden van Google Chrome OS.</translation>
 <translation id="7627609214560473136">Ter bescherming van je gegevens kun je Chrome de rechten laten verwijderen voor sites die je niet recent hebt bezocht.</translation>
 <translation id="7629695634924605473">Chrome laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="7641148173327520642">Je systeembeheerder heeft Google Chrome geconfigureerd om <ph name="ALTERNATIVE_BROWSER_NAME" /> te openen voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>

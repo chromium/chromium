@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promocija obavještenja o savjetima je zatvorena</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1045899828449635435">Obrisati i podatke ovih web lokacija?</translation>
+<translation id="1049461303780085993">Isprobajte Gemini u Chromeu da dobijate odgovore, ključne zaključke i drugo</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1052842760770519282">Neke od vaših lozinki nisu dostupne</translation>
 <translation id="1057623954802068161">Klizanje na vrh stranice</translation>
@@ -297,6 +298,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2318045970523081853">Dodirnite da uspostavite poziv</translation>
 <translation id="232137538351753795">Prevucite od lijevog ruba da se vratite</translation>
 <translation id="2323763861024343754">Pohrana web lokacije</translation>
+<translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Svako će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a svi linkovi pozivnice će se isključiti</translation>
 <translation id="2330186936255788117">Više oznaka</translation>
 <translation id="2332515770639153015">Poboljšano Sigurno pregledanje je uključeno</translation>
@@ -675,6 +677,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, zakačena kartica slike u slici</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="395377504920307820">Koristite bez računa</translation>
+<translation id="3955353672249727801">Stranice su dodane na listu za čitanje</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati vašu stranicu kada bude spreman}one{Chrome će učitati vaše stranice kada bude spreman}few{Chrome će učitati vaše stranice kada bude spreman}other{Chrome će učitati vaše stranice kada bude spreman}}</translation>
 <translation id="3969142555815019568">Chrome ne može provjeriti vaše lozinke</translation>
 <translation id="3969863827134279083">Pomjeranje nagore</translation>
@@ -834,6 +837,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4595237294768457124">Otvorite stranicu Nova kartica</translation>
 <translation id="4595276580892809760">Prilaganje slika iz galerije</translation>
 <translation id="4595805675102978678">Greška u vezi s Google računom</translation>
+<translation id="4599585406846903742">Prikaz na jednoj stranici</translation>
 <translation id="4601095002996233687">Detaljna skeniranja radi provjere sumnjivih preuzimanja.</translation>
 <translation id="4606559747793337066">Kada web lokacija ili aplikacija zatraži da privatno predučita linkove na svojim stranicama, Chrome će šifrirati i predučitati stranice putem Googleovih servera bez kolačića. Ovim se sakriva vaš identitet na predučitanoj web lokaciji.</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1092,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="569536719314091526">Prevedite ovu stranicu na bilo koji jezik koristeći dugme Više opcija</translation>
 <translation id="5696597120588531049">Chrome vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga</translation>
 <translation id="5698878456427040674">Provjerite je li odabrani račun podržan.</translation>
+<translation id="5700415746238689851">Otvori Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> se želi povezati sa serijskim priključkom</translation>
 <translation id="5715150588940290235">Izbrisati sačuvane sigurnosne kodove?</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
@@ -1769,6 +1774,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8271267069224406035">Prijavi kao neželjeno</translation>
 <translation id="8277710303010772444">Pokretanje pretraživanja</translation>
 <translation id="8279945625179116733">Osigurava aplikacija <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Linkovi su primljeni</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282297628636750033">Primijeni tamnu temu na web lokacije</translation>
 <translation id="8282950411412455249">Idite u postavke sigurnosti</translation>
@@ -1904,6 +1910,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8863714995118816041">Ponovo su dozvoljena odobrenja za <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Podaci Chromea na vašem računu</translation>
 <translation id="8872506776304248286">Otvori u aplikaciji</translation>
+<translation id="8880275451109933094">Prikaz na dvije stranice</translation>
 <translation id="8890668505403261809">Pretražite anonimne kartice</translation>
 <translation id="8892234476517513962">Već ste prijavljeni</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, odabrana anonimna kartica za snimanje</translation>

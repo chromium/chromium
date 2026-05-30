@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1000614056227025171">「自訂首頁」宣傳底部功能表已開啟在整個畫面上</translation>
 <translation id="1006017844123154345">在網路上開啟</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1046742265332833834">藍色主題</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">網站可以播放音效</translation>
 <translation id="3065787901655140044">進階保護功能已開啟</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
+<translation id="3084983642903364837">你稍後可透過三點選單編輯首頁。</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3108122610701115301">設為預設值</translation>
 <translation id="310979712355504754">全部刪除</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">連上序列埠</translation>
 <translation id="4223404254440398437">不允許使用麥克風</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
+<translation id="4227965147357783918">「自訂首頁」宣傳底部功能表已開啟在畫面下半部</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在你離開網站後，網站可以繼續透過同步作業完成各項工作，例如上傳相片或傳送即時通訊訊息等等</translation>
 <translation id="4278390842282768270">允許</translation>

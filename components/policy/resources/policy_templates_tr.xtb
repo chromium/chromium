@@ -9606,6 +9606,13 @@ Bu politikanın yalnızca yönetilen tarayıcılar için geçerli olduğunu ve y
 <translation id="7055022222176591388">Eski <ph name="FLASH_PLUGIN_NAME" /> eklentisine izin verme</translation>
 <translation id="7056040036973126753">Alan güvenilirliği verileri, Chrome Kullanıcı Metrikleri (UMA) politikasına bağlı olarak Google'a gönderilebilir</translation>
 <translation id="7062803946218028349">Telefon Merkezi'nin etkinleştirilmesine izin ver</translation>
+<translation id="7063646777978847358">Bu politika, hizmet çalışanlarından gelen arka planda getirme isteklerinin kısıtlanıp kısıtlanmayacağını kontrol eder. Arka planda dosya indiren bir özellik etkilenirse bu politika geçerli olabilir.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kısıtlama etkin olur ve hizmet çalışanı bağlamlarından gelen arka planda getirme istekleri engellenebilir.
+
+Bu politika, Devre dışı değerine ayarlanırsa kısıtlama atlanır ve tüm hizmet çalışanlarının arka planda getirme isteği göndermesine izin verilir.
+
+Bu kurumsal politika geçici olup M152 sürümünden sonra kaldırılacaktır.</translation>
 <translation id="7066292150801784098">Uzaktan destek oturumlarında yükseltilmiş pencerelerle uzaktan kullanıcı etkileşimini devre dışı bırak</translation>
 <translation id="706669471845501145">Sitelerin masaüstü bildirimi göstermesine izin ver</translation>
 <translation id="7067419518071223152">Bu politika ayarlanırsa dosya türlerine erişim izni verilmiş web uygulamalarının belirtildiği URL kalıpları listesini oluşturabilirsiniz.

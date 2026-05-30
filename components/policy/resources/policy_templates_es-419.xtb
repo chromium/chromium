@@ -9827,6 +9827,13 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="7055022222176591388">No permitir el complemento de <ph name="FLASH_PLUGIN_NAME" /> desactualizado</translation>
 <translation id="7056040036973126753">Enviar datos de confiabilidad de dominios a Google en función de la política de Métricas del usuario (UMA) de Chrome</translation>
 <translation id="7062803946218028349">Permitir que se habilite Phone Hub</translation>
+<translation id="7063646777978847358">Esta política controla si se restringen las solicitudes de Background Fetch de los service workers. Si se ve afectada una función que descarga archivos en segundo plano, esta política puede ser pertinente.
+
+Si habilitas esta política o no la estableces, la restricción estará activa y es posible que se bloqueen las solicitudes de Background Fetch de los contextos de service worker.
+
+Si inhabilitas esta política, se omitirá la restricción y se permitirá que todos los service workers realicen solicitudes de Background Fetch.
+
+Esta política empresarial es temporal y se quitará después de la versión M152.</translation>
 <translation id="7066292150801784098">Impedir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio.</translation>
 <translation id="7067419518071223152">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen las aplicaciones web que tengan acceso a determinados tipos de archivos.

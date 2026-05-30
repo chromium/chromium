@@ -9587,6 +9587,13 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="7055022222176591388">Non consentire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
 <translation id="7056040036973126753">I dati relativi all'attendibilità dei domini potrebbero essere inviati a Google in base alla policy Metriche utente di Chrome (UMA)</translation>
 <translation id="7062803946218028349">Consenti l'attivazione di Phone Hub</translation>
+<translation id="7063646777978847358">Questa policy consente di stabilire se le richieste di recupero in background da parte dei service worker sono limitate. Questa policy potrebbe essere pertinente se è interessata una funzionalità che scarica file in background.
+
+Se questa policy viene impostata su Attivata o se non viene configurata, la limitazione è attiva e le richieste di recupero in background provenienti dai contesti di service worker potrebbero essere bloccate.
+
+Se questa policy viene impostata su Disattivata, la limitazione viene bypassata, consentendo a tutti i service worker di effettuare richieste di recupero in background.
+
+Questa policy aziendale è temporanea e verrà rimossa dopo la versione M152.</translation>
 <translation id="7066292150801784098">Disattiva l'interazione degli utenti remoti con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
 <translation id="706669471845501145">Consenti la visualizzazione di notifiche desktop da parte dei siti</translation>
 <translation id="7067419518071223152">La configurazione della policy consente di elencare i pattern URL che specificano quali app web hanno l'autorizzazione ad accedere a determinati tipi di file.

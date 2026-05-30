@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Промоцијата на „Известувања за совети“ е затворена</translation>
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1045899828449635435">Да се избришат податоците и од сајтовиве?</translation>
+<translation id="1049461303780085993">Испробајте го Gemini во Chrome за да добивате одговори, клучни заклучоци и друго</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1052842760770519282">Не може да се пристапи до некои од вашите лозинки</translation>
 <translation id="1057623954802068161">Лизгај до врвот на страницата</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
 <translation id="232137538351753795">Повлечете од левиот раб за да се вратите назад</translation>
 <translation id="2323763861024343754">Достапен простор на сајтот</translation>
+<translation id="2327445548174191329">Од <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Сите веднаш ќе го изгубат пристапот до групата картички „<ph name="GROUP_NAME" />“ и сите линкови за покана ќе се исклучат</translation>
 <translation id="2330186936255788117">Повеќе обележувачи</translation>
 <translation id="2332515770639153015">„Подобреното безбедно прелистување“ е вклучено</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">Отворете страница во нова картичка</translation>
 <translation id="4595276580892809760">Приложете слики од галеријата</translation>
 <translation id="4595805675102978678">Грешка на сметката на Google</translation>
+<translation id="4599585406846903742">Приказ на една страница</translation>
 <translation id="4601095002996233687">Детални скенирања за сомнителни преземања.</translation>
 <translation id="4606559747793337066">Кога некој сајт или апликација ќе ви побара приватно вчитување однапред на линковите на нејзината страница, Chrome ги шифрира и ги вчитува страниците однапред преку серверите на Google без колачиња. Вака се крие вашиот идентитет од однапред вчитаниот сајт.</translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">Преведете ја страницава на кој било јазик со копчето „Повеќе опции“</translation>
 <translation id="5696597120588531049">Chrome може да ве штити од упад во податоците, небезбедни вебсајтови и друго</translation>
 <translation id="5698878456427040674">Проверете дали избраната сметка е поддржана.</translation>
+<translation id="5700415746238689851">Отвори го Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> сака да се поврзе со сериска порта</translation>
 <translation id="5715150588940290235">Да се избришат зачуваните безбедносни кодови?</translation>
 <translation id="572328651809341494">Неодамнешни картички</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">Пријавете спам</translation>
 <translation id="8277710303010772444">Започнете пребарување</translation>
 <translation id="8279945625179116733">Заштитено од <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Примени се линкови</translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8282297628636750033">Ако е можно, примени темна тема на сајтовите</translation>
 <translation id="8282950411412455249">Одете во „Поставки за безбедност“</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">Дозволите за <ph name="SITE_NAME" /> се дозволени повторно</translation>
 <translation id="8865415417596392024">Податоци од Chrome во вашата сметка</translation>
 <translation id="8872506776304248286">Отвори во апликација</translation>
+<translation id="8880275451109933094">Приказ на две страници</translation>
 <translation id="8890668505403261809">Пребарајте ги картичките „Инкогнито“</translation>
 <translation id="8892234476517513962">Веќе сте најавени</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“ за снимање</translation>

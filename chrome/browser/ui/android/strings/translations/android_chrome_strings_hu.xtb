@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Tippekre vonatkozó értesítések promóciója bezárva</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1045899828449635435">Törli az e webhelyekről származó adatokat is?</translation>
+<translation id="1049461303780085993">Próbálja ki a Gemini a Chrome-ban funkciót, amellyel válaszokat, fontos információkat és egyebeket kaphat</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="1052842760770519282">Bizonyos jelszavai nem állnak rendelkezésre</translation>
 <translation id="1057623954802068161">Görgetés az oldal tetejére</translation>
@@ -297,6 +298,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2318045970523081853">Koppintson a hívás indításához</translation>
 <translation id="232137538351753795">A visszalépéshez csúsztasson a képernyő bal széléről</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
+<translation id="2327445548174191329">Forrás: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Mindenki azonnal el fogja veszíteni a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a rendszer az összes meghívólinket ki fogja kapcsolni.</translation>
 <translation id="2330186936255788117">További könyvjelzők</translation>
 <translation id="2332515770639153015">A Biztonságos Böngészés fokozott védelemmel funkció be van kapcsolva</translation>
@@ -834,6 +836,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4595237294768457124">Nyisson meg egy Új lap oldalt.</translation>
 <translation id="4595276580892809760">Képek csatolása a galériából</translation>
 <translation id="4595805675102978678">Hiba a Google-fiókkal</translation>
+<translation id="4599585406846903742">Egyoldalas nézet</translation>
 <translation id="4601095002996233687">Mélyreható vizsgálatok a gyanús letöltött tartalmak ellenőrzéséhez.</translation>
 <translation id="4606559747793337066">Ha valamely webhely vagy alkalmazás a linkek privát módon való előtöltését kéri az oldalán, a Chrome cookie-k nélkül titkosítja és tölti be előre az oldalakat a Google szerverein keresztül. Ez a művelet elrejti az Ön személyazonosságát az előre betöltött webhely előtt.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> megnyitása</translation>
@@ -1088,6 +1091,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="569536719314091526">Bármely nyelvre lefordíthatja ezt az oldalt a További lehetőségek gomb segítségével</translation>
 <translation id="5696597120588531049">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben</translation>
 <translation id="5698878456427040674">Ellenőrizze, hogy a kiválasztott fiók támogatott-e.</translation>
+<translation id="5700415746238689851">A Gemini megnyitása</translation>
 <translation id="5709213329446699338">A(z) <ph name="SITE" /> soros porthoz szeretne csatlakozni</translation>
 <translation id="5715150588940290235">Törli a mentett biztonsági kódokat?</translation>
 <translation id="572328651809341494">Nemrég megnyitott lapok</translation>
@@ -1769,6 +1773,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8271267069224406035">Ez spam</translation>
 <translation id="8277710303010772444">Keresés indítása</translation>
 <translation id="8279945625179116733">A biztonságról gondoskodik: <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Linkek fogadva</translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8282297628636750033">Sötét téma a webhelyeken, ha lehet</translation>
 <translation id="8282950411412455249">Ugrás a biztonsági beállításokhoz</translation>
@@ -1904,6 +1909,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8863714995118816041">Újból megadta az engedélyeket a következő számára: <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">A fiókjában található Chrome-adatok</translation>
 <translation id="8872506776304248286">Megnyitás alkalmazásban</translation>
+<translation id="8880275451109933094">Kétoldalas nézet</translation>
 <translation id="8890668505403261809">Keresés az inkognitó lapokon</translation>
 <translation id="8892234476517513962">Már be van jelentkezve</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, kiválasztott, felvételt készítő inkognitó lap</translation>

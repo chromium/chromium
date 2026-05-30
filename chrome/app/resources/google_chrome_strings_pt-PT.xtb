@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Aguarde até que o Chrome instale as atualizações do sistema mais recentes.</translation>
 <translation id="1330562121671411446">Detetar idioma</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> requer a leitura e aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Pode mudar para ver as palavras-passe de outro perfil do Chrome</translation>
 <translation id="1343830902827845050">Inicie sessão no Chrome</translation>
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
@@ -633,7 +632,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para proteger os seus dados, permita que o Chrome remova as autorizações de sites que não visitou recentemente.</translation>
 <translation id="7629695634924605473">O Chrome indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="7641148173327520642">O administrador do sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> e aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>

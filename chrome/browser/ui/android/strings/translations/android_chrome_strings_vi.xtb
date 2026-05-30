@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Thông báo quảng cáo kèm mẹo đã đóng</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1045899828449635435">Đồng thời xóa dữ liệu khỏi các trang web này?</translation>
+<translation id="1049461303780085993">Dùng thử Gemini trong Chrome để nhận câu trả lời, nắm bắt ý chính và nhiều lợi ích khác</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1052842760770519282">Không sử dụng được một số mật khẩu của bạn</translation>
 <translation id="1057623954802068161">Di chuyển lên đầu trang</translation>
@@ -297,6 +298,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
 <translation id="232137538351753795">Vuốt từ mép trái sang để quay lại</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
+<translation id="2327445548174191329">Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Mọi người sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và tất cả đường liên kết của lời mời sẽ đều bị vô hiệu hoá</translation>
 <translation id="2330186936255788117">Các dấu trang khác</translation>
 <translation id="2332515770639153015">Tính năng Duyệt web an toàn có tăng cường bảo vệ đang bật</translation>
@@ -675,6 +677,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />: Thẻ được ghim đang ở chế độ hình trong hình</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="395377504920307820">Sử dụng mà không cần tài khoản</translation>
+<translation id="3955353672249727801">Đã thêm trang vào danh sách đọc</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sẽ tải trang của bạn khi sẵn sàng}other{Chrome sẽ tải trang của bạn khi sẵn sàng}}</translation>
 <translation id="3969142555815019568">Chrome không thể kiểm tra mật khẩu của bạn</translation>
 <translation id="3969863827134279083">Di chuyển lên</translation>
@@ -834,6 +837,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4595237294768457124">Mở trang Thẻ mới</translation>
 <translation id="4595276580892809760">Đính kèm hình ảnh từ thư viện</translation>
 <translation id="4595805675102978678">Lỗi Tài khoản Google</translation>
+<translation id="4599585406846903742">Chế độ xem một trang</translation>
 <translation id="4601095002996233687">Quét kỹ càng để tìm nội dung tải xuống đáng ngờ.</translation>
 <translation id="4606559747793337066">Khi một trang web hoặc ứng dụng yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, thì Chrome sẽ mã hoá và tải trước những trang này thông qua các máy chủ của Google mà không có cookie. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước.</translation>
 <translation id="4616150815774728855">Mở <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1092,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="569536719314091526">Dịch trang này sang ngôn ngữ bất kỳ từ nút Tùy chọn khác</translation>
 <translation id="5696597120588531049">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác</translation>
 <translation id="5698878456427040674">Kiểm tra xem tài khoản đã chọn có được hỗ trợ hay không.</translation>
+<translation id="5700415746238689851">Mở Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> muốn kết nối với một cổng nối tiếp</translation>
 <translation id="5715150588940290235">Xoá mã bảo mật đã lưu?</translation>
 <translation id="572328651809341494">Thẻ gần đây</translation>
@@ -1769,6 +1774,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8271267069224406035">Báo cáo nội dung rác</translation>
 <translation id="8277710303010772444">Bắt đầu tìm kiếm</translation>
 <translation id="8279945625179116733">Bảo mật bằng <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Đã nhận được đường liên kết</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8282297628636750033">Áp dụng giao diện tối khi có thể</translation>
 <translation id="8282950411412455249">Chuyển đến phần cài đặt bảo mật</translation>
@@ -1904,6 +1910,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8863714995118816041">Đã cấp lại quyền cho <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dữ liệu trên Chrome trong tài khoản của bạn</translation>
 <translation id="8872506776304248286">Mở trong ứng dụng</translation>
+<translation id="8880275451109933094">Chế độ xem hai trang</translation>
 <translation id="8890668505403261809">Tìm kiếm trong các thẻ ẩn danh</translation>
 <translation id="8892234476517513962">Bạn đã đăng nhập</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Thẻ ẩn danh đang ghi và được chọn</translation>

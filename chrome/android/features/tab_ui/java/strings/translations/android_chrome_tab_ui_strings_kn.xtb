@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1844381456014878100">7 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ}one{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="1909810060368225529">ಗಮನಿಸಿ: ಈ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿನ ಬದಲಾವಣೆಗಳು ಎಲ್ಲರಿಗೂ ಗೋಚರಿಸುತ್ತವೆ. ನಿಮ್ಮ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳಿಗೆ ಪ್ರತಿಯೊಬ್ಬರೂ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಿನ್ ಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಿನ್ ಮಾಡಿ}}</translation>
 <translation id="1982637982196732906">ನಿಷ್ಕ್ರಿಯ ವಿಭಾಗಕ್ಕೆ ಸರಿಸಿ</translation>

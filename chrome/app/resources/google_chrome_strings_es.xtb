@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Para eliminar los datos de navegación de este dispositivo, pero no de tu cuenta de Google, <ph name="BEGIN_LINK" />cierra sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Haz clic para cerrar el cuadro de diálogo de inicio de sesión de Chrome</translation>
 <translation id="1051793555070215510">Para ayudarnos a mejorar el modo Incógnito, responde a esta encuesta de 1 minuto.</translation>
+<translation id="1055295352198814912">Mostrar Gemini en Chrome en la barra de menú de Mac y activar la combinación de teclas</translation>
 <translation id="1059838145689930908">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, inicia sesión en Chrome.</translation>
 <translation id="1065672644894730302">No se pueden leer tus preferencias.
 
@@ -34,7 +35,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1290883685122687410">Error de configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> requiere que leas y aceptes los siguientes Términos del Servicio antes de utilizar este dispositivo. Estos términos no amplían, modifican ni limitan los Términos de Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puedes cambiar de perfil para ver las contraseñas de otro perfil de Chrome</translation>
 <translation id="1343830902827845050">Iniciar sesión en Chrome</translation>
 <translation id="1356661055722410047">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla.</translation>
@@ -282,6 +282,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3941890832296813527">Error de instalación: el nombre de archivo del instalador no es válido o no se admite.</translation>
 <translation id="395904275706073188">Las páginas protegidas no se pueden leer. Prueba con otra página.</translation>
+<translation id="3965532487635448963">Mostrar Gemini en Chrome en la bandeja del sistema y activar la combinación de teclas</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968962723676998462">Introduce tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">Google Chrome quiere eliminar tus datos del Gestor de contraseñas de Google. Introduce tu contraseña de Windows para permitirlo.</translation>
@@ -324,6 +325,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="4367027658822022112">Para acceder fácilmente a Google Lens, puedes fijarlo haciendo clic en el botón Fijar situado en la parte superior del panel lateral</translation>
 <translation id="4372389195695053189">Chrome es ahora tu navegador predeterminado</translation>
 <translation id="4389991535395284064">Cuando navegues en modo Incógnito, Chrome te avisará antes de cargar un sitio usando una conexión no segura</translation>
+<translation id="4400772909124543403">No hay actualizaciones disponibles</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y malware.</translation>
 <translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
@@ -362,6 +364,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="4891791193823137474">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="4895437082222824641">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
 <translation id="4896867431081882115">Accede fácilmente a las funciones que conoces, te encantan y en las que confías estableciendo Chrome como navegador predeterminado. Chrome se fijará en la barra de tareas para que puedas acceder rápidamente.</translation>
+<translation id="4904953848704395458">Abre Gemini en Chrome con una combinación de teclas.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4918844574251943176">Imagen copiada</translation>
 <translation id="4926882258455737990">Para usar otra cuenta de Google con Gemini en Chrome, <ph name="BEGIN_LINK" />crea un perfil nuevo<ph name="END_LINK" /> e inicia sesión con la cuenta que quieras</translation>
@@ -524,6 +527,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6434035853014503219">Gracias por elegir Chrome como navegador predeterminado.</translation>
 <translation id="6438015621983209660">Amplía Navegación segura mejorada con Chrome en tu teléfono</translation>
 <translation id="6442774133615368941">Compra, traduce e identifica lo que ves con tu cámara en la aplicación iOS de Chrome</translation>
+<translation id="6448835208126432197">Para seleccionar parte de la pantalla en Gemini en Chrome, usa la combinación de teclas.</translation>
 <translation id="6473905796280459355">Ir a la página Información de Chrome</translation>
 <translation id="6481963882741794338">Vincula Chrome y otros servicios de Google con fines de personalización y otros propósitos</translation>
 <translation id="648319183876919572">Navegación segura mejorada te protege de forma más eficaz de los sitios web y las descargas peligrosos</translation>
@@ -536,6 +540,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6520670145826811516">Para usar tu ubicación, da acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532945796722480006">Abrir Gemini en Chrome Canary</translation>
+<translation id="6539493053177300926">Accede fácilmente a Gemini en Chrome en todo tu dispositivo, aunque Chrome esté minimizado.</translation>
 <translation id="6585124893636629274">Cerrar Gemini en Chrome</translation>
 <translation id="659498884637196217">En el Gestor de contraseñas de Google de este dispositivo</translation>
 <translation id="6631524303639368205">Continúa por donde lo dejaste: Chrome ha restaurado las pestañas de tu última sesión. Puedes desactivar esta opción en</translation>
@@ -595,6 +600,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7161904924553537242">Te damos la bienvenida a Google Chrome</translation>
 <translation id="7193885263065350793">Tu organización cierra Chrome cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse.</translation>
 <translation id="7242029209006116544">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Google Chrome. Tus datos de Chrome como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociar estos datos a otra cuenta. De forma opcional, puedes crear un nuevo perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Para salir de Gemini en Chrome o volver a él, usa la combinación de teclas.</translation>
 <translation id="7274402351400635015">Puedes usar Chrome cada vez que hagas clic en enlaces de mensajes, documentos y otras aplicaciones. También se fijará en tu barra de tareas.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestiona Chrome</translation>
 <translation id="7285990705317078173">Descarga Chrome en tu teléfono para hacer un seguimiento de precios y recibir alertas cuando el precio baje en cualquier sitio</translation>
@@ -633,7 +639,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> requiere que leas y aceptes los siguientes Términos del Servicio antes de utilizar este dispositivo. Estos términos no amplían, modifican ni limitan los Términos de Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite los permisos de los sitios que no hayas visitado recientemente.</translation>
 <translation id="7629695634924605473">Chrome te avisará si tus contraseñas están en riesgo</translation>
 <translation id="7641148173327520642">El administrador del sistema ha configurado Google Chrome para que abra <ph name="ALTERNATIVE_BROWSER_NAME" /> al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -704,6 +709,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="8253851811470049684">Abre enlaces en Chrome desde cualquier aplicación y accede fácilmente al navegador desde la barra de tareas</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando la cámara y el micrófono.</translation>
+<translation id="8260086374035800939">Si Gemini en Chrome está abierto, el panel lateral permanece abierto al crear nuevas pestañas</translation>
 <translation id="8267953129876836456">Chrome ha encontrado algunas recomendaciones de seguridad para que las revises</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="829923460755755423">Añade un acceso directo al Gestor de contraseñas de Google</translation>
@@ -715,6 +721,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8362914115861174987">Traducir al</translation>
 <translation id="8366770919198174997">Reduce el rendimiento, pero hace que Chrome sea más resistente a los ataques</translation>
 <translation id="8367705492654390392">Pregunta lo que quieras</translation>
+<translation id="8367950957770994118">Abre Gemini en Chrome rápidamente cuando lo necesites</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8377158135256176353">Activar o desactivar Gemini en Chrome Canary</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
@@ -732,6 +739,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia ahora y restauraremos las pestañas.</translation>
 <translation id="8521348052903287641">Regla entrante para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="852529348814672339">Mostrar Chrome en este idioma</translation>
+<translation id="8525579356836940628">Instalación detenida</translation>
 <translation id="8533056045953418157">Establece Google Chrome como visor de PDFs predeterminado</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>

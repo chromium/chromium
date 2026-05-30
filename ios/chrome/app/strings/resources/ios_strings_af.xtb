@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Skakel KI-modus af</translation>
 <translation id="1554477036522844996">Nuwe venster</translation>
 <translation id="1558391695376153246">Maak Incognito-oortjies toe</translation>
+<translation id="1560153516220021659">Ingevoude sekondêrenutsbalkknoppie</translation>
 <translation id="1565371473877914088">Nuwe incognito-oortjie</translation>
 <translation id="1567960978791353852">Wys Leesmodus</translation>
 <translation id="1571780780926010134">Incognito-oortjies</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-pos is gestuur.</translation>
 <translation id="1582732959743469162">Dit sal alle vordering van jou huidige aflaai staak.</translation>
 <translation id="1594034544529347967">Begin</translation>
+<translation id="1598485494295307681">Luister tans</translation>
 <translation id="1598751033135758830">Maak in app oop …</translation>
 <translation id="1600571977391127696">Sommige inhoud is dalk nie vir almal geskik nie.</translation>
 <translation id="1601560923496285236">Pas toe</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Jammer, kon nie jou item deel nie.</translation>
 <translation id="4944543191714094452">Soek op bladsy …</translation>
 <translation id="4945756290001680296">Gaan by wagwoordinstelling in</translation>
+<translation id="4946307855175300628">Antwoord tans</translation>
 <translation id="4949302115427722371">Bestuur instellings …</translation>
 <translation id="4958444002117714549">Vou lys uit</translation>
 <translation id="496392417432935267">Elders oopgemaak</translation>
@@ -1552,6 +1555,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6355820183143562453">Versteek prysnasporingkaart</translation>
 <translation id="6355820205320395730">Swak wagwoorde is maklik om te raai. Maak seker jy skep sterk wagwoorde. <ph name="BEGIN_LINK" />Sien nog sekuriteitswenke.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Meld aan om al jou goed soos wagwoorde, boekmerke en meer te kry.</translation>
+<translation id="6364268785720100355">Meld aan om jou wagwoorde en meer op al jou toestelle te kry.</translation>
 <translation id="6368038301482806847">Kies ’n soekenjin uit die lys.</translation>
 <translation id="6368102751067608420">Om alle Wagwoordbestuurder-data uit te vee</translation>
 <translation id="6372558618707314581">Gaan na enige bladsy wat jy wil</translation>
@@ -1681,6 +1685,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
 <translation id="6750456911389438250">{count,plural, =1{Het {count} geskiedenisitem ingevoer}other{Het {count} geskiedenisitems ingevoer}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opsie vir eiebewys is bo jou sleutelbord beskikbaar.}other{{count} opsies vir eiebewys is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="6755200887046212842">Bestuur rekeninge</translation>
 <translation id="6757899787818440812">Medium hoogte</translation>
 <translation id="6759709389246683070">Jy kan hierdie oortjie raak en hou om ’n onthounota te stel om later daarheen terug te keer</translation>

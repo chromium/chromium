@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">ਅਗਿਆਤ ਨੀਤੀ।</translation>
 <translation id="1227677022489889280">ਫ਼ਾਈਲ ਨੂੰ ਲਿਜਾਉਣ ਦਾ ਕਾਰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ (ਲੋੜੀਂਦਾ)</translation>
 <translation id="1228893227497259893">ਗ਼ਲਤ ਸੰਸਥਾ ਪਛਾਣਕਰਤਾ</translation>
+<translation id="122989279399348496">ਜਦੋਂ ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="DOMAIN" /> ਸਮਰਥਿਤ ਸਾਈਟਾਂ 'ਤੇ <ph name="EMAIL" /> ਦੀ ਤਸਦੀਕ ਕਰ ਸਕਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਹਾਨੂੰ ਆਪਣਾ ਇਨਬਾਕਸ ਨਾ ਦੇਖਣਾ ਪਵੇ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ਸਵੈਚਲਿਤ-ਪਛਾਣੀ ਗਈ ਭਾਸ਼ਾ)</translation>
 <translation id="1232569758102978740">ਬਿਨਾਂ ਸਿਰਲੇਖ ਦਾ</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> ਲੋੜੀਂਦਾ ਹੈ</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਇੱਕ ਤੋਂ ਵੱਧ ਕਾਰਵਾਈਆਂ ਉਪਲਬਧ ਹਨ, ਉਹਨਾਂ ਵਿੱਚ ਚੱਕਰ ਲਗਾਉਣ ਲਈ Tab ਦਬਾਓ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ਆਭਾਸੀ ਕਾਰਡ ਵੇਰਵੇ</translation>
+<translation id="1802420021606590788">Chrome ਕਲਾਊਡ ਵਿਚਲੀ ਪ੍ਰਾਈਵੇਟ ਸਪੇਸ ਵਿੱਚ ਪੰਨਾ ਸਿਰਲੇਖਾਂ ਅਤੇ URL 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਦਾ ਹੈ</translation>
 <translation id="1803254472779303354">ਮਾਊਸ ਲਾਕ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="1803351196216024260">ਸਾਈਟ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1804258830776932716">ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਤੁਰੰਤ ਲਿੰਕ ਕਰ ਕੇ Pix ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -3024,6 +3026,7 @@
 <translation id="5742806904559466333">ਬਾਰ, ਕਲੱਬ ਅਤੇ ਨਾਈਟਲਾਈਫ਼</translation>
 <translation id="5743684619253032786">ਨਹੁੰਆਂ ਦੀ ਦੇਖਭਾਲ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
+<translation id="5745586894920491759">Chrome ਕਲਾਊਡ ਵਿੱਚ ਪੰਨਾ ਸਿਰਲੇਖਾਂ ਅਤੇ URL 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਦਾ ਹੈ</translation>
 <translation id="5745733273847572235">ਸਾਈਟ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="5750869797196646528">ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
 <translation id="5752327398324808817">ਇੱਕ ਜਾਂ ਦੋ ਸ਼ਬਦ ਦਾਖਲ ਕਰੋ</translation>
@@ -3417,6 +3420,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ਲੌਗ ਦੇਖੋ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ਪ੍ਰੌਕਸੀ, ਫ਼ਾਇਰਵਾਲ, ਅਤੇ ਸੁਰੱਖਿਅਤ DNS ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਨਾ<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">ਆਪਣੀਆਂ ਈਮੇਲਾਂ ਦੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="6366710531182496394">ਖੱਬੇ ਦੋ ਪਿੰਨਾਂ</translation>
 <translation id="6367196786591004737">ਇੰਦਰਾਜ ਮਿਟਾਓ</translation>
 <translation id="6370022303958842211">ਡੀਵਾਈਸ ਪਹੁੰਚ ਸੰਬੰਧੀ ਕਾਰਵਾਈਆਂ ਜਿਵੇਂ ਕਿ ਲੌਗ-ਇਨ (ਅਸਫਲ ਲੌਗ-ਇਨ ਕਾਰਨਾਂ ਸਮੇਤ), ਲੌਗ-ਆਊਟ, ਲਾਕ ਅਤੇ ਅਣਲਾਕ</translation>
@@ -4061,6 +4065,7 @@
 <translation id="7388380253839603603">ਪੈਟਰੋਲ ਦੀਆਂ ਕੀਮਤਾਂ ਅਤੇ ਵਾਹਨ ਦਾ ਬਾਲਣ</translation>
 <translation id="7388594495505979117">{0,plural, =1{ਤੁਹਾਡਾ ਡੀਵਾਈਸ 1 ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ}one{ਤੁਹਾਡਾ ਡੀਵਾਈਸ # ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ}other{ਤੁਹਾਡਾ ਡੀਵਾਈਸ # ਮਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ}}</translation>
 <translation id="7393161616326137353">ਰੁਮਾਂਚਕਾਰੀ ਗੇਮਾਂ</translation>
+<translation id="7393243238767102021">ਕੀ <ph name="DOMAIN" /> ਨੂੰ ਇਸ ਈਮੇਲ ਦੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="7393475648162498734">ਦੇਖੋ ਕਿ ਚੈੱਕ-ਆਊਟ 'ਤੇ ਤੁਹਾਡੇ ਕਾਰਡਾਂ ਲਈ ਕਿਹੜੇ ਇਨਾਮ ਅਤੇ ਲਾਭ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="7393971683644170444">ਤੁਹਾਡੇ ਕਾਰਡ ਪ੍ਰਦਾਨਕ ਨੂੰ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="739728382607845710">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਦਾ ਪ੍ਰਤੀਕ</translation>
@@ -5056,6 +5061,7 @@
 <translation id="8963117664422609631">ਸਾਈਟ ਦੀਆਂ ਸੈਟਿੰਗਾਂ 'ਤ ਜਾਓ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ਸੁਝਾਅ:<ph name="MARKUP_2" />ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਡਾਟਾ ਕਨੈਕਸ਼ਨ ਹੈ<ph name="MARKUP_3" />ਬਾਅਦ ਵਿੱਚ ਇਹ ਵੈਬਸਫ਼ਾ ਰੀਲੋਡ ਕਰੋ<ph name="MARKUP_4" />ਉਸ ਪਤੇ ਦੀ ਜਾਂਚ ਕਰੋ, ਜੋ ਤੁਸੀਂ ਦਰਜ ਕੀਤਾ ਸੀ<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ਤੁਹਾਡੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOURS" /> ਘੰਟਿਆਂ ਵਿੱਚ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="8964904785315870349">ਪੁਸ਼ਟੀਕਿਰਤ ਈਮੇਲ</translation>
 <translation id="8968766641738584599">ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="8970887620466824814">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="8971063699422889582">ਸਰਵਰ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ।</translation>

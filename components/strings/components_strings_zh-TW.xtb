@@ -1771,7 +1771,7 @@
 <translation id="3763752038825281594">你先前不允許這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">出紙槽 9</translation>
 <translation id="3767485424735936570">系統管理員政策不建議複製這項內容並貼到「<ph name="VM_NAME" />」</translation>
-<translation id="3769584711865378220"><ph name="URL" /> 想將位置存取權從「大概位置」改成「精確位置」</translation>
+<translation id="3769584711865378220"><ph name="URL" /> 想將位置存取權從「概略」改成「精確」</translation>
 <translation id="3772211998634047851">紙 (證券紙)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google Keep 中快速建立新記事</translation>
 <translation id="3780694243617746492">輸出紙槽</translation>
@@ -2050,7 +2050,7 @@
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
 <translation id="4213500579045346575">健美</translation>
 <translation id="4214357935346142455">登入畫面設定檔</translation>
-<translation id="4218327733815631046">維持「大概位置」</translation>
+<translation id="4218327733815631046">維持概略位置</translation>
 <translation id="4219596572397833317">提供價格記錄等資訊，協助你做出更聰明的購物決策。</translation>
 <translation id="4220128509585149162">當機</translation>
 <translation id="4221630205957821124">&lt;h4&gt;步驟 1：從入口網站登入&lt;/h4&gt;
@@ -2954,7 +2954,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 將您重新導向的次數過多。</translation>
 <translation id="5619721953841297650">預設</translation>
 <translation id="5624120631404540903">管理密碼</translation>
-<translation id="5627344039351500898">改成「精確位置」</translation>
+<translation id="5627344039351500898">改成精確位置</translation>
 <translation id="5628060911499153873">儲存資訊後可在各項 Google 產品使用，效率更高！這項資訊會儲存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。</translation>
 <translation id="5629630648637658800">無法載入政策設定</translation>
 <translation id="5630981295558454585">「問問 Google 這個網頁的內容」按鈕，啟用即可問 Google 有關本頁的資訊</translation>

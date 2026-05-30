@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1000614056227025171">Avalehe promo kohandamise alumine leht on avatud täiskõrgusel</translation>
 <translation id="1006017844123154345">Ava veebis</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1046742265332833834">Sinine teema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Saidid saavad esitada heli</translation>
 <translation id="3065787901655140044">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="3069226013421428034">Konkreetse saidi jaoks kolmanda osapoole sisselogimise lubamine.</translation>
+<translation id="3084983642903364837">Saate oma avalehte hiljem muuta kolmetäpimenüü kaudu.</translation>
 <translation id="310297983047869047">Eelmine slaid</translation>
 <translation id="3108122610701115301">Määra vaikeseadeks</translation>
 <translation id="310979712355504754">Kustuta kõik</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Jadapordiga ühendatud</translation>
 <translation id="4223404254440398437">Mikrofon ei ole lubatud</translation>
 <translation id="4226663524361240545">Seade võib märguannete korral vibreerida</translation>
+<translation id="4227965147357783918">Avalehe promo kohandamise alumine leht on avatud poolel kõrgusel</translation>
 <translation id="4259722352634471385">Navigeerimine on blokeeritud: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kui lahkute saidilt, võib see sünkroonimist jätkata, et toimingud (nt fotode üleslaadimine või vestlussõnumi saatmine) lõpule viia</translation>
 <translation id="4278390842282768270">Lubatud</translation>

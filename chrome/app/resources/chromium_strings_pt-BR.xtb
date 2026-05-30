@@ -310,7 +310,6 @@
 <translation id="4334241893986177674">Pesquisar esta captura de tela</translation>
 <translation id="4384331407722351213">Iniciar o Chromium junto com o Windows</translation>
 <translation id="4384993550046411228">Defina o Chromium como o navegador padrão para acessar com facilidade seus recursos favoritos. O Chromium será fixado na barra de tarefas para agilizar seu acesso.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do ChromiumOS.</translation>
 <translation id="4400772909124543403">Nenhuma atualização disponível</translation>
 <translation id="4407044323746248786">Sair do Chromium mesmo assim?</translation>
 <translation id="4413205837991854510">Sempre mostrar o atalho da pesquisa por imagens</translation>
@@ -370,6 +369,7 @@
 <translation id="5187123684706427865">A conta do Chromium precisa ser autenticada de novo</translation>
 <translation id="5231355151045086930">Sair do Chromium</translation>
 <translation id="5234764350956374838">Dispensar</translation>
+<translation id="5249261924633168472">Abrir link na janela anô&amp;nima do Chromium</translation>
 <translation id="5254739261293693943">Faça perguntas sobre este vídeo</translation>
 <translation id="5276305953263010518">Baixe o app Chromium para salvar senhas em qualquer lugar</translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>

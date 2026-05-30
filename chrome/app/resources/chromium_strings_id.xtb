@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Saat Anda membuka Penelusuran Gambar, judul halaman, URL, dan konten, termasuk PDF, akan otomatis dikirim ke server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Saat Anda login, Anda dapat menggunakan sandi Anda dan info lainnya dari Akun Google Anda di Chromium. Untuk mengubahnya, buka “Akun Anda di Chromium”.</translation>
+<translation id="1257483544893909270">Gunakan pintasan keyboard untuk memilih bagian tertentu dari layar di Gemini di Chromium.</translation>
 <translation id="1262876892872089030">Saat tab ini tidak aktif, memori akan dikosongkan agar Chromium tetap cepat. Anda dapat memilih untuk selalu mengecualikan situs ini agar tetap aktif.</translation>
 <translation id="1265577313130862557">Chromium memblokir download ini karena file tersebut berbahaya</translation>
 <translation id="126567311906253476">Saat login ke layanan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, Anda dapat login otomatis ke Chromium dengan akun yang sama</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organisasi Anda dapat melihat dan mengelola data penjelajahan, seperti bookmark, histori, dan sandi. Organisasi Anda tidak dapat melihat data penjelajahan di profil Chromium lain</translation>
 <translation id="2635452620547538388">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chromium di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Untuk keluar dari atau kembali ke Gemini di Chromium, gunakan pintasan keyboard.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran tidak akan dibuka kembali.}other{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran tidak akan dibuka kembali.}}</translation>
 <translation id="2648074677641340862">Terjadi error pada sistem operasi saat pemasangan berlangsung. Download Chromium lagi.</translation>
 <translation id="2661879430930417727">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya</translation>
+<translation id="2676569452213089702">Akses mudah untuk menggunakan Gemini di Chromium di berbagai perangkat Anda, bahkan saat Chromium diperkecil.</translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
 <translation id="2718390899429598676">Untuk keamanan tambahan, Chromium akan mengenkripsi data Anda.</translation>
 <translation id="2721354645805494590">Logout untuk menghapus Akun Google Anda dari Chromium</translation>
@@ -309,7 +312,7 @@
 <translation id="4334241893986177674">Telusuri screenshot ini</translation>
 <translation id="4384331407722351213">Luncurkan Chromium saat Windows dimulai</translation>
 <translation id="4384993550046411228">Dapatkan akses mudah ke fitur yang Anda kenal, suka, dan percaya dengan menyetel Chromium sebagai browser default. Chromium akan disematkan ke taskbar agar dapat diakses dengan cepat.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan ChromiumOS.</translation>
+<translation id="4400772909124543403">Tidak ada update yang tersedia</translation>
 <translation id="4407044323746248786">Tetap keluar dari Chromium?</translation>
 <translation id="4413205837991854510">Selalu Tampilkan Pintasan Penelusuran Gambar</translation>
 <translation id="4415566066719264597">Jalankan Chromium di Background</translation>
@@ -348,6 +351,7 @@
 <translation id="4746050847053251315">Tetap tutup Chromium?</translation>
 <translation id="4748217263233248895">Update keamanan khusus untuk Chromium baru saja diterapkan. Mulai ulang Chromium sekarang dan kami akan memulihkan tab Anda.</translation>
 <translation id="4771701986670315895">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="COUNT" /> lainnya.</translation>
+<translation id="4786083865378785874">Jika Gemini di Chromium terbuka, panel samping akan tetap terbuka saat membuat tab baru</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4814736265800133385">Gunakan Chromium tanpa akun</translation>
 <translation id="4888717733111232871">Inbound rule untuk Chromium guna mengizinkan lalu lintas mDNS.</translation>
@@ -399,6 +403,7 @@
 <translation id="555970465369471303">Demi keamanan, Chromium menonaktifkan pengoptimalan JavaScript saat Anda membuka suatu situs untuk pertama kalinya.
 
 Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimalan.</translation>
+<translation id="5575874067957905201">Tampilkan Gemini di Chromium di panel menu Mac dan aktifkan pintasan keyboard</translation>
 <translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
 <translation id="5580770360767802657">Gunakan Chromium sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
@@ -620,6 +625,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7867198900892795913">Chromium tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
 <translation id="7872446069773932638">Mendownload ... <ph name="SECONDS" /> detik lagi</translation>
 <translation id="7873537467422636035">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Buka Gemini dengan cepat di Chromium kapan pun Anda membutuhkannya</translation>
 <translation id="7877212753140190672">Tanyakan info tentang gambar ini</translation>
 <translation id="7888981273428720788">Setel Chromium sebagai browser default</translation>
 <translation id="7934340546140346950">Chromium mengupgrade koneksi yang tidak aman ke HTTPS secara otomatis jika memungkinkan</translation>
@@ -641,6 +647,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8118331347066725040">Kirim masukan untuk penelusuran dengan Lens</translation>
 <translation id="8133124826068723441">ChromiumOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="813913629614996137">Memulai...</translation>
+<translation id="8161503455832158203">Buka Gemini di Chromium dengan pintasan keyboard.</translation>
 <translation id="8164014945047474187">Persyaratan Layanan Tambahan Chromium</translation>
 <translation id="81770708095080097">File ini berbahaya, jadi Chromium telah memblokirnya.</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan konten di halaman</translation>
@@ -650,6 +657,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8232193495299001329">Chromium tidak dapat memverifikasi asal ekstensi ini, dan mungkin ekstensi ini tidak aman. Hapus dari Chromium agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="8248265253516264921">Jika gambar tidak memiliki deskripsi yang berguna, Chromium akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>
 <translation id="8254601181414348851">Login ke Chromium di profil baru?</translation>
+<translation id="8277334259226003205">Tampilkan Gemini di Chromium di area notifikasi dan aktifkan pintasan keyboard</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium akan memperingatkan Anda<ph name="END_LINK" /> tentang situs dan download yang tidak aman</translation>
 <translation id="8295827201165805317">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Gunakan kamera di aplikasi Chromium versi iOS untuk berbelanja, menerjemahkan teks, dan mengidentifikasi objek yang Anda lihat</translation>
@@ -678,6 +686,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8493179195440786826">Chromium Terlalu Lawas</translation>
 <translation id="850264194101621529">Terima kasih telah memilih Chromium sebagai browser default Anda.</translation>
 <translation id="8522801943730206384">Chromium dapat memeriksa sandi jika Anda menyimpannya</translation>
+<translation id="8525579356836940628">Penginstalan Dihentikan</translation>
 <translation id="8548787790260785208">Dapatkan peringatan jika Chromium menemukan salah satu sandi Anda dalam pelanggaran data publik</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Beberapa fitur dan ekstensi Chromium dilengkapi pintasan. Anda dapat mengaktifkannya kembali.</translation>

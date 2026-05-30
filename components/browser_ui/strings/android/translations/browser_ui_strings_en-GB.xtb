@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1000614056227025171">Customise your homepage promo bottom sheet opened at full height</translation>
 <translation id="1006017844123154345">Open Online</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1046742265332833834">Blue theme</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Sites can play sound</translation>
 <translation id="3065787901655140044">Advanced Protection is on</translation>
 <translation id="3069226013421428034">Allow third-party sign-in for a specific site.</translation>
+<translation id="3084983642903364837">Edit your homepage later via the 3-dots menu.</translation>
 <translation id="310297983047869047">Previous slide</translation>
 <translation id="3108122610701115301">Set default</translation>
 <translation id="310979712355504754">Delete all</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Connected to a serial port</translation>
 <translation id="4223404254440398437">Microphone not allowed</translation>
 <translation id="4226663524361240545">Notifications may vibrate the device</translation>
+<translation id="4227965147357783918">Customise your homepage promo bottom sheet opened at half height</translation>
 <translation id="4259722352634471385">Navigation is blocked: <ph name="URL" /></translation>
 <translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
 <translation id="4278390842282768270">Allowed</translation>

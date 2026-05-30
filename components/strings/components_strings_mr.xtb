@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">अज्ञात धोरण.</translation>
 <translation id="1227677022489889280">हलवण्याचे कारण द्या (आवश्यक)</translation>
 <translation id="1228893227497259893">चुकीचा अस्तित्व ओळखकर्ता</translation>
+<translation id="122989279399348496">तुम्ही साइन इन केलेले असताना, सपोर्ट असलेल्या साइटवर <ph name="DOMAIN" /> हे <ph name="EMAIL" /> कन्फर्म करू शकते, जेणेकरून तुम्हाला तुमचा इनबॉक्स तपासावा लागणार नाही</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ऑटो-डिटेक्ट केली आहे)</translation>
 <translation id="1232569758102978740">अशीर्षकांकित</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> आवश्यक आहे</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकाहून अधिक कृती उपलब्ध आहेत, प्रत्येकावर जाण्यासाठी टॅब प्रेस करा</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">व्हर्च्युअल कार्डचे तपशील</translation>
+<translation id="1802420021606590788">Chrome हे क्लाउडमधील खाजगी स्पेसमध्ये पेजची शीर्षके आणि URLs वर प्रक्रिया करते</translation>
 <translation id="1803254472779303354">माउस लॉकला अनुमती आहे</translation>
 <translation id="1803351196216024260">तुमचा मायक्रोफोन वापरण्याची विनंती करू शकते</translation>
 <translation id="1804258830776932716">तुमचे खाते झटपट लिंक करून Pix सुरू करा</translation>
@@ -3026,6 +3028,7 @@
 <translation id="5742806904559466333">बार, क्लब आणि नाइटलाइफ</translation>
 <translation id="5743684619253032786">नखांच्या निगेशी संबंधित उत्पादने</translation>
 <translation id="574392208103952083">मध्यम</translation>
+<translation id="5745586894920491759">Chrome हे क्लाउडमध्ये पेजची शीर्षके आणि URLs वर प्रक्रिया करते</translation>
 <translation id="5745733273847572235">तुमच्या स्थानाची विनंती करू शकते</translation>
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
 <translation id="5752327398324808817">एक किंवा दोन शब्द एंटर करा</translation>
@@ -3421,6 +3424,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">लॉग पहा</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">तुमचे ईमेल आपोआप कन्फर्म करा</translation>
 <translation id="6366710531182496394">ड्युअल स्टेपल लेफ्ट</translation>
 <translation id="6367196786591004737">एंट्री हटवा</translation>
 <translation id="6370022303958842211">डिव्हाइस अ‍ॅक्सेस करण्याशी संबंधित कृती, जसे की लॉग इन (लॉग इन न करता आल्याची कारणे यांच्या समावेशासह), लॉगआउट, लॉक आणि अनलॉक</translation>
@@ -4066,6 +4070,7 @@
 <translation id="7388380253839603603">गॅसच्या किमती आणि वाहनांचे इंधन</translation>
 <translation id="7388594495505979117">{0,plural, =1{तुमचे डिव्हाइस एका मिनिटामध्ये रीस्टार्ट होईल}other{तुमचे डिव्हाइस # मिनिटांमध्ये रीस्टार्ट होईल}}</translation>
 <translation id="7393161616326137353">साहसपर गेम</translation>
+<translation id="7393243238767102021"><ph name="DOMAIN" /> ला या ईमेलची आपोआप पडताळणी करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="7393475648162498734">चेकआउट करताना तुमच्या कार्डसाठी कोणते रिवॉर्ड आणि फायदे उपलब्ध आहेत हे दाखवा</translation>
 <translation id="7393971683644170444">तुमच्या कार्ड पुरवठादाराशी कनेक्ट करत आहे...</translation>
 <translation id="739728382607845710">पेमेंट हँडलरचा आयकन</translation>
@@ -5061,6 +5066,7 @@
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सूचना:<ph name="MARKUP_2" />आपल्याकडे डेटा कनेक्शन असल्याचे निश्चित करा<ph name="MARKUP_3" />हे वेबपेज नंतर रीलोड करा<ph name="MARKUP_4" />तुम्ही एंटर केलेला ॲड्रेस तपासा<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">तुमच्या स्थानिक फाइल <ph name="HOURS" /> तासांमध्ये हटवल्या जातील</translation>
+<translation id="8964904785315870349">पडताळणी केलेला ईमेल</translation>
 <translation id="8968766641738584599">कार्ड सेव्ह करा</translation>
 <translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="8971063699422889582">सर्व्हरचे सर्टिफिकेट एक्स्पायर झाले आहे.</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Vinkki-ilmoituskampanja suljettu</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1045899828449635435">Poistetaanko data?</translation>
+<translation id="1049461303780085993">Kokeile Gemini in Chromea, niin saat esimerkiksi vastauksia ja tärkeät kohdat</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Joitakin salasanojasi ei ole saatavilla</translation>
 <translation id="1057623954802068161">Vieritä sivun yläreunaan</translation>
@@ -297,6 +298,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2318045970523081853">Soita napauttamalla</translation>
 <translation id="232137538351753795">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>
+<translation id="2327445548174191329">Lähde: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
 <translation id="2330186936255788117">Lisää kirjanmerkkejä</translation>
 <translation id="2332515770639153015">Parannettu selaussuoja on päällä</translation>
@@ -834,6 +836,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4595237294768457124">Avaa Uusi välilehti ‑sivu</translation>
 <translation id="4595276580892809760">Liitä kuvia galleriasta</translation>
 <translation id="4595805675102978678">Google-tilin virhe</translation>
+<translation id="4599585406846903742">Yhden sivun näkymä</translation>
 <translation id="4601095002996233687">Yksityiskohtaiset tarkistukset epäilyttäville latauksille.</translation>
 <translation id="4606559747793337066">Kun sivusto tai sovellus pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome salaa ja esilataa sivut Googlen palvelimien kautta ilman evästeitä. Henkilöllisyytesi piilotetaan esiladatulta sivustolta.</translation>
 <translation id="4616150815774728855">Avaa <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="569536719314091526">Käännä sivu mille tahansa kielelle Lisävalinnat-painikkeella</translation>
 <translation id="5696597120588531049">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta</translation>
 <translation id="5698878456427040674">Tarkista, tuetaanko valittua tiliä.</translation>
+<translation id="5700415746238689851">Avaa Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> haluaa yhdistää sarjaporttiin</translation>
 <translation id="5715150588940290235">Poistetaanko tallennetut turvakoodit?</translation>
 <translation id="572328651809341494">Hiljattain suljetut välilehdet</translation>
@@ -1769,6 +1773,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8271267069224406035">Merkitse roskasisällöksi</translation>
 <translation id="8277710303010772444">Aloita haku</translation>
 <translation id="8279945625179116733">Varmentaja: <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Linkkejä vastaanotettu</translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8282297628636750033">Käytä tummaa teemaa sivustoilla</translation>
 <translation id="8282950411412455249">Siirry suojausasetuksiin</translation>
@@ -1904,6 +1909,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8863714995118816041">Luvat sallittu uudelleen: <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Tilisi Chrome-data</translation>
 <translation id="8872506776304248286">Avaa sovelluksessa</translation>
+<translation id="8880275451109933094">Kahden sivun näkymä</translation>
 <translation id="8890668505403261809">Tee hakuja incognito-välilehdillä</translation>
 <translation id="8892234476517513962">Olet jo kirjautunut sisään</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, valittu incognito-välilehti, jolla tallennetaan mediaa</translation>

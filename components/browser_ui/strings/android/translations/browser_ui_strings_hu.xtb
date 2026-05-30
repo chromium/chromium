@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1000614056227025171">A kezdőlap személyre szabásának promócióját tartalmazó alsó lap teljes magasságban van megnyitva</translation>
 <translation id="1006017844123154345">Online megnyitás</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1046742265332833834">Kék téma</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">A webhelyek lejátszhatnak hangokat</translation>
 <translation id="3065787901655140044">Bekapcsolta a Speciális védelmet</translation>
 <translation id="3069226013421428034">Engedélyezheti a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
+<translation id="3084983642903364837">A kezdőlapot később a hárompontos menün keresztül szerkesztheti.</translation>
 <translation id="310297983047869047">Előző dia</translation>
 <translation id="3108122610701115301">Beállítás alapértelmezettként</translation>
 <translation id="310979712355504754">Az összes törlése</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Soros porthoz csatlakoztatva</translation>
 <translation id="4223404254440398437">Mikrofonhasználat nem engedélyezett</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
+<translation id="4227965147357783918">A kezdőlap személyre szabásának promócióját tartalmazó alsó lap félmagasságban van megnyitva</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Elhagyásuk után a webhelyek tovább folytathatják a szinkronizálást a feladatok (például fotók feltöltése vagy csevegőüzenetek küldése) befejezése érdekében.</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>

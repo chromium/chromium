@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">팁 알림 프로모션 닫힘</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
+<translation id="1049461303780085993">Chrome의 Gemini를 사용해 답변을 얻고 핵심 내용 등을 확인하세요</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1052842760770519282">일부 비밀번호에 액세스할 수 없습니다</translation>
 <translation id="1057623954802068161">페이지 상단으로 스크롤</translation>
@@ -297,6 +298,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="232137538351753795">왼쪽 끝에서부터 스와이프하여 뒤로 돌아가기</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
+<translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
 <translation id="2330186936255788117">북마크 더보기</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
@@ -834,6 +836,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4595237294768457124">새 탭 페이지를 엽니다.</translation>
 <translation id="4595276580892809760">갤러리에서 이미지 첨부</translation>
 <translation id="4595805675102978678">Google 계정 오류</translation>
+<translation id="4599585406846903742">한 페이지씩 보기</translation>
 <translation id="4601095002996233687">의심스러운 다운로드 항목을 심층 스캔합니다.</translation>
 <translation id="4606559747793337066">사이트 또는 앱에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 페이지를 암호화한 다음 쿠키를 사용하지 않고 Google 서버를 통해 미리 로드합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있습니다.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
@@ -1088,6 +1091,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="569536719314091526">옵션 더보기 버튼을 눌러 이 페이지를 원하는 언어로 번역하세요</translation>
 <translation id="5696597120588531049">Chrome은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="5698878456427040674">선택한 계정이 지원되는지 확인하세요.</translation>
+<translation id="5700415746238689851">Gemini 열기</translation>
 <translation id="5709213329446699338"><ph name="SITE" />에서 직렬 포트에 연결하려고 합니다</translation>
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
 <translation id="572328651809341494">최근 탭</translation>
@@ -1769,6 +1773,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8271267069224406035">스팸 신고</translation>
 <translation id="8277710303010772444">검색 시작</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> 앱으로 보호됨</translation>
+<translation id="8280797717392145626">링크 수신됨</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282297628636750033">가능하면 사이트에 어두운 테마를 적용합니다</translation>
 <translation id="8282950411412455249">보안 설정으로 이동</translation>
@@ -1904,6 +1909,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8863714995118816041"><ph name="SITE_NAME" />에 대한 권한이 다시 허용됨</translation>
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
 <translation id="8872506776304248286">앱에서 열기</translation>
+<translation id="8880275451109933094">두 페이지씩 보기</translation>
 <translation id="8890668505403261809">시크릿 탭 검색</translation>
 <translation id="8892234476517513962">이미 로그인되어 있습니다</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, 선택되고 녹화 중인 시크릿 탭</translation>

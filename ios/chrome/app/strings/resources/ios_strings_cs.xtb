@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Vypnout AI režim</translation>
 <translation id="1554477036522844996">Nové okno</translation>
 <translation id="1558391695376153246">Zavřít anonymní karty</translation>
+<translation id="1560153516220021659">Tlačítko sbalené sekundární lišty</translation>
 <translation id="1565371473877914088">Nová anonymní karta</translation>
 <translation id="1567960978791353852">Zobrazit režim čtení</translation>
 <translation id="1571780780926010134">Anonymní karty</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-mail byl odeslán.</translation>
 <translation id="1582732959743469162">Tímto zastavíte veškerý postup aktuálního stahování.</translation>
 <translation id="1594034544529347967">Začíná</translation>
+<translation id="1598485494295307681">Poslouchám</translation>
 <translation id="1598751033135758830">Otevřít v aplikaci…</translation>
 <translation id="1600571977391127696">Některý obsah nemusí být vhodný pro každého.</translation>
 <translation id="1601560923496285236">Použít</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Litujeme, ale při sdílení položky došlo k potížím.</translation>
 <translation id="4944543191714094452">Najít na stránce…</translation>
 <translation id="4945756290001680296">Otevřít nastavení hesla</translation>
+<translation id="4946307855175300628">Odpovídání</translation>
 <translation id="4949302115427722371">Správa nastavení…</translation>
 <translation id="4958444002117714549">Rozbalit seznam</translation>
 <translation id="496392417432935267">Otevřeno jinde</translation>
@@ -1552,6 +1555,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6355820183143562453">Skrýt kartu Sledování cen</translation>
 <translation id="6355820205320395730">Slabá hesla lze snadno uhodnout. Vždy se snažte vytvářet silná hesla. <ph name="BEGIN_LINK" />Další tipy k zabezpečení<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Když se přihlásíte, budete mít k dispozici svá data, jako jsou hesla, záložky a další.</translation>
+<translation id="6364268785720100355">Přihlaste se a používejte svá hesla a další obsah na všech svých zařízeních.</translation>
 <translation id="6368038301482806847">Vyberte vyhledávač ze seznamu.</translation>
 <translation id="6368102751067608420">Ke smazání všech dat správce hesel</translation>
 <translation id="6372558618707314581">Přejděte na libovolnou stránku</translation>
@@ -1681,6 +1685,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6746338529702829275">Zkontrolovat data svého účtu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Byla importována {count} položka historie}few{Byly importovány {count} položky historie}many{Bylo importováno {count} položky historie}other{Bylo importováno {count} položek historie}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Nad klávesnicí je k dispozici {count} možnost zadání identifikačních údajů.}few{Nad klávesnicí jsou k dispozici {count} možnosti zadání identifikačních údajů.}many{Nad klávesnicí je k dispozici {count} možnosti zadání identifikačních údajů.}other{Nad klávesnicí je k dispozici {count} možností zadání identifikačních údajů.}}</translation>
 <translation id="6755200887046212842">Správa účtů</translation>
 <translation id="6757899787818440812">Střední výška</translation>
 <translation id="6759709389246683070">Podržením této karty můžete nastavit připomenutí, že se k ní máte později vrátit</translation>

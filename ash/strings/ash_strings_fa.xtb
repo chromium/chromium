@@ -35,6 +35,7 @@
 <translation id="1088231044944504242">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر. برای پیمایش برنامه‌ها، از کلیدهای جهت‌نما استفاده کنید.</translation>
 <translation id="1093645050124056515">مهار + دگرساز + پایین‌بر</translation>
 <translation id="1094756674036064790">بلوتوث خاموش شود؟</translation>
+<translation id="109647177154844434">‏حذف نصب Parallels Desktop تصویر Windows شما را حذف خواهد کرد. برنامه‌ها، تنظیمات، و داده‌های آن هم حذف خواهد شد. مطمئنید که می‌خواهید ادامه دهید؟</translation>
 <translation id="1104084341931202936">نشان دادن تنظیمات دسترس‌پذیری</translation>
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
 <translation id="1111021433905331574">می‌توانید رنگ نور پس‌زمینه صفحه‌کلید را در اینجا تغییر دهید: «تنظیمات &gt; <ph name="APP_TITLE" />»</translation>
@@ -80,6 +81,7 @@
 <translation id="1210557957257435379">ضبط صفحه‌نمایش</translation>
 <translation id="121097972571826261">جلو رفتن کلمه‌به‌کلمه</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، برنامه فروشگاه Play</translation>
+<translation id="1223484782328004593"><ph name="APP_NAME" /> به پروانه نیاز دارد</translation>
 <translation id="1225748608451425081">‏Chromebook شما به‌دلیل مشکل شناخته‌شده‌ای قفل شده است. پس از <ph name="TIME_LEFT" /> می‌توانید به سیستم وارد شوید.</translation>
 <translation id="1229194443904279055">توقف انتخاب</translation>
 <translation id="1235458158152011030">شبکه‌های شناخته‌شده</translation>
@@ -90,6 +92,7 @@
 <translation id="1244265436519979884">‏درحال‌حاضر بازیابی Linux درحال انجام است</translation>
 <translation id="1245476784081715330">عالی است!</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> نصب نشد: نشانی وب تصویر کد خطای <ph name="HTTP_ERROR" /> را برگرداند. لطفاً با سرپرست تماس بگیرید.</translation>
 <translation id="1246890715821376239">برنامه‌های پشتیبانی‌نشده</translation>
 <translation id="1247372569136754018">میکروفون (داخلی)</translation>
 <translation id="1247519845643687288">برنامه‌های اخیر</translation>
@@ -103,6 +106,7 @@
 <translation id="1275285675049378717">درحال تأمین برق <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1276975447697633661">فایل را انتخاب کنید و <ph name="KEY" /> را فشار دهید</translation>
+<translation id="1276994519141842946"><ph name="APP_NAME" /> حذف نصب نشد</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">پیدا کردن تلفن</translation>
 <translation id="1287002645302686982">میز کار ذخیره‌شده‌ای با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل موجود است</translation>
@@ -110,6 +114,8 @@
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1290982764014248209">انتقال <ph name="DRAGGED_APP" /> به پوشه <ph name="FOLDER_NAME" />.</translation>
+<translation id="1291119821938122630">شرایط خدمات <ph name="MANAGER" /></translation>
+<translation id="1292849930724124745">کارت هوشمند را وارد کنید تا از سیستم خارج نشوید</translation>
 <translation id="1293264513303784526">‏دستگاه USB-C (درگاه سمت چپ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -128,6 +134,7 @@
 <translation id="132346741904777634">دوربین به گوشه بالا سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="132415371743256095">بستن <ph name="DESK_NAME" /> و پنجره‌ها</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> متصل شد</translation>
+<translation id="1335640173511558774">‏<ph name="MANAGER" /> لازم می‌داند که پیش‌از استفاده از این دستگاه، «شرایط خدمات» زیر را بخوانید و آن‌ها را بپذیرید. این شرایط باعث بسط داده شدن، تغییر یافتن،‌ یا محدود شدن «شرایط Google ChromeOS Flex» نمی‌شود.</translation>
 <translation id="1338950911836659113">در حال حذف...</translation>
 <translation id="1340378040547539434">زوم‌پس کردن در صفحه</translation>
 <translation id="1341651618736211726">سرریز</translation>
@@ -136,6 +143,7 @@
 <translation id="1346748346194534595">راست</translation>
 <translation id="1350494136075914725">درحال انجام · رفتن به زبانه</translation>
 <translation id="1351937230027495976">کوچک کردن منو</translation>
+<translation id="1355088139103479645">همه داده‌ها حذف شود؟</translation>
 <translation id="1360220746312242196">رفتن به مورد منطبق قبلی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="1360788414852622716">درحال غیرفعال کردن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="1364382257761975320">‏برای باز کردن قفل Chromebook، از اثر انگشتتان استفاده کنید</translation>
@@ -143,6 +151,7 @@
 <translation id="1372545819342940910">ذخیره میز کار برای زمانی دیگر</translation>
 <translation id="1383597849754832576">نمی‌توان فایل‌های گفتاری را بارگیری کرد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1383876407941801731">جستجو</translation>
+<translation id="1388728792929436380">وقتی به‌روزرسانی‌ها تمام شد، <ph name="DEVICE_TYPE" /> بازراه‌اندازی می‌شود.</translation>
 <translation id="1390113502208199250">‏برای استفاده از ویژگی‌های Chrome Education Upgrade، باید این دستگاه را بازنشانی کارخانه‌ای کنید.</translation>
 <translation id="1391102559483454063">روشن</translation>
 <translation id="1394698770495054737">محو کردن کامل</translation>
@@ -161,6 +170,7 @@
 <translation id="1421166164855200062">گروه پیشنهادی</translation>
 <translation id="1426410128494586442">بله</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> مسدود شده است</translation>
+<translation id="142765311413773645">پروانه <ph name="APP_NAME" /> منقضی شده است</translation>
 <translation id="1435537621343861112">دیکته شروع نشد. میکروفون خاموش است.</translation>
 <translation id="1445031758921122223">فایل‌های کنترل چهره بارگیری شد</translation>
 <translation id="1447907279406111651">اکنون · <ph name="END_TIME" /> به‌پایان می‌رسد</translation>
@@ -176,16 +186,19 @@
 <translation id="147310119694673958">باتری تلفن <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="1475340220124222168">روشن/ خاموش کردن نقطه اتصال. نقطه اتصال روشن است، ۱ دستگاه متصل است.</translation>
 <translation id="1476595624592550506">گذرواژه‌تان را تغییر دهید</translation>
+<translation id="1477446329585670721">برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.</translation>
 <translation id="1479685784053141667">ایجاد مخاطب</translation>
 <translation id="1479909375538722835">منوی دسترس‌پذیری شناور</translation>
 <translation id="1483493594462132177">ارسال</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">‏با ویژگی دیکته می‌توانید با صدایتان تایپ کنید. وقتی در فیلد نوشتاری هستید، کلید دیکته را فشار دهید یا نماد میکروفون را در پایین صفحه انتخاب کنید. زبان دیکته روی <ph name="LANGUAGE" /> تنظیم شده است. گفتار برای پردازش به Google ارسال می‌شود. هرزمان بخواهید می‌توانید زبان دیکته را در «تنظیمات &gt; دسترس‌پذیری» تغییر دهید.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> با <ph name="SECOND_ITEM_TITLE" /> جابه‌جا شد</translation>
+<translation id="1494429729245089920">ماشین مجازی «<ph name="VM_NAME" />» وجود دارد، اما ظاهراً ماشین مجازی <ph name="APP_NAME" /> معتبری نیست. لطفاً با سرپرست تماس بگیرید.</translation>
 <translation id="1500926532737552529">نمایش همه پیشنهادها</translation>
 <translation id="1501946871587957338">منبع صوتی تغییر کند؟</translation>
 <translation id="1505542291183484463">تغییر اندازه کاشی پنجره به‌سمت پایین</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
+<translation id="1515163294334130951">راه‌اندازی</translation>
 <translation id="1519090060276706457">بازیابی پنجره‌ها بیش‌از انتظار طول کشیده است</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{نشان دادن تنظیمات اعلان. اعلان‌های یک برنامه خاموش است}one{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}other{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}}</translation>
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
@@ -211,6 +224,7 @@
 <translation id="1574691582236909946">دستگیره لبه سمت چپ انتخاب شده است، از کلیدهای جهت‌نما برای حرکت کردن استفاده کنید</translation>
 <translation id="1576623706766186887">زوم‌پس کردن هنگام روشن بودن ذره‌بین</translation>
 <translation id="1578558981922970608">بستن اجباری</translation>
+<translation id="1580772913177567930">با سرپرستتان تماس بگیرید</translation>
 <translation id="1582946770779745370">‏«داشبورد بازی‌ها» دردسترس است. هرزمان خواستید برای باز کردن آن، کلید <ph name="LAUNCHER_KEY_NAME" /> + تبدیل + گریز و سپس <ph name="LAUNCHER_KEY_NAME" /> + g را فشار دهید</translation>
 <translation id="1586324912145647027">رفتن به میز کار ۱ تا ۸</translation>
 <translation id="158838227375272121">‏وب‌سایت Google Classroom</translation>
@@ -361,6 +375,7 @@
 <translation id="2048554637254265991">خطایی در راه‌اندازی مدیر محتوی وجود داشت. لطفاً دوباره امتحان کنید.</translation>
 <translation id="2048653237708779538">کنش دردسترس نیست</translation>
 <translation id="2049240716062114887">نام میز کار به <ph name="DESK_NAME" /> تغییر کرد</translation>
+<translation id="2053312383184521053">داده‌های حالت بیکار</translation>
 <translation id="2064048859448024834">پیش‌نمای دوربین روشن است</translation>
 <translation id="2065098273523946419">پیوند کسب اطلاعات بیشتر. وقتی فعال شود به مرورگر هدایت می‌شود</translation>
 <translation id="2067220651560163985">نمایش دما به سلسیوس</translation>
@@ -378,6 +393,7 @@
 <translation id="2114145607116268663">نصب نشد، بازراه‌اندازی ضروری است. لطفاً رایانه را بازراه‌اندازی و دوباره امتحان کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="2115680839221566783">‏شارژ باتری ‎٪<ph name="PERCENTAGE" /> است. شارژ موقتاً متوقف شده است.</translation>
 <translation id="2126242104232412123">فضای کار جدید</translation>
+<translation id="212862741129535676">درصد اشغال حالت فرکانس</translation>
 <translation id="2132302418721800944">ضبط تمام صفحه</translation>
 <translation id="2135456203358955318">ذره‌بین متصل</translation>
 <translation id="2148716181193084225">امروز</translation>
@@ -402,6 +418,7 @@
 <translation id="2223384056430485343">در صفحهٔ دونیمه</translation>
 <translation id="2224075387478458881">ضبط صفحه‌نمایش هنگامی که محتوای محافظت‌شده نمایان باشد مجاز نیست</translation>
 <translation id="2227179592712503583">حذف پیشنهاد</translation>
+<translation id="2238379619048995541">داده‌های حالت فرکانس</translation>
 <translation id="2248634276911611268">باز کردن پیوند در زبانه جدید و رفتن به این زبانه جدید</translation>
 <translation id="2251809247798634662">پنجرهٔ جدید حالت ناشناس</translation>
 <translation id="2253808149208613283">برای سفارشی‌سازی این دستگاه، برنامه را نصب کنید</translation>
@@ -433,6 +450,7 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> ، دسته نتیجه جستجو</translation>
 <translation id="2322173485024759474">عقب رفتن حرف‌به‌حرف</translation>
 <translation id="2326112202058075478">نمایش اموجی‌های بیشتر</translation>
+<translation id="2328561734797404498">لطفاً برای استفاده از <ph name="APP_NAME" />، دستگاه را بازراه‌اندازی کنید.</translation>
 <translation id="2335091074961603075">‏Chromebook یا دستگاه بلوتوث شما از نسخه قدیمی بلوتوث استفاده می‌کند. برای کیفیت صدای بهتر، از میکروفون داخلی استفاده کنید.</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">برای یادداشت‌برداری، گرفتن نماگرفت، استفاده از اشاره‌گر لیزری یا ذره‌بین روی دکمه قلم در قفسه تک‌ضرب بزنید.</translation>
@@ -461,8 +479,10 @@
 <translation id="2389423187722941333">‏روشن/خاموش کردن Gemini</translation>
 <translation id="2390347491606624519">اتصال به پراکسی امکان‌پذیر نیست، لطفاً دوباره به سیستم وارد شوید</translation>
 <translation id="2392659840443812875">نقطه اتصالی دردسترس نیست. دستگاهتان باید همین اطراف باشد و بلوتوث آن روشن باشد.</translation>
+<translation id="2393136602862631930">‏راه‌اندازی <ph name="APP_NAME" /> در Chromebook</translation>
 <translation id="2397416548179033562">‏نمایش منوی Chrome</translation>
 <translation id="240006516586367791">کنترل‌های رسانه</translation>
+<translation id="2400664245143453337">به‌روزرسانی فوری الزامی است</translation>
 <translation id="240155812475001919">‏سندنگار Google</translation>
 <translation id="2402411679569069051">‏برای باز کردن قفل Chromebook، از اثر انگشت استفاده کنید یا قفل تلفنتان را باز کنید</translation>
 <translation id="240545663114741956">برای خروج از سیستم، دوبار <ph name="ACCELERATOR" /> را فشار دهید.</translation>
@@ -494,6 +514,7 @@
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475783092753560388">درج <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
+<translation id="2476974672882258506">‏برای حذف نصب <ph name="PARALLELS_DESKTOP" />، ‏Windows را خاموش کنید.</translation>
 <translation id="2478076885740497414">نصب برنامه</translation>
 <translation id="2479148705183875116">رفتن به «تنظیمات»</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
@@ -537,6 +558,7 @@
 <translation id="2573588302192866788"><ph name="NAME" /> متصل نشد</translation>
 <translation id="2575685495496069081">ورود چندگانه به سیستم غیرفعال شده است</translation>
 <translation id="2579264398927991698">به‌روزرسانی‌های سفت‌افزار</translation>
+<translation id="2586561813241011046"><ph name="APP_NAME" /> نصب نشد. لطفاً دوباره امتحان کنید، یا با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">بریده‌دان</translation>
 <translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2598725286293895280">برنامه‌های پشتیبانی‌نشده در میز کار</translation>
@@ -560,6 +582,7 @@
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> و <ph name="UNAVAILABLE_APPS_TWO" /> در این دستگاه وجود ندارند.</translation>
+<translation id="2669241540496514785"><ph name="APP_NAME" /> باز نشد</translation>
 <translation id="2670350619068134931">پویانمایی‌های کاهش‌یافته</translation>
 <translation id="2672142220933875349">‏فایل crx نادرست، باز کردن بسته انجام نشد.</translation>
 <translation id="2673968385134502798">بازی‌ها</translation>
@@ -578,6 +601,7 @@
 <translation id="2705001408393684014">روشن/خاموش کردن میکروفون. <ph name="STATE_TEXT" /></translation>
 <translation id="2706304388244371417">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. این نسخه پشتیبان حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» فرزندتان رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />درباره پشتیبان‌گیری بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">پیکان بالا</translation>
+<translation id="270921614578699633">میانگین بالا</translation>
 <translation id="2710101514844343743">داده‌های استفاده و عیب‌یابی</translation>
 <translation id="2710984741481549981">قفل کردن پنجره‌ها</translation>
 <translation id="2714393097308983682">‏فروشگاه Google Play</translation>
@@ -695,6 +719,7 @@
 <translation id="3026897869154397692">به «تقویم» اضافه شد</translation>
 <translation id="3033545621352269033">روشن</translation>
 <translation id="3033912566804961911">ترکیب با <ph name="DESK_NAME" /></translation>
+<translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
 <translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="304097922505898963">باز کردن برنامه «میان‌برهای مهم»</translation>
@@ -754,6 +779,7 @@
 <translation id="3176221688814061633">‏‫Chromebook یا دستگاه بلوتوث شما از نسخه قدیمی‌تر بلوتوث استفاده می‌کند. برای کیفیت صدای بهتر، «اَبَرتفکیک‌پذیری با بلوتوث» را روشن کنید یا از میکروفون داخلی استفاده کنید.</translation>
 <translation id="3181441307743005334">بازراه‌اندازی ممکن است مدتی طول بکشد</translation>
 <translation id="3183700187146209259">نرم‌افزار اسکنر نصب نشد</translation>
+<translation id="3188465121994729530">میانگین متحرک</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{متصل به یک دستگاه.}one{متصل به # دستگاه}other{متصل به # دستگاه}}</translation>
 <translation id="3203405173652969239">«دسترسی کلیدی» فعال شده است</translation>
 <translation id="3204648577100496185">داده‌های مرتبط با این برنامه ممکن است از این دستگاه برداشته شود.</translation>
@@ -837,10 +863,14 @@
 <translation id="3444385531800624797">نتایج درحال بار شدن هستند</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
+<translation id="3446274660183028131">‏لطفاً برای نصب Windows، ‏Parallels Desktop را راه‌اندازی کنید.</translation>
 <translation id="3449393517661170867">پنجره برگه‌دار جدید</translation>
+<translation id="3450157232394774192">درصد اشغال حالت بدون فعالیت</translation>
+<translation id="3450180775417907283">‏<ph name="MANAGER" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید.</translation>
 <translation id="3454555520521576458">قابل تغییر اندازه</translation>
 <translation id="3455468639467374593">الگو، <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">یک دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> متصل است</translation>
+<translation id="3458451003193188688">به‌دلیل خطای شبکه، دستگاه مجازی نصب نشد. لطفاً دوباره امتحان کنید، یا با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">بازنشانی سطح بزرگ‌نمایی</translation>
 <translation id="3465223694362104965">از آخرین باری که به سیستم وارد شدید، صفحه‌کلید دیگری به این دستگاه متصل شده است. قبل از استفاده از این صفحه‌کلید، مطمئن شوید به آن اعتماد دارید.</translation>
 <translation id="3465356146291925647">تحت‌مدیریت سرپرست</translation>
@@ -859,6 +889,7 @@
 <translation id="3513798432020909783">حساب تحت مدیریت <ph name="MANAGER_EMAIL" /> است</translation>
 <translation id="3516000762115478502">تغییر اندازه کاشی پنجره به‌سمت بالا</translation>
 <translation id="3517037892157925473">آخرین به‌روزرسانی تکالیف: <ph name="TIME" />، <ph name="DATE" />.</translation>
+<translation id="3522088408596898827">فضای دیسک بسیار کم است. فضای دیسک را آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="352245152354538528">{0,plural, =1{دستگاه را تا یک دقیقه دیگر به‌روزرسانی کنید}one{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}other{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}}</translation>
 <translation id="3522979239100719575">درحال جستجوی نمایه‌های دردسترس. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="3526440770046466733">باز کردن پیوند در زبانه جدید و ماندن در زبانه کنونی</translation>
@@ -1012,6 +1043,7 @@
 <translation id="3891340733213178823">‏برای خروج از سیستم Ctrl+Shift+Q را دو بار فشار دهید.</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3893630138897523026">‏ChromeVox (بازخورد گفتاری)</translation>
+<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">چرخش ۹۰ درجه صفحه درجهت ساعت‌گرد</translation>
 <translation id="3900355044994618856">جلسه‌تان <ph name="SESSION_TIME_REMAINING" /> دیگر به پایان می‌رسد</translation>
 <translation id="3901991538546252627">در حال اتصال به <ph name="NAME" /></translation>
@@ -1109,6 +1141,7 @@
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="4185671786623711291">انتقال پنجره فعال به میز کار در سمت راست</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
+<translation id="4187424053537113647">درحال راه‌اندازی<ph name="APP_NAME" />...</translation>
 <translation id="4189826113259617332">ذخیره کردن همه صفحه‌های باز در پنجره کنونی به‌عنوان نشانک در پوشه جدید</translation>
 <translation id="4190143678693626113">‏با پاسخ دادن سریع به پیامک‌های تلفن از Chromebook در زمان صرفه‌جویی کنید</translation>
 <translation id="4190780880566297084">بستن راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و برنامه‌های جدید تلفن</translation>
@@ -1122,6 +1155,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دردسترس نیست.</translation>
 <translation id="4201051445878709314">نمایش ماه قبلی</translation>
 <translation id="4209973997261364186">‏Wi-Fi روشن است</translation>
+<translation id="4210048056321123003">درحال بارگیری دستگاه مجازی</translation>
 <translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4212472694152630271">رفتن به پین</translation>
 <translation id="4212932720786388874">‫<ph name="PREFERENCE_TITLE" />، <ph name="EFFECT_NAME" />، دکمه مبدل، <ph name="STATE" /></translation>
@@ -1139,6 +1173,8 @@
 <translation id="4249248555939881673">در انتظار اتصال شبکه...</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="425364040945105958">سیم‌کارتی وجود ندارد</translation>
+<translation id="425573743389990240">نسبت تخلیه باتری به وات (مقدار منفی به معنی این است که باتری در حال شارژ شدن است)</translation>
+<translation id="4259388776256904261">این کار ممکن است مدتی طول بکشد</translation>
 <translation id="4261870227682513959">نمایش تنظیمات اعلان. اعلان‌ها خاموش است</translation>
 <translation id="4264977415328155183">، جمع‌شده</translation>
 <translation id="4265259722091164182">بزرگ‌نویسی حروف اول</translation>
@@ -1191,6 +1227,7 @@
 <translation id="4381031910344220229">با این کار، دسترسی به میکروفون برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="4382340674111381977">برگشتن به صفحه قبل</translation>
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
+<translation id="439358628917130594">‏<ph name="MANAGER" /> لازم می‌داند که شما «شرایط خدمات» زیر را قبل‌از استفاده از این دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شود، اصلاح نمی‌شود، و شرایط Chromium OS را محدود نمی‌کند.</translation>
 <translation id="4394466652057229831">کلیک راست برای خلاصه کردن</translation>
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">‏دستگاه‌تان درست خاموش نشد. برای استفاده از برنامه‌های Linux، آن را بازراه‌اندازی کنید.</translation>
@@ -1227,6 +1264,7 @@
 ‫۱ دستگاه متصل است.</translation>
 <translation id="4477892968187500306">‏ممکن است این دستگاه حاوی برنامه‌هایی باشد که Google آن‌ها را تأیید نکرده است.</translation>
 <translation id="4479639480957787382">اترنت</translation>
+<translation id="4479877282574735775">درحال پیکربندی ماشین مجازی. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4481530544597605423">دستگاه‌های لغو ارتباط‌شده</translation>
 <translation id="4485506555414638855">بستن راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفن</translation>
 <translation id="4491109536499578614">تصویر</translation>
@@ -1348,6 +1386,7 @@
 <translation id="479989351350248267">جستجو</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="4806631651704497161">محو کردن خفیف</translation>
+<translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
 <translation id="4813311884204119883">کشیدن پیوند به قسمتی خالی در نوار زبانه</translation>
 <translation id="4814539958450445987">صفحه ورود به سیستم</translation>
 <translation id="481455355267255546">بعدی</translation>
@@ -1386,6 +1425,7 @@
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> درحال استفاده از دوربین است</translation>
+<translation id="492363500327720082">درحال حذف نصب <ph name="APP_NAME" />...</translation>
 <translation id="492453977506755176">کلید حالت ضبط</translation>
 <translation id="4925542575807923399">سرپرست این حساب لازم می‌داند که این حساب اولین حسابی باشد که در جلسه چندگانه ورود به سیستم وارد سیستم شده باشد.</translation>
 <translation id="493076006037866439">زوم‌پس کردن صفحه‌نمایش</translation>
@@ -1460,6 +1500,7 @@
 <translation id="5117590920725113268">نمایش ماه بعدی</translation>
 <translation id="5121628974188116412">رفتن به پایین صفحه</translation>
 <translation id="5122517996953421795">پیش‌نمایش <ph name="DESK_NAME" />. میز کار غیرفعال است.</translation>
+<translation id="5127986747308934633">دستگاهتان تحت کنترل سرپرست است</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
 <translation id="5137349216872139332">«نقطه اتصال فوری» متصل نشد</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -1472,6 +1513,7 @@
         <ph name="BEGIN_PARAGRAPH2" />خاموش کردن این ویژگی بر توانایی دستگاه برای ارسال اطلاعات موردنیاز سرویس‌های ضروری مانند امنیت و به‌روزرسانی‌های سیستم تأثیر نمی‌گذارد.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />مالک می‌تواند این ویژگی را در «تنظیمات &gt; پیشرفته &gt; ارسال خودکار داده‌های تشخیصی و میزان استفاده به Google» کنترل کند.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />اگر تنظیم «دیگر فعالیت‌ها در وب و برنامه» روشن باشد، ممکن است این داده‌ها در «حساب Google» شما ذخیره شود. می‌توانید در account.google.com، داده‌هایتان را ببینید، حذف کنید، و تنظیمات حسابتان را تغییر دهید.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> مسدود شد</translation>
 <translation id="5163434717504750796">سلامت باتری <ph name="BATTERY_HEALTH_PERCENTAGE" />٪ | تعداد چرخه <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ذخیره میز کار به‌عنوان الگو</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
@@ -1577,10 +1619,12 @@
 <translation id="543584294741034249">می‌توانید حداکثر <ph name="DISPLAY_LIMIT" /> نمایشگر خارجی وصل کنید.</translation>
 <translation id="5442228125690314719">هنگام ایجاد تصویر دیسک خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="544691375626129091">تمام کاربران موجود قبلاً به این جلسه اضافه شده‌اند.</translation>
+<translation id="5457113250005438886">نامعتبر</translation>
 <translation id="54609108002486618">مدیریت شده</translation>
 <translation id="5460938382730614333">نشانگر روشن است.</translation>
 <translation id="5463129623250377817">بریدن محتوای انتخاب‌شده در بریده‌دان</translation>
 <translation id="5465662442746197494">به راهنمایی نیاز دارید؟</translation>
+<translation id="5474859849784484111">‏<ph name="MANAGER" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).</translation>
 <translation id="547979256943495781">قفسه در سمت چپ است</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> یا <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5482873136202102190">، +</translation>
@@ -1620,10 +1664,12 @@
 <translation id="5578188167649348993">حافظه</translation>
 <translation id="5580000943347215299">کتابخانه</translation>
 <translation id="5581972110672966454">نمی‌توان دستگاه را به دامنه وصل کرد. لطفاً دوباره امتحان کنید یا با سرپرست یا مالک دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
+<translation id="5585898376467608182">فضای ذخیره‌سازی دستگاهتان کم است. حداقل<ph name="MINIMUM_SPACE" /> فضای آزاد برای استفاده از <ph name="APP_NAME" /> نیاز دارید. برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="5586388332127302891">ذره‌بین متصل فعال شد. برای خاموش کردن آن، کلیدهای <ph name="ACCELERATOR" /> را دوباره فشار دهید.</translation>
 <translation id="5587506661873751671">درحال بارگیری <ph name="DOWNLOAD_PERCENT" />٪</translation>
 <translation id="558849140439112033">برای انتخاب ناحیه گرفتن عکس، بکشید</translation>
 <translation id="5590609058453685222">«تذکر میکروفون خاموش» روشن است. اگر هنگام صامت بودن صحبت کنید به شما اطلاع داده می‌شود.</translation>
+<translation id="5592595402373377407">هنوز داده کافی در دسترس نیست.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">‏مرورگر Chrome</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
@@ -1690,6 +1736,7 @@
 <translation id="5767730327234918501">سرپرستتان نقطه اتصال را خاموش کرده است.</translation>
 <translation id="5769373120130404283">صفحه حریم خصوصی</translation>
 <translation id="5770004650349728202">روشن کردن «انتخاب برای شنیدن»</translation>
+<translation id="5772114492540073460">‏<ph name="PARALLELS_NAME" /> به شما اجازه می‌دهد برنامه‌های Windows®‎ را در Chromebook اجرا کنید. <ph name="MINIMUM_SPACE" /> فضای خالی برای نصب توصیه می‌شود.</translation>
 <translation id="5773950591113557721">با این کار، دسترسی برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین و میکروفون مجاز می‌شود</translation>
 <translation id="5774295353725270860">‏باز کردن برنامه Files</translation>
 <translation id="5775936059231769503">روشن/ خاموش کردن نقطه اتصال. نقطه اتصال خاموش است.</translation>
@@ -1722,6 +1769,7 @@
 <translation id="5858490737742085133">پایانه</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
+<translation id="5864195618110239517">استفاده از اتصال محدود</translation>
 <translation id="5864691701242730005">نشان دادن تنظیمات «هم‌رسانی سریع». رؤیت‌پذیری <ph name="VISIBILITY" /> انتخاب شد</translation>
 <translation id="5864748620896638071">باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> به‌زودی متوقف می‌شود</translation>
@@ -1738,6 +1786,8 @@
 <translation id="589817443623831496">اسکن نقطه‌ای</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">زرد</translation>
+<translation id="5904614460720589786">به‌دلیل مشکل پیکربندی، <ph name="APP_NAME" /> راه‌اندازی نشد. لطفاً با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
+<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آفلاین است</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">اعلان جدید، <ph name="NOTIFICATION_COUNT" /> مورد در مجموع</translation>
 <translation id="5916664084637901428">روشن</translation>
@@ -1747,6 +1797,7 @@
         <ph name="BEGIN_PARAGRAPH3" />هرزمان بخواهید می‌توانید «دقت مکان» را در تنظیمات مکان این دستگاه خاموش کنید («تنظیمات» &gt; «حریم خصوصی و امنیت» &gt; «کنترل‌های حریم خصوصی» &gt; «دسترسی به مکان» &gt; «تنظیمات پیشرفته مکان»). اگر «دقت مکان» خاموش باشد، داده‌های «دقت مکان» جمع‌آوری نخواهد شد. برای برنامه‌ها و سرویس‌های Android، درصورت وجود فقط از نشانی IP برای تعیین مکان این دستگاه استفاده می‌شود که ممکن است بر دردسترس بودن و دقت مکان برای برنامه‌ها و سرویس‌های Android مثل Google Maps تأثیر بگذارد.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />درباره «دقت مکان» بیشتر بدانید<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> به‌روزرسانی را الزامی کرده است</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> از شما می‌خواهد فوراً <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید.</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> روشن است.</translation>
 <translation id="5947494881799873997">برگرداندن</translation>
@@ -1759,6 +1810,7 @@
 <translation id="5960410286721553511">مشاهده رسانه و عکس‌های جدید تلفن</translation>
 <translation id="5965524703725988602">روشن/خاموش کردن «زمینه تاریک». <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">چرخش روبه جلو میان پنجره‌ها</translation>
+<translation id="5975792506968920132">درصد شارژ باتری</translation>
 <translation id="5978382165065462689">هم‌رسانی کنترل صفحه‌تان از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="5980301590375426705">خروج از مهمان</translation>
 <translation id="5983567367406220847">نقطه اتصال به‌دلیل عدم فعالیت خاموش شد.</translation>
@@ -1806,6 +1858,7 @@
 <translation id="6064463340679478396">کارم با این فایل تمام شده است</translation>
 <translation id="6068258534237496331">کنترل‌های تماس تصویری</translation>
 <translation id="6071576563962215370">این سیستم نتوانست قفل ویژگی‌های زمان نصب دستگاه را ایجاد کند.</translation>
+<translation id="6072442788591997866"><ph name="APP_NAME" /> در این دستگاه مجاز نیست. با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="6074087755403037157">کانال بتا</translation>
 <translation id="6075098173600599596">تغییر دادن بزرگ‌نویسی</translation>
@@ -1813,6 +1866,7 @@
 <translation id="6093867385179428431">توسط سرپرست غیرفعال شده است</translation>
 <translation id="6095008505822982596">سرعت گفتار</translation>
 <translation id="6095425951508823973">افزودن اتصال با <ph name="PROVIDER" /></translation>
+<translation id="6095541101974653012">از سیستم خارج شده‌اید.</translation>
 <translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
 <translation id="6103838137565245112">سیستم</translation>
 <translation id="6108952804512516814">ساخت با هوش مصنوعی</translation>
@@ -1911,8 +1965,10 @@
 <translation id="6364386432014869981">صفحه لمسی داخلی روشن است</translation>
 <translation id="6376931439017688372">بلوتوث روشن است</translation>
 <translation id="6378515133128829137">سنجاق کردن پنجره به راست</translation>
+<translation id="6380143666419481200">پذیرش و ادامه</translation>
 <translation id="6381109794406942707">برای باز کردن قفل دستگاه، پین را وارد کنید.</translation>
 <translation id="6381305031890976705">{0,plural, =1{تا یک ساعت دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}one{تا # ساعت دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}other{تا # ساعت دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}}</translation>
+<translation id="6385149369087767061">به اینترنت متصل شوید و دوباره امتحان کنید</translation>
 <translation id="638716340450135524">روشن کردن دسترسی به دوربین</translation>
 <translation id="639644700271529076">‏CAPS LOCK خاموش است</translation>
 <translation id="6406458002328242616">ویرایش زمان‌سنج. <ph name="FOCUS_DURATION" />.</translation>
@@ -1925,12 +1981,14 @@
 <translation id="6418160186546245112">بازگرداندن به نسخه نصب شده قبلی <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="641817663353603351">صفحه قبلی</translation>
 <translation id="6418511932144861495">نصب به‌روزرسانی ضروری</translation>
+<translation id="641867537956679916">سرپرستتان به سیستم وارد شده است تا موردی را بررسی کند. بعداز آنکه سرپرست دوباره کنترل را به شما داد می‌توانید به استفاده از دستگاه ادامه دهید.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">پاک کردن همه اعلان‌ها</translation>
 <translation id="6426905245930183644">درحال ایجاد…</translation>
 <translation id="6430225033895752525">نمایش تنظیمات «تمرکز»</translation>
 <translation id="643147933154517414">کاملاً انجام شد</translation>
 <translation id="6431865393913628856">ضبط کردن صفحه‌نمایش</translation>
+<translation id="6434325376267409267">قبل از اینکه بتوانید از <ph name="APP_NAME" /> استفاده کنید باید دستگاه را به‌روزرسانی کنید.</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> فضای ذخیره‌سازی از مجموع <ph name="STORAGE_TOTAL_SIZE" /> استفاده شده است</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
@@ -1990,6 +2048,7 @@
 <translation id="6585808820553845416">جلسه در <ph name="SESSION_TIME_REMAINING" /> به پایان می‌رسد.</translation>
 <translation id="6586685375736417639">امکان شارژ دستگاه وجود ندارد</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597017209724497268">نمونه‌ها</translation>
 <translation id="6597278316891651699">دوربین به گوشه پایین سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="6605415194043280389">«تمرکز» روشن است.</translation>
 <translation id="6608773371844092260">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در سمت راست این <ph name="DEVICE_TYPE" /> لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
@@ -2090,6 +2149,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{یک رقم باقی‌مانده است}one{# رقم باقی‌مانده است}other{# رقم باقی‌مانده است}}</translation>
 <translation id="6867938213751067702">بارگیری <ph name="FILENAME" /> موقتاً متوقف شد</translation>
+<translation id="6868934826811377550">دیدن جزئیات</translation>
 <translation id="6874854809828346832">نمایش جزئیات نقطه اتصال. نقطه اتصال روشن است.</translation>
 <translation id="6878400149835617132">میان‌بر خاموش شد</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{یک برنامه}one{# برنامه}other{# برنامه}}</translation>
@@ -2114,6 +2174,7 @@
 <translation id="6945922087561257829">‏تلفن شما از شبکه تلفن همراه استفاده می‌کند. مطمئن شوید تلفن و Chromebook به یک شبکه Wi-Fi متصل باشند و سپس دوباره امتحان کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">بازیابی برنامه‌ها</translation>
 <translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
+<translation id="696103774840402661">همه فایل‌ها و داده‌های محلی برای همه کاربران این <ph name="DEVICE_TYPE" /> به‌طور دائم حذف شده‌اند.</translation>
 <translation id="6961121602502368900">«بی‌صدا کردن تلفن» در نمایه کاری دردسترس نیست</translation>
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
 <translation id="696267987219125751">قاب‌بندی دوربین خاموش است.</translation>
@@ -2163,7 +2224,10 @@
 <translation id="709015856939120012">زوم‌پیش کردن در صفحه</translation>
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="7100906357717321275">‏نمایش فایل‌های پنهان‌شده در برنامه Files</translation>
+<translation id="710640343305609397">بازکردن تنظیمات شبکه</translation>
 <translation id="7108254681523785542">‏موردی انتخاب کنید تا جای‌گذاری شود. با فشار دادن <ph name="SHORTCUT_KEY_NAME" /> + v می‌توانید بریده‌دان را ببینید.</translation>
+<translation id="7108338896283013870">عدم نمایش</translation>
+<translation id="7108933416628942903">اکنون قفل شود</translation>
 <translation id="7116969082764510092">میز کار ۱۱</translation>
 <translation id="7118268675952955085">نماگرفت</translation>
 <translation id="7118597077555700347">باز کردن <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -2205,6 +2269,7 @@
 <translation id="7258828758145722155">دیروز ویرایش شده است</translation>
 <translation id="726276584504105859">برای استفاده از تقسیم صفحه، به اینجا بکشید</translation>
 <translation id="7264788308526527464">کاهش <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267044199012331848">دستگاه مجازی نصب نشد. لطفاً دوباره امتحان کنید، یا با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">مدام انگشتتان را جابه‌جا کنید تا بخش‌های مختلف اثر انگشتتان را اضافه کنید</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + پس‌بر</translation>
 <translation id="7285232777292757180">برای ثبت نماگرفت، از ابزار ضبط صفحه‌نمایش در تنظیمات فوری استفاده کنید</translation>
@@ -2245,6 +2310,7 @@
 <translation id="7378889811480108604">حالت «بهینه‌سازی باتری» خاموش است</translation>
 <translation id="7382680553121047388">روشن</translation>
 <translation id="7384028040782072252">برای تغییر ترتیب برنامه‌ها، جایی کلیک راست کنید</translation>
+<translation id="7385490373498027129">همه فایل‌ها و داده‌های محلی برای همه کاربران این <ph name="DEVICE_TYPE" /> برای همیشه حذف خواهند شد.</translation>
 <translation id="7386767620098596324">روشن/خاموش کردن اتصال شبکه. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">همیشه می‌توانید راه‌اندازی را در زمان دیگری ازطریق «تنظیمات» انجام دهید.</translation>
 <translation id="7400839060291901923">تنظیم اتصال در <ph name="PHONE_NAME" /></translation>
@@ -2255,9 +2321,12 @@
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> را فشار دهید و نگه دارید، چندبار روی <ph name="KEY" /> تک‌ضرب بزنید تا به پنجره‌ای که می‌خواهید باز شود برسید، سپس دکمه را رها کنید</translation>
 <translation id="740790383907119240">میان‌برهای برنامه</translation>
 <translation id="7413851974711031813">برای بستن، کلید «گریز» را فشار دهید</translation>
+<translation id="7415454883318062233">راه‌اندازی کامل شد</translation>
 <translation id="7416471219712049036">ذخیره کردن صفحه کنونی</translation>
+<translation id="7423807071740419372"><ph name="APP_NAME" /> برای اجرا شدن به اجازه نیاز دارد</translation>
 <translation id="742594950370306541">دوربین در حال استفاده است.</translation>
 <translation id="743058460480092004">دوربین و میکروفن در حال استفاده هستند.</translation>
+<translation id="7433708794692032816">برای ادامه استفاده از <ph name="DEVICE_TYPE" />، کارت هوشمند را وارد کنید</translation>
 <translation id="7440404390546433462">‏جستجوی Google</translation>
 <translation id="7441711280402516925">درحال پخش · رفتن به زبانه</translation>
 <translation id="7453330308669753048">نتیجه سابقه «جستجو» برداشته شد</translation>
@@ -2266,6 +2335,7 @@
 <translation id="7461924472993315131">پین</translation>
 <translation id="746216226901520237">‏دفعه بعد، تلفنتان قفل <ph name="DEVICE_TYPE" /> را باز خواهد کرد. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="746232733191930409">حالت ضبط صفحه‌نمایش</translation>
+<translation id="7465635034594602553">مشکلی پیش آمد. لطفاً چند دقیقه صبر کنید و دوباره <ph name="APP_NAME" /> را اجرا کنید.</translation>
 <translation id="7466449121337984263">لطفاً حسگر را لمس کنید</translation>
 <translation id="7477793887173910789">کنترل موسیقی، ویدیو و سایر موارد</translation>
 <translation id="7478485216301680444">برنامه کاربردی کیوسک نصب نشد.</translation>
@@ -2294,6 +2364,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">ایجاد کردن</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
+<translation id="7530016656428373557">نسبت تخلیه به وات</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
 <translation id="7534543072325030705">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این گروه پیشنهادی را می‌پسندید</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
@@ -2315,6 +2386,7 @@
 <translation id="7569509451529460200">‏بریل و ChromeVox فعال هستند</translation>
 <translation id="7569886975397378678">بستن راه‌اندازی مشاهده اعلان‌ها و برنامه‌های تلفن</translation>
 <translation id="7571361473021531288">شارژ <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> باقی مانده است</translation>
+<translation id="7573172247376861652">شارژ باتری</translation>
 <translation id="7573585051776738856">پنجره فعال به راست متصل شد.</translation>
 <translation id="7576976045740938453">در رابطه با حساب حالت نمایشی، مشکلی پیش آمد.</translation>
 <translation id="7579778809502851308">ضبط صفحه‌نمایش</translation>
@@ -2336,6 +2408,7 @@
 <translation id="7621008024906456933">تنظیمات «هم‌رسانی سریع»</translation>
 <translation id="7621382409404463535">سیستم نتوانست پیکربندی دستگاه را ذخیره کند.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجه فارنهایت</translation>
+<translation id="7626072681686626474">‏<ph name="MANAGER" /> لازم می‌داند که شما «شرایط خدمات» زیر را قبل‌از استفاده از دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شود، اصلاح نمی‌شود، یا «شرایط Google ChromeOS» را محدود نمی‌کند.</translation>
 <translation id="7627303771480696593">سؤالی بپرسید</translation>
 <translation id="7629858978065675960">نتیجه نامشخص است.</translation>
 <translation id="7631014249255418691">‏از برنامه‌ها و فایل‌های Linux پشتیبان‌گیری شد</translation>
@@ -2420,6 +2493,7 @@
 <translation id="7850320739366109486">مزاحم نشوید</translation>
 <translation id="7851039877802112575">انتقال تمرکز به بالاپرها و کادرهای گفتگو</translation>
 <translation id="7851768487828137624">قناری</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">برای استفاده از دستگاه به‌عنوان مهمان، باید از سیستم خارج شوید و سپس گزینه «مرور به‌عنوان مهمان» را در پایین صفحه‌نمایش انتخاب کنید.</translation>
 <translation id="7866482334467279021">روشن</translation>
 <translation id="7870790288828963061">‏برنامه «کیوسک» با نسخه جدیدتر پیدا نشد. چیزی برای به‌روزرسانی وجود ندارد. لطفاً فلش USB را خارج کنید.</translation>
@@ -2548,6 +2622,7 @@
 <translation id="8172370561760918656">دستگیره بالا سمت چپ انتخاب شده است، از کلیدهای جهت‌نما برای حرکت کردن استفاده کنید</translation>
 <translation id="81817143961839203">تصویر درج نشد</translation>
 <translation id="8182105986296479640">برنامه پاسخ نمی‌دهد</translation>
+<translation id="8182412589359523143">برای حذف همه داده‌ها از این <ph name="DEVICE_TYPE" />، <ph name="BEGIN_LINK" />اینجا کلیک کنید<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
 <translation id="8192727139462702395">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه‌های خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="8198456017687137612">فرستادن زبانه</translation>
@@ -2684,6 +2759,7 @@
 <translation id="8619138598101195078">کاهش صدا</translation>
 <translation id="862543346640737572">اموجی و گیف</translation>
 <translation id="8627191004499078455">متصل به <ph name="DEVICE_NAME" /></translation>
+<translation id="862727964348362408">معلق شد</translation>
 <translation id="8631727435199967028">تنظیمات دسترس‌پذیری</translation>
 <translation id="8634326941504371857">‏فایل‌های شما که در این دستگاه و Google Drive قرار دارد</translation>
 <translation id="8636284842992792762">درحال دادن مقدار اولیه به افزونه‌ها…</translation>
@@ -2708,6 +2784,7 @@
 <translation id="8683506306463609433">ردیابی عملکرد فعال است</translation>
 <translation id="8698432579173128320">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. نسخه‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />درباره پشتیبان‌گیری بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="8700087567921985940">‏استفاده از مکان. به برنامه‌ها و سرویس‌های دارای اجازه مکان اجازه داده می‌شود از مکان این دستگاه استفاده کنند. Google ممکن است به‌صورت دوره‌ای داده‌های مکان را جمع‌آوری کند و از این داده‌ها به‌شیوه‌ای ناشناس برای بهبود دقت مکان و خدمات مکان‌مبنا استفاده کند. <ph name="BEGIN_LINK1" />درباره مکان بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
+<translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> شما قفل شده است.</translation>
 <translation id="8703634754197148428">شروع ضبط. هروقت ضبط شروع شد، بااستفاده از کلیدهای «دگرساز + تبدیل + م» به قفسه پیمایش کنید و دکمه متوقف کردن ضبط را پیدا کنید</translation>
 <translation id="8704155109538237473">تمرکز کردن روی پنجرۀ تصویر در تصویر</translation>
 <translation id="8705580154597116082">‏Wi-Fi ازطریق تلفن دردسترس است</translation>
@@ -2744,6 +2821,7 @@
 <translation id="8763883995157866248">قرار دادن دستگاه در حالت خواب</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، برنامه نصب‌شده، مسدودشده</translation>
 <translation id="8782565991310229362">راه‌اندازی برنامه کاربردی کیوسک لغو شد.</translation>
+<translation id="8784626084144195648">میانگین حذف‌شده‌ها</translation>
 <translation id="8785070478575117577">اتصال به <ph name="NETWORK_NAME" /></translation>
 <translation id="8786824282808281903">وقتی فرزندتان این نماد را ببیند، می‌تواند برای تشخیص هویت یا تأیید خرید از اثر انگشت استفاده کند.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -2758,6 +2836,7 @@
 <translation id="8815390544836110344">میان‌بر نماگرفت (مهار به‌علاوه تبدیل به‌علاوه کلید حالت نمای کلی) را فشار دهید</translation>
 <translation id="881757059229893486">تنظیمات روش‌های ورودی</translation>
 <translation id="8819728065740986820">«شارژ تطبیقی» روشن است</translation>
+<translation id="8821268776955756404"><ph name="APP_NAME" /> آماده استفاده است.</translation>
 <translation id="882204272221080310">به‌روزرسانی سفت‌افزار برای امنیت بیشتر.</translation>
 <translation id="8822104519413696986">این بازی لمسی است</translation>
 <translation id="8825863694328519386">برای برگشتن به عقب از سمت راست تند بکشید</translation>
@@ -2770,6 +2849,7 @@
 <translation id="8849001918648564819">پنهان</translation>
 <translation id="8855885154700222542">کلید تمام‌صفحه</translation>
 <translation id="8858369206579825206">کنترل‌های حریم خصوصی</translation>
+<translation id="8859402192569844210">«شرایط خدمات» بارگیری نشد</translation>
 <translation id="8860366331836346216">افزودن سیم‌کارت داخلی</translation>
 <translation id="8869149849311827122">مطمئنید می‌خواهید کنترل مکان‌نمای موشواره را خاموش کنید؟</translation>
 <translation id="8870509716567206129">برنامه از تقسیم صفحه پشتیبانی نمی‌کند.</translation>
@@ -2790,6 +2870,7 @@
 <translation id="8905919797434099235">(بی‌عنوان)</translation>
 <translation id="890616557918890486">تغییر منبع</translation>
 <translation id="8909138438987180327">شارژ باتری <ph name="PERCENTAGE" /> درصد است.</translation>
+<translation id="8909298138148012791"><ph name="APP_NAME" /> حذف نصب شده است</translation>
 <translation id="8916866375277139011">پنهان کردن موارد موجود در <ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">خدمات مسئول اطلاعات دردسترس نیست.</translation>
 <translation id="8921554779039049422">H+‎</translation>
@@ -2866,6 +2947,7 @@
 <translation id="9126339866969410112">واگرد آخرین کنش</translation>
 <translation id="9126642911267312373">بلوتوث دردسترس نیست</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{‫۱ دقیقه دیگر}one{‫# دقیقه دیگر}other{‫# دقیقه دیگر}}</translation>
+<translation id="9128317794749765148">راه‌اندازی تکمیل نشد</translation>
 <translation id="9129245940793250979">دکمه پشت</translation>
 <translation id="9133335900048457298">نمی‌توان محتوای محافظت‌شده را ضبط کرد</translation>
 <translation id="9139720510312328767">حذف حرف بعدی</translation>
@@ -2916,6 +2998,7 @@
 <translation id="974545358917229949">نمایش <ph name="RESULT_COUNT" /> نتیجه برای <ph name="QUERY" /></translation>
 <translation id="97905529126098460">بعد از کامل شدن لغو، این پنجره بسته می‌شود.</translation>
 <translation id="981011780479609956">بدون سررسید</translation>
+<translation id="981121421437150478">آفلاین</translation>
 <translation id="98120814841227350">رفتن به انتهای سند</translation>
 <translation id="987589956647469042">داده تلفن همراه روشن است</translation>
 <translation id="989374776391122812">کنترل‌های دوربین و صدا</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Uždaryta patarimų pranešimų reklama</translation>
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1045899828449635435">Taip pat išvalyti duomenis iš šių svetainių?</translation>
+<translation id="1049461303780085993">Išbandykite „Gemini“ naršyklėje „Chrome“, kad gautumėte atsakymus, pagrindines išvadas ir kt.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Kai kurie slaptažodžiai nepasiekiami</translation>
 <translation id="1057623954802068161">Slinkti į puslapio viršų</translation>
@@ -297,6 +298,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2318045970523081853">Palieskite ir skambinkite</translation>
 <translation id="232137538351753795">Perbraukite iš kairiojo krašto, kad grįžtumėte</translation>
 <translation id="2323763861024343754">Svetainės saugykla</translation>
+<translation id="2327445548174191329">Iš <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Visi iškart neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o visos kvietimų nuorodos bus išjungtos</translation>
 <translation id="2330186936255788117">Daugiau žymių</translation>
 <translation id="2332515770639153015">Sustiprintas saugus naršymas įjungtas</translation>
@@ -834,6 +836,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4595237294768457124">Atidarykite naujo skirtuko puslapį</translation>
 <translation id="4595276580892809760">Pridėti vaizdų iš galerijos</translation>
 <translation id="4595805675102978678">„Google“ paskyros klaida</translation>
+<translation id="4599585406846903742">Vieno puslapio peržiūra</translation>
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606559747793337066">Kai svetainė ar programa paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ šifruoja ir iš anksto įkelia puslapius per „Google“ serverius be slapukų. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės.</translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
@@ -1088,6 +1091,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="569536719314091526">Išverskite šį puslapį į bet kokią kalbą spustelėję mygtuką „Daugiau parinkčių“</translation>
 <translation id="5696597120588531049">„Chrome“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir daugiau</translation>
 <translation id="5698878456427040674">Patikrinkite, ar pasirinkta paskyra palaikoma.</translation>
+<translation id="5700415746238689851">Atidaryti „Gemini“</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> nori prisijungti prie nuosekliojo prievado</translation>
 <translation id="5715150588940290235">Ištrinti išsaugotus saugos kodus?</translation>
 <translation id="572328651809341494">Naujausi skirtukai</translation>
@@ -1769,6 +1773,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8271267069224406035">Pranešti apie šlamštą</translation>
 <translation id="8277710303010772444">Pradėti paiešką</translation>
 <translation id="8279945625179116733">Apsaugota „<ph name="APP_NAME" />“</translation>
+<translation id="8280797717392145626">Nuorodos gautos</translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8282297628636750033">Kai galima, taikyti tamsiąją temą svetainėse</translation>
 <translation id="8282950411412455249">Eiti į skiltį „Saugos nustatymai“</translation>
@@ -1904,6 +1909,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8863714995118816041">Svetainei <ph name="SITE_NAME" /> vėl suteikti leidimai</translation>
 <translation id="8865415417596392024">„Chrome“ duomenys jūsų paskyroje</translation>
 <translation id="8872506776304248286">Atidaryti programoje</translation>
+<translation id="8880275451109933094">Dviejų puslapių peržiūra</translation>
 <translation id="8890668505403261809">Ieškokite inkognito skirtukuose</translation>
 <translation id="8892234476517513962">Jau prisijungėte</translation>
 <translation id="8894890673032951011">„<ph name="TAB_TITLE" />“, pasirinktas įrašantis inkognito skirtukas</translation>

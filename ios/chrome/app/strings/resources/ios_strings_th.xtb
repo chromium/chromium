@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">ปิดโหมด AI</translation>
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
+<translation id="1560153516220021659">ปุ่มแถบเครื่องมือรองที่ยุบอยู่</translation>
 <translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1567960978791353852">แสดงโหมดการอ่าน</translation>
 <translation id="1571780780926010134">แท็บที่ไม่ระบุตัวตน</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
 <translation id="1594034544529347967">เริ่ม</translation>
+<translation id="1598485494295307681">กำลังฟัง</translation>
 <translation id="1598751033135758830">เปิดในแอป…</translation>
 <translation id="1600571977391127696">เนื้อหาบางรายการอาจไม่เหมาะสำหรับทุกคน</translation>
 <translation id="1601560923496285236">นำไปใช้</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">ขออภัย เกิดปัญหาในการแชร์รายการของคุณ</translation>
 <translation id="4944543191714094452">ค้นหาในหน้าเว็บ…</translation>
 <translation id="4945756290001680296">เข้าถึงการตั้งค่ารหัสผ่าน</translation>
+<translation id="4946307855175300628">กำลังตอบ</translation>
 <translation id="4949302115427722371">จัดการการตั้งค่า…</translation>
 <translation id="4958444002117714549">ขยายรายการ</translation>
 <translation id="496392417432935267">เปิดอยู่ที่อื่น</translation>
@@ -1552,6 +1555,7 @@
 <translation id="6355820183143562453">ซ่อนการ์ด "การติดตามราคา"</translation>
 <translation id="6355820205320395730">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย โปรดตรวจสอบว่าคุณสร้างรหัสผ่านที่รัดกุม <ph name="BEGIN_LINK" />ดูเคล็ดลับความปลอดภัยเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">ลงชื่อเข้าใช้เพื่อรับข้อมูลทั้งหมด เช่น รหัสผ่าน บุ๊กมาร์ก และอื่นๆ</translation>
+<translation id="6364268785720100355">ลงชื่อเข้าใช้เพื่อรับรหัสผ่านและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6368038301482806847">เลือกเครื่องมือค้นหาจากรายการ</translation>
 <translation id="6368102751067608420">หากต้องการลบข้อมูลในเครื่องมือจัดการรหัสผ่านทั้งหมด</translation>
 <translation id="6372558618707314581">ไปที่หน้าใดก็ได้ที่คุณต้องการ</translation>
@@ -1681,6 +1685,7 @@
 <translation id="6736243959894955139">ที่อยู่</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
 <translation id="6750456911389438250">{count,plural, =1{นำเข้ารายการประวัติ {count} รายการแล้ว}other{นำเข้ารายการประวัติ {count} รายการแล้ว}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{ตัวเลือกข้อมูลเข้าสู่ระบบ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกข้อมูลเข้าสู่ระบบ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="6755200887046212842">จัดการบัญชี</translation>
 <translation id="6757899787818440812">ความสูงปานกลาง</translation>
 <translation id="6759709389246683070">คุณแตะแท็บนี้ค้างไว้เพื่อตั้งการช่วยเตือนให้กลับมาดูในภายหลังได้</translation>

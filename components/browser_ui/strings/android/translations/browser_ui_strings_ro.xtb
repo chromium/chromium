@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1000614056227025171">Foaia din partea de jos a promoției Personalizează pagina de pornire este deschisă la înălțime completă</translation>
 <translation id="1006017844123154345">Deschide online</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1046742265332833834">Temă albastră</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Site-urile pot reda sunet</translation>
 <translation id="3065787901655140044">Protecția avansată este activată</translation>
 <translation id="3069226013421428034">Permite conectarea terță parte pentru un anumit site.</translation>
+<translation id="3084983642903364837">Editează pagina de pornire mai târziu din meniul cu trei puncte.</translation>
 <translation id="310297983047869047">Slide-ul anterior</translation>
 <translation id="3108122610701115301">Setează ca prestabilit</translation>
 <translation id="310979712355504754">Ștergeți tot</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Conectat la un port serial</translation>
 <translation id="4223404254440398437">Folosirea microfonului nu este permisă</translation>
 <translation id="4226663524361240545">Notificările pot face dispozitivul să vibreze</translation>
+<translation id="4227965147357783918">Foaia din partea de jos a promoției Personalizează pagina de pornire este deschisă la jumătate din înălțime</translation>
 <translation id="4259722352634471385">Navigarea este blocată: <ph name="URL" /></translation>
 <translation id="4274673989874969668">După ce ieși de pe un site, acesta poate continua sincronizarea pentru a finaliza activități, cum ar fi încărcarea fotografiilor sau trimiterea unui mesaj de chat</translation>
 <translation id="4278390842282768270">Se permite</translation>

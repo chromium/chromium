@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Cliquer sur le bouton pour fermer la boîte de dialogue de connexion à Chrome</translation>
 <translation id="1051793555070215510">Aidez-nous à améliorer la Navigation privée en répondant à ce sondage d'une minute.</translation>
+<translation id="1055295352198814912">Afficher Gemini dans Chrome dans la barre de menu Mac et activer le raccourci-clavier</translation>
 <translation id="1059838145689930908">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chrome.</translation>
 <translation id="1065672644894730302">Échec de lecture de vos préférences.
 
@@ -34,7 +35,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1290883685122687410">Erreur de configuration : <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Veuillez patienter pendant que Chrome installe les dernières mises à jour système.</translation>
 <translation id="1330562121671411446">Détecter la langue</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent les conditions d'utilisation de Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Vous pouvez passer à un autre profil Chrome pour voir les mots de passe</translation>
 <translation id="1343830902827845050">Connectez-vous à Chrome</translation>
 <translation id="1356661055722410047">Nouveau! Vous pouvez traduire à la fois le texte et les images sur votre écran</translation>
@@ -281,6 +281,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom du fichier du programme d'installation n'est pas valide ou n'est pas pris en charge.</translation>
 <translation id="395904275706073188">Les pages protégées ne peuvent pas être lues. Essayez une autre page.</translation>
+<translation id="3965532487635448963">Afficher Gemini dans Chrome dans la barre d'état système et activer le raccourci-clavier</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968962723676998462">Entrez votre phrase de passe pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome souhaite supprimer vos données du gestionnaire de mots de passe Google. Tapez votre mot de passe Windows pour autoriser la suppression.</translation>
@@ -323,6 +324,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4367027658822022112">Vous pouvez épingler Lentille Google pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
 <translation id="4372389195695053189">Chrome est désormais votre navigateur par défaut</translation>
 <translation id="4389991535395284064">Lors de la navigation en mode Navigation privée, Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
+<translation id="4400772909124543403">Aucune mise à jour n'est proposée</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – Connexion au réseau – <ph name="PAGE_TITLE" /></translation>
@@ -361,6 +363,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="4895437082222824641">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="4896867431081882115">Accédez facilement aux fonctionnalités que vous connaissez et aimez, et auxquelles vous faites confiance en définissant Chrome comme navigateur par défaut. Chrome sera épinglé à votre barre des tâches pour un accès rapide.</translation>
+<translation id="4904953848704395458">Ouvrez Gemini dans Chrome avec un raccourci-clavier.</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918844574251943176">Image copiée</translation>
 <translation id="4926882258455737990">Pour utiliser un autre compte Google avec Gemini dans Chrome, <ph name="BEGIN_LINK" />créez un profil<ph name="END_LINK" /> et connectez-vous avec le compte souhaité</translation>
@@ -522,6 +525,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6434035853014503219">Merci d'avoir choisi Chrome comme navigateur par défaut!</translation>
 <translation id="6438015621983209660">Étendez la navigation sécurisée améliorée avec Chrome sur votre téléphone</translation>
 <translation id="6442774133615368941">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo sur l'appli Chrome iOS</translation>
+<translation id="6448835208126432197">Pour sélectionner une partie de l'écran dans Gemini dans Chrome, utilisez un raccourci-clavier.</translation>
 <translation id="6473905796280459355">Accéder à la page À propos de Chrome</translation>
 <translation id="6481963882741794338">Associez Chrome et d'autres services Google à des fins de personnalisation et à d'autres fins</translation>
 <translation id="648319183876919572">La navigation sécurisée améliorée vous protège davantage contre les sites Web et les téléchargements dangereux</translation>
@@ -534,6 +538,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6520670145826811516">Pour utiliser votre position, accordez l'accès à Chrome dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historique de Google Chrome</translation>
 <translation id="6532945796722480006">Ouvrir Gemini dans Chrome Canary</translation>
+<translation id="6539493053177300926">Accédez facilement à Gemini dans Chrome sur votre appareil, même si Chrome est réduit.</translation>
 <translation id="6585124893636629274">Fermer Gemini dans Chrome</translation>
 <translation id="659498884637196217">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="6631524303639368205">Reprenez là où vous en étiez : Chrome restaure les onglets de votre dernière session. Vous pouvez désactiver cette option dans</translation>
@@ -593,6 +598,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7161904924553537242">Bienvenue dans Google Chrome</translation>
 <translation id="7193885263065350793">Votre organisation ferme Chrome lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Google Chrome. Vos données de Google Chrome, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. Vous avez la possibilité de créer un nouveau profil pour maintenir vos données Chrome actuelles séparées. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Pour quitter Gemini dans Chrome ou y revenir, utilisez un raccourci-clavier.</translation>
 <translation id="7274402351400635015">Vous pouvez utiliser Chrome chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis. Il sera également épinglé à votre barre des tâches.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gère Chrome</translation>
 <translation id="7285990705317078173">Téléchargez Chrome sur votre téléphone pour suivre les prix et recevoir des alertes lorsque le prix baisse sur n'importe quel site</translation>
@@ -631,7 +637,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent pas les conditions d'utilisation de Google Chrome OS.</translation>
 <translation id="7627609214560473136">Pour protéger vos données, laissez Chrome retirer les autorisations des sites que vous n'avez pas visités récemment.</translation>
 <translation id="7629695634924605473">Chrome vous informera si jamais vos mots de passe sont compromis</translation>
 <translation id="7641148173327520642">Votre administrateur système a configuré Google Chrome de manière à ouvrir <ph name="ALTERNATIVE_BROWSER_NAME" /> pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -702,6 +707,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="8221491193165283816">Vous bloquez habituellement les notifications. Pour autoriser ce site à vous envoyer des notifications, cliquez ici.</translation>
 <translation id="8253851811470049684">Ouvrez des liens dans Chrome à partir de n'importe quelle appli et gardez le navigateur à portée de main dans votre barre des tâches</translation>
 <translation id="8255190535488645436">Google Chrome utilise votre caméra et votre microphone.</translation>
+<translation id="8260086374035800939">Si Gemini dans Chrome est ouvert, le panneau latéral reste ouvert lors de la création de nouveaux onglets</translation>
 <translation id="8267953129876836456">Chrome a trouvé des recommandations de sécurité que vous pouvez examiner</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="829923460755755423">Ajouter un raccourci vers le gestionnaire de mots de passe Google</translation>
@@ -713,6 +719,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8366770919198174997">Réduit les performances, mais rend Chrome plus résistant aux attaques</translation>
 <translation id="8367705492654390392">Posez une question</translation>
+<translation id="8367950957770994118">Ouvrez rapidement Gemini dans Chrome lorsque vous en avez besoin</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8377158135256176353">Activer/Désactiver Gemini dans Chrome Canary</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
@@ -730,6 +737,7 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="8498858610309223613">Une mise à jour de sécurité spéciale pour Google Chrome vient d'être effectuée. Redémarrez maintenant, et nous restaurerons vos onglets.</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome Dev autorisant le trafic mDNS.</translation>
 <translation id="852529348814672339">Afficher Chrome dans cette langue</translation>
+<translation id="8525579356836940628">L'installation s'est arrêtée</translation>
 <translation id="8533056045953418157">Définissez Google Chrome comme visionneuse PDF par défaut</translation>
 <translation id="8555465886620020932">Erreur liée au service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Rechercher la liste de langues</translation>

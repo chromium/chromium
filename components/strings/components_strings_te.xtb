@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">తెలియని విధానం.</translation>
 <translation id="1227677022489889280">తరలించడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="1228893227497259893">ఎంటిటీ ఐడెంటిఫైయర్ చెల్లదు</translation>
+<translation id="122989279399348496">మీరు సైన్ ఇన్ చేసి ఉండగా, సపోర్ట్ ఉన్న సైట్‌లలో <ph name="DOMAIN" />, <ph name="EMAIL" />‌ను నిర్ధారించగలదు, కాబట్టి మీరు ఇన్‌బాక్స్‌ను చెక్ చేయాల్సిన అవసరం లేదు</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ఆటోమేటిక్‌గా గుర్తించబడింది)</translation>
 <translation id="1232569758102978740">శీర్షికలేనిది</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> అవసరం</translation>
@@ -505,6 +506,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, పలు చర్యలు అందుబాటులో ఉన్నాయి, వాటిలో దేనిని అయినా ఎంచుకోవడానికి 'Tab'ను నొక్కండి</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">వర్చువల్ కార్డ్ వివరాలు</translation>
+<translation id="1802420021606590788">Chrome, క్లౌడ్‌లోని ప్రైవేట్ స్పేస్‌లో పేజీ టైటిల్స్‌ను, URLలను ప్రాసెస్ చేస్తుంది</translation>
 <translation id="1803254472779303354">మౌస్ లాక్ అనుమతించబడుతుంది</translation>
 <translation id="1803351196216024260">మీ మైక్రోఫోన్‌ను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1804258830776932716">మీ ఖాతాను త్వరగా లింక్ చేయడం ద్వారా Pixను ఎనేబుల్ చేయండి</translation>
@@ -3022,6 +3024,7 @@
 <translation id="5742806904559466333">బార్‌లు, క్లబ్‌లు &amp; నైట్‌లైఫ్</translation>
 <translation id="5743684619253032786">గోళ్ల సంరక్షణా ప్రోడక్ట్‌లు</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
+<translation id="5745586894920491759">Chrome, క్లౌడ్‌లో పేజీ టైటిల్స్‌ను, URLలను ప్రాసెస్ చేస్తుంది</translation>
 <translation id="5745733273847572235">మీ లొకేషన్‌ను ఉపయోగించడం కోసం సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="5750869797196646528">చేతి కదలికల ట్రాకింగ్</translation>
 <translation id="5752327398324808817">ఒక పదం లేదా రెండు పదాలను ఎంటర్ చేయండి</translation>
@@ -3416,6 +3419,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">లాగ్‌లను చూడండి</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ప్రాక్సీ, ఫైర్‌వాల్ మరియు సెక్యూర్ DNS కాన్ఫిగరేషన్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">మీ ఈమెయిల్స్‌ను ఆటోమేటిక్‌గా నిర్ధారించండి</translation>
 <translation id="6366710531182496394">ఎడమవైపు డ్యుయల్ స్టేపుల్</translation>
 <translation id="6367196786591004737">ఎంట్రీని తొలగించండి</translation>
 <translation id="6370022303958842211">లాగిన్‌లు (విఫలమైన లాగిన్ కారణాలతో సహా), లాగ్‌అవుట్‌లు, లాక్‌లు, ఇంకా అన్‌లాక్‌లు వంటి పరికర యాక్సెస్ చర్యలు</translation>
@@ -4061,6 +4065,7 @@
 <translation id="7388380253839603603">గ్యాస్ ధరలు &amp; వాహన ఇంధనం</translation>
 <translation id="7388594495505979117">{0,plural, =1{మీ పరికరం 1 నిమిషంలో రీస్టార్ట్ అవుతుంది}other{మీ పరికరం # నిమిషాలలో రీస్టార్ట్ అవుతుంది}}</translation>
 <translation id="7393161616326137353">అడ్వెంచర్ గేమ్‌లు</translation>
+<translation id="7393243238767102021">ఈ ఈమెయిల్‌ను ఆటోమేటిక్‌గా వెరిఫై చేయడానికి <ph name="DOMAIN" />‌ను అనుమతించాలా?</translation>
 <translation id="7393475648162498734">చెక్ అవుట్ వద్ద మీ కార్డ్‌లకు ఏ రివార్డ్‌లు, ప్రయోజనాలు అందుబాటులో ఉన్నాయో చూడండి</translation>
 <translation id="7393971683644170444">మీ కార్డ్ ప్రొవైడర్‌కు కనెక్ట్ చేస్తున్నాము...</translation>
 <translation id="739728382607845710">పేమెంట్ హ్యాండ్లర్ చిహ్నం</translation>
@@ -5056,6 +5061,7 @@
 <translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />సూచనలు:<ph name="MARKUP_2" />మీకు డేటా కనెక్షన్ ఉందని నిర్ధారించుకోండి<ph name="MARKUP_3" />ఈ వెబ్‌పేజీని తర్వాత మళ్లీ లోడ్ చేయండి<ph name="MARKUP_4" />మీరు నమోదు చేసిన అడ్రస్‌ చెక్ చేయండి<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">మీ లోకల్ ఫైల్స్ <ph name="HOURS" /> గంటల్లో తొలగించబడతాయి</translation>
+<translation id="8964904785315870349">వెరిఫై చేసిన ఈమెయిల్</translation>
 <translation id="8968766641738584599">కార్డ్‌ని సేవ్ చేయండి</translation>
 <translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8971063699422889582">సర్వర్ ప్రమాణపత్రం గడువు ముగిసింది.</translation>

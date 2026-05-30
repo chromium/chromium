@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">I-off ang AI Mode</translation>
 <translation id="1554477036522844996">Bagong Window</translation>
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
+<translation id="1560153516220021659">Naka-collapse na pangalawang button ng toolbar</translation>
 <translation id="1565371473877914088">Bagong Tab na Incognito</translation>
 <translation id="1567960978791353852">Ipakita ang Reading Mode</translation>
 <translation id="1571780780926010134">Mga tab na incognito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Naipadala na ang mail.</translation>
 <translation id="1582732959743469162">Ihihinto nito ang lahat ng progreso para sa iyong kasalukuyang pag-download.</translation>
 <translation id="1594034544529347967">Magsisimula sa</translation>
+<translation id="1598485494295307681">Nakikinig</translation>
 <translation id="1598751033135758830">Buksan sa app…</translation>
 <translation id="1600571977391127696">Posibleng hindi naaangkop para sa lahat ang ilang content.</translation>
 <translation id="1601560923496285236">Ilapat</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Paumanhin, nagkaroon ng problema sa pagbabahagi ng item mo.</translation>
 <translation id="4944543191714094452">Hanapin sa Page…</translation>
 <translation id="4945756290001680296">I-access ang mga setting ng password</translation>
+<translation id="4946307855175300628">Tumutugon</translation>
 <translation id="4949302115427722371">Pamahalaan ang mga setting…</translation>
 <translation id="4958444002117714549">Palawakin ang listahan</translation>
 <translation id="496392417432935267">Nakabukas sa ibang lugar</translation>
@@ -1552,6 +1555,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6355820183143562453">I-hide ang card na pagsubaybay sa presyo</translation>
 <translation id="6355820205320395730">Madaling hulaan ang mahihinang password. Tiyaking malalakas na password ang gagawin mo. <ph name="BEGIN_LINK" />Tumingin pa ng mga tip sa seguridad.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Mag-sign in para makuha ang lahat ng iyong bagay-bagay tulad ng mga password, bookmark, at higit pa.</translation>
+<translation id="6364268785720100355">Mag-sign in para makuha ang iyong mga password at higit pa sa lahat ng device mo.</translation>
 <translation id="6368038301482806847">Pumili ng search engine mula sa listahan.</translation>
 <translation id="6368102751067608420">Para ma-delete ang lahat ng data ng passwords manager</translation>
 <translation id="6372558618707314581">Pumunta sa anumang page na gusto mo</translation>
@@ -1681,6 +1685,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6736243959894955139">Address</translation>
 <translation id="6746338529702829275">Suriin ang data ng iyong account</translation>
 <translation id="6750456911389438250">{count,plural, =1{Nag-import ng {count} item ng history}one{Nag-import ng {count} item ng history}other{Nag-import ng {count} na item ng history}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Available ang {count} opsyon para sa kredensyal sa itaas ng iyong keyboard.}one{Available ang {count} opsyon para sa kredensyal sa itaas ng iyong keyboard.}other{Available ang {count} na opsyon para sa kredensyal sa itaas ng iyong keyboard.}}</translation>
 <translation id="6755200887046212842">Pamahalaan ang Mga Account</translation>
 <translation id="6757899787818440812">Katamtamang taas</translation>
 <translation id="6759709389246683070">Puwede mong pindutin nang matagal ang tab na ito para magtakda ng paalala na bumisita ulit sa ibang pagkakataon</translation>

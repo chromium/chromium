@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ਨੁਕਤਿਆਂ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਵਾਲਾ ਪ੍ਰੋਮੋ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
 <translation id="1045899828449635435">ਇਹਨਾਂ ਸਾਈਟਾਂ ਤੋਂ ਵੀ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1049461303780085993">ਜਵਾਬ, ਮੁੱਖ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Chrome ਵਿੱਚ Gemini ਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="1049743911850919806">ਗੁਮਨਾਮ</translation>
 <translation id="1052842760770519282">ਤੁਹਾਡੇ ਕੁਝ ਪਾਸਵਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="1057623954802068161">ਪੰਨੇ ਦੇ ਸਿਖਰ ਤੱਕ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="232137538351753795">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ਤੋਂ</translation>
 <translation id="2328474416100889417">ਹਰ ਕੋਈ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਸੱਦੇ ਦੇ ਸਾਰੇ ਲਿੰਕਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2330186936255788117">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="2332515770639153015">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ</translation>
@@ -675,6 +677,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬ</translation>
 <translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="395377504920307820">ਕਿਸੇ ਖਾਤੇ ਦੇ ਬਿਨਾਂ ਵਰਤੋ</translation>
+<translation id="3955353672249727801">ਪੰਨੇ ਨੂੰ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪੰਨੇ ਨੂੰ ਲੋਡ ਕਰੇਗਾ}one{ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪੰਨੇ ਨੂੰ ਲੋਡ ਕਰੇਗਾ}other{ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪੰਨਿਆਂ ਨੂੰ ਲੋਡ ਕਰੇਗਾ}}</translation>
 <translation id="3969142555815019568">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
 <translation id="3969863827134279083">ਉੱਪਰ ਮੂਵ ਕਰੋ</translation>
@@ -834,6 +837,7 @@
 <translation id="4595237294768457124">ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4595276580892809760">ਗੈਲਰੀ ਤੋਂ ਚਿੱਤਰ ਨੱਥੀ ਕਰੋ</translation>
 <translation id="4595805675102978678">Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ</translation>
+<translation id="4599585406846903742">ਇਕਹਿਰਾ ਪੰਨਾ-ਦ੍ਰਿਸ਼</translation>
 <translation id="4601095002996233687">ਸ਼ੱਕੀ ਡਾਊਨਲੋਡਾਂ ਦੀ ਗਹਿਰਾਈ ਨਾਲ ਸਕੈਨਿੰਗ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4606559747793337066">ਜਦੋਂ ਕੋਈ ਸਾਈਟ ਜਾਂ ਐਪ ਆਪਣੇ ਪੰਨੇ 'ਤੇ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਲਿੰਕਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਨ ਲਈ ਕਹਿੰਦੀ ਹੈ, ਤਾਂ Chrome ਕੁਕੀਜ਼ ਤੋਂ ਬਿਨਾਂ Google ਸਰਵਰਾਂ ਰਾਹੀਂ ਪੰਨਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰੀਲੋਡ ਕਰਦਾ ਹੈ। ਇਹ ਪ੍ਰੀਲੋਡ ਕੀਤੀ ਸਾਈਟ ਤੋਂ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਲੁਕਾਉਂਦਾ ਹੈ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
@@ -1088,6 +1092,7 @@
 <translation id="569536719314091526">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਇਸ ਪੰਨੇ ਦਾ ਕਿਸੇ ਵੀ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5696597120588531049">ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ, ਅਸੁਰੱਖਿਅਤ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਵਿੱਚ Chrome ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="5698878456427040674">ਜਾਂਚ ਕਰੋ ਕਿ ਚੁਣਿਆ ਗਿਆ ਖਾਤਾ ਸਮਰਥਿਤ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
+<translation id="5700415746238689851">Gemini ਖੋਲ੍ਹੋ</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ਕਿਸੇ ਸੀਰੀਅਲ ਪੋਰਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5715150588940290235">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="572328651809341494">ਹਾਲੀਆ ਟੈਬਸ</translation>
@@ -1769,6 +1774,7 @@
 <translation id="8271267069224406035">ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="8277710303010772444">ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> ਵੱਲੋਂ ਸੁਰੱਖਿਅਤ</translation>
+<translation id="8280797717392145626">ਪ੍ਰਾਪਤ ਕੀਤੇ ਲਿੰਕ</translation>
 <translation id="8281886186245836920">ਛੱਡੋ</translation>
 <translation id="8282297628636750033">ਸੰਭਵ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਗੂ ਕਰੋ</translation>
 <translation id="8282950411412455249">ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -1904,6 +1910,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਦੁਬਾਰਾ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="8865415417596392024">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿਚਲਾ Chrome ਡਾਟਾ</translation>
 <translation id="8872506776304248286">ਐਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="8880275451109933094">ਦੋ ਪੰਨਾ-ਦ੍ਰਿਸ਼</translation>
 <translation id="8890668505403261809">ਆਪਣੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਖੋਜੋ</translation>
 <translation id="8892234476517513962">ਤੁਸੀਂ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਹੋ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਰਿਕਾਰਡਿੰਗ ਵਾਲੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1000614056227025171">Əsas səhifənizdə tanıtım üzrə tam hündürlükdə açılan aşağıdakı vərəqi fərdiləşdirin</translation>
 <translation id="1006017844123154345">Onlayn açın</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1046742265332833834">Mavi tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Saytlar səs oxuda bilər</translation>
 <translation id="3065787901655140044">Qabaqcıl Qoruma aktivdir</translation>
 <translation id="3069226013421428034">Müəyyən bir sayt üçün üçüncü tərəfin girişinə icazə verin.</translation>
+<translation id="3084983642903364837">Əsas səhifənizi daha sonra 3 nöqtəli menyu vasitəsilə redaktə edin.</translation>
 <translation id="310297983047869047">Əvvəlki slayd</translation>
 <translation id="3108122610701115301">Defolt olaraq ayarlayın</translation>
 <translation id="310979712355504754">Hamısını silin</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Serial porta qoşulub</translation>
 <translation id="4223404254440398437">Mikrofona icazə verilmir</translation>
 <translation id="4226663524361240545">Bildirişlər cihazı titrədə bilər</translation>
+<translation id="4227965147357783918">Əsas səhifənizdə tanıtım üzrə yarım hündürlükdə açılan aşağıdakı vərəqi fərdiləşdirin</translation>
 <translation id="4259722352634471385">Naviqasiya bloklandı: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Saytdan çıxdıqdan sonra o, fotoların yüklənməsi, yaxud söhbət mesajı göndərmək kimi tapşırıqları tamamlamaq üçün sinxronizasiyanı saxlaya bilər</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>

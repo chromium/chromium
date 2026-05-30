@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1000614056227025171">Panel bawah sesuaikan promo halaman beranda terbuka sepenuhnya</translation>
 <translation id="1006017844123154345">Buka versi Online</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1046742265332833834">Tema biru</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Situs dapat memutar suara</translation>
 <translation id="3065787901655140044">Perlindungan Lanjutan aktif</translation>
 <translation id="3069226013421428034">Izinkan login pihak ketiga untuk situs tertentu.</translation>
+<translation id="3084983642903364837">Edit halaman beranda Anda nanti melalui menu 3 titik.</translation>
 <translation id="310297983047869047">Slide sebelumnya</translation>
 <translation id="3108122610701115301">Jadikan default</translation>
 <translation id="310979712355504754">Hapus semua</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Terhubung ke port serial</translation>
 <translation id="4223404254440398437">Mikrofon tidak diizinkan</translation>
 <translation id="4226663524361240545">Notifikasi dapat membuat perangkat bergetar</translation>
+<translation id="4227965147357783918">Panel bawah sesuaikan promo halaman beranda terbuka setengah</translation>
 <translation id="4259722352634471385">Navigasi diblokir: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Setelah Anda menutupnya, situs dapat terus melakukan sinkronisasi untuk menyelesaikan tugas, seperti mengupload foto atau mengirim pesan chat</translation>
 <translation id="4278390842282768270">Diizinkan</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promo notifikasi tips ditutup</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1045899828449635435">Hapus data dari situs ini juga?</translation>
+<translation id="1049461303780085993">Coba Gemini di Chrome untuk mendapatkan jawaban, poin-poin penting, dan lainnya</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1052842760770519282">Beberapa sandi Anda tidak dapat diakses</translation>
 <translation id="1057623954802068161">Scroll ke bagian atas halaman</translation>
@@ -297,6 +298,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2318045970523081853">Ketuk untuk melakukan panggilan</translation>
 <translation id="232137538351753795">Geser dari tepi kiri untuk kembali</translation>
 <translation id="2323763861024343754">Penyimpanan situs</translation>
+<translation id="2327445548174191329">Dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan semua link undangan akan dinonaktifkan</translation>
 <translation id="2330186936255788117">Bookmark lainnya</translation>
 <translation id="2332515770639153015">Safe Browsing yang Disempurnakan aktif</translation>
@@ -834,6 +836,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4595237294768457124">Buka halaman Tab baru</translation>
 <translation id="4595276580892809760">Lampirkan gambar dari galeri</translation>
 <translation id="4595805675102978678">Terjadi kesalahan pada Akun Google</translation>
+<translation id="4599585406846903742">Tampilan satu halaman</translation>
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
 <translation id="4606559747793337066">Saat sebuah situs atau aplikasi meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan mengenkripsi dan melakukan pramuat halaman melalui server Google tanpa cookie. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat.</translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="569536719314091526">Terjemahkan halaman ini ke bahasa apa pun dari tombol Opsi lainnya</translation>
 <translation id="5696597120588531049">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya</translation>
 <translation id="5698878456427040674">Periksa apakah akun yang dipilih didukung.</translation>
+<translation id="5700415746238689851">Buka Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ingin terhubung ke port serial</translation>
 <translation id="5715150588940290235">Hapus kode keamanan yang tersimpan?</translation>
 <translation id="572328651809341494">Tab terbaru</translation>
@@ -1769,6 +1773,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8271267069224406035">Laporkan spam</translation>
 <translation id="8277710303010772444">Mulai penelusuran</translation>
 <translation id="8279945625179116733">Dijamin oleh <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Link diterima</translation>
 <translation id="8281886186245836920">Lewati</translation>
 <translation id="8282297628636750033">Terapkan tema gelap ke situs, jika mungkin</translation>
 <translation id="8282950411412455249">Buka setelan keamanan</translation>
@@ -1904,6 +1909,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8863714995118816041">Izin diberikan lagi untuk <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Data Chrome di akun Anda</translation>
 <translation id="8872506776304248286">Buka di aplikasi</translation>
+<translation id="8880275451109933094">Tampilan dua halaman</translation>
 <translation id="8890668505403261809">Telusuri tab Samaran Anda</translation>
 <translation id="8892234476517513962">Anda sudah login</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Tab Samaran yang Sedang Merekam dan Dipilih</translation>

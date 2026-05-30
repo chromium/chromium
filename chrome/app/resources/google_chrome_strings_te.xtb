@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">సెటప్ ఎర్రర్: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">దయచేసి Chrome తాజా సిస్టమ్ అప్‌డేట్‌లను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="1330562121671411446">భాషను గుర్తించండి</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> కోసం ఈ డివైజ్‌ను ఉపయోగించడానికి ముందు కింది సర్వీస్ నియమాలను మీరు చదివి, అంగీకరించాలి. ఈ నియమాలు Google ChromeOS Flex నియమాలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
 <translation id="1341711321000856656">మీరు మరొక Chrome ప్రొఫైల్‌కు మారి, పాస్‌వర్డ్‌లను చూడవచ్చు</translation>
 <translation id="1343830902827845050">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="1356661055722410047">కొత్తది! మీరు ఇప్పుడు మీ స్క్రీన్‌పై టెక్స్ట్‌ను, ఇమేజ్‌లను రెండింటినీ అనువదించవచ్చు</translation>
@@ -239,6 +238,7 @@
 <translation id="345171907106878721">Chromeకు మిమ్మల్ని జోడించుకోండి</translation>
 <translation id="3453763134178591239">ChromeOS నియమాలు</translation>
 <translation id="3503306920980160878">ఈ సైట్‌తో మీ లొకేషన్‌ను షేర్ చేయడానికి Chromeకు మీ లొకేషన్ యాక్సెస్ అవసరం</translation>
+<translation id="3539955434060988644">Chrome అజ్ఞాత విండోలో లింక్‌ను తెరువు</translation>
 <translation id="3576528680708590453"><ph name="TARGET_URL_HOSTNAME" />‌ను యాక్సెస్ చేయడం కోసం ఒక ప్రత్యామ్నాయ బ్రౌజర్‌ను తెరిచే విధంగా Google Chromeను మీ సిస్టమ్ నిర్వాహకులు కాన్ఫిగర్ చేశారు.</translation>
 <translation id="3582972582564653026">మీ పరికరాలన్నిటిలో Chromeను సింక్ చేయండి, వ్యక్తిగతీకరించండి</translation>
 <translation id="3583751698304738917">మీరు ఇప్పటికే మరొక Chrome ప్రొఫైల్‌లో <ph name="USER_EMAIL_ADDRESS" />‌గా సైన్ ఇన్ చేశారు</translation>
@@ -632,7 +632,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> కోసం ఈ డివైజ్‌ను ఉపయోగించడానికి ముందు కింది సర్వీస్ నియమాలను మీరు చదివి, అంగీకరించాలి. ఈ నియమాలు Google ChromeOS నియమాలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
 <translation id="7627609214560473136">మీ డేటాను సురక్షితంగా ఉంచడానికి, మీరు ఇటీవల ఉపయోగించని సైట్‌లకు అనుమతులను తీసివేయడానికి Chromeకు అనుమతినివ్వండి.</translation>
 <translation id="7629695634924605473">మీ పాస్‌వర్డ్‌లు ఎప్పుడైనా హ్యాక్ అయితే, Chrome మీకు తెలియచేస్తుంది</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Google Chromeను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>

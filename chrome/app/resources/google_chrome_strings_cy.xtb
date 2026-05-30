@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">I ddileu data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Cliciwch i gau'r deialog mewngofnodi Chrome</translation>
 <translation id="1051793555070215510">Helpwch ni i wella'r modd anhysbys trwy gymryd yr arolwg 1 funud hwn.</translation>
+<translation id="1055295352198814912">Dangos Gemini yn Chrome ym mar dewislen Mac a throi llwybr byr bysellfwrdd ymlaen</translation>
 <translation id="1059838145689930908">I ddefnyddio'r estyniad hwn fel <ph name="USER_EMAIL_ADDRESS" />, mewngofnodwch i Chrome.</translation>
 <translation id="1065672644894730302">Ni ellir darllen eich dewisiadau.
 
@@ -34,7 +35,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1290883685122687410">Gwall gosod: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Arhoswch dra bod Chrome yn gosod y diweddariadau system diweddaraf.</translation>
 <translation id="1330562121671411446">Canfod yr iaith</translation>
-<translation id="1335640173511558774">Mae <ph name="MANAGER" /> yn gofyn i chi ddarllen a derbyn y Telerau Gwasanaeth canlynol cyn defnyddio'r ddyfais hon. Nid yw'r telerau hyn yn ehangu, addasu na chyfyngu ar Delerau Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Gallwch newid i weld cyfrineiriau o broffil Chrome arall</translation>
 <translation id="1343830902827845050">Mewngofnodi i Chrome</translation>
 <translation id="1356661055722410047">Newydd! Gallwch gyfieithu testun a lluniau ar eich sgrîn</translation>
@@ -282,6 +282,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="3941890832296813527">Gwall gosod: Mae enw ffeil y gosodwr yn annilys neu heb ei gefnogi.</translation>
 <translation id="395904275706073188">Nid oes modd darllen tudalennau gwarchodedig. Rhowch gynnig ar dudalen wahanol.</translation>
+<translation id="3965532487635448963">Dangos Gemini yn Chrome yn yr hambwrdd system a throi'r llwybr byr bysellfwrdd ymlaen</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3968962723676998462">Rhowch eich cyfrin-ymadrodd i'w ddefnyddio a chadwch ddata Chrome yn eich cyfrif, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Mae Google Chrome eisiau dileu eich data Rheolwr Cyfrineiriau Google. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
@@ -324,6 +325,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="4367027658822022112">Gallwch binio Google Lens i gael mynediad hawdd; cliciwch ar y botwm Pinio ar frig y panel ochr</translation>
 <translation id="4372389195695053189">Mae Chrome bellach yn borwr diofyn i chi</translation>
 <translation id="4389991535395284064">Wrth bori yn y modd Anhysbys, bydd Chrome yn eich rhybuddio cyn llwytho gwefan gan ddefnyddio cysylltiad anniogel</translation>
+<translation id="4400772909124543403">Nid oes diweddariad ar gael.</translation>
 <translation id="4427306783828095590">Mae gwell amddiffyniad yn gwneud rhagor i rwystro gwe-rwydo a drwgwedd</translation>
 <translation id="4434353761996769206">Gwall gosodwr: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Mewngofnodi Rhwydwaith - <ph name="PAGE_TITLE" /></translation>
@@ -362,6 +364,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="4891791193823137474">Caniatáu i Google Chrome redeg yn y cefndir</translation>
 <translation id="4895437082222824641">Agor dolen mewn tab Chrome newydd</translation>
 <translation id="4896867431081882115">Cael mynediad hawdd at y nodweddion rydych chi'n eu hadnabod, eu caru ac yn ymddiried ynddynt trwy osod Chrome fel eich porwr diofyn. Bydd Chrome yn cael ei binio i'ch bar tasgau i gael mynediad cyflym.</translation>
+<translation id="4904953848704395458">Agor Gemini yn Chrome gyda llwybr byr bysellfwrdd.</translation>
 <translation id="4918086044614829423">Derbyn</translation>
 <translation id="4918844574251943176">Llun wedi'i gopïo</translation>
 <translation id="4926882258455737990">I ddefnyddio Cyfrif Google gwahanol gyda Gemini yn Chrome, <ph name="BEGIN_LINK" />crëwch broffil newydd<ph name="END_LINK" /> a mewngofnodwch gyda'r cyfrif rydych ei eisiau</translation>
@@ -524,6 +527,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6434035853014503219">Diolch am ddewis Chrome fel eich porwr diofyn!</translation>
 <translation id="6438015621983209660">Estynnwch Bori'n Ddiogel Gwell gyda Chrome ar eich ffôn</translation>
 <translation id="6442774133615368941">Siopa, cyfieithu ac adnabod yr hyn a welwch gyda'ch camera ar ap iOS Chrome</translation>
+<translation id="6448835208126432197">I ddewis rhan o'r sgrîn yn Gemini yn Chrome, defnyddiwch y llwybr byr bysellfwrdd.</translation>
 <translation id="6473905796280459355">Mynd i'r dudalen Ynghylch Chrome</translation>
 <translation id="6481963882741794338">Cysylltwch Chrome a gwasanaethau Google eraill at ddibenion personoleiddio a dibenion eraill</translation>
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
@@ -536,6 +540,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6520670145826811516">I ddefnyddio'ch lleoliad, rhowch fynediad i Chrome yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Hanes Chrome</translation>
 <translation id="6532945796722480006">Agor Gemini yn Chrome Canary</translation>
+<translation id="6539493053177300926">Mynediad hawdd i ddefnyddio Gemini yn Chrome ar draws eich dyfais, hyd yn oed os yw Chrome wedi'i leihau.</translation>
 <translation id="6585124893636629274">Cau Gemini yn Chrome</translation>
 <translation id="659498884637196217">Yn Rheolwr Cyfrineiriau Google ar y ddyfais hon</translation>
 <translation id="6631524303639368205">Parhau lle gwnaethoch adael: Mae Chrome wedi adfer eich tabiau o'ch sesiwn ddiwethaf. Gallwch ddiffodd hyn yn</translation>
@@ -595,6 +600,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7161904924553537242">Croeso i Google Chrome</translation>
 <translation id="7193885263065350793">Mae eich sefydliad yn cau Chrome pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Rydych yn mewngofnodi gyda chyfrif a reolir ac yn rhoi rheolaeth dros eich proffil Google Chrome i'w weinyddwr. Bydd eich data Chrome, megis eich apiau, eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill yn cysylltu'n barhaol â <ph name="USER_NAME" />. Byddwch yn gallu dileu'r data hyn drwy'r Dangosfwrdd Cyfrifon Google, ond ni fyddwch yn gallu cysylltu'r data hyn â chyfrif arall. Gallwch ddewis creu proffil newydd i gadw'ch data Chrome presennol ar wahân. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">I adael neu ddychwelyd i Gemini yn Chrome, defnyddiwch y llwybr byr bysellfwrdd.</translation>
 <translation id="7274402351400635015">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill. Bydd hefyd yn cael ei binio i'ch bar tasgau.</translation>
 <translation id="7285616922384953075">Mae <ph name="MANAGER" /> yn rheoli Chrome</translation>
 <translation id="7285990705317078173">Lawrlwythwch Chrome ar eich ffôn i olrhain prisiau a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>
@@ -633,7 +639,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474">Mae <ph name="MANAGER" /> yn gofyn i chi ddarllen a derbyn y Telerau Gwasanaeth canlynol cyn defnyddio'r ddyfais hon. Nid yw'r telerau hyn yn ehangu, addasu na chyfyngu ar Delerau Google ChromeOS.</translation>
 <translation id="7627609214560473136">I ddiogelu eich data, gadewch i Chrome dynnu caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar.</translation>
 <translation id="7629695634924605473">Mae Chrome yn gadael i chi wybod a yw'ch cyfrineiriau byth wedi'u darganfod</translation>
 <translation id="7641148173327520642">Mae gweinyddwr eich system wedi ffurfweddu Google Chrome i agor <ph name="ALTERNATIVE_BROWSER_NAME" /> i gael mynediad at <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -704,6 +709,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8221491193165283816">Rydych fel arfer yn rhwystro hysbysiadau. I ganiatáu i'r wefan hon eich hysbysu, cliciwch yma.</translation>
 <translation id="8253851811470049684">Agor dolenni yn Chrome o unrhyw ap a chadw'r porwr yn hygyrch ar eich bar tasgau</translation>
 <translation id="8255190535488645436">Mae Google Chrome yn defnyddio'ch camera a'ch meicroffon.</translation>
+<translation id="8260086374035800939">Os yw Gemini yn Chrome ar agor, mae'r panel ochr yn aros ar agor wrth greu tabiau newydd</translation>
 <translation id="8267953129876836456">Mae Chrome wedi dod o hyd i argymhellion diogelwch i chi eu hadolygu</translation>
 <translation id="8286862437124483331">Mae Google Chrome yn ceisio dangos cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="829923460755755423">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau Google</translation>
@@ -715,6 +721,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8362914115861174987">Cyfieithu i</translation>
 <translation id="8366770919198174997">Yn lleihau perfformiad ond yn gwneud Chrome yn fwy ymwrthol i ymosodiadau</translation>
 <translation id="8367705492654390392">Gofynnwch unrhyw beth</translation>
+<translation id="8367950957770994118">Agorwch Gemini yn gyflym yn Chrome pryd bynnag y bydd ei angen arnoch</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
 <translation id="8377158135256176353">Toglo Gemini yn Chrome Canary</translation>
 <translation id="8387459386171870978">Parhau i ddefnyddio Chrome</translation>
@@ -732,6 +739,7 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="8498858610309223613">Cymhwyswyd diweddariad diogelwch arbennig ar gyfer Google Chrome yn unig. Ailgychwynnwch nawr a byddwn yn adfer eich tabiau.</translation>
 <translation id="8521348052903287641">Rheol dod i mewn ar gyfer Google Chrome Dev i ganiatáu traffig mDNS.</translation>
 <translation id="852529348814672339">Arddangos Chrome yn yr iaith hon</translation>
+<translation id="8525579356836940628">Wedi Stopio Gosod</translation>
 <translation id="8533056045953418157">Gosod Google Chrome fel eich dangosydd PDF diofyn</translation>
 <translation id="8555465886620020932">Gwall gwasanaeth: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Chwilio rhestr iaith</translation>

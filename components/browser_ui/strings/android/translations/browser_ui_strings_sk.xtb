@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1000614056227025171">Dolný hárok s promom vyzývajúcim na prispôsobenie domovskej stránky je otvorený na celú výšku</translation>
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1046742265332833834">Modrý motív</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Weby môžu prehrávať zvuk</translation>
 <translation id="3065787901655140044">Rozšírená ochrana je zapnutá</translation>
 <translation id="3069226013421428034">Na konkrétnom webe môžete povoliť prihlasovanie tretími stranami.</translation>
+<translation id="3084983642903364837">Domovskú stránku si môžete neskôr upraviť prostredníctvom trojbodkovej ponuky.</translation>
 <translation id="310297983047869047">Predchádzajúca snímka</translation>
 <translation id="3108122610701115301">Nastaviť ako predvolené</translation>
 <translation id="310979712355504754">Odstrániť všetko</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Pripojené k sériovému portu</translation>
 <translation id="4223404254440398437">Mikrofón nie je povolený</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
+<translation id="4227965147357783918">Dolný hárok s promom vyzývajúcim na prispôsobenie domovskej stránky je otvorený na polovičnú výšku</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Keď web opustíte, môže naďalej synchronizovať dokončenie úloh, napríklad nahrávanie fotiek alebo odoslanie četovej správy</translation>
 <translation id="4278390842282768270">Povolené</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Werbeangebot zu Benachrichtigungen mit Tipps geschlossen</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1045899828449635435">Auch Daten dieser Websites löschen?</translation>
+<translation id="1049461303780085993">Probiere Gemini in Chrome aus – für schnelle Antworten, nützliche Informationen und mehr</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Auf einige deiner Passwörter kann nicht zugegriffen werden</translation>
 <translation id="1057623954802068161">Zum Seitenanfang scrollen</translation>
@@ -297,6 +298,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2318045970523081853">Zum Anrufen tippen</translation>
 <translation id="232137538351753795">Vom linken Rand aus wischen, um zurück­zugehen</translation>
 <translation id="2323763861024343754">Websitespeicher</translation>
+<translation id="2327445548174191329">Von <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und alle Einladungslinks werden deaktiviert</translation>
 <translation id="2330186936255788117">Weitere Lesezeichen</translation>
 <translation id="2332515770639153015">Erweitertes Safe Browsing ist aktiviert</translation>
@@ -834,6 +836,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4595237294768457124">Öffne einen neuen Tab</translation>
 <translation id="4595276580892809760">Bilder aus Galerie anhängen</translation>
 <translation id="4595805675102978678">Google-Kontofehler</translation>
+<translation id="4599585406846903742">Einzelseitenansicht</translation>
 <translation id="4601095002996233687">Umfangreiche Scans nach verdächtigen Downloads.</translation>
 <translation id="4606559747793337066">Wenn eine Website oder App anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die Seiten und lädt sie ohne Cookies über Google-Server vorab. Dadurch wird deine Identität vor der vorab geladenen Website oder App verborgen.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
@@ -1088,6 +1091,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="569536719314091526">Über den Button „Weitere Optionen“ kannst du dir diese Seite in eine beliebige Sprache übersetzen lassen</translation>
 <translation id="5696597120588531049">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und unsicheren Websites zu schützen</translation>
 <translation id="5698878456427040674">Prüfe, ob das ausgewählte Konto unterstützt wird.</translation>
+<translation id="5700415746238689851">Gemini öffnen</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> möchte eine Verbindung zu einem seriellen Port herstellen</translation>
 <translation id="5715150588940290235">Gespeicherte Sicherheitscodes löschen?</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
@@ -1769,6 +1773,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8271267069224406035">Spam melden</translation>
 <translation id="8277710303010772444">Suche starten</translation>
 <translation id="8279945625179116733">Geschützt durch <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Links empfangen</translation>
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8282297628636750033">Dunkles Design auf Websites anwenden</translation>
 <translation id="8282950411412455249">Zu den Sicherheitseinstellungen</translation>
@@ -1904,6 +1909,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8863714995118816041">Berechtigungen wieder zugelassen für <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
 <translation id="8872506776304248286">In App öffnen</translation>
+<translation id="8880275451109933094">Zwei-Seiten-Ansicht</translation>
 <translation id="8890668505403261809">In meinen Inkognitotabs suchen</translation>
 <translation id="8892234476517513962">Du bist bereits angemeldet</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ausgewählter Inkognitotab zum Aufzeichnen</translation>

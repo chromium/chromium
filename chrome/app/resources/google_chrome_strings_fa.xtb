@@ -5,7 +5,7 @@
 <translation id="1006034097353797313">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chrome هربار که آن را بازراه‌اندازی کنید، زبانه‌هایتان را بازمی‌گرداند. برای خاموش کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="1018937009655463387">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید.</translation>
 <translation id="1026101648481255140">ازسر گرفتن نصب</translation>
-<translation id="102763973188675173">‏سفارشی کردن و کنترل Google Chrome. به‌روزرسانی‌ در دسترس است.</translation>
+<translation id="102763973188675173">‏سفارشی کردن و کنترل Google Chrome. به‌روزرسانی‌ دردسترس است.</translation>
 <translation id="1028061813283459617">‏برای حذف کردن داده‌های مرور فقط از این دستگاه و نگهداری آن در «حساب Google»، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">‏برای بستن کادر گفتگوی ورود به سیستم Chrome، کلیک کنید</translation>
 <translation id="1051793555070215510">با تکمیل این نظرسنجی ۱ دقیقه‌ای به ما کمک کنید «حالت ناشناس» را بهبود ببخشیم.</translation>
@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">خطای راه‌اندازی: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">‏لطفاً صبر کنید تا Chrome جدیدترین به‌روزرسانی‌های سیستم را نصب کند.</translation>
 <translation id="1330562121671411446">تشخیص دادن زبان</translation>
-<translation id="1335640173511558774">‏<ph name="MANAGER" /> لازم می‌داند که پیش‌از استفاده از این دستگاه، «شرایط خدمات» زیر را بخوانید و آن‌ها را بپذیرید. این شرایط باعث بسط داده شدن، تغییر یافتن،‌ یا محدود شدن «شرایط Google ChromeOS Flex» نمی‌شود.</translation>
 <translation id="1341711321000856656">‏برای دیدن گذرواژه‌های نمایه Chrome دیگر، می‌توانید به آن نمایه بروید</translation>
 <translation id="1343830902827845050">‏وارد سیستم Chrome شوید</translation>
 <translation id="1356661055722410047">جدید! می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
@@ -631,7 +630,6 @@
 <translation id="760353356052806707">‏برنامه دیگری در رایانه شما یک برنامه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474">‏<ph name="MANAGER" /> لازم می‌داند که شما «شرایط خدمات» زیر را قبل‌از استفاده از دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شود، اصلاح نمی‌شود، یا «شرایط Google ChromeOS» را محدود نمی‌کند.</translation>
 <translation id="7627609214560473136">‏برای محافظت از داده‌هایتان، به Chrome اجازه داده می‌شود اجازه‌های سایت‌هایی را که اخیراً از آن‌ها بازدید نکرده‌اید حذف کند.</translation>
 <translation id="7629695634924605473">‏Chrome می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="7641148173327520642">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Google Chrome را پیکربندی کرده است.</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Ծանուցումներով պրոմոհուշումը փակված է</translation>
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1045899828449635435">Մաքրե՞լ այս տվյալները</translation>
+<translation id="1049461303780085993">Փորձեք «Gemini-ը Chrome-ում» հավելվածը՝ պատասխաններ, կարևոր տեղեկություններ և ավելին ստանալու համար</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="1052842760770519282">Ձեր որոշ գաղտնաբառեր անհասանելի են</translation>
 <translation id="1057623954802068161">Թերթել դեպի էջի սկիզբ</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">Հպեք՝ զանգելու համար</translation>
 <translation id="232137538351753795">Մատը սահեցրեք էկրանի ձախ եզրից՝ հետ գնալու համար</translation>
 <translation id="2323763861024343754">Կայքի օգտագործած տարածքը</translation>
+<translation id="2327445548174191329">Աղբյուրը՝ <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Ներդիրների «<ph name="GROUP_NAME" />» խումբն անմիջապես անհասանելի կդառնա բոլորին, և հրավերի բոլոր հղումները կանջատվեն</translation>
 <translation id="2330186936255788117">Այլ էջանիշներ</translation>
 <translation id="2332515770639153015">Բարելավված Ապահով դիտարկումը միացված է</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">Բացեք նոր ներդիրի էջը</translation>
 <translation id="4595276580892809760">Ավելացնել պատկերներ ցուցասրահից</translation>
 <translation id="4595805675102978678">Google հաշվի սխալ</translation>
+<translation id="4599585406846903742">Դիտել մեկ էջով</translation>
 <translation id="4601095002996233687">Կասկածելի ներբեռնումների մանրակրկիտ սկանավորում։</translation>
 <translation id="4606559747793337066">Երբ որևէ կայք կամ հավելված հայցում է էջերի անանուն նախաբեռնում իր էջում առկա հղումների միջոցով, Chrome-ը գաղտնագրում և նախապես բեռնում է էջերը Google-ի սերվերների միջոցով առանց քուքիների։ Այդպիսով ձեր ինքնության մասին տվյալները չեն փոխանցվում։</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">Թարգմանեք այս կայքը «Այլ ընտրանքներ» կոճակի միջոցով</translation>
 <translation id="5696597120588531049">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>
 <translation id="5698878456427040674">Ստուգեք՝ արդյոք ընտրված հաշիվն աջակցվում է։</translation>
+<translation id="5700415746238689851">Բացել Gemini-ը</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> կայքն ուզում է միանալ հերթական միացքին</translation>
 <translation id="5715150588940290235">Ջնջե՞լ անվտանգության պահված կոդերը</translation>
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">Նշել որպես սպամ</translation>
 <translation id="8277710303010772444">Որոնել</translation>
 <translation id="8279945625179116733">Պաշտպանությունն ապահովում է՝ <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Հղումներ են ստացվել</translation>
 <translation id="8281886186245836920">Բաց թողնել</translation>
 <translation id="8282297628636750033">Կայքերում հնարավորինս կիրառել մուգ թեման</translation>
 <translation id="8282950411412455249">Բացել անվտանգության կարգավորումները</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">Թույլտվությունները <ph name="SITE_NAME" /> կայքի համար նորից տրամադրվեցին</translation>
 <translation id="8865415417596392024">Chrome-ի տվյալները ձեր հաշվում</translation>
 <translation id="8872506776304248286">Բացել հավելվածում</translation>
+<translation id="8880275451109933094">Դիտել երկու էջով</translation>
 <translation id="8890668505403261809">Որոնեք ձեր ինկոգնիտո ներդիրներում</translation>
 <translation id="8892234476517513962">Արդեն մուտք եք գործել</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որում տեսագրում է արվում</translation>

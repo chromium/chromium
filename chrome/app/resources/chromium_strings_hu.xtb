@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
 <translation id="1232234696885483911">A képkereső megnyitásakor a rendszer automatikusan elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a szervernek. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chromiumban. A módosításhoz lépjen „Az Ön fiókja a Chromiumban” részhez.</translation>
+<translation id="1257483544893909270">Billentyűparancs használata a képernyő egy részének kiválasztásához a Gemini a Chromiumban szolgáltatásban.</translation>
 <translation id="1262876892872089030">Amíg ez a lap inaktív volt, a rendszer memóriát szabadított fel, hogy a Chromium gyors maradjon. Dönthet úgy, hogy mindig kizárja ezt a webhelyet az inaktív állapotból.</translation>
 <translation id="1265577313130862557">A Chromium letiltotta ezt a letöltést, mert a fájl veszélyes</translation>
 <translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2629740064077610681">Szervezete láthatja és kezelheti a böngészési adatokat (például a könyvjelzőket, az előzményeket és a jelszavakat). A többi Chromium-profilban lévő böngészési adatot viszont nem láthatja.</translation>
 <translation id="2635452620547538388">Igazolja személyazonosságát, ha a Chromium-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
+<translation id="2636783171884046627">Billentyűparancs használata a Gemini a Chromiumban szolgáltatásból való kilépéshez vagy a Gemini a Chromiumban szolgáltatásba való visszatéréshez.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához}=1{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitóablak nem fog újra megnyílni.}}</translation>
 <translation id="2648074677641340862">Az operációs rendszer hibát jelzett a telepítés során. Kérjük, töltse le újra a Chromiumot.</translation>
 <translation id="2661879430930417727">Ha megoszt egy eszközt, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chromiumot.</translation>
+<translation id="2676569452213089702">Könnyen hozzáférhet a Gemini a Chromiumban szolgáltatáshoz az eszközén, még akkor is, ha a Chromium kis méretre van állítva.</translation>
 <translation id="2711502716910134313">Chromium lap</translation>
 <translation id="2718390899429598676">A nagyobb biztonság érdekében a Chromium titkosítja az Ön adatait.</translation>
 <translation id="2721354645805494590">Ha szeretné eltávolítani Google-fiókját a Chromiumból, jelentkezzen ki</translation>
@@ -309,7 +312,7 @@
 <translation id="4334241893986177674">Keresés ezen a képernyőképen</translation>
 <translation id="4384331407722351213">A Chromium indítása a Windows indulásakor</translation>
 <translation id="4384993550046411228">A Chromium alapértelmezett böngészőként való beállításával könnyen hozzáférhet a már ismert, szeretett és megbízható funkciókhoz. A Chromium a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
-<translation id="439358628917130594">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a ChromiumOS feltételeit.</translation>
+<translation id="4400772909124543403">Nincs rendelkezésre álló frissítés</translation>
 <translation id="4407044323746248786">Biztosan kilép a Chromiumból?</translation>
 <translation id="4413205837991854510">A Képkereső parancsikonja mindig jelenjen meg</translation>
 <translation id="4415566066719264597">A Chromium futhat a háttérben</translation>
@@ -348,6 +351,7 @@
 <translation id="4746050847053251315">Biztosan kilép a Chromiumból?</translation>
 <translation id="4748217263233248895">A rendszer egy speciális biztonsági frissítést alkalmazott a Chromiumon. Indítsa újra a számítógépet, a lapokat majd mi visszaállítjuk.</translation>
 <translation id="4771701986670315895">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
+<translation id="4786083865378785874">Ha a Gemini a Chromiumban szolgáltatás meg van nyitva, az oldalsó panel megnyitva marad új lapok létrehozásakor</translation>
 <translation id="479167709087336770">A szolgáltatás ugyanazt a helyesírás-ellenőrzést használja, mint a Google Kereső. A begépelt szöveget a böngésző elküldi a Google-nak. A beállítások között ezt bármikor módosíthatja.</translation>
 <translation id="4814736265800133385">Chromium használata fiók nélkül</translation>
 <translation id="4888717733111232871">Bejövő szabály a Chromiumhoz az mDNS forgalom engedélyezése céljából.</translation>
@@ -399,6 +403,7 @@
 <translation id="555970465369471303">Biztonsági okokból a Chromium kikapcsolja a JavaScript-optimalizálást, amikor Ön első alkalommal keres fel egy webhelyet.
 
 Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás engedélyezésével.</translation>
+<translation id="5575874067957905201">A Gemini a Chromiumban szolgáltatás megjelenítése a Mac menüsorán, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="5579324208890605088">Indítási hiba: normál felhasználóként futtassa a telepítőt, ne rendszergazdaként.</translation>
 <translation id="5580770360767802657">Használja a Chromiumot alapértelmezett böngészőként, és tűzze ki a tálcára</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
@@ -620,6 +625,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7867198900892795913">Nem sikerült a Chromium frissítése a legújabb verzióra, így Ön lemarad az új funkciókról és biztonsági javításokról.</translation>
 <translation id="7872446069773932638">Letöltés… <ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="7873537467422636035">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
+<translation id="7874369989024033742">Gyorsan megnyithatja a Gemini a Chromiumban szolgáltatást, amikor szüksége van rá</translation>
 <translation id="7877212753140190672">Kérdés erről a képről</translation>
 <translation id="7888981273428720788">A Chromium beállítása alapértelmezettként</translation>
 <translation id="7934340546140346950">A Chromium automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges.</translation>
@@ -641,6 +647,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8118331347066725040">Visszajelzés küldése a Lens segítségével való keresésről</translation>
 <translation id="8133124826068723441">A ChromiumOS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem áll rendelkezésre az Ön domainjénél.</translation>
 <translation id="813913629614996137">Indítás…</translation>
+<translation id="8161503455832158203">A Gemini a Chromiumban szolgáltatás megnyitása billentyűparancs használatával.</translation>
 <translation id="8164014945047474187">A Chromium kiegészítő szerződési feltételei</translation>
 <translation id="81770708095080097">Ez a fájl veszélyes, ezért a Chromium letiltotta.</translation>
 <translation id="8177472873527554730">Nem található tartalom az oldalon</translation>
@@ -650,6 +657,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8232193495299001329">A Chromium nem tudja ellenőrizni, hogy honnan származik a bővítmény, amely lehet, hogy nem biztonságos. Távolítsa el a Chromiumból, hogy a bővítmény a továbbiakban már ne láthassa és módosíthassa az Ön adatait a felkeresett webhelyeken (a személyes adatokat is beleértve).</translation>
 <translation id="8248265253516264921">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chromium igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket. A funkciót a beállítások között bármikor kikapcsolhatja.</translation>
 <translation id="8254601181414348851">Új profilban jelentkezik be a Chromiumba?</translation>
+<translation id="8277334259226003205">A Gemini a Chromiumban szolgáltatás megjelenítése a tálcán, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />A Chromium figyelmezteti<ph name="END_LINK" /> a nem biztonságos webhelyekre és letöltésekre</translation>
 <translation id="8295827201165805317">Nem látogatta meg mostanában. A Chromium eltávolította a következőt: <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Vásárolhat, fordíthat, és azonosíthatja a látott dolgokat a kamera segítségével a Chromium iOS-alkalmazásban</translation>
@@ -678,6 +686,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8493179195440786826">A Chromium elavult</translation>
 <translation id="850264194101621529">Köszönjük, hogy a Chromiumot választotta alapértelmezett böngészőként!</translation>
 <translation id="8522801943730206384">A Chromium képes a jelszavak ellenőrzésére, ha Ön menti őket</translation>
+<translation id="8525579356836940628">Telepítés leállítva</translation>
 <translation id="8548787790260785208">Figyelmeztetést kaphat, ha a Chromium azt észleli, hogy az Ön egyik jelszava nyilvános adatvédelmi incidensben volt érintett.</translation>
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Egyes Chromium-funkciókhoz és -bővítményekhez gyorsparancsok tartoznak. Újra bekapcsolhatja őket.</translation>

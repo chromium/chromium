@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">关闭 AI 模式</translation>
 <translation id="1554477036522844996">打开新的窗口</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
+<translation id="1560153516220021659">已收起辅助工具栏按钮</translation>
 <translation id="1565371473877914088">打开新的无痕式标签页</translation>
 <translation id="1567960978791353852">显示阅读模式</translation>
 <translation id="1571780780926010134">无痕式标签页</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">邮件已发送。</translation>
 <translation id="1582732959743469162">这会全面停止您正在执行的下载任务。</translation>
 <translation id="1594034544529347967">开始日期</translation>
+<translation id="1598485494295307681">正在聆听</translation>
 <translation id="1598751033135758830">在应用中打开…</translation>
 <translation id="1600571977391127696">有些内容不一定适合所有人。</translation>
 <translation id="1601560923496285236">应用</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">很抱歉，分享您的信息时出现问题。</translation>
 <translation id="4944543191714094452">在网页中查找…</translation>
 <translation id="4945756290001680296">访问密码设置</translation>
+<translation id="4946307855175300628">正在回答</translation>
 <translation id="4949302115427722371">管理设置…</translation>
 <translation id="4958444002117714549">展开列表</translation>
 <translation id="496392417432935267">已在别处打开</translation>
@@ -1552,6 +1555,7 @@
 <translation id="6355820183143562453">隐藏“价格跟踪”卡片</translation>
 <translation id="6355820205320395730">安全系数低的密码容易被人猜到。请务必创建安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="6357455205205567365">登录后即可获取您的所有内容，例如密码、书签等。</translation>
+<translation id="6364268785720100355">登录后即可将密码等信息同步到您的所有设备上。</translation>
 <translation id="6368038301482806847">从列表中选择搜索引擎。</translation>
 <translation id="6368102751067608420">删除所有密码管理工具数据</translation>
 <translation id="6372558618707314581">前往您喜欢的任何页面</translation>
@@ -1681,6 +1685,7 @@
 <translation id="6736243959894955139">地址</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6750456911389438250">{count,plural, =1{已导入 {count} 项历史记录}other{已导入 {count} 项历史记录}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{键盘上方显示了 {count} 个凭证选项。}other{键盘上方显示了 {count} 个凭证选项。}}</translation>
 <translation id="6755200887046212842">管理账号</translation>
 <translation id="6757899787818440812">中等高度</translation>
 <translation id="6759709389246683070">您可以轻触并按住此标签页，设置提醒以便日后再次访问</translation>

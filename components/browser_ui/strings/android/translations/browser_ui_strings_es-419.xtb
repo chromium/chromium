@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1000614056227025171">La hoja inferior de la promoción para personalizar la página principal está totalmente abierta</translation>
 <translation id="1006017844123154345">Abrir en línea</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1046742265332833834">Tema azul</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Permitir que los sitios reproduzcan sonido</translation>
 <translation id="3065787901655140044">Se activó la Protección avanzada</translation>
 <translation id="3069226013421428034">Permite el acceso de terceros a un sitio específico.</translation>
+<translation id="3084983642903364837">Edita tu página principal más tarde a través del menú de 3 puntos.</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3108122610701115301">Establecer como predeterminado</translation>
 <translation id="310979712355504754">Eliminar todos</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Conectado a un puerto en serie</translation>
 <translation id="4223404254440398437">No se permite el micrófono</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan vibrar el dispositivo</translation>
+<translation id="4227965147357783918">La hoja inferior de la promoción para personalizar la página principal está abierta a media altura</translation>
 <translation id="4259722352634471385">Navegación bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Después de que sales de los sitios, por lo general se siguen sincronizando para completar tareas, como la de subir fotos o enviar un mensaje de chat.</translation>
 <translation id="4278390842282768270">Permitido</translation>

@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">Ralat persediaan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
 <translation id="1330562121671411446">Kesan bahasa</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Anda boleh menukar profil untuk melihat kata laluan daripada profil Chrome yang lain</translation>
 <translation id="1343830902827845050">Log masuk ke Chrome</translation>
 <translation id="1356661055722410047">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda</translation>
@@ -632,7 +631,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Google Chrome OS.</translation>
 <translation id="7627609214560473136">Untuk melindungi data anda, benarkan Chrome mengalih keluar kebenaran daripada laman yang belum anda lawati baru-baru ini.</translation>
 <translation id="7629695634924605473">Chrome akan memberitahu anda sekiranya kata laluan anda terjejas</translation>
 <translation id="7641148173327520642">Pentadbir sistem anda telah mengkonfigurasikan Google Chrome agar membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>

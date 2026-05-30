@@ -9418,6 +9418,13 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="7055022222176591388">Veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins nicht zulassen</translation>
 <translation id="7056040036973126753">Abhängig von der Richtlinie für Chrome-Nutzermesswerte werden möglicherweise Daten zur Domainzuverlässigkeit an Google gesendet</translation>
 <translation id="7062803946218028349">Aktivieren des Phone Hub zulassen</translation>
+<translation id="7063646777978847358">Mit dieser Richtlinie wird festgelegt, ob Anfragen für Hintergrundabrufe durch Service Workers eingeschränkt werden. Diese Richtlinie ist möglicherweise relevant, wenn eine Funktion betroffen ist, die Dateien im Hintergrund herunterlädt.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Einschränkung aktiv und Anfragen für Hintergrundabrufe aus Service Worker-Kontexten können blockiert werden.
+
+Wenn diese Richtlinie deaktiviert ist, wird die Einschränkung umgangen und alle Service Workers können Hintergrundabrufe anfragen.
+
+Diese Unternehmensrichtlinie ist nur vorübergehend verfügbar und wird nach M152 entfernt.</translation>
 <translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
 <translation id="7067419518071223152">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Webanwendungen Zugriff auf Dateitypen erhalten.

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Зөвлөгөөний мэдэгдлийн сурталчилгааг хаасан</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1045899828449635435">Эдгээр сайтаас мөн өгөгдөл арилгах уу?</translation>
+<translation id="1049461303780085993">Хариулт, гол санаа болон бусад зүйлийг авахын тулд Chrome дахь Gemini-г туршиж үзээрэй</translation>
 <translation id="1049743911850919806">Нууцлал</translation>
 <translation id="1052842760770519282">Таны зарим нууц үгэнд хандах боломжгүй байна</translation>
 <translation id="1057623954802068161">Хуудасны дээд тал руу гүйлгэх</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">Дуудлага хийхийн тулд товшино уу</translation>
 <translation id="232137538351753795">Буцахын тулд зүүн ирмэгээс нь шударна уу</translation>
 <translation id="2323763861024343754">Сайтын сан</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" />-с</translation>
 <translation id="2328474416100889417">Хүн бүр “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд урилгын бүх холбоосыг унтраана</translation>
 <translation id="2330186936255788117">Бусад хавчуурга</translation>
 <translation id="2332515770639153015">Сайжруулсан аюулгүй хөтөч асаалттай байна</translation>
@@ -834,6 +836,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4595237294768457124">Шинэ таб хуудсыг нээх</translation>
 <translation id="4595276580892809760">Зургийн цомгоос зураг хавсаргах</translation>
 <translation id="4595805675102978678">Google Бүртгэлийн алдаа</translation>
+<translation id="4599585406846903742">Нэг хуудсыг харах</translation>
 <translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4606559747793337066">Сайт, апп өөрийн хуудсан дээр холбооснуудыг нууцлалтайгаар урьдчилан ачаалахыг хүсэхэд Chrome хуудаснуудыг күүкигүйгээр Google-н серверүүдээр дамжуулан шифрлэж, урьдчилан ачаална. Энэ нь таны хувийн мэдээллийг урьдчилан ачаалсан сайтаас нууна.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-г нээх</translation>
@@ -1088,6 +1091,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="569536719314091526">Энэ хуудсыг Бусад сонголт гэсэн товчлуураас дурын хэл рүү орчуулна уу</translation>
 <translation id="5696597120588531049">Chrome таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаалахад туслах боломжтой</translation>
 <translation id="5698878456427040674">Сонгосон бүртгэлийг дэмждэг эсэхийг шалгана уу.</translation>
+<translation id="5700415746238689851">Gemini-г нээх</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> цуваа портод холбогдохыг хүсэж байна</translation>
 <translation id="5715150588940290235">Хадгалсан аюулгүй байдлын кодуудыг устгах уу?</translation>
 <translation id="572328651809341494">Саяхан нээсэн табууд</translation>
@@ -1769,6 +1773,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8271267069224406035">Спамыг мэдээлэх</translation>
 <translation id="8277710303010772444">Хайж эхлэх</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" />-р хамгаалсан</translation>
+<translation id="8280797717392145626">Холбооснууд хүлээн авсан</translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8282297628636750033">Боломжтой бол сайтуудад бараан загварыг ашиглах</translation>
 <translation id="8282950411412455249">Аюулгүй байдлын тохиргоо руу очих</translation>
@@ -1904,6 +1909,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8863714995118816041"><ph name="SITE_NAME" />-н зөвшөөрлийг дахин зөвшөөрсөн</translation>
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
 <translation id="8872506776304248286">Апп-д нээх</translation>
+<translation id="8880275451109933094">Хоёр хуудсыг харах</translation>
 <translation id="8890668505403261809">Нууцлалтай табуудаасаа хайх</translation>
 <translation id="8892234476517513962">Та аль хэдийн нэвтэрсэн байна</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Сонгогдож, бичлэг хийж буй нууцлалтай таб</translation>

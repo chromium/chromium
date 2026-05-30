@@ -149,6 +149,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1227224963052638717">Política desconhecida.</translation>
 <translation id="1227677022489889280">Explique o motivo da mudança (obrigatório)</translation>
 <translation id="1228893227497259893">Identificador de entidade incorreto</translation>
+<translation id="122989279399348496">Enquanto o login estiver feito, o domínio <ph name="DOMAIN" /> pode confirmar o e-mail <ph name="EMAIL" /> em sites compatíveis para que você não precise verificar sua caixa de entrada</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectado automaticamente)</translation>
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1234539281285007945">O campo <ph name="FIELD_1" /> é obrigatório</translation>
@@ -510,6 +511,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Várias ações disponíveis. Pressione "Tab" para alternar entre elas</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalhes do cartão virtual</translation>
+<translation id="1802420021606590788">O Chrome processa títulos de páginas e URLs em um espaço privado na nuvem</translation>
 <translation id="1803254472779303354">Bloqueio do mouse permitido</translation>
 <translation id="1803351196216024260">Pode pedir para usar o microfone</translation>
 <translation id="1804258830776932716">Vincule sua conta para pagar com Pix</translation>
@@ -3027,6 +3029,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5742806904559466333">Bares, danceterias e vida noturna</translation>
 <translation id="5743684619253032786">Produtos de cuidados com as unhas</translation>
 <translation id="574392208103952083">Médio</translation>
+<translation id="5745586894920491759">O Chrome processa títulos de páginas e URLs na nuvem</translation>
 <translation id="5745733273847572235">Pode pedir sua localização</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5752327398324808817">Insira 1 ou 2 palavras</translation>
@@ -3421,6 +3424,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ver registros</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />verificar o proxy, o firewall e a configuração de DNS seguro<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Confirmar seus e-mails automaticamente</translation>
 <translation id="6366710531182496394">Dois grampos no lado esquerdo</translation>
 <translation id="6367196786591004737">Excluir entrada</translation>
 <translation id="6370022303958842211">Ações de acesso ao dispositivo, como logins (incluindo motivos de falhas), logouts, bloqueios e desbloqueios</translation>
@@ -4066,6 +4070,7 @@ Mais detalhes:
 <translation id="7388380253839603603">Preços de combustível e abastecimento de veículos</translation>
 <translation id="7388594495505979117">{0,plural, =1{Seu dispositivo será reiniciado em 1 minuto}one{Seu dispositivo será reiniciado em # minuto}other{Seu dispositivo será reiniciado em # minutos}}</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
+<translation id="7393243238767102021">Permitir que <ph name="DOMAIN" /> verifique este e-mail automaticamente?</translation>
 <translation id="7393475648162498734">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra</translation>
 <translation id="7393971683644170444">Conectando ao emissor do seu cartão…</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
@@ -5062,6 +5067,7 @@ Mais detalhes:
 <translation id="8963117664422609631">Acessar as configurações do site</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestões:<ph name="MARKUP_2" />certifique-se de que você tenha uma conexão de dados<ph name="MARKUP_3" />atualize esta página da Web mais tarde<ph name="MARKUP_4" />verifique o endereço que digitou<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Seus arquivos locais serão excluídos em <ph name="HOURS" /> horas</translation>
+<translation id="8964904785315870349">E-mail verificado</translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8971063699422889582">O certificado do servidor expirou.</translation>

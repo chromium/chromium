@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Isinara ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1045899828449635435">I-clear ang data sa mga site?</translation>
+<translation id="1049461303780085993">Subukan ang Gemini sa Chrome para makakuha ng mga sagot, pangunahing takeaway, at higit pa</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Hindi ma-access ang ilan sa iyong mga password</translation>
 <translation id="1057623954802068161">Mag-scroll pataas ng page</translation>
@@ -297,6 +298,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2318045970523081853">I-tap para tumawag</translation>
 <translation id="232137538351753795">Mag-swipe mula sa kaliwang gilid para bumalik</translation>
 <translation id="2323763861024343754">Storage ng site</translation>
+<translation id="2327445548174191329">Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
 <translation id="2330186936255788117">Higit pang bookmark</translation>
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
@@ -834,6 +836,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4595237294768457124">Magbukas ng page ng Bagong tab.</translation>
 <translation id="4595276580892809760">Mag-attach ng mga larawan mula sa gallery</translation>
 <translation id="4595805675102978678">Error sa Google Account</translation>
+<translation id="4599585406846903742">Isang page na view</translation>
 <translation id="4601095002996233687">Mga detalyadong pag-scan para sa mga kahina-hinalang pag-download.</translation>
 <translation id="4606559747793337066">Kapag hiniling ng isang site o app na pribadong mag-preload ng mga link sa page nito, mag-e-encrypt at magpi-preload ng mga page ang Chrome sa pamamagitan ng mga server ng Google nang walang cookies. Iha-hide nito ang iyong pagkakakilanlan sa na-preload na site.</translation>
 <translation id="4616150815774728855">Buksan ang <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="569536719314091526">Isalin ang page na ito sa anumang wika mula sa button na Higit pang opsyon</translation>
 <translation id="5696597120588531049">Makakatulong ang Chrome na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa</translation>
 <translation id="5698878456427040674">Tingnan kung sinusuportahan ang napiling account.</translation>
+<translation id="5700415746238689851">Buksan ang Gemini</translation>
 <translation id="5709213329446699338">Gustong kumonekta ng <ph name="SITE" /> sa isang serial port</translation>
 <translation id="5715150588940290235">I-delete ang mga naka-save na panseguridad na code?</translation>
 <translation id="572328651809341494">Mga kamakailang tab</translation>
@@ -1769,6 +1773,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8271267069224406035">Iulat na spam</translation>
 <translation id="8277710303010772444">Simulan ang paghahanap</translation>
 <translation id="8279945625179116733">Na-secure ng <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Mga natanggap na link</translation>
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8282297628636750033">Ilapat ang dark theme sa sites</translation>
 <translation id="8282950411412455249">Pumunta sa mga setting ng seguridad</translation>
@@ -1904,6 +1909,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8863714995118816041">Pinayagan ulit ang mga pahintulot para sa <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8872506776304248286">Buksan sa app</translation>
+<translation id="8880275451109933094">Dalawang page na view</translation>
 <translation id="8890668505403261809">Maghanap sa iyong mga tab na Incognito</translation>
 <translation id="8892234476517513962">Naka-sign in ka na</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Piniling Nagre-record na Tab na Incognito</translation>

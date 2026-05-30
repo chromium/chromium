@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Dezactivează Modul AI</translation>
 <translation id="1554477036522844996">Fereastră nouă</translation>
 <translation id="1558391695376153246">Închide filele incognito</translation>
+<translation id="1560153516220021659">Butonul barei de instrumente secundare restrânse</translation>
 <translation id="1565371473877914088">Filă incognito nouă</translation>
 <translation id="1567960978791353852">Afișează modul de lectură</translation>
 <translation id="1571780780926010134">File incognito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-mail trimis.</translation>
 <translation id="1582732959743469162">Aceasta va opri progresul descărcării actuale.</translation>
 <translation id="1594034544529347967">Începe</translation>
+<translation id="1598485494295307681">Se ascultă</translation>
 <translation id="1598751033135758830">Deschide în aplicația…</translation>
 <translation id="1600571977391127696">Este posibil ca unele tipuri de conținut să nu fie adecvate pentru toată lumea.</translation>
 <translation id="1601560923496285236">Aplică</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">A apărut o problemă la trimiterea articolului.</translation>
 <translation id="4944543191714094452">Caută în pagină…</translation>
 <translation id="4945756290001680296">Accesează setările pentru parole</translation>
+<translation id="4946307855175300628">Se răspunde</translation>
 <translation id="4949302115427722371">Gestionează setările…</translation>
 <translation id="4958444002117714549">Extindeți lista</translation>
 <translation id="496392417432935267">Deschisă în altă parte</translation>
@@ -1552,6 +1555,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6355820183143562453">Ascunde cardul de urmărire a prețurilor</translation>
 <translation id="6355820205320395730">Parolele slabe sunt ușor de ghicit. Trebuie să creezi parole puternice. <ph name="BEGIN_LINK" />Vezi mai multe sfaturi de securitate.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Conectează-te pentru a accesa toate datele tale, cum ar fi parolele, marcajele și multe altele.</translation>
+<translation id="6364268785720100355">Conectează-te pentru a-ți accesa parolele și alte date de pe toate dispozitivele</translation>
 <translation id="6368038301482806847">Alege din listă un motor de căutare.</translation>
 <translation id="6368102751067608420">Pentru a șterge toate datele din managerul de parole</translation>
 <translation id="6372558618707314581">Accesează orice pagină dorești</translation>
@@ -1681,6 +1685,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6736243959894955139">Adresă</translation>
 <translation id="6746338529702829275">Examinează datele din cont</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} element din istoric importat}few{{count} elemente din istoric importate}other{{count} de elemente din istoric importate}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opțiune pentru datele de conectare disponibilă deasupra tastaturii.}few{{count} opțiuni pentru datele de conectare disponibile deasupra tastaturii.}other{{count} de opțiuni pentru datele de conectare disponibile deasupra tastaturii.}}</translation>
 <translation id="6755200887046212842">Gestionați conturile</translation>
 <translation id="6757899787818440812">Înălțime medie</translation>
 <translation id="6759709389246683070">Atinge lung această filă pentru a seta un memento ca să o accesezi din nou mai târziu</translation>

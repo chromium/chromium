@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Desactivar el Modo IA</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
+<translation id="1560153516220021659">Botón secundario de la barra de herramientas contraído</translation>
 <translation id="1565371473877914088">Nueva pestaña de incógnito</translation>
 <translation id="1567960978791353852">Mostrar el Modo de lectura</translation>
 <translation id="1571780780926010134">Pestañas de incógnito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Correo enviado</translation>
 <translation id="1582732959743469162">Esta acción detendrá el progreso de la descarga actual.</translation>
 <translation id="1594034544529347967">Comienza</translation>
+<translation id="1598485494295307681">Escuchando</translation>
 <translation id="1598751033135758830">Abrir en la app…</translation>
 <translation id="1600571977391127696">Es posible que parte del contenido no sea apto para todos los usuarios.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Se produjo un error al compartir tu elemento.</translation>
 <translation id="4944543191714094452">Buscar en la página…</translation>
 <translation id="4945756290001680296">Accede a la configuración de contraseñas</translation>
+<translation id="4946307855175300628">Respondiendo</translation>
 <translation id="4949302115427722371">Administrar configuración…</translation>
 <translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="496392417432935267">Se abrió en otra ventana</translation>
@@ -1552,6 +1555,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6355820183143562453">Ocultar la tarjeta Seguimiento de precios</translation>
 <translation id="6355820205320395730">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Accede para obtener todo tu contenido, como contraseñas, favoritos y mucho más.</translation>
+<translation id="6364268785720100355">Accede para obtener tus contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6368038301482806847">Elige un motor de búsqueda de la lista.</translation>
 <translation id="6368102751067608420">Para borrar todos los datos del administrador de contraseñas</translation>
 <translation id="6372558618707314581">Ve a cualquier página que quieras</translation>
@@ -1681,6 +1685,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6750456911389438250">{count,plural, =1{Se importó {count} elemento del historial}other{Se importaron {count} elementos del historial}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Hay {count} opción de credencial disponible arriba del teclado.}other{Hay {count} opciones de credenciales disponibles arriba del teclado.}}</translation>
 <translation id="6755200887046212842">Administrar cuentas</translation>
 <translation id="6757899787818440812">Altura media</translation>
 <translation id="6759709389246683070">Puedes mantener presionada esta pestaña para establecer un recordatorio para volver a verla más tarde</translation>

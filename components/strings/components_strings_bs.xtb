@@ -149,6 +149,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1227224963052638717">Nepoznato pravilo.</translation>
 <translation id="1227677022489889280">Navedite razlog za premještanje (obavezno)</translation>
 <translation id="1228893227497259893">Pogrešan identifikator entiteta</translation>
+<translation id="122989279399348496">Dok ste prijavljeni, domena <ph name="DOMAIN" /> može potvrditi <ph name="EMAIL" /> na podržanim web lokacijama, pa ne morate provjeravati pristiglu poštu</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatski prepoznato)</translation>
 <translation id="1232569758102978740">Bez naslova</translation>
 <translation id="1234539281285007945">Obavezno je polje <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Dostupno je više radnji. Pritisnite Tab da ih prelistate</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalji virtuelne kartice</translation>
+<translation id="1802420021606590788">Chrome obrađuje naslove stranica i URL-ove u privatnom prostoru u oblaku</translation>
 <translation id="1803254472779303354">Zaključavanje miša je dozvoljeno</translation>
 <translation id="1803351196216024260">Može tražiti da koristi mikrofon</translation>
 <translation id="1804258830776932716">Omogućite Pix brzim povezivanjem računa</translation>
@@ -3027,6 +3029,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5742806904559466333">Barovi, klubovi i noćni život</translation>
 <translation id="5743684619253032786">Proizvodi za njegu noktiju</translation>
 <translation id="574392208103952083">Srednje</translation>
+<translation id="5745586894920491759">Chrome obrađuje naslove stranica i URL-ove u oblaku</translation>
 <translation id="5745733273847572235">Može tražiti vašu lokaciju</translation>
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5752327398324808817">Unesite riječ-dvije</translation>
@@ -3421,6 +3424,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Pregledajte zapisnike</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />provjeriti konfiguraciju proksi servera, zaštitnog zida i sigurnosnog DNS-a<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automatski potvrdi adrese e-pošte</translation>
 <translation id="6366710531182496394">Dvostruko spajanje na lijevoj strani</translation>
 <translation id="6367196786591004737">Izbrišite unos</translation>
 <translation id="6370022303958842211">Radnje u Pristupu uređajima kao što su prijave (uključujući razloge neuspješnih prijava), odjave, zaključavanja i otključavanja</translation>
@@ -4066,6 +4070,7 @@ Dodatni detalji:
 <translation id="7388380253839603603">Cijene plina i gorivo za vozila</translation>
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se ponovo pokrenuti za 1 min}one{Uređaj će se ponovo pokrenuti za # min}few{Uređaj će se ponovo pokrenuti za # min}other{Uređaj će se ponovo pokrenuti za # min}}</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
+<translation id="7393243238767102021">Dozvoliti domeni <ph name="DOMAIN" /> da automatski potvrdi ovu adresu e-pošte?</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
 <translation id="7393971683644170444">Povezivanje s pružaocem usluga kartice…</translation>
 <translation id="739728382607845710">Ikona obrađivača plaćanja</translation>
@@ -5061,6 +5066,7 @@ Dodatni detalji:
 <translation id="8963117664422609631">Idite u postavke web lokacije</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Prijedlozi:<ph name="MARKUP_2" />Provjerite imate li vezu za prenos podataka<ph name="MARKUP_3" />Ponovo učitajte ovu stranicu kasnije<ph name="MARKUP_4" />Provjerite unesenu adresu<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Lokalni fajlovi će se izbrisati za <ph name="HOURS" /> h</translation>
+<translation id="8964904785315870349">Potvrđena adresa e-pošte</translation>
 <translation id="8968766641738584599">Sačuvaj karticu</translation>
 <translation id="8970887620466824814">Nešto nije uredu.</translation>
 <translation id="8971063699422889582">Potvrda servera je istekla.</translation>

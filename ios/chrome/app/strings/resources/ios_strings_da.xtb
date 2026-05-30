@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Deaktiver AI-tilstand</translation>
 <translation id="1554477036522844996">Nyt vindue</translation>
 <translation id="1558391695376153246">Luk inkognitofaner</translation>
+<translation id="1560153516220021659">Den sekundære knap til værktøjslinjen er skjult</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1567960978791353852">Vis Læsetilstand</translation>
 <translation id="1571780780926010134">Inkognitofaner</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Email sendt.</translation>
 <translation id="1582732959743469162">Denne handling stopper den aktuelle download.</translation>
 <translation id="1594034544529347967">Starter</translation>
+<translation id="1598485494295307681">Lytter</translation>
 <translation id="1598751033135758830">Åbn i app…</translation>
 <translation id="1600571977391127696">Noget indhold er muligvis ikke egnet for alle.</translation>
 <translation id="1601560923496285236">Anvend</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Beklager, men der opstod et problem med at dele dit element.</translation>
 <translation id="4944543191714094452">Find på siden…</translation>
 <translation id="4945756290001680296">Få adgang til indstillinger for adgangskode</translation>
+<translation id="4946307855175300628">Svarer</translation>
 <translation id="4949302115427722371">Administrer indstillinger…</translation>
 <translation id="4958444002117714549">Udvid liste</translation>
 <translation id="496392417432935267">Blev åbnet et andet sted</translation>
@@ -1552,6 +1555,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6355820183143562453">Skjul kortet Prissporing</translation>
 <translation id="6355820205320395730">Svage adgangskoder er nemme at gætte. Sørg for, at du opretter stærke adgangskoder. <ph name="BEGIN_LINK" />Se flere sikkerhedstips<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Log ind for at få adgang til alle dine ting, f.eks. adgangskoder, bogmærker og meget mere.</translation>
+<translation id="6364268785720100355">Log ind for at få dine adgangskoder m.m. på alle dine enheder.</translation>
 <translation id="6368038301482806847">Vælg en søgemaskine på listen.</translation>
 <translation id="6368102751067608420">Sådan sletter du alle data i Adgangskodeadministrator</translation>
 <translation id="6372558618707314581">Gå til en hvilken som helst side</translation>
@@ -1681,6 +1685,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Gennemgå dine kontodata</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikelement blev importeret}one{{count} historikelemente blev importeret}other{{count} historikelementer blev importeret}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} valgmulighed for loginoplysninger er tilgængelig over dit tastatur.}one{{count} valgmulighed for loginoplysninger er tilgængelig over dit tastatur.}other{{count} valgmuligheder for loginoplysninger er tilgængelige over dit tastatur.}}</translation>
 <translation id="6755200887046212842">Administrer konti</translation>
 <translation id="6757899787818440812">Middelhøj</translation>
 <translation id="6759709389246683070">Du kan holde fingeren på denne fane for at indstille en påmindelse om at vende tilbage senere</translation>

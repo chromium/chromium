@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1000614056227025171">የመነሻ ገጽ ማስተዋወቂያዎን የግርጌ ሉህ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="1006017844123154345">መስመር ላይ ክፈት</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1046742265332833834">ሰማያዊ ገጽታ</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">ጣቢያዎች ድምጽን መጫወት ይችላሉ</translation>
 <translation id="3065787901655140044">የላቀ ጥበቃ በርቷል</translation>
 <translation id="3069226013421428034">ለአንድ የተወሰነ ጣቢያ የሦስተኛ ወገን መግባትን ይፍቀዱ።</translation>
+<translation id="3084983642903364837">በኋላ ላይ በመነሻ ገጽዎ ላይ በ3-ነጥቦች ምናሌ በኩል አርትዖት ያድርጉ።</translation>
 <translation id="310297983047869047">ቀዳሚ ተንሸራታች</translation>
 <translation id="3108122610701115301">ነባሪ አዘጋጅ</translation>
 <translation id="310979712355504754">ሁሉንም ይሰርዙ</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">ከተከታታይ ወደብ ጋር ተገናኝቷል</translation>
 <translation id="4223404254440398437">ማይክሮፎን አይፈቀድም</translation>
 <translation id="4226663524361240545">ማሳወቂያዎች መሣሪያውን እንዲነዝር ሊያደርጉት ይችላሉ</translation>
+<translation id="4227965147357783918">የመነሻ ገጽ ማስተዋወቂያዎን የግርጌ ሉህ በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="4259722352634471385">ዳሰሳ ታግዷል፦ <ph name="URL" /></translation>
 <translation id="4274673989874969668">ጣቢያን ከለቀቁ በኋላ፣ እንደ ፎቶዎችን መስቀል ወይም የውይይት መልእክት መላክ ያሉ ተግባሮችን ለመጨረስ ስምረትን መቀጠል ይችላል</translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>

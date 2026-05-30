@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Kynningarblað neðst með ábendingu, lokað</translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1045899828449635435">Hreinsa líka gögn af þessum svæðum?</translation>
+<translation id="1049461303780085993">Prófaðu Gemini í Chrome til að fá svör, samantekt á helstu atriðum og fleira</translation>
 <translation id="1049743911850919806">Fara huldu höfði</translation>
 <translation id="1052842760770519282">Sum aðgangsorðanna þinna eru ekki aðgengileg</translation>
 <translation id="1057623954802068161">Fletta efst á síðu</translation>
@@ -297,6 +298,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="232137538351753795">Strjúktu frá vinstri brún til að fara til baka</translation>
 <translation id="2323763861024343754">Geymsla vefsvæða</translation>
+<translation id="2327445548174191329">Frá <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og slökkt verður á öllum boðstenglum</translation>
 <translation id="2330186936255788117">Fleiri bókamerki</translation>
 <translation id="2332515770639153015">Kveikt er á enn öruggari vefskoðun</translation>
@@ -834,6 +836,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4595237294768457124">Opnaðu síðu nýrra flipa</translation>
 <translation id="4595276580892809760">Hengja myndir úr myndasafni við</translation>
 <translation id="4595805675102978678">Villa í Google-reikningi</translation>
+<translation id="4599585406846903742">Birta eina síðu</translation>
 <translation id="4601095002996233687">Ítarleg leit að grunsamlegu niðurhali.</translation>
 <translation id="4606559747793337066">Þegar vefsvæði eða forrit biður um að forhlaða tenglum á síðu sinni í lokaðri stillingu mun Chrome dulkóða og forhlaða síðunum á Google-þjónum, án fótspora. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig.</translation>
 <translation id="4616150815774728855">Opna <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="569536719314091526">Notaðu hnappinn „Fleiri valkostir“ til að þýða þessa síðu yfir á hvaða tungumál sem er</translation>
 <translation id="5696597120588531049">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira</translation>
 <translation id="5698878456427040674">Kannaðu hvort valinn reikningur er studdur.</translation>
+<translation id="5700415746238689851">Opna Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vill tengjast við raðtengi</translation>
 <translation id="5715150588940290235">Eyða vistuðum öryggisnúmerum?</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>
@@ -1769,6 +1773,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8271267069224406035">Tilkynna ruslefni</translation>
 <translation id="8277710303010772444">Hefja leit</translation>
 <translation id="8279945625179116733">Varið af <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Tenglar mótteknir</translation>
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8282297628636750033">Nota dökkt þema fyrir vefsvæði</translation>
 <translation id="8282950411412455249">Opna öryggisstillingar</translation>
@@ -1904,6 +1909,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8863714995118816041">Heimildir leyfðar aftur fyrir <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-gögn á reikningnum þínum</translation>
 <translation id="8872506776304248286">Opna í forriti</translation>
+<translation id="8880275451109933094">Birta tvær síður</translation>
 <translation id="8890668505403261809">Leitaðu í huliðsflipunum þínum</translation>
 <translation id="8892234476517513962">Þú ert þegar skráð(ur) inn</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, valinn huliðsflipi sem er að taka upp</translation>

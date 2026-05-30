@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1000614056227025171">Promoveringsfeltet i bunden til tilpasning af startsiden er åbnet i fuld højde</translation>
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1046742265332833834">Blåt tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Websites kan afspille lyd</translation>
 <translation id="3065787901655140044">Avanceret beskyttelse er aktiveret</translation>
 <translation id="3069226013421428034">Tillad tredjepartslogin for et bestemt website.</translation>
+<translation id="3084983642903364837">Du kan redigere din startside senere via prikmenuen.</translation>
 <translation id="310297983047869047">Forrige dias</translation>
 <translation id="3108122610701115301">Indstil standard</translation>
 <translation id="310979712355504754">Slet alle</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Tilsluttet en serieport</translation>
 <translation id="4223404254440398437">Adgang til mikrofon er ikke tilladt</translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
+<translation id="4227965147357783918">Promoveringsfeltet i bunden til tilpasning af startsiden er åbnet i halv højde</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Når du forlader et website, kan websitet fortsætte med at synkronisere for at afslutte opgaver såsom upload af billeder eller afsendelse af en chatbesked</translation>
 <translation id="4278390842282768270">Tilladt</translation>

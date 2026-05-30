@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Ομαδοποιήθηκε <ph name="TABS_COUNT_ONE" /> καρτέλα</translation>
 <translation id="1844381456014878100">Μετά από 7 ημέρες αδράνειας</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Προσθήκη καρτέλας στη λίστα ανάγνωσης}other{Προσθήκη καρτελών στη λίστα ανάγνωσης}}</translation>
 <translation id="1909810060368225529">Σημείωση: Οι αλλαγές σε αυτή την κοινόχρηστη ομάδα καρτελών είναι ορατές σε όλους. Όλοι μπορούν να κάνουν αλλαγές στις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Καρφίτσωμα καρτέλας}other{Καρφίτσωμα καρτελών}}</translation>
 <translation id="1982637982196732906">Μετακίνηση στην ενότητα ανενεργών</translation>

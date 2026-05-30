@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1232234696885483911">画像検索を開くと、ページのタイトル、URL、コンテンツ（PDF を含む）が自動的にサーバーに送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Chromium にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。この設定を変更するには、[Chromium のアカウント設定] に移動してください。</translation>
+<translation id="1257483544893909270">Gemini in Chromium で画面の一部を選択するときに、キーボード ショートカットを使用します。</translation>
 <translation id="1262876892872089030">Chromium を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
 <translation id="1265577313130862557">危険なファイルであるため、このダウンロードは Chromium でブロックされました</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chromium に自動的にログインできます</translation>
@@ -153,9 +154,11 @@
 <translation id="2620436844016719705">システム</translation>
 <translation id="2629740064077610681">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chromium プロファイルの閲覧データを確認することはできません。</translation>
 <translation id="2635452620547538388">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを使用、保存するには、本人確認を行ってください</translation>
+<translation id="2636783171884046627">Gemini in Chromium を終了するか、Gemini in Chromium に戻るときに、キーボード ショートカットを使用します。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります}=1{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります。シークレット ウィンドウは、再起動後は自動的には開きません。}other{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
 <translation id="2661879430930417727">デバイスを共有している場合でも、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
+<translation id="2676569452213089702">Chromium を最小化している場合でも、デバイスのさまざまな場所から Gemini in Chromium にすばやくアクセスできます。</translation>
 <translation id="2711502716910134313">Chromium タブ</translation>
 <translation id="2718390899429598676">セキュリティ強化のため、Chromium ではデータが暗号化されます。</translation>
 <translation id="2721354645805494590">Chromium から Google アカウントを削除するには、ログアウトしてください</translation>
@@ -304,7 +307,7 @@
 <translation id="4334241893986177674">このスクリーンショットを検索</translation>
 <translation id="4384331407722351213">Windows の起動時に Chromium を自動で起動する</translation>
 <translation id="4384993550046411228">Chromium を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。Chromium はタスクバーに固定され、すばやくアクセスできます。</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Chromium OS 利用規約を拡張、変更、制限するものではありません。</translation>
+<translation id="4400772909124543403">利用できるアップデートはありません</translation>
 <translation id="4407044323746248786">今すぐ Chromium を終了しますか？</translation>
 <translation id="4413205837991854510">画像検索のショートカットを常に表示する</translation>
 <translation id="4415566066719264597">Chromium をバックグラウンドで実行する</translation>
@@ -343,6 +346,7 @@
 <translation id="4746050847053251315">今すぐ Chromium を終了しますか？</translation>
 <translation id="4748217263233248895">Chromium の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
 <translation id="4771701986670315895">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="COUNT" /> 件の権限を削除しました。</translation>
+<translation id="4786083865378785874">Gemini in Chromium が開いている場合、新しく開いたタブでもサイドパネルが表示されます。</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4814736265800133385">アカウントなしで Chromium を使用する</translation>
 <translation id="4888717733111232871">mDNS トラフィックを許可する Chromium のインバウンド ルールです。</translation>
@@ -392,6 +396,7 @@
 <translation id="5527463683072221100">Chromium で PDF を開く</translation>
 <translation id="5536164441519929134">このタブについて<ph name="LINE_BREAK" />質問する</translation>
 <translation id="555970465369471303">セキュリティ上の理由から、Chromium では、サイトに初めてアクセスしたときに JavaScript の最適化がオフになります。このページが想定どおりに動作しない場合は、最適化を許可してみてください。</translation>
+<translation id="5575874067957905201">Gemini in Chromium を Mac のメニューバーに表示して、キーボード ショートカットをオンにする</translation>
 <translation id="5579324208890605088">起動エラー: 管理者ではなく標準ユーザーとしてインストーラを実行してください。</translation>
 <translation id="5580770360767802657">Chromium を既定に設定してタスクバーに固定する</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
@@ -613,6 +618,7 @@
 <translation id="7867198900892795913">Chromium を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
 <translation id="7873537467422636035">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chromium データを削除<ph name="END_LINK" />してください。</translation>
+<translation id="7874369989024033742">必要なときに Gemini in Chromium をすばやく開くことができます。</translation>
 <translation id="7877212753140190672">この画像について質問する</translation>
 <translation id="7888981273428720788">Chromium を既定として設定</translation>
 <translation id="7934340546140346950">可能な場合に安全でない接続を HTTPS に自動的にアップグレードします</translation>
@@ -634,6 +640,7 @@
 <translation id="8118331347066725040">Google レンズでの検索に関するフィードバックを送信する</translation>
 <translation id="8133124826068723441">ご使用のドメインでは同期を利用できないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="813913629614996137">初期化しています...</translation>
+<translation id="8161503455832158203">Gemini in Chromium を開くときに、キーボード ショートカットを使用します。</translation>
 <translation id="8164014945047474187">Chromium 追加利用規約</translation>
 <translation id="81770708095080097">このファイルは危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="8177472873527554730">ページにコンテンツが見つかりません</translation>
@@ -643,6 +650,7 @@
 <translation id="8232193495299001329">Chromium では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="8254601181414348851">新しいプロフィールで Chromium にログインしますか？</translation>
+<translation id="8277334259226003205">システムトレイに Gemini in Chromium を表示して、キーボード ショートカットをオンにする</translation>
 <translation id="8286943863733751221">安全でないサイトやダウンロードが見つかると <ph name="BEGIN_LINK" />Chromium が警告<ph name="END_LINK" />します</translation>
 <translation id="8295827201165805317">最近アクセスしていないため、Chromium で<ph name="PERMISSION" />の権限を削除しました。</translation>
 <translation id="8296236834352487533">Chromium iOS アプリで、カメラに映ったものを購入、翻訳、特定できます</translation>
@@ -671,6 +679,7 @@
 <translation id="8493179195440786826">Chromium は古いバージョンです</translation>
 <translation id="850264194101621529">Chromium を既定のブラウザとしてお選びいただきありがとうございます。</translation>
 <translation id="8522801943730206384">パスワードを保存すると、Chromium による確認が可能になります</translation>
+<translation id="8525579356836940628">インストールが停止しました</translation>
 <translation id="8548787790260785208">一般に報告されているデータ侵害でパスワードが検出された場合、警告が表示されます</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556055872671007529">Chromium の一部の機能と拡張機能にはショートカットが用意されており、有効にするよう選択できます。</translation>

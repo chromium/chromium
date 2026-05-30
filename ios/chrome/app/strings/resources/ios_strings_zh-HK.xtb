@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">關閉 AI 模式</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
+<translation id="1560153516220021659">收埋咗次要工具列按鈕</translation>
 <translation id="1565371473877914088">新無痕式分頁</translation>
 <translation id="1567960978791353852">顯示「閱讀模式」</translation>
 <translation id="1571780780926010134">無痕式分頁</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">已傳送郵件。</translation>
 <translation id="1582732959743469162">這會停止所有下載進度。</translation>
 <translation id="1594034544529347967">開始時間</translation>
+<translation id="1598485494295307681">正在聽取</translation>
 <translation id="1598751033135758830">在應用程式中開啟…</translation>
 <translation id="1600571977391127696">部分內容不一定適合所有人使用。</translation>
 <translation id="1601560923496285236">套用</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">抱歉，分享項目時發生問題。</translation>
 <translation id="4944543191714094452">從網頁中尋找…</translation>
 <translation id="4945756290001680296">存取密碼設定</translation>
+<translation id="4946307855175300628">正在回覆</translation>
 <translation id="4949302115427722371">管理設定…</translation>
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="496392417432935267">已在其他視窗開啟</translation>
@@ -1552,6 +1555,7 @@
 <translation id="6355820183143562453">隱藏「價格追蹤」資訊卡</translation>
 <translation id="6355820205320395730">安全性弱的密碼很容易被猜到。請務必設定安全度高的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">登入即可存取密碼、書籤和其他資料。</translation>
+<translation id="6364268785720100355">登入帳戶即可在任何裝置上存取密碼及其他資料。</translation>
 <translation id="6368038301482806847">由清單度揀搜尋引擎。</translation>
 <translation id="6368102751067608420">如要刪除所有密碼管理工具資料</translation>
 <translation id="6372558618707314581">前往要瀏覽的頁面</translation>
@@ -1681,6 +1685,7 @@
 <translation id="6736243959894955139">位址</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6750456911389438250">{count,plural, =1{已匯入 {count} 個記錄項目}other{已匯入 {count} 個記錄項目}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{鍵盤上面顯示 {count} 個憑證選項。}other{鍵盤上面顯示 {count} 個憑證選項。}}</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
 <translation id="6757899787818440812">中等高度</translation>
 <translation id="6759709389246683070">按住此分頁即可設定提醒，方便日後再次瀏覽</translation>

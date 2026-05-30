@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1000614056227025171">自定义首页宣传内容底部动作条已以最大高度打开</translation>
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1046742265332833834">蓝色主题</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">网站可以播放声音</translation>
 <translation id="3065787901655140044">高级保护已开启</translation>
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
+<translation id="3084983642903364837">稍后可通过三点状菜单修改首页。</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3108122610701115301">设为默认</translation>
 <translation id="310979712355504754">全部删除</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">已连接到串行端口</translation>
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
 <translation id="4226663524361240545">收到通知时设备会振动</translation>
+<translation id="4227965147357783918">自定义首页宣传内容底部动作条已以一半高度打开</translation>
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4278390842282768270">允许</translation>

@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Slökkva á gervigreindarstillingu</translation>
 <translation id="1554477036522844996">Nýr gluggi</translation>
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
+<translation id="1560153516220021659">Samandreginn hnappur viðbótartækjastiku</translation>
 <translation id="1565371473877914088">Nýr huliðsflipi</translation>
 <translation id="1567960978791353852">Sýna lesstillingu</translation>
 <translation id="1571780780926010134">Huliðsflipar</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Póstur sendur.</translation>
 <translation id="1582732959743469162">Allt niðurhal sem er í gangi verður stöðvað.</translation>
 <translation id="1594034544529347967">Hefst</translation>
+<translation id="1598485494295307681">Hlustar</translation>
 <translation id="1598751033135758830">Opna í forriti…</translation>
 <translation id="1600571977391127696">Sumt efni er hugsanlega ekki við hæfi allra.</translation>
 <translation id="1601560923496285236">Nota</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Því miður kom upp vandamál við að deila atriðinu.</translation>
 <translation id="4944543191714094452">Finna á síðu…</translation>
 <translation id="4945756290001680296">Opna stillingar fyrir aðgangsorð</translation>
+<translation id="4946307855175300628">Svarar</translation>
 <translation id="4949302115427722371">Stjórna stillingum…</translation>
 <translation id="4958444002117714549">Stækka lista</translation>
 <translation id="496392417432935267">Opið annars staðar</translation>
@@ -1552,6 +1555,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6355820183143562453">Fela spjaldið „Verðvöktun“</translation>
 <translation id="6355820205320395730">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Gakktu úr skugga um að þú búir til traust aðgangsorð. <ph name="BEGIN_LINK" />Sjá fleiri öryggisábendingar.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Skráðu þig inn til að fá aðgang að öllu þínu, s.s. aðgangsorðum, bókamerkjum og fleiru.</translation>
+<translation id="6364268785720100355">Skráðu þig inn til að sækja aðgangsorðin og fleira í öllum tækjunum þínum.</translation>
 <translation id="6368038301482806847">Veldu leitarvél af listanum.</translation>
 <translation id="6368102751067608420">Til að eyða öllum gögnum aðgangsorðastjórnunar</translation>
 <translation id="6372558618707314581">Farðu á hvaða síðu sem er</translation>
@@ -1681,6 +1685,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6736243959894955139">Vistfang</translation>
 <translation id="6746338529702829275">Farðu yfir gögn reikningsins</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ferilatriði flutt inn}one{{count} ferilatriði flutt inn}other{{count} ferilatriði flutt inn}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} valkostur fyrir skilríki tiltækur fyrir ofan lyklaborðið.}one{{count} valkostur um sjálfvirka útfyllingu tiltækur fyrir ofan lyklaborðið.}other{{count} valkostir um sjálfvirka útfyllingu tiltækir fyrir ofan lyklaborðið.}}</translation>
 <translation id="6755200887046212842">Stjórna reikningum</translation>
 <translation id="6757899787818440812">Miðlungshæð</translation>
 <translation id="6759709389246683070">Þú getur haldið þessum flipa inni til að stilla áminningu um að koma aftur síðar.</translation>

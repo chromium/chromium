@@ -35,7 +35,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="1330562121671411446">Zbulo gjuhën</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë apo kufizojnë kushtet e Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Mund ta ndërrosh për të parë fjalëkalimet nga një profil tjetër i Chrome</translation>
 <translation id="1343830902827845050">Identifikohu në Chrome</translation>
 <translation id="1356661055722410047">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd</translation>
@@ -639,7 +638,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se të përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë ose kufizojnë "Kushtet e Google ChromeOS".</translation>
 <translation id="7627609214560473136">Për të mbrojtur të dhënat e tua, lejo që Chrome të heqë lejet nga sajtet që nuk i ke vizituar së fundi.</translation>
 <translation id="7629695634924605473">Chrome të informon nëse fjalëkalimet e tua komprometohen ndonjëherë</translation>
 <translation id="7641148173327520642">Administratori i sistemit ka konfiguruar Google Chrome që të hapë <ph name="ALTERNATIVE_BROWSER_NAME" /> për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>

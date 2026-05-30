@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Se cerró a promoción de notificaciones de sugerencias</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">¿Borrar estos datos?</translation>
+<translation id="1049461303780085993">Prueba Gemini en Chrome para obtener respuestas, información clave y mucho más</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1052842760770519282">No se puede acceder a algunas de tus contraseñas</translation>
 <translation id="1057623954802068161">Desplazarse hasta la parte superior de la página</translation>
@@ -297,6 +298,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2318045970523081853">Presiona para realizar la llamada</translation>
 <translation id="232137538351753795">Para volver, desliza el dedo desde el borde izquierdo</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
+<translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
 <translation id="2330186936255788117">Más favoritos</translation>
 <translation id="2332515770639153015">Se activó la Navegación segura mejorada</translation>
@@ -834,6 +836,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4595237294768457124">Abre una página Nueva pestaña.</translation>
 <translation id="4595276580892809760">Adjuntar imágenes de la galería</translation>
 <translation id="4595805675102978678">Error en la Cuenta de Google</translation>
+<translation id="4599585406846903742">Vista de una sola página</translation>
 <translation id="4601095002996233687">Análisis detallados de descargas sospechosas.</translation>
 <translation id="4606559747793337066">Cuando un sitio o app te pregunta si quieres precargar de forma privada los vínculos de su página, Chrome encripta y precarga las páginas por medio de los servidores de Google sin cookies. De esta forma, se oculta tu identidad del sitio precargado.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="569536719314091526">Traduce esta página a cualquier idioma desde el botón Más opciones</translation>
 <translation id="5696597120588531049">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más</translation>
 <translation id="5698878456427040674">Revisa si se admite la cuenta seleccionada.</translation>
+<translation id="5700415746238689851">Abrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> quiere conectarse a un puerto en serie</translation>
 <translation id="5715150588940290235">¿Quieres borrar los códigos de seguridad guardados?</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
@@ -1769,6 +1773,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8271267069224406035">Marcar como spam</translation>
 <translation id="8277710303010772444">Iniciar la búsqueda</translation>
 <translation id="8279945625179116733">Con la protección de <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Vínculos recibidos</translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282297628636750033">Aplica el Tema oscuro para sitios (de ser posible)</translation>
 <translation id="8282950411412455249">Ir a la configuración de seguridad</translation>
@@ -1904,6 +1909,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8863714995118816041">Se volvieron a otorgar permisos para <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
 <translation id="8872506776304248286">Abrir en la app</translation>
+<translation id="8880275451109933094">Vista de dos páginas</translation>
 <translation id="8890668505403261809">Buscar en tus pestañas de incógnito</translation>
 <translation id="8892234476517513962">Ya accediste</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, pestaña de incógnito con grabación seleccionada</translation>

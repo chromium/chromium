@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ਟੈਬ ਗਰੁੱਪਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="1844381456014878100">7 ਦਿਨ ਅਕਿਰਿਆਸ਼ੀਲ ਰਹਿਣ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ}one{ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ}other{ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
 <translation id="1909810060368225529">ਨੋਟਿਸ: ਸਾਂਝੇ ਕੀਤੇ ਇਸ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਤਬਦੀਲੀਆਂ ਹਰ ਕਿਸੇ ਨੂੰ ਦਿਖਾਈ ਦੇਣਗੀਆਂ। ਹਰ ਕੋਈ ਤੁਹਾਡੇ ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ਟੈਬ ਪਿੰਨ ਕਰੋ}one{ਟੈਬ ਪਿੰਨ ਕਰੋ}other{ਟੈਬਾਂ ਪਿੰਨ ਕਰੋ}}</translation>
 <translation id="1982637982196732906">ਅਕਿਰਿਆਸ਼ੀਲ ਸੈਕਸ਼ਨ ਵਿੱਚ ਲਿਜਾਓ</translation>

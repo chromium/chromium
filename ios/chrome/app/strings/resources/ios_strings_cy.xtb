@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Diffodd Dull AI</translation>
 <translation id="1554477036522844996">Ffenestr Newydd</translation>
 <translation id="1558391695376153246">Cau tabiau Anhysbys</translation>
+<translation id="1560153516220021659">Botwm bar offer eilaidd wedi'i grebachu</translation>
 <translation id="1565371473877914088">Tab Anhysbys Newydd</translation>
 <translation id="1567960978791353852">Dangos y Modd Darllen</translation>
 <translation id="1571780780926010134">Tabiau anhysbys</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Wedi anfon e-bost.</translation>
 <translation id="1582732959743469162">Bydd hyn yn atal pob cynnydd ar gyfer eich lawrlwythiad presennol.</translation>
 <translation id="1594034544529347967">Yn dechrau</translation>
+<translation id="1598485494295307681">Wrthi'n gwrando</translation>
 <translation id="1598751033135758830">Agor mewn ap…</translation>
 <translation id="1600571977391127696">Mae'n bosib na fydd rhywfaint o gynnwys yn addas i bawb.</translation>
 <translation id="1601560923496285236">Defnyddio</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Mae'n ddrwg gennym, bu problem wrth rannu eich eitem.</translation>
 <translation id="4944543191714094452">Chwilio'r Dudalen…</translation>
 <translation id="4945756290001680296">Cyrchu gosodiadau cyfrinair</translation>
+<translation id="4946307855175300628">Wrthi'n ymateb</translation>
 <translation id="4949302115427722371">Rheoli gosodiadau…</translation>
 <translation id="4958444002117714549">Ehangu'r rhestr</translation>
 <translation id="496392417432935267">Wedi'i agor rhywle arall</translation>
@@ -1552,6 +1555,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6355820183143562453">Cuddio'r cerdyn olrhain prisiau</translation>
 <translation id="6355820205320395730">Mae'n hawdd dyfalu cyfrineiriau gwan. Gwnewch yn siŵr eich bod yn creu cyfrineiriau cryf. <ph name="BEGIN_LINK" />Gweld rhagor o awgrymiadau diogelwch.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Mewngofnodi i gael eich holl bethau megis cyfrineiriau, nodau tudalen a rhagor.</translation>
+<translation id="6364268785720100355">Mewngofnodwch i gael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="6368038301482806847">Dewiswch beiriant chwilio o'r rhestr.</translation>
 <translation id="6368102751067608420">I ddileu holl ddata rheolwr cyfrineiriau</translation>
 <translation id="6372558618707314581">Ewch i unrhyw dudalen rydych yn ei hoffi</translation>
@@ -1681,6 +1685,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6736243959894955139">Cyfeiriad</translation>
 <translation id="6746338529702829275">Adolygu data eich cyfrif</translation>
 <translation id="6750456911389438250">{count,plural, =1{Wedi mewnforio {count} eitem hanes}zero{Wedi mewnforio {count} eitemau hanes}two{Wedi mewnforio {count} eitem hanes}few{Wedi mewnforio {count} eitem hanes}many{Wedi mewnforio {count} eitem hanes}other{Wedi mewnforio {count} eitem hanes}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}zero{Mae {count} opsiynau ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}two{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}few{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}many{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}other{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="6755200887046212842">Rheoli Cyfrifon</translation>
 <translation id="6757899787818440812">Uchder canolig</translation>
 <translation id="6759709389246683070">Gallwch gyffwrdd a dal y tab hwn i osod atgoffwr i ddod yn ôl ato yn nes ymlaen</translation>
@@ -2232,6 +2237,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8643403533759285912">Dileu Grŵp</translation>
 <translation id="8647280737650867362">Methu â dad-dracio'r pris.</translation>
 <translation id="8654802032646794042">Canslo</translation>
+<translation id="8659875081143553823">Arhoswch eiliad</translation>
 <translation id="8660600697590740984">Llun Lens wedi'i gopïo</translation>
 <translation id="866266761389616183">O na!</translation>
 <translation id="8663764600409216912">Rydych yn defnyddio cyfrineiriau sy'n edrych yn anodd eu dyfalu</translation>

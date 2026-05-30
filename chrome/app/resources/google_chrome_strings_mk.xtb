@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">За да ги избришете податоците од прелистување само од овој уред, а притоа да ги задржите во сметката на Google, <ph name="BEGIN_LINK" />одјавете се од Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Кликнете за да се затвори дијалогот за најавување на Chrome</translation>
 <translation id="1051793555070215510">Помогнете ни да ја подобриме „Инкогнито“ така што ќе ја пополните анкетава што ќе ви одземе 1 минута.</translation>
+<translation id="1055295352198814912">Прикажи го Gemini во Chrome во лентата со менија на Mac и вклучи ја кратенката од тастатура</translation>
 <translation id="1059838145689930908">За да ја користите екстензијава како <ph name="USER_EMAIL_ADDRESS" />, најавете се на Chrome.</translation>
 <translation id="1065672644894730302">Вашите поставки не може да се прочитаат.
 
@@ -34,7 +35,6 @@
 <translation id="1290883685122687410">Грешка при поставувањето: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Почекајте додека Chrome ги инсталира последните системски ажурирања.</translation>
 <translation id="1330562121671411446">Откриј јазик</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google ChromeOS Flex“.</translation>
 <translation id="1341711321000856656">Може да смените за да гледате лозинки од друг профил на Chrome</translation>
 <translation id="1343830902827845050">Најавете се на Chrome</translation>
 <translation id="1356661055722410047">Ново! Може да ги преведувате и текстот и сликите на екранот</translation>
@@ -282,6 +282,7 @@
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3941890832296813527">Грешка при инсталирање: името на датотеката на инсталаторот е неважечко или неподдржано.</translation>
 <translation id="395904275706073188">Заштитените страници не може да се читаат. Обидете се со друга страница.</translation>
+<translation id="3965532487635448963">Прикажи го Gemini во Chrome во системската фиока и вклучи ја кратенката од тастатура</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3968962723676998462">Внесете ја вашата лозинка за да користите и зачувувате податоци од Chrome во вашата сметка <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome сака да ги избрише вашите податоци во Google Password Manager. За да го дозволите тоа, внесете ја вашата лозинка за Windows.</translation>
@@ -324,6 +325,7 @@
 <translation id="4367027658822022112">Може да ја закачите Google Lens за лесен пристап. Само кликнете го копчето „Закачи“ најгоре на страничната табла</translation>
 <translation id="4372389195695053189">Отсега Chrome е вашиот стандарден прелистувач</translation>
 <translation id="4389991535395284064">При прелистување во режим „Инкогнито“, Chrome ќе ве предупреди пред да вчита сајт преку небезбедна врска</translation>
+<translation id="4400772909124543403">Не е достапно ажурирање</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4434353761996769206">Грешка на инсталаторот: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Мрежно најавување - <ph name="PAGE_TITLE" /></translation>
@@ -362,6 +364,7 @@
 <translation id="4891791193823137474">Остави Google Chrome да работи во заднина</translation>
 <translation id="4895437082222824641">Отвори го линкот во нова &amp;картичка на Chrome</translation>
 <translation id="4896867431081882115">Добијте лесен пристап до функциите што ги знаете, ги обожавате и во коишто имате доверба така што ќе го поставите Chrome како стандарден прелистувач. За брз пристап, Chrome ќе се закачи на лентата со задачи.</translation>
+<translation id="4904953848704395458">Отворете го Gemini во Chrome со кратенка од тастатура.</translation>
 <translation id="4918086044614829423">Прифати</translation>
 <translation id="4918844574251943176">Сликата е копирана</translation>
 <translation id="4926882258455737990">За да користите друга сметка на Google со Gemini во Chrome, <ph name="BEGIN_LINK" />создајте нов профил<ph name="END_LINK" /> и најавете се со саканата сметка</translation>
@@ -524,6 +527,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6434035853014503219">Фала што го избравте Chrome како ваш стандарден прелистувач!</translation>
 <translation id="6438015621983209660">Проширете ја „Подобрено безбедно прелистување“ со Chrome на вашиот телефон</translation>
 <translation id="6442774133615368941">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата во апликацијата Chrome за iOS</translation>
+<translation id="6448835208126432197">За да изберете дел од екранот во Gemini во Chrome, користете ја кратенката од тастатура.</translation>
 <translation id="6473905796280459355">Одете на страницата „За Chrome“</translation>
 <translation id="6481963882741794338">Поврзете ги Chrome и другите услуги на Google за персонализација и други цели</translation>
 <translation id="648319183876919572">„Подобрено безбедно прелистување“ нуди поголема заштита од опасни веб-сајтови и преземања</translation>
@@ -536,6 +540,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6520670145826811516">За да ја користи локацијата, дајте му пристап на Chrome во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Историја на Chrome</translation>
 <translation id="6532945796722480006">Отворете го Gemini во Chrome Canary</translation>
+<translation id="6539493053177300926">Лесен пристап за да го користите Gemini во Chrome на уредот, дури и ако е минимизиран Chrome.</translation>
 <translation id="6585124893636629274">Затвори го Gemini во Chrome</translation>
 <translation id="659498884637196217">Во „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="6631524303639368205">Продолжете каде што сте застанале: Chrome ги врати вашите картички од последната сесија. Ова може да го исклучите во</translation>
@@ -595,6 +600,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7161904924553537242">Добре дојдовте на Google Chrome</translation>
 <translation id="7193885263065350793">Вашата организација го затвора Chrome кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Се пријавувате со управувана сметка и на нејзиниот администратор му давате контрола врз вашиот профил на Google Chrome. Вашите податоци на Chrome, како апликации, обележувачи, историја, лозинки и други поставки, трајно ќе се поврзат со <ph name="USER_NAME" />. Ќе може да ги избришете податоците преку Информациска табла на сметките на Google, но нема да може да ги поврзувате со друга сметка. Изборно може да направите и нов профил за постоечките податоци од Chrome за да бидат одделни. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">За да го напуштате и да се враќате во Gemini во Chrome, користете ја кратенката од тастатура.</translation>
 <translation id="7274402351400635015">Може да го користите Chrome секогаш кога ќе кликнете линкови во пораки, документи и други апликации. Ќе се закачи и на вашата лента со задачи.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> управува со Chrome</translation>
 <translation id="7285990705317078173">Преземете го Chrome на телефонот за да ги следите цените и да добивате известувања кога ќе се намали цената на кој било сајт</translation>
@@ -633,7 +639,6 @@ Google Chrome не може да ги обнови вашите поставки
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google Chrome OS“.</translation>
 <translation id="7627609214560473136">За да ги заштитите вашите податоци, дозволете му на Chrome да ги отстрани дозволите за сајтовите што не сте ги посетиле неодамна.</translation>
 <translation id="7629695634924605473">Chrome ве известува дали вашите лозинки се компромитирани</translation>
 <translation id="7641148173327520642">Системскиот администратор го конфигурирал Google Chrome да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -703,6 +708,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8221491193165283816">Вообичаено ги блокирате известувањата. За да дозволите сајтов да ве известува, кликнете тука.</translation>
 <translation id="8253851811470049684">Отворајте линкови во Chrome од која било апликација и пристапувајте до прелистувачот преку лентата со задачи</translation>
 <translation id="8255190535488645436">Google Chrome ги користи камерата и микрофонот.</translation>
+<translation id="8260086374035800939">Ако е отворен Gemini во Chrome, страничната табла ќе остане отворена при создавањето нови картички</translation>
 <translation id="8267953129876836456">Chrome најде неколку препораки за безбедност што може да ги прегледате</translation>
 <translation id="8286862437124483331">Google Chrome се обидува да покаже лозинки. Впишете ја лозинката за Windows за да се дозволи ова.</translation>
 <translation id="829923460755755423">Додајте кратенка за Google Password Manager</translation>
@@ -714,6 +720,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8362914115861174987">Преведи на</translation>
 <translation id="8366770919198174997">Ја намалува изведбата, но го прави Chrome поотпорен на напади</translation>
 <translation id="8367705492654390392">Прашајте што било</translation>
+<translation id="8367950957770994118">Брзо отворајте го Gemini во Chrome кога и да ви затреба</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="8377158135256176353">Вклучете/исклучете го Gemini во Chrome Canary</translation>
 <translation id="8387459386171870978">Продолжете да користите Chrome</translation>
@@ -731,6 +738,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8498858610309223613">Тукушто применивме посебно безбедносно ажурирање за Google Chrome. Рестартирајте сега и ќе ви ги вратиме картичките.</translation>
 <translation id="8521348052903287641">Дојдовно правило за Google Chrome Dev за овозможување mDNS-сообраќај.</translation>
 <translation id="852529348814672339">Прикажувај го Chrome на овој јазик</translation>
+<translation id="8525579356836940628">Инсталирањето е сопрено</translation>
 <translation id="8533056045953418157">Поставете го Google Chrome како стандарден PDF-прикажувач</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Пребарајте го списокот со јазици</translation>

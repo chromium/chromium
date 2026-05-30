@@ -34,7 +34,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1290883685122687410">Konfigurazio-errorea: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="1330562121671411446">Hauteman hizkuntza</translation>
-<translation id="1335640173511558774">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS Flex-en Baldintzak.</translation>
 <translation id="1341711321000856656">Chrome-ko beste profil bateko pasahitzak ikustera joan zaitezke</translation>
 <translation id="1343830902827845050">Hasi saioa Chrome-n</translation>
 <translation id="1356661055722410047">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak</translation>
@@ -632,7 +631,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS-ren Baldintzak.</translation>
 <translation id="7627609214560473136">Datuak babesteko, eman azkenaldian bisitatu ez dituzun webguneei baimenak kentzeko baimena Chrome-ri.</translation>
 <translation id="7629695634924605473">Chrome-k abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>
 <translation id="7641148173327520642">Sistemaren administratzailearen konfigurazioaren arabera, Google Chrome-k <ph name="ALTERNATIVE_BROWSER_NAME" /> arakatzailea ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>

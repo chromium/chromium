@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="1000614056227025171">自訂首頁宣傳頁底面板宜家顯示喺成個畫面</translation>
 <translation id="1006017844123154345">在線上開啟</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1046742265332833834">藍色主題</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">網站可播放音效</translation>
 <translation id="3065787901655140044">已啟用「進階保護功能」</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
+<translation id="3084983642903364837">你可稍後透過三點選單編輯首頁。</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3108122610701115301">設為預設</translation>
 <translation id="310979712355504754">全部刪除</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">已連線至序列連接埠</translation>
 <translation id="4223404254440398437">唔批准用咪</translation>
 <translation id="4226663524361240545">裝置會在收到通知時震動</translation>
+<translation id="4227965147357783918">自訂首頁宣傳頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
 <translation id="4278390842282768270">已允許</translation>

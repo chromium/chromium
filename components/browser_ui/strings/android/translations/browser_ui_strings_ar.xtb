@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1000614056227025171">تم بطول الشاشة فتح البطاقة السفلية الترويجية لتخصيص صفحتك الرئيسية</translation>
 <translation id="1006017844123154345">فتح على الإنترنت</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1046742265332833834">مظهر باللون الأزرق</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
 <translation id="3065787901655140044">"الحماية المتقدّمة" مفعّلة</translation>
 <translation id="3069226013421428034">يمكنك السماح بتسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
+<translation id="3084983642903364837">يمكنك تعديل صفحتك الرئيسية لاحقًا من خلال قائمة النقاط الثلاث.</translation>
 <translation id="310297983047869047">الشريحة السابقة</translation>
 <translation id="3108122610701115301">الضبط كمتصفّح تلقائي</translation>
 <translation id="310979712355504754">حذف الكل</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">الموقع الإلكتروني أصبح متصلاً بمنفذ تسلسلي</translation>
 <translation id="4223404254440398437">تم رفض طلب الوصول إلى الميكروفون.</translation>
 <translation id="4226663524361240545">يمكن أن تؤدي الإشعارات إلى اهتزاز الجهاز</translation>
+<translation id="4227965147357783918">تم في نصف الشاشة فتح البطاقة السفلية الترويجية لتخصيص صفحتك الرئيسية</translation>
 <translation id="4259722352634471385">التنقل محظور: <ph name="URL" /></translation>
 <translation id="4274673989874969668">عندما تغادر موقعًا إلكترونيًا، يواصل هذا الموقع الإلكتروني عادةً عملية المزامنة لإكمال المهام، مثل تحميل الصور أو إرسال رسالة محادثة.</translation>
 <translation id="4278390842282768270">مسموح به</translation>

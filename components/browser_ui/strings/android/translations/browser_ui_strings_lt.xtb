@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1000614056227025171">Raginimo tinkinti pagrindinį puslapį apatinis lapas atidarytas per visą aukštį</translation>
 <translation id="1006017844123154345">Atidaryti prisijungus</translation>
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1046742265332833834">Mėlyna tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Svetainėse galima leisti garsus</translation>
 <translation id="3065787901655140044">Papildoma apsauga įjungta</translation>
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
+<translation id="3084983642903364837">Redaguokite pagrindinį puslapį vėliau naudodamiesi trijų taškų meniu.</translation>
 <translation id="310297983047869047">Ankstesnė skaidrė</translation>
 <translation id="3108122610701115301">Nustatyti numatytuosius nustatymus</translation>
 <translation id="310979712355504754">Ištrinti viską</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Prijungta prie nuosekliojo prievado</translation>
 <translation id="4223404254440398437">Mikrofonas neleidžiamas</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
+<translation id="4227965147357783918">Raginimo tinkinti pagrindinį puslapį apatinis lapas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Išėjus iš svetainės, joje gali būti toliau sinchronizuojama, kad būtų užbaigtos užduotys, pvz., įkeltos nuotraukos arba išsiųstas pokalbio pranešimas</translation>
 <translation id="4278390842282768270">Leidžiama</translation>

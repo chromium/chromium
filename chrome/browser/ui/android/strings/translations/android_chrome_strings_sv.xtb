@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Kampanjen för tipsaviseringar har stängts</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1045899828449635435">Vill du även rensa data?</translation>
+<translation id="1049461303780085993">Testa Gemini i Chrome för att få svar, viktiga slutsatser med mera</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Vissa av dina lösenord är inte tillgängliga</translation>
 <translation id="1057623954802068161">Scrolla högst upp på sidan</translation>
@@ -297,6 +298,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2318045970523081853">Tryck för att ringa</translation>
 <translation id="232137538351753795">Återgå genom att svepa från vänster kant</translation>
 <translation id="2323763861024343754">Webbplatslagring</translation>
+<translation id="2327445548174191329">Från <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
 <translation id="2330186936255788117">Fler bokmärken</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
@@ -835,6 +837,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4595237294768457124">Öppna en sida på en ny flik</translation>
 <translation id="4595276580892809760">Bifoga bilder från galleriet</translation>
 <translation id="4595805675102978678">Fel i Google-kontot</translation>
+<translation id="4599585406846903742">Enkelsidig vy</translation>
 <translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4606559747793337066">När en webbplats eller app frågar om dess länkar ska läsas in privat i förväg krypterar Chrome sidorna och läser in dem i förväg via Googles servrar utan cookies. Det innebär att din identitet döljs från den förinlästa webbplatsen.</translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
@@ -1089,6 +1092,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="569536719314091526">Översätt den här sidan till vilket språk som helst via knappen Fler alternativ</translation>
 <translation id="5696597120588531049">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera</translation>
 <translation id="5698878456427040674">Kontrollera att det valda kontot stöds.</translation>
+<translation id="5700415746238689851">Öppna Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vill ansluta till en serieport</translation>
 <translation id="5715150588940290235">Vill du radera sparade säkerhetskoder?</translation>
 <translation id="572328651809341494">Senaste flikarna</translation>
@@ -1770,6 +1774,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8271267069224406035">Rapportera skräppost</translation>
 <translation id="8277710303010772444">Starta sökningen</translation>
 <translation id="8279945625179116733">Skyddas av <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Mottagna länkar</translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8282297628636750033">Använd mörkt tema på webbplatser när det är möjligt</translation>
 <translation id="8282950411412455249">Öppna säkerhetsinställningarna</translation>
@@ -1905,6 +1910,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8863714995118816041">Behörigheter har tillåtits igen för <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8872506776304248286">Öppna i appen</translation>
+<translation id="8880275451109933094">Dubbelsidig vy</translation>
 <translation id="8890668505403261809">Sök bland inkognitoflikar</translation>
 <translation id="8892234476517513962">Du är redan inloggad</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, vald inkognitoflik som spelas in</translation>

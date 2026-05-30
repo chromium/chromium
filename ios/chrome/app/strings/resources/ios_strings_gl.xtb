@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Desactivar o modo IA</translation>
 <translation id="1554477036522844996">Nova ventá</translation>
 <translation id="1558391695376153246">Pechar pestanas incógnito</translation>
+<translation id="1560153516220021659">Botón contraído da barra de ferramentas secundaria</translation>
 <translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
 <translation id="1567960978791353852">Mostrar modo de lectura</translation>
 <translation id="1571780780926010134">Pestanas do modo de incógnito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Correo enviado.</translation>
 <translation id="1582732959743469162">Esta acción deterá o progreso da túa descarga actual.</translation>
 <translation id="1594034544529347967">Inicio</translation>
+<translation id="1598485494295307681">Escoitando</translation>
 <translation id="1598751033135758830">Abrir na aplicación…</translation>
 <translation id="1600571977391127696">É posible que algúns contidos non sexan adecuados para todo o mundo.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Produciuse un problema ao compartir o teu elemento.</translation>
 <translation id="4944543191714094452">Buscar na páxina…</translation>
 <translation id="4945756290001680296">Acceder á configuración do contrasinal</translation>
+<translation id="4946307855175300628">Respondendo</translation>
 <translation id="4949302115427722371">Xestionar configuración…</translation>
 <translation id="4958444002117714549">Ampliar lista</translation>
 <translation id="496392417432935267">Opción aberta noutro lugar</translation>
@@ -1552,6 +1555,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6355820183143562453">Ocultar a tarxeta Seguimento de prezos</translation>
 <translation id="6355820205320395730">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Inicia sesión para acceder a todo o teu contido (por exemplo, os contrasinais e os marcadores).</translation>
+<translation id="6364268785720100355">Inicia sesión para poder acceder aos teus contrasinais e moito máis en todos os teus dispositivos.</translation>
 <translation id="6368038301482806847">Escolle un buscador da lista.</translation>
 <translation id="6368102751067608420">Para eliminar todos os datos do xestor de contrasinais</translation>
 <translation id="6372558618707314581">Accede á páxina que queiras</translation>
@@ -1681,6 +1685,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6736243959894955139">Enderezo</translation>
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento do historial importado}other{{count} elementos do historial importados}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opción de credencial dispoñible sobre o teclado.}other{{count} opcións de autocompletado dispoñibles sobre o teclado.}}</translation>
 <translation id="6755200887046212842">Xestionar contas</translation>
 <translation id="6757899787818440812">Altura media</translation>
 <translation id="6759709389246683070">Se queres volver acceder a esta pestana máis tarde, mantena premida para definir un recordatorio</translation>

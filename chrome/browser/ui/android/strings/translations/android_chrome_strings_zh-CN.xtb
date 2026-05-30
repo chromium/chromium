@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">已关闭提示通知宣传内容</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1045899828449635435">一并清除来自这些网站的数据？</translation>
+<translation id="1049461303780085993">试用 Chrome 中的 Gemini，轻松获取答案、要点总结等</translation>
 <translation id="1049743911850919806">无痕模式</translation>
 <translation id="1052842760770519282">您的部分密码无法使用</translation>
 <translation id="1057623954802068161">滚动到页面顶部</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="232137538351753795">从左侧边缘滑动即可返回</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
+<translation id="2327445548174191329">来自<ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
 <translation id="2330186936255788117">更多书签</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">打开“新标签页”页面</translation>
 <translation id="4595276580892809760">附加图库中的图片</translation>
 <translation id="4595805675102978678">Google 账号错误</translation>
+<translation id="4599585406846903742">单页视图</translation>
 <translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4606559747793337066">当某个网站或应用请求以私密方式预加载其网页上的链接时，Chrome 会通过 Google 服务器（而不使用 Cookie）加密和预加载网页。这样一来，预加载的网站便无法得知您的身份。</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">通过“更多选项”按钮将此页面翻译成任何语言</translation>
 <translation id="5696597120588531049">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响</translation>
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
+<translation id="5700415746238689851">打开 Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> 想连接到串行端口</translation>
 <translation id="5715150588940290235">要删除已保存的安全码吗？</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
@@ -1767,6 +1771,7 @@
 <translation id="8271267069224406035">举报垃圾信息</translation>
 <translation id="8277710303010772444">开始搜索</translation>
 <translation id="8279945625179116733">由“<ph name="APP_NAME" />”提供安全保护</translation>
+<translation id="8280797717392145626">已收到链接</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
@@ -1902,6 +1907,7 @@
 <translation id="8863714995118816041">已重新为 <ph name="SITE_NAME" /> 授予权限</translation>
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8872506776304248286">在应用中打开</translation>
+<translation id="8880275451109933094">双页视图</translation>
 <translation id="8890668505403261809">搜索无痕式标签页</translation>
 <translation id="8892234476517513962">您已登录</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />，已选择的无痕式标签页，正在录制内容</translation>

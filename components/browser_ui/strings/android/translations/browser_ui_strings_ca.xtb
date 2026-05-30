@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1000614056227025171">El full inferior de promoció Personalitza la pàgina d'inici s'ha obert a alçada completa</translation>
 <translation id="1006017844123154345">Obre en línia</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1046742265332833834">Tema blau</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Els llocs web poden reproduir so</translation>
 <translation id="3065787901655140044">La Protecció avançada està activada</translation>
 <translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
+<translation id="3084983642903364837">Edita la pàgina d'inici més tard mitjançant el menú de tres punts.</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3108122610701115301">Defineix com a predeterminat</translation>
 <translation id="310979712355504754">Suprimeix-ho tot</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Connectat a un port en sèrie</translation>
 <translation id="4223404254440398437">No està permès utilitzar el micròfon</translation>
 <translation id="4226663524361240545">És possible que les notificacions facin vibrar el dispositiu</translation>
+<translation id="4227965147357783918">El full inferior de promoció Personalitza la pàgina d'inici s'ha obert a mitja alçada</translation>
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Quan surts d'un lloc web, el lloc pot continuar amb la sincronització per finalitzar les taques que estava fent, com ara penjar fotos o enviar un missatge de xat</translation>
 <translation id="4278390842282768270">Permès</translation>

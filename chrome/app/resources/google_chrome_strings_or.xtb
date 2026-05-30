@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଡାଟା ରଖି କେବଳ ଏହି ଡିଭାଇସରୁ ସେହି ଡାଟା ଡିଲିଟ କରିବାକୁ <ph name="BEGIN_LINK" />Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="1042270987544905725">Chrome ସାଇନ-ଇନ ଡାଏଲଗକୁ ବନ୍ଦ କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="1051793555070215510">ଏହି 1 ମିନିଟ ସର୍ଭେରେ ଭାଗ ନେଇ ଇନକଗ୍ନିଟୋକୁ ଉନ୍ନତ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
+<translation id="1055295352198814912">Mac ମେନୁ ବାରରେ Chromeରେ Gemini ଦେଖାନ୍ତୁ ଏବଂ କୀବୋର୍ଡ ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1059838145689930908"><ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଏହି ଏକ୍ସଟେନସନ ବ୍ୟବହାର କରିବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="1065672644894730302">ଆପଣଙ୍କର ଅଗ୍ରାଧିକାରଗୁଡ଼ିକୁ ପଢ଼ାଯାଇପାରିବ ନାହିଁ।
 
@@ -34,7 +35,6 @@
 <translation id="1290883685122687410">ସେଟଅପ ତ୍ରୁଟି: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome ନବୀନତମ ସିଷ୍ଟମ୍ ଅପ୍‌ଡେଟ୍‌ଗୁଡ଼ିକ ଇନ୍‌ଷ୍ଟଲ୍ କରୁଛି, ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="1330562121671411446">ଭାଷା ଚିହ୍ନଟ କରନ୍ତୁ</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ନିମ୍ନୋକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀକୁ ପଢ଼ି ସେଗୁଡ଼ିକୁ ଗ୍ରହଣ କରିବାର ଆବଶ୍ୟକତା ଅଛି। ଏହି ସର୍ତ୍ତାବଳୀ Google ChromeOS Flexର ସର୍ତ୍ତାବଳୀକୁ ବିସ୍ତାର, ପରିବର୍ତ୍ତନ କିମ୍ବା ସୀମିତ କରେ ନାହିଁ।</translation>
 <translation id="1341711321000856656">ଅନ୍ୟ ଏକ Chrome ପ୍ରୋଫାଇଲରୁ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ଆପଣ ସୁଇଚ କରିପାରିବେ</translation>
 <translation id="1343830902827845050">Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1356661055722410047">ନୂଆ! ଆପଣ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଉଭୟ ଟେକ୍ସଟ ଏବଂ ଇମେଜଗୁଡ଼ିକୁ ଅନୁବାଦ କରିପାରିବେ</translation>
@@ -281,6 +281,7 @@
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="3941890832296813527">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ଫାଇଲନାମ ଅବୈଧ କିମ୍ବା ଅସମର୍ଥିତ ଅଟେ।</translation>
 <translation id="395904275706073188">ସୁରକ୍ଷିତ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ। ଏକ ଭିନ୍ନ ପୃଷ୍ଠା ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
+<translation id="3965532487635448963">ସିଷ୍ଟମ ଟ୍ରେରେ Chromeରେ Gemini ଦେଖାନ୍ତୁ ଏବଂ କୀବୋର୍ଡ ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3967822245660637423">ଡାଉନ୍‍‍‍ଲୋଡ୍ ଶେଷ ହୋଇଛି</translation>
 <translation id="3968962723676998462">ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଲେଖନ୍ତୁ</translation>
 <translation id="3973161977468201858">Google Chrome ଆପଣଙ୍କ Google Password Manager ଡାଟା ଡିଲିଟ କରିବାକୁ ଚାହେଁ। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କ Windows ପାସୱାର୍ଡ ଟାଇପ କରନ୍ତୁ।</translation>
@@ -323,6 +324,7 @@
 <translation id="4367027658822022112">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ Google Lensକୁ ପିନ କରିପାରିବେ; ସାଇଡ ପେନେଲର ଶୀର୍ଷରେ ଥିବା 'ପିନ କରନ୍ତୁ' ବଟନରେ କ୍ଲିକ କରିପାରିବେ</translation>
 <translation id="4372389195695053189">Chrome ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଅଟେ</translation>
 <translation id="4389991535395284064">ଇନକଗ୍ନିଟୋ ମୋଡରେ ବ୍ରାଉଜ କରିବା ସମୟରେ, ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରି କୌଣସି ସାଇଟ ଲୋଡ କରିବା ପୂର୍ବରୁ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦେବ</translation>
+<translation id="4400772909124543403">କୌଣସି ଅପଡେଟ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4427306783828095590">ଉନ୍ନତ ସୁରକ୍ଷା ଫିସିଂ ଓ ମାଲୱେୟାରକୁ ବ୍ଲକ୍ କରିବାକୁ ଅନେକ କିଛି କରେ</translation>
 <translation id="4434353761996769206">ଇନଷ୍ଟଲର ତ୍ରୁଟି: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - <ph name="PAGE_TITLE" /></translation>
@@ -361,6 +363,7 @@
 <translation id="4891791193823137474">ପୃଷ୍ଠଭୂମିରେ Google Chromeକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="4895437082222824641">ନୂଆ Chrome &amp;ଟାବ୍‌ରେ ଲିଙ୍କ୍‌ଟି ଖୋଲନ୍ତୁ</translation>
 <translation id="4896867431081882115">Chromeକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରି ଆପଣ ଜାଣିଥିବା, ପସନ୍ଦ କରୁଥିବା ଏବଂ ବିଶ୍ୱାସ କରୁଥିବା ଫିଚରଗୁଡ଼ିକୁ ସହଜରେ ଆକ୍ସେସ ପାଆନ୍ତୁ। କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ Chromeକୁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ ପିନ କରାଯିବ।</translation>
+<translation id="4904953848704395458">ଏକ କୀବୋର୍ଡ ସର୍ଟକଟ ମାଧ୍ୟମରେ Chromeରେ Gemini ଖୋଲନ୍ତୁ।</translation>
 <translation id="4918086044614829423">ସ୍ୱୀକାର କରନ୍ତୁ</translation>
 <translation id="4918844574251943176">ଇମେଜ କପି କରାଯାଇଛି</translation>
 <translation id="4926882258455737990">Chromeରେ Gemini ସହ ଏକ ଭିନ୍ନ Google ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ଏକ ନୂଆ ପ୍ରୋଫାଇଲ ତିଆରି କରନ୍ତୁ<ph name="END_LINK" /> ଏବଂ ଆପଣ ଚାହୁଁଥିବା ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
@@ -523,6 +526,7 @@
 <translation id="6434035853014503219">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ Chromeକୁ ବାଛିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ!</translation>
 <translation id="6438015621983209660">ଆପଣଙ୍କ ଫୋନରେ Chrome ସହ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6442774133615368941">Chrome iOS ଆପରେ ଆପଣଙ୍କ କେମେରା ମାଧ୍ୟମରେ ଆପଣ ଯାହା ଦେଖନ୍ତି, ତାହାକୁ କ୍ରୟ, ଅନୁବାଦ ଏବଂ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
+<translation id="6448835208126432197">Chromeରେ Geminiରେ ସ୍କ୍ରିନର ଅଂଶ ଚୟନ କରିବାକୁ କୀବୋର୍ଡ ସର୍ଟକଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="6473905796280459355">Chrome ବିଷୟରେ ପୃଷ୍ଠାକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6481963882741794338">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ ପାଇଁ Chrome ଏବଂ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକ ଲିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="648319183876919572">ବିପଦଜନକ ୱେବସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଆହୁରି ଅନେକ କିଛି କରେ</translation>
@@ -535,6 +539,7 @@
 <translation id="6520670145826811516">ଆପଣଙ୍କ ଲୋକେସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ସିଷ୍ଟମ ସେଟିଂସ<ph name="END_LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ</translation>
 <translation id="652948702951888897">Chrome ଇତିବୃତ୍ତି</translation>
 <translation id="6532945796722480006">Chrome Canaryରେ Gemini ଖୋଲନ୍ତୁ</translation>
+<translation id="6539493053177300926">Chromeକୁ ଛୋଟ କରାଯାଇଥିଲେ ମଧ୍ୟ, ଆପଣଙ୍କର ଡିଭାଇସରେ Chromeରେ Geminiକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସହଜ ଆକ୍ସେସ।</translation>
 <translation id="6585124893636629274">Chromeରେ Gemini ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="659498884637196217">ଏହି ଡିଭାଇସରେ ଥିବା Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ</translation>
 <translation id="6631524303639368205">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖନ୍ତୁ: Chrome ଆପଣଙ୍କର ଗତ ସେସନରୁ ଟାବଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିଛି। ଆପଣ ଏଠାରେ ଏହାକୁ ବନ୍ଦ କରିପାରିବେ</translation>
@@ -594,6 +599,7 @@
 <translation id="7161904924553537242">Google Chrome କୁ ସ୍ଵାଗତଂ</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> ପାଇଁ Chromeକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାକୁ ବନ୍ଦ କରିଦିଏ।</translation>
 <translation id="7242029209006116544">ଆପଣ ଏକ ପରିଚାଳିତ ଆକାଉଣ୍ଟ ସାହାଯ୍ୟରେ ସାଇନ୍ ଇନ୍ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କର Google Chrome ପ୍ରୋଫାଇଲ୍ ଉପରେ ଏହାର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ନିୟନ୍ତ୍ରଣ ଦେଉଛନ୍ତି। ଆପଣଙ୍କର Chrome ଡାଟା ଯେପରିକି, ଆପଣଙ୍କର ଆପ୍ସ, ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍ ସ୍ଥାୟୀ ରୂପେ <ph name="USER_NAME" /> ସହ ଯୋଡ଼ି ହୋଇଯିବ। ଆପଣ ଏହି ଡାଟାକୁ Google ଆକାଉଣ୍ଟ ଡ୍ୟାସ୍‌ବୋର୍ଡ ମାଧ୍ୟମରେ ଡିଲିଟ୍ କରିପାରିବେ, କିନ୍ତୁ ଆପଣ ତାହାକୁ ଅନ୍ୟ ଆକାଉଣ୍ଟ ସହିତ ଯୋଡ଼ିପାରିବେ ନାହିଁ। ଆପଣଙ୍କର ବିଦ୍ୟମାନ Chrome ଡାଟାକୁ ଅଲଗା ରଖିବା ପାଇଁ ଇଚ୍ଛାଧୀନ ରୂପେ ଆପଣ ଏକ ନୂଆ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିପାରିବେ। <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Chromeରେ Geminiରୁ ବାହାରି ଯିବା କିମ୍ବା ଏଠାକୁ ଫେରିବା ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7274402351400635015">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କଗୁଡ଼ିକରେ କ୍ଲିକ କରି ଯେ କୌଣସି ସମୟରେ Chrome ବ୍ୟବହାର କରିପାରିବେ। ଏହାକୁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ ମଧ୍ୟ ପିନ କରାଯିବ।</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> Chromeକୁ ପରିଚାଳନା କରେ</translation>
 <translation id="7285990705317078173">ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବା ଏବଂ କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଇଲେ ଆଲର୍ଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ Chrome ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
@@ -632,7 +638,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ନିମ୍ନୋକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀକୁ ପଢ଼ି ସେଗୁଡ଼ିକୁ ଗ୍ରହଣ କରିବାର ଆବଶ୍ୟକତା ଅଛି। ଏହି ସର୍ତ୍ତାବଳୀ Google ChromeOSର ସର୍ତ୍ତାବଳୀକୁ ବିସ୍ତାର, ପରିବର୍ତ୍ତନ କିମ୍ବା ସୀମିତ କରେ ନାହିଁ।</translation>
 <translation id="7627609214560473136">ଆପଣଙ୍କ ଡାଟାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeକୁ ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ସାଇଟଗୁଡ଼ିକରୁ ଅନୁମତି କାଢ଼ି ଦେବାକୁ ଦିଅନ୍ତୁ।</translation>
 <translation id="7629695634924605473">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ କେବେ ବି ଚୋରି ହୋଇଛି କି ନାହିଁ ତାହା Chrome ଆପଣଙ୍କୁ ଜାଣିବାକୁ ଦିଏ</translation>
 <translation id="7641148173327520642">ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ <ph name="ALTERNATIVE_BROWSER_NAME" /> ଖୋଲିବା ପାଇଁ Google Chrome କନ୍‌ଫିଗର୍ କରିଛନ୍ତି, ଯାହା ଦ୍ୱାରା <ph name="TARGET_URL_HOSTNAME" />କୁ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ।</translation>
@@ -703,6 +708,7 @@
 <translation id="8221491193165283816">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତି। ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କୁ ସୂଚିତ କରିବା ସୁବିଧା ଦେବା ପାଇଁ, ଏଠାରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="8253851811470049684">ଯେ କୌଣସି ଆପରୁ Chromeରେ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଟାସ୍କବାରରେ ବ୍ରାଉଜରକୁ ଆକ୍ସେସଯୋଗ୍ୟ ରଖନ୍ତୁ</translation>
 <translation id="8255190535488645436">Google Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍‌କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="8260086374035800939">ଯଦି Chromeରେ Gemini ଖୋଲା ଅଛି, ତେବେ ନୂଆ ଟାବଗୁଡ଼ିକ ତିଆରି କରିବା ସମୟରେ ସାଇଡ ପେନେଲ ଖୋଲା ରହିଥାଏ</translation>
 <translation id="8267953129876836456">Chrome ଆପଣଙ୍କ ସମୀକ୍ଷା ପାଇଁ କିଛି ସୁରକ୍ଷା ସୁପାରିଶ ପାଇଛି</translation>
 <translation id="8286862437124483331">Google Chrome ପାସ୍‌ୱର୍ଡ ଦେଖାଇବାକୁ ଚାହୁଁଛି। ଏହାକୁ ଅନୁମତି ଦେବାପାଇଁ ଆପଣଙ୍କର Windows ପାସ୍‌ୱର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="829923460755755423">Google Password Managerରେ ଏକ ସର୍ଟକଟ ଯୋଗ କରନ୍ତୁ</translation>
@@ -714,6 +720,7 @@
 <translation id="8362914115861174987">ଏଥିକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="8366770919198174997">ପରଫରମାନ୍ସ କମ କରେ କିନ୍ତୁ Chromeକୁ ଅଧିକ ଆକ୍ରମଣ ପ୍ରତିରୋଧୀ କରେ</translation>
 <translation id="8367705492654390392">ଯେ କୌଣସି ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ</translation>
+<translation id="8367950957770994118">ଆପଣ Chromeରେ Gemini ଆବଶ୍ୟକ କରିବା ସମୟରେ ଏହାକୁ ଶୀଘ୍ର ଖୋଲନ୍ତୁ</translation>
 <translation id="8370517070665726704">କପିରାଇଟ୍ <ph name="YEAR" /> Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="8377158135256176353">Chrome Canaryରେ Geminiକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8387459386171870978">Chrome ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
@@ -731,6 +738,7 @@
 <translation id="8498858610309223613">କିଛି ସମୟ ପୂର୍ବରୁ Google Chrome ପାଇଁ ଏକ ବିଶେଷ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍ ଲାଗୁ କରାଯାଇଛି। ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ ଏବଂ ଆମେ ଆପଣଙ୍କ ଟାବ୍ ରିଷ୍ଟୋର୍ କରିବୁ।</translation>
 <translation id="8521348052903287641">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବାକୁ Google Chrome Dev ପାଇଁ ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
 <translation id="852529348814672339">ଏହି ଭାଷାରେ Chrome ଡିସପ୍ଲେ କରନ୍ତୁ</translation>
+<translation id="8525579356836940628">ଇନଷ୍ଟଲେସନ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="8533056045953418157">Google Chromeକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ PDF ଭ୍ୟୁଅର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ଭାଷାର ତାଲିକା ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>

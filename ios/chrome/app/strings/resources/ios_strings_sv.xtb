@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Inaktivera AI-läge</translation>
 <translation id="1554477036522844996">Nytt fönster</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
+<translation id="1560153516220021659">Knapp för komprimerat sekundärt verktygsfält</translation>
 <translation id="1565371473877914088">Ny inkognitoflik</translation>
 <translation id="1567960978791353852">Visa läsläget</translation>
 <translation id="1571780780926010134">Inkognitoflikar</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-post skickades.</translation>
 <translation id="1582732959743469162">Den pågående nedladdningen avbryts.</translation>
 <translation id="1594034544529347967">Börjar</translation>
+<translation id="1598485494295307681">Lyssnar</translation>
 <translation id="1598751033135758830">Öppna i appen …</translation>
 <translation id="1600571977391127696">Visst innehåll kanske inte är lämpligt för alla.</translation>
 <translation id="1601560923496285236">Verkställ</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Det gick inte att dela objektet.</translation>
 <translation id="4944543191714094452">Hitta på sida …</translation>
 <translation id="4945756290001680296">Åtkomst till lösenordsinställningar</translation>
+<translation id="4946307855175300628">Svarar</translation>
 <translation id="4949302115427722371">Hantera inställningar …</translation>
 <translation id="4958444002117714549">Expandera lista</translation>
 <translation id="496392417432935267">Har öppnats någon annanstans</translation>
@@ -1552,6 +1555,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6355820183143562453">Dölj kortet Prisbevakning</translation>
 <translation id="6355820205320395730">Svaga lösenord är lätta att lista ut. Använd alltid starka lösenord. <ph name="BEGIN_LINK" />Här hittar du fler säkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Logga in om du vill få tillgång till dina grejer, till exempel lösenord, bokmärken med mera.</translation>
+<translation id="6364268785720100355">Logga in om du vill ha dina lösenord med mera på alla dina enheter.</translation>
 <translation id="6368038301482806847">Välj en sökmotor i listan.</translation>
 <translation id="6368102751067608420">Så här raderar du all lösenordshanteringsdata</translation>
 <translation id="6372558618707314581">Öppna valfri sida</translation>
@@ -1681,6 +1685,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6736243959894955139">Adress</translation>
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikobjekt har importerats}other{{count} historikobjekt har importerats}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} alternativ för användaruppgifter visas ovanför tangentbordet.}other{{count} alternativ för användaruppgifter visas ovanför tangentbordet.}}</translation>
 <translation id="6755200887046212842">Hantera konton</translation>
 <translation id="6757899787818440812">Medelhögt</translation>
 <translation id="6759709389246683070">Du kan trycka länge på den här fliken för att ställa in en påminnelse om att besöka den senare</translation>

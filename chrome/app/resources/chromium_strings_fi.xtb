@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="1232234696885483911">Kun avaat kuvahaun, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään automaattisesti palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromiumissa. Jos haluat muuttaa tätä, siirry kohtaan "Tilisi Chromiumissa".</translation>
+<translation id="1257483544893909270">Voit valita osan näytöstä Gemini in Chromiumissa pikanäppäimellä.</translation>
 <translation id="1262876892872089030">Kun tämä välilehti ei ollut aktiivinen, muistia vapautettiin Chromiumin pitämiseksi nopeana. Voit halutessasi valita, että tämä sivusto ei ole koskaan ei-aktiivinen.</translation>
 <translation id="1265577313130862557">Chromium on estänyt tämän latauksen, koska tiedosto on haitallinen</translation>
 <translation id="126567311906253476">Kun kirjaudut Googlen palveluihin (esim. Gmailiin tai YouTubeen) tilillä <ph name="USER_EMAIL" />, voit kirjautua Chromiumiin automaattisesti samalla tilillä</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2629740064077610681">Organisaatiosi voi nähdä ja hallinnoida selausdataa, esimerkiksi kirjanmerkkejä, historiaa ja salasanoja. Se ei näe muiden Chromium-profiilien selausdataa.</translation>
 <translation id="2635452620547538388">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa Chromium-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Voit poistua Gemini in Chromiumista tai palata siihen pikanäppäimellä.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön}=1{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaa ei avata uudelleen.}other{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaa ei avata uudelleen.}}</translation>
 <translation id="2648074677641340862">Asennuksessa ilmeni käyttöjärjestelmävirhe. Lataa Chromium uudelleen.</translation>
 <translation id="2661879430930417727">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromiumista juuri itselleen sopivan</translation>
+<translation id="2676569452213089702">Gemini in Chromium on helposti käytettävissä laitteella, vaikka Chromium olisi pienennettynä.</translation>
 <translation id="2711502716910134313">Chromium-välilehti</translation>
 <translation id="2718390899429598676">Chromium lisää suojausta salaamalla tietosi.</translation>
 <translation id="2721354645805494590">Jos haluat poistaa Google-tilisi Chromiumista, kirjaudu ulos</translation>
@@ -309,7 +312,7 @@
 <translation id="4334241893986177674">Hae tätä kuvakaappausta</translation>
 <translation id="4384331407722351213">Käynnistä Chromium, kun Windows käynnistyy</translation>
 <translation id="4384993550046411228">Kun valitset Chromiumin oletusselaimeksi, saat helposti käyttöösi tutut, luotettavat ominaisuudet. Chromium kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Chromium-käyttöjärjestelmän ehtoja.</translation>
+<translation id="4400772909124543403">Päivityksiä ei ole saatavilla</translation>
 <translation id="4407044323746248786">Suljetaanko Chromium silti?</translation>
 <translation id="4413205837991854510">Näytä aina kuvahaun pikanäppäin</translation>
 <translation id="4415566066719264597">Jätä Chromium käyntiin taustalle</translation>
@@ -348,6 +351,7 @@
 <translation id="4746050847053251315">Suljetaanko Chromium silti?</translation>
 <translation id="4748217263233248895">Chromiumin tärkeä tietoturvapäivitys on asennettu. Käynnistä selain uudelleen – palautamme avoimet välilehdet.</translation>
 <translation id="4771701986670315895">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="COUNT" /> muuta.</translation>
+<translation id="4786083865378785874">Jos Gemini in Chromium on auki, sivupaneeli pysyy auki, kun luot uusia välilehtiä</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4814736265800133385">Käytä Chromiumia ilman tiliä</translation>
 <translation id="4888717733111232871">Chromiumin saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
@@ -399,6 +403,7 @@
 <translation id="555970465369471303">Turvallisuussyistä Chromium laittaa JavaScript-optimoinnin pois päältä, kun käyt sivustolla ensimmäistä kertaa.
 
 Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</translation>
+<translation id="5575874067957905201">Näytä Gemini in Chromium Macin valikkopalkissa ja laita pikanäppäin päälle</translation>
 <translation id="5579324208890605088">Käynnistysvirhe: Suorita asennusohjelma tavallisena käyttäjänä, ei järjestelmänvalvojana.</translation>
 <translation id="5580770360767802657">Chromiumin käyttäminen oletuksena ja kiinnittäminen</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
@@ -622,6 +627,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7867198900892795913">Chromiumia ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="7873537467422636035">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chromium-data<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Avaa Gemini in Chromium nopeasti aina tarvittaessa</translation>
 <translation id="7877212753140190672">Kysy tästä kuvasta</translation>
 <translation id="7888981273428720788">Valitse Chromium oletusselaimeksi</translation>
 <translation id="7934340546140346950">Chromium päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
@@ -643,6 +649,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8118331347066725040">Lähetä palautetta Lensillä hakemisesta</translation>
 <translation id="8133124826068723441">Chromium-käyttöjärjestelmä ei voi synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
+<translation id="8161503455832158203">Avaa Gemini in Chromium pikanäppäimellä.</translation>
 <translation id="8164014945047474187">Chromiumin lisäkäyttöehdot</translation>
 <translation id="81770708095080097">Tämä tiedosto on vaarallinen, joten Chromium on estänyt sen.</translation>
 <translation id="8177472873527554730">Sisältöä ei löydy sivulta</translation>
@@ -652,6 +659,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8232193495299001329">Chromium ei voi vahvistaa, mistä tämä laajennus on peräisin, ja se saattaa olla vaarallinen. Poista se Chromiumista, jotta se ei enää voi nähdä tai muuttaa dataasi (mukaan lukien henkilökohtaisia tietoja) avatuilla sivustoilla.</translation>
 <translation id="8248265253516264921">Jos kuvalla ei ole hyödyllistä kuvausta, Chromium yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="8254601181414348851">Haluatko kirjautua Chromiumiin uudella profiililla?</translation>
+<translation id="8277334259226003205">Näytä Gemini in Chromium ilmaisinalueella ja laita pikanäppäin päälle</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium varoittaa sinua<ph name="END_LINK" /> vaarallisista sivustoista ja latauksista</translation>
 <translation id="8295827201165805317">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti tämän luvan: <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran avulla Chromiumin iOS-sovelluksen avulla</translation>
@@ -680,6 +688,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8493179195440786826">Chromium on vanhentunut</translation>
 <translation id="850264194101621529">Kiitos, että valitsit Chromiumin oletusselaimeksi.</translation>
 <translation id="8522801943730206384">Chromium voi tarkistaa salasanasi, kun tallennat niitä</translation>
+<translation id="8525579356836940628">Asennus keskeytyi</translation>
 <translation id="8548787790260785208">Saat varoituksen, jos Chromium jonkin salasanoistasi julkisesta tietosuojaloukkauksesta</translation>
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Joissakin Chromiumin ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>

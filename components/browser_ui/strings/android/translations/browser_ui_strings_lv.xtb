@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1000614056227025171">Sākumlapas pielāgošanas reklāmas paziņojuma ekrāna apakšdaļas lapa ir atvērta pilnā augstumā.</translation>
 <translation id="1006017844123154345">Atvērt tiešsaistē</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1046742265332833834">Zils motīvs</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Atļaut vietnēm atskaņot skaņu</translation>
 <translation id="3065787901655140044">Papildu aizsardzība ir ieslēgta</translation>
 <translation id="3069226013421428034">Atļauja trešajai pusei pierakstīties konkrētā vietnē</translation>
+<translation id="3084983642903364837">Vēlāk varat rediģēt sākumlapu, izmantojot trīs punktu izvēlni.</translation>
 <translation id="310297983047869047">Iepriekšējais slaids</translation>
 <translation id="3108122610701115301">Iestatīt kā noklusējumu</translation>
 <translation id="310979712355504754">Dzēst visu</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Izveidots savienojums ar seriālo portu</translation>
 <translation id="4223404254440398437">Piekļuve mikrofonam nav atļauta</translation>
 <translation id="4226663524361240545">Saņemot paziņojumu, ierīce var vibrēt.</translation>
+<translation id="4227965147357783918">Sākumlapas pielāgošanas reklāmas paziņojuma ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
 <translation id="4259722352634471385">Navigācija ir bloķēta: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Pēc tam, kad aizverat vietni, tajā var tikt turpināta sinhronizācija, lai pabeigtu noteiktus uzdevumus, piemēram, fotoattēlu augšupielādi vai tērzēšanas ziņojuma nosūtīšanu.</translation>
 <translation id="4278390842282768270">Atļauts</translation>

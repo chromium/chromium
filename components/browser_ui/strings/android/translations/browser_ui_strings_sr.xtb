@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1000614056227025171">Доња табела за промоцију прилагођавања почетне странице је отворена преко целог екрана</translation>
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1036348656032585052">Искључи</translation>
 <translation id="1046742265332833834">Плава тема</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Сајтови могу да пуштају звук</translation>
 <translation id="3065787901655140044">Напредна заштита је укључена</translation>
 <translation id="3069226013421428034">Дозволите пријављивање трећих страна за одређени сајт.</translation>
+<translation id="3084983642903364837">Измените почетну страницу касније преко менија са 3 тачке.</translation>
 <translation id="310297983047869047">Претходни слајд</translation>
 <translation id="3108122610701115301">Постави на подразумевано</translation>
 <translation id="310979712355504754">Избриши све</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Повезано са серијским портом</translation>
 <translation id="4223404254440398437">Микрофон није дозвољен</translation>
 <translation id="4226663524361240545">Уређај ће вибрирати када примате обавештења</translation>
+<translation id="4227965147357783918">Доња табела за промоцију прилагођавања почетне странице је отворена до половине екрана</translation>
 <translation id="4259722352634471385">Навигација је блокирана: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Када напустите сајт, он обично наставља синхронизацију да би завршио задатке попут отпремања слика или слања чет поруке</translation>
 <translation id="4278390842282768270">Дозвољено</translation>

@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Щоб видалити дані вебперегляду лише на цьому пристрої, але зберегти їх в обліковому записі Google, <ph name="BEGIN_LINK" />вийдіть із Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Натисніть, щоб закрити вікно входу в Chrome</translation>
 <translation id="1051793555070215510">Пройдіть опитування, щоб допомогти нам покращити анонімний режим. Це займе 1 хвилину.</translation>
+<translation id="1055295352198814912">Показувати Gemini у Chrome на панелі меню Mac і ввімкнути комбінацію клавіш</translation>
 <translation id="1059838145689930908">Щоб використовувати це розширення в обліковому записі <ph name="USER_EMAIL_ADDRESS" />, увійдіть у Chrome.</translation>
 <translation id="1065672644894730302">Не вдається розпізнати налаштування. Деякі функції можуть бути не доступні, а зміни в налаштуваннях не зберігатимуться.</translation>
 <translation id="1070377999570795893">Інша програма на вашому комп’ютері додала розширення, яке може впливати на роботу Chrome.
@@ -32,7 +33,6 @@
 <translation id="1290883685122687410">Помилка налаштування: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
 <translation id="1330562121671411446">Визначити мову</translation>
-<translation id="1335640173511558774">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome Flex.</translation>
 <translation id="1341711321000856656">Щоб переглянути паролі з іншого профілю Chrome, перейдіть у нього</translation>
 <translation id="1343830902827845050">Увійдіть у Chrome</translation>
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
@@ -238,6 +238,7 @@
 <translation id="345171907106878721">Додати себе в Chrome</translation>
 <translation id="3453763134178591239">Умови використання ОС Chrome</translation>
 <translation id="3503306920980160878">Chrome потрібен доступ до геоданих, щоб повідомляти цьому сайту ваше місцезнаходження</translation>
+<translation id="3539955434060988644">Відкрити посилання в &amp;анонімному вікні Chrome</translation>
 <translation id="3576528680708590453">Ваш системний адміністратор налаштував Chrome відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в альтернативному веб-переглядачі.</translation>
 <translation id="3582972582564653026">Синхронізуйте та персоналізуйте роботу Chrome на всіх своїх пристроях</translation>
 <translation id="3583751698304738917">Ви вже ввійшли як <ph name="USER_EMAIL_ADDRESS" /> в іншому профілі Chrome</translation>
@@ -278,6 +279,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
 <translation id="395904275706073188">Захищені сторінки не можна зчитувати. Спробуйте на іншій сторінці.</translation>
+<translation id="3965532487635448963">Показувати Gemini у Chrome в області сповіщень і ввімкнути комбінацію клавіш</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968962723676998462">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, введіть парольну фразу</translation>
 <translation id="3973161977468201858">Google Chrome хоче видалити ваші дані в Google Менеджері паролів. Щоб дозволити це, введіть пароль Windows.</translation>
@@ -320,6 +322,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4367027658822022112">Ви можете закріпити Google Об’єктив для швидкого доступу. Для цього вгорі бічної панелі натисніть кнопку "Закріпити".</translation>
 <translation id="4372389195695053189">Тепер Chrome – ваш вебпереглядач за умовчанням</translation>
 <translation id="4389991535395284064">У режимі анонімного перегляду Chrome показуватиме попередження, перш ніж завантажити сайт через незахищене з’єднання</translation>
+<translation id="4400772909124543403">Немає оновлень</translation>
 <translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4434353761996769206">Помилка програми встановлення: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – Вхід у мережу – <ph name="PAGE_TITLE" /></translation>
@@ -358,6 +361,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4891791193823137474">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="4895437082222824641">Відкрити посилання в новій &amp;вкладці Chrome</translation>
 <translation id="4896867431081882115">Зробіть Chrome вебпереглядачем за умовчанням, щоб легко користуватись улюбленими функціями. Chrome буде закріплено на панелі завдань для швидкого доступу.</translation>
+<translation id="4904953848704395458">Відкривайте Gemini у Chrome за допомогою комбінації клавіш.</translation>
 <translation id="4918086044614829423">Прийняти</translation>
 <translation id="4918844574251943176">Зображення скопійовано</translation>
 <translation id="4926882258455737990">Щоб використовувати інший обліковий запис Google із Gemini у Chrome, увійдіть у нього, <ph name="BEGIN_LINK" />створивши новий профіль<ph name="END_LINK" /></translation>
@@ -516,6 +520,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6434035853014503219">Дякуємо, що зробили Chrome вебпереглядачем за умовчанням.</translation>
 <translation id="6438015621983209660">Використовуйте Безпечний перегляд із розширеним захистом у Chrome на телефоні</translation>
 <translation id="6442774133615368941">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти навколо за допомогою камери в додатку Chrome для iOS</translation>
+<translation id="6448835208126432197">Використовуйте цю комбінацію клавіш, щоб вибрати частину екрана в Gemini у Chrome.</translation>
 <translation id="6473905796280459355">Перейти на сторінку "Про Chrome"</translation>
 <translation id="6481963882741794338">Зв’яжіть Chrome з іншими сервісами Google для персоналізації і інших цілей</translation>
 <translation id="648319183876919572">Безпечний перегляд із розширеним захистом додатково захищає вас від небезпечних веб-сайтів і завантажень</translation>
@@ -528,6 +533,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6520670145826811516">Щоб використовувати геодані, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6532945796722480006">Відкрити Gemini у Chrome Canary</translation>
+<translation id="6539493053177300926">Легко використовуйте Gemini у Chrome на своєму пристрої, навіть якщо Chrome згорнуто.</translation>
 <translation id="6585124893636629274">Закрити Gemini у Chrome</translation>
 <translation id="659498884637196217">У Менеджері паролів Google на цьому пристрої</translation>
 <translation id="6631524303639368205">Продовжуйте роботу з місця, де зупинилися: вебпереглядач Chrome відновив ваші вкладки з останнього сеансу. Щоб вимкнути цю функцію, перейдіть у</translation>
@@ -587,6 +593,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7161904924553537242">Вітаємо у Google Chrome:</translation>
 <translation id="7193885263065350793">Ваша організація закриває веб-переглядач Chrome, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Google Chrome. Ваші дані Chrome, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chrome окремо. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Щоб вийти з Gemini у Chrome або повернутися в сервіс, скористайтеся комбінацією клавіш.</translation>
 <translation id="7274402351400635015">Ви можете відкривати в Chrome посилання з повідомлень, документів і інших додатків. Вебпереглядач також буде закріплено на панелі завдань.</translation>
 <translation id="7285616922384953075">Вебпереглядачем Chrome керує <ph name="MANAGER" /></translation>
 <translation id="7285990705317078173">Завантажте Chrome на телефон, щоб відстежувати ціни й отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
@@ -625,7 +632,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">ОС Google Chrome Flex</translation>
-<translation id="7626072681686626474">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome.</translation>
 <translation id="7627609214560473136">Щоб захистити ваші дані, дозвольте Chrome скасовувати дозволи для сайтів, які ви останнім часом не відвідували.</translation>
 <translation id="7629695634924605473">Якщо ваші паролі колись викрадуть, Chrome повідомить вас про це</translation>
 <translation id="7641148173327520642">Ваш системний адміністратор налаштував Google Chrome відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -696,6 +702,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
 <translation id="8253851811470049684">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chrome і закріпіть його на панелі завдань для зручності</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
+<translation id="8260086374035800939">Якщо Gemini у Chrome відкрито, бічна панель не закривається, коли ви відкриваєте нові вкладки</translation>
 <translation id="8267953129876836456">Веб-переглядач Chrome знайшов для вас кілька рекомендацій щодо безпеки</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="829923460755755423">Додайте ярлик Google Менеджера паролів</translation>
@@ -707,6 +714,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
 <translation id="8366770919198174997">Знижує продуктивність, але робить вебпереглядач Chrome стійкішим до атак</translation>
 <translation id="8367705492654390392">Поставте запитання</translation>
+<translation id="8367950957770994118">Швидко відкривайте Gemini у Chrome будь-коли</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="8377158135256176353">Увімкнути або вимкнути Gemini у Chrome Canary</translation>
 <translation id="8387459386171870978">Продовжити використовувати Chrome</translation>
@@ -724,6 +732,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8498858610309223613">Щойно було застосовано спеціальне оновлення для захисту Google Chrome. Перезапустіть веб-переглядач, і ваші вкладки буде відновлено.</translation>
 <translation id="8521348052903287641">Вхідне правило для Google Chrome для розробників дозволяє трафік mDNS.</translation>
 <translation id="852529348814672339">Вибрати цю мову для Chrome</translation>
+<translation id="8525579356836940628">Встановлення зупинено</translation>
 <translation id="8533056045953418157">Зробіть Google Chrome засобом перегляду файлів PDF за умовчанням</translation>
 <translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Пошук у списку мов</translation>

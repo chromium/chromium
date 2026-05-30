@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">અજ્ઞાત પૉલિસી.</translation>
 <translation id="1227677022489889280">ખસેડવા માટેનું કારણ આપો (આવશ્યક છે)</translation>
 <translation id="1228893227497259893">ખોટો અસ્તિત્વ ઓળખકર્તા</translation>
+<translation id="122989279399348496">જ્યારે તમે સાઇન ઇન કરેલું હોય, ત્યારે <ph name="DOMAIN" /> સપોર્ટેડ સાઇટ પર <ph name="EMAIL" /> કન્ફર્મ કરી શકે છે, જેથી તમારે તમારું ઇનબૉક્સ ચેક કરવું ન પડે</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ઑટોમૅટિક રીતે ભાળ મેળવેલી)</translation>
 <translation id="1232569758102978740">શીર્ષક વિનાનું</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> જરૂરી છે</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, એકથી વધારે ક્રિયાઓ ઉપલબ્ધ છે, એ બધી પર નજર કરવા માટે Tab કી દબાવો</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">વર્ચ્યુઅલ કાર્ડની વિગતો</translation>
+<translation id="1802420021606590788">Chrome ક્લાઉડમાં ખાનગી સ્પેસમાં પેજના શીર્ષકો અને URLs પર પ્રક્રિયા કરે છે</translation>
 <translation id="1803254472779303354">માઉસ લૉક કરવાની મંજૂરી છે</translation>
 <translation id="1803351196216024260">તમારા માઇક્રોફોનનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="1804258830776932716">તમારા એકાઉન્ટને ઝડપથી લિંક કરીને Pix ચાલુ કરો</translation>
@@ -3027,6 +3029,7 @@
 <translation id="5742806904559466333">બાર, ક્લબ અને નાઇટલાઇફ</translation>
 <translation id="5743684619253032786">નખની સંભાળ માટેની પ્રોડક્ટ</translation>
 <translation id="574392208103952083">મધ્યમ</translation>
+<translation id="5745586894920491759">Chrome ક્લાઉડમાં પેજના શીર્ષકો અને URLs પર પ્રક્રિયા કરે છે</translation>
 <translation id="5745733273847572235">તમારા સ્થાન માટે પૂછી શકે છે</translation>
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="5752327398324808817">એક કે બે શબ્દ દાખલ કરો</translation>
@@ -3421,6 +3424,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">લૉગ જુઓ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />પ્રૉક્સી, ફાયરવૉલ અને DNS ગોઠવણીને ચેક કરવાનો<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">તમારા ઇમેઇલ ઍડ્રેસ ઑટોમૅટિક રીતે કન્ફર્મ કરો</translation>
 <translation id="6366710531182496394">ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
 <translation id="6367196786591004737">એન્ટ્રી ડિલીટ કરો</translation>
 <translation id="6370022303958842211">ડિવાઇસના ઍક્સેસની ક્રિયાઓ જેમ કે લૉગ ઇન (લૉગ ઇન નિષ્ફ્ળ થવાના કારણો સહિત), લૉગ આઉટ, લૉક અને અનલૉક કરવાની ક્રિયાઓ</translation>
@@ -4066,6 +4070,7 @@
 <translation id="7388380253839603603">ગૅસની કિંમતો અને વાહનોના ઈંધણ સંબંધિત સેવાઓ</translation>
 <translation id="7388594495505979117">{0,plural, =1{તમારું ડિવાઇસ 1 મિનિટમાં ફરી શરૂ થશે}one{તમારું ડિવાઇસ # મિનિટમાં ફરી શરૂ થશે}other{તમારું ડિવાઇસ # મિનિટમાં ફરી શરૂ થશે}}</translation>
 <translation id="7393161616326137353">સાહસવાળી ગેમ</translation>
+<translation id="7393243238767102021"><ph name="DOMAIN" />ને આ ઇમેઇલ ઍડ્રેસની ચકાસણી ઑટોમૅટિક રીતે કરવાની મંજૂરી આપીએ?</translation>
 <translation id="7393475648162498734">ચેકઆઉટ વખતે તમારા કાર્ડ માટે કયા રિવૉર્ડ અને લાભ ઉપલબ્ધ હોય છે, તે બતાવે છે</translation>
 <translation id="7393971683644170444">તમારા કાર્ડના પ્રદાતા સાથે કનેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="739728382607845710">ચુકવણી હૅન્ડલરનું આઇકન</translation>
@@ -5061,6 +5066,7 @@
 <translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />સૂચનો:<ph name="MARKUP_2" />ખાતરી કરો કે તમારી પાસે ડેટા કનેક્શન છે<ph name="MARKUP_3" />આ વેબપેજને પછીથી ફરી લોડ કરો<ph name="MARKUP_4" />તમે દાખલ કરેલું ઍડ્રેસ તપાસો<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">તમારી સ્થાનિક ફાઇલો <ph name="HOURS" /> કલાકમાં ડિલીટ થઈ જશે</translation>
+<translation id="8964904785315870349">ચકાસાયેલું ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="8968766641738584599">કાર્ડ સાચવો</translation>
 <translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8971063699422889582">સર્વરના પ્રમાણપત્રની સમયસીમા સમાપ્ત થઈ છે.</translation>

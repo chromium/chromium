@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">ເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບໃນອຸປະກອນນີ້ເທົ່ານັ້ນ, ແຕ່ຍັງຮັກສາຂໍ້ມູນດັ່ງກ່າວໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">ຄລິກເພື່ອປິດກ່ອງໂຕ້ຕອບການເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1051793555070215510">ຊ່ວຍພວກເຮົາປັບປຸງໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໂດຍເຮັດແບບສຳຫຼວດ 1 ນາທີນີ້.</translation>
+<translation id="1055295352198814912">ສະແດງ Gemini ໃນ Chrome ໃນແຖບເມນູຂອງ Mac ແລະ ເປີດຄີລັດ</translation>
 <translation id="1059838145689930908">ເພື່ອໃຊ້ສ່ວນຂະຫຍາຍນີ້ດ້ວຍ <ph name="USER_EMAIL_ADDRESS" />, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome.</translation>
 <translation id="1065672644894730302">ບໍ່ສາມາດອ່ານຄວາມມັກຂອງທ່ານໄດ້.
 
@@ -34,7 +35,6 @@
 <translation id="1290883685122687410">ຂໍ້ຜິດພາດໃນການຕັ້ງຄ່າ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chrome ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="1330562121671411446">ກວດຫາພາສາ</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ແກ້ໄຂ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">ທ່ານສາມາດສະຫຼັບເພື່ອເບິ່ງລະຫັດຜ່ານຈາກໂປຣໄຟລ໌ Chrome ອື່ນໄດ້</translation>
 <translation id="1343830902827845050">ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1356661055722410047">ໃໝ່! ທ່ານສາມາດແປໄດ້ທັງຂໍ້ຄວາມ ແລະ ຮູບພາບຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
@@ -282,6 +282,7 @@
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="3941890832296813527">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຊື່ໄຟລ໌ຂອງຕົວຕິດຕັ້ງບໍ່ຖືກຕ້ອງ ຫຼື ລະບົບບໍ່ຮອງຮັບ.</translation>
 <translation id="395904275706073188">ບໍ່ສາມາດອ່ານໜ້າທີ່ມີການປ້ອງກັນໄດ້. ລອງໃຊ້ໜ້າອື່ນ.</translation>
+<translation id="3965532487635448963">ສະແດງ Gemini ໃນ Chrome ໃນຖາດລະບົບ ແລະ ເປີດຄີລັດ</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="3968962723676998462">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome ຕ້ອງການລຶບຂໍ້ມູນຕົວຈັດການລະຫັດຜ່ານ Google ຂອງທ່ານ. ກະລຸນາພິມລະຫັດຜ່ານ Windows ຂອງທ່ານເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
@@ -324,6 +325,7 @@
 <translation id="4367027658822022112">ທ່ານສາມາດປັກໝຸດ Google Lens ເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍ; ໂດຍການຄລິກປຸ່ມປັກໝຸດຢູ່ເທິງສຸດຂອງແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="4372389195695053189">ຕອນນີ້ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານແລ້ວ</translation>
 <translation id="4389991535395284064">ເມື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, Chrome ຈະເຕືອນທ່ານກ່ອນການໂຫຼດເວັບໄຊທີ່ກຳລັງໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ</translation>
+<translation id="4400772909124543403">ບໍ່ມີອັບເດດພ້ອມນຳໃຊ້</translation>
 <translation id="4427306783828095590">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເຮັດໄດ້ຫຼາຍກວ່າໃນການບລັອກການຫຼອກເອົາຂໍ້ມູນ ແລະ ເມົາແວ</translation>
 <translation id="4434353761996769206">ຕົວຕິດຕັ້ງຜິດພາດ: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - <ph name="PAGE_TITLE" /></translation>
@@ -362,6 +364,7 @@
 <translation id="4891791193823137474">ໃຫ້ Google Chrome ແລ່ນຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="4895437082222824641">ເປີດລິ້ງໃນແຖບ Chrome ໃໝ່</translation>
 <translation id="4896867431081882115">ເຂົ້າເຖິງຄຸນສົມບັດທີ່ທ່ານຮູ້ຈັກ, ມັກ ແລະ ໄວ້ວາງໃຈໄດ້ຢ່າງງ່າຍດາຍໂດຍການຕັ້ງຄ່າ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ. ລະບົບຈະປັກໝຸດ Chrome ໄວ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ຢ່າງວ່ອງໄວ.</translation>
+<translation id="4904953848704395458">ເປີດ Gemini ໃນ Chrome ດ້ວຍຄີລັດ.</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
 <translation id="4918844574251943176">ສຳເນົາຮູບແລ້ວ</translation>
 <translation id="4926882258455737990">ເພື່ອໃຊ້ບັນຊີ Google ອື່ນກັບ Gemini ໃນ Chrome, ໃຫ້ <ph name="BEGIN_LINK" />ສ້າງໂປຣໄຟລ໌ໃໝ່<ph name="END_LINK" /> ແລ້ວເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ທ່ານຕ້ອງການ</translation>
@@ -524,6 +527,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6434035853014503219">ຂໍຂອບໃຈທີ່ເລືອກ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ!</translation>
 <translation id="6438015621983209660">ຂະຫຍາຍ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນດ້ວຍ Chrome ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="6442774133615368941">ເລືອກຊື້, ແປພາສາ ແລະ ລະບຸສິ່ງທີ່ທ່ານເຫັນດ້ວຍກ້ອງຂອງທ່ານຢູ່ແອັບ Chrome iOS</translation>
+<translation id="6448835208126432197">ເພື່ອເລືອກພາກສ່ວນໜຶ່ງຂອງໜ້າຈໍໃນ Gemini ໃນ Chrome, ໃຫ້ໃຊ້ຄີລັດ.</translation>
 <translation id="6473905796280459355">ເຂົ້າໄປໜ້າກ່ຽວກັບ Chrome</translation>
 <translation id="6481963882741794338">ລິ້ງ Chrome ແລະ ບໍລິການອື່ນໆຂອງ Google ເພື່ອການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຈຸດປະສົງອື່ນໆ</translation>
 <translation id="648319183876919572">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຊ່ວຍປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
@@ -536,6 +540,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6520670145826811516">ເພື່ອໃຊ້ສະຖານທີ່ຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">ປະຫວັດ Chrome</translation>
 <translation id="6532945796722480006">ເປີດ Gemini ໃນ Chrome Canary</translation>
+<translation id="6539493053177300926">ເຂົ້າເຖິງເພື່ອໃຊ້ Gemini ໃນ Chrome ໃນອຸປະກອນຕ່າງໆຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ, ເຖິງແມ່ນວ່າຈະຫຍໍ້ Chrome ຢູ່.</translation>
 <translation id="6585124893636629274">ປິດ Gemini ໃນ Chrome</translation>
 <translation id="659498884637196217">ໃນຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="6631524303639368205">ສືບຕໍ່ຈາກບ່ອນທີ່ທ່ານຄ້າງໄວ້: Chrome ໄດ້ກູ້ຄືນແທັບຂອງທ່ານຈາກເຊດຊັນຫຼ້າສຸດຂອງທ່ານ. ທ່ານສາມາດປິດໃຊ້ສິ່ງນີ້ໄດ້ໃນ</translation>
@@ -595,6 +600,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7161904924553537242">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Google Chrome</translation>
 <translation id="7193885263065350793">ອົງກອນຂອງທ່ານປິດ Chrome ໄວ້ເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">ທ່ານກໍາລັງລົງຊື່ເຂົ້າໃຊ້ດ້ວຍບັນຊີທີ່ມີການຄຸ້ມຄອງ ແລະໃຫ້ຜູ້ຄວບຄຸມຂອງມັນຄວບຄຸມໂປຣໄຟລ໌ Google Chrome ຂອງທ່ານ. ຂໍ້ມູນ Chrome ຂອງທ່ານ, ເຊັ່ນ ແອັບ, ບຸກມາກສ໌, ປະຫວັດ, ລະຫັດຜ່ານ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຜູກ​ມັດກັບ <ph name="USER_NAME" /> ຢ່າງຖາວອນ. ທ່ານຈະສາມາດລຶບຂໍ້ມູນນີ້ໄດ້ຜ່ານ Google Accounts Dashboard, ແຕ່ທ່ານຈະບໍ່ສາມາດເອົາຂໍ້ມູນນີ້ເຂົ້າຮ່ວມກັບບັນຊີອື່ນໄດ້. ​ໂດຍ​ເລືອກ​ໄດ້ ທ່ານສາມາດສ້າງໂປຣໄຟລ໌​ໃໝ່ ເພື່ອຮັກສາຂໍ້ມູນ Chrome ທີ່​ມີ​ຢູ່ຂອງທ່ານ​ແຍກຕ່າງຫາກ. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">ເພື່ອອອກ ຫຼື ກັບຄືນມາຫາ Gemini ໃນ Chrome, ໃຫ້ໃຊ້ຄີລັດ.</translation>
 <translation id="7274402351400635015">ທ່ານສາມາດໃຊ້ Chrome ໄດ້ທຸກເທື່ອທີ່ທ່ານຄລິກລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ. ນອກຈາກນີ້, ລະບົບຍັງຈະປັກໝຸດໄວ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານນຳ.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> ຈັດການ Chrome</translation>
 <translation id="7285990705317078173">ດາວໂຫຼດ Chrome ຢູ່ໂທລະສັບຂອງທ່ານເພື່ອຕິດຕາມລາຄາ ແລະ ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນເວັບໄຊໃດກໍຕາມ</translation>
@@ -633,7 +639,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ປ່ຽນແປງ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS.</translation>
 <translation id="7627609214560473136">ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ກະລຸນາອະນຸຍາດໃຫ້ Chrome ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້.</translation>
 <translation id="7629695634924605473">Chrome ແຈ້ງໃຫ້ທ່ານຮູ້ຖ້າມີຄົນຮູ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="7641148173327520642">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ກຳນົດຄ່າໃຫ້ Google Chrome ເປີດ <ph name="ALTERNATIVE_BROWSER_NAME" /> ເພື່ອເຂົ້າເຖິງ <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -704,6 +709,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8221491193165283816">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອອະນຸຍາດໃຫ້ເວັບໄຊນີ້ແຈ້ງເຕືອນທ່ານ, ກະລຸນາຄລິກບ່ອນນີ້.</translation>
 <translation id="8253851811470049684">ເປີດລິ້ງໃນ Chrome ຈາກແອັບໃດກໍໄດ້ ແລະ ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບເຂົ້າເຖິງໄດ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານ</translation>
 <translation id="8255190535488645436">Google Chrome ກໍາລັງໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
+<translation id="8260086374035800939">ຫາກ Gemini ໃນ Chrome ເປີດຢູ່, ແຜງຄວບຄຸມດ້ານຂ້າງຈະເປີດຢູ່ເມື່ອສ້າງແຖບໃໝ່</translation>
 <translation id="8267953129876836456">Chrome ພົບຄຳແນະນຳດ້ານຄວາມປອດໄພບາງຢ່າງທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="8286862437124483331">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
 <translation id="829923460755755423">ເພີ່ມທາງລັດໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
@@ -715,6 +721,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8362914115861174987">ແປພາສາເປັນ</translation>
 <translation id="8366770919198174997">ຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ</translation>
 <translation id="8367705492654390392">ຖາມຫຍັງກໍໄດ້</translation>
+<translation id="8367950957770994118">ເປີດ Gemini ໃນ Chrome ໄດ້ຢ່າງວ່ອງໄວທຸກເທື່ອທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="8377158135256176353">ເປີດ/ປິດ Gemini ໃນ Chrome Canary</translation>
 <translation id="8387459386171870978">ສືບຕໍ່ນຳໃຊ້ Chrome</translation>
@@ -732,6 +739,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8498858610309223613">ຫາກໍນຳໃຊ້ການອັບເດດຄວາມປອດໄພພິເສດສຳລັບ Google Chrome. ກະລຸນາປິດເປີດໃໝ່ຕອນນີ້ເລີຍ ແລ້ວພວກເຮົາຈະກູ້ຄືນແຖບຂອງທ່ານ.</translation>
 <translation id="8521348052903287641">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Dev ເພື່ອອະນຸຍາດການຮັບສົ່ງຂໍ້ມູນ mDNS.</translation>
 <translation id="852529348814672339">ສະແດງ Chrome ໃນພາສານີ້</translation>
+<translation id="8525579356836940628">ຢຸດການຕິດຕັ້ງແລ້ວ</translation>
 <translation id="8533056045953418157">ຕັ້ງຄ່າ Google Chrome ເປັນໂປຣແກຣມອ່ານ PDF ເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="8555465886620020932">ບໍລິການຜິດພາດ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ຊອກຫາລາຍການພາສາ</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Nõuandemärguannete promo on suletud</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1045899828449635435">Kas kustutada ka nende saitide andmed?</translation>
+<translation id="1049461303780085993">Proovige Geminit Chrome'is, et saada vastuseid, põhipunkte ja muud</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Mõnele teie paroolile ei pääse juurde</translation>
 <translation id="1057623954802068161">Kerige lehe ülaossa</translation>
@@ -297,6 +298,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2318045970523081853">Puudutage helistamiseks</translation>
 <translation id="232137538351753795">Tagasiliikumiseks pühkige vasakust servast</translation>
 <translation id="2323763861024343754">Saidi salvestusruum</translation>
+<translation id="2327445548174191329">Seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Kõik kasutajad kaotavad vahelehegrupile „<ph name="GROUP_NAME" />“ kohe juurdepääsu ja kõik kutselingid lülitatakse välja</translation>
 <translation id="2330186936255788117">Rohkem järjehoidjaid</translation>
 <translation id="2332515770639153015">Täiustatud ohutu sirvimine on sisse lülitatud</translation>
@@ -834,6 +836,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4595237294768457124">Avage uus vaheleht.</translation>
 <translation id="4595276580892809760">Galerii piltide manustamine</translation>
 <translation id="4595805675102978678">Google'i konto viga</translation>
+<translation id="4599585406846903742">Ühe lehe vaade</translation>
 <translation id="4601095002996233687">Põhjalikud kontrollid kahtlaste allalaadimiste korral.</translation>
 <translation id="4606559747793337066">Kui sait või rakendus palub lehel olevad lingid privaatselt eellaadida, krüpteerib Chrome need lehed ja laadib need Google'i serverite kaudu ilma küpsisefailideta. See peidab teie identiteedi eellaaditud saidi eest.</translation>
 <translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="569536719314091526">Tõlkige leht mis tahes keelde nupuga Rohkem valikuid</translation>
 <translation id="5696597120588531049">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest</translation>
 <translation id="5698878456427040674">Kontrollige, kas valitud kontot toetatakse.</translation>
+<translation id="5700415746238689851">Avage Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> soovib luua ühendust jadapordiga</translation>
 <translation id="5715150588940290235">Kas kustutada salvestatud turvakoodid?</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
@@ -1769,6 +1773,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8271267069224406035">Teavita rämpspostist</translation>
 <translation id="8277710303010772444">Otsingu alustamine</translation>
 <translation id="8279945625179116733">Kaitseb: <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Saadud on lingid</translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8282297628636750033">Kui võimalik, rakendatakse saitidele tume teema</translation>
 <translation id="8282950411412455249">Avage turvaseaded</translation>
@@ -1904,6 +1909,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8863714995118816041">Veebisaidile <ph name="SITE_NAME" /> on uuesti load antud</translation>
 <translation id="8865415417596392024">Chrome'i andmed teie kontol</translation>
 <translation id="8872506776304248286">Ava rakenduses</translation>
+<translation id="8880275451109933094">Kahe lehe vaade</translation>
 <translation id="8890668505403261809">Otsige oma inkognito vahelehtedelt</translation>
 <translation id="8892234476517513962">Olete juba sisse logitud</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, valitud salvestav inkognito vaheleht</translation>

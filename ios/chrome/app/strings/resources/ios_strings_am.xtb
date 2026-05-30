@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">የሰው ሠራሽ አስተውሎት ሁነታን አጥፋ</translation>
 <translation id="1554477036522844996">አዲስ መስኮት</translation>
 <translation id="1558391695376153246">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
+<translation id="1560153516220021659">የተሰበሰበ ሁለተኛ የመሣሪያ አሞሌ አዝራር</translation>
 <translation id="1565371473877914088">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="1567960978791353852">የንባብ ሁነታ አሳይ</translation>
 <translation id="1571780780926010134">ማንነት የማያሳውቁ ትሮች</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">መልዕክት ተልኳል።</translation>
 <translation id="1582732959743469162">ይህ መተግበሪያ ለአሁኑ ውርድዎ ሁሉንም ሂደት ያቆማል።</translation>
 <translation id="1594034544529347967">ይጀምራል</translation>
+<translation id="1598485494295307681">በማዳመጥ ላይ</translation>
 <translation id="1598751033135758830">በመተግበሪያ ውስጥ ይክፈቱ…</translation>
 <translation id="1600571977391127696">አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል።</translation>
 <translation id="1601560923496285236">ተግብር</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">ይቅርታ፣ ንጥልዎን ማጋራት ላይ ችግር ነበር።</translation>
 <translation id="4944543191714094452">በዚህ ገፅ ውስጥ አግኝ…</translation>
 <translation id="4945756290001680296">የይለፍ ቃል ቅንብሮችን ይደርሱባቸው</translation>
+<translation id="4946307855175300628">ምላሽ በመስጠት ላይ</translation>
 <translation id="4949302115427722371">ቅንብሮችን አስተዳድር…</translation>
 <translation id="4958444002117714549">ዝርዝሩን ዘርጋ</translation>
 <translation id="496392417432935267">ሌላ ቦታ ተከፍቷል</translation>
@@ -1552,6 +1555,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6355820183143562453">የዋጋ ክትትል ካርድን ደብቅ</translation>
 <translation id="6355820205320395730">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። ጠንካራ የይለፍ ቃላትን እየፈጠሩ መሆንዎን ያረጋግጡ። <ph name="BEGIN_LINK" />ተጨማሪ ጠቃሚ የደህንነት ምክሮችን ይመልከቱ።<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">እንደ የይለፍ ቃላት፣ እልባቶች እና ሌሎችም ያሉ ሁሉንም ነገሮችዎን ለማግኘት በመለያ ይግቡ።</translation>
+<translation id="6364268785720100355">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የይለፍ ቃሎች እና ሌሎችንም ለማግኘት በመለያ ይግቡ</translation>
 <translation id="6368038301482806847">ከዝርዝሩ ውስጥ የፍለጋ ፕሮግራም ይምረጡ።</translation>
 <translation id="6368102751067608420">ሁሉም የሚስጥር ቁልፍ አስተዳዳሪ ውሂብ ላይ ለመድረስ</translation>
 <translation id="6372558618707314581">ወደሚወዱት ማንኛውም ገፅ ይሂዱ</translation>
@@ -1681,6 +1685,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6736243959894955139">አድራሻ</translation>
 <translation id="6746338529702829275">የመለያ ውሂብዎን ይገምግሙ</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} የመጣ ታሪክ ንጥል}one{{count} የመጣ ታሪክ ንጥል}other{{count} የመጡ ታሪክ ንጥሎች}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{ከቁልፍ ሰሌዳዎ በላይ ለሚገኝ የመግቢያ ማስረጃ {count} አማራጭ።}one{ከቁልፍ ሰሌዳዎ በላይ ለሚገኝ የመግቢያ ማስረጃ {count} አማራጭ።}other{ከቁልፍ ሰሌዳዎ በላይ ለሚገኙ የመግቢያ ማስረጃ {count} አማራጮች።}}</translation>
 <translation id="6755200887046212842">መለያዎችን አቀናብር</translation>
 <translation id="6757899787818440812">መካከለኛ ቁመት</translation>
 <translation id="6759709389246683070">ቆይተው እንደገና ለመጎብኘት አስታዋሽ ለማቀናበር ይህን ትር መንካት እና መያዝ ይችላሉ</translation>

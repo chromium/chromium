@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">שגיאה בהגדרה: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">‏יש להמתין בזמן ש-Chrome מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="1330562121671411446">זיהוי שפה אוטומטי</translation>
-<translation id="1335640173511558774">‏לפי דרישת <ph name="MANAGER" />, צריך לקרוא את התנאים וההגבלות הבאים ולהסכים להם לפני השימוש במכשיר הזה. התנאים האלה לא מרחיבים, משנים או מגבילים את התנאים לשימוש ב-Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">‏אפשר לעבור כדי לראות סיסמאות מפרופיל Chrome אחר</translation>
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1356661055722410047">חדש! אפשר לתרגם טקסט ותמונות במסך</translation>
@@ -632,7 +631,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474">‏לפי הדרישה של <ph name="MANAGER" />, יש לקרוא ולאשר את התנאים וההגבלות הבאים לפני השימוש במכשיר הזה. תנאים אלה לא מרחיבים, משנים או מגבילים את התנאים לשימוש ב-ChromeOS.</translation>
 <translation id="7627609214560473136">‏כדי להגן על הנתונים שלך, כדאי לאפשר ל-Chrome להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה.</translation>
 <translation id="7629695634924605473">‏Chrome מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="7641148173327520642">‏לפי הגדרת מנהל המערכת, Google Chrome יפתח את <ph name="ALTERNATIVE_BROWSER_NAME" /> כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>

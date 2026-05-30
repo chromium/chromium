@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">AI モードをオフにする</translation>
 <translation id="1554477036522844996">新規ウインドウ</translation>
 <translation id="1558391695376153246">シークレット タブを閉じる</translation>
+<translation id="1560153516220021659">折りたたまれたセカンダリ ツールバー ボタン</translation>
 <translation id="1565371473877914088">新しいシークレット タブ</translation>
 <translation id="1567960978791353852">リーディング モードを表示</translation>
 <translation id="1571780780926010134">シークレット タブ</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">メールを送信しました。</translation>
 <translation id="1582732959743469162">この操作を行うと、現在進行中のダウンロードは停止します。</translation>
 <translation id="1594034544529347967">開始</translation>
+<translation id="1598485494295307681">聞き取っています</translation>
 <translation id="1598751033135758830">アプリで開く…</translation>
 <translation id="1600571977391127696">一部のユーザーに適していないコンテンツがあります。</translation>
 <translation id="1601560923496285236">適用</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">アイテムの共有中に問題が発生しました。</translation>
 <translation id="4944543191714094452">ページ内を検索…</translation>
 <translation id="4945756290001680296">パスワードの設定にアクセスします</translation>
+<translation id="4946307855175300628">返答しています</translation>
 <translation id="4949302115427722371">設定を管理…</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
 <translation id="496392417432935267">別の場所で開かれています</translation>
@@ -1552,6 +1555,7 @@
 <translation id="6355820183143562453">価格トラッキング カードを非表示にする</translation>
 <translation id="6355820205320395730">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。<ph name="BEGIN_LINK" />セキュリティに関する他のヒントを見る<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">ログインすると、パスワードやブックマークなど、すべての設定やデータにアクセスできます。</translation>
+<translation id="6364268785720100355">ログインすると、保存済みのパスワードなどをすべてのデバイスで使用できるようになります。</translation>
 <translation id="6368038301482806847">リストから対象の検索エンジンを選択します。</translation>
 <translation id="6368102751067608420">パスワード マネージャーのすべてのデータを削除するには</translation>
 <translation id="6372558618707314581">好きなページを表示します</translation>
@@ -1681,6 +1685,7 @@
 <translation id="6736243959894955139">アドレス</translation>
 <translation id="6746338529702829275">アカウントのデータを確認します</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} 件の履歴をインポートしました}other{{count} 件の履歴をインポートしました}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{キーボードの上部に利用可能な認証情報の候補が {count} 件表示されています。}other{キーボードの上部に利用可能な認証情報の候補が {count} 件表示されています。}}</translation>
 <translation id="6755200887046212842">アカウントを管理</translation>
 <translation id="6757899787818440812">中程度の高さ</translation>
 <translation id="6759709389246683070">このタブを長押しすると、後で再度アクセスするようリマインダーを設定できます</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टॅब गटबद्ध केला आहे</translation>
 <translation id="1844381456014878100">७ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{वाचन सूचीवर टॅब जोडा}other{वाचन सूचीवर टॅब जोडा}}</translation>
 <translation id="1909810060368225529">नोटिस: शेअर केलेल्या या टॅब गट मधील बदल प्रत्येकासाठी दृश्यमान आहेत. सर्वजण तुमच्या शेअर केलेल्या टॅब गटांमध्ये बदल करू शकतात</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{टॅब पिन करा}other{टॅब पिन करा}}</translation>
 <translation id="1982637982196732906">इनॅक्टिव्ह विभागामध्ये हलवा</translation>

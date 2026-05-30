@@ -25,6 +25,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
 <translation id="1232234696885483911">Ko odprete slikovno iskanje, se naslov strani, URL in vsebina, vključno z datotekami PDF, samodejno pošljejo v strežnik. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Ko ste prijavljeni, lahko v Chromiumu uporabljate svoja gesla in drugo iz računa Google. Če želite to spremeniti, odprite »Vaš račun v Chromiumu«.</translation>
+<translation id="1257483544893909270">Če želite v Geminiju v Chromiumu izbrati del zaslona, uporabite bližnjične tipke.</translation>
 <translation id="1262876892872089030">Ko je bil ta zavihek neaktiven, je bil pomnilnik sproščen, da je bil Chromium še naprej hiter. Izberete lahko, da to spletno mesto ni nikoli neaktivno.</translation>
 <translation id="1265577313130862557">Chromium je blokiral ta prenos, ker je datoteka nevarna</translation>
 <translation id="126567311906253476">Pri prijavi v Googlove storitve, kot je Gmail ali YouTube, z računom <ph name="USER_EMAIL" /> se lahko z istim računom samodejno prijavite v Chromium</translation>
@@ -156,9 +157,11 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Vaša organizacija si lahko ogleda in upravlja podatke brskanja, na primer zaznamke, zgodovino in gesla. V drugih profilih v Chromiumu si ne more ogledati podatkov brskanja.</translation>
 <translation id="2635452620547538388">Potrdite, da ste to vi, če želite podatke iz Chromiuma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Če želite Geminija v Chromiumu zapustiti ali se vrniti vanj, uporabite bližnjične tipke.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chromium}=1{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="2648074677641340862">Napaka v operacijskem sistemu med namestitvijo. Znova prenesite Chromium.</translation>
 <translation id="2661879430930417727">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
+<translation id="2676569452213089702">Preprost dostop za uporabo Geminija v Chromiumu v napravi, tudi če je Chromium pomanjšan.</translation>
 <translation id="2711502716910134313">Zavihek v Chromiumu</translation>
 <translation id="2718390899429598676">Zaradi večje varnosti bo Chromium šifriral vaše podatke.</translation>
 <translation id="2721354645805494590">Če želite račun Google odstraniti iz Chromiuma, se odjavite</translation>
@@ -311,7 +314,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4334241893986177674">Iskanje po tem posnetku zaslona</translation>
 <translation id="4384331407722351213">Zaženi Chromium, ko se zažene Windows</translation>
 <translation id="4384993550046411228">Nastavite Chromium kot privzeti brskalnik in si zagotovite preprost dostop do funkcij, ki jih poznate, so vam všeč in jim zaupate. Chromium bo pripet v opravilno vrstico za hitri dostop.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Chromium OS.</translation>
+<translation id="4400772909124543403">Na voljo ni nobena posodobitev</translation>
 <translation id="4407044323746248786">Želite vseeno zapreti Chromium?</translation>
 <translation id="4413205837991854510">Vedno pokaži bližnjico za slikovno iskanje</translation>
 <translation id="4415566066719264597">Naj se Chromium izvaja v ozadju</translation>
@@ -350,6 +353,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4746050847053251315">Želite vseeno zapreti Chromium?</translation>
 <translation id="4748217263233248895">Pravkar je bila nameščena posebna varnostna posodobitev za Chromium. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
 <translation id="4771701986670315895">Nedavno niste obiskali tega mesta. Chromium je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
+<translation id="4786083865378785874">Če je Gemini v Chromiumu odprt, stransko podokno ostane odprto pri ustvarjanju novih zavihkov</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4814736265800133385">Uporaba Chromiuma brez računa</translation>
 <translation id="4888717733111232871">Pravilo za dohodni promet za Chromium, ki omogoča promet mDNS.</translation>
@@ -401,6 +405,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="555970465369471303">Chromium zaradi varnosti izklopi optimizacijo JavaScripta, ko prvič obiščete spletno mesto.
 
 Če ta stran ne deluje po pričakovanjih, poskusite omogočiti optimizacijo.</translation>
+<translation id="5575874067957905201">Prikaz Geminija v Chromiumu v menijski vrstici sistema macOS in vklop bližnjičnih tipk</translation>
 <translation id="5579324208890605088">Napaka pri zagonu: Zaženite namestitveni program kot običajni uporabnik, ne kot skrbnik.</translation>
 <translation id="5580770360767802657">Privzeto uporabljajte Chromium in ga pripnite</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
@@ -624,6 +629,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7867198900892795913">Chromiuma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in varnostnih popravkov.</translation>
 <translation id="7872446069773932638">Prenašanje … Še <ph name="SECONDS" /> s.</translation>
 <translation id="7873537467422636035">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
+<translation id="7874369989024033742">Hitro odprite Geminija v Chromiumu, ko ga potrebujete</translation>
 <translation id="7877212753140190672">Vprašajte o tej sliki</translation>
 <translation id="7888981273428720788">Nastavite Chromium kot privzeto možnost</translation>
 <translation id="7934340546140346950">Povezave, ki niso varne, Chromium samodejno nadgradi na HTTPS, ko je to mogoče</translation>
@@ -645,6 +651,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8118331347066725040">Pošiljanje povratnih informacij za iskanje z Googlom Lens</translation>
 <translation id="8133124826068723441">Chromium OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
+<translation id="8161503455832158203">Odprite Geminija v Chromiumu z bližnjično tipko.</translation>
 <translation id="8164014945047474187">Dodatni pogoji storitve za Chromium</translation>
 <translation id="81770708095080097">Ta datoteka je nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="8177472873527554730">Vsebine na strani ni mogoče najti</translation>
@@ -654,6 +661,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8232193495299001329">Chromium ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="8248265253516264921">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="8254601181414348851">Se želite v Chromium prijaviti v novem profilu?</translation>
+<translation id="8277334259226003205">Prikaz Geminija v Chromiumu v sistemski vrstici in vklop bližnjičnih tipk</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vas opozori<ph name="END_LINK" /> glede spletnih mest in prenosov, ki niso varni</translation>
 <translation id="8295827201165805317">Nedavno niste obiskali tega mesta. Chromium je odstranil to dovoljenje: <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Uporabite fotoaparat v aplikaciji Chromium za iOS, da boste lahko nakupovali, prevajali in prepoznavali, kaj je prikazano</translation>
@@ -682,6 +690,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8493179195440786826">Chromium je zastarel</translation>
 <translation id="850264194101621529">Hvala, ker ste izbrali Chromium kot privzeti brskalnik.</translation>
 <translation id="8522801943730206384">Chromium lahko preveri gesla, če jih shranite</translation>
+<translation id="8525579356836940628">Namestitev je prekinjena</translation>
 <translation id="8548787790260785208">Prejmite opozorilo, če Chromium v javni podatkovni kršitvi najde katero od vaših gesel</translation>
 <translation id="8555465886620020932">Napaka storitve: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Nekatere funkcije in razširitve Chromiuma imajo bližnjice. Lahko jih znova vklopite.</translation>

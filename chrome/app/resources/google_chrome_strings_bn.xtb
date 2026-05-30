@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">সেট-আপ সংক্রান্ত সমস্যা: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome যখন সাম্প্রতিক সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
 <translation id="1330562121671411446">ভাষা শনাক্ত করুন</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Google ChromeOS Flex-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="1341711321000856656">অন্য Chrome প্রোফাইল থেকে পাসওয়ার্ড দেখতে, আপনি প্রোফাইল পরিবর্তন করতে পারবেন</translation>
 <translation id="1343830902827845050">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="1356661055722410047">নতুন! আপনি স্ক্রিনে টেক্সট ও ছবি দুটিই অনুবাদ করতে পারবেন</translation>
@@ -241,6 +240,7 @@
 <translation id="345171907106878721">Chrome এর সাথে নিজেকে যোগ করুন</translation>
 <translation id="3453763134178591239">ChromeOS-এর শর্তাবলী</translation>
 <translation id="3503306920980160878">এই সাইটটির সাথে আপনার লোকেশন শেয়ার করার জন্য Chrome কে আপনার লোকেশনের তথ্যে অ্যাক্সেস দিতে হবে</translation>
+<translation id="3539955434060988644">Chrome-এ ছদ্ম&amp;বেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3576528680708590453"><ph name="TARGET_URL_HOSTNAME" /> অ্যাক্সেস করতে অন্য ব্রাউজার খোলার জন্য আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর Google Chrome কনফিগার করেছেন।</translation>
 <translation id="3582972582564653026">আপনার সব ডিভাইস জুড়ে Chrome সিঙ্ক করুন এবং নিজের মতো সাজিয়ে নিন</translation>
 <translation id="3583751698304738917">আপনি আগে থেকেই অন্য Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন</translation>
@@ -636,7 +636,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Google ChromeOS-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="7627609214560473136">আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি ভিজিট করেননি এমন সাইট থেকে Chrome-কে অনুমতি সরাতে দিন।</translation>
 <translation id="7629695634924605473">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chrome আপনাকে জানিয়ে দেবে</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" /> অ্যাক্সেস করতে <ph name="ALTERNATIVE_BROWSER_NAME" /> ব্যবহার করার জন্য আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর Google Chrome কনফিগার করেছে।</translation>

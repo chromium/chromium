@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">تم إغلاق بطاقة العرض الترويجي لإشعارات النصائح</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1045899828449635435">محو البيانات من هذه المواقع أيضًا؟</translation>
+<translation id="1049461303780085993">‏يمكنك تجربة "Gemini في Chrome" للحصول على إجابات لأسئلتك وأفكار رئيسية وغيرها</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1052842760770519282">يتعذّر الوصول إلى بعض كلمات المرور</translation>
 <translation id="1057623954802068161">الانتقال إلى أعلى الصفحة</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
 <translation id="232137538351753795">مرِّر سريعًا من الحافة اليمنى للرجوع</translation>
 <translation id="2323763861024343754">مساحة تخزين الموقع</translation>
+<translation id="2327445548174191329">من جهاز "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2328474416100889417">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم إيقاف جميع روابط الدعوة</translation>
 <translation id="2330186936255788117">المزيد من الإشارات المرجعية</translation>
 <translation id="2332515770639153015">ميزة "الحماية المُحسَّنة للتصفّح الآمن" مفعَّلة</translation>
@@ -835,6 +837,7 @@
 <translation id="4595237294768457124">افتح علامة تبويب جديدة</translation>
 <translation id="4595276580892809760">إرفاق صور من المعرض</translation>
 <translation id="4595805675102978678">‏حدث خطأ في حساب Google</translation>
+<translation id="4599585406846903742">عرض صفحة واحدة</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606559747793337066">‏عندما تطلب المواقع الإلكترونية أو التطبيقات أن يتم تحميل الروابط في صفحاتها مسبقًا بسريّة تامة، سيشفِّر Chrome هذه الصفحات ويحمّلها مُسبقًا من خلال خوادم Google بدون أي ملفات تعريف ارتباط. ويؤدي هذا الإجراء إلى إخفاء هويتك عن الموقع الإلكتروني الذي يتم تحميل صفحاته مُسبقًا.</translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
@@ -1089,6 +1092,7 @@
 <translation id="569536719314091526">ترجمة هذه الصفحة إلى أي لغة من خلال الزر "مزيد من الخيارات"</translation>
 <translation id="5696597120588531049">‏يستطيع Chrome مساعدتك في حماية معلوماتك من عمليات الاختراق والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته صحيحًا.</translation>
+<translation id="5700415746238689851">‏فتح Gemini</translation>
 <translation id="5709213329446699338">يطلب الموقع الإلكتروني <ph name="SITE" /> الاتصال بمنفذ تسلسلي</translation>
 <translation id="5715150588940290235">هل تريد حذف رموز الأمان المحفوظة؟</translation>
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
@@ -1773,6 +1777,7 @@
 <translation id="8271267069224406035">الإبلاغ عن محتوى غير مرغوب فيه</translation>
 <translation id="8277710303010772444">بدء البحث</translation>
 <translation id="8279945625179116733">يتم تأمينها باستخدام "<ph name="APP_NAME" />"</translation>
+<translation id="8280797717392145626">الروابط التي تم تلقّيها</translation>
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8282297628636750033">تطبيق "المظهر الداكن" على المواقع، إن أمكن ذلك</translation>
 <translation id="8282950411412455249">الانتقال إلى إعدادات الأمان</translation>
@@ -1908,6 +1913,7 @@
 <translation id="8863714995118816041">تم منح الأذونات مجددًا للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8872506776304248286">فتح في التطبيق</translation>
+<translation id="8880275451109933094">عرض صفحتين</translation>
 <translation id="8890668505403261809">البحث في علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="8892234476517513962">سبق أن سجّلت الدخول</translation>
 <translation id="8894890673032951011">‫"<ph name="TAB_TITLE" />"، علامة تبويب تسجِّل وسائط وتم اختيارها في "وضع التصفّح المتخفي"</translation>

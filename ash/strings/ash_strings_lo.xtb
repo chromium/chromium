@@ -35,6 +35,7 @@
 <translation id="1088231044944504242">ຊອກຫາ <ph name="CATEGORY" />, ໄຟລ໌, ແອັບ ແລະ ອື່ນໆຂອງທ່ານ. ໃຊ້ປຸ່ມລູກສອນເພື່ອນຳທາງແອັບຂອງທ່ານ.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + ລູກສອນລົງ</translation>
 <translation id="1094756674036064790">ປິດ Bluetooth ບໍ?</translation>
+<translation id="109647177154844434">ການຖອນການຕິດຕັ້ງ Parallels Desktop ຈະລຶບຮູບ Windows ຂອງທ່ານ. ນີ້ຮວມທັງແອັບພລິເຄຊັນ, ການຕັ້ງຄ່າ ແລະ ຂໍ້ມູນຂອງມັນນຳ. ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການສືບຕໍ່?</translation>
 <translation id="1104084341931202936">ສະແດງການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="1104621072296271835">ອຸປະກອນຂອງທ່ານໃຊ້ໄດ້ດີຍິ່ງຂຶ້ນຮ່ວມກັນ</translation>
 <translation id="1111021433905331574">ທ່ານສາມາດປ່ຽນສີຂອງໄຟແປ້ນພິມຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າ &gt; <ph name="APP_TITLE" /></translation>
@@ -80,6 +81,7 @@
 <translation id="1210557957257435379">ການບັນທຶກໜ້າຈໍ</translation>
 <translation id="121097972571826261">ໄປໜ້າເທື່ອລະຄຳ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, ແອັບ Play Store</translation>
+<translation id="1223484782328004593"><ph name="APP_NAME" /> ຈຳເປັນຕ້ອງມີໃບອະນຸຍາດ</translation>
 <translation id="1225748608451425081">Chromebook ຂອງທ່ານຖືກລັອກໄວ້ເນື່ອງຈາກບັນຫາທີ່ຮູ້ແລ້ວ. ທ່ານຈະສາມາດເຂົ້າສູ່ລະບົບໄດ້ຫຼັງຈາກ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ຢຸດການເລືອກ</translation>
 <translation id="1235458158152011030">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
@@ -90,6 +92,7 @@
 <translation id="1244265436519979884">ການກູ້ຄືນຂໍ້ມູນຂອງ Linux ພວມດຳເນີນຢູ່ໃນປັດຈຸບັນ</translation>
 <translation id="1245476784081715330">ດີຫຼາຍ!</translation>
 <translation id="124678866338384709">ປິດແຖບປັດຈຸບັນ</translation>
+<translation id="1246863218384630739">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="VM_NAME" /> ໄດ້: URL ຮູບພາບຕອບລະຫັດຜິດພາດ <ph name="HTTP_ERROR" /> ກັບມາ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1246890715821376239">ແອັບທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1247372569136754018">ໄມໂຄຣໂຟນ (ພາຍໃນ)</translation>
 <translation id="1247519845643687288">ແອັບຫຼ້າສຸດ</translation>
@@ -103,6 +106,7 @@
 <translation id="1275285675049378717">ການສາກໄຟ <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
 <translation id="1276975447697633661">ເລືອກໄຟລ໌, ແລ້ວກົດ <ph name="KEY" /></translation>
+<translation id="1276994519141842946">ບໍ່ສາມາດຖອນຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ຊອກຫາໂທລະສັບ</translation>
 <translation id="1287002645302686982">ມີໂຕະທີ່ບັນທຶກໄວ້ຊື່ <ph name="DESK_TEMPLATE_NAME" /> ຢູ່ກ່ອນແລ້ວ</translation>
@@ -110,6 +114,8 @@
 <translation id="1289185460362160437">ກັບຄືນມາ <ph name="COME_BACK_DAY_OF_WEEK" /> ໃນເວລາ <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
 <translation id="1290982764014248209">ຍ້າຍ <ph name="DRAGGED_APP" /> ໄປໃສ່ໂຟນເດີ <ph name="FOLDER_NAME" />.</translation>
+<translation id="1291119821938122630">ຂໍ້ກຳນົດການບໍລິການຂອງ <ph name="MANAGER" /></translation>
+<translation id="1292849930724124745">ສຽບບັດອັດສະລິຍະເພື່ອສືບຕໍ່ຢູ່ໃນລະບົບ</translation>
 <translation id="1293264513303784526">ອຸ​ປະ​ກອນ USB-C (​ຊ່ອງ​ຊ້າຍ)</translation>
 <translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -128,6 +134,7 @@
 <translation id="132346741904777634">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍເທິງແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="132415371743256095">ປິດ <ph name="DESK_NAME" /> ແລະ ໜ້າຈໍ</translation>
 <translation id="1333308631814936910">ເຊື່ອມຕໍ່ <ph name="DISPLAY_NAME" /> ແລ້ວ</translation>
+<translation id="1335640173511558774"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ແກ້ໄຂ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS Flex.</translation>
 <translation id="1338950911836659113">ກໍາລັງລຶບ​...</translation>
 <translation id="1340378040547539434">ຂະຫຍາຍອອກໃນໜ້າ</translation>
 <translation id="1341651618736211726">ລົ້ນ</translation>
@@ -136,6 +143,7 @@
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1350494136075914725">ດຳເນີນຢູ່ · ປ່ຽນເປັນແຖບ</translation>
 <translation id="1351937230027495976">ຫຍໍ້ເມນູ</translation>
+<translation id="1355088139103479645">ລຶບຂໍ້ມູນທັງໝົດບໍ?</translation>
 <translation id="1360220746312242196">ເມື່ອຊອກຫາໃນໜ້າ, ໃຫ້ເຂົ້າໄປລາຍການກ່ອນໜ້າທີ່ກົງກັນກັບການຊອກຫາ</translation>
 <translation id="1360788414852622716">ກຳລັງປິດການນຳໃຊ້ໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="1364382257761975320">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃຊ້ລາຍນິ້ວມືຂອງທ່ານ</translation>
@@ -143,6 +151,7 @@
 <translation id="1372545819342940910">ບັນທຶກໂຕະໄວ້ພາຍຫຼັງ</translation>
 <translation id="1383597849754832576">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ສຽງເວົ້າໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
+<translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ຈະຣີສະຕາດເມື່ອການອັບເດດສຳເລັດແລ້ວ.</translation>
 <translation id="1390113502208199250">ທ່ານຈະຕ້ອງຣີເຊັດອຸປະກອນນີ້ໃຫ້ເປັນຄ່າຈາກໂຮງງານເພື່ອນຳໃຊ້ຄຸນສົມບັດອັບເກຣດ Chrome Education</translation>
 <translation id="1391102559483454063">ເປີດ</translation>
 <translation id="1394698770495054737">ມົວເຕັມ</translation>
@@ -161,6 +170,7 @@
 <translation id="1421166164855200062">ກຸ່ມແນະນຳ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ຖືກບລັອກໄວ້ຢູ່</translation>
+<translation id="142765311413773645">ໃບອະນຸຍາດ <ph name="APP_NAME" /> ໝົດອາຍຸແລ້ວ</translation>
 <translation id="1435537621343861112">ບໍ່ສາມາດເລີ່ມການປ້ອນຂໍ້ມູນດ້ວຍສຽງໄດ້. ໄມຂອງທ່ານປິດຢູ່.</translation>
 <translation id="1445031758921122223">ດາວໂຫຼດໄຟລ໌ການຄວບຄຸມດ້ວຍໃບໜ້າແລ້ວ</translation>
 <translation id="1447907279406111651">ດຳເນີນຢູ່ · ສິ້ນສຸດ <ph name="END_TIME" /></translation>
@@ -176,16 +186,19 @@
 <translation id="147310119694673958">ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ 1 ອຸປະກອນ.</translation>
 <translation id="1476595624592550506">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານສຽບບັດອັດສະລິຍະຄາໄວ້.</translation>
 <translation id="1479685784053141667">ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1479909375538722835">ເມນູການຊ່ວຍເຂົ້າເຖິງແບບລອຍ</translation>
 <translation id="1483493594462132177">ສົ່ງ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">ດ້ວຍການປ້ອນຂໍ້ມູນດ້ວຍສຽງ, ທ່ານຈະສາມາດພິມໂດຍໃຊ້ສຽງຂອງທ່ານໄດ້. ກົດປຸ່ມການປ້ອນຂໍ້ມູນດ້ວຍສຽງ ຫຼື ເລືອກໄອຄອນໄມໂຄຣໂຟນຢູ່ລຸ່ມສຸດຂອງໜ້າຈໍຕອນທີ່ທ່ານຢູ່ຊ່ອງຂໍ້ມູນຂໍ້ຄວາມ. ຕັ້ງພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງຂອງທ່ານເປັນ <ph name="LANGUAGE" /> ແລ້ວ. ການເວົ້າຈະຖືກສົ່ງໄປໃຫ້ Google ປະມວນຜົນ. ທ່ານສາມາດປ່ຽນພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="1487931858675166540">ສະຫຼັບ <ph name="FIRST_ITEM_TITLE" /> ກັບ <ph name="SECOND_ITEM_TITLE" /> ແລ້ວ</translation>
+<translation id="1494429729245089920">ເຄື່ອງຈັກສະເໝືອນ "<ph name="VM_NAME" />" ມີຢູ່, ແຕ່ປາກົດວ່າບໍ່ແມ່ນເຄື່ອງຈັກສະເໝືອນ <ph name="APP_NAME" /> ທີ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1500926532737552529">ສະແດງການແນະນຳທັງໝົດ</translation>
 <translation id="1501946871587957338">ປ່ຽນແຫຼ່ງທີ່ມາຂອງສຽງບໍ?</translation>
 <translation id="1505542291183484463">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນລົງລຸ່ມ</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
+<translation id="1515163294334130951">ເປີດໃຊ້</translation>
 <translation id="1519090060276706457">ການກູ້ຄືນໜ້າຈໍໃຊ້ເວລາດົນກວ່າທີ່ຄາດໄວ້</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບໜຶ່ງແອັບ}other{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບ # ແອັບ}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
@@ -211,6 +224,7 @@
 <translation id="1574691582236909946">ເລືອກດ້າມຈັບຂອບເບື້ອງຊ້າຍແລ້ວ, ໃຊ້ປຸ່ມລູກສອນເພື່ອຍ້າຍ</translation>
 <translation id="1576623706766186887">ຂະຫຍາຍອອກເມື່ອແວ່ນຂະຫຍາຍເປີດຢູ່</translation>
 <translation id="1578558981922970608">ບັງຄັບປິດ</translation>
+<translation id="1580772913177567930">ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="1582946770779745370">ມີແຜງໜ້າປັດເກມໃຫ້ໃຊ້. ກົດ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, ຈາກນັ້ນ <ph name="LAUNCHER_KEY_NAME" /> + g ຕອນໃດກໍໄດ້ເພື່ອເປີດ</translation>
 <translation id="1586324912145647027">ໄປຫາໂຕະທີ 1 ຫາ 8</translation>
 <translation id="158838227375272121">ເວັບໄຊ Google ຫ້ອງຮຽນ</translation>
@@ -361,6 +375,7 @@
 <translation id="2048554637254265991">ເກີດຜິດພາດໃນການເລີ່ມຕົວຈັດການກ່ອງບັນຈຸ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="2048653237708779538">ຄຳສັ່ງບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="2049240716062114887">ຊື່ໂຕະໄດ້ຖືກປ່ຽນເປັນ <ph name="DESK_NAME" /> ແລ້ວ</translation>
+<translation id="2053312383184521053">ຂໍ້ມູນສະພາວະຢູ່ຊື່ໆ</translation>
 <translation id="2064048859448024834">ເປີດຕົວຢ່າງກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="2065098273523946419">ລິ້ງສຶກສາເພີ່ມເຕີມ. ປ່ຽນເສັ້ນທາງໄປຫາໂປຣແກຣມທ່ອງເວັບເມື່ອເປີດການນຳໃຊ້</translation>
 <translation id="2067220651560163985">ສະແດງອຸນຫະພູມເປັນເຊວຊຽສ</translation>
@@ -378,6 +393,7 @@
 <translation id="2114145607116268663">ຕິດຕັ້ງບໍ່ໄດ້, ຈຳເປັນຕ້ອງປິດ​ເປີດ​ໃໝ່. ກະລຸນາຣີສະຕາດຄອມພິວເຕີຂອງທ່ານ ແລະ ລອງໃໝ່. ລະຫັດຂໍ້ຜິດພາດແມ່ນ <ph name="ERROR" />.</translation>
 <translation id="2115680839221566783">ແບັດເຕີຣີເຫຼືອ <ph name="PERCENTAGE" />%. ຢຸດການສາກຊົ່ວຄາວ.</translation>
 <translation id="2126242104232412123">ພື້ນທີ່ເຮັດວຽກໃໝ່</translation>
+<translation id="212862741129535676">​ເປີ​ເຊັນການຄອບຄອງສະພາວະຄວາມຖີ່</translation>
 <translation id="2132302418721800944">ບັນທຶກໜ້າຈໍເຕັມ</translation>
 <translation id="2135456203358955318">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
@@ -402,6 +418,7 @@
 <translation id="2223384056430485343">ຢູ່ໃນໂໝດແບ່ງໜ້າຈໍ</translation>
 <translation id="2224075387478458881">ບໍ່ອະນຸຍາດການບັນທຶກໜ້າຈໍເມື່ອສະແດງເນື້ອຫາທີ່ໄດ້ຮັບການປົກປ້ອງຢູ່</translation>
 <translation id="2227179592712503583">ລຶບການແນະນຳອອກ</translation>
+<translation id="2238379619048995541">ຂໍ້ມູນສະພາບຄວາມຖີ່</translation>
 <translation id="2248634276911611268">ເປີດລິ້ງໃນແຖບໃໝ່ ແລະ ສະຫຼັບໄປຫາແຖບໃໝ່ນີ້</translation>
 <translation id="2251809247798634662">ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="2253808149208613283">ຕິດຕັ້ງແອັບເພື່ອປັບແຕ່ງອຸປະກອນນີ້</translation>
@@ -433,6 +450,7 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , ໝວດໝູ່ຜົນ​ການຊອກຫາ</translation>
 <translation id="2322173485024759474">ຖອຍກັບເທື່ອລະຕົວໜັງສື</translation>
 <translation id="2326112202058075478">ສະແດງອີໂມຈິເພີ່ມເຕີມ</translation>
+<translation id="2328561734797404498">ກະລຸນາຣິສະຕາດອຸປະກອນຂອງທ່ານເພື່ອໃຊ້ <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Chromebook ຫຼື ອຸປະກອນ Bluetooth ຂອງທ່ານກຳລັງໃຊ້ Bluetooth ເວີຊັນເກົ່າ. ກະລຸນາໃຊ້ໄມໂຄຣໂຟນໃນເຄື່ອງເພື່ອຄຸນນະພາບສຽງທີ່ດີຂຶ້ນ.</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">ແຕະປຸ່ມປາກກາຢູ່ໃນຖ້ານເພື່ອຈົດບັນທຶກ, ຖ່າຍຮູບໜ້າຈໍ, ໃຊ້ຕົວຊີ້ເລເຊີ ຫຼື ແວ່ນຂະຫຍາຍ.</translation>
@@ -461,8 +479,10 @@
 <translation id="2389423187722941333">ເປີດ/ປິດ Gemini</translation>
 <translation id="2390347491606624519">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບພຣັອກຊີໄດ້, ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງ</translation>
 <translation id="2392659840443812875">ບໍ່ມີຮັອດສະປອດທີ່ໃຊ້ໄດ້. ກວດສອບໃຫ້ແນ່ໃຈວ່າອຸປະກອນຂອງທ່ານຢູ່ໃກ້ຄຽງ ແລະ ເປີດ Bluetooth ຢູ່.</translation>
+<translation id="2393136602862631930">ຕັ້ງຄ່າ <ph name="APP_NAME" /> ໃນ Chromebook ຂອງທ່ານ</translation>
 <translation id="2397416548179033562">ສະ​ແດງ​ເມ​ນູ​ Chrome</translation>
 <translation id="240006516586367791">ການຄວບຄຸມມີເດຍ</translation>
+<translation id="2400664245143453337">ຈໍາເປັນຕ້ອງອັບເດດໃນທັນທີ</translation>
 <translation id="240155812475001919">Google Doc</translation>
 <translation id="2402411679569069051">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃຊ້ລາຍນິ້ວມືຂອງທ່ານ ຫຼື ປົດລັອກໂທລະສັບທ່ານ</translation>
 <translation id="240545663114741956">ກົດ <ph name="ACCELERATOR" /> ສອງເທື່ອເພື່ອອອກຈາກລະບົບ.</translation>
@@ -494,6 +514,7 @@
 <translation id="2473177541599297363">ຢືນຢັນຄວາມລະອຽດ</translation>
 <translation id="2475783092753560388">ແຊກ <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
+<translation id="2476974672882258506">ປິດ Windows ເພື່ອຖອນການຕິດຕັ້ງ <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478076885740497414">ຕິດຕັ້ງແອັບ</translation>
 <translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
@@ -537,6 +558,7 @@
 <translation id="2573588302192866788">ບໍ່ສາມາດເຊື່ອມຕໍ່ຫາ <ph name="NAME" /> ໄດ້</translation>
 <translation id="2575685495496069081">ປິດນຳໃຊ້ການເຂົ້າສູ່ລະບົບແບບຫຼາຍບັນຊີ</translation>
 <translation id="2579264398927991698">ການອັບເດດເຟີມແວ</translation>
+<translation id="2586561813241011046">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
 <translation id="2596078834055697711">ຖ່າຍພາບໜ້າຈໍ</translation>
 <translation id="2598725286293895280">ແອັບທີ່ບໍ່ຮອງຮັບໃນໂຕະ</translation>
@@ -560,6 +582,7 @@
 <translation id="2653659639078652383">ສົ່ງ</translation>
 <translation id="2658778018866295321">ຄລິກ ແລ້ວລາກ</translation>
 <translation id="2665788051462227163">ບໍ່ມີ <ph name="UNAVAILABLE_APPS_ONE" /> ແລະ <ph name="UNAVAILABLE_APPS_TWO" /> ຢູ່ອຸປະກອນນີ້.</translation>
+<translation id="2669241540496514785">ບໍ່ສາມາດເປີດ <ph name="APP_NAME" /> ໄດ້</translation>
 <translation id="2670350619068134931">ອະນິເມຊັນທີ່ຫຼຸດລົງແລ້ວ</translation>
 <translation id="2672142220933875349">ໄຟລ​໌ crx ບໍ່​ດີ​, ການແຍກອອກບໍ່ສໍາ​ເລັດ​.</translation>
 <translation id="2673968385134502798">ເກມ</translation>
@@ -578,6 +601,7 @@
 <translation id="2705001408393684014">ເປີດໄມ. <ph name="STATE_TEXT" /></translation>
 <translation id="2706304388244371417">ສຳຮອງຂໍ້ມູນໄປໃສ່ Google Drive. ກູ້ຄືນຂໍ້ມູນ ຫຼື ປ່ຽນອຸປະກອນໄດ້ຢ່າງງ່າຍດາຍທຸກເວລາ. ຂໍ້ມູນສຳຮອງນີ້ຈະຮວມທັງຂໍ້ມູນແອັບ. ລະບົບຈະອັບໂຫຼດຂໍ້ມູນສຳຮອງໄປໃສ່ Google ແລະ ເຂົ້າລະຫັດໂດຍໃຊ້ລະຫັດຜ່ານບັນຊີ Google ຂອງລູກຂອງທ່ານ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການສຳຮອງຂໍ້ມູນ<ph name="BEGIN_LINK1_END" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ຂຶ້ນ</translation>
+<translation id="270921614578699633">ສະເລ່ຍເກີນ</translation>
 <translation id="2710101514844343743">ຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິນິໄສ</translation>
 <translation id="2710984741481549981">ລັອກໜ້າຈໍ</translation>
 <translation id="2714393097308983682">ຮ້ານຄ້າ Google Play</translation>
@@ -695,6 +719,7 @@
 <translation id="3026897869154397692">ເພີ່ມໃສ່ປະຕິທິນແລ້ວ</translation>
 <translation id="3033545621352269033">ເປີດ</translation>
 <translation id="3033912566804961911">ຮວມກັບ <ph name="DESK_NAME" /></translation>
+<translation id="3036327949511794916">ກຳນົດເວລາສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນກາຍແລ້ວ.</translation>
 <translation id="3039491566278747710">ຕິດຕັ້ງນະໂຍບາຍອອບລາຍໃນອຸປະກອນບໍ່ສຳເລັດ.</translation>
 <translation id="3039939407102840004">ແບັດເຕີຣີປາກກາເຫຼືອ <ph name="PERCENTAGE" /> ເປີເຊັນ.</translation>
 <translation id="304097922505898963">ເປີດແອັບຄີລັດ</translation>
@@ -754,6 +779,7 @@
 <translation id="3176221688814061633">Chromebook ຫຼື ອຸປະກອນ Bluetooth ຂອງທ່ານກຳລັງໃຊ້ Bluetooth ເວີຊັນເກົ່າ. ເປີດໃຊ້ Bluetooth ຄວາມລະອຽດສູງສຸດ ຫຼື ໃຊ້ໄມໂຄຣໂຟນພາຍໃນເພື່ອຄຸນນະພາບສຽງທີ່ດີຂຶ້ນ.</translation>
 <translation id="3181441307743005334">ການຣິສະຕາດອາດຈະໃຊ້ເວລາຄາວໜຶ່ງ</translation>
 <translation id="3183700187146209259">ບໍ່ສາມາດຕິດຕັ້ງຊອບແວເຄື່ອງສະແກນໄດ້</translation>
+<translation id="3188465121994729530">ການ​​ຍ້າຍ​ໂດຍ​ສະ​ເລ່ຍ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ເຊື່ອມຕໍ່ກັບໜຶ່ງອຸປະກອນແລ້ວ}other{ເຊື່ອມຕໍ່ກັບ # ອຸປະກອນແລ້ວ}}</translation>
 <translation id="3203405173652969239">ເປີດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດ</translation>
 <translation id="3204648577100496185">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ອາດຖືກລຶບອອກຈາກອຸປະກອນນີ້</translation>
@@ -837,10 +863,14 @@
 <translation id="3444385531800624797">ກຳລັງໂຫຼດຜົນການຊອກຫາ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3445925074670675829">ອຸ​ປະ​ກອນ USB-C</translation>
+<translation id="3446274660183028131">ກະລຸນາເປີດໃຊ້ Parallels Desktop ເພື່ອຕິດຕັ້ງ Windows.</translation>
 <translation id="3449393517661170867">ໜ້າຈໍແຖບໃໝ່</translation>
+<translation id="3450157232394774192">ເປີເຊັນການຄອບຄອງສະພາວະຢູ່ຊື່ໆ</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານຕ້ອງເຊື່ອມຕໍ່ກັບ Wi-Fi ຕອນນີ້ ແລະ ດາວໂຫຼດການອັບເດດ.</translation>
 <translation id="3454555520521576458">ປ່ຽນຂະໜາດໄດ້</translation>
 <translation id="3455468639467374593">ແມ່ແບບ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">ມີ 1 ອຸປະກອນເຊື່ອມຕໍ່ກັບຮັອດສະປອດ <ph name="DEVICE_NAME" /></translation>
+<translation id="3458451003193188688">ບໍ່ສາມາດຕິດຕັ້ງເຄື່ອງສະເໝືອນຈິງໄດ້ ເນື່ອງຈາກເຄືອຂ່າຍຜິດພາດ. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">ຣີເຊັດລະດັບການຊູມ</translation>
 <translation id="3465223694362104965">ແປ້ນພິມອື່ນໄດ້ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້ແລ້ວນັບແຕ່ທ່ານເຂົ້າສູ່ລະບົບຄັ້ງສຸດທ້າຍ. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າທ່ານເຊື່ອຖືແປ້ນພິມນີ້ກ່ອນທີ່ທ່ານຈະໃຊ້ມັນ.</translation>
 <translation id="3465356146291925647">ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
@@ -859,6 +889,7 @@
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນຂຶ້ນເທິງ</translation>
 <translation id="3517037892157925473">ອັບເດດໜ້າວຽກຫຼ້າສຸດ: <ph name="TIME" />, <ph name="DATE" />.</translation>
+<translation id="3522088408596898827">ພື້ນທີ່ດິສກ໌ເຫຼືອໜ້ອຍຫຼາຍ. ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງໃນດິສກ໌ແລ້ວລອງໃໝ່.</translation>
 <translation id="352245152354538528">{0,plural, =1{ອັບເດດອຸປະກອນພາຍໃນ 1 ນາທີ}other{ອັບເດດອຸປະກອນພາຍໃນ # ນາທີ}}</translation>
 <translation id="3522979239100719575">ກຳລັງຊອກຫາໂປຣໄຟລ໌ທີ່ສາມາດໃຊ້ໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="3526440770046466733">ເປີດລິ້ງໃນແຖບໃໝ່ ແລະ ຢູ່ໃນແຖບປັດຈຸບັນຕໍ່ໄປ</translation>
@@ -1012,6 +1043,7 @@
 <translation id="3891340733213178823">ກົດ Ctrl+Shift+Q ສອງຄັ້ງເພື່ອອອກຈາກລະບົບ.</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="3893630138897523026">ChromeVox (ຄໍາ​ຄິດ​ເຫັນ​ທີ່ເວົ້າມາ​)</translation>
+<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">ໝຸນຈໍ 90 ອົງສາຕາມເຂັມໂມງ</translation>
 <translation id="3900355044994618856">ເຊດຊັນຂອງທ່ານຈະສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">ກໍາລເຊື່ອມຕໍ່ກັບ <ph name="NAME" /></translation>
@@ -1109,6 +1141,7 @@
 <translation id="4181841719683918333">ພາສາ</translation>
 <translation id="4185671786623711291">ຍ້າຍໜ້າຈໍທີ່ເປີດນຳໃຊ້ຢູ່ໄປໃສ່ໂຕະທາງຂວາ</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ຊອກຫາ</translation>
+<translation id="4187424053537113647">ກຳລັງຕັ້ງຄ່າ <ph name="APP_NAME" />...</translation>
 <translation id="4189826113259617332">ບັນທຶກທຸກໜ້າທີ່ເປີດໃນໜ້າຈໍປັດຈຸບັນເປັນບຸກມາກໃນໂຟນເດີໃໝ່</translation>
 <translation id="4190143678693626113">ປະຢັດເວລາໂດຍການຕອບກັບຫາຂໍ້ຄວາມຂອງໂທລະສັບທ່ານຈາກ Chromebook ຂອງທ່ານ</translation>
 <translation id="4190780880566297084">ປິດການຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
@@ -1122,6 +1155,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ບໍ່ສາມາດໃຊ້ໄດ້.</translation>
 <translation id="4201051445878709314">ສະແດງເດືອນກ່ອນນີ້</translation>
 <translation id="4209973997261364186">ເປີດໃຊ້ Wi-Fi ແລ້ວ</translation>
+<translation id="4210048056321123003">ກຳລັງດາວໂຫຼດເຄື່ອງຈຳລອງສະເໝືອນຈິງ</translation>
 <translation id="4212246570487010370">ສືບຕໍ່ທ່ອງເວັບ</translation>
 <translation id="4212472694152630271">ປ່ຽນໄປໃຊ້ PIN</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, ປຸ່ມເປີດປິດ, <ph name="STATE" /></translation>
@@ -1139,6 +1173,8 @@
 <translation id="4249248555939881673">ກໍາລັງລໍ​ຖ້າ​ການ​ເຊື່ອມ​ຕໍ່​ເຄືອ​ຂ່າຍ...</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="425364040945105958">ບໍ່ມີ SIM</translation>
+<translation id="425573743389990240">ອັດຕາປ່ອຍໃນແບັດເຕີຣີເປັນວັດຕ໌ (ຄ່າລົບໝາຍຄວາມວ່າ ແບັດເຕີຣີກໍາລັງສາກຢູ່)</translation>
+<translation id="4259388776256904261">ຂັ້ນຕອນນີ້ຈະໃຊ້ເວລາເລັກນ້ອຍ</translation>
 <translation id="4261870227682513959">ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່</translation>
 <translation id="4264977415328155183">, ຫຍໍ້ລົງແລ້ວ</translation>
 <translation id="4265259722091164182">ຕົວພິມໃຫຍ່ນຳໜ້າ</translation>
@@ -1191,6 +1227,7 @@
 <translation id="4381031910344220229">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນໃຫ້ <ph name="APP_NAME" /> ແລະ ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="4382340674111381977">ກັບຄືນຫາໜ້າຜ່ານມາ</translation>
 <translation id="4389184120735010762">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
+<translation id="439358628917130594"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກຳນົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກຳນົດບໍລິການເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ປ່ຽນແປງ ຫຼື ຈຳກັດຂໍ້ກຳນົດຂອງ ChromiumOS.</translation>
 <translation id="4394466652057229831">ຄລິກຂວາເພື່ອສະຫຼຸບ</translation>
 <translation id="439598569299422042">ຢຸດຊົ່ວຄາວແລ້ວ, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">ອຸປະກອນຂອງທ່ານປິດເຄື່ອງຢ່າງບໍ່ຖືກຕ້ອງ. ຣີສະຕາດ Linux ເພື່ອໃຊ້ແອັບ Linux.</translation>
@@ -1227,6 +1264,7 @@
 ເຊື່ອມຕໍ່ 1 ອຸປະກອນແລ້ວ.</translation>
 <translation id="4477892968187500306">ອຸປະກອນນີ້ອາດຈະປະກອບມີແອັບທີ່ບໍ່ໄດ້ຜ່ານການຢັ້ງຢືນຈາກ Google.</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
+<translation id="4479877282574735775">ກຳລັງກຳນົດຄ່າເຄື່ອງສະເໝືອນຈິງ. ນີ້ອາດຈະໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="4481530544597605423">ອຸປະກອນທີ່ບໍ່ໄດ້ຈັບຄູ່ກັນ</translation>
 <translation id="4485506555414638855">ປິດການຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ, ການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
 <translation id="4491109536499578614">ຮູບ​</translation>
@@ -1348,6 +1386,7 @@
 <translation id="479989351350248267">ຄົ້ນ​ຫາ</translation>
 <translation id="4804818685124855865">ຕັດເຊື່ອມຕໍ່</translation>
 <translation id="4806631651704497161">ມົວໜ້ອຍ</translation>
+<translation id="4809079943450490359">ຄຳແນະນຳຈາກຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ:</translation>
 <translation id="4813311884204119883">ລາກລິ້ງໄປຫາພື້ນທີ່ຫວ່າງເປົ່າຢູ່ລາຍແຖບ</translation>
 <translation id="4814539958450445987">ໜ້າຈໍການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="481455355267255546">ຕໍ່ໄປ</translation>
@@ -1386,6 +1425,7 @@
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
+<translation id="492363500327720082">ກໍາລັງຖອນການຕິດຕັ້ງ <ph name="APP_NAME" />...</translation>
 <translation id="492453977506755176">ປຸ່ມສຳລັບໂໝດຖ່າຍຮູບ</translation>
 <translation id="4925542575807923399">ຜູ້ຄຸ້ມຄອງບັນຊີນີ້ຕ້ອງການບັນຊີນີ້ໃຫ້ເປັນບັນຊີລົງຊື່ເຂົ້າ​ໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງ​ເວລາ​ເຂົ້າລະບົບຫຼາຍອັນ.</translation>
 <translation id="493076006037866439">ຊູມອອກຈາກໜ້າຈໍ</translation>
@@ -1460,6 +1500,7 @@
 <translation id="5117590920725113268">ສະ​ແດງ​ເດືອນ​ຕໍ່​ໄປ</translation>
 <translation id="5121628974188116412">ໄປຫາສ່ວນລຸ່ມຂອງໜ້າ</translation>
 <translation id="5122517996953421795">ຕົວຢ່າງ <ph name="DESK_NAME" />. ໂຕະທີ່ບໍ່ໄດ້ໃຊ້.</translation>
+<translation id="5127986747308934633">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງຄວບຄຸມອຸປະກອນຂອງທ່ານ</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
 <translation id="5137349216872139332">ການເຊື່ອມຕໍ່ຮັອດສະປອດພ້ອມໃຊ້ບໍ່ສຳເລັດ</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ຊອກຫາ</translation>
@@ -1472,6 +1513,7 @@
         <ph name="BEGIN_PARAGRAPH2" />ການປິດຄຸນສົມບັດນີ້ຈະບໍ່ສົ່ງຜົນຕໍ່ຄວາມສາມາດຂອງອຸປະກອນຂອງທ່ານໃນການສົ່ງຂໍ້ມູນທີ່ຈຳເປັນຕໍ່ບໍລິການສຳຄັນ ເຊັ່ນ: ການອັບເດດລະບົບ ແລະ ການຮັກສາຄວາມປອດໄພ.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />ເຈົ້າຂອງສາມາດຄວບຄຸມຄຸນສົມບັດນີ້ໄດ້ຈາກການຕັ້ງຄ່າ &gt; ຂັ້ນສູງ &gt; ສົ່ງຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ໃຫ້ Google ໂດຍອັດຕະໂນມັດ.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />ຫາກເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມຂອງທ່ານໄວ້, ລະບົບອາດບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານສາມາດເບິ່ງ ແລະ ລຶບຂໍ້ມູນຂອງທ່ານ, ຮວມທັງປ່ຽນແປງການຕັ້ງຄ່າບັນຊີຂອງທ່ານໄດ້ຢູ່ account.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5162905305237671850">ບລັອກ <ph name="DEVICE_TYPE" /> ແລ້ວ</translation>
 <translation id="5163434717504750796">ສຸຂະພາບແບັດເຕີຣີ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ນັບຮອບວຽນ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ບັນທຶກໂຕະເປັນແມ່ແບບ</translation>
 <translation id="5168181903108465623">ອຸປະກອນຄາສທ໌ທີ່ມີໃຫ້</translation>
@@ -1577,10 +1619,12 @@
 <translation id="543584294741034249">ທ່ານສາມາດເຊື່ອມຕໍ່ຈໍສະແດງຜົນພາຍນອກໄດ້ສູງສຸດ <ph name="DISPLAY_LIMIT" /> ຈໍ.</translation>
 <translation id="5442228125690314719">ເກີດຄວາມຜິດພາດໃນການສ້າງຮູບດິສກ໌. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="544691375626129091">ຜູ້ໃຊ້ທີ່ມີຢູ່ຄົນອື່ນຖືກເອົາເພີ່ມເຂົ້າພາກນີ້ແລ້ວ.</translation>
+<translation id="5457113250005438886">ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="54609108002486618">ຖືກຈັດການ</translation>
 <translation id="5460938382730614333">ເປີດໃຊ້ຕົວໝາຍແລ້ວ.</translation>
 <translation id="5463129623250377817">ຕັດເນື້ອຫາທີ່ເລືອກໃສ່ຄລິບບອດ</translation>
 <translation id="5465662442746197494">ຕ້ອງ​ການ​ຄວາມຊ່ວຍ​ເຫຼືອບໍ​?</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານຕ້ອງເຊື່ອມຕໍ່ກັບ Wi-Fi ຕອນນີ້ ແລະ ດາວໂຫຼດການອັບເດດ. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).</translation>
 <translation id="547979256943495781">ຊັ້ນວາງຢູ່ເບື້ອງຂວາ</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> ຫຼື <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5482873136202102190">, +</translation>
@@ -1620,10 +1664,12 @@
 <translation id="5578188167649348993">ໜ່ວຍຄວາມຈຳ</translation>
 <translation id="5580000943347215299">ຫ້ອງສະໝຸດ</translation>
 <translation id="5581972110672966454">ບໍ່ສາມາດນຳອຸປະກອນເຂົ້າຮ່ວມໂດເມນໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ເຈົ້າຂອງ ຫຼື ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
+<translation id="5585898376467608182">ອຸປະກອນຂອງທ່ານມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນເຫຼືອໜ້ອຍ. ຈຳເປັນຕ້ອງມີພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ <ph name="MINIMUM_SPACE" /> ເພື່ອໃຊ້ <ph name="APP_NAME" />. ເພື່ອເພີ່ມພື້ນທີ່ຫວ່າງ, ກະລຸນາລຶບໄຟລ໌ຕ່າງໆອອກຈາກອຸປະກອນ.</translation>
 <translation id="5586388332127302891">ເປີດການນຳໃຊ້ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ. ກົດ <ph name="ACCELERATOR" /> ອີກເທື່ອໜຶ່ງເພື່ອສະຫຼັບເປັນປິດ.</translation>
 <translation id="5587506661873751671">ກຳລັງດາວໂຫຼດ <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">ລາກເພື່ອເລືອກພື້ນທີ່ເພື່ອຖ່າຍຮູບ</translation>
 <translation id="5590609058453685222">ແຈ້ງເຕືອນໄມຖືກປິດແລ້ວ. ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກທ່ານເວົ້າໃນລະຫວ່າງທີ່ປິດສຽງຢູ່.</translation>
+<translation id="5592595402373377407">ບໍ່ມີຂໍ້​ມູນພຽງ​ພໍ​ເທື່ອ​.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">ໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
@@ -1690,6 +1736,7 @@
 <translation id="5767730327234918501">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານປິດຮັອດສະປອດໄວ້.</translation>
 <translation id="5769373120130404283">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="5770004650349728202">ເປີດຄຸນສົມບັດເລືອກເພື່ອເວົ້າ</translation>
+<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> ອະນຸຍາດໃຫ້ທ່ານເອີ້ນໃຊ້ແອັບ Windows® ໃນ Chromebook ຂອງທ່ານ. ແນະນຳໃຫ້ມີພື້ນທີ່ຫວ່າງ <ph name="MINIMUM_SPACE" /> ສຳລັບການຕິດຕັ້ງ.</translation>
 <translation id="5773950591113557721">ນີ້ຈະອະນຸຍາດໃຫ້ <ph name="APP_NAME" />, ແອັບ ແລະ ເວັບໄຊທັງໝົດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນໄດ້</translation>
 <translation id="5774295353725270860">ເປີດ​ແອັບໄຟລ​໌</translation>
 <translation id="5775936059231769503">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດປິດຢູ່.</translation>
@@ -1722,6 +1769,7 @@
 <translation id="5858490737742085133">ອຸປະກອນປາຍທາງ</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
+<translation id="5864195618110239517">ໃຊ້ການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ</translation>
 <translation id="5864691701242730005">ສະແດງການຕັ້ງຄ່າການແຊຣ໌ດ່ວນ. ເລືອກລະດັບການເບິ່ງເຫັນເປັນ <ph name="VISIBILITY" /> ແລ້ວ</translation>
 <translation id="5864748620896638071">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ຈະຢຸດຊົ່ວຄາວໃນໄວໆນີ້</translation>
@@ -1738,6 +1786,8 @@
 <translation id="589817443623831496">ການສະແກນຈຸດ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
+<translation id="5904614460720589786">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້ ເນື່ອງຈາກບັນຫາການຕັ້ງຄ່າ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
+<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ອອບລາຍຢູ່</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">ການແຈ້ງເຕືອນໃໝ່, ທັງໝົດ <ph name="NOTIFICATION_COUNT" /> ລາຍການ</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
@@ -1747,6 +1797,7 @@
         <ph name="BEGIN_PARAGRAPH3" />ທ່ານສາມາດປິດໃຊ້ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າສະຖານທີ່ຂອງອຸປະກອນນີ້ພາຍໃຕ້ການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ &gt; ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ &gt; ສິດເຂົ້າເຖິງສະຖານທີ່ &gt; ການຕັ້ງຄ່າສະຖານທີ່ຂັ້ນສູງ. ຫາກຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ປິດຢູ່, ກໍຈະບໍ່ມີການຮວບຮວມຂໍ້ມູນຄວາມຖືກຕ້ອງຂອງສະຖານທີ່. ສຳລັບແອັບ ແລະ ບໍລິການຕ່າງໆຂອງ Android, ລະບົບຈະໃຊ້ສະເພາະທີ່ຢູ່ IP (ຫາກມີ), ເພື່ອລະບຸສະຖານທີ່ຂອງອຸປະກອນນີ້, ເຊິ່ງອາດສົ່ງຜົນຕໍ່ຄວາມພ້ອມນຳໃຊ້ ແລະ ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ສຳລັບແອັບ ແລະ ບໍລິການຕ່າງໆຂອງ Android ເຊັ່ນ: Google ແຜນທີ່.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄວາມຖືກຕ້ອງຂອງສະຖານທີ່<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> ກຳນົດໃຫ້ຕ້ອງມີການອັບເດດ</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໃນທັນທີ.</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ເປີດຢູ່.</translation>
 <translation id="5947494881799873997">ກັບຄືນ</translation>
@@ -1759,6 +1810,7 @@
 <translation id="5960410286721553511">ເບິ່ງຮູບພາບ ແລະ ມີເດຍຫຼ້າສຸດຂອງໂທລະສັບທ່ານ</translation>
 <translation id="5965524703725988602">ສະຫຼັບຮູບແບບສີສັນມືດ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">ວົນໄປໜ້າຜ່ານໜ້າຈໍ</translation>
+<translation id="5975792506968920132">ເປີເຊັນສາກແບັດເຕີຣີ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
 <translation id="5983567367406220847">ເນື່ອງຈາກບໍ່ມີການເຄື່ອນໄຫວ, ຮັອດສະປອດຖືກປິດໄວ້ແລ້ວ.</translation>
@@ -1806,6 +1858,7 @@
 <translation id="6064463340679478396">ໃຊ້ໄຟລ໌ແລ້ວໆ</translation>
 <translation id="6068258534237496331">ການຄວບຄຸມການໂທວິດີໂອ</translation>
 <translation id="6071576563962215370">ລະບົບກຳນົດການລັອກຄຸນລັກສະນະເວລາການຕິດຕັ້ງຂອງອຸປະກອນບໍ່ສຳເລັດ.</translation>
+<translation id="6072442788591997866">ບໍ່ອະນຸຍາດ <ph name="APP_NAME" /> ໃນເວັບໄຊນີ້. ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">ຢຸດການບັນທຶກ</translation>
 <translation id="6074087755403037157">ຊ່ອງເບຕ້າ</translation>
 <translation id="6075098173600599596">ປ່ຽນການໃຊ້ຕົວພິມໃຫຍ່</translation>
@@ -1813,6 +1866,7 @@
 <translation id="6093867385179428431">ປິດການນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="6095008505822982596">ອັດຕາການເວົ້າ</translation>
 <translation id="6095425951508823973">ເພີ່ມການເຊື່ອມຕໍ່ກັບ <ph name="PROVIDER" /></translation>
+<translation id="6095541101974653012">ທ່ານອອກຈາກລະບົບແລ້ວ.</translation>
 <translation id="6099678161144790572">ແກ້ໄຂເດືອນແລ້ວ</translation>
 <translation id="6103838137565245112">ລະບົບ</translation>
 <translation id="6108952804512516814">ສ້າງດ້ວຍ AI</translation>
@@ -1911,8 +1965,10 @@
 <translation id="6364386432014869981">ແຜ່ນສໍາຜັດໃນຕົວເປີດຢູ່</translation>
 <translation id="6376931439017688372">Bluetooth ເປີດຢູ່</translation>
 <translation id="6378515133128829137">ປັກໝຸດໜ້າຈໍໄວ້ທາງຂວາ</translation>
+<translation id="6380143666419481200">ຍອມ​ຮັບ​ ແລະ​ສືບ​ຕໍ່</translation>
 <translation id="6381109794406942707">ເພື່ອປົດລັອກອຸປະກອນ, ກະລຸນາປ້ອນ PIN ຂອງທ່ານ.</translation>
 <translation id="6381305031890976705">{0,plural, =1{ອັບເດດອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ 1 ຊົ່ວໂມງ}other{ອັບເດດອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ # ຊົ່ວໂມງ}}</translation>
+<translation id="6385149369087767061">ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່</translation>
 <translation id="638716340450135524">ເປີດໃຊ້ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="639644700271529076">CAPS LOCK ປິດ</translation>
 <translation id="6406458002328242616">ແກ້ໄຂໂມງນັບຖອຍຫຼັງ. <ph name="FOCUS_DURATION" />.</translation>
@@ -1925,12 +1981,14 @@
 <translation id="6418160186546245112">ການກັບຄືນຫາ <ph name="IDS_SHORT_PRODUCT_NAME" /> ລຸ້ນຕິດຕັ້ງຜ່ານມາແລ້ວ</translation>
 <translation id="641817663353603351">ເລື່ອນໜ້າຂຶ້ນ</translation>
 <translation id="6418511932144861495">ຕິດຕັ້ງການອັບເດດທີ່ສຳຄັນ</translation>
+<translation id="641867537956679916">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ເຂົ້າສູ່ລະບົບເພື່ອກວດສອບບັນຫາແລ້ວ. ທ່ານສາມາດສືບຕໍ່ໃຊ້ອຸປະກອນໄດ້ຫຼັງຈາກທີ່ຜູ້ເບິ່ງແຍງລະບົບຄືນສິດການຄວບຄຸມໃຫ້ທ່ານ.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="6426905245930183644">ກຳລັງສ້າງ…</translation>
 <translation id="6430225033895752525">ສະແດງການຕັ້ງຄ່າໂໝດໂຟກັສ</translation>
 <translation id="643147933154517414">ສໍາເລັດແລ້ວ</translation>
 <translation id="6431865393913628856">ບັນທຶກໜ້າຈໍ</translation>
+<translation id="6434325376267409267">ຈຳເປັນຕ້ອງອັບເດດອຸປະກອນຂອງທ່ານກ່ອນທີ່ທ່ານຈະສາມາດໃຊ້ <ph name="APP_NAME" /> ໄດ້.</translation>
 <translation id="643593192654616063">ໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນໄປແລ້ວ <ph name="STORAGE_IN_USE_SIZE" /> ຈາກທັງໝົດ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
@@ -1990,6 +2048,7 @@
 <translation id="6585808820553845416">ຊ່ວງເວລາເຂົ້າໃຊ້ສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="6586685375736417639">ບໍ່ສາມາດສາກອຸປະກອນໄດ້</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597017209724497268">ຕົວ​ຢ່າງ</translation>
 <translation id="6597278316891651699">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="6605415194043280389">ໂໝດໂຟກັສເປີດຢູ່</translation>
 <translation id="6608773371844092260">ເພື່ອຕັ້ງຄ່າລາຍນິ້ວມື, ກະລຸນາໃຫ້ລູກຂອງທ່ານແຕະໃສ່ເຊັນເຊີລາຍນິ້ວມືຢູ່ເບື້ອງຂວາຂອງ <ph name="DEVICE_TYPE" /> ນີ້. ຂໍ້ມູນລາຍນິ້ວມືຂອງລູກທ່ານແມ່ນຖືກເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຢູ່ໃນ <ph name="DEVICE_TYPE" /> ນີ້ສະເໝີ.</translation>
@@ -2090,6 +2149,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ຍັງເຫຼືອໜຶ່ງຕົວເລກ}other{ຍັງເຫຼືອ # ຕົວເລກ}}</translation>
 <translation id="6867938213751067702">ຢຸດດາວໂຫຼດ <ph name="FILENAME" /> ຊົ່ວຄາວແລ້ວ</translation>
+<translation id="6868934826811377550">ເບິ່ງລາຍລະອຽດ</translation>
 <translation id="6874854809828346832">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່.</translation>
 <translation id="6878400149835617132">ປິດທາງລັດແລ້ວ</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ແອັບ}other{# ແອັບ}}</translation>
@@ -2114,6 +2174,7 @@
 <translation id="6945922087561257829">ໂທລະສັບຂອງທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍມືຖືຢູ່. ກວດສອບໃຫ້ໝັ້ນໃຈວ່າໂທລະສັບ ແລະ Chromebook ຂອງທ່ານຢູ່ໃນເຄືອຂ່າຍ Wi-Fi ດຽວກັນ ແລ້ວລອງໃໝ່. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">ກູ້ຄືນແອັບ</translation>
 <translation id="6960565108681981554">ບໍ່ໄດ້ເປີດນຳໃຊ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
+<translation id="696103774840402661">ໄຟລ໌ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດສຳລັບຜູ້ໃຊ້ທັງໝົດໃນ <ph name="DEVICE_TYPE" /> ໄດ້ຖືກລຶບຖາວອນແລ້ວ.</translation>
 <translation id="6961121602502368900">ປິດສຽງໂທລະສັບບໍ່ສາມາດໃຊ້ໄດ້ໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="6961840794482373852">ຄີລັດ Alt + ລູກສອນຂຶ້ນຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Page Up, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂຶ້ນ.</translation>
 <translation id="696267987219125751">ການວາງເຟຣມກ້ອງຖ່າຍຮູບປິດຢູ່</translation>
@@ -2163,7 +2224,10 @@
 <translation id="709015856939120012">ຊູມເຂົ້າໃນໜ້າ</translation>
 <translation id="7098389117866926363">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານດ້ານ​ຊ້າຍ​ຢູ່​ເບື້ອງ​ຫຼັງ)</translation>
 <translation id="7100906357717321275">ສະແດງໄຟລ໌ທີ່ເຊື່ອງໄວ້ໃນແອັບໄຟລ໌</translation>
+<translation id="710640343305609397">ເປີດການຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
 <translation id="7108254681523785542">ເລືອກລາຍການເພື່ອວາງມັນ. ທ່ານສາມາດເບິ່ງຄລິບບອດໄດ້ໂດຍການກົດ <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
+<translation id="7108338896283013870">ເຊື່ອງ</translation>
+<translation id="7108933416628942903">ລັອກຕອນນີ້</translation>
 <translation id="7116969082764510092">ໂຕະ 11</translation>
 <translation id="7118268675952955085">ຮູບໜ້າຈໍ</translation>
 <translation id="7118597077555700347">ເປີດ <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -2205,6 +2269,7 @@
 <translation id="7258828758145722155">ແກ້ໄຂມື້ວານນີ້</translation>
 <translation id="726276584504105859">ລາກມາບ່ອນນີ້ເພື່ອໃຊ້ການແບ່ງໜ້າຈໍ</translation>
 <translation id="7264788308526527464">ຫຼຸດລົງ <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267044199012331848">ບໍ່ສາມາດຕິດຕັ້ງເຄື່ອງສະເໝືອນໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">ຍົກນິ້ວຂອງທ່ານຂຶ້ນເພື່ອເພີ່ມສ່ວນຕ່າງໆຂອງລາຍນິ້ວມືທ່ານ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7285232777292757180">ໃຊ້ເຄື່ອງມືຖ່າຍຮູບໜ້າຈໍໃນການຕັ້ງຄ່າດ່ວນເພື່ອຖ່າຍຮູບໜ້າຈໍ</translation>
@@ -2245,6 +2310,7 @@
 <translation id="7378889811480108604">ໂໝດຕົວປະຢັດແບັດເຕີຣີປິດຢູ່</translation>
 <translation id="7382680553121047388">ເປີດ</translation>
 <translation id="7384028040782072252">ຄລິກຂວາໃສ່ບ່ອນໃດກໍໄດ້ເພື່ອຈັດຮຽງແອັບຂອງທ່ານຄືນໃໝ່</translation>
+<translation id="7385490373498027129">ໄຟລ໌ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນ <ph name="DEVICE_TYPE" /> ນີ້ຈະຖືກລຶບຢ່າງຖາວອນ.</translation>
 <translation id="7386767620098596324">ສະຫຼັບການເຊື່ອມຕໍ່ເຄືອຂ່າຍ. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">ທ່ານສາມາດຕັ້ງຄ່າໄດ້ໃນພາຍຫຼັງໄດ້ສະເໝີຈາກການຕັ້ງຄ່າ.</translation>
 <translation id="7400839060291901923">ຕັ້ງຄ່າການເຊື່ອມຕໍ່ໃນ <ph name="PHONE_NAME" /> ຂອງທ່ານ</translation>
@@ -2255,9 +2321,12 @@
 <translation id="7406854842098869085">ກົດ <ph name="MODIFIER_1" /> ຄ້າງໄວ້, ແຕະ <ph name="KEY" /> ຈົນກວ່າວ່າທ່ານຈະໄປຮອດໜ້າຈໍທີ່ທ່ານຕ້ອງການເປີດ, ຈາກນັ້ນຈຶ່ງປ່ອຍ</translation>
 <translation id="740790383907119240">ທາງລັດແອັບ</translation>
 <translation id="7413851974711031813">ກົດປຸ່ມ escape ເພື່ອປິດ</translation>
+<translation id="7415454883318062233">ຕັ້ງຄ່າສຳເລັດແລ້ວ</translation>
 <translation id="7416471219712049036">ບັນທຶກໜ້າປັດຈຸບັນ</translation>
+<translation id="7423807071740419372"><ph name="APP_NAME" /> ຕ້ອງການການອະນຸຍາດເພື່ອເປີດໃຊ້</translation>
 <translation id="742594950370306541">ກ້ອງ​ຖ່າຍ​ຮູບໃຊ້ງານຢູ່.</translation>
 <translation id="743058460480092004">ກ້ອງ​ຖ່າຍ​ຮູບ ​ແລະໄມໂຄຣໂຟນໃຊ້ງານຢູ່.</translation>
+<translation id="7433708794692032816">ສຽບບັດອັດສະລິຍະເພື່ອສືບຕໍ່ໃຊ້ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="7440404390546433462">Google ຊອກຫາ</translation>
 <translation id="7441711280402516925">ກຳລັງຫຼິ້ນ · ປ່ຽນເປັນແຖບ</translation>
 <translation id="7453330308669753048">ລຶບຜົນການຊອກຫາປະ​ຫວັດ​ການ​ຊອກຫາອອກແລ້ວ</translation>
@@ -2266,6 +2335,7 @@
 <translation id="7461924472993315131">ປັກໝຸດ</translation>
 <translation id="746216226901520237">ຄັ້ງຕໍ່ໄປ, ໂທລະສັບຂອງທ່ານຈະປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ທ່ານສາມາດປິດ Smart Lock ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="746232733191930409">ໂໝດການບັນທຶກໜ້າຈໍ</translation>
+<translation id="7465635034594602553">ມີບາງຢ່າງຜິດພາດ. ກະລຸນາລໍຖ້າສອງສາມນາທີ ແລ້ວເປີດໃຊ້ <ph name="APP_NAME" /> ອີກຄັ້ງ.</translation>
 <translation id="7466449121337984263">ກະລຸນາແຕະເຊັນເຊີ</translation>
 <translation id="7477793887173910789">ຄວບຄຸມເພງ, ວິດີໂອຂອງທ່ານ ແລະ ອື່ນໆອີກ</translation>
 <translation id="7478485216301680444">ບໍ່​ສາ​ມາດ​ຕິດ​ຕັ້ງແອັບພລິເຄຊັນ Kiosk ໄດ້.</translation>
@@ -2294,6 +2364,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">ສ້າງຂຶ້ນ</translation>
 <translation id="7526573455193969409">ອາດມີການຕິດຕາມເບິ່ງເຄືອຂ່າຍ</translation>
+<translation id="7530016656428373557">ອັດຕາປ່ອຍອອກມາເປັນວັດຕ໌</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ບໍ່ຕອບສະໜອງ. ເລືອກ "ບັງຄັບປິດ" ເພື່ອປິດແອັບ.</translation>
 <translation id="7534543072325030705">ຍົກໂປ້ຈະສົ່ງຄຳຕິຊົມທີ່ທ່ານມັກກຸ່ມແນະນໍານີ້</translation>
 <translation id="7536035074519304529">ທີ່ຢູ່ IP: <ph name="ADDRESS" /></translation>
@@ -2315,6 +2386,7 @@
 <translation id="7569509451529460200">ເປີດນຳໃຊ້ Braille ແລະ ChromeVox ແລ້ວ</translation>
 <translation id="7569886975397378678">ປີດການຕັ້ງຄ່າການເບິ່ງການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
 <translation id="7571361473021531288">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />% | ໃຊ້ໄດ້ອີກ <ph name="TIME" /></translation>
+<translation id="7573172247376861652">ສາກແບັດເຕີຣີ</translation>
 <translation id="7573585051776738856">ຈອດໜ້າຈໍທີ່ນຳໃຊ້ຢູ່ທາງຂວາແລ້ວ.</translation>
 <translation id="7576976045740938453">ເກີດບັນຫາກັບບັນຊີໂໝດສາທິດ.</translation>
 <translation id="7579778809502851308">ການຖ່າຍຮູບໜ້າຈໍ</translation>
@@ -2336,6 +2408,7 @@
 <translation id="7621008024906456933">ການຕັ້ງຄ່າການແຊຣ໌ດ່ວນ</translation>
 <translation id="7621382409404463535">ລະບົບບັນທຶກການກຳນົດຄ່າອຸປະກອນບໍ່ສຳເລັດ.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7626072681686626474"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ປ່ຽນແປງ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS.</translation>
 <translation id="7627303771480696593">ຖາມຄຳຖາມ</translation>
 <translation id="7629858978065675960">ຜົນການຊອກຫາທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="7631014249255418691">ສຳຮອງແອັບ ແລະ ໄຟລ໌ Linux ສຳເລັດແລ້ວ</translation>
@@ -2420,6 +2493,7 @@
 <translation id="7850320739366109486">ຢ່າລົບ​ກວນ</translation>
 <translation id="7851039877802112575">ຍ້າຍໂຟກັສໄປຫາປັອບອັບ ແລະ ກ່ອງໂຕ້ຕອບ</translation>
 <translation id="7851768487828137624">Canary</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">ເພື່ອໃຊ້ອຸປະກອນໃນຖານະແຂກ, ທ່ານຕ້ອງອອກຈາກລະບົບ ແລະ ຈາກນັ້ນເລືອກ ເລືອກເບິ່ງໃນຖານະແຂກ ຢູ່ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="7866482334467279021">ເປີດ</translation>
 <translation id="7870790288828963061">ບໍ່ພົບ​ແອັບ Kiosk ລຸ້ນ​ໃໝ່​ກວ່າ​ໃດ. ບໍ່​ມີ​ອັນ​ໃດ​ຈະ​ອັບ​ເດດ. ກະ​ລຸ​ນາ​ເອົາ USB ອອກ.</translation>
@@ -2548,6 +2622,7 @@
 <translation id="8172370561760918656">ເລືອກດ້າມຈັບເທິງສຸດເບື້ອງຊ້າຍແລ້ວ, ໃຊ້ປຸ່ມລູກສອນເພື່ອຍ້າຍ</translation>
 <translation id="81817143961839203">ແຊກຮູບບໍ່ສຳເລັດ</translation>
 <translation id="8182105986296479640">ແອັບພລິເຄຊັນບໍ່ຕອບສະໜອງ.</translation>
+<translation id="8182412589359523143">ເພື່ອລຶບຂໍ້ມູນທັງໝົດຈາກ <ph name="DEVICE_TYPE" /> ນີ້, ກະລຸນາ <ph name="BEGIN_LINK" />ຄລິກບ່ອນນີ້<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">ເປີດ/ປິດເມນູເພື່ອປັບຂະໜາດໂໝດລັອກ</translation>
 <translation id="8192727139462702395">ເມື່ອທ່ານປິດ Bluetooth, ອຸປະກອນພາຍນອກເຫຼົ່ານີ້ຈະຍົກເລີກການເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ:</translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>
@@ -2684,6 +2759,7 @@
 <translation id="8619138598101195078">ຫຼຸດສຽງລົງ</translation>
 <translation id="862543346640737572">ອີໂມຈິ ແລະ GIF</translation>
 <translation id="8627191004499078455">ເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
+<translation id="862727964348362408">ໂຈະແລ້ວ</translation>
 <translation id="8631727435199967028">ການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="8634326941504371857">ໄຟລ໌ຂອງທ່ານຢູ່ອຸປະກອນນີ້ ແລະ Google Drive</translation>
 <translation id="8636284842992792762">ກຳລັງລິເລີ່ມສ່ວນຂະຫຍາຍ...</translation>
@@ -2708,6 +2784,7 @@
 <translation id="8683506306463609433">ການຕິດຕາມປະສິດທິພາບເປີດນຳໃຊ້ຢູ່</translation>
 <translation id="8698432579173128320">ສຳຮອງຂໍ້ມູນໄປໃສ່ Google Drive. ກູ້ຄືນຂໍ້ມູນຂອງທ່ານ ຫຼື ປ່ຽນອຸປະກອນໄດ້ຢ່າງງ່າຍດາຍທຸກເວລາ. ຂໍ້ມູນສຳຮອງຂອງທ່ານຈະຮວມທັງຂໍ້ມູນແອັບ. ລະບົບຈະອັບໂຫຼດຂໍ້ມູນສຳຮອງຂອງທ່ານໄປໃສ່ Google ແລະ ເຂົ້າລະຫັດໂດຍໃຊ້ລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການສຳຮອງຂໍ້ມູນ<ph name="BEGIN_LINK1_END" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="8700087567921985940">ໃຊ້ສະຖານທີ່. ອະນຸຍາດໃຫ້ແອັບ ແລະ ບໍລິການທີ່ໄດ້ຮັບການອະນຸຍາດສະຖານທີ່ໃຊ້ສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ. Google ອາດຮວບຮວມຂໍ້ມູນສະຖານທີ່ເປັນໄລຍະ ແລະ ໃຊ້ຂໍ້ມູນນີ້ໃນແບບບໍ່ລະບຸຕົວຕົນເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ບໍລິການທີ່ອ້າງອີງສະຖານທີ່. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສະຖານທີ່<ph name="BEGIN_LINK1_END" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
+<translation id="8702825062053163569">ລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄວ້ແລ້ວ.</translation>
 <translation id="8703634754197148428">ເລີ່ມການບັນທຶກ. ເມື່ອການບັນທຶກເລີ່ມແລ້ວ ກະລຸນາກົດ Alt + Shift + L ເພື່ອນຳທາງໄປຫາຖ້ານ ແລະ ຊອກຫາປຸ່ມຢຸດການບັນທຶກ</translation>
 <translation id="8704155109538237473">ໂຟກັສຢູ່ໜ້າຈໍການສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="8705580154597116082">Wi-Fi ມີໃຫ້ນຳໃຊ້ຜ່ານໂທລະສັບໄດ້</translation>
@@ -2745,6 +2822,7 @@
 <translation id="8763883995157866248">ເຮັດໃຫ້ອຸປະກອນຢູ່ໃນໂໝດການນອນ</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ, ບລັອກໄວ້ແລ້ວ</translation>
 <translation id="8782565991310229362">ຍົກເລີກການເປີດແອັບພລິເຄຊັນ Kiosk ແລ້ວ.</translation>
+<translation id="8784626084144195648">ສະ​ເລ່ຍລົງຖັງແລ້ວ</translation>
 <translation id="8785070478575117577">ເຊື່ອມຕໍ່ກັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="8786824282808281903">ເມື່ອລູກຂອງທ່ານເຫັນໄອຄອນນີ້, ລາຍນິ້ວມືຈະສາມາດຖືກໃຊ້ສຳລັບການລະບຸຕົວຕົນ ຫຼື ເພື່ອອະນຸມັດການສັ່ງຊື້ໄດ້.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -2759,6 +2837,7 @@
 <translation id="8815390544836110344">ກົດປຸ່ມ​ທາງ​ລັດຮູບໜ້າຈໍ, Ctrl ບວກ Shift ບວກປຸ່ມໂໝດພາບຮວມ</translation>
 <translation id="881757059229893486">ການຕັ້ງຄ່າວິທີການປ້ອນຂໍ້ມູນ</translation>
 <translation id="8819728065740986820">ເປີດໃຊ້ການສາກໄຟແບບປັບອັດຕະໂນມັດແລ້ວ</translation>
+<translation id="8821268776955756404"><ph name="APP_NAME" /> ພ້ອມໃຫ້ນຳໃຊ້ແລ້ວ.</translation>
 <translation id="882204272221080310">ອັບເດດເຟີມແວເພື່ອເພີ່ມຄວາມປອດໄພ.</translation>
 <translation id="8822104519413696986">ນີ້ແມ່ນເກມແບບສຳຜັດ</translation>
 <translation id="8825863694328519386">ປັດຈາກຊ້າຍເພື່ອກັບຄືນ</translation>
@@ -2771,6 +2850,7 @@
 <translation id="8849001918648564819">ເຊື່ອງໄວ້</translation>
 <translation id="8855885154700222542">ປຸ່ມເຕັມຈໍ</translation>
 <translation id="8858369206579825206">ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ</translation>
+<translation id="8859402192569844210">ບໍ່ສາມາດດາວໂຫຼດຂໍ້ກຳນົດການບໍລິການໄດ້</translation>
 <translation id="8860366331836346216">ເພີ່ມ eSIM</translation>
 <translation id="8869149849311827122">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການປິດການຄວບຄຸມເຄີເຊີເມົ້າ?</translation>
 <translation id="8870509716567206129">ແອັບບໍ່ຮອງຮັບໜ້າຈໍແບບແຍກກັນ.</translation>
@@ -2791,6 +2871,7 @@
 <translation id="8905919797434099235">(ບໍ່ມີຊື່)</translation>
 <translation id="890616557918890486">ປ່ຽນແຫຼ່ງ</translation>
 <translation id="8909138438987180327">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" /> ເປີເຊັນ.</translation>
+<translation id="8909298138148012791">ຖອນການຕິດຕັ້ງ <ph name="APP_NAME" /> ແລ້ວ</translation>
 <translation id="8916866375277139011">ເຊື່ອງລາຍການໃນ <ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">ບໍລິການຈາກເຈົ້າໜ້າທີ່ບໍ່ພ້ອມໃຫ້ນຳໃຊ້.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2867,6 +2948,7 @@
 <translation id="9126339866969410112">ຍົກເລີກຄຳສັ່ງຫຼ້າສຸດ</translation>
 <translation id="9126642911267312373">Bluetooth ບໍ່ພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{ໃນອີກ 1 ນທ}other{ໃນອີກ # ນາທີ}}</translation>
+<translation id="9128317794749765148">ບໍ່ສາມາດເຮັດສຳເລັດການຕັ້ງຄ່າໄດ້</translation>
 <translation id="9129245940793250979">ປຸ່ມດ້ານຫຼັງ</translation>
 <translation id="9133335900048457298">ບໍ່ສາມາດບັນທຶກເນື້ອຫາທີ່ໄດ້ຮັບການປົກປ້ອງໄດ້</translation>
 <translation id="9139720510312328767">ລຶບຕົວອັກສອນຖັດໄປ</translation>
@@ -2917,6 +2999,7 @@
 <translation id="974545358917229949">ສະແດງຜົນການຊອກຫາ <ph name="RESULT_COUNT" /> ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="97905529126098460">ໜ້າຈໍນີ້ຈະປິດຫຼັງຈາກສຳເລັດການຍົກເລີກແລ້ວ.</translation>
 <translation id="981011780479609956">ບໍ່ມີມື້ຮອດກຳນົດ</translation>
+<translation id="981121421437150478">ອອຟລາຍນ໌</translation>
 <translation id="98120814841227350">ໄປຫາທ້າຍເອກະສານ</translation>
 <translation id="987589956647469042">ອິນເຕີເນັດມືຖືເປີດຢູ່</translation>
 <translation id="989374776391122812">ການຄວບຄຸມກ້ອງຖ່າຍຮູບ ແລະ ສຽງ</translation>

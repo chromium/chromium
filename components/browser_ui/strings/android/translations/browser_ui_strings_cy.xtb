@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1000614056227025171">Dalen waelod hyrwyddo addasu eich hafan wedi'i hagor ar uchder llawn</translation>
 <translation id="1006017844123154345">Agor ar-lein</translation>
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1046742265332833834">Thema las</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Gall gwefannau chwarae sain</translation>
 <translation id="3065787901655140044">Mae Advanced Protection ymlaen</translation>
 <translation id="3069226013421428034">Caniatáu mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
+<translation id="3084983642903364837">Golygwch eich hafan yn nes ymlaen trwy'r ddewislen 3 dot.</translation>
 <translation id="310297983047869047">Sleid flaenorol</translation>
 <translation id="3108122610701115301">Gosod fel eich dull diofyn</translation>
 <translation id="310979712355504754">Dileu pob un</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Wedi'i gysylltu â phorth cyfresol</translation>
 <translation id="4223404254440398437">Ni chaniateir meicroffon</translation>
 <translation id="4226663524361240545">Mae'n bosib y bydd hysbysiadau ddirgrynu’r ddyfais</translation>
+<translation id="4227965147357783918">Dalen waelod hyrwyddo addasu eich hafan wedi'i hagor ar hanner uchder</translation>
 <translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Ar ôl i chi adael gwefan, gall ddal i gysoni i orffen tasgau, megis uwchlwytho lluniau neu anfon neges sgwrsio</translation>
 <translation id="4278390842282768270">Caniateir</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ඉඟි දැනුම්දීම් ප්‍රවර්ධනය වසා ඇත</translation>
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1045899828449635435">මෙම අඩවිවලින් ද දත්ත හිස් කරන්න ද?</translation>
+<translation id="1049461303780085993">පිළිතුරු, ප්‍රධාන කරුණු සහ තවත් දේ ලබා ගැනීමට Chrome හි Gemini උත්සාහ කරන්න</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="1052842760770519282">ඔබේ සමහර මුරපද වෙත ප්‍රවේශ විය නොහැක</translation>
 <translation id="1057623954802068161">පිටුවේ ඉහළට අනුචලනය කරන්න</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">ඇමතීමට තට්ටු කරන්න</translation>
 <translation id="232137538351753795">ආපසු යාමට දාරයේ සිට ස්වයිප් කරන්න</translation>
 <translation id="2323763861024343754">අඩවි ආචයනය</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" /> සිට</translation>
 <translation id="2328474416100889417">සියලු දෙනාටම “<ph name="GROUP_NAME" />” පටිති සමූහය වෙත ප්‍රවේශය වහාම අහිමි වනු ඇති අතර, ආරාධනා සබැඳි සියල්ල ක්‍රියාවිරහිත වනු ඇත</translation>
 <translation id="2330186936255788117">තවත් පිටුසන්</translation>
 <translation id="2332515770639153015">ඉහළ නැංවූ සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මකයි</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">නව පටිති පිටුවක් විවෘත කරන්න</translation>
 <translation id="4595276580892809760">ගැලරියෙන් රූප අමුණන්න</translation>
 <translation id="4595805675102978678">Google ගිණුම් දෝෂයකි</translation>
+<translation id="4599585406846903742">තනි පිටු දසුන</translation>
 <translation id="4601095002996233687">සැක සහිත බාගැනීම් සඳහා ගැඹුරු ස්කෑන් කිරීම්.</translation>
 <translation id="4606559747793337066">අඩවියක් හෝ යෙදුමක් ඔවුන්ගේ පිටුවේ සබැඳි පුද්ගලිකව පූර්ව පූරණය කිරීමට ඉල්ලන විට, Chrome කුකි නොමැතිව Google සේවාදායක හරහා පිටු සංකේතනය කර පූර්ව පූරණය කරයි. මෙය පූර්ව පූරණය කර ඇති අඩවියෙන් ඔබගේ අනන්‍යතාව සඟවයි.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> විවෘත කරන්න</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">තවත් විකල්ප බොත්තමෙන් මෙම පිටුව ඕනෑම භාෂාවකට පරිවර්තන කරන්න</translation>
 <translation id="5696597120588531049">Chrome දත්ත කඩ කිරීම්, අනාරක්ෂිත වෙබ් අඩවි, සහ තවත් ඒවාවලින් ඔබව ආරක්ෂිතව තබා ගැනීමට උදවු කළ හැකිය</translation>
 <translation id="5698878456427040674">තෝරන ලද ගිණුමට සහාය දක්වන්නේ දැයි පරීක්ෂා කරන්න.</translation>
+<translation id="5700415746238689851">Gemini විවෘත කරන්න</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> හට අනුක්‍රමික තොටකට සම්බන්ධ වීමට අවශ්‍යයි</translation>
 <translation id="5715150588940290235">සුරැකි ආරක්‍ෂක කේත මකන්නද?</translation>
 <translation id="572328651809341494">මෑතකාලීන පටිති</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">අයාචිත වාර්තා කරන්න</translation>
 <translation id="8277710303010772444">සෙවීම අරඹන්න</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> මගින් සුරක්ෂිත කර ඇත</translation>
+<translation id="8280797717392145626">සබැඳි ලැබුණි</translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8282297628636750033">හැකි විට, අඩවිවලට අඳුරු තේමාව යොදන්න</translation>
 <translation id="8282950411412455249">ආරක්ෂක සැකසීම් වෙත යන්න</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> සඳහා නැවත අවසරවලට ඉඩ දී ඇත</translation>
 <translation id="8865415417596392024">ඔබේ ගිණුමේ Chrome දත්ත</translation>
 <translation id="8872506776304248286">යෙදුමෙහි විවෘත කරන්න</translation>
+<translation id="8880275451109933094">පිටු දෙකේ දසුන</translation>
 <translation id="8890668505403261809">ඔබේ අප්‍රකට පටිති සොයන්න</translation>
 <translation id="8892234476517513962">ඔබ දැනටමත් පුරනය වී ඇත</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, තෝරා ගත් පටිගත කිරීමේ අප්‍රකට පටිත්ත</translation>

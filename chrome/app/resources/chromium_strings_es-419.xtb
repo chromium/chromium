@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu navegador antes de usarlo.</translation>
 <translation id="1232234696885483911">Cuando abras la Búsqueda con imágenes, el título de la página, la URL y el contenido, incluidos los archivos PDF, se enviarán automáticamente al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Mientras tengas acceso, podrás usar las contraseñas y otros elementos de tu Cuenta de Google en Chromium. Para cambiar esta opción, ve a "Tu cuenta en Chromium".</translation>
+<translation id="1257483544893909270">Para seleccionar una parte de la pantalla en Gemini en Chromium, usa la combinación de teclas.</translation>
 <translation id="1262876892872089030">Mientras esta pestaña estaba inactiva, se liberó memoria para mantener Chromium rápido. Puedes elegir que este sitio nunca esté inactivo.</translation>
 <translation id="1265577313130862557">Chromium bloqueó esta descarga porque el archivo es peligroso</translation>
 <translation id="126567311906253476">Cuando accedes a servicios de Google, como Gmail o YouTube, con <ph name="USER_EMAIL" />, puedes ingresar automáticamente a Chromium con la misma cuenta</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">Tu organización puede ver y administrar los datos de navegación, como tus favoritos, historial y contraseñas. No puede ver los datos de navegación en otros perfiles de Chromium.</translation>
 <translation id="2635452620547538388">Verifica tu identidad para usar y guardar datos de Chromium en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Para salir de Gemini en Chromium o volver a él, usa la combinación de teclas.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización}=1{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
 <translation id="2661879430930417727">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chromium según sus preferencias.</translation>
+<translation id="2676569452213089702">Accede fácilmente a Gemini en Chromium en todo tu dispositivo, incluso si Chromium está minimizado.</translation>
 <translation id="2711502716910134313">Pestaña de Chromium</translation>
 <translation id="2718390899429598676">Para mayor seguridad, Chromium encriptará los datos.</translation>
 <translation id="2721354645805494590">Sal de Chromium para quitar tu Cuenta de Google</translation>
@@ -307,7 +310,7 @@
 <translation id="4334241893986177674">Buscar esta captura de pantalla</translation>
 <translation id="4384331407722351213">Ejecutar Chromium cuando se inicie Windows</translation>
 <translation id="4384993550046411228">Establece Chromium como tu navegador predeterminado para acceder fácilmente a las funciones que conoces, te encantan y en las que confías. Chromium se fijará a la barra de tareas para que puedas acceder rápidamente.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Chromium OS.</translation>
+<translation id="4400772909124543403">No hay actualizaciones disponibles</translation>
 <translation id="4407044323746248786">¿Deseas salir de Chromium de todos modos?</translation>
 <translation id="4413205837991854510">Mostrar siempre el atajo de Búsqueda con imágenes</translation>
 <translation id="4415566066719264597">Permitir que Chromium se ejecute en segundo plano</translation>
@@ -346,6 +349,7 @@
 <translation id="4746050847053251315">¿Deseas salir de Chromium de todos modos?</translation>
 <translation id="4748217263233248895">Se acaba de instalar una actualización de seguridad especial para Chromium. Reinícialo ahora (se restablecerán tus pestañas).</translation>
 <translation id="4771701986670315895">No lo visitaste recientemente. Chromium quitó los permisos de <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
+<translation id="4786083865378785874">Si Gemini en Chromium está abierto, el panel lateral permanecerá abierto cuando se crean pestañas nuevas</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
 <translation id="4814736265800133385">Usar Chromium sin una cuenta</translation>
 <translation id="4888717733111232871">Regla de entrada para que Chromium permita el tráfico mDNS.</translation>
@@ -397,6 +401,7 @@
 <translation id="555970465369471303">Por motivos de seguridad, Chromium desactiva la optimización de JavaScript cuando visitas un sitio por primera vez.
 
 Si esta página no funciona como debería, intenta permitir la optimización.</translation>
+<translation id="5575874067957905201">Mostrar Gemini en Chromium en la barra de menú de Mac y activar la combinación de teclas</translation>
 <translation id="5579324208890605088">Error de inicio: Ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5580770360767802657">Usa Chromium de forma predeterminada y fíjalo</translation>
 <translation id="5596627076506792578">Más opciones</translation>
@@ -616,6 +621,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7867198900892795913">Chromium no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
 <translation id="7873537467422636035">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="7874369989024033742">Abre Gemini en Chromium rápidamente cuando lo necesites</translation>
 <translation id="7877212753140190672">Preguntar acerca de esta imagen</translation>
 <translation id="7888981273428720788">Establece Chromium como navegador predeterminado</translation>
 <translation id="7934340546140346950">Chromium actualiza automáticamente las conexiones no seguras a HTTPS cuando es posible</translation>
@@ -637,6 +643,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8118331347066725040">Envía comentarios sobre la búsqueda con Lens</translation>
 <translation id="8133124826068723441">Chromium OS no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
+<translation id="8161503455832158203">Abre Gemini en Chromium con una combinación de teclas.</translation>
 <translation id="8164014945047474187">Condiciones del Servicio Adicionales de Chromium</translation>
 <translation id="81770708095080097">Chromium bloqueó este archivo porque es peligroso.</translation>
 <translation id="8177472873527554730">No se puede encontrar el contenido de la página</translation>
@@ -646,6 +653,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8232193495299001329">Chromium no puede verificar de dónde proviene esta extensión y es posible que no sea segura. Quítala de Chromium para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida la información personal.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene una descripción útil, Chromium intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google. Puedes desactivar esta opción en la configuración en cualquier momento.</translation>
 <translation id="8254601181414348851">¿Quieres acceder a Chromium con un perfil nuevo?</translation>
+<translation id="8277334259226003205">Mostrar Gemini en Chromium en la bandeja del sistema y activar la combinación de teclas</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te advierte<ph name="END_LINK" /> sobre descargas y sitios no seguros</translation>
 <translation id="8295827201165805317">No lo visitaste recientemente. Chromium quitó el permiso de <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Compra, identifica y traduce lo que ves con la cámara en la app de Chromium para iOS</translation>
@@ -674,6 +682,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8493179195440786826">Chromium no actualizado</translation>
 <translation id="850264194101621529">Gracias por elegir Chromium como tu navegador predeterminado.</translation>
 <translation id="8522801943730206384">Chromium puede revisar las contraseñas cuando las guardas</translation>
+<translation id="8525579356836940628">Se detuvo la instalación</translation>
 <translation id="8548787790260785208">Recibe una advertencia si Chromium encuentra una de tus contraseñas en una violación de la seguridad de los datos pública</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algunas funciones y extensiones de Chromium vienen con atajos. Puedes volver a activarlos.</translation>

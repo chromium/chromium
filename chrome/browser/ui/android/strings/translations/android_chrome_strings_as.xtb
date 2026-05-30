@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">কিটিপ সম্পৰ্কীয় জাননীৰ প্ৰ’ম’ বন্ধ কৰা হৈছে</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1045899828449635435">এই ছাইটসমূহৰ পৰাও ডেটা মচিবনে?</translation>
+<translation id="1049461303780085993">উত্তৰ, মুখ্যাংশ আৰু অধিক সমল লাভ কৰিবলৈ Chromeত Gemini ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1052842760770519282">আপোনাৰ কিছুমান পাছৱৰ্ড এক্সেছ কৰিব নোৱাৰি</translation>
 <translation id="1057623954802068161">পৃষ্ঠাখনৰ একেবাৰে ওপৰলৈ স্ক্ৰ’ল কৰক</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">কল কৰিবলৈ টিপক</translation>
 <translation id="232137538351753795">উভতি যাবলৈ বাওঁ কাষৰ পৰা ছোৱাইপ কৰক</translation>
 <translation id="2323763861024343754">ছাইট ষ্ট’ৰেজ</translation>
+<translation id="2327445548174191329"><ph name="DEVICE_NAME" />ৰ পৰা</translation>
 <translation id="2328474416100889417">সকলোৱে লগে লগে <ph name="GROUP_NAME" /> টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু আটাইবোৰ আমন্ত্ৰণৰ লিংক অফ কৰা হ’ব</translation>
 <translation id="2330186936255788117">অধিক বুকমাৰ্ক</translation>
 <translation id="2332515770639153015">বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং সুবিধাটো অন আছে</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">এটা নতুন টেবৰ পৃষ্ঠা খোলক</translation>
 <translation id="4595276580892809760">গেলাৰীৰ পৰা প্ৰতিচ্ছবি সংলগ্ন কৰক</translation>
 <translation id="4595805675102978678">Google একাউণ্ট সম্পৰ্কীয় আসোঁৱাহ</translation>
+<translation id="4599585406846903742">এখন পৃষ্ঠাৰ ভিউ</translation>
 <translation id="4601095002996233687">সন্দেহজনক ডাউনল’ডৰ বাবে বিস্তাৰিত স্কেনৰ সুবিধা</translation>
 <translation id="4606559747793337066">কোনো ছাইট বা এপে নিজৰ পৃষ্ঠাত থকা লিংকসমূহ গোপনে আগতীয়াকৈ ল’ড কৰিবলৈ অনুৰোধ কৰিলে Chromeএ কুকি অবিহনে Google ছাৰ্ভাৰৰ জৰিয়তে পৃষ্ঠাসমূহ এনক্ৰিপ্ট কৰি আগতীয়াকৈ ল’ড কৰে। ই আগতীয়াকৈ ল’ড কৰা ছাইটৰ পৰা আপোনাৰ পৰিচয় লুকুৱায়।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> খোলক</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">অধিক বিকল্প-ৰ বুটামটো ব্যৱহাৰ কৰি এই পৃষ্ঠাটো যিকোনো ভাষালৈ অনুবাদ কৰক</translation>
 <translation id="5696597120588531049">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="5698878456427040674">বাছনি কৰা একাউণ্টটো সমৰ্থিত হয়নে নহয় পৰীক্ষা কৰক।</translation>
+<translation id="5700415746238689851">Gemini খোলক</translation>
 <translation id="5709213329446699338"><ph name="SITE" />এ এটা ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ হ’ব বিচাৰে</translation>
 <translation id="5715150588940290235">ছেভ কৰি ৰখা সুৰক্ষা ক'ড মচিবনে?</translation>
 <translation id="572328651809341494">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">স্পাম হিচাপে অভিযোগ কৰক</translation>
 <translation id="8277710303010772444">সন্ধান কৰা আৰম্ভ কৰক</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" />ৰ দ্বাৰা সুৰক্ষিত</translation>
+<translation id="8280797717392145626">লিংক লাভ কৰিছে</translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8282297628636750033">সম্ভৱ হ’লে ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
 <translation id="8282950411412455249">সুৰক্ষাৰ ছেটিঙলৈ যাওক</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" />ৰ বাবে পুনৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="8865415417596392024">আপোনাৰ একাউণ্টত থকা Chromeৰ ডেটা</translation>
 <translation id="8872506776304248286">এপত খোলক</translation>
+<translation id="8880275451109933094">দুখন পৃষ্ঠাৰ ভিউ</translation>
 <translation id="8890668505403261809">আপোনাৰ ইনক’গ্নিট’ টেবসমূহ সন্ধান কৰক</translation>
 <translation id="8892234476517513962">আপুনি ইতিমধ্যে ছাইন ইন হৈ আছে</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, বাছনি কৰা ৰেকৰ্ডিং ইনক’গ্নিট’ টেব</translation>

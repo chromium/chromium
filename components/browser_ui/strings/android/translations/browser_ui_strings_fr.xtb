@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1000614056227025171">Bottom sheet de la promotion de personnalisation de la page d'accueil ouverte à pleine hauteur</translation>
 <translation id="1006017844123154345">Ouvrir la version en ligne</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1046742265332833834">Thème bleu</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Les sites peuvent lire du son</translation>
 <translation id="3065787901655140044">La Protection Avancée est activée</translation>
 <translation id="3069226013421428034">Autorisez la connexion tierce pour un site spécifique.</translation>
+<translation id="3084983642903364837">Modifiez votre page d'accueil plus tard via le menu à trois points.</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
 <translation id="3108122610701115301">Définir par défaut</translation>
 <translation id="310979712355504754">Tout supprimer</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Connecté à un port série</translation>
 <translation id="4223404254440398437">Micro non autorisé</translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
+<translation id="4227965147357783918">Bottom sheet de la promotion de personnalisation de la page d'accueil ouverte à mi-hauteur</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme télécharger des photos ou envoyer un message de chat</translation>
 <translation id="4278390842282768270">Autorisé</translation>

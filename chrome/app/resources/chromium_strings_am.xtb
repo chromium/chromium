@@ -25,6 +25,7 @@
 <translation id="1203500561924088507">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት አሳሽዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="1232234696885483911">የምስል ፍለጋን ሲከፍቱ PDFዎችን ጨምሮ የገጹ ርዕስ፣ ዩአርኤል እና ይዘት በራስ-ሰር ወደ አገልጋዩ ይላካሉ። <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">በመለያ ገብተው ሳለ በChromium ውስጥ ከGoogle መለያዎ የይለፍ ቃላትዎን እና ሌሎችንም መጠቀም ይችላሉ። ይህን ለመለወጥ ወደ «Chromium ውስጥ የእርስዎ መለያ» ይሂዱ።</translation>
+<translation id="1257483544893909270">Gemini ውስጥ Chromium ውስጥ የማያ ገጹን ክፍል ለመምረጥ የቁልፍ ሰሌዳ አቋራጭ ይጠቀሙ።</translation>
 <translation id="1262876892872089030">ይህ ትር ቦዝኖ ሳለ Chromiumን ፈጣን እንደሆነ ለማቆየት ማህደረ ትውስታ ነፃ ተደርጓል። ይህን ጣቢያ ሁልጊዜ ከመቦዘን ማግለል መምረጥ ይችላሉ።</translation>
 <translation id="1265577313130862557">ፋይሉ አደገኛ ስለሆነ Chromium ይህን ውርድ አግዷል</translation>
 <translation id="126567311906253476">በ<ph name="USER_EMAIL" /> እንደ Gmail ወይም YouTube ወዳሉ የGoogle አገልግሎቶች ሲገቡ በተመሳሳይ መለያ ወደ Chromium መግባት ይችላሉ</translation>
@@ -156,9 +157,11 @@
 <translation id="2620436844016719705">ስርዓት</translation>
 <translation id="2629740064077610681">ድርጅትዎ እንደ የእርስዎ እልባቶች፣ ታሪክ እና የይለፍ ቃሎች ያለ የአሰሳ ውሂብን ማየት እና ማስተዳደር ይችላል። በሌሎች Chromium መገለጫዎች ውስጥ የአሰሳ ውሂብን ማየት አይችልም</translation>
 <translation id="2635452620547538388">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chromium ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
+<translation id="2636783171884046627">ከGemini ለመውጣት ወይም ወደ እሱ ለመመለስ የቁልፍ ሰሌዳ አቋራጭ ይጠቀሙ።</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{የላቀ ጥበቃ ዝማኔ ለመተግበር Chromiumን ዳግም እንዲያስጀምሩ ይጠይቃል}=1{የላቀ ጥበቃ ዝማኔ ለመተግበር Chromiumን ዳግም እንዲያስጀምሩ ይጠይቃል። የእርስዎ ማንነትን የማያሳውቅ መስኮት እንደገና አይከፈትም።}one{የላቀ ጥበቃ ዝማኔ ለመተግበር Chromiumን ዳግም እንዲያስጀምሩ ይጠይቃል። የእርስዎ # ማንነትን የማያሳውቅ መስኮት እንደገና አይከፈትም።}other{የላቀ ጥበቃ ዝማኔ ለመተግበር Chromiumን ዳግም እንዲያስጀምሩ ይጠይቃል። የእርስዎ # ማንነትን የማያሳውቁ መስኮቶች እንደገና አይከፈቱም።}}</translation>
 <translation id="2648074677641340862">በጭነት ጊዜ የስርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Chromiumን እንደገና ያውርዱት።</translation>
 <translation id="2661879430930417727">መሣሪያ የሚያጋሩ ከሆኑ ጓደኛዎች እና ቤተሰብ ተለይተው ሊያስሱ እና Chromiumን በሚፈልጉበት መንገድ ማዋቀር ይችላሉ</translation>
+<translation id="2676569452213089702">Chromium አንሶ ሳለ እንኳን በመላው መሣሪያዎ ላይ Gemini በChromium ውስጥ ለመጠቀም ቀላል መዳረሻ።</translation>
 <translation id="2711502716910134313">የChromium ትር</translation>
 <translation id="2718390899429598676">ለተጨማሪ ደህንነት ሲባል Chromium ውሂብዎን ያመሰጥረዋል።</translation>
 <translation id="2721354645805494590">የGoogle መለያዎን ከChromium ለማስወገድ ዘግተው ይውጡ</translation>
@@ -311,7 +314,7 @@
 <translation id="4334241893986177674">ይህን ቅጽበታዊ ገጽ እይታ ይፈልጉ</translation>
 <translation id="4384331407722351213">Windows ሲጀምር Chromiumን አስጀምር</translation>
 <translation id="4384993550046411228">Chromiumን እንደ ነባሪ አሳሽዎ በማቀናበር የሚያውቋቸውን፣ የሚወዷቸውን እና የሚያምኗቸውን ባህሪያት ቀላል መዳረሻ ያግኙ። ለፈጣን መዳረሻ Chromium በተግባር አሞሌዎ ላይ ሰካ ይደረጋል።</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡት እና እንዲቀበሉት ይፈለጋል። ይህ ውል የChromiumOS ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>
+<translation id="4400772909124543403">ምንም ዝማኔ አይገኝም</translation>
 <translation id="4407044323746248786">የሆነው ሆኖ ከChromium ይወጣ?</translation>
 <translation id="4413205837991854510">የምስል ፍለጋ አቋራጭን ሁልጊዜ አሳይ</translation>
 <translation id="4415566066719264597">Chromium በበስተጀርባ ላይ ያሂድ</translation>
@@ -350,6 +353,7 @@
 <translation id="4746050847053251315">የሆነው ሆኖ Chromium ይቁም?</translation>
 <translation id="4748217263233248895">ለChromium ልዩ የደህንነት ዝማኔ ተፈጻሚ ተደርጓል። አሁን ዳግም ያስጀምሩ እና የእርስዎን ትሮች ወደ ነበሩበት እንመልሳለን።</translation>
 <translation id="4771701986670315895">በቅርብ ጊዜ አልጎበኙም። Chromium <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="COUNT" /> ሌሎችንም አስወግዷል።</translation>
+<translation id="4786083865378785874">Gemini በChromium ውስጥ ክፍት ከሆነ አዲስ ትሮች ሲፈጠሩ የጎን ፓነሉ ክፍት ሆኖ ይቆያል</translation>
 <translation id="479167709087336770">ይህ በ Google ፍለጋ ውስጥ ጥቅም ላይ ጋር ተመሳሳይ የፊደል አራሚ ይጠቀማል። በአሳሽ ውስጥ የሚተይቡት ጽሁፍ ወደ Google ይላካል። ይህን ባህሪ ሁልጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="4814736265800133385">Chromiumን ያለመለያ ይጠቀሙ</translation>
 <translation id="4888717733111232871">Chromium ለmDNS ትራፊክ ለመፍቀድ የውስጥ ደንብ።</translation>
@@ -401,6 +405,7 @@
 <translation id="555970465369471303">ለደኅንነት ሲባል፣ Chromium አንድን ጣቢያ ለመጀመሪያ ጊዜ ሲጎበኙ የጃቫስክሪፕት ማትባትን ያጠፋል።
 
 ይህ ገጽ እንደተጠበቀው እየሠራ ካልሆነ፣ ማትባትን ለመፍቀድ ይሞክሩ።</translation>
+<translation id="5575874067957905201">Gemini በChromium ውስጥ በMac የምናሌ አሞሌ ውስጥ ያሳዩ እና የቁልፍ ሰሌዳ አቋራጭን ያብሩ</translation>
 <translation id="5579324208890605088">የማስነሻ ስህተት፦ እባክዎ መጫኛውን እንደ አስተዳዳሪ ሳይሆን እንደ መደበኛ ተጠቃሚ ያሂዱ።</translation>
 <translation id="5580770360767802657">Chromiumን በነባሪ ይጠቀሙ እና ፒን ያድርጉት</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
@@ -624,6 +629,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7867198900892795913">Chromium ወደ የቅርብ ጊዜው ስሪት ሊዘመን አልቻለም፣ ስለዚህ አዲስ ባህሪያት እና የደህንነት ጥገናዎች እያመለጡዎት ናቸው። Chromiumን ማዘመን አለብዎት።</translation>
 <translation id="7872446069773932638">በማውረድ ላይ... <ph name="SECONDS" /> ሰከንድ(ዶች) ይቀራሉ</translation>
 <translation id="7873537467422636035">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ይሰርዙ<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Geminiን በሚያስፈልግዎ ማንኛውም ጊዜ በChromium ውስጥ በፍጥነት ይክፈቱት</translation>
 <translation id="7877212753140190672">ስለዚህ ምስል ይጠይቁ</translation>
 <translation id="7888981273428720788">Chromiumን እንደ ነባሪ ያቀናብሩት</translation>
 <translation id="7934340546140346950">Chromium በሚቻልበት ጊዜ ደህንነታቸው ያልተጠበቀ ግንኙነቶችን በራስ-ሰር ወደ ኤችቲቲፒኤስ ያልቃል</translation>
@@ -645,6 +651,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8118331347066725040">በሌንስ ለፍለጋ ግብረ መልስ ይላኩ</translation>
 <translation id="8133124826068723441">ማስመር ለጎራዎ ስለማይገኝ ChromiumOS ውሂብዎን ማስመር አይችልም።</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
+<translation id="8161503455832158203">Gemini በChromium ውስጥ በቁልፍ ሰሌዳ አቋራጭ ይክፈቱ።</translation>
 <translation id="8164014945047474187">የChromium ተጨማሪ የአገልግሎት ውል</translation>
 <translation id="81770708095080097">ይህ ፋይል አደገኛ ስለሆነ Chromium አግዶታል።</translation>
 <translation id="8177472873527554730">በገፅ ውስጥ ያለ ይዘትን ማግኘት አይቻልም</translation>
@@ -654,6 +661,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8232193495299001329">Chromium ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም፣ እና ደህንነቱ ያልተጠበቀ ሊሆን ይችላል። የግል መረጃን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎትን ውሂብ ማየት እና መለወጥ እንዳይችል ከChromium ያስወግዱት።</translation>
 <translation id="8248265253516264921">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chromium ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ ሊያጠፉት ይችላሉ።</translation>
 <translation id="8254601181414348851">በአዲስ መገለጫ ወደ Chromium ይግቡ?</translation>
+<translation id="8277334259226003205">Geminiን በሥርዓት ትሪ ውስጥ በChromium ውስጥ ያሳዩ እና የቁልፍ ሰሌዳ አቋራጭን ያብሩ</translation>
 <translation id="8286943863733751221">ደህንነታቸው ስላልተጠበቁ ጣቢያዎች እና ውርዶች <ph name="BEGIN_LINK" />Chromium ያስጠነቅቅዎታል<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">በቅርብ ጊዜ አልጎበኙም። Chromium <ph name="PERMISSION" />ን አስወግዷል።</translation>
 <translation id="8296236834352487533">በChromium iOS መተግበሪያ ላይ በካሜራዎ የሚያዩትን ይሸምቱ፣ ይተርጉሙ እና ይለዩ</translation>
@@ -682,6 +690,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8493179195440786826">Chromium ጊዜው አልፎበታል</translation>
 <translation id="850264194101621529">Chromiumን እንደ ነባሪ አሳሽዎ ስለመረጡ እናመሰግናለን!</translation>
 <translation id="8522801943730206384">እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል</translation>
+<translation id="8525579356836940628">ጭነት ቆሟል</translation>
 <translation id="8548787790260785208">Chromium ከይለፍ ቃሎችዎ ውስጥ አንዱን በይፋዊ የውሂብ ጥሰት ውስጥ ካገኘ ማስጠንቀቂያ ያግኙ</translation>
 <translation id="8555465886620020932">የአገልግሎት ስህተት፡ <ph name="SERVICE_ERROR" />።</translation>
 <translation id="8556055872671007529">አንዳንድ የChromium ባህሪያት እና ቅጥያዎች ከአቋራጮች ጋር ይመጣሉ። መልሰው ለማብራት መምረጥ ይችላሉ።</translation>

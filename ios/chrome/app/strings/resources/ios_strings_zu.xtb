@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Vala Imodi ye-AI</translation>
 <translation id="1554477036522844996">Iwindi Elisha</translation>
 <translation id="1558391695376153246">Vala amathebhu we-incognito</translation>
+<translation id="1560153516220021659">Inkinobho yebha yamathuluzi yesibili egoqiwe</translation>
 <translation id="1565371473877914088">Ithebhu entsha ye-incognito</translation>
 <translation id="1567960978791353852">Bonisa Imodi Yokufunda</translation>
 <translation id="1571780780926010134">Amathebhu we-Incognito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Imeyili ithunyelwe.</translation>
 <translation id="1582732959743469162">Lokhu kuzomisa konke ukuqhubeka kokulanda kwakho kwamanje.</translation>
 <translation id="1594034544529347967">Iyaqala</translation>
+<translation id="1598485494295307681">Ukulalela</translation>
 <translation id="1598751033135758830">Vula ku-app…</translation>
 <translation id="1600571977391127696">Enye ikhontenti ingase ingafaneleki kuwo wonke umuntu.</translation>
 <translation id="1601560923496285236">Faka</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Uxolo, kube nephutha ukwabelana ngento yakho.</translation>
 <translation id="4944543191714094452">Thola kukhasi…</translation>
 <translation id="4945756290001680296">Finyelela kuzilungiselelo zephasiwedi</translation>
+<translation id="4946307855175300628">Iyaphendula</translation>
 <translation id="4949302115427722371">Phatha amasethingi…</translation>
 <translation id="4958444002117714549">Nweba uhlu</translation>
 <translation id="496392417432935267">Ivuliwe kwenye indawo</translation>
@@ -1552,6 +1555,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6355820183143562453">Fihla ikhadi lokulandelela intengo</translation>
 <translation id="6355820205320395730">Amaphasiwedi angaqinile aqageleka kalula. Qinisekisa ukuthi usungula iphasiwedi eqinile. <ph name="BEGIN_LINK" />Bona amathiphu amaningi okuvikeleka.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Ngena ngemvume ukuze uthole zonke izinto zakho ezifana namaphasiwedi, amabhukhimakhi, nokuningi.</translation>
+<translation id="6364268785720100355">Ngena ngemvume ukuze uthole amaphasiwedi nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="6368038301482806847">Khetha injini yokusesha kusuka kuhlu.</translation>
 <translation id="6368102751067608420">Ukusula yonke idatha yomphathi wamaphasiwedi</translation>
 <translation id="6372558618707314581">Yiya kunoma yiliphi ikhasi olithandayo.</translation>
@@ -1681,6 +1685,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6736243959894955139">Ikheli</translation>
 <translation id="6746338529702829275">Buyekeza idatha ye-akhawunti yakho</translation>
 <translation id="6750456911389438250">{count,plural, =1{Into yomlando engu-{count} engenisiwe}one{Izinto zomlando ezingu-{count} ezingenisiwe}other{Izinto zomlando ezingu-{count} ezingenisiwe}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Okukhethwayo oku-{count} kwezimfanelo kuyatholakala ngenhla kwekhibhodi yakho.}one{Okukhethwayo okungu-{count} kwezimfanelo kuyatholakala ngenhla kwekhibhodi yakho.}other{Okukhethwayo okungu-{count} kwezimfanelo kuyatholakala ngenhla kwekhibhodi yakho.}}</translation>
 <translation id="6755200887046212842">Phatha ama-akhawunti</translation>
 <translation id="6757899787818440812">Ukuphakama okuphakathi</translation>
 <translation id="6759709389246683070">Ungathinta futhi ubambe le thebhu ukuze usethe isikhumbuzi ozophinde usivakashele kamuva</translation>

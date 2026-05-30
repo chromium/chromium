@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Wyłącz Tryb AI</translation>
 <translation id="1554477036522844996">Nowe okno</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
+<translation id="1560153516220021659">Przycisk zwiniętego dodatkowego paska narzędzi</translation>
 <translation id="1565371473877914088">Nowa karta incognito</translation>
 <translation id="1567960978791353852">Pokaż Tryb czytania</translation>
 <translation id="1571780780926010134">Karty incognito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-mail wysłany.</translation>
 <translation id="1582732959743469162">Spowoduje to zatrzymanie bieżącego pobierania.</translation>
 <translation id="1594034544529347967">Rozpoczęcie</translation>
+<translation id="1598485494295307681">Słucham</translation>
 <translation id="1598751033135758830">Otwórz w aplikacji…</translation>
 <translation id="1600571977391127696">Niektóre treści mogą nie być odpowiednie dla wszystkich osób.</translation>
 <translation id="1601560923496285236">Zastosuj</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Niestety, wystąpił problem z udostępnieniem tej rzeczy.</translation>
 <translation id="4944543191714094452">Znajdź na stronie…</translation>
 <translation id="4945756290001680296">Otwórz ustawienia haseł</translation>
+<translation id="4946307855175300628">Odpowiadam</translation>
 <translation id="4949302115427722371">Zarządzaj ustawieniami…</translation>
 <translation id="4958444002117714549">Rozwiń listę</translation>
 <translation id="496392417432935267">Otwarto w innym oknie</translation>
@@ -1552,6 +1555,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6355820183143562453">Ukryj kartę śledzenia cen</translation>
 <translation id="6355820205320395730">Słabe hasła są łatwe do odgadnięcia. Pamiętaj, aby używać tylko silnych haseł. <ph name="BEGIN_LINK" />Więcej wskazówek dotyczących bezpieczeństwa<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Zaloguj się, aby mieć dostęp do wszystkich swoich danych, takich jak np. hasła i zakładki.</translation>
+<translation id="6364268785720100355">Zaloguj się, aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach.</translation>
 <translation id="6368038301482806847">Wybierz wyszukiwarkę z listy.</translation>
 <translation id="6368102751067608420">Aby usunąć wszystkie dane menedżera haseł</translation>
 <translation id="6372558618707314581">Otwórz dowolną stronę</translation>
@@ -1681,6 +1685,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6750456911389438250">{count,plural, =1{Zaimportowano {count} element historii}few{Zaimportowano {count} elementy historii}many{Zaimportowano {count} elementów historii}other{Zaimportowano {count} elementu historii}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja danych logowania.}few{Nad klawiaturą dostępne są {count} opcje danych logowania.}many{Nad klawiaturą dostępnych jest {count} opcji danych logowania.}other{Nad klawiaturą dostępne jest {count} opcji danych logowania.}}</translation>
 <translation id="6755200887046212842">Zarządzaj kontami</translation>
 <translation id="6757899787818440812">Średnia wysokość</translation>
 <translation id="6759709389246683070">Możesz nacisnąć i przytrzymać tę kartę, aby ustawić przypomnienie, że chcesz wyświetlić ją później</translation>

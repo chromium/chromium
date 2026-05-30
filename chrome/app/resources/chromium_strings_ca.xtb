@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Quan obris la cerca d'imatges, el títol, l'URL i el contingut de la pàgina (inclosos els PDF) s'enviaran automàticament al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Amb la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Per canviar-ho, ves a El teu compte a Chromium.</translation>
+<translation id="1257483544893909270">Per seleccionar una part de la pantalla a Gemini a Chromium, utilitza les tecles de drecera.</translation>
 <translation id="1262876892872089030">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chromium funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="1265577313130862557">Chromium ha bloquejat aquesta baixada perquè el fitxer és perillós</translation>
 <translation id="126567311906253476">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chromium</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">La teva organització pot veure i gestionar les dades de navegació, com ara les adreces d'interès, l'historial i les contrasenyes. No pot veure les dades de navegació dels altres perfils de Chromium.</translation>
 <translation id="2635452620547538388">Verifica la teva identitat per utilitzar i desar les dades de Chromium al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Per sortir de Gemini a Chromium o tornar-hi, utilitza les tecles de drecera.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització}=1{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització. # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="2648074677641340862">Hi ha hagut un error en el sistema operatiu durant la instal·lació. Torneu a baixar Chromium.</translation>
 <translation id="2661879430930417727">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chromium com vulguin</translation>
+<translation id="2676569452213089702">Accedeix fàcilment a Gemini a Chromium en tot el dispositiu, fins i tot si Chromium està minimitzat.</translation>
 <translation id="2711502716910134313">Pestanya de Chromium</translation>
 <translation id="2718390899429598676">Per a més seguretat, Chromium encriptarà les teves dades.</translation>
 <translation id="2721354645805494590">Per suprimir de Chromium el teu Compte de Google, tanca la sessió</translation>
@@ -309,7 +312,7 @@
 <translation id="4334241893986177674">Cerca aquesta captura de pantalla</translation>
 <translation id="4384331407722351213">Obre Chromium quan s'iniciï Windows</translation>
 <translation id="4384993550046411228">Accedeix fàcilment a les funcions que coneixes, que tant t'agraden i en què confies establint Chromium com a navegador predeterminat. Chromium es fixarà a la barra de tasques perquè hi puguis accedir ràpidament.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> requereix que llegeixis i acceptis les condicions del servei següents abans d'utilitzar el dispositiu. Aquestes condicions no amplien, modifiquen ni limiten les condicions de Chromium OS.</translation>
+<translation id="4400772909124543403">No hi ha cap actualització disponible</translation>
 <translation id="4407044323746248786">Vols sortir de Chromium igualment?</translation>
 <translation id="4413205837991854510">Mostra sempre la drecera de la cerca d'imatges</translation>
 <translation id="4415566066719264597">Permet que Chromium s'executi en segon pla</translation>
@@ -348,6 +351,7 @@
 <translation id="4746050847053251315">Vols sortir de Chromium igualment?</translation>
 <translation id="4748217263233248895">S'acaba d'aplicar una actualització de seguretat especial per a Chromium. Reinicia el navegador i restaurarem les pestanyes.</translation>
 <translation id="4771701986670315895">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> més.</translation>
+<translation id="4786083865378785874">Si Gemini a Chromium està obert, el tauler lateral es manté obert quan es creen pestanyes noves</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4814736265800133385">Fes servir Chromium sense cap compte</translation>
 <translation id="4888717733111232871">Regla d'entrada de Chromium per permetre el trànsit de mDNS.</translation>
@@ -399,6 +403,7 @@
 <translation id="555970465369471303">Per motius de seguretat, Chromium desactiva l'optimització de JavaScript quan visites un lloc web per primera vegada.
 
 Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimització.</translation>
+<translation id="5575874067957905201">Mostra Gemini a Chromium a la barra de menú de Mac i activa les tecles de drecera</translation>
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5580770360767802657">Utilitza Chromium de manera predeterminada i fixa'l</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -622,6 +627,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7867198900892795913">Chromium no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les noves funcions ni de les correccions de seguretat.</translation>
 <translation id="7872446069773932638">S'està baixant… Queden <ph name="SECONDS" /> segons</translation>
 <translation id="7873537467422636035">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chromium del compte<ph name="END_LINK" />.</translation>
+<translation id="7874369989024033742">Obre ràpidament Gemini a Chromium sempre que et calgui</translation>
 <translation id="7877212753140190672">Pregunta sobre aquesta imatge</translation>
 <translation id="7888981273428720788">Defineix Chromium com a navegador predeterminat</translation>
 <translation id="7934340546140346950">Quan és possible, Chromium actualitza automàticament les connexions no segures a HTTPS</translation>
@@ -643,6 +649,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8118331347066725040">Envia suggeriments per a la cerca amb Lens</translation>
 <translation id="8133124826068723441">Chromium OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
+<translation id="8161503455832158203">Obre Gemini a Chromium amb una drecera de teclat.</translation>
 <translation id="8164014945047474187">Condicions del servei addicionals de Chromium</translation>
 <translation id="81770708095080097">Chromium ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8177472873527554730">No es troba contingut a la pàgina</translation>
@@ -652,6 +659,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8232193495299001329">Chromium no pot verificar d'on prové aquesta extensió i és possible que no sigui segura. Suprimeix-la de Chromium perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la informació personal.</translation>
 <translation id="8248265253516264921">Si una imatge no té una descripció útil, Chromium provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="8254601181414348851">Vols iniciar la sessió a Chromium en un altre perfil?</translation>
+<translation id="8277334259226003205">Mostra Gemini a Chromium a la safata del sistema i activa les tecles de drecera</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
 <translation id="8295827201165805317">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Compra, tradueix i identifica el que veus amb la càmera a l'aplicació Chromium per a iOS</translation>
@@ -680,6 +688,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8493179195440786826">Chromium no està actualitzat</translation>
 <translation id="850264194101621529">Gràcies per triar Chromium com a navegador predeterminat.</translation>
 <translation id="8522801943730206384">Chromium pot comprovar les teves contrasenyes quan les deses</translation>
+<translation id="8525579356836940628">La instal·lació s'ha aturat</translation>
 <translation id="8548787790260785208">Rep un advertiment si Chromium troba que una de les teves contrasenyes s'ha fet pública a causa d'una violació de les dades</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algunes funcions i extensions de Chromium inclouen dreceres. Pots decidir si vols tornar-les a activar.</translation>

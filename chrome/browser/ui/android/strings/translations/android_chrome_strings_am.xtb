@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">የጠቃሚ ምክሮች ማሳወቂያዎች ማስተዋወቂያ ተዘግቷል</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1045899828449635435">ከእነዚህ ጣቢያዎች የመጣ ውሂብም ይጽዳ?</translation>
+<translation id="1049461303780085993">መልሶችን፣ ቁልፍ ነጥቦችን እና ሌሎችንም ለማግኘት Gemini በChrome ውስጥን ይሞክሩ</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1052842760770519282">አንዳንድ የይለፍ ቃላትዎ የሚደረሱ አይደሉም</translation>
 <translation id="1057623954802068161">ወደ ገጹ የላይኛው ክፍል ያሸብልሉ</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">ጥሪ ለማድረግ መታ ያድርጉ</translation>
 <translation id="232137538351753795">ወደኋላ ለመመለስ ከግራ ጠርዝ ያንሸራትቱ</translation>
 <translation id="2323763861024343754">የጣቢያ ማከማቻ</translation>
+<translation id="2327445548174191329">ከ<ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">ሁሉም ሰው ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣል እና ሁሉም የግብዣ አገናኞች ይጠፋሉ</translation>
 <translation id="2330186936255788117">ተጨማሪ እልባቶች</translation>
 <translation id="2332515770639153015">የተሻሻለ የደህንነት አሰሳ በርቷል</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">አዲስ የትር ገጽ ይክፈቱ</translation>
 <translation id="4595276580892809760">ምስሎችን ከማዕከለ ሥዕላት ያያይዙ</translation>
 <translation id="4595805675102978678">የGoogle መለያ ስህተት</translation>
+<translation id="4599585406846903742">ነጠላ ገጽ ዕይታ</translation>
 <translation id="4601095002996233687">ለሚያጠራጥሩ ውርዶች በጥልቀት የሚደረጉ ቅኝቶች።</translation>
 <translation id="4606559747793337066">አንድ ጣቢያ ወይም መተግበሪያ በገፃቸው ላይ አገናኞችን በግል ቅድሚያ ለመጫን ሲጠይቅ Chrome ገፆችን ያመሠጥራል እና ያለ ኩኪዎች በGoogle አገልጋዮች በኩል ቅድሚያ ይጭናቸዋል። ይህ ማንነትዎን ቅድሚያ ከተጫነው ጣቢያ ይደብቃል።</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ን ይክፈቱ</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">ከተጨማሪ አማራጮች አዝራርሩ ይህን ገፅ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
 <translation id="5696597120588531049">Chrome ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ደህንነትዎን ለመጠበቅ ሊያግዝዎት ይችላል</translation>
 <translation id="5698878456427040674">የተመረጠው መለያ የሚደገፍ እንደሆነ ይፈትሹ።</translation>
+<translation id="5700415746238689851">Geminiን ክፈት</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ከተከታታይ ወደብ ጋር መገናኘት ይፈልጋል</translation>
 <translation id="5715150588940290235">የተቀመጡ የደህንነት ኮዶች ይሰረዙ?</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">አይፈለጌ መልዕክትን ሪፖርት አድርግ</translation>
 <translation id="8277710303010772444">ፍለጋ ይጀምሩ</translation>
 <translation id="8279945625179116733">በ<ph name="APP_NAME" /> ጥበቃ ይደረግለታል</translation>
+<translation id="8280797717392145626">የደረሱ አገናኞች</translation>
 <translation id="8281886186245836920">ዝለል</translation>
 <translation id="8282297628636750033">በሚቻልበት ጊዜ ጠቆር ያለ ገጽታን ጣቢያዎች ላይ ተግብር</translation>
 <translation id="8282950411412455249">ወደ ደህንነት ቅንብሮች ሂድ</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">ለ<ph name="SITE_NAME" /> ፈቃዶች እንደገና ተፈቅደዋል</translation>
 <translation id="8865415417596392024">በመለያዎ ውስጥ የChrome ውሂብ</translation>
 <translation id="8872506776304248286">በመተግበሪያ ውስጥ ክፈት</translation>
+<translation id="8880275451109933094">ሁለት ገጽ ዕይታ</translation>
 <translation id="8890668505403261809">ማንነት የማያሳውቅ ትሮችዎን ይፈልጉ</translation>
 <translation id="8892234476517513962">አስቀድመው ገብተዋል</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />፣ የተመረጠ እየቀዳ ያለ ማንነት የማያሳውቅ ትር</translation>

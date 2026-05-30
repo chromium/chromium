@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1000614056227025171">Arket på nedre delen av skärmen för att anpassa kampanjens startsida har öppnats över hela skärmen</translation>
 <translation id="1006017844123154345">Öppna onlineversionen</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1046742265332833834">Blått tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Webbplatser får spela upp ljud</translation>
 <translation id="3065787901655140044">Avancerat skydd är aktiverat</translation>
 <translation id="3069226013421428034">Tillåt tredjepartsinloggning på en viss webbplats.</translation>
+<translation id="3084983642903364837">Redigera startsidan senare via trepunktsmenyn.</translation>
 <translation id="310297983047869047">Föregående bild</translation>
 <translation id="3108122610701115301">Ange standard</translation>
 <translation id="310979712355504754">Ta bort alla</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Ansluten till en serieport</translation>
 <translation id="4223404254440398437">Mikrofon tillåts inte</translation>
 <translation id="4226663524361240545">Aviseringar kan göra att enheten vibrerar</translation>
+<translation id="4227965147357783918">Arket på nedre delen av skärmen för att anpassa kampanjens startsida har öppnats över halva skärmen</translation>
 <translation id="4259722352634471385">Webbadressen har blockerats: <ph name="URL" /></translation>
 <translation id="4274673989874969668">När du har lämnat en webbplats kan den fortsätta med synkroniseringen i syfte att slutföra uppgifter som att ladda upp foton eller skicka ett chattmeddelande</translation>
 <translation id="4278390842282768270">Tillåts</translation>

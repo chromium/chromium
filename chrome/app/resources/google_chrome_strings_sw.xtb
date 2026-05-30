@@ -35,7 +35,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1290883685122687410">Hitilafu ya kuweka mipangilio: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Tafadhali subiri Chrome inaposakinisha sasisho mpya za mfumo.</translation>
 <translation id="1330562121671411446">Tambua lugha</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> inahitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, hayarekebishi wala hayapunguzi Sheria na Masharti ya Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Unaweza kubadilisha ili uone manenosiri kwenye wasifu mwingine wa Chrome</translation>
 <translation id="1343830902827845050">Ingia katika Chrome</translation>
 <translation id="1356661055722410047">Mpya! Unaweza kutafsiri maandishi na picha kwenye skrini yako</translation>
@@ -640,7 +639,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Programu ya Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> inahitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, hayarekebishi wala hayapunguzi Sheria na Masharti ya Mfumo wa Uendeshaji wa Google Chrome.</translation>
 <translation id="7627609214560473136">Ili kulinda data yako, ruhusu Chrome iondoe ruhusa kwenye tovuti ambazo hujatembelea hivi karibuni.</translation>
 <translation id="7629695634924605473">Chrome hukuruhusu ujue iwapo manenosiri yako yameathiriwa</translation>
 <translation id="7641148173327520642">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Google Chrome ifungue <ph name="ALTERNATIVE_BROWSER_NAME" /> ili kufikia <ph name="TARGET_URL_HOSTNAME" />.</translation>

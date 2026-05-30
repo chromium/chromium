@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promotion des notifications de conseils fermée</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045899828449635435">Supprimer aussi les données de ces sites?</translation>
+<translation id="1049461303780085993">Essayez Gemini dans Chrome pour obtenir des réponses, des points principaux à retenir et plus encore</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1052842760770519282">Certains de vos mots de passe ne sont pas accessibles</translation>
 <translation id="1057623954802068161">Faire défiler jusqu'en haut de la page</translation>
@@ -297,6 +298,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2318045970523081853">Touchez ici pour faire un appel</translation>
 <translation id="232137538351753795">Balayez l'écran à partir de la gauche pour revenir en arrière</translation>
 <translation id="2323763861024343754">Stockage des sites</translation>
+<translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et tous les liens d'invitation seront désactivés.</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
 <translation id="2332515770639153015">Navigation sécurisée améliorée activée</translation>
@@ -834,6 +836,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4595237294768457124">Ouvrez une page Nouvel onglet.</translation>
 <translation id="4595276580892809760">Joindre des images de la galerie</translation>
 <translation id="4595805675102978678">Erreur de compte Google</translation>
+<translation id="4599585406846903742">Affichage d'une seule page</translation>
 <translation id="4601095002996233687">Analyses approfondies des téléchargements suspects.</translation>
 <translation id="4606559747793337066">Lorsqu'un site ou une appli demande de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par le biais de serveurs Google sans témoins. Cela permet de masquer votre identité auprès du site préchargé.</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est pris en charge.</translation>
+<translation id="5700415746238689851">Ouvrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> souhaite se connecter à un port série</translation>
 <translation id="5715150588940290235">Supprimer les codes de sécurité enregistrés?</translation>
 <translation id="572328651809341494">Onglets récents</translation>
@@ -1769,6 +1773,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8271267069224406035">Signaler comme indésirable</translation>
 <translation id="8277710303010772444">Lancer la recherche</translation>
 <translation id="8279945625179116733">Sécurisé par <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Liens reçus</translation>
 <translation id="8281886186245836920">Ignorer</translation>
 <translation id="8282297628636750033">Si possible, appliquer un thème sombre aux sites</translation>
 <translation id="8282950411412455249">Accéder aux paramètres de sécurité</translation>
@@ -1904,6 +1909,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8863714995118816041">Autorisations à nouveau accordées pour <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Données relatives à Chrome dans votre compte</translation>
 <translation id="8872506776304248286">Ouvrir dans l'appli.</translation>
+<translation id="8880275451109933094">Affichage de deux pages</translation>
 <translation id="8890668505403261809">Recherchez dans vos onglets de navigation privée</translation>
 <translation id="8892234476517513962">Vous êtes déjà connecté</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné avec enregistrement en cours</translation>

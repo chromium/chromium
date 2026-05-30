@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1000614056227025171">Ana sayfanızı özelleştirin tanıtım alt sayfası tam ekranda açıldı</translation>
 <translation id="1006017844123154345">İnternet'te aç</translation>
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1046742265332833834">Mavi tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Siteler ses çalabilir</translation>
 <translation id="3065787901655140044">Gelişmiş Koruma etkin</translation>
 <translation id="3069226013421428034">Belirli bir sitede üçüncü taraf oturum açmaya izin verin.</translation>
+<translation id="3084983642903364837">Ana sayfanızı daha sonra 3 noktalı menüden düzenleyebilirsiniz.</translation>
 <translation id="310297983047869047">Önceki slayt</translation>
 <translation id="3108122610701115301">Varsayılan olarak ayarla</translation>
 <translation id="310979712355504754">Tümünü sil</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Seri bağlantı noktasına bağlandı</translation>
 <translation id="4223404254440398437">Mikrofona izin verilmiyor</translation>
 <translation id="4226663524361240545">Bildirimler cihazı titretebilir</translation>
+<translation id="4227965147357783918">Ana sayfanızı özelleştirin tanıtım alt sayfası, ekranın yarısına kadar açıldı</translation>
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Siz bir siteden çıktıktan sonra o site, fotoğrafları yükleme veya sohbet mesajı gönderme gibi görevleri tamamlamak için senkronizasyona devam edebilir</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>

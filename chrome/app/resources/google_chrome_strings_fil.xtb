@@ -9,6 +9,7 @@
 <translation id="1028061813283459617">Para ma-delete ang data mula sa pag-browse sa device lang na ito, habang pinapanatili ito sa iyong Google Account, <ph name="BEGIN_LINK" />mag-sign out sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">I-click para isara ang dialog ng pag-sign in sa Chrome</translation>
 <translation id="1051793555070215510">Tulungan kaming pahusayin ang Incognito sa pamamagitan ng pagsagot sa 1 minutong survey na ito.</translation>
+<translation id="1055295352198814912">Ipakita ang Gemini sa Chrome sa menu bar ng Mac at i-on ang keyboard shortcut</translation>
 <translation id="1059838145689930908">Para magamit ang extension na ito bilang <ph name="USER_EMAIL_ADDRESS" />, mag-sign in sa Chrome.</translation>
 <translation id="1065672644894730302">Hindi mabasa ang iyong mga kagustuhan.
 
@@ -34,7 +35,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Mangyaring maghintay habang ini-install ng Chrome ang mga pinakabagong update sa system.</translation>
 <translation id="1330562121671411446">I-detect ang wika</translation>
-<translation id="1335640173511558774">Hinihiling ng <ph name="MANAGER" /> na basahin at tanggapin mo ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago, o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puwede kang lumipat para makita ang mga password mula sa ibang profile sa Chrome</translation>
 <translation id="1343830902827845050">Mag-sign in sa Chrome</translation>
 <translation id="1356661055722410047">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen</translation>
@@ -282,6 +282,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3941890832296813527">Error sa pag-install: Invalid o hindi sinusuportahan ang filename ng installer.</translation>
 <translation id="395904275706073188">Hindi mababasa ang mga pinoprotektahang page. Sumubok ng ibang page.</translation>
+<translation id="3965532487635448963">Ipakita ang Gemini sa Chrome sa system tray at i-on ang keyboard shortcut</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3968962723676998462">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mo, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Gustong i-delete ng Google Chrome ang iyong data sa Google Password Manager. I-type ang iyong password sa Windows para payagan ito.</translation>
@@ -324,6 +325,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4367027658822022112">Puwede mong i-pin ang Google Lens para sa madaling pag-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
 <translation id="4372389195695053189">Chrome na ang iyong default browser</translation>
 <translation id="4389991535395284064">Kapag nagba-browse sa Incognito mode, bibigyan ka ng babala ng Chrome bago nito i-load ang isang site na gumagamit ng hindi secure na koneksyon</translation>
+<translation id="4400772909124543403">Walang available na update</translation>
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
 <translation id="4434353761996769206">Error sa installer: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Pag-sign in sa Network - <ph name="PAGE_TITLE" /></translation>
@@ -362,6 +364,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4891791193823137474">Hayaan ang Google Chrome na tumakbo sa background</translation>
 <translation id="4895437082222824641">Buksan ang link sa bagong &amp;tab ng Chrome</translation>
 <translation id="4896867431081882115">Magkaroon ng madaling access sa mga feature na alam, gusto, at pinagkakatiwalaan mo sa pamamagitan ng pagtatakda sa Chrome bilang default browser mo. Ipi-pin ang Chrome sa iyong taskbar para sa mabilis na pag-access.</translation>
+<translation id="4904953848704395458">Buksan ang Gemini sa Chrome gamit ang keyboard shortcut.</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4918844574251943176">Nakopya na ang larawan</translation>
 <translation id="4926882258455737990">Para gumamit ng ibang Google Account sa Gemini sa Chrome, <ph name="BEGIN_LINK" />gumawa ng bagong profile<ph name="END_LINK" /> at mag-sign in gamit ang account na gusto mo</translation>
@@ -524,6 +527,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6434035853014503219">Salamat sa pagpili sa Chrome bilang iyong default browser!</translation>
 <translation id="6438015621983209660">I-extend ang Pinahusay na Ligtas na Pag-browse gamit ang Chrome sa iyong telepono</translation>
 <translation id="6442774133615368941">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera sa Chrome iOS app</translation>
+<translation id="6448835208126432197">Para pumili ng bahagi ng screen sa Gemini sa Chrome, gamitin ang keyboard shortcut.</translation>
 <translation id="6473905796280459355">Pumunta sa page na Tungkol sa Chrome</translation>
 <translation id="6481963882741794338">I-link ang Chrome at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
 <translation id="648319183876919572">Mas maraming magagawa ang Pinahusay na Ligtas na Pag-browse para protektahan ka laban sa mga mapanganib na website at download</translation>
@@ -536,6 +540,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6520670145826811516">Para magamit ang iyong lokasyon, bigyan ng access ang Chrome sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">History sa Chrome</translation>
 <translation id="6532945796722480006">Buksan ang Gemini sa Chrome Canary</translation>
+<translation id="6539493053177300926">Madaling pag-access para magamit ang Gemini sa Chrome sa iyong device, kahit na naka-minimize ang Chrome.</translation>
 <translation id="6585124893636629274">Isara ang Gemini sa Chrome</translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
 <translation id="6631524303639368205">Magpatuloy kung saan ka huminto: Ni-restore ng Chrome ang iyong mga tab mula sa huling session mo. Puwede mo itong i-off sa</translation>
@@ -595,6 +600,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7161904924553537242">Maligayang pagdating sa Google Chrome</translation>
 <translation id="7193885263065350793">Isinasara ng iyong organisasyon ang Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7257689164441568409">Para umalis o bumalik sa Gemini sa Chrome, gamitin ang keyboard shortcut.</translation>
 <translation id="7274402351400635015">Magagamit mo ang Chrome sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app. Mapi-pin din ito sa iyong taskbar.</translation>
 <translation id="7285616922384953075">Pinapamahalaan ni <ph name="MANAGER" /> ang Chrome</translation>
 <translation id="7285990705317078173">I-download ang Chrome sa iyong telepono para i-track ang mga presyo at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
@@ -633,7 +639,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474">Kinakailangan ng <ph name="MANAGER" /> na basahin mo at tanggapin ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para protektahan ang iyong data, hayaan ang Chrome na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan.</translation>
 <translation id="7629695634924605473">Ipinapaalam sa iyo ng Chrome kung nakompromiso ang mga password mo</translation>
 <translation id="7641148173327520642">Na-configure ng iyong system administrator ang Google Chrome para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -704,6 +709,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8221491193165283816">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, mag-click dito.</translation>
 <translation id="8253851811470049684">Magbukas ng mga link sa Chrome mula sa anumang app at panatilihing naa-access ang browser sa iyong taskbar</translation>
 <translation id="8255190535488645436">Ginagamit ng Google Chrome ang iyong camera at mikropono.</translation>
+<translation id="8260086374035800939">Kung nakabukas ang Gemini sa Chrome, mananatiling nakabukas ang panel sa gilid kapag gumagawa ng mga bagong tab</translation>
 <translation id="8267953129876836456">Nakakita ang Chrome ng ilang rekomendasyon sa kaligtasan para sa pagsusuri mo</translation>
 <translation id="8286862437124483331">Sinusubukan ng Google Chrome na ipakita ang mga password. I-type ang iyong password sa Windows upang payagan ito.</translation>
 <translation id="829923460755755423">Magdagdag ng shortcut papuntang Google Password Manager</translation>
@@ -715,6 +721,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
 <translation id="8366770919198174997">Pinapahina ang performance pero ginagawang mas matatag ang Chrome laban sa mga attack</translation>
 <translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
+<translation id="8367950957770994118">Mabilisang buksan ang Gemini sa Chrome sa tuwing kailangan mo ito</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8377158135256176353">I-toggle ang Gemini sa Chrome Canary</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>
@@ -732,6 +739,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8498858610309223613">Naglapat ng espesyal na update sa seguridad para sa Google Chrome. Mag-restart na at ire-restore namin ang iyong mga tab.</translation>
 <translation id="8521348052903287641">Inbound na panuntunan para sa Google Chrome Dev upang payagan ang trapiko ng mDNS.</translation>
 <translation id="852529348814672339">Ipakita ang Chrome sa wikang ito</translation>
+<translation id="8525579356836940628">Inihinto ang Pag-install</translation>
 <translation id="8533056045953418157">Itakda ang Google Chrome bilang iyong default na viewer ng PDF</translation>
 <translation id="8555465886620020932">Error sa serbisyo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Maghanap sa listahan ng wika</translation>

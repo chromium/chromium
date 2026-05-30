@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1000614056227025171">Panel inferior da mensaxe promocional Personaliza a páxina de inicio aberto a altura completa</translation>
 <translation id="1006017844123154345">Abrir en liña</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1046742265332833834">Tema azul</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Os sitios poden reproducir sons</translation>
 <translation id="3065787901655140044">A opción Protección avanzada está activada</translation>
 <translation id="3069226013421428034">Permite o inicio de sesión de terceiros para un sitio específico.</translation>
+<translation id="3084983642903364837">Podes editar a páxina de inicio máis tarde no menú de tres puntos.</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3108122610701115301">Definir como predeterminado</translation>
 <translation id="310979712355504754">Eliminar todo</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Estableceuse a conexión cun porto en serie</translation>
 <translation id="4223404254440398437">O acceso ao micrófono non está permitido</translation>
 <translation id="4226663524361240545">O dispositivo pode vibrar ao recibir notificacións</translation>
+<translation id="4227965147357783918">Panel inferior da mensaxe promocional Personaliza a páxina de inicio aberto a media altura</translation>
 <translation id="4259722352634471385">A navegación está bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Unha vez que saes dun sitio, este pode seguir sincronizando datos para finalizar tarefas (por exemplo, cargar fotos ou enviar mensaxes de chat)</translation>
 <translation id="4278390842282768270">Permitida</translation>

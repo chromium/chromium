@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">AI Modu'nu kapat</translation>
 <translation id="1554477036522844996">Yeni Pencere</translation>
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
+<translation id="1560153516220021659">Daraltılmış ikincil araç çubuğu düğmesi</translation>
 <translation id="1565371473877914088">Yeni Gizli Sekme</translation>
 <translation id="1567960978791353852">Okuma Modu'nu Göster</translation>
 <translation id="1571780780926010134">Gizli mod sekmeleri</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Posta gönderildi.</translation>
 <translation id="1582732959743469162">Bu, geçerli indirme işleminizin tüm ilerlemesini durduracaktır.</translation>
 <translation id="1594034544529347967">Başlangıç zamanı</translation>
+<translation id="1598485494295307681">Dinliyorum</translation>
 <translation id="1598751033135758830">Uygulamada aç</translation>
 <translation id="1600571977391127696">Bazı içerikler herkese uygun olmayabilir.</translation>
 <translation id="1601560923496285236">Uygula</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Maalesef öğeniz paylaşılırken bir sorun oluştu.</translation>
 <translation id="4944543191714094452">Sayfada Bul…</translation>
 <translation id="4945756290001680296">Şifre ayarlarına erişin</translation>
+<translation id="4946307855175300628">Yanıtlanıyor</translation>
 <translation id="4949302115427722371">Ayarları yönet…</translation>
 <translation id="4958444002117714549">Listeyi genişlet</translation>
 <translation id="496392417432935267">Başka yerde açılmış</translation>
@@ -1552,6 +1555,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6355820183143562453">Fiyat takibi kartını gizle</translation>
 <translation id="6355820205320395730">Zayıf şifrelerin tahmin edilmesi kolaydır. Güçlü şifreler oluşturduğunuzdan emin olun. <ph name="BEGIN_LINK" />Güvenlikle ilgili diğer ipuçlarına bakın.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Şifreleriniz ve yer işaretleriniz gibi tüm verilerinize erişmek için oturum açın.</translation>
+<translation id="6364268785720100355">Yer işaretlerinize, şifrelerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın.</translation>
 <translation id="6368038301482806847">Listeden bir arama motoru seçin.</translation>
 <translation id="6368102751067608420">Şifre yöneticisindeki tüm verileri silmek için</translation>
 <translation id="6372558618707314581">İstediğiniz sayfaya gidin.</translation>
@@ -1681,6 +1685,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Hesap verilerinizi inceleyin</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geçmiş öğesi içe aktarıldı}other{{count} geçmiş öğesi içe aktarıldı}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Klavyenizin üzerinde {count} tane kimlik bilgisi seçeneği mevcut.}other{Klavyenizin üzerinde {count} tane kimlik bilgisi mevcut.}}</translation>
 <translation id="6755200887046212842">Hesapları Yönetme</translation>
 <translation id="6757899787818440812">Orta yükseklik</translation>
 <translation id="6759709389246683070">Bu sekmeye dokunup basılı tutarak daha sonra tekrar göz atacağınız bir hatırlatıcı oluşturabilirsiniz</translation>

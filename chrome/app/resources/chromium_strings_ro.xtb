@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1232234696885483911">Când deschizi Căutarea de imagini, titlul paginii, adresa URL și conținutul, inclusiv PDF-urile, vor fi trimise automat la server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">După ce te conectezi, poți folosi parolele și alte date din Contul Google în Chromium. Pentru a modifica această setare, accesează Contul tău în Chromium.</translation>
+<translation id="1257483544893909270">Pentru a selecta o parte a ecranului în Gemini în Chromium, folosește comanda rapidă de la tastatură.</translation>
 <translation id="1262876892872089030">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chromium. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="1265577313130862557">Chromium a blocat descărcarea, deoarece fișierul este periculos</translation>
 <translation id="126567311906253476">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chromium cu același cont</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organizația ta poate să vadă și să gestioneze datele de navigare, cum ar fi marcajele, istoricul și parolele. Nu poate să vadă datele de navigare din alte profiluri Chromium</translation>
 <translation id="2635452620547538388">Confirmă-ți identitatea pentru a folosi și a salva datele Chromium în contul <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Pentru a ieși din Gemini sau a reveni la Gemini în Chromium, folosește comanda rapidă de la tastatură.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare}=1{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
 <translation id="2661879430930417727">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc</translation>
+<translation id="2676569452213089702">Acces ușor pentru a folosi Gemini în Chromium pe dispozitiv, chiar dacă Chromium este minimizat.</translation>
 <translation id="2711502716910134313">Fila Chromium</translation>
 <translation id="2718390899429598676">Pentru un plus de securitate, Chromium îți va cripta datele.</translation>
 <translation id="2721354645805494590">Pentru a elimina Contul Google din Chromium, deconectează-te</translation>
@@ -309,7 +312,7 @@
 <translation id="4334241893986177674">Caută în această captură de ecran</translation>
 <translation id="4384331407722351213">Lansează Chromium când pornește Windows</translation>
 <translation id="4384993550046411228">Accesează cu ușurință funcțiile pe care le cunoști, le apreciezi și în care ai încredere setând Chromium ca browser prestabilit. Chromium va fi fixat în bara de activități pentru acces rapid.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile sistemului de operare Chromium.</translation>
+<translation id="4400772909124543403">Nu este disponibilă nicio actualizare</translation>
 <translation id="4407044323746248786">Ieși din Chromium oricum?</translation>
 <translation id="4413205837991854510">Afișează întotdeauna comanda rapidă pentru Căutarea de imagini</translation>
 <translation id="4415566066719264597">Permite Chromium să ruleze în fundal</translation>
@@ -348,6 +351,7 @@
 <translation id="4746050847053251315">Ieși din Chromium oricum?</translation>
 <translation id="4748217263233248895">Tocmai a fost aplicată o actualizare de securitate specială pentru Chromium. Repornește acum, iar filele vor fi restabilite.</translation>
 <translation id="4771701986670315895">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="COUNT" />.</translation>
+<translation id="4786083865378785874">Dacă Gemini în Chromium este deschis, panoul lateral rămâne deschis când creezi file noi</translation>
 <translation id="479167709087336770">Folosește același verificator ortografic folosit în Căutarea Google. Textul pe care îl introduci în browser este trimis la Google. Poți schimba acest comportament în setări.</translation>
 <translation id="4814736265800133385">Folosește Chromium fără un cont</translation>
 <translation id="4888717733111232871">Regula de intrare pentru Chromium pentru a permite traficul mDNS.</translation>
@@ -399,6 +403,7 @@
 <translation id="555970465369471303">Din motive de securitate, Chromium dezactivează optimizarea JavaScript când accesezi un site pentru prima dată.
 
 Dacă această pagină nu funcționează conform așteptărilor, încearcă să permiți optimizarea.</translation>
+<translation id="5575874067957905201">Afișează Gemini în Chromium în bara de meniu Mac și activează comanda rapidă de la tastatură</translation>
 <translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5580770360767802657">Folosește Chromium în mod prestabilit și fixează-l</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
@@ -622,6 +627,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7867198900892795913">Chromium nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
 <translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>
 <translation id="7873537467422636035">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Deschide rapid Gemini în Chromium oricând ai nevoie</translation>
 <translation id="7877212753140190672">Întreabă despre această imagine</translation>
 <translation id="7888981273428720788">Setează Chromium ca browser prestabilit</translation>
 <translation id="7934340546140346950">Chromium face automat upgrade conexiunilor nesecurizate la HTTPS, dacă este posibil</translation>
@@ -643,6 +649,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8118331347066725040">Trimite feedback pentru căutare cu Lens</translation>
 <translation id="8133124826068723441">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
+<translation id="8161503455832158203">Deschide Gemini în Chromium cu o comandă rapidă de la tastatură.</translation>
 <translation id="8164014945047474187">Termenii și condițiile suplimentare pentru Chromium</translation>
 <translation id="81770708095080097">Fișierul este periculos, așadar Chromium l-a blocat.</translation>
 <translation id="8177472873527554730">Nu se găsește conținut în pagină</translation>
@@ -652,6 +659,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8232193495299001329">Chromium nu poate verifica de unde provine această extensie. Ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="8248265253516264921">Dacă o imagine nu are o descriere utilă, Chromium va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
 <translation id="8254601181414348851">Te conectezi la Chromium cu un profil nou?</translation>
+<translation id="8277334259226003205">Afișează Gemini în Chromium în bara de sistem și activează comanda rapidă de la tastatură</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te avertizează<ph name="END_LINK" /> cu privire la site-urile și descărcările nesigure</translation>
 <translation id="8295827201165805317">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Cumpără, tradu și identifică ceea ce vezi cu camera foto în Chromium pentru iOS</translation>
@@ -680,6 +688,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8493179195440786826">Chromium nu este actualizat</translation>
 <translation id="850264194101621529">Mulțumim că ai ales Chromium ca browser prestabilit!</translation>
 <translation id="8522801943730206384">Chromium îți poate verifica parolele dacă le salvezi</translation>
+<translation id="8525579356836940628">Instalare oprită</translation>
 <translation id="8548787790260785208">Primește avertismente dacă Chromium găsește una dintre parolele tale într-o încălcare a securității datelor publice</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Unele funcții și extensii Chromium au comenzi rapide. Poți alege să le reactivezi.</translation>

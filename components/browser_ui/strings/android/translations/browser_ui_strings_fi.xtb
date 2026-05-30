@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1000614056227025171">Etusivun räätälöintipromon alapaneeli avattu kokonaan</translation>
 <translation id="1006017844123154345">Avaa verkkoversio</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1046742265332833834">Sininen teema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Sivustot voivat toistaa ääntä</translation>
 <translation id="3065787901655140044">Lisäsuojaus on päällä</translation>
 <translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
+<translation id="3084983642903364837">Voit muokata etusivua myöhemmin kolmen pisteen valikosta.</translation>
 <translation id="310297983047869047">Edellinen dia</translation>
 <translation id="3108122610701115301">Aseta oletukseksi</translation>
 <translation id="310979712355504754">Poista kaikki</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Yhdistetty sarjaporttiin</translation>
 <translation id="4223404254440398437">Pääsyä mikrofoniin ei sallittu</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
+<translation id="4227965147357783918">Etusivun räätälöintipromon alapaneeli avattu puoliksi</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kun lähdet sivustolta, se voi jatkaa synkronointia viimeistelläkseen asioita, kuten kuvien latauksen tai chat-viestin lähettämisen</translation>
 <translation id="4278390842282768270">Sallittu</translation>

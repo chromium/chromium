@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Белгісіз саясат.</translation>
 <translation id="1227677022489889280">Жылжыту себебін көрсетіңіз (міндетті)</translation>
 <translation id="1228893227497259893">Қате нысан идентификаторы</translation>
+<translation id="122989279399348496">Аккаунтқа кірген кезде, <ph name="DOMAIN" /> қолдау көрсетілетін сайттарда <ph name="EMAIL" /> мекенжайын растай алады, сондықтан кіріс қалтасын тексерудің қажеті жоқ.</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматты түрде анықталған)</translation>
 <translation id="1232569758102978740">Атаусыз</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> өрісін толтыру қажет.</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бірнеше әрекет қолжетімді, оларды қарап шығу үшін Tab пернесін басыңыз.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуалдық карта мәліметтері</translation>
+<translation id="1802420021606590788">Chrome бет атаулары мен URL мекенжайларын бұлттағы құпия кеңістікте өңдейді.</translation>
 <translation id="1803254472779303354">Тінтуірді құлыптауға рұқсат берілді</translation>
 <translation id="1803351196216024260">Сайттар микрофоныңызды қолдануға рұқсат сұрай алады</translation>
 <translation id="1804258830776932716">Аккаунтты жылдам байланыстыру арқылы Pix-ті қосыңыз.</translation>
@@ -3026,6 +3028,7 @@
 <translation id="5742806904559466333">Барлар, клубтар және түнгі өмір</translation>
 <translation id="5743684619253032786">Тырнақ күтіміне арналған өнімдер</translation>
 <translation id="574392208103952083">Орташа</translation>
+<translation id="5745586894920491759">Chrome бет атаулары мен URL мекенжайларын бұлтта өңдейді.</translation>
 <translation id="5745733273847572235">Орналасқан жеріңізді сұрай алады</translation>
 <translation id="5750869797196646528">Қолды бақылау</translation>
 <translation id="5752327398324808817">Бір немесе екі сөз енгізіңіз.</translation>
@@ -3420,6 +3423,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Журналдарды көру</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси-серверді, брандмауэрді және қауіпсіз DNS конфигурациясын тексеру<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Электрондық мекенжайларды автоматты түрде растау</translation>
 <translation id="6366710531182496394">Сол жағын екі рет қапсыру</translation>
 <translation id="6367196786591004737">Жазбаны жою</translation>
 <translation id="6370022303958842211">Жүйеге кіру, (сонымен қатар жүйеге кіре алмау себептері), жүйеден шығу, құлыптау және құлыпты ашу сияқты әрекеттер</translation>
@@ -4064,6 +4068,7 @@
 <translation id="7388380253839603603">Бензин бағасы мен көлікке жанармай құю</translation>
 <translation id="7388594495505979117">{0,plural, =1{Құрылғыңыз 1 минуттан кейін қайта қосылады}other{Құрылғыңыз # минуттан кейін қайта қосылады}}</translation>
 <translation id="7393161616326137353">Шытырман ойындар</translation>
+<translation id="7393243238767102021"><ph name="DOMAIN" /> қолданбасына осы электрондық мекенжайды автоматты түрде растауға рұқсат беру керек пе?</translation>
 <translation id="7393475648162498734">Төлеген кезде карталарда болатын бонустарды көрсетеді.</translation>
 <translation id="7393971683644170444">Карта провайдеріне қосылып жатыр...</translation>
 <translation id="739728382607845710">Төлемді өңдегіш белгішесі</translation>
@@ -5059,6 +5064,7 @@
 <translation id="8963117664422609631">Сайт параметрлеріне өту</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Ұсыныстар:<ph name="MARKUP_2" />Деректер қосылымы бар екендігін тексеріңіз<ph name="MARKUP_3" />Бұл веб-бетті кейінірек қайта жүктеңіз<ph name="MARKUP_4" />Енгізген мекенжайды тексеріңіз<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Жергілікті файлдар <ph name="HOURS" /> сағаттан кейін жойылады</translation>
+<translation id="8964904785315870349">Расталған электрондық мекенжай</translation>
 <translation id="8968766641738584599">Картаны сақтау</translation>
 <translation id="8970887620466824814">Бірдеңе дұрыс болмады.</translation>
 <translation id="8971063699422889582">Сервер сертификатының мерзімі аяқталды.</translation>

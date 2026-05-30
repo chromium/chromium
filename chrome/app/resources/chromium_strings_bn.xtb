@@ -312,7 +312,6 @@
 <translation id="4334241893986177674">এই স্ক্রিনশট সার্চ করুন</translation>
 <translation id="4384331407722351213">Windows চালু হলে Chromium লঞ্চ করুন</translation>
 <translation id="4384993550046411228">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে, আপনার পরিচিত, পছন্দের এবং বিশ্বস্ত ফিচারে সহজেই অ্যাক্সেস পান। দ্রুত অ্যাক্সেসের জন্য Chromium আপনার টাস্কবারে পিন করা হবে।</translation>
-<translation id="439358628917130594"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত ChromiumOS-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="4400772909124543403">কোনও আপডেট উপলভ্য নেই</translation>
 <translation id="4407044323746248786">তা স্বত্তেও Chromium ছেড়ে যাবেন?</translation>
 <translation id="4413205837991854510">ছবি সার্চ করা শর্টকাট সবসময় দেখুন</translation>
@@ -372,6 +371,7 @@
 <translation id="5187123684706427865">Chromium অ্যাকাউন্ট আবার যাচাই করতে হবে</translation>
 <translation id="5231355151045086930">Chromium থেকে সাইন-আউট করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
+<translation id="5249261924633168472">Chromium ছদ্ম&amp;বেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="5254739261293693943">এই ভিডিওর ব্যাপারে জিজ্ঞাসা করুন</translation>
 <translation id="5276305953263010518">যে কোনও সময় পাসওয়ার্ড সেভ করার জন্য Chromium অ্যাপ ডাউনলোড করুন</translation>
 <translation id="5277894862589591112">আপনার পরিবর্তনগুলি প্রয়োগ করতে, Chromium রিলঞ্চ করুন</translation>

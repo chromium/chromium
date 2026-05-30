@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">提示通知宣傳內容已關閉</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1045899828449635435">要一併清除這些網站中的資料嗎？</translation>
+<translation id="1049461303780085993">試用 Chrome 內建 Gemini，取得解答、重點摘要等資訊</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1052842760770519282">無法存取部分密碼</translation>
 <translation id="1057623954802068161">捲動到頁面頂端</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">輕觸即可撥打電話</translation>
 <translation id="232137538351753795">從左側邊緣向內滑動即可返回</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
+<translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">所有共用對象都將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，邀請連結也會全部失效</translation>
 <translation id="2330186936255788117">更多書籤</translation>
 <translation id="2332515770639153015">已啟用安全瀏覽強化防護功能</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">開啟新分頁</translation>
 <translation id="4595276580892809760">附上相片庫中的圖片</translation>
 <translation id="4595805675102978678">Google 帳戶錯誤</translation>
+<translation id="4599585406846903742">單頁檢視模式</translation>
 <translation id="4601095002996233687">提供深入掃描功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606559747793337066">網站或應用程式要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器加密網頁並預先載入，且不會使用 Cookie。這麼做可在預先載入網站中隱藏你的身分。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">透過 [更多選項] 按鈕將這個網頁翻譯成任何語言</translation>
 <translation id="5696597120588531049">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
+<translation id="5700415746238689851">開啟 Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> 要求與序列埠連線</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">檢舉垃圾訊息</translation>
 <translation id="8277710303010772444">開始搜尋</translation>
 <translation id="8279945625179116733">安全性服務提供者：<ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">已收到連結</translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282297628636750033">盡可能對網站套用深色主題</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> 已重獲權限</translation>
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
 <translation id="8872506776304248286">在應用程式中開啟</translation>
+<translation id="8880275451109933094">雙頁檢視模式</translation>
 <translation id="8890668505403261809">搜尋無痕分頁</translation>
 <translation id="8892234476517513962">你已成功登入</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />，選取的無痕分頁，正在錄製媒體</translation>

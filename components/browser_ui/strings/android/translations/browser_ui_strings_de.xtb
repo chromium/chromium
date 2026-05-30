@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1000614056227025171">Ansicht am unteren Rand für das Angebot zum Anpassen der Startseite ist vollständig geöffnet</translation>
 <translation id="1006017844123154345">Online öffnen</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1046742265332833834">Blaues Design</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Websites dürfen Ton wiedergeben</translation>
 <translation id="3065787901655140044">Erweitertes Sicherheitsprogramm ist aktiviert</translation>
 <translation id="3069226013421428034">Hier kannst du Websites angeben, für die die Anmeldung über Drittanbieter erlaubt werden soll.</translation>
+<translation id="3084983642903364837">Du kannst deine Startseite später über das Dreipunkt-Menü bearbeiten.</translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3108122610701115301">Als Standard festlegen</translation>
 <translation id="310979712355504754">Alle löschen</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Mit einem seriellen Port verbunden</translation>
 <translation id="4223404254440398437">Mikrofonnutzung nicht zulässig</translation>
 <translation id="4226663524361240545">Bei Benachrichtigungen kann das Gerät vibrieren</translation>
+<translation id="4227965147357783918">Ansicht am unteren Rand für das Angebot zum Anpassen der Startseite ist halb geöffnet</translation>
 <translation id="4259722352634471385">Die Navigation zu <ph name="URL" /> ist blockiert.</translation>
 <translation id="4274673989874969668">Wenn du eine Website verlässt, kann die Synchronisierung trotzdem fortgesetzt werden, um Aufgaben wie das Hochladen von Fotos oder das Versenden einer Chatnachricht zu beenden</translation>
 <translation id="4278390842282768270">Zugelassen</translation>

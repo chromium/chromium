@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">ಸೆಟಪ್ ದೋಷ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">ಇತ್ತೀಚಿನ ಸಿಸ್ಟಂ ನವೀಕರಣಗಳನ್ನು Chrome ಸ್ಥಾಪಿಸುವಾಗ ದಯವಿಟ್ಟು ಕಾಯಿರಿ.</translation>
 <translation id="1330562121671411446">ಭಾಷೆಯನ್ನು ಪತ್ತೆ ಮಾಡಿ</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> ನ ನೀತಿಯ ಪ್ರಕಾರ ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ಈ ಕೆಳಗಿನ ಸೇವಾ ನಿಯಮಗಳನ್ನು ಓದಿ, ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸಬೇಕಾಗುತ್ತದೆ. ಈ ನಿಯಮಗಳು Google ChromeOS Flex ನಿಯಮಗಳನ್ನು ವಿಸ್ತರಿಸುವುದಿಲ್ಲ, ಮಾರ್ಪಡಿಸುವುದಿಲ್ಲ, ಅಥವಾ ಸೀಮಿತಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="1341711321000856656">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ನೀವು ಇನ್ನೊಂದು Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="1343830902827845050">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1356661055722410047">ಹೊಸತು! ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ನೀವು ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳೆರಡನ್ನೂ ಅನುವಾದಿಸಬಹುದು</translation>
@@ -241,6 +240,7 @@
 <translation id="345171907106878721">ನಿಮ್ಮನ್ನು Chrome ಗೆ ಸೇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="3453763134178591239">ChromeOS ನಿಯಮಗಳು</translation>
 <translation id="3503306920980160878">ಈ ಸೈಟ್‌ ಜೊತೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು Chrome ಗೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
+<translation id="3539955434060988644">ಲಿಂಕ್ ಅನ್ನು Chrome ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3576528680708590453"><ph name="TARGET_URL_HOSTNAME" /> ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Google Chrome ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="3582972582564653026">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಂಕ್ ಮಾಡಿ ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
 <translation id="3583751698304738917">ನೀವು ಈಗಾಗಲೇ ಮತ್ತೊಂದು Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ</translation>
@@ -634,7 +634,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> ನ ನೀತಿಯ ಪ್ರಕಾರ ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ಈ ಕೆಳಗಿನ ಸೇವಾ ನಿಯಮಗಳನ್ನು ಓದಿ, ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸಬೇಕಾಗುತ್ತದೆ. ಈ ನಿಯಮಗಳು Google ChromeOS ನಿಯಮಗಳನ್ನು ವಿಸ್ತರಿಸುವುದಿಲ್ಲ, ಮಾರ್ಪಡಿಸುವುದಿಲ್ಲ, ಅಥವಾ ಸೀಮಿತಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="7627609214560473136">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ರಕ್ಷಿಸಲು, ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲು Chrome ಗೆ ಅವಕಾಶ ನೀಡಿ.</translation>
 <translation id="7629695634924605473">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಎಂದಾದರೂ ಹ್ಯಾಕ್‌ ಆಗಿವೆಯೇ ಎಂಬುದನ್ನು Chrome ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯುವುದಕ್ಕಾಗಿ <ph name="ALTERNATIVE_BROWSER_NAME" /> ಅನ್ನು ತೆರೆಯಲು ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Google Chrome ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>

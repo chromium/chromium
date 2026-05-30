@@ -35,6 +35,7 @@
 <translation id="1088231044944504242">Търсете в своите <ph name="CATEGORY" />, файлове, приложения и други. Използвайте клавишите със стрелки, за да се придвижвате в приложенията.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + стрелката за надолу</translation>
 <translation id="1094756674036064790">Да се изключи ли Bluetooth?</translation>
+<translation id="109647177154844434">Ако деинсталирате Parallels Desktop, образът ви на Windows ще бъде изтрит. Това включва приложенията, настройките и данните в него. Наистина ли искате да продължите?</translation>
 <translation id="1104084341931202936">Показване на настройките за достъпност</translation>
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
 <translation id="1111021433905331574">Можете да промените цвета на фоновото осветление на клавиатурата от „Настройки“ &gt; „<ph name="APP_TITLE" />“</translation>
@@ -80,6 +81,7 @@
 <translation id="1210557957257435379">записване на екрана</translation>
 <translation id="121097972571826261">Придвижване напред с една дума</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение Google Play Магазин</translation>
+<translation id="1223484782328004593">Изисква се лиценз за <ph name="APP_NAME" /></translation>
 <translation id="1225748608451425081">Вашият Chromebook е заключен поради известен проблем. Ще можете да влезете в профила си след <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спиране на избирането</translation>
 <translation id="1235458158152011030">Известни мрежи</translation>
@@ -90,6 +92,7 @@
 <translation id="1244265436519979884">В момента се извършва възстановяване на Linux</translation>
 <translation id="1245476784081715330">Отлично!</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> не се инсталира: URL адресът на изображението изведе код на грешка <ph name="HTTP_ERROR" />. Моля, обърнете се към администратора си.</translation>
 <translation id="1246890715821376239">Неподдържани приложения</translation>
 <translation id="1247372569136754018">Микрофон (вътрешен)</translation>
 <translation id="1247519845643687288">Скорошни приложения</translation>
@@ -103,6 +106,7 @@
 <translation id="1275285675049378717">Захранва се <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1276975447697633661">Изберете файла и натиснете <ph name="KEY" /></translation>
+<translation id="1276994519141842946">Деинсталирането на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="1279938420744323401">„<ph name="DISPLAY_NAME" />“ (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Намиране на телефона</translation>
 <translation id="1287002645302686982">Вече има запазен работен кът на име „<ph name="DESK_TEMPLATE_NAME" />“</translation>
@@ -110,6 +114,8 @@
 <translation id="1289185460362160437">Заповядайте отново в <ph name="COME_BACK_TIME" /> в(ъв) <ph name="COME_BACK_DAY_OF_WEEK" />.</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1290982764014248209">Преместване на <ph name="DRAGGED_APP" /> в папката <ph name="FOLDER_NAME" />.</translation>
+<translation id="1291119821938122630">Общи условия на <ph name="MANAGER" /></translation>
+<translation id="1292849930724124745">Поставете смарткарта, за да останете в профила си</translation>
 <translation id="1293264513303784526">USB-C устройство (левият порт)</translation>
 <translation id="1293556467332435079">Файлове</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -128,6 +134,7 @@
 <translation id="132346741904777634">Картината от камерата е прилепена към горния ляв ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="132415371743256095">Затваряне на <ph name="DESK_NAME" /> и прозорците</translation>
 <translation id="1333308631814936910">Свързахте <ph name="DISPLAY_NAME" /></translation>
+<translation id="1335640173511558774"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google ChromeOS Flex.</translation>
 <translation id="1338950911836659113">Изтрива се...</translation>
 <translation id="1340378040547539434">Намаляване на мащаба на страницата</translation>
 <translation id="1341651618736211726">Препълване</translation>
@@ -136,6 +143,7 @@
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1350494136075914725">Текущо · Превключване към раздел</translation>
 <translation id="1351937230027495976">Свиване на менюто</translation>
+<translation id="1355088139103479645">Да се изтрият ли всички данни?</translation>
 <translation id="1360220746312242196">Преминаване към предишното съответствие за заявката при търсене на страница</translation>
 <translation id="1360788414852622716">Потребителският профил се деактивира. Това може да отнеме няколко минути.</translation>
 <translation id="1364382257761975320">За да отключите своя Chromebook, използвайте отпечатъка си</translation>
@@ -143,6 +151,7 @@
 <translation id="1372545819342940910">Запазване на работния кът за по-късно</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
+<translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ще се рестартира, когато актуализациите завършат.</translation>
 <translation id="1390113502208199250">За да използвате функциите на Chrome Education Upgrade, ще трябва да възстановите фабричните настройки на това устройство.</translation>
 <translation id="1391102559483454063">Включено</translation>
 <translation id="1394698770495054737">Пълно замъгляване</translation>
@@ -161,6 +170,7 @@
 <translation id="1421166164855200062">Предложена група</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="142655739075382478">Приложението <ph name="APP_NAME" /> е блокирано</translation>
+<translation id="142765311413773645">Лицензът за <ph name="APP_NAME" /> е изтекъл</translation>
 <translation id="1435537621343861112">Функцията за диктуване не може да стартира. Микрофонът ви е изключен.</translation>
 <translation id="1445031758921122223">Файловете за контролиране с лице бяха изтеглени</translation>
 <translation id="1447907279406111651">В момента ⋅ Приключва в <ph name="END_TIME" /></translation>
@@ -176,16 +186,19 @@
 <translation id="147310119694673958">Батерия на телефона: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Превключване на точката за достъп. Тя е включена, има 1 свързано устройство.</translation>
 <translation id="1476595624592550506">Променете паролата си</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> изисква да не изваждате смарткартата си.</translation>
 <translation id="1479685784053141667">Създаване на контакт</translation>
 <translation id="1479909375538722835">Плаващо меню за достъпност</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Функцията за диктуване ви дава възможност да въвеждате текст с гласа си. Натиснете клавиша за диктуване или изберете иконата на микрофон в долната част на екрана, когато сте в текстово поле. За езика ви за диктуване е зададено <ph name="LANGUAGE" />. Говорът се изпраща до Google за обработка. Можете да промените езика за диктуване по всяко време от „Настройки &gt; Достъпност“.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> се замени от <ph name="SECOND_ITEM_TITLE" /></translation>
+<translation id="1494429729245089920">Виртуалната машина „<ph name="VM_NAME" />“ съществува, но изглежда, че не е валидна виртуална машина за <ph name="APP_NAME" />. Моля, обърнете се към администратора си.</translation>
 <translation id="1500926532737552529">Показване на всички предложения</translation>
 <translation id="1501946871587957338">Да се превключи ли аудиоизточникът?</translation>
 <translation id="1505542291183484463">Преоразмеряване на фиксиран прозорец надолу</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="1515163294334130951">Стартиране</translation>
 <translation id="1519090060276706457">Възстановяването на прозорците отнема повече време от очакваното</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показване на настройките за известия. Известията са изключени за едно приложение}other{Показване на настройките за известия. Известията са изключени за # приложения}}</translation>
 <translation id="1521655867290435174">Google Таблици</translation>
@@ -211,6 +224,7 @@
 <translation id="1574691582236909946">Избран е манипулаторът за лявата страна, използвайте клавишите със стрелки, за да го преместите</translation>
 <translation id="1576623706766186887">Отдалечаване при включена лупа</translation>
 <translation id="1578558981922970608">Принудително затваряне</translation>
+<translation id="1580772913177567930">Обърнете се към администратора си</translation>
 <translation id="1582946770779745370">Таблото за управление на играта е налице. Натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Shift + Escape, след което клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + g по всяко време, за да отворите таблото</translation>
 <translation id="1586324912145647027">Преминаване към работен кът от 1 до 8</translation>
 <translation id="158838227375272121">Уебсайтът на Google Classroom</translation>
@@ -361,6 +375,7 @@
 <translation id="2048554637254265991">Грешка при стартирането на мениджъра на контейнерите. Моля, опитайте отново.</translation>
 <translation id="2048653237708779538">Действието не може да се извърши</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
+<translation id="2053312383184521053">Данни за състоянието на неактивност</translation>
 <translation id="2064048859448024834">Визуализацията на камерата е включена</translation>
 <translation id="2065098273523946419">Връзка „Научете повече“. Пренасочване към браузъра при активиране</translation>
 <translation id="2067220651560163985">Показване на температурата в градуси по Целзий</translation>
@@ -378,6 +393,7 @@
 <translation id="2114145607116268663">Инсталирането не е възможно. Моля, рестартирайте компютъра си и опитайте отново. Кодът на грешката е <ph name="ERROR" />.</translation>
 <translation id="2115680839221566783">Батерията е на <ph name="PERCENTAGE" />%. Зареждането е поставено на пауза.</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
+<translation id="212862741129535676">Процент на използване в състояние на активност</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
 <translation id="2148716181193084225">днес</translation>
@@ -402,6 +418,7 @@
 <translation id="2223384056430485343">При разделен екран</translation>
 <translation id="2224075387478458881">Записването на екрана не е разрешено, когато се вижда защитено съдържание</translation>
 <translation id="2227179592712503583">Премахване на предложението</translation>
+<translation id="2238379619048995541">Данни за състоянието на активност</translation>
 <translation id="2248634276911611268">Отваряне на връзката в нов раздел и превключване към него</translation>
 <translation id="2251809247798634662">Нов прозорец инкогнито</translation>
 <translation id="2253808149208613283">Инсталирайте приложението, за да персонализирате това устройство</translation>
@@ -433,6 +450,7 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" />, категория на резултатите от търсенето</translation>
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
 <translation id="2326112202058075478">Показване на още емоджита</translation>
+<translation id="2328561734797404498">Рестартирайте устройството си, за да използвате <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Вашият Chromebook или устройството ви с Bluetooth е с по-стара версия на Bluetooth. За по-добро качество на звука използвайте вътрешния микрофон.</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате лазерната показалка или лупата.</translation>
@@ -461,8 +479,10 @@
 <translation id="2389423187722941333">Превключване на Gemini</translation>
 <translation id="2390347491606624519">Не може да се установи връзка с прокси сървъра. Моля, влезте отново</translation>
 <translation id="2392659840443812875">Няма точки за достъп. Уверете се, че устройството ви е в близост и функцията за Bluetooth е включена.</translation>
+<translation id="2393136602862631930">Настройте <ph name="APP_NAME" /> на своя Chromebook</translation>
 <translation id="2397416548179033562">Показване на менюто на Chrome</translation>
 <translation id="240006516586367791">Контроли за мултимедия</translation>
+<translation id="2400664245143453337">Изисква се незабавна актуализация</translation>
 <translation id="240155812475001919">Документ в Google Документи</translation>
 <translation id="2402411679569069051">За да отключите своя Chromebook, използвайте отпечатъка си или отключете телефона си</translation>
 <translation id="240545663114741956">Натиснете два пъти <ph name="ACCELERATOR" /> за изход.</translation>
@@ -494,6 +514,7 @@
 <translation id="2473177541599297363">Потвърждаване на разделителната способност</translation>
 <translation id="2475783092753560388">Вмъкване на <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Възникна грешка</translation>
+<translation id="2476974672882258506">Изключете Windows, за да деинсталирате <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
 <translation id="2479148705183875116">Към настройките</translation>
 <translation id="2482878487686419369">Известия</translation>
@@ -537,6 +558,7 @@
 <translation id="2573588302192866788">Неуспешно свързване с(ъс) <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Централизираният вход е деактивиран</translation>
 <translation id="2579264398927991698">Актуализации на фърмуера</translation>
+<translation id="2586561813241011046">Инсталирането на <ph name="APP_NAME" /> не бе успешно. Моля, опитайте отново или се обърнете към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
 <translation id="2598725286293895280">Работният кът съдържа неподдържани приложения</translation>
@@ -560,6 +582,7 @@
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2658778018866295321">Кликване и преместване с плъзгане</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> и <ph name="UNAVAILABLE_APPS_TWO" /> не са инсталирани на това устройство.</translation>
+<translation id="2669241540496514785">Отварянето на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="2670350619068134931">Ограничени анимации</translation>
 <translation id="2672142220933875349">Невалиден crx файл. Разпакетирането не бе успешно.</translation>
 <translation id="2673968385134502798">Игри</translation>
@@ -578,6 +601,7 @@
 <translation id="2705001408393684014">Превключване на микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706304388244371417">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервното копие включва данните на приложенията. Резервните копия се качват в Google и се шифроват посредством паролата за профила в Google на детето ви. <ph name="BEGIN_LINK1" />Научете повече за създаването на резервни копия<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Клавиш за нагоре</translation>
+<translation id="270921614578699633">Осредняване</translation>
 <translation id="2710101514844343743">Данни за употребата и диагностиката</translation>
 <translation id="2710984741481549981">Заключване на прозорците</translation>
 <translation id="2714393097308983682">Google Play Магазин</translation>
@@ -695,6 +719,7 @@
 <translation id="3026897869154397692">Добавено към календара</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Комбиниране с(ъс) <ph name="DESK_NAME" /></translation>
+<translation id="3036327949511794916">Крайният срок за връщане на това устройство <ph name="DEVICE_TYPE" /> е изтекъл.</translation>
 <translation id="3039491566278747710">Правилото за работа офлайн не бе инсталирано успешно на устройството.</translation>
 <translation id="3039939407102840004">Батерията на писалката е на <ph name="PERCENTAGE" />%.</translation>
 <translation id="304097922505898963">Отваряне на приложението за клавишни комбинации</translation>
@@ -754,6 +779,7 @@
 <translation id="3176221688814061633">Вашият Chromebook или устройството ви с Bluetooth е с по-стара версия на Bluetooth. За по-добро качество на звука включете Bluetooth Super Resolution или използвайте вътрешен микрофон.</translation>
 <translation id="3181441307743005334">Рестартирането може да отнеме известно време</translation>
 <translation id="3183700187146209259">Софтуерът на скенера не може да се инсталира</translation>
+<translation id="3188465121994729530">Пълзяща средна стойност</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Установена е връзка с едно устройство}other{Установена е връзка с # устройства}}</translation>
 <translation id="3203405173652969239">Функцията „Достъп с превключване“ е активирана</translation>
 <translation id="3204648577100496185">Данните, свързани с това приложение, може да бъдат премахнати от устройството</translation>
@@ -837,10 +863,14 @@
 <translation id="3444385531800624797">Резултатите се зареждат</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C устройство</translation>
+<translation id="3446274660183028131">Моля, стартирайте Parallels Desktop, за да инсталирате Windows.</translation>
 <translation id="3449393517661170867">Нов прозорец с раздели</translation>
+<translation id="3450157232394774192">Процент на използване в състояние на неактивност</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
 <translation id="3454555520521576458">Може да се преоразмерява</translation>
 <translation id="3455468639467374593">Шаблон – <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 устройство е свързано с точката за достъп от <ph name="DEVICE_NAME" /></translation>
+<translation id="3458451003193188688">Виртуалната машина не бе инсталирана поради грешка в мрежата. Моля, опитайте отново или се обърнете към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">Повторно задаване на мащаба на страницата</translation>
 <translation id="3465223694362104965">След последното ви влизане в профила на това устройство към него е свързана друга клавиатура. Преди да я използвате, проверете дали й имате доверие.</translation>
 <translation id="3465356146291925647">Управлява се от администратора ви</translation>
@@ -859,6 +889,7 @@
 <translation id="3513798432020909783">Профилът се управлява от <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Преоразмеряване на фиксиран прозорец нагоре</translation>
 <translation id="3517037892157925473">Последна актуализация на задачите: <ph name="TIME" />, <ph name="DATE" />.</translation>
+<translation id="3522088408596898827">Свободното място на диска е критично малко. Освободете място и опитайте отново.</translation>
 <translation id="352245152354538528">{0,plural, =1{Актуализирайте устройството в рамките на 1 минута}other{Актуализирайте устройството в рамките на # минути}}</translation>
 <translation id="3522979239100719575">Търсят се налични профили за мобилна мрежа. Това може да отнеме няколко минути.</translation>
 <translation id="3526440770046466733">Отваряне на връзката в нов раздел и оставане в текущия раздел</translation>
@@ -1013,6 +1044,7 @@
 <translation id="3891340733213178823">Натиснете два пъти „Ctrl+Shift+Q“ за изход.</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
+<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">Завъртане на екрана на 90 градуса по часовниковата стрелка</translation>
 <translation id="3900355044994618856">Сесията ви ще приключи след <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Установява се връзка със: <ph name="NAME" /></translation>
@@ -1110,6 +1142,7 @@
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4185671786623711291">Преместване на активния прозорец към работния кът отдясно</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Търсене</translation>
+<translation id="4187424053537113647"><ph name="APP_NAME" /> се настройва...</translation>
 <translation id="4189826113259617332">Запазване на всички отворени страници в текущия прозорец като отметки в нова папка</translation>
 <translation id="4190143678693626113">Пестете време, като отговаряте бързо на текстовите съобщения от телефона си на вашия Chromebook</translation>
 <translation id="4190780880566297084">Отхвърляне на настройването на прегледа на скорошните снимки, мултимедийни файлове и приложения на телефона ви</translation>
@@ -1123,6 +1156,7 @@
 <translation id="4201033867194214117">„<ph name="FEATURE_NAME" />“ не е налице.</translation>
 <translation id="4201051445878709314">Показване на предишния месец</translation>
 <translation id="4209973997261364186">Функцията за Wi-Fi е включена</translation>
+<translation id="4210048056321123003">Виртуалната машина се изтегля</translation>
 <translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="4212472694152630271">Превключване към ПИН</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, бутон за превключване, <ph name="STATE" /></translation>
@@ -1140,6 +1174,8 @@
 <translation id="4249248555939881673">Изчаква се връзка с мрежата...</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="425364040945105958">Няма SIM карта</translation>
+<translation id="425573743389990240">Скорост на разреждане на батерията във ватове (отрицателна стойност означава, че батерията се зарежда)</translation>
+<translation id="4259388776256904261">Това може да отнеме известно време</translation>
 <translation id="4261870227682513959">Показване на настройките за известия. Известията са изключени</translation>
 <translation id="4264977415328155183">, свито</translation>
 <translation id="4265259722091164182">Всяка дума с главна буква</translation>
@@ -1192,6 +1228,7 @@
 <translation id="4381031910344220229">Разрешава достъп до микрофона за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="4382340674111381977">Назад към предишната страница</translation>
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
+<translation id="439358628917130594"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Chromium OS.</translation>
 <translation id="4394466652057229831">Кликнете с десния бутон за обобщаване</translation>
 <translation id="439598569299422042">На пауза, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">Устройството ви не се изключи правилно. Рестартирайте Linux, за да използвате приложенията за тази операционна система.</translation>
@@ -1228,6 +1265,7 @@
 1 устройство е свързано.</translation>
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
+<translation id="4479877282574735775">Виртуалната машина се конфигурира. Това може да отнеме няколко минути.</translation>
 <translation id="4481530544597605423">Несдвоени устройства</translation>
 <translation id="4485506555414638855">Отхвърляне на настройването на прегледа на скорошните снимки, мултимедийни файлове, известия и приложения на телефона ви</translation>
 <translation id="4491109536499578614">Изображение</translation>
@@ -1349,6 +1387,7 @@
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Изключване</translation>
 <translation id="4806631651704497161">Слабо замъгляване</translation>
+<translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
 <translation id="4813311884204119883">Преместете с плъзгане дадена връзка до празен участък на лентата с раздели</translation>
 <translation id="4814539958450445987">Екран за вход</translation>
 <translation id="481455355267255546">Предстоящи събития</translation>
@@ -1387,6 +1426,7 @@
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Приемам</translation>
 <translation id="4919841137949306064">Понастоящем <ph name="APP_NAME" /> използва камерата ви</translation>
+<translation id="492363500327720082"><ph name="APP_NAME" /> се деинсталира...</translation>
 <translation id="492453977506755176">Клавиш за режима на заснемане</translation>
 <translation id="4925542575807923399">Този администратор изисква профилът му да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="493076006037866439">Отдалечаване на екрана</translation>
@@ -1461,6 +1501,7 @@
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5121628974188116412">Преминаване към края на страницата</translation>
 <translation id="5122517996953421795">Визуализация на <ph name="DESK_NAME" />. Неактивен работен кът.</translation>
+<translation id="5127986747308934633">Администраторът ви управлява устройството ви</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5137349216872139332">Връзката с мигновената точка за достъп не бе успешна</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, търсене с(ъс) <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -1473,6 +1514,7 @@
         <ph name="BEGIN_PARAGRAPH2" />Изключването на тази функция няма да засегне възможността на устройството ви да изпраща информацията, необходима за получаването на основни услуги, като системни актуализации и подобрения в сигурността.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Собственикът може да контролира тази функция от „Настройки &gt; Разширени &gt; Автоматично изпращане до Google на данни за диагностиката и употребата“.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google. Имате възможност да преглеждате и изтривате данните си и да променяте настройките на профила си на адрес account.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5162905305237671850">Устройството <ph name="DEVICE_TYPE" /> бе блокирано</translation>
 <translation id="5163434717504750796">Състояние на батерията: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Брой цикли: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Запазване на работния кът като шаблон</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
@@ -1578,10 +1620,12 @@
 <translation id="543584294741034249">Можете да свържете до <ph name="DISPLAY_LIMIT" /> външни екрана.</translation>
 <translation id="5442228125690314719">Грешка при създаването на образ на диска. Моля, опитайте отново.</translation>
 <translation id="544691375626129091">Всички налични потребители вече са добавени към тази сесия.</translation>
+<translation id="5457113250005438886">Невалидно</translation>
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5460938382730614333">Маркерът е включен.</translation>
 <translation id="5463129623250377817">Изрязване на избраното съдържание в буферната памет</translation>
 <translation id="5465662442746197494">Нужна ви е помощ?</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).</translation>
 <translation id="547979256943495781">Лавицата е вдясно</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /> + <ph name="KEY_ONE" /> или <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /></translation>
 <translation id="5482873136202102190">, +</translation>
@@ -1621,10 +1665,12 @@
 <translation id="5578188167649348993">памет</translation>
 <translation id="5580000943347215299">Колекция</translation>
 <translation id="5581972110672966454">Устройството не може да се присъедини към домейна. Моля, опитайте отново или се обърнете към собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
+<translation id="5585898376467608182">Мястото в хранилището на устройството ви е малко. За да използвате <ph name="APP_NAME" />, трябва да разполагате с поне <ph name="MINIMUM_SPACE" />. За да освободите място, изтрийте файлове от устройството.</translation>
 <translation id="5586388332127302891">Лупата в прикрепен режим е активирана. Натиснете отново <ph name="ACCELERATOR" />, за да я изключите.</translation>
 <translation id="5587506661873751671">Изтегля се: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">С плъзгане изберете областта, която да се заснеме</translation>
 <translation id="5590609058453685222">Функцията за спиране на подсещането е включена. Ще получите известие, ако говорите, докато звукът е спрян.</translation>
+<translation id="5592595402373377407">Още не са налице достатъчно данни.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Браузър Chrome</translation>
 <translation id="5596627076506792578">Още опции</translation>
@@ -1691,6 +1737,7 @@
 <translation id="5767730327234918501">Администраторът ви е изключил точката за достъп.</translation>
 <translation id="5769373120130404283">Екран за поверителност</translation>
 <translation id="5770004650349728202">Включване на функцията „Прочитане на глас“</translation>
+<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> ви дава възможност да изпълнявате приложения за Windows® на своя Chromebook. За инсталирането е препоръчително да разполагате с поне <ph name="MINIMUM_SPACE" /> свободно място.</translation>
 <translation id="5773950591113557721">Това разрешава достъп на <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат разрешения за камерата и микрофона</translation>
 <translation id="5774295353725270860">Отваряне на приложението за файлове</translation>
 <translation id="5775936059231769503">Превключване на точката за достъп. Тя е изключена.</translation>
@@ -1723,6 +1770,7 @@
 <translation id="5858490737742085133">Терминал</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
+<translation id="5864195618110239517">Използване на връзка с отчитане</translation>
 <translation id="5864691701242730005">Показване на настройките за „Бързо споделяне“. Избрана е видимостта за „<ph name="VISIBILITY" />“</translation>
 <translation id="5864748620896638071">Батерия: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> скоро ще бъде на пауза</translation>
@@ -1739,6 +1787,8 @@
 <translation id="589817443623831496">Точково сканиране</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Жълто</translation>
+<translation id="5904614460720589786">Настройването на <ph name="APP_NAME" /> не бе успешно поради проблем с конфигурирането. Моля, обърнете се към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
+<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлайн</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Ново известие, общо <ph name="NOTIFICATION_COUNT" /> известия</translation>
 <translation id="5916664084637901428">Включено</translation>
@@ -1748,6 +1798,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Можете да изключите настройката „Точност на местоположението“ по всяко време от настройките за местоположението на устройството. За целта отворете „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението &gt; Разширени настройки за местоположението“. Ако настройката „Точност на местоположението“ е изключена, тя няма да събира данни. За определяне на местоположението на това устройство за приложенията и услугите за Android се използва само IP адресът, ако е налице. Това може да повлияе на наличността и точността на местоположенията за съответните приложения и услуги, като например Google Карти.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Научете повече за настройката „Точност на местоположението“<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Изисква се актуализация от <ph name="MANAGER" /></translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> изисква незабавно да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ е включено.</translation>
 <translation id="5947494881799873997">Възстановяване</translation>
@@ -1760,6 +1811,7 @@
 <translation id="5960410286721553511">Преглед на скорошните снимки и мултимедийни файлове на телефона ви</translation>
 <translation id="5965524703725988602">Превключване на тъмната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Циклично придвижване напред през прозорците</translation>
+<translation id="5975792506968920132">Процент на зареждане на батерията</translation>
 <translation id="5978382165065462689">Споделяте контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="5980301590375426705">Изход като гост</translation>
 <translation id="5983567367406220847">Точката за достъп е изключена поради неактивност.</translation>
@@ -1807,6 +1859,7 @@
 <translation id="6064463340679478396">Приключих с използването на този файл</translation>
 <translation id="6068258534237496331">Контроли за видеообаждания</translation>
 <translation id="6071576563962215370">Системата не успя да заключи атрибутите за времето за инсталиране за устройството.</translation>
+<translation id="6072442788591997866">Използването на <ph name="APP_NAME" /> не е разрешено на това устройство. Обърнете се към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
 <translation id="6074087755403037157">Бета-канал</translation>
 <translation id="6075098173600599596">Промяна на изписването с главни букви</translation>
@@ -1814,6 +1867,7 @@
 <translation id="6093867385179428431">Деактивирано от администратора</translation>
 <translation id="6095008505822982596">Скорост на говора</translation>
 <translation id="6095425951508823973">Добавяне на връзка с(ъс) <ph name="PROVIDER" /></translation>
+<translation id="6095541101974653012">Вече не сте в профила си.</translation>
 <translation id="6099678161144790572">Редактирано през миналия месец</translation>
 <translation id="6103838137565245112">система</translation>
 <translation id="6108952804512516814">Създаване с AI</translation>
@@ -1912,8 +1966,10 @@
 <translation id="6364386432014869981">Вграденият сензорен панел е включен</translation>
 <translation id="6376931439017688372">Функцията за Bluetooth е включена</translation>
 <translation id="6378515133128829137">Фиксиране на прозореца отдясно</translation>
+<translation id="6380143666419481200">Приемам и продължавам</translation>
 <translation id="6381109794406942707">Въведете ПИН кода си, за да отключите устройството.</translation>
 <translation id="6381305031890976705">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един час}other{Връщане на устройството към предишна версия в рамките на # часа}}</translation>
+<translation id="6385149369087767061">Свържете се с интернет и опитайте отново</translation>
 <translation id="638716340450135524">Разрешаване на достъпа до камерата</translation>
 <translation id="639644700271529076">„CAPS LOCK“ е изключен</translation>
 <translation id="6406458002328242616">Редактиране на таймера. <ph name="FOCUS_DURATION" />.</translation>
@@ -1926,12 +1982,14 @@
 <translation id="6418160186546245112">Предишната инсталирана версия на <ph name="IDS_SHORT_PRODUCT_NAME" /> се възстановява</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6418511932144861495">Инсталиране на критична актуализация</translation>
+<translation id="641867537956679916">Администраторът ви е влязъл в профила си, за да проучи даден проблем. След като той ви върне контрола над устройството, можете да продължите да го използвате.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Изчистване на всички известия</translation>
 <translation id="6426905245930183644">Създава се...</translation>
 <translation id="6430225033895752525">Показване на настройките за режима за концентрация</translation>
 <translation id="643147933154517414">Всичко е готово</translation>
 <translation id="6431865393913628856">Записване на екрана</translation>
+<translation id="6434325376267409267">Устройството ви трябва да бъде актуализирано, преди да можете да използвате <ph name="APP_NAME" />.</translation>
 <translation id="643593192654616063">Използвано хранилище: <ph name="STORAGE_IN_USE_SIZE" /> от общо <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6445915701151710649">процесор</translation>
@@ -1991,6 +2049,7 @@
 <translation id="6585808820553845416">Сесията приключва след <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6586685375736417639">Устройството не може да се зареди</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597017209724497268">Извадки</translation>
 <translation id="6597278316891651699">Картината от камерата е прилепена към долния ляв ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="6605415194043280389">Режимът за концентрация е включен</translation>
 <translation id="6608773371844092260">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци от дясната страна на устройството <ph name="DEVICE_TYPE" />. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
@@ -2091,6 +2150,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
 <translation id="6867938213751067702">Изтеглянето на <ph name="FILENAME" /> е на пауза</translation>
+<translation id="6868934826811377550">Преглед на подробностите</translation>
 <translation id="6874854809828346832">Показване на подробностите за точката за достъп. Тя е включена.</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 приложение}other{# приложения}}</translation>
@@ -2115,6 +2175,7 @@
 <translation id="6945922087561257829">Телефонът ви използва мобилна мрежа. Уверете се, че той и Chromebook са свързани с една и съща Wi-Fi мрежа, и опитайте отново. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Възстановяване на приложенията</translation>
 <translation id="6960565108681981554">Не е активирана. Свържете се с оператора си.</translation>
+<translation id="696103774840402661">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> бяха изтрити за постоянно.</translation>
 <translation id="6961121602502368900">Функцията за заглушаване на телефона не е налице в служебни потребителски профили</translation>
 <translation id="6961840794482373852">Клавишната комбинация Alt + стрелка нагоре се промени. За да използвате клавиша Page Up, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката нагоре.</translation>
 <translation id="696267987219125751">Функцията за центриране на камерата е изключена.</translation>
@@ -2164,7 +2225,10 @@
 <translation id="709015856939120012">Увеличаване на мащаба на страницата</translation>
 <translation id="7098389117866926363">Устройство с USB-C (левият порт на гърба)</translation>
 <translation id="7100906357717321275">Показване на скритите файлове в приложението „Файлове“</translation>
+<translation id="710640343305609397">Отваряне на настройките за мрежата</translation>
 <translation id="7108254681523785542">Изберете елемент, за да го поставите. Можете да видите буферната памет, като натиснете клавиша „<ph name="SHORTCUT_KEY_NAME" />“ + v.</translation>
+<translation id="7108338896283013870">Скриване</translation>
+<translation id="7108933416628942903">Заключване сега</translation>
 <translation id="7116969082764510092">Работен кът 11</translation>
 <translation id="7118268675952955085">екранна снимка</translation>
 <translation id="7118597077555700347">Отваряне на <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -2206,6 +2270,7 @@
 <translation id="7258828758145722155">Редактирано вчера</translation>
 <translation id="726276584504105859">Преместете тук с плъзгане, за да използвате режим за разделен екран</translation>
 <translation id="7264788308526527464">Намаляване с <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="7267044199012331848">Виртуалната машина не бе инсталирана. Моля, опитайте отново или се обърнете към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Продължавайте да вдигате пръста си, за да добавите различните части от отпечатъка си</translation>
 <translation id="7278787617901301220">Клавишът „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace</translation>
 <translation id="7285232777292757180">Използвайте инструмента за заснемане на екрана в бързите настройки, за да правите екранни снимки</translation>
@@ -2246,6 +2311,7 @@
 <translation id="7378889811480108604">Режимът за запазване на батерията е изключен</translation>
 <translation id="7382680553121047388">Вкл.</translation>
 <translation id="7384028040782072252">Кликнете с десния бутон върху произволно място, за да пренаредите приложенията си</translation>
+<translation id="7385490373498027129">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> ще бъдат изтрити за постоянно.</translation>
 <translation id="7386767620098596324">Превключване на връзката с мрежа. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Винаги можете да настроите функцията по-късно от „Настройки“.</translation>
 <translation id="7400839060291901923">Настройте връзката на телефона си <ph name="PHONE_NAME" /></translation>
@@ -2256,9 +2322,12 @@
 <translation id="7406854842098869085">Натиснете и задръжте <ph name="MODIFIER_1" />, използвайте <ph name="KEY" />, за да стигнете до желания прозорец, и освободете клавишите</translation>
 <translation id="740790383907119240">Преки пътища в приложението</translation>
 <translation id="7413851974711031813">Натиснете клавиша Escape, за да затворите</translation>
+<translation id="7415454883318062233">Настройването завърши</translation>
 <translation id="7416471219712049036">Запазване на текущата страница</translation>
+<translation id="7423807071740419372">За стартирането на <ph name="APP_NAME" /> е необходимо разрешение</translation>
 <translation id="742594950370306541">Камерата се използва.</translation>
 <translation id="743058460480092004">Камерата и микрофонът се използват.</translation>
+<translation id="7433708794692032816">Поставете смарткарта, за да продължите да използвате своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google Търсене</translation>
 <translation id="7441711280402516925">Възпроизвежда се · Превключване към раздел</translation>
 <translation id="7453330308669753048">Резултатът от историята на търсенията бе премахнат</translation>
@@ -2267,6 +2336,7 @@
 <translation id="7461924472993315131">Фиксиране</translation>
 <translation id="746216226901520237">Следващия път телефонът ви ще отключи устройството ви <ph name="DEVICE_TYPE" />. Можете да изключите Smart Lock от настройките.</translation>
 <translation id="746232733191930409">Режим за записване на екрана</translation>
+<translation id="7465635034594602553">Нещо се обърка. Изчакайте няколко минути и стартирайте <ph name="APP_NAME" /> отново.</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
 <translation id="7478485216301680444">Павилионното приложение не можа да бъде инсталирано.</translation>
@@ -2295,6 +2365,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Създаване</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
+<translation id="7530016656428373557">Скорост на разреждане във ватове</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не реагира. Изберете „Принудително затваряне“, за да затворите приложението.</translation>
 <translation id="7534543072325030705">Чрез бутона „Харесва ми“ отбелязвате, че харесвате тази предложена група</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
@@ -2316,6 +2387,7 @@
 <translation id="7569509451529460200">Активирахте функцията за брайлово писмо и ChromeVox</translation>
 <translation id="7569886975397378678">Отхвърляне на настройването на прегледа на известията и приложенията на телефона ви</translation>
 <translation id="7571361473021531288">Батерия: <ph name="BATTERY_PERCENTAGE" />% | оставащо време: <ph name="TIME" /></translation>
+<translation id="7573172247376861652">Заряд на батерията</translation>
 <translation id="7573585051776738856">Активният прозорец е прикрепен отдясно.</translation>
 <translation id="7576976045740938453">Възникна проблем с профила за демонстрационен режим.</translation>
 <translation id="7579778809502851308">Заснемане на екрана</translation>
@@ -2337,6 +2409,7 @@
 <translation id="7621008024906456933">Настройки за „Бързо споделяне“</translation>
 <translation id="7621382409404463535">Системата не успя да запази конфигурацията на устройството.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7626072681686626474"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google Chrome OS.</translation>
 <translation id="7627303771480696593">Задайте въпрос</translation>
 <translation id="7629858978065675960">Неизвестен резултат.</translation>
 <translation id="7631014249255418691">Успешно бе създадено резервно копие на приложенията и файловете за Linux</translation>
@@ -2421,6 +2494,7 @@
 <translation id="7850320739366109486">Не безпокойте</translation>
 <translation id="7851039877802112575">Преместване на фокуса към изскачащите и диалоговите прозорци</translation>
 <translation id="7851768487828137624">Ранна версия</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">За да използвате устройството като гост, трябва да излезете от профила си и след това да изберете „Сърфиране като гост“ в долната част на екрана.</translation>
 <translation id="7866482334467279021">включено</translation>
 <translation id="7870790288828963061">Няма намерени павилионни приложения с по-нова версия. Няма нищо за актуализиране. Моля, извадете USB паметта.</translation>
@@ -2549,6 +2623,7 @@
 <translation id="8172370561760918656">Избран е горният ляв манипулатор, използвайте клавишите със стрелки, за да го преместите</translation>
 <translation id="81817143961839203">Изображението не бе вмъкнато</translation>
 <translation id="8182105986296479640">Приложението не реагира.</translation>
+<translation id="8182412589359523143">За да изтриете всички данни от това устройство <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />кликнете тук<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">Включване или изключване на менюто за преоразмеряване в заключения режим</translation>
 <translation id="8192727139462702395">Когато изключите Bluetooth, ще прекратите връзката между своя <ph name="DEVICE_TYPE" /> и следните външни устройства:</translation>
 <translation id="8198456017687137612">Разделът се предава</translation>
@@ -2685,6 +2760,7 @@
 <translation id="8619138598101195078">Намаляване на силата на звука</translation>
 <translation id="862543346640737572">Емоджита и GIF файлове</translation>
 <translation id="8627191004499078455">Установена е връзка (<ph name="DEVICE_NAME" />)</translation>
+<translation id="862727964348362408">Спряно</translation>
 <translation id="8631727435199967028">Настройки за достъпност</translation>
 <translation id="8634326941504371857">Вашите файлове на това устройство и в Google Диск</translation>
 <translation id="8636284842992792762">Разширенията се подготвят за работа...</translation>
@@ -2709,6 +2785,7 @@
 <translation id="8683506306463609433">Проследяването на ефективността е активно</translation>
 <translation id="8698432579173128320">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервното ви копие включва данните от приложенията. Резервните ви копия са качени в Google и са шифровани посредством паролата за профила ви в Google. <ph name="BEGIN_LINK1" />Научете повече за създаването на резервни копия<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="8700087567921985940">Използване на местоположението. Позволете на приложенията и услугите да ползват местоположението на устройството ви, ако имат съответното разрешение за достъп. Google може периодично да събира данни за местоположението и да ги използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги. <ph name="BEGIN_LINK1" />Научете повече за местоположението<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
+<translation id="8702825062053163569">Устройството ви <ph name="DEVICE_TYPE" /> бе заключено.</translation>
 <translation id="8703634754197148428">Стартиране на записването. След като то започне, използвайте Alt + Shift + L, за да се придвижите до лавицата, където ще намерите бутона за спирането му</translation>
 <translation id="8704155109538237473">Поставяне на фокуса върху прозореца в режим „картина в картината“</translation>
 <translation id="8705580154597116082">Налице е Wi-Fi през телефон</translation>
@@ -2746,6 +2823,7 @@
 <translation id="8763883995157866248">Включване на спящия режим на устройството</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирано приложение, блокирано</translation>
 <translation id="8782565991310229362">Стартирането на павилионното приложение е анулирано.</translation>
+<translation id="8784626084144195648">Средна стойност при групирани данни</translation>
 <translation id="8785070478575117577">Свързване със <ph name="NETWORK_NAME" /></translation>
 <translation id="8786824282808281903">Когато детето ви види тази икона, то може да използва отпечатъка си за идентификация или за одобряване на покупки.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -2760,6 +2838,7 @@
 <translation id="8815390544836110344">Натиснете клавишната комбинация за екранна снимка: Ctrl + Shift + клавиша за общ преглед</translation>
 <translation id="881757059229893486">Настройки на методите на въвеждане</translation>
 <translation id="8819728065740986820">Функцията за адаптивно зареждане е включена</translation>
+<translation id="8821268776955756404">Приложението <ph name="APP_NAME" /> е готово за използване.</translation>
 <translation id="882204272221080310">За допълнителна сигурност актуализирайте фърмуера.</translation>
 <translation id="8822104519413696986">Това е игра със сензорно управление</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
@@ -2772,6 +2851,7 @@
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8858369206579825206">Контроли за поверителност</translation>
+<translation id="8859402192569844210">Общите условия не се заредиха</translation>
 <translation id="8860366331836346216">Добавяне на електронна SIM карта</translation>
 <translation id="8869149849311827122">Наистина ли искате да изключите управлението с курсора на мишката?</translation>
 <translation id="8870509716567206129">Приложението не поддържа разделен екран.</translation>
@@ -2792,6 +2872,7 @@
 <translation id="8905919797434099235">(Без заглавие)</translation>
 <translation id="890616557918890486">Промяна на източника</translation>
 <translation id="8909138438987180327">Батерията е на <ph name="PERCENTAGE" /> процента.</translation>
+<translation id="8909298138148012791">Деинсталирането на <ph name="APP_NAME" /> бе успешно</translation>
 <translation id="8916866375277139011">Скриване на елементите в(ъв) „<ph name="GROUP_NAME" />“</translation>
 <translation id="8921369299636221117">Услугата за консиерж не е налице.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2868,6 +2949,7 @@
 <translation id="9126339866969410112">Отмяна на последното действие</translation>
 <translation id="9126642911267312373">Bluetooth не е налице</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{След 1 мин}other{След # мин}}</translation>
+<translation id="9128317794749765148">Настройването не можа да бъде завършено</translation>
 <translation id="9129245940793250979">Заден бутон</translation>
 <translation id="9133335900048457298">Не е възможно записване на защитено съдържание</translation>
 <translation id="9139720510312328767">Изтриване на следващата буква</translation>
@@ -2918,6 +3000,7 @@
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="97905529126098460">Този прозорец ще се затвори, след като анулирането завърши.</translation>
 <translation id="981011780479609956">Няма крайна дата</translation>
+<translation id="981121421437150478">Офлайн</translation>
 <translation id="98120814841227350">Преместване в края на документа</translation>
 <translation id="987589956647469042">Мобилните данни са включени</translation>
 <translation id="989374776391122812">Контроли за камерата и аудиото</translation>

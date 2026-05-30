@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ການແຈ້ງເຕືອນເຄັດລັບການສົ່ງເສີມປິດແລ້ວ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1045899828449635435">ລຶບຂໍ້ມູນອອກຈາກເວັບໄຊເຫຼົ່ານີ້ນຳບໍ?</translation>
+<translation id="1049461303780085993">ລອງໃຊ້ Gemini ໃນ Chrome ເພື່ອຮັບຄຳຕອບ, ປະເດັນສຳຄັນ ແລະ ອື່ນໆ</translation>
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
 <translation id="1052842760770519282">ລະຫັດຜ່ານບາງລາຍການຂອງທ່ານບໍ່ສາມາດເຂົ້າເຖິງໄດ້</translation>
 <translation id="1057623954802068161">ເລື່ອນໄປເທິງສຸດຂອງໜ້າ</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">ແຕະເພື່ອໂທອອກ</translation>
 <translation id="232137538351753795">ປັດຈາກຂອບຊ້າຍເພື່ອກັບຄືນ</translation>
 <translation id="2323763861024343754">ບ່ອນເກັບຂໍ້ມູນຂອງເວັບໄຊ</translation>
+<translation id="2327445548174191329">ຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />” ທັນທີ ແລະ ລະບົບຈະປິດລິ້ງຄຳເຊີນທັງໝົດ</translation>
 <translation id="2330186936255788117">ບຸກມາກເພີ່ມເຕີມ</translation>
 <translation id="2332515770639153015">ເປີດໃຊ້ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">ເປີດໜ້າແຖບໃໝ່</translation>
 <translation id="4595276580892809760">ແນບຮູບຈາກຄັງຮູບ</translation>
 <translation id="4595805675102978678">ບັນຊີ Google ຜິດພາດ</translation>
+<translation id="4599585406846903742">ເບິ່ງແບບໜ້າດຽວ</translation>
 <translation id="4601095002996233687">ການສະແກນແບບເຈາະເລິກສຳລັບການດາວໂຫຼດທີ່ໜ້າສົງໄສ.</translation>
 <translation id="4606559747793337066">ເມື່ອເວັບໄຊ ຫຼື ແອັບຂໍໂຫຼດລິ້ງຢູ່ໜ້າເວັບຂອງຕົນເອງກ່ອນລ່ວງໜ້າແບບສ່ວນຕົວ, Chrome ຈະເຂົ້າລະຫັດ ແລະ ໂຫຼດໜ້າເວັບກ່ອນລ່ວງໜ້າຜ່ານເຊີບເວີຂອງ Google ໂດຍບໍ່ມີຄຸກກີ້. ການດຳເນີນການນີ້ຈະເຊື່ອງຕົວຕົນຂອງທ່ານຈາກເວັບໄຊທີ່ໂຫຼດກ່ອນລ່ວງໜ້າ.</translation>
 <translation id="4616150815774728855">ເປີດ <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">ແປໜ້ານີ້ເປັນພາສາໃດໆກໍໄດ້ຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="5696597120588531049">Chrome ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ</translation>
 <translation id="5698878456427040674">ກວດສອບວ່າລະບົບຮອງຮັບບັນຊີທີ່ເລືອກຫຼືບໍ່.</translation>
+<translation id="5700415746238689851">ເປີດ Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ຕ້ອງການເຊື່ອມຕໍ່ກັບຜອດອະນຸກໍາ</translation>
 <translation id="5715150588940290235">ລຶບລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້ອອກບໍ?</translation>
 <translation id="572328651809341494">ແຖບບໍ່ດົນມານີ້</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">ລາຍງານສະແປມ</translation>
 <translation id="8277710303010772444">ເລີ່ມການຊອກຫາ</translation>
 <translation id="8279945625179116733">ຮັກສາຄວາມປອດໄພໂດຍ <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">ໄດ້ຮັບລິ້ງແລ້ວ</translation>
 <translation id="8281886186245836920">ຂ້າມ</translation>
 <translation id="8282297628636750033">ນຳໃຊ້ຮູບແບບສີສັນມືດໃສ່ເວັບໄຊ, ເມື່ອເປັນໄປໄດ້.</translation>
 <translation id="8282950411412455249">ເຂົ້າໄປການຕັ້ງຄ່າຄວາມປອດໄພ</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">ອະນຸຍາດສິດການອະນຸຍາດອີກຄັ້ງສຳລັບ <ph name="SITE_NAME" /> ແລ້ວ</translation>
 <translation id="8865415417596392024">ຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ</translation>
 <translation id="8872506776304248286">ເປີດໃນແອັບ</translation>
+<translation id="8880275451109933094">ເບິ່ງແບບ 2 ໜ້າ</translation>
 <translation id="8890668505403261809">ຊອກຫາແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ</translation>
 <translation id="8892234476517513962">ທ່ານເຂົ້າສູ່ລະບົບຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ແຖບການບັນທຶກສຽງບໍ່ເປີດເຜີຍຕົວຕົນທີ່ເລືອກໄວ້</translation>

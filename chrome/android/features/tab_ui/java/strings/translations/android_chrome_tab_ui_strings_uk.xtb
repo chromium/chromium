@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Згруповано <ph name="TABS_COUNT_ONE" /> вкладку</translation>
 <translation id="1844381456014878100">Через 7 днів без активності</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Додати вкладку в список читання}one{Додати вкладки в список читання}few{Додати вкладки в список читання}many{Додати вкладки в список читання}other{Додати вкладки в список читання}}</translation>
 <translation id="1909810060368225529">Зверніть увагу: усі користувачі в цій спільній групі вкладок можуть бачити й вносити зміни.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Закріпити вкладку}one{Закріпити вкладки}few{Закріпити вкладки}many{Закріпити вкладки}other{Закріпити вкладки}}</translation>
 <translation id="1982637982196732906">Переміщати в розділ "Неактивні вкладки"</translation>

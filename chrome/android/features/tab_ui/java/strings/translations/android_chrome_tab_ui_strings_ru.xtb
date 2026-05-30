@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Создана группа с <ph name="TABS_COUNT_ONE" /> вкладкой.</translation>
 <translation id="1844381456014878100">Через 7 дней</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Добавить вкладку в список для чтения}one{Добавить вкладки в список для чтения}few{Добавить вкладки в список для чтения}many{Добавить вкладки в список для чтения}other{Добавить вкладки в список для чтения}}</translation>
 <translation id="1909810060368225529">Обратите внимание, что эти изменения будут видны всем. Изменять общую группу вкладок могут все участники</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Закрепить вкладку}one{Закрепить вкладки}few{Закрепить вкладки}many{Закрепить вкладки}other{Закрепить вкладки}}</translation>
 <translation id="1982637982196732906">Переместить в список неактивных</translation>

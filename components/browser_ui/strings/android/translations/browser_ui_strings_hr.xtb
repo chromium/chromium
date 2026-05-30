@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1000614056227025171">Donja tablica za promociju prilagodbe početne stranice otvorena je u punoj visini</translation>
 <translation id="1006017844123154345">Otvori online</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1046742265332833834">Plava tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Web-lokacije mogu reproducirati zvuk</translation>
 <translation id="3065787901655140044">Uključena je napredna zaštita</translation>
 <translation id="3069226013421428034">Dopusti prijavu treće strane za određenu web-lokaciju.</translation>
+<translation id="3084983642903364837">Kasnije uredite početnu stranicu putem izbornika s tri točke.</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3108122610701115301">Postavi kao zadano</translation>
 <translation id="310979712355504754">Izbriši sve</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Povezano sa serijskim priključkom</translation>
 <translation id="4223404254440398437">Mikrofon nije dopušten</translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
+<translation id="4227965147357783918">Donja tablica za promociju prilagodbe početne stranice otvorena je na pola visine</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nakon što je napustite, web-lokacija može nastaviti sa sinkronizacijom kao što je prijenos fotografija ili slanje poruke chata</translation>
 <translation id="4278390842282768270">Dopušteno</translation>

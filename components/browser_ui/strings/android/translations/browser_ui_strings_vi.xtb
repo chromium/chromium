@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1000614056227025171">Bảng Tuỳ chỉnh quảng cáo trên trang chủ ở dưới cùng đã mở trên toàn màn hình</translation>
 <translation id="1006017844123154345">Mở trực tuyến</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1046742265332833834">Giao diện màu xanh dương</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Các trang web có thể phát âm thanh</translation>
 <translation id="3065787901655140044">Chế độ Bảo vệ nâng cao đang bật</translation>
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
+<translation id="3084983642903364837">Vào trình đơn có biểu tượng 3 dấu chấm để chỉnh sửa trang chủ của bạn sau.</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3108122610701115301">Đặt làm mặc định</translation>
 <translation id="310979712355504754">Xóa tất cả</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Đã kết nối với một cổng nối tiếp</translation>
 <translation id="4223404254440398437">Không cho phép truy cập micrô</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
+<translation id="4227965147357783918">Bảng Tuỳ chỉnh quảng cáo trên trang chủ ở dưới cùng đã mở trên một nửa màn hình</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Sau khi bạn rời khỏi một trang web, trang web đó có thể tiếp tục đồng bộ hóa để hoàn tất những việc như tải ảnh lên hoặc gửi một tin nhắn trò chuyện</translation>
 <translation id="4278390842282768270">Được cho phép</translation>

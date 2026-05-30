@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Når du åbner Billedsøgning, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, automatisk til serveren. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chromium. Du kan ændre dette ved at gå til "Din konto i Chromium".</translation>
+<translation id="1257483544893909270">Brug tastaturgenvejen til at markere en del af skærmen i Gemini i Chromium.</translation>
 <translation id="1262876892872089030">Mens denne fane var inaktiv, blev der frigjort hukommelse for at sikre, at Chromium kører hurtigt. Du kan vælge, at dette website altid skal være inaktivt.</translation>
 <translation id="1265577313130862557">Chromium har blokeret denne download, fordi filen er skadelig</translation>
 <translation id="126567311906253476">Når du logger ind i Google-tjenester som f.eks. Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge ind i Chromium med den samme konto</translation>
@@ -154,9 +155,11 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2629740064077610681">Din organisation kan se og administrere browserdata, f.eks. bogmærker, historik og adgangskoder. Den kan ikke se browserdata på dine andre Chromium-profiler</translation>
 <translation id="2635452620547538388">Verificer din identitet for at bruge og gemme Chromium-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2636783171884046627">Brug tastaturgenvejen for at forlade eller vende tilbage til Gemini i Chromium.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering}=1{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chromium hver især</translation>
+<translation id="2676569452213089702">Nem adgang til Gemini i Chromium overalt på din enhed, selvom Chromium er minimeret.</translation>
 <translation id="2711502716910134313">Fanen Chromium</translation>
 <translation id="2718390899429598676">Som et ekstra sikkerhedsniveau krypterer Chromium dine data.</translation>
 <translation id="2721354645805494590">Log ud for at fjerne din Google-konto fra Chromium</translation>
@@ -309,7 +312,7 @@
 <translation id="4334241893986177674">Søg i dette screenshot</translation>
 <translation id="4384331407722351213">Åbn Chromium, når Windows starter</translation>
 <translation id="4384993550046411228">Få nem adgang til de funktioner, du kender, elsker og har tillid til, ved at angive Chromium som din standardbrowser. Chromium fastgøres til proceslinjen, så du hurtigt kan tilgå den.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Chromium OS.</translation>
+<translation id="4400772909124543403">Der er ingen tilgængelig opdatering</translation>
 <translation id="4407044323746248786">Vil du afslutte Chromium alligevel?</translation>
 <translation id="4413205837991854510">Vis altid genvejen til billedsøgning</translation>
 <translation id="4415566066719264597">Lad Chromium køre i baggrunden</translation>
@@ -348,6 +351,7 @@
 <translation id="4746050847053251315">Vil du slutte Chromium alligevel?</translation>
 <translation id="4748217263233248895">En særlig sikkerhedsopdatering til Chromium blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="4771701986670315895">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> andre.</translation>
+<translation id="4786083865378785874">Hvis Gemini i Chromium er åben, forbliver sidepanelet åbent, når der oprettes nye faner</translation>
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
 <translation id="4814736265800133385">Brug Chromium uden en konto</translation>
 <translation id="4888717733111232871">Indgående regel for Chromium om at tillade mDNS-trafik.</translation>
@@ -399,6 +403,7 @@
 <translation id="555970465369471303">Af sikkerhedsmæssige årsager deaktiverer Chromium JavaScript-optimering, når du besøger et website for første gang.
 
 Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering.</translation>
+<translation id="5575874067957905201">Vis Gemini i Chromium på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
 <translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
 <translation id="5580770360767802657">Brug Chromium som standard, og fastgør den</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -622,6 +627,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7867198900892795913">Chromium kunne ikke opdatere til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7873537467422636035">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chromium-dataene på din konto<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Åbn hurtigt Gemini i Chromium, når du har brug for det</translation>
 <translation id="7877212753140190672">Stil spørgsmål om dette billede</translation>
 <translation id="7888981273428720788">Angiv Chromium som standardbrowser</translation>
 <translation id="7934340546140346950">Chromium opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
@@ -643,6 +649,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8118331347066725040">Send feedback om søgning via Lens</translation>
 <translation id="8133124826068723441">Chromium OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængeligt på dit domæne.</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
+<translation id="8161503455832158203">Åbn Gemini i Chromium med en tastaturgenvej.</translation>
 <translation id="8164014945047474187">Yderligere servicevilkår for Chromium</translation>
 <translation id="81770708095080097">Denne fil er farlig, så Chromium har blokeret den.</translation>
 <translation id="8177472873527554730">Der blev ikke fundet indhold på siden</translation>
@@ -652,6 +659,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8232193495299001329">Chromium kan ikke verificere, hvor denne udvidelse kommer fra, og den kan derfor være skadelig. Du bør fjerne udvidelsen fra Chromium, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
 <translation id="8248265253516264921">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chromium at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>
 <translation id="8254601181414348851">Vil du logge ind i Chromium med en ny profil?</translation>
+<translation id="8277334259226003205">Vis Gemini i Chromium i systembakken, og aktivér tastaturgenvejen</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer dig<ph name="END_LINK" /> om usikre websites og downloads</translation>
 <translation id="8295827201165805317">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Køb, oversæt og identificer det, du ser gennem dit kamera, i Chromium-appen til iOS</translation>
@@ -680,6 +688,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8493179195440786826">Chromium er forældet</translation>
 <translation id="850264194101621529">Tak, fordi du har valgt Chromium som din standardbrowser.</translation>
 <translation id="8522801943730206384">Chromium kan tjekke dine adgangskoder, når du gemmer dem</translation>
+<translation id="8525579356836940628">Installationen blev afbrudt</translation>
 <translation id="8548787790260785208">Få en advarsel, hvis Chromium registrerer, at én af dine adgangskoder er blevet offentligt tilgængelig i forbindelse med et brud på datasikkerheden</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Nogle Chromium-funktioner og -udvidelser har genveje. Du kan vælge at aktivere dem igen.</translation>

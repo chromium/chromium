@@ -25,6 +25,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1203500561924088507">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je potřeba restartovat prohlížeč.</translation>
 <translation id="1232234696885483911">Když otevřete Vyhledávání obrázků, název stránky, adresa URL a obsah, včetně souborů PDF, se automaticky odešlou na server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google. Pokud to chcete změnit, přejděte do sekce Váš účet v prohlížeči Chromium.</translation>
+<translation id="1257483544893909270">Klávesová zkratka pro výběr části obrazovky v Gemini v Chromiu.</translation>
 <translation id="1262876892872089030">Když tato karta nebyla aktivní, byla uvolněna paměť, aby byl prohlížeč Chromium rychlý. Můžete zvolit, že tento web nikdy nemá být považován za neaktivní.</translation>
 <translation id="1265577313130862557">Prohlížeč Chromium toto stahování zablokoval, protože soubor je nebezpečný</translation>
 <translation id="126567311906253476">Když se pomocí účtu <ph name="USER_EMAIL" /> přihlásíte do služeb Google, jako je Gmail nebo YouTube, můžete se pomocí něj automaticky přihlásit i do prohlížeče Chromium</translation>
@@ -155,9 +156,11 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2629740064077610681">Vaše organizace může zobrazit a spravovat údaje o prohlížení (například vaše záložky, historii a hesla). Údaje o prohlížení v ostatních profilech prohlížeče Chromium nevidí.</translation>
 <translation id="2635452620547538388">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu <ph name="ACCOUNT_EMAIL" />, ověřte svou totožnost</translation>
+<translation id="2636783171884046627">Opouštět Gemini v Chromiu a vracet se do Gemini v Chromiu klávesovou zkratkou.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci.}=1{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. Anonymní okno se neotevře znovu.}few{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymní okna se neotevřou znovu.}many{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymního okna se neotevře znovu.}other{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
 <translation id="2661879430930417727">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet samostatně a nastavit si Chromium tak, jak potřebuje</translation>
+<translation id="2676569452213089702">Snadný přístup k používání Gemini v Chromiu na zařízení, i když je prohlížeč Chromium minimalizovaný.</translation>
 <translation id="2711502716910134313">Karta prohlížeče Chromium</translation>
 <translation id="2718390899429598676">V zájmu lepšího zabezpečení bude Chromium šifrovat vaše data.</translation>
 <translation id="2721354645805494590">Pokud z prohlížeče Chromium chcete odebrat svůj účet Google, odhlaste se</translation>
@@ -310,7 +313,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4334241893986177674">Vyhledat na tomto snímku obrazovky</translation>
 <translation id="4384331407722351213">Spustit Chromium při spuštění Windows</translation>
 <translation id="4384993550046411228">Nastavte si Chromium jako výchozí prohlížeč. Budete tak mít snadno přístup k funkcím, které znáte, máte rádi a kterým důvěřujete. Prohlížeč Chromium bude připnutý na hlavní panel, kde bude kdykoli snadno rychle k dispozici.</translation>
-<translation id="439358628917130594">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému ChromiumOS.</translation>
+<translation id="4400772909124543403">Nejsou k dispozici žádné aktualizace</translation>
 <translation id="4407044323746248786">Přesto Chromium ukončit?</translation>
 <translation id="4413205837991854510">Vždy zobrazovat zástupce vyhledávání obrázků</translation>
 <translation id="4415566066719264597">Nechat Chromium běžet na pozadí</translation>
@@ -349,6 +352,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4746050847053251315">Přesto Chromium ukončit?</translation>
 <translation id="4748217263233248895">Právě byla nainstalována mimořádná bezpečnostní aktualizace prohlížeče Chromium. Restartujte jej, vaše karty budou obnoveny.</translation>
 <translation id="4771701986670315895">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ještě <ph name="COUNT" />.</translation>
+<translation id="4786083865378785874">Pokud je otevřený Gemini v Chromiu, zůstává při vytváření nových karet boční panel otevřený</translation>
 <translation id="479167709087336770">Tato funkce využívá stejnou službu kontroly pravopisu, jaká se používá ve vyhledávání Google. Text, který v prohlížeči zadáte, se odešle do Googlu. Toto chování můžete kdykoliv změnit v nastavení.</translation>
 <translation id="4814736265800133385">Použít Chromium bez účtu</translation>
 <translation id="4888717733111232871">Pravidlo příchozího provozu pro prohlížeč Chromium, které povolí provoz mDNS.</translation>
@@ -400,6 +404,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="555970465369471303">Z bezpečnostních důvodů Chromium při první návštěvě webu vypíná optimalizaci JavaScriptu.
 
 Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translation>
+<translation id="5575874067957905201">Zobrazovat Gemini v Chromiu na liště s nabídkou na Macu a zapnout klávesovou zkratku</translation>
 <translation id="5579324208890605088">Chyba při spuštění: Spusťte instalační program jako běžný uživatel, nikoli jako administrátor.</translation>
 <translation id="5580770360767802657">Používejte prohlížeč Chromium jako výchozí a připněte si ho</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
@@ -623,6 +628,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7867198900892795913">Chromium nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>
 <translation id="7873537467422636035">Pokud si heslovou frázi nepamatujete nebo toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">Umožňuje kdykoli Gemini v Chromiu rychle otevřít</translation>
 <translation id="7877212753140190672">Zeptat se na tento obrázek</translation>
 <translation id="7888981273428720788">Nastavte si Chromium jako výchozí prohlížeč</translation>
 <translation id="7934340546140346950">Pokud je to možné, Chromium nezabezpečená připojení automaticky upgraduje na HTTPS</translation>
@@ -644,6 +650,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8118331347066725040">Zpětná vazba k vyhledávání s funkcí Lens</translation>
 <translation id="8133124826068723441">ChromiumOS nemůže synchronizovat data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
+<translation id="8161503455832158203">Klávesová zkratka k otevření Gemini v Chromiu.</translation>
 <translation id="8164014945047474187">Dodatečné smluvní podmínky prohlížeče Chromium</translation>
 <translation id="81770708095080097">Tento soubor je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="8177472873527554730">Na stránce se nepodařilo najít obsah</translation>
@@ -653,6 +660,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8232193495299001329">Toto rozšíření nemusí být bezpečné. Chromium nedokáže ověřit, odkud pochází. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit vaše data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="8254601181414348851">Přihlásit se do prohlížeče Chromium v novém profilu?</translation>
+<translation id="8277334259226003205">Zobrazovat Gemini v Chromiu na hlavním panelu systému a zapnout klávesovou zkratku</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vás varuje<ph name="END_LINK" /> před nebezpečnými weby a soubory ke stažení</translation>
 <translation id="8295827201165805317">V poslední době jste nenavštívili. Prohlížeč Chromium odebral toto oprávnění: <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu v aplikaci Chromium pro iOS</translation>
@@ -681,6 +689,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8493179195440786826">Prohlížeč Chromium je zastaralý</translation>
 <translation id="850264194101621529">Děkujeme, že jste si Chromium vybrali jako výchozí prohlížeč.</translation>
 <translation id="8522801943730206384">Chromium může hesla zkontrolovat, pouze když si je uložíte</translation>
+<translation id="8525579356836940628">Instalace byla zastavena</translation>
 <translation id="8548787790260785208">Nechte se upozornit, pokud Chromium některé z vašich hesel najde ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Některé funkce a rozšíření prohlížeče Chromium mají zkratky. Můžete je znovu zapnout.</translation>

@@ -33,7 +33,6 @@
 <translation id="1290883685122687410">Sozlash xatosi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome so‘nggi tizim yangilanishlarini o‘rnatguncha kutib turing.</translation>
 <translation id="1330562121671411446">Tilni aniqlash</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromeOS Flex shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="1341711321000856656">Profilni almashtirib, boshqa Chrome profili parollarini koʻrish mumkin</translation>
 <translation id="1343830902827845050">Chrome hisobiga kirish</translation>
 <translation id="1356661055722410047">Yangi! Ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
@@ -636,7 +635,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromeOS shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="7627609214560473136">Maʼlumotlaringizni himoyalash maqsadida Chrome brauzeriga uzoq vaqt kirmagan saytlardan ruxsatlarni olib tashlashi uchun ruxsat bering.</translation>
 <translation id="7629695634924605473">Parollaringiz oshkor etilsa, Chrome bu haqida xabar qiladi</translation>
 <translation id="7641148173327520642">Tizim administratori tomonidan Google Chrome brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>

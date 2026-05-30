@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promotion des notifications de conseils fermée</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045899828449635435">Effacer les données de ces sites ?</translation>
+<translation id="1049461303780085993">Essayez Gemini dans Chrome pour obtenir des réponses, dégager les points clés à retenir et plus encore</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1052842760770519282">Certains de vos mots de passe ne sont pas accessibles</translation>
 <translation id="1057623954802068161">Faire défiler la page vers le haut</translation>
@@ -297,6 +298,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
 <translation id="232137538351753795">Balayer depuis le bord gauche pour revenir en arrière</translation>
 <translation id="2323763861024343754">Données de site stockées</translation>
+<translation id="2327445548174191329">Source : <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
 <translation id="2332515770639153015">Navigation sécurisée avec protection renforcée activée</translation>
@@ -834,6 +836,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4595237294768457124">Ouvrez une page "Nouvel onglet"</translation>
 <translation id="4595276580892809760">Joindre des images de la galerie</translation>
 <translation id="4595805675102978678">Erreur liée au compte Google</translation>
+<translation id="4599585406846903742">Vue sur une page</translation>
 <translation id="4601095002996233687">Analyses approfondies pour les téléchargements suspects.</translation>
 <translation id="4606559747793337066">Quand un site ou une appli demandent de précharger en mode privé des liens sur leur page, Chrome chiffre et précharge les pages via les serveurs de Google sans cookies. Le site préchargé ne sait alors rien de votre identité.</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="569536719314091526">Traduire cette page dans n'importe quelle langue à partir du bouton "Plus d'options"</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est compatible.</translation>
+<translation id="5700415746238689851">Ouvrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> souhaite se connecter à un port série</translation>
 <translation id="5715150588940290235">Supprimer les codes de sécurité enregistrés ?</translation>
 <translation id="572328651809341494">Onglets récents</translation>
@@ -1769,6 +1773,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8271267069224406035">Signaler comme spam</translation>
 <translation id="8277710303010772444">Lancer une recherche</translation>
 <translation id="8279945625179116733">Sécurisé par <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Liens reçus</translation>
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8282297628636750033">Appliquer thème sombre aux sites</translation>
 <translation id="8282950411412455249">Accéder aux paramètres de sécurité</translation>
@@ -1904,6 +1909,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8863714995118816041">Autorisations de nouveau accordées pour <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Données Chrome de votre compte</translation>
 <translation id="8872506776304248286">Ouvrir dans l'appli</translation>
+<translation id="8880275451109933094">Vue sur deux pages</translation>
 <translation id="8890668505403261809">Rechercher dans vos onglets de navigation privée</translation>
 <translation id="8892234476517513962">Vous êtes déjà connecté</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné avec enregistrement en cours</translation>

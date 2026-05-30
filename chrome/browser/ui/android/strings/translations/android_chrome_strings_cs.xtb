@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Zavřené propagační oznámení s tipy</translation>
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1045899828449635435">Vymazat data i z těchto webů?</translation>
+<translation id="1049461303780085993">Vyzkoušejte Gemini v Chromu a získejte odpovědi, klíčové poznatky a další informace</translation>
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="1052842760770519282">Některá z vašich hesel nejsou přístupná</translation>
 <translation id="1057623954802068161">Přejít na začátek stránky</translation>
@@ -297,6 +298,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="232137538351753795">Přejetím prstem z levého okraje se vrátíte</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
+<translation id="2327445548174191329">Ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
 <translation id="2330186936255788117">Další záložky</translation>
 <translation id="2332515770639153015">Vylepšené Bezpečné prohlížení je zapnuté</translation>
@@ -834,6 +836,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4595237294768457124">Otevřete stránku Nová karta</translation>
 <translation id="4595276580892809760">Připojit obrázky z galerie</translation>
 <translation id="4595805675102978678">Chyba účtu Google</translation>
+<translation id="4599585406846903742">Zobrazení jedné stránky</translation>
 <translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4606559747793337066">Když web nebo aplikace požádá o soukromé předběžné načtení odkazů na stránce, Chrome stránky zašifruje a předběžně načte prostřednictvím serverů Google bez souborů cookie. To před předběžně načítaným webem skryje vaši identitu.</translation>
 <translation id="4616150815774728855">Do aplikace <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="569536719314091526">Pomocí tlačítka Další možnosti můžete tuto stránku přeložit do libovolného jazyka.</translation>
 <translation id="5696597120588531049">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami</translation>
 <translation id="5698878456427040674">Zkontrolujte, zda je vybraný účet podporován.</translation>
+<translation id="5700415746238689851">Otevřít Gemini</translation>
 <translation id="5709213329446699338">Web <ph name="SITE" /> se chce připojit k sériovému portu</translation>
 <translation id="5715150588940290235">Vymazat uložené bezpečnostní kódy?</translation>
 <translation id="572328651809341494">Nedávno použité karty</translation>
@@ -1769,6 +1773,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8271267069224406035">Nahlásit spam</translation>
 <translation id="8277710303010772444">Zahájit vyhledávání</translation>
 <translation id="8279945625179116733">Zabezpečeno službou <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Byly přijaty odkazy</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8282297628636750033">Pokud je to možné, použít pro weby tmavý motiv</translation>
 <translation id="8282950411412455249">Přejít do nastavení zabezpečení</translation>
@@ -1904,6 +1909,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8863714995118816041">Oprávnění webu <ph name="SITE_NAME" /> jsou opět povolena</translation>
 <translation id="8865415417596392024">Data Chromu ve vašem účtu</translation>
 <translation id="8872506776304248286">Otevřít v aplikaci</translation>
+<translation id="8880275451109933094">Zobrazení dvou stránek</translation>
 <translation id="8890668505403261809">Vyhledat na anonymních kartách</translation>
 <translation id="8892234476517513962">Už jste přihlášeni</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, vybraná nahrávající anonymní karta</translation>

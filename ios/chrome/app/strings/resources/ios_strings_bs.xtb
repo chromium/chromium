@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Isključivanje AI načina rada</translation>
 <translation id="1554477036522844996">Novi prozor</translation>
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
+<translation id="1560153516220021659">Suženo dugme na sekundarnoj alatnoj traci</translation>
 <translation id="1565371473877914088">Nova anonimna kartica</translation>
 <translation id="1567960978791353852">Prikazujte način rada za čitanje</translation>
 <translation id="1571780780926010134">Anonimne kartice</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-poruka je poslana.</translation>
 <translation id="1582732959743469162">Ovim će se zaustaviti sav tok trenutnog preuzimanja.</translation>
 <translation id="1594034544529347967">Počinje</translation>
+<translation id="1598485494295307681">Slušanje</translation>
 <translation id="1598751033135758830">Otvaranje u aplikaciji…</translation>
 <translation id="1600571977391127696">Određeni sadržaj možda nije primjeren za sve.</translation>
 <translation id="1601560923496285236">Primijeni</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Žao nam je, došlo je do problema prilikom dijeljenja vaše stavke.</translation>
 <translation id="4944543191714094452">Pronađi na stranici…</translation>
 <translation id="4945756290001680296">Pristupite postavkama lozinke</translation>
+<translation id="4946307855175300628">Odgovaranje</translation>
 <translation id="4949302115427722371">Upravljanje postavkama…</translation>
 <translation id="4958444002117714549">Proširi listu</translation>
 <translation id="496392417432935267">Otvoreno je na drugom mjestu</translation>
@@ -1552,6 +1555,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6355820183143562453">Sakrivanje kartice praćenja cijena</translation>
 <translation id="6355820205320395730">Slabe lozinke je lako pogoditi. Vodite računa da kreirate jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još sigurnosnih savjeta.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Prijavite se da dobijete sve svoje stvari kao što su lozinke, oznake i drugo.</translation>
+<translation id="6364268785720100355">Prijavite se da dobijete lozinke i drugo na svim svojim uređajima.</translation>
 <translation id="6368038301482806847">Odaberite pretraživač s liste.</translation>
 <translation id="6368102751067608420">Da izbrišete sve podatke upravitelja lozinki</translation>
 <translation id="6372558618707314581">Idite na bilo koju stranicu koja vam se sviđa</translation>
@@ -1681,6 +1685,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6746338529702829275">Pregledajte podatke o računu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Uvezena je {count} stavka historije}one{Uvezena je {count} stavka historije}few{Uvezene su {count} stavke historije}other{Uvezeno je {count} stavki historije}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opcija za akreditiv je dostupna iznad tastature.}one{{count} opcija za akreditiv je dostupna iznad tastature.}few{{count} opcije za akreditiv su dostupna iznad tastature.}other{{count} opcija za akreditiv je dostupno iznad tastature.}}</translation>
 <translation id="6755200887046212842">Upravljanje računima</translation>
 <translation id="6757899787818440812">Srednja visina</translation>
 <translation id="6759709389246683070">Možete dodirnuti i zadržati ovu karticu da postavite podsjetnik da je ponovo posjetite</translation>

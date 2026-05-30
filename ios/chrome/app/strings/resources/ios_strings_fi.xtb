@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Laita tekoälytila pois päältä</translation>
 <translation id="1554477036522844996">Uusi ikkuna</translation>
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
+<translation id="1560153516220021659">Tiivistetty toissijaisen yläpalkin painike</translation>
 <translation id="1565371473877914088">Uusi incognito-välilehti</translation>
 <translation id="1567960978791353852">Näytä lukutila</translation>
 <translation id="1571780780926010134">Incognito-välilehdet</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Viesti lähetetty.</translation>
 <translation id="1582732959743469162">Tämä keskeyttää nykyisen latauksen edistymisen.</translation>
 <translation id="1594034544529347967">Alkaa</translation>
+<translation id="1598485494295307681">Kuunnellaan</translation>
 <translation id="1598751033135758830">Avaa sovelluksessa…</translation>
 <translation id="1600571977391127696">Osa sisällöstä ei välttämättä sovi kaikille.</translation>
 <translation id="1601560923496285236">Käytä</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Virhe jaettaessa kohdetta.</translation>
 <translation id="4944543191714094452">Hae sivulta…</translation>
 <translation id="4945756290001680296">Siirry salasana-asetuksiin</translation>
+<translation id="4946307855175300628">Vastataan</translation>
 <translation id="4949302115427722371">Muuta asetuksia…</translation>
 <translation id="4958444002117714549">Laajenna luettelo</translation>
 <translation id="496392417432935267">Avattu muualla</translation>
@@ -1552,6 +1555,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6355820183143562453">Piilota hintaseurantakortti</translation>
 <translation id="6355820205320395730">Heikko salasana on helppo arvata. Muista käyttää vahvoja salasanoja. <ph name="BEGIN_LINK" />Katso muita tietoturvavinkkejä<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Kirjaudu sisään, niin voit käyttää esimerkiksi salasanoja ja kirjanmerkkejä.</translation>
+<translation id="6364268785720100355">Kirjaudu sisään, niin voit käyttää esimerkiksi salasanoja kaikilla laitteilla.</translation>
 <translation id="6368038301482806847">Valitse hakukone listalta.</translation>
 <translation id="6368102751067608420">Poista kaikki salasanojen hallintaohjelman data</translation>
 <translation id="6372558618707314581">Siirry mille tahansa sivulle</translation>
@@ -1681,6 +1685,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6736243959894955139">Osoite</translation>
 <translation id="6746338529702829275">Tarkista tilin data</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historiakohta tuotu}other{{count} historiakohtaa tuotu}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tunnistetietovaihtoehto.}other{Näppäimistön yläpuolella on saatavilla {count} tunnistetietovaihtoehtoa.}}</translation>
 <translation id="6755200887046212842">Hallinnoi tilejä</translation>
 <translation id="6757899787818440812">Keskikorkeus</translation>
 <translation id="6759709389246683070">Jos haluat palata tälle välilehdelle myöhemmin, voit asettaa muistutuksen koskettamalla sitä pitkään</translation>

@@ -149,6 +149,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1227224963052638717">Chính sách không xác định.</translation>
 <translation id="1227677022489889280">Cung cấp lý do di chuyển tệp (bắt buộc)</translation>
 <translation id="1228893227497259893">Số nhận dạng tổ chức không đúng</translation>
+<translation id="122989279399348496">Khi bạn đăng nhập, <ph name="DOMAIN" /> có thể xác nhận <ph name="EMAIL" /> trên các trang web được hỗ trợ để bạn không phải kiểm tra hộp thư đến</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (tự động phát hiện)</translation>
 <translation id="1232569758102978740">Không tên</translation>
 <translation id="1234539281285007945">Bạn phải điền vào <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, có nhiều thao tác, nhấn phím Tab để chuyển giữa các thao tác đó</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Thông tin về thẻ ảo</translation>
+<translation id="1802420021606590788">Chrome sẽ xử lý các tiêu đề trang và URL trong một không gian riêng tư trên đám mây</translation>
 <translation id="1803254472779303354">Đã cấp quyền khoá chuột</translation>
 <translation id="1803351196216024260">Trang web có thể yêu cầu dùng micrô của bạn</translation>
 <translation id="1804258830776932716">Bật Pix bằng cách nhanh chóng liên kết tài khoản của bạn</translation>
@@ -3027,6 +3029,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5742806904559466333">Quán bar, câu lạc bộ và cuộc sống về đêm</translation>
 <translation id="5743684619253032786">Sản phẩm chăm sóc móng</translation>
 <translation id="574392208103952083">Trung bình</translation>
+<translation id="5745586894920491759">Chrome xử lý các tiêu đề trang và URL trên đám mây</translation>
 <translation id="5745733273847572235">Trang web có thể hỏi vị trí của bạn</translation>
 <translation id="5750869797196646528">Theo dõi cử chỉ tay</translation>
 <translation id="5752327398324808817">Nhập một hoặc hai từ</translation>
@@ -3421,6 +3424,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Xem nhật ký</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Kiểm tra cấu hình proxy, tường lửa và DNS bảo mật<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Tự động xác nhận email của bạn</translation>
 <translation id="6366710531182496394">Dập 2 ghim bên trái</translation>
 <translation id="6367196786591004737">Xoá mục</translation>
 <translation id="6370022303958842211">Các hành động truy cập thiết bị như đăng nhập (kể cả lý do đăng nhập không thành công), đăng xuất, khoá và mở khoá</translation>
@@ -4066,6 +4070,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7388380253839603603">Giá xăng và nhiên liệu xe</translation>
 <translation id="7388594495505979117">{0,plural, =1{Thiết bị của bạn sẽ khởi động lại sau 1 phút}other{Thiết bị của bạn sẽ khởi động lại sau # phút}}</translation>
 <translation id="7393161616326137353">Trò chơi mạo hiểm</translation>
+<translation id="7393243238767102021">Cho phép <ph name="DOMAIN" /> tự động xác minh email này?</translation>
 <translation id="7393475648162498734">Cho biết những phần thưởng và lợi ích nào áp dụng cho thẻ của bạn tại thời điểm thanh toán</translation>
 <translation id="7393971683644170444">Đang kết nối với nhà cung cấp thẻ của bạn...</translation>
 <translation id="739728382607845710">Biểu tượng trình xử lý khoản thanh toán</translation>
@@ -5062,6 +5067,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8963117664422609631">Chuyển đến phần cài đặt trang web</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Đề xuất:<ph name="MARKUP_2" />Đảm bảo bạn có kết nối dữ liệu<ph name="MARKUP_3" />Tải lại trang web này sau<ph name="MARKUP_4" />Kiểm tra địa chỉ bạn đã nhập<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Các tệp trên máy của bạn sẽ bị xoá sau <ph name="HOURS" /> giờ</translation>
+<translation id="8964904785315870349">Email đã xác minh</translation>
 <translation id="8968766641738584599">Lưu thẻ</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8971063699422889582">Chứng chỉ của máy chủ đã hết hạn.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1000614056227025171">Нүүр хуудсаа тусгайлан өөрчлөх сурталчилгааны доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="1006017844123154345">Онлайнаар нээх</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1046742265332833834">Хөх загвар</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Сайтууд дуу чимээ тоглуулах боломжтой</translation>
 <translation id="3065787901655140044">Дэвшилтэт хамгаалалт асаалттай байна</translation>
 <translation id="3069226013421428034">Тодорхой сайтын гуравдагч талын нэвтрэлтийг зөвшөөрнө үү.</translation>
+<translation id="3084983642903364837">Дараа нь 3 цэгт цэсээр нүүр хуудсаа засна уу.</translation>
 <translation id="310297983047869047">Өмнөх слайд</translation>
 <translation id="3108122610701115301">Өгөгдмөл болгох</translation>
 <translation id="310979712355504754">Бүгдийг устгах</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Цуваа портод холбогдсон</translation>
 <translation id="4223404254440398437">Микрофоныг зөвшөөрөөгүй</translation>
 <translation id="4226663524361240545">Мэдэгдэл ирэхэд төхөөрөмж чичрэнэ</translation>
+<translation id="4227965147357783918">Нүүр хуудсаа тусгайлан өөрчлөх сурталчилгааны доод хүснэгтийг тал өндрөөр нээсэн</translation>
 <translation id="4259722352634471385">Навигацыг хориглосон байна: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Таныг сайтаас гарсны дараа энэ нь зураг байршуулах эсвэл чатын мессеж илгээх зэрэг ажлуудыг дуусгахын тулд синк хийсэн хэвээр байх боломжтой</translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>

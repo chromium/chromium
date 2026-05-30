@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Disattiva AI Mode</translation>
 <translation id="1554477036522844996">Nuova finestra</translation>
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
+<translation id="1560153516220021659">Pulsante della barra degli strumenti secondaria compressa</translation>
 <translation id="1565371473877914088">Nuova scheda Incognito</translation>
 <translation id="1567960978791353852">Mostra modalità Lettura</translation>
 <translation id="1571780780926010134">Schede Incognito</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">Messaggio inviato.</translation>
 <translation id="1582732959743469162">Verrà interrotto l'avanzamento del tuo download attuale.</translation>
 <translation id="1594034544529347967">Inizio</translation>
+<translation id="1598485494295307681">Ascolto in corso…</translation>
 <translation id="1598751033135758830">Apri nell'app…</translation>
 <translation id="1600571977391127696">Alcuni contenuti potrebbero non essere adatti a tutti.</translation>
 <translation id="1601560923496285236">Applica</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Spiacenti, si è verificato un problema di condivisione.</translation>
 <translation id="4944543191714094452">Trova nella pagina…</translation>
 <translation id="4945756290001680296">Accedi alle impostazioni della password</translation>
+<translation id="4946307855175300628">Risposta in corso…</translation>
 <translation id="4949302115427722371">Gestisci impostazioni…</translation>
 <translation id="4958444002117714549">Espandi elenco</translation>
 <translation id="496392417432935267">Aperta altrove</translation>
@@ -1552,6 +1555,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6355820183143562453">Nascondi scheda Monitoraggio del prezzo</translation>
 <translation id="6355820205320395730">Le password inefficaci sono facili da indovinare. Assicurati di creare password efficaci. <ph name="BEGIN_LINK" />Leggi altri suggerimenti per la sicurezza.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Accedi per avere a disposizione tutti i tuoi dati, come le password, i preferiti e altro ancora.</translation>
+<translation id="6364268785720100355">Accedi per avere a disposizione password e altro ancora su tutti i tuoi dispositivi.</translation>
 <translation id="6368038301482806847">Seleziona il motore di ricerca dall'elenco.</translation>
 <translation id="6368102751067608420">Per eliminare tutti i dati del Gestore delle password</translation>
 <translation id="6372558618707314581">Vai a una pagina a tua scelta</translation>
@@ -1681,6 +1685,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6736243959894955139">Indirizzo</translation>
 <translation id="6746338529702829275">Rivedi i dati dell'account</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento della cronologia importato}other{{count} elementi della cronologia importati}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} opzione per le credenziali disponibile sopra la tastiera.}other{{count} opzioni per le credenziali disponibili sopra la tastiera.}}</translation>
 <translation id="6755200887046212842">Gestisci account</translation>
 <translation id="6757899787818440812">Mezza altezza</translation>
 <translation id="6759709389246683070">Puoi toccare e tenere premuta questa scheda per impostare un promemoria per tornare più tardi</translation>

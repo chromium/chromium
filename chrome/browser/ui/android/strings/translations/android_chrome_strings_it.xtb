@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Notifica di promozione suggerita chiusa</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1045899828449635435">Vuoi cancellare anche i dati di questi siti?</translation>
+<translation id="1049461303780085993">Prova Gemini in Chrome per ottenere risposte, informazioni e altro ancora</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Alcune delle tue password non sono accessibili</translation>
 <translation id="1057623954802068161">Scorri a inizio pagina</translation>
@@ -297,6 +298,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2318045970523081853">Tocca per chiamare</translation>
 <translation id="232137538351753795">Scorri dal bordo sinistro per tornare indietro</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
+<translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
 <translation id="2330186936255788117">Altri preferiti</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
@@ -834,6 +836,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4595237294768457124">Apri una pagina Nuova scheda</translation>
 <translation id="4595276580892809760">Allega immagini dalla galleria</translation>
 <translation id="4595805675102978678">Errore dell'Account Google</translation>
+<translation id="4599585406846903742">Visualizzazione a pagina singola</translation>
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4606559747793337066">Quando un sito o un'app richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
 <translation id="5698878456427040674">Verifica se l'account selezionato è supportato.</translation>
+<translation id="5700415746238689851">Apri Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vuole collegarsi a una porta seriale</translation>
 <translation id="5715150588940290235">Eliminare i codici di sicurezza salvati?</translation>
 <translation id="572328651809341494">Schede recenti</translation>
@@ -1769,6 +1773,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8271267069224406035">Segnala come spam</translation>
 <translation id="8277710303010772444">Inizia la ricerca</translation>
 <translation id="8279945625179116733">Protetta da <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">Link ricevuti</translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8282297628636750033">Applica il tema scuro ai siti, se possibile</translation>
 <translation id="8282950411412455249">Vai alle impostazioni di sicurezza</translation>
@@ -1904,6 +1909,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8863714995118816041">Autorizzazioni consentite di nuovo per il sito <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8872506776304248286">Apri nell'app</translation>
+<translation id="8880275451109933094">Visualizzazione a due pagine</translation>
 <translation id="8890668505403261809">Cerca nelle schede Incognito</translation>
 <translation id="8892234476517513962">Hai già eseguito l'accesso</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, scheda Incognito con registrazione selezionata</translation>

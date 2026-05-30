@@ -25,6 +25,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="1232234696885483911">Wanneer jy Prentsoektog oopmaak, sal die bladsytitel, URL en inhoud, insluitend PDF’s, outomaties na die bediener toe gestuur word. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer uit jou Google-rekening in Chromium gebruik. Gaan na “Jou rekening in Chromium” toe om dit te verander.</translation>
+<translation id="1257483544893909270">Gebruik kortpadsleutel om ’n deel van die skerm in Gemini in Chromium te kies.</translation>
 <translation id="1262876892872089030">Geheue is beskikbaar gemaak terwyl hierdie oortjie onaktief was om Chromium vinnig te hou. Jy kan kies om hierdie werf altyd daarvan uit te sluit om onaktief te wees.</translation>
 <translation id="1265577313130862557">Chromium het hierdie aflaai geblokkeer omdat die lêer gevaarlik is</translation>
 <translation id="126567311906253476">Wanneer jy by Google-dienste soos Gmail of YouTube met <ph name="USER_EMAIL" /> aanmeld, kan jy met dieselfde rekening outomaties by Chromium aanmeld</translation>
@@ -156,9 +157,11 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2629740064077610681">Jou organisasie kan blaaierdata sien en bestuur, soos jou boekmerke, geskiedenis en wagwoorde. Dit kan nie blaaierdata in ander Chromium-profiele sien nie</translation>
 <translation id="2635452620547538388">Verifieer dat dit jy is om Chromium-data in jou rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik en te stoor</translation>
+<translation id="2636783171884046627">Gebruik kortpadsleutel om Gemini in Chromium te verlaat of daarheen terug te gaan.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Gevorderde Beskerming vereis dat jy Chromium herbegin om ’n opdatering toe te pas}=1{Gevorderde Beskerming vereis dat jy Chromium herbegin om ’n opdatering toe te pas. Jou Incognito-venster sal nie weer oopmaak nie.}other{Gevorderde Beskerming vereis dat jy Chromium herbegin om ’n opdatering toe te pas. Jou # Incognito-vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="2648074677641340862">'n Bedryfstelselfout het voorgekom met installering. Laai Chromium asseblief weer af.</translation>
 <translation id="2661879430930417727">As jy 'n toestel deel, kan vriende en familie apart blaai en Chromium opstel net soos hulle dit wil hê</translation>
+<translation id="2676569452213089702">Maklike toegang om Gemini in Chromium oral op jou toestel te gebruik, selfs al is Chromium geminimeer.</translation>
 <translation id="2711502716910134313">Chromium-oortjie</translation>
 <translation id="2718390899429598676">Chromium sal jou data enkripteer vir bykomende sekuriteit.</translation>
 <translation id="2721354645805494590">Meld af om jou Google-rekening uit Chromium te verwyder</translation>
@@ -311,7 +314,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4334241893986177674">Deursoek hierdie skermskoot</translation>
 <translation id="4384331407722351213">Begin Chromium wanneer Windows begin</translation>
 <translation id="4384993550046411228">Kry maklik toegang tot die kenmerke wat jy ken, van hou en vertrou deur Chromium as jou verstekblaaier te stel. Chromium sal vir kitstoegang op jou taakbalk vasgespeld word.</translation>
-<translation id="439358628917130594"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voordat jy hierdie toestel gebruik. Hierdie bepalings verander, beperk of brei nie Chromium-bedryfstelsel se bepalings uit nie.</translation>
+<translation id="4400772909124543403">Geen opdatering is beskikbaar nie</translation>
 <translation id="4407044323746248786">Verlaat Chromium in elk geval?</translation>
 <translation id="4413205837991854510">Wys altyd kortpad vir Prentsoektog</translation>
 <translation id="4415566066719264597">Laat Chromium in die agtergrond loop</translation>
@@ -350,6 +353,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4746050847053251315">Verlaat Chromium in elk geval?</translation>
 <translation id="4748217263233248895">'n Spesiale sekuriteitopdatering vir Chromium is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="4771701986670315895">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="COUNT" /> verwyder.</translation>
+<translation id="4786083865378785874">As Gemini in Chromium oop is, bly die kantpaneel oop wanneer nuwe oortjies geskep word</translation>
 <translation id="479167709087336770">Dit gebruik dieselfde speltoetser wat in Google-soektog gebruik word. Teks wat jy in die blaaier tik, word na Google toe gestuur. Jy kan altyd hierdie gedrag in instellings verander.</translation>
 <translation id="4814736265800133385">Gebruik Chromium sonder 'n rekening</translation>
 <translation id="4888717733111232871">Inkomende reël vir Chromium om mDNS-verkeer toe te laat.</translation>
@@ -401,6 +405,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="555970465369471303">Chromium skakel vir sekuriteitredes JavaScript-optimering af wanneer jy ’n werf vir die eerste keer besoek.
 
 Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</translation>
+<translation id="5575874067957905201">Wys Gemini in Chromium in Mac-kieslysbalk en skakel kortpadsleutel aan</translation>
 <translation id="5579324208890605088">Aanskakelingfout: laat loop die installeerder as ’n gereelde gebruiker, nie as administrateur nie.</translation>
 <translation id="5580770360767802657">Gebruik Chromium by verstek en speld dit vas</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
@@ -624,6 +629,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7867198900892795913">Chromium kon nie na die nuutste weergawe opdateer nie en daarom het jy nie nuwe kenmerke en sekuriteitregstellings nie.</translation>
 <translation id="7872446069773932638">Laai tans af … <ph name="SECONDS" /> sekonde(s) oor.</translation>
 <translation id="7873537467422636035"><ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
+<translation id="7874369989024033742">Maak Gemini vinnig in Chromium oop wanneer jy dit ook al nodig het</translation>
 <translation id="7877212753140190672">Vra oor hierdie prent</translation>
 <translation id="7888981273428720788">Stel Chromium as jou verstek.</translation>
 <translation id="7934340546140346950">Chromium gradeer onveilige verbindings aan HTTPS outomaties op, wanneer moontlik</translation>
@@ -645,6 +651,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8118331347066725040">Stuur terugvoer vir soektog met Lens</translation>
 <translation id="8133124826068723441">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
+<translation id="8161503455832158203">Maak Gemini in Chromium met ’n kortpadsleutel oop.</translation>
 <translation id="8164014945047474187">Chromium se bykomende diensbepalings</translation>
 <translation id="81770708095080097">Hierdie lêer is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
 <translation id="8177472873527554730">Kan nie inhoud op die bladsy vind nie</translation>
@@ -654,6 +661,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8232193495299001329">Chromium kan nie verifieer waar hierdie uitbreiding vandaan kom nie, en dit kan dalk onveilig wees. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="8248265253516264921">As 'n prent nie 'n nuttige beskrywing het nie, sal Chromium probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>
 <translation id="8254601181414348851">Meld in ’n nuwe profiel by Chromium aan?</translation>
+<translation id="8277334259226003205">Wys Gemini in Chromium in stelsellaai en skakel kortpadsleutel aan</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium waarsku jou<ph name="END_LINK" /> oor onveilige werwe en aflaaie</translation>
 <translation id="8295827201165805317">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION" /> verwyder.</translation>
 <translation id="8296236834352487533">Koop, vertaal en identifiseer wat jy sien met jou kamera in die Chromium iOS-app</translation>
@@ -682,6 +690,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>
 <translation id="850264194101621529">Dankie dat jy Chromium as jou verstekblaaier gekies het!</translation>
 <translation id="8522801943730206384">Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
+<translation id="8525579356836940628">Installering is gestop</translation>
 <translation id="8548787790260785208">Kry ’n waarskuwing as Chromium een van jou wagwoorde in ’n publieke dataskending vind</translation>
 <translation id="8555465886620020932">Diensfout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sommige Chromium-kenmerke en -uitbreidings kom met kortpaaie. Jy kan kies om hulle weer aan te skakel.</translation>

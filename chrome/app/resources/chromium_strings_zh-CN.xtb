@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1232234696885483911">当您打开图片搜索功能时，系统会自动将网页标题、网址和内容（包括 PDF 文件）发送给服务器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登录后，您可以在 Chromium 中使用 Google 账号中的密码等信息。如需更改此设置，请前往“设置 Chromium 账号”。</translation>
+<translation id="1257483544893909270">可以使用键盘快捷键在 Chromium 中的 Gemini 中选择屏幕上的部分内容。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">由于该文件具有危险性，Chromium 阻止了这次下载</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
@@ -153,9 +154,11 @@
 <translation id="2620436844016719705">系统</translation>
 <translation id="2629740064077610681">您的组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看其他 Chromium 资料中的浏览数据</translation>
 <translation id="2635452620547538388">请验证您的身份，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
+<translation id="2636783171884046627">可以使用键盘快捷键退出或返回 Chromium 中的 Gemini。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{高级保护计划要求您重新启动 Chromium 以应用一项更新}=1{高级保护计划要求您重新启动 Chromium 以应用一项更新。无痕式窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chromium 以应用一项更新。# 个无痕式窗口将不会重新打开。}}</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
 <translation id="2661879430930417727">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chromium</translation>
+<translation id="2676569452213089702">在设备上轻松使用 Chromium 中的 Gemini，即使 Chromium 已最小化也无妨。</translation>
 <translation id="2711502716910134313">Chromium 标签页</translation>
 <translation id="2718390899429598676">为了提高安全性，Chromium 将对您的数据进行加密。</translation>
 <translation id="2721354645805494590">若要从 Chromium 中移除您的 Google 账号，请退出账号</translation>
@@ -308,7 +311,7 @@
 <translation id="4334241893986177674">搜索此屏幕截图</translation>
 <translation id="4384331407722351213">在 Windows 启动时启动 Chromium</translation>
 <translation id="4384993550046411228">将 Chromium 设为默认浏览器，即可轻松使用您熟悉、喜爱和信任的功能。Chromium 将固定到任务栏，以便您快速访问。</translation>
-<translation id="439358628917130594">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Chromium 操作系统条款。</translation>
+<translation id="4400772909124543403">没有可用的更新</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
 <translation id="4413205837991854510">始终显示图片搜索快捷方式</translation>
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
@@ -347,6 +350,7 @@
 <translation id="4746050847053251315">仍要退出 Chromium？</translation>
 <translation id="4748217263233248895">Chromium 刚刚应用了一项特殊的安全更新。请立即重启，以便系统恢复您的标签页。</translation>
 <translation id="4771701986670315895">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和另外 <ph name="COUNT" /> 项权限。</translation>
+<translation id="4786083865378785874">如果 Chromium 中的 Gemini 已打开，则在创建新标签页时，侧边栏会保持打开状态</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4814736265800133385">在不登录账号的情况下使用 Chromium</translation>
 <translation id="4888717733111232871">Chromium的入站规则，允许mDNS流量。</translation>
@@ -398,6 +402,7 @@
 <translation id="555970465369471303">出于安全考虑，当您首次访问某个网站时，Chromium 会关闭 JavaScript 优化功能。
 
 如果此网页无法按预期运行，请尝试允许优化。</translation>
+<translation id="5575874067957905201">在 Mac 菜单栏中显示 Chromium 中的 Gemini 并开启键盘快捷键</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5580770360767802657">默认使用 Chromium 并将其固定</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -621,6 +626,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7867198900892795913">Chromium 无法更新至最新版本，因此您未能获得最新的功能和安全修复程序。</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7873537467422636035">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" /></translation>
+<translation id="7874369989024033742">随时随需快速打开 Chromium 中的 Gemini</translation>
 <translation id="7877212753140190672">询问此图片</translation>
 <translation id="7888981273428720788">将 Chromium 设为默认浏览器</translation>
 <translation id="7934340546140346950">Chromium 会尽可能将不安全的连接自动升级为 HTTPS</translation>
@@ -642,6 +648,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
 <translation id="8133124826068723441">由于您的网域不支持同步，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
+<translation id="8161503455832158203">使用键盘快捷键打开 Chromium 中的 Gemini。</translation>
 <translation id="8164014945047474187">Chromium 附加服务条款</translation>
 <translation id="81770708095080097">此文件存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="8177472873527554730">在页面中找不到内容</translation>
@@ -651,6 +658,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8232193495299001329">Chromium 无法验证此扩展程序的来源，它可能不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
 <translation id="8248265253516264921">如果图片缺少有用的说明，则 Chromium 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>
 <translation id="8254601181414348851">要使用新的个人资料登录 Chromium 吗？</translation>
+<translation id="8277334259226003205">在系统任务栏中显示 Chromium 中的 Gemini 并开启键盘快捷键</translation>
 <translation id="8286943863733751221">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chromium 会向您发出警告<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION" />权限。</translation>
 <translation id="8296236834352487533">在 iOS 版 Chromium 应用中，借助摄像头轻松购买、翻译和识别所见内容</translation>
@@ -679,6 +687,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="850264194101621529">感谢您选择 Chromium 作为默认浏览器！</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
+<translation id="8525579356836940628">已停止安装</translation>
 <translation id="8548787790260785208">如果 Chromium 发现您的密码在公开数据泄露事件中外泄，会向您发出警告</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556055872671007529">某些 Chromium 功能和扩展程序附带快捷字词。您可以选择重新开启它们。</translation>

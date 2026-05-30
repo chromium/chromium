@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ปิดการโปรโมตการแจ้งเตือนเคล็ดลับแล้ว</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1045899828449635435">ล้างข้อมูลเว็บไซต์เหล่านี้ด้วยไหม</translation>
+<translation id="1049461303780085993">ลองใช้ Gemini ใน Chrome เพื่อรับคำตอบ ประเด็นสำคัญ และอื่นๆ</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1052842760770519282">รหัสผ่านบางรายการเข้าถึงไม่ได้</translation>
 <translation id="1057623954802068161">เลื่อนไปที่ด้านบนของหน้า</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">แตะเพื่อโทร</translation>
 <translation id="232137538351753795">ปัดจากขอบด้านซ้ายเพื่อย้อนกลับ</translation>
 <translation id="2323763861024343754">พื้นที่เก็บข้อมูลเว็บไซต์</translation>
+<translation id="2327445548174191329">จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะปิดลิงก์คำเชิญทั้งหมด</translation>
 <translation id="2330186936255788117">บุ๊กมาร์กเพิ่มเติม</translation>
 <translation id="2332515770639153015">Google Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">เปิดหน้าแท็บใหม่</translation>
 <translation id="4595276580892809760">แนบรูปภาพจากแกลเลอรี</translation>
 <translation id="4595805675102978678">ข้อผิดพลาดของบัญชี Google</translation>
+<translation id="4599585406846903742">ดูแบบหน้าเดียว</translation>
 <translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4606559747793337066">เมื่อเว็บไซต์หรือแอปขอโหลดลิงก์ล่วงหน้าแบบส่วนตัว Chrome จะเข้ารหัสและโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google โดยไม่มีคุกกี้ การดำเนินการนี้จะซ่อนตัวตนของคุณจากเว็บไซต์ที่โหลดล่วงหน้า</translation>
 <translation id="4616150815774728855">เปิด <ph name="WEBAPK_NAME" /></translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">แปลหน้านี้เป็นภาษาใดก็ได้จากปุ่มตัวเลือกเพิ่มเติม</translation>
 <translation id="5696597120588531049">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="5698878456427040674">ตรวจสอบว่าระบบรองรับบัญชีที่เลือกหรือไม่</translation>
+<translation id="5700415746238689851">เปิด Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ต้องการเชื่อมต่อกับพอร์ตอนุกรม</translation>
 <translation id="5715150588940290235">ลบรหัสความปลอดภัยที่บันทึกไว้ใช่ไหม</translation>
 <translation id="572328651809341494">แท็บล่าสุด</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">รายงานสแปม</translation>
 <translation id="8277710303010772444">เริ่มค้นหา</translation>
 <translation id="8279945625179116733">รักษาความปลอดภัยโดย <ph name="APP_NAME" /></translation>
+<translation id="8280797717392145626">ได้รับลิงก์แล้ว</translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282297628636750033">ใช้ธีมมืดกับเว็บไซต์เมื่อทำได้</translation>
 <translation id="8282950411412455249">ไปที่การตั้งค่าความปลอดภัย</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041">อนุญาตสิทธิ์อีกครั้งแล้วสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
 <translation id="8872506776304248286">เปิดในแอป</translation>
+<translation id="8880275451109933094">ดูแบบ 2 หน้า</translation>
 <translation id="8890668505403261809">ค้นหาแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="8892234476517513962">คุณลงชื่อเข้าใช้แล้ว</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, แท็บการบันทึกเสียงที่ไม่ระบุตัวตนที่เลือก</translation>

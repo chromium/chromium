@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1000614056227025171">Binuksan nang buo ang bottom sheet ng promo na i-customize ang iyong homepage</translation>
 <translation id="1006017844123154345">Buksan Online</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1046742265332833834">Asul na tema</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Puwedeng mag-play ng tunog ang mga site</translation>
 <translation id="3065787901655140044">Naka-on ang Advanced na Proteksyon</translation>
 <translation id="3069226013421428034">Payagan ang third-party na pag-sign in para sa partikular na site.</translation>
+<translation id="3084983642903364837">I-edit ang iyong homepage sa ibang pagkakataon sa pamamagitan ng 3-dot menu.</translation>
 <translation id="310297983047869047">Nakaraang slide</translation>
 <translation id="3108122610701115301">Itakda ang default</translation>
 <translation id="310979712355504754">Tanggalin lahat</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Nakakonekta sa serial port</translation>
 <translation id="4223404254440398437">Hindi pinapayagan ang mikropono</translation>
 <translation id="4226663524361240545">Maaaring mag-vibrate ang device dahil sa mga notification</translation>
+<translation id="4227965147357783918">Binuksan nang kalahati ang bottom sheet ng promo na i-customize ang iyong homepage</translation>
 <translation id="4259722352634471385">Naka-block ang navigation: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Pagkatapos mong umalis sa isang site, puwede itong patuloy na mag-sync para matapos ang mga gawain, tulad ng pag-upload ng mga larawan o pagpapadala ng mensahe sa chat</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>

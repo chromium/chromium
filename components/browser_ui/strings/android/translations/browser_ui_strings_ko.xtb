@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1000614056227025171">홈페이지 맞춤설정 프로모션 하단 시트가 전체 높이로 열림</translation>
 <translation id="1006017844123154345">온라인 열기</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1046742265332833834">파란색 테마</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065787901655140044">고급 보호 기능이 사용 설정됨</translation>
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
+<translation id="3084983642903364837">나중에 점 3개 메뉴에서 홈페이지를 수정하세요</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3108122610701115301">기본으로 설정</translation>
 <translation id="310979712355504754">모두 삭제</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">직렬 포트에 연결됨</translation>
 <translation id="4223404254440398437">마이크가 허용되지 않음</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
+<translation id="4227965147357783918">홈페이지 맞춤설정 프로모션 하단 시트가 절반 높이로 열림</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
 <translation id="4278390842282768270">허용됨</translation>

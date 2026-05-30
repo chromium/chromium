@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Désactiver le Mode IA</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
 <translation id="1558391695376153246">Fermer onglets nav. privée</translation>
+<translation id="1560153516220021659">Bouton de la barre d'outils secondaire réduit</translation>
 <translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
 <translation id="1567960978791353852">Afficher le mode Lecture</translation>
 <translation id="1571780780926010134">Onglets de navigation privée</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-mail envoyé.</translation>
 <translation id="1582732959743469162">Cette action arrêtera le téléchargement en cours.</translation>
 <translation id="1594034544529347967">Début</translation>
+<translation id="1598485494295307681">Écoute…</translation>
 <translation id="1598751033135758830">Ouvrir dans l'appli…</translation>
 <translation id="1600571977391127696">Certains contenus ne sont peut-être pas adaptés à tous les publics.</translation>
 <translation id="1601560923496285236">Appliquer</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Désolé, un problème est survenu lors du partage de l'élément.</translation>
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
+<translation id="4946307855175300628">Réponse…</translation>
 <translation id="4949302115427722371">Gérer les réglages…</translation>
 <translation id="4958444002117714549">Développer la liste</translation>
 <translation id="496392417432935267">Ouvert ailleurs</translation>
@@ -1552,6 +1555,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6355820183143562453">Masquer la carte de suivi de prix</translation>
 <translation id="6355820205320395730">Les mots de passe peu sécurisés sont faciles à deviner. Assurez-vous de créer des mots de passe sécurisés. <ph name="BEGIN_LINK" />Découvrez d'autres conseils de sécurité.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Connectez-vous pour accéder à tous vos éléments, comme vos mots de passe, vos favoris et plus encore.</translation>
+<translation id="6364268785720100355">Connectez-vous pour accéder à vos mots de passe et plus encore sur tous vos appareils.</translation>
 <translation id="6368038301482806847">Choisissez un moteur de recherche dans la liste.</translation>
 <translation id="6368102751067608420">Pour supprimer toutes les données du Gestionnaire de mots de passe</translation>
 <translation id="6372558618707314581">Accédez à la page de votre choix</translation>
@@ -1681,6 +1685,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Examinez les données de votre compte</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} élément d'historique importé}one{{count} élément d'historique importé}other{{count} éléments d'historique importés}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{{count} option d'identifiant disponible au-dessus de votre clavier.}one{{count} option d'identifiant disponible au-dessus de votre clavier.}other{{count} options d'identifiant disponibles au-dessus de votre clavier.}}</translation>
 <translation id="6755200887046212842">Gérer les comptes</translation>
 <translation id="6757899787818440812">Hauteur moyenne</translation>
 <translation id="6759709389246683070">Appuyez de manière prolongée sur cet onglet pour définir un rappel afin de revenir plus tard</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> பக்கம் குழுவாக்கப்பட்டது</translation>
 <translation id="1844381456014878100">7 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{பக்கத்தை வாசிப்புப் பட்டியலில் சேர்}other{பக்கங்களை வாசிப்புப் பட்டியலில் சேர்}}</translation>
 <translation id="1909810060368225529">குறிப்பு: இந்தப் பகிர்ந்த பக்கக் குழுவில் செய்யப்படும் மாற்றங்கள் எல்லோருக்கும் காட்டப்படும். நீங்கள் பகிரும் பக்கக் குழுக்களில் எல்லோரும் மாற்றங்களைச் செய்யலாம்.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{பக்கத்தைப் பின் செய்யும்}other{பக்கங்களைப் பின் செய்யும்}}</translation>
 <translation id="1982637982196732906">'செயலில் இல்லாதவை' பிரிவுக்கு நகர்த்துதல்</translation>

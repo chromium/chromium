@@ -35,7 +35,6 @@
 <translation id="1290883685122687410">დაყენების შეცდომა: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">დაელოდეთ, სანამ Chrome დააინსტალირებს სისტემის უახლეს განახლებებს.</translation>
 <translation id="1330562121671411446">ენის ამოცნობა</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> მოითხოვს, რომ ამ მოწყობილობის გამოყენებამდე წაიკითხოთ ქვემოთ მოცემული მომსახურების პირობები და დაეთანხმოთ მათ. აღნიშნული პირობები არ არის Google ChromeOS Flex-ის წესების დამატება, ასევე, არ ცვლის და არც ზღუდავს მათ.</translation>
 <translation id="1341711321000856656">ახლა შეგიძლიათ გადართვა, პაროლები სხვა Chrome პროფილიდან რომ ნახოთ</translation>
 <translation id="1343830902827845050">Chrome-ში შესვლა</translation>
 <translation id="1356661055722410047">სიახლე! თქვენს ეკრანზე შეგიძლიათ, თარგმნოთ ტექსტი და სურათები</translation>
@@ -640,7 +639,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> მოითხოვს, რომ ამ მოწყობილობის გამოყენებამდე წაიკითხოთ ქვემოთ მოცემული მომსახურების პირობები და დაეთანხმოთ მათ. აღნიშნული პირობები არ არის Google ChromeOS-ის წესების დამატება, ასევე, არ ცვლის და არც ზღუდავს მათ.</translation>
 <translation id="7627609214560473136">თქვენი მონაცემების დაცვის მიზნით, მიეცით საშუალება Chrome-ს გაუუქმოს ნებართვები საიტებს, რომლებზეც ბოლო დროს არ გადასულხართ.</translation>
 <translation id="7629695634924605473">Chrome გაცნობებთ, თუ თქვენს პაროლებს ვინმე გატეხავს</translation>
 <translation id="7641148173327520642">თქვენი სისტემის ადმინისტრატორმა მოახდინა Google Chrome-ის კონფიგურაცია იმგვარად, რომ <ph name="TARGET_URL_HOSTNAME" />-ზე წვდომისთვის საჭიროა <ph name="ALTERNATIVE_BROWSER_NAME" />-ის გახსნა.</translation>

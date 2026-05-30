@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">AI मोड बंद करा</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
+<translation id="1560153516220021659">कोलॅप्स केलेले दुय्यम टूलबार बटण</translation>
 <translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
 <translation id="1567960978791353852">वाचन मोड दाखवा</translation>
 <translation id="1571780780926010134">गुप्त टॅब</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">मेल पाठवले.</translation>
 <translation id="1582732959743469162">यामुळे तुमच्या सुरू असलेल्या डाउनलोडची पुढची सर्व प्रगती थांबेल.</translation>
 <translation id="1594034544529347967">सुरू होईल</translation>
+<translation id="1598485494295307681">ऐकत आहे</translation>
 <translation id="1598751033135758830">ॲपमध्ये उघडा…</translation>
 <translation id="1600571977391127696">काही आशय प्रत्येकासाठी योग्य नसू शकतो.</translation>
 <translation id="1601560923496285236">लागू करा</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">क्षमस्व, तुमचा आयटम शेअर करताना समस्या आली.</translation>
 <translation id="4944543191714094452">या पेजमध्ये शोधा…</translation>
 <translation id="4945756290001680296">पासवर्ड सेटिंग्ज अ‍ॅक्सेस करा</translation>
+<translation id="4946307855175300628">प्रतिसाद देत आहे</translation>
 <translation id="4949302115427722371">सेटिंग्ज व्यवस्थापित करा…</translation>
 <translation id="4958444002117714549">सूची विस्तार करा</translation>
 <translation id="496392417432935267">इतरत्र उघडले आहे</translation>
@@ -1553,6 +1556,7 @@
 <translation id="6355820183143562453">किमतीचा माग ठेवण्याशी संबंधित कार्ड लपवा</translation>
 <translation id="6355820205320395730">कमकुवत पासवर्ड ओळखणे सोपे असते. तुम्ही क्लिष्ट पासवर्ड तयार करत आहात याची खात्री करा. <ph name="BEGIN_LINK" />आणखी सुरक्षा टिपा पहा.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टींसारखा तुमचा सर्व आशय मिळवण्यासाठी साइन इन करा.</translation>
+<translation id="6364268785720100355">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा.</translation>
 <translation id="6368038301482806847">सूचीमधून शोध इंजीन निवडा.</translation>
 <translation id="6368102751067608420">सर्व पासवर्ड व्यवस्थापक डेटा हटवण्यासाठी</translation>
 <translation id="6372558618707314581">तुम्हाला आवडत असलेल्या कोणत्याही पेजवर जा</translation>
@@ -1682,6 +1686,7 @@
 <translation id="6736243959894955139">पत्ता</translation>
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
 <translation id="6750456911389438250">{count,plural, =1{इतिहासाचा {count} आयटम इंपोर्ट केला आहे}other{इतिहासाचे {count} आयटम इंपोर्ट केले आहेत}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{तुमच्या कीबोर्डच्या वरती क्रेडेंशियलचा {count} पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती क्रेडेंशियलचे {count} पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="6755200887046212842">खाती व्यवस्थापित करा</translation>
 <translation id="6757899787818440812">मध्यम उंची</translation>
 <translation id="6759709389246683070">नंतर पुन्हा भेट देण्यासाठी रिमाइंडर सेट करण्याकरिता तुम्ही या टॅबला स्‍पर्श करून धरून ठेवू शकता</translation>

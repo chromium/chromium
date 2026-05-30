@@ -169,6 +169,7 @@
 <translation id="1554043146674176775">Izslēgt MI režīmu</translation>
 <translation id="1554477036522844996">Jauns logs</translation>
 <translation id="1558391695376153246">Aizvērt inkognito cilnes</translation>
+<translation id="1560153516220021659">Sakļautas sekundārās rīkjoslas poga</translation>
 <translation id="1565371473877914088">Jauna inkognito cilne</translation>
 <translation id="1567960978791353852">Rādīt lasīšanas režīmu</translation>
 <translation id="1571780780926010134">Inkognito režīma cilnes</translation>
@@ -176,6 +177,7 @@
 <translation id="1580783302095112590">E-pasts nosūtīts.</translation>
 <translation id="1582732959743469162">Šādi tiks pārtraukta pašreizējās lejupielādes norise.</translation>
 <translation id="1594034544529347967">Sākums</translation>
+<translation id="1598485494295307681">Notiek klausīšanās</translation>
 <translation id="1598751033135758830">Atvērt lietotnē…</translation>
 <translation id="1600571977391127696">Noteikts saturs var nebūt piemērots visiem.</translation>
 <translation id="1601560923496285236">Lietot</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4941089862236492464">Diemžēl, kopīgojot jūsu vienumu, radās problēma.</translation>
 <translation id="4944543191714094452">Atrast lapā…</translation>
 <translation id="4945756290001680296">Piekļūt paroles iestatījumiem</translation>
+<translation id="4946307855175300628">Notiek atbildēšana</translation>
 <translation id="4949302115427722371">Iestatījumu pārvaldīšana…</translation>
 <translation id="4958444002117714549">Izvērst sarakstu</translation>
 <translation id="496392417432935267">Atvērts citā logā</translation>
@@ -1552,6 +1555,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6355820183143562453">Paslēpt kartīti “Cenu izsekošana”</translation>
 <translation id="6355820205320395730">Nedrošas paroles ir viegli uzminēt. Noteikti izveidojiet drošas paroles. <ph name="BEGIN_LINK" />Skatiet citus drošības padomus<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Pierakstieties, lai piekļūtu savam saturam, piemēram, parolēm, grāmatzīmēm un citiem datiem.</translation>
+<translation id="6364268785720100355">Pierakstieties, lai piekļūtu parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="6368038301482806847">Sarakstā izvēlieties meklētājprogrammu.</translation>
 <translation id="6368102751067608420">Lai dzēstu visus paroļu pārvaldnieka datus</translation>
 <translation id="6372558618707314581">Pārejiet uz jebkuru lapu.</translation>
@@ -1681,6 +1685,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6736243959894955139">Adrese</translation>
 <translation id="6746338529702829275">Pārskatīt konta datus</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importēts {count} vēstures vienums}zero{Importēti {count} vēstures vienumi}one{Importēts {count} vēstures vienums}other{Importēti {count} vēstures vienumi}}</translation>
+<translation id="6751817018972413719">{count,plural, =1{Virs tastatūras ir pieejams {count} akreditācijas datu variants.}zero{Virs tastatūras ir pieejami {count} akreditācijas datu varianti.}one{Virs tastatūras ir pieejams {count} akreditācijas datu variants.}other{Virs tastatūras ir pieejami {count} akreditācijas datu varianti.}}</translation>
 <translation id="6755200887046212842">Pārvaldīt kontus</translation>
 <translation id="6757899787818440812">Vidējs augstums</translation>
 <translation id="6759709389246683070">Varat pieskarties šai cilnei un turēt to, lai iestatītu atgādinājumu par atkārtotu apmeklējumu vēlāk.</translation>

@@ -483,6 +483,7 @@ Se a política for definida como "Desativada" ou não for definida, as configura
       Se ela estiver ativada, a melhoria ficará ativada.
       Se a política for deixada sem definição, ela ficará ativada em dispositivos gerenciados e dispositivos de consumidores.
       Observe que esta é uma política temporária para permitir que os usuários gerenciados continuem usando atalhos legados descontinuados. Esta política será descontinuada quando os atalhos personalizados ficarem disponíveis.</translation>
+<translation id="1359459742455216057">Identificador exclusivo do app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostrar o botão "Página inicial" na barra de ferramentas</translation>
 <translation id="1363275621236827384">Permitir consultas no Servidor Quirks para perfis de hardware</translation>
 <translation id="1363839375295535439">Se a política for ativada ou não for definida, permite que o sandbox do LPAC seja ativado para serviços de impressão sempre que a configuração do sistema permitir.
@@ -2306,6 +2307,15 @@ Essa política é temporária e será removida na etapa 157.</translation>
 
       Especifique o valor da política em dias.</translation>
 <translation id="2466131534462628618">A autenticação de portal cativo ignora o proxy</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+O recurso ServiceWorkerAutoPreload envia uma solicitação de rede para um recurso principal ao mesmo tempo que inicia o processo de inicialização do ServiceWorker.
+
+Se a política for ativada ou deixada sem definição, o
+<ph name="PRODUCT_NAME" /> vai ativar o ServiceWorkerAutoPreload. A solicitação de navegação é enviada automaticamente ao iniciar o ServiceWorker em alguns cenários, por exemplo, quando o ServiceWorker não está em execução.
+
+Se estiver desativado, o <ph name="PRODUCT_NAME" /> não vai ativar o ServiceWorkerAutoPreload. A solicitação de navegação é enviada sempre após o início do ServiceWorker.
+
+Esta política é uma medida temporária para controlar o recurso e será removida na versão M154.</translation>
 <translation id="2467181864598429837">Comportamento padrão do navegador</translation>
 <translation id="2467896267442150508">Intervalo de tempo que dura no máximo uma semana. Se o horário de início for posterior ao de término, o intervalo será contínuo.</translation>
 <translation id="2475594733565572760">Esta política define a configuração padrão para todos os recursos de IA generativa cobertos. Por exemplo, se esta política for definida com o valor 1, então 1 será a configuração padrão para todos os recursos de IA generativa cobertos. Isso não afeta os valores de política definidos manualmente. Essa configuração vai definir os padrões para os recursos de IA generativa cobertos no Chrome. Consulte https://support.google.com/chrome/a?p=generative_ai_settings para conferir a lista de recursos cobertos.
@@ -4432,6 +4442,7 @@ Quando essa política estiver desativada ou não for definida, o SSO flutuante v
 <translation id="3778689139323007309">Realizar verificações de revogação para certificados de servidor validados com assinatura dos certificados de CA locais</translation>
 <translation id="3780152581321609624">Incluir porta não padrão no SPN Kerberos</translation>
 <translation id="3785423718413114598">Não permitir recursos de IA generativa</translation>
+<translation id="378626615843371785">Configurar as definições do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BETA)</translation>
 <translation id="3788155044604525647">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
 Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
 
@@ -4947,6 +4958,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4136603825567209889">Ativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="4138655880188755661">Limite de tempo</translation>
 <translation id="4140646780789794190">Desativar o compartilhamento de dados de diagnósticos com o PluginVm</translation>
+<translation id="4141430435877011529">A multirregião ou local do app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Saiba mais sobre o local do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> em https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Disponibilizar o Modo área de trabalho unificada para o usuário</translation>
 <translation id="4146319954420095470">Aviso! Essa dependência será descartada em breve. Comece a usar a <ph name="GLS_POLICY_NAME" />. Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os serviços do sistema <ph name="PRODUCT_OS_NAME" /> e os apps Android não poderão acessar as informações de localização. Se esta política for definida com qualquer outro valor ou deixada sem definição, o consentimento do usuário será solicitado quando um app Android quiser acessar as informações de localização.</translation>
@@ -9259,6 +9271,7 @@ Quando a política é ativada, os dados são coletados e enviados por upload par
 
 Para o <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
+<translation id="6714333117401088746">O ID do projeto <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondente à instância do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> a ser ativada.</translation>
 <translation id="6720330829631914048">Horas decorridas desde o começo do dia (no formato de 24 horas).</translation>
 <translation id="6720862827454058309">Substituir mapeamentos de espaço de endereço IP</translation>
 <translation id="6721252203593581486">O WebSQL em contextos de terceiros (por exemplo, iframes entre sites) fica desativado por padrão a partir do M97 e será totalmente removido no M101.
@@ -10635,6 +10648,15 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será 
 
 Se a política não for definida, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193, exceto se o recurso CastAllowAllIPs estiver ativado.</translation>
 <translation id="7534199150025803530">Esta política não tem nenhum efeito sobre o app Google Drive para Android. Para impedir o uso do Google Drive por conexões celulares, bloqueie a instalação do app Google Drive para Android.</translation>
+<translation id="7537404002861344834">Configura as definições de conexão do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para melhorar as respostas dos recursos do Gemini no Chrome.
+
+Se esta política for ativada, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> poderá ser usado para aprimorar as respostas do Gemini no Chrome para usuários que fizeram login com uma conta gerenciada associada ao projeto e ao ID do app especificados. O <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não estará disponível para perfis que fizeram login com contas pessoais.
+
+Se a política não for ativada, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será usado para aprimorar as respostas do Gemini no Chrome.
+
+Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Todas as configurações desta política precisam ser compatíveis com a configuração do projeto <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no console do <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Qualquer incompatibilidade vai causar um comportamento inesperado ao usar o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados informam o nome do modelo, a arquitetura e a velocidade máxima do clock da CPU, além da temperatura e utilização da CPU no M96 e versões mais recentes.
 
       Se a política for desativada, os dispositivos registrados não vão enviar informações sobre a CPU.

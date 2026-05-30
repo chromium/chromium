@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1000614056227025171">Plansza dolna promocji Dostosuj stronę główną otwarta na całą wysokość</translation>
 <translation id="1006017844123154345">Otwórz online</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1046742265332833834">Motyw niebieski</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Strony mogą odtwarzać dźwięk</translation>
 <translation id="3065787901655140044">Ochrona zaawansowana jest włączona</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
+<translation id="3084983642903364837">Stronę główną możesz edytować później w menu z 3 kropkami.</translation>
 <translation id="310297983047869047">Poprzedni slajd</translation>
 <translation id="3108122610701115301">Ustaw jako wartość domyślną</translation>
 <translation id="310979712355504754">Usuń wszystkie</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Połączono z portem szeregowym</translation>
 <translation id="4223404254440398437">Mikrofon nie jest dozwolony</translation>
 <translation id="4226663524361240545">Powiadomienia będą sygnalizowane wibracjami</translation>
+<translation id="4227965147357783918">Plansza dolna promocji Dostosuj stronę główną otwarta do połowy wysokości</translation>
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Gdy zamkniesz witrynę, może ona kontynuować synchronizację, aby dokończyć zadania takie jak przesłanie zdjęć czy wysłanie wiadomości czatu</translation>
 <translation id="4278390842282768270">Dozwolone</translation>

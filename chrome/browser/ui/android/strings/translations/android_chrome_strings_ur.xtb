@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">تجاویز کی اطلاعات کا پرومو بند ہو گیا</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1045899828449635435">ان سائٹس سے ڈیٹا بھی صاف کریں؟</translation>
+<translation id="1049461303780085993">‏جوابات، اہم نکات اور مزید حاصل کرنے کے لیے Chrome میں Gemini آزمائیں</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1052842760770519282">آپ کے کچھ پاس ورڈز قابل رسائی نہیں ہیں</translation>
 <translation id="1057623954802068161">صفحہ کے اوپری حصے تک اسکرول کریں</translation>
@@ -297,6 +298,7 @@
 <translation id="2318045970523081853">کال کرنے کے لیے تھپتھپائیں</translation>
 <translation id="232137538351753795">واپس جانے کے لیے بائیں کنارے سے سوائپ کریں</translation>
 <translation id="2323763861024343754">سائٹ اسٹوریج</translation>
+<translation id="2327445548174191329">‫<ph name="DEVICE_NAME" /> سے</translation>
 <translation id="2328474416100889417">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور شامل ہونے کے تمام لنکس آف کر دئے جائیں گے</translation>
 <translation id="2330186936255788117">مزید بُک مارکس</translation>
 <translation id="2332515770639153015">بہتر کردہ محفوظ براؤزنگ آن ہے</translation>
@@ -834,6 +836,7 @@
 <translation id="4595237294768457124">نئے ٹیب کا صفحہ کھولیں</translation>
 <translation id="4595276580892809760">گیلری سے تصاویر منسلک کریں</translation>
 <translation id="4595805675102978678">‏Google اکاؤنٹ میں خرابی</translation>
+<translation id="4599585406846903742">واحد صفحہ کا منظر</translation>
 <translation id="4601095002996233687">مشتبہ ڈاؤن لوڈز کے لیے گہرائی سے اسکینز کرتا ہے۔</translation>
 <translation id="4606559747793337066">‏جب کوئی سائٹ یا ایپ اپنے صفحہ پر لنکس کو نجی طور پر پیشگی لوڈ کرنے کا مطالبہ کرتی ہے تو Chrome کوکیز کے بغیر Google سرورز کے ذریعے صفحات کو مرموز اور پیشگی لوڈ کرتا ہے۔ اس سے پیشگی لوڈ کردہ سائٹ سے آپ کی شناخت پوشیدہ ہو جاتی ہے۔</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> کو کھولیں</translation>
@@ -1088,6 +1091,7 @@
 <translation id="569536719314091526">مزید اختیارات کے بٹن سے کسی بھی زبان میں اس صفحہ کا ترجمہ کریں</translation>
 <translation id="5696597120588531049">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="5698878456427040674">چیک کریں کہ آیا منتخب کردہ اکاؤنٹ تعاون یافتہ ہے۔</translation>
+<translation id="5700415746238689851">‏‫Gemini کھولیں</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ایک سیریل پورٹ سے منسلک ہونا چاہتا ہے</translation>
 <translation id="5715150588940290235">محفوظ کردہ سیکیورٹی کوڈز حذف کریں؟</translation>
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
@@ -1769,6 +1773,7 @@
 <translation id="8271267069224406035">اسپام کی اطلاع دیں</translation>
 <translation id="8277710303010772444">تلاش شروع کریں</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> کے ذریعے محفوظ کردہ</translation>
+<translation id="8280797717392145626">لنکس موصول ہوئے</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8282297628636750033">ممکن ہو تو سائٹس پر گہری تھیم لاگو کریں</translation>
 <translation id="8282950411412455249">سیکیورٹی کی ترتیبات پر جائیں</translation>
@@ -1904,6 +1909,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> کے لیے اجازتوں کو دوبارہ اجازت مل گئی</translation>
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
 <translation id="8872506776304248286">ایپ میں کھولیں</translation>
+<translation id="8880275451109933094">دو صفحہ کا منظر</translation>
 <translation id="8890668505403261809">اپنے پوشیدگی ٹیبز تلاش کریں</translation>
 <translation id="8892234476517513962">آپ پہلے سے ہی سائن ان ہیں</translation>
 <translation id="8894890673032951011">‫<ph name="TAB_TITLE" />، منتخب کردہ ریکارڈنگ پوشیدگی ٹیب</translation>
