@@ -11631,7 +11631,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "glic-chrome-status-icon-size-px": "18"
+                        "glic-chrome-status-icon-log-only": "true",
+                        "glic-chrome-status-icon-other-app-id": "com.google.GeminiMacOS"
                     },
                     "enable_features": [
                         "GlicChromeStatusIcon"
