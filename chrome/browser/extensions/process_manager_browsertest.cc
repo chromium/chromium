@@ -54,7 +54,10 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -740,6 +743,220 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(baseline_keepalive, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(baseline_activities_count,
             pm->GetLazyKeepaliveActivities(extension.get()).size());
+}
+
+// Verifies that `ProcessManager` strictly enforces exact activity matching
+// before decrementing the lazy keepalive count. Untrusted or unbalanced
+// decrements with incorrect `extra_data` strings must be rejected to prevent
+// counter underflow. Regression test for https://crbug.com/513156160.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
+                       LazyKeepaliveDecrementRequiresMatchingActivity) {
+  TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "Lazy background",
+    "version": "1",
+    "manifest_version": 2,
+    "background": {
+      "page": "bg.html",
+      "persistent": false
+    }
+  })");
+  dir.WriteFile(FILE_PATH_LITERAL("bg.html"), "");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension));
+
+  ProcessManager* pm = ProcessManager::Get(profile());
+  ASSERT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  constexpr char kTestActivity[] = "test activity";
+  pm->IncrementLazyKeepaliveCount(extension, Activity::PROCESS_MANAGER,
+                                  kTestActivity);
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+
+  // Attempting to decrement with an unmatched activity (e.g., generic IPC
+  // activity) should fail and leave the keepalive count intact.
+  EXPECT_FALSE(pm->DecrementLazyKeepaliveCount(
+      extension, Activity::LIFECYCLE_MANAGEMENT, Activity::kIPC));
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+
+  // Decrementing with the exact matching activity succeeds.
+  EXPECT_TRUE(pm->DecrementLazyKeepaliveCount(
+      extension, Activity::PROCESS_MANAGER, kTestActivity));
+  EXPECT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+}
+
+// Verifies that `ExtensionFrameHost` "absorbs" repetitive keepalive increments
+// and decrements from a renderer frame, forwarding exactly one increment and
+// one decrement to `ProcessManager` scoped specifically to the frame's ID.
+// Regression test for https://crbug.com/513156160.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
+                       LazyKeepaliveIpcActivityIsFrameScoped) {
+  TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "Lazy background",
+    "version": "1",
+    "manifest_version": 2,
+    "background": {
+      "page": "bg.html",
+      "persistent": false
+    }
+  })");
+  dir.WriteFile(FILE_PATH_LITERAL("bg.html"), "");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension));
+
+  ProcessManager* pm = ProcessManager::Get(profile());
+  ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(host);
+
+  auto* observer =
+      ExtensionWebContentsObserver::GetForWebContents(host->host_contents());
+  ASSERT_TRUE(observer);
+  ExtensionFrameHost* extension_frame_host =
+      observer->extension_frame_host_for_testing();
+  ASSERT_TRUE(extension_frame_host);
+
+  content::RenderFrameHost* background_frame =
+      host->host_contents()->GetPrimaryMainFrame();
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      background_frame);
+
+  ASSERT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  // First increment forwards to `ProcessManager`.
+  extension_frame_host->IncrementLazyKeepaliveCount();
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+  // Second increment is "absorbed" locally by `ExtensionFrameHost`.
+  extension_frame_host->IncrementLazyKeepaliveCount();
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+
+  // Decrementing directly on `ProcessManager` using generic Activity::kIPC
+  // fails because `ExtensionFrameHost` registered a unique frame-scoped
+  // activity string.
+  EXPECT_FALSE(pm->DecrementLazyKeepaliveCount(
+      extension, Activity::LIFECYCLE_MANAGEMENT, Activity::kIPC));
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+
+  // First decrement is "absorbed" locally by `ExtensionFrameHost`.
+  extension_frame_host->DecrementLazyKeepaliveCount();
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+  // Second decrement drops local count to 0 and forwards to `ProcessManager`.
+  extension_frame_host->DecrementLazyKeepaliveCount();
+  EXPECT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      nullptr);
+}
+
+// Verifies that if a render frame is deleted or destroyed while holding active
+// IPC keepalive counts, `ExtensionFrameHost` correctly cleans up and balances
+// the keepalive count in `ProcessManager`.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
+                       LazyKeepaliveIpcActivityReleasedOnFrameDeletion) {
+  TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "Lazy background",
+    "version": "1",
+    "manifest_version": 2,
+    "background": {
+      "page": "bg.html",
+      "persistent": false
+    }
+  })");
+  dir.WriteFile(FILE_PATH_LITERAL("bg.html"), "");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension));
+
+  ProcessManager* pm = ProcessManager::Get(profile());
+  ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(host);
+
+  auto* observer =
+      ExtensionWebContentsObserver::GetForWebContents(host->host_contents());
+  ASSERT_TRUE(observer);
+  ExtensionFrameHost* extension_frame_host =
+      observer->extension_frame_host_for_testing();
+  ASSERT_TRUE(extension_frame_host);
+  content::RenderFrameHost* background_frame =
+      host->host_contents()->GetPrimaryMainFrame();
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      background_frame);
+
+  ASSERT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  // Increment keepalive count multiple times from the frame.
+  extension_frame_host->IncrementLazyKeepaliveCount();
+  extension_frame_host->IncrementLazyKeepaliveCount();
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+
+  // Simulating unexpected frame deletion causes `ExtensionFrameHost` to
+  // release the frame's keepalive in `ProcessManager`.
+  extension_frame_host->RenderFrameDeleted(background_frame);
+  EXPECT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      nullptr);
+}
+
+// Verifies that `ExtensionFrameHost` silently drops mismatched keepalive
+// decrements from a frame (e.g., a decrement without a prior increment, or
+// more decrements than increments) without underflowing the keepalive count
+// in `ProcessManager`. Regression test for https://crbug.com/513156160.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
+                       LazyKeepaliveMismatchedDecrementsAreIgnored) {
+  TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "Lazy background",
+    "version": "1",
+    "manifest_version": 2,
+    "background": {
+      "page": "bg.html",
+      "persistent": false
+    }
+  })");
+  dir.WriteFile(FILE_PATH_LITERAL("bg.html"), "");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension));
+
+  ProcessManager* pm = ProcessManager::Get(profile());
+  ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(host);
+
+  auto* observer =
+      ExtensionWebContentsObserver::GetForWebContents(host->host_contents());
+  ASSERT_TRUE(observer);
+  ExtensionFrameHost* extension_frame_host =
+      observer->extension_frame_host_for_testing();
+  ASSERT_TRUE(extension_frame_host);
+  content::RenderFrameHost* background_frame =
+      host->host_contents()->GetPrimaryMainFrame();
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      background_frame);
+
+  ASSERT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  // Decrement without any prior increment is silently ignored.
+  extension_frame_host->DecrementLazyKeepaliveCount();
+  EXPECT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  // After a balanced increment/decrement, further decrements are also ignored.
+  extension_frame_host->IncrementLazyKeepaliveCount();
+  EXPECT_EQ(1, pm->GetLazyKeepaliveCount(extension));
+  extension_frame_host->DecrementLazyKeepaliveCount();
+  EXPECT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+  extension_frame_host->DecrementLazyKeepaliveCount();
+  EXPECT_EQ(0, pm->GetLazyKeepaliveCount(extension));
+
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
