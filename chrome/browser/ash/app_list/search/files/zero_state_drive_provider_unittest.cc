@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
+#include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -152,8 +153,6 @@ class ZeroStateDriveProviderTest : public testing::Test {
     task_environment_.FastForwardBy(base::Minutes(minutes));
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
-
   int update_count() const { return file_suggest_service_->update_count_; }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -281,9 +280,11 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
 
   // Only test this logic if the `file_suggest_service_` is ready for test.
   if (file_suggest_service_->IsReadyForTest()) {
+    SearchResultsChangedWaiter results_waiter(
+        &search_controller_, {ash::AppListSearchResultType::kZeroStateDrive});
     file_suggest_service_->SetSuggestionsForType(
         ash::FileSuggestionType::kDriveFile, suggestions);
-    Wait();
+    results_waiter.Wait();
 
     ASSERT_EQ(search_controller_.last_results().size(), suggestion_size);
     // Check the scores to results are assigned by using their position in the
