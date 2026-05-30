@@ -13034,6 +13034,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCentralizedInfoBarFrameworkDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(infobars::kCentralizedInfoBarFramework)},
 
+
+    {"autofill-ai-wallet-pass-branding-2026",
+     flag_descriptions::kAutofillAiWalletPassBranding2026Name,
+     flag_descriptions::kAutofillAiWalletPassBranding2026Description, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiWalletPassBranding2026)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

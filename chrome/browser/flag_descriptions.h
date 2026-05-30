@@ -896,6 +896,12 @@ inline constexpr char kAutofillAiWalletFlightReservationDescription[] =
     "Enables Autofill AI support for flight reservation entities from Google "
     "Wallet.";
 
+inline constexpr char kAutofillAiWalletPassBranding2026Name[] =
+    "Autofill AI Google Wallet Pass Branding Updates";
+inline constexpr char kAutofillAiWalletPassBranding2026Description[] =
+    "When enabled, brings Autofill AI strings and images referencing passes "
+    "in Google Wallet into consistency with 2026 branding requirements.";
+
 inline constexpr char kAutofillAiWalletPrivatePassesName[] =
     "Autofill AI Google Wallet private passes";
 inline constexpr char kAutofillAiWalletPrivatePassesDescription[] =

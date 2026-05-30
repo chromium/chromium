@@ -808,6 +808,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "autofill-ai-wallet-pass-branding-2026",
+    "owners": [ "hhtran@google.com", "wallet-1p-integrations-eng@google.com" ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "autofill-ai-wallet-private-passes",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160

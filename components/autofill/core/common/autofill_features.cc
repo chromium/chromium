@@ -339,6 +339,10 @@ BASE_FEATURE(kAutofillAiWalletFlightReservation,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the 2026 Autofill AI Wallet Pass Branding Updates.
+BASE_FEATURE(kAutofillAiWalletPassBranding2026,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports private passes entities from Google Wallet.
 BASE_FEATURE(kAutofillAiWalletPrivatePasses, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1074,7 +1078,6 @@ BASE_FEATURE(kManageTravelPerceptionSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 // settings page.
 BASE_FEATURE(kManageYourSavedInfoPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
 
 // If enabled, an entry point to AtMemory will be shown at the bottom of the
 // Autocomplete dialogs.
