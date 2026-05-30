@@ -455,7 +455,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
                 },
             },
         },
-        {blink::features::kRemovePurposeHeaderForPrefetch});
+        {});
   }
 
   void MakePrefetchService(std::unique_ptr<MockPrefetchServiceDelegate>

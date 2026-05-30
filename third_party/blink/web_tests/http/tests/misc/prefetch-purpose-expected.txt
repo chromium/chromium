@@ -1,3 +1,0 @@
-Purpose: prefetch
-
-This test verifies that prefetches are sent with the HTTP request header Purpose: prefetch. To do this, the root page has a prefetch link targetting this subresource which contains a PHP script (resources/prefetch-purpose.php). The PHP prints the value of the Purpose header into the document. Later, the root page sets window.location to target this script, which should have "Purpose: prefetch" in its output if it's served from cache.

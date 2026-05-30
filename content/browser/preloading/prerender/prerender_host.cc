@@ -1862,11 +1862,6 @@ void PrerenderHost::AddAdditionalRequestHeaders(
   // https://github.com/WICG/nav-speculation/issues/133).
   headers.SetHeader(blink::kSecPurposeHeaderName,
                     blink::kSecPurposePrefetchPrerenderHeaderValue);
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    headers.SetHeader(blink::kPurposeHeaderName,
-                      blink::kSecPurposePrefetchHeaderValue);
-  }
 
   // Add the "Sec-Speculation-Tags" header to main frame initial prerender
   // navigation.

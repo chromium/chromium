@@ -1114,36 +1114,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchLoadFlag) {
   EXPECT_TRUE(script_request->load_flags & net::LOAD_PREFETCH);
 }
 
-class NoStatePrefetchPurposeHeaderBrowserTest
-    : public NoStatePrefetchBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  NoStatePrefetchPurposeHeaderBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
-
-    // Parameter determines whether kRemovePurposeHeaderForPrefetch is enabled
-    if (GetParam()) {
-      enabled_features.push_back(
-          blink::features::kRemovePurposeHeaderForPrefetch);
-    } else {
-      disabled_features.push_back(
-          blink::features::kRemovePurposeHeaderForPrefetch);
-    }
-
-    purpose_header_feature_list_.InitWithFeatures(enabled_features,
-                                                  disabled_features);
-  }
-
-  bool IsRemovePurposeHeaderEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList purpose_header_feature_list_;
-};
-
 // Check that prefetched resources and subresources set the 'Purpose: prefetch'
 // header.
-IN_PROC_BROWSER_TEST_P(NoStatePrefetchPurposeHeaderBrowserTest,
-                       PurposeHeaderIsSet) {
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
   GURL prefetch_page = src_server()->GetURL(kPrefetchPage);
   GURL prefetch_script = src_server()->GetURL(kPrefetchScript);
 
@@ -1159,29 +1132,16 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchPurposeHeaderBrowserTest,
         monitor.GetRequestInfo(url);
     EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
 
-    // Test Purpose headers based on feature flag state
-    if (IsRemovePurposeHeaderEnabled()) {
-      // When feature is enabled, legacy Purpose header should be removed
-      EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
-      EXPECT_FALSE(
-          request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
-    } else {
-      // When feature is disabled, legacy Purpose header should be present
-      EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
-      EXPECT_TRUE(
-          request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
-      EXPECT_EQ(
-          blink::kSecPurposePrefetchHeaderValue,
-          request->cors_exempt_headers.GetHeader(blink::kPurposeHeaderName)
-              .value_or(std::string()));
-    }
+    // Legacy Purpose header should be removed.
+    EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
+    EXPECT_FALSE(
+        request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
   }
 }
 
 // Check that prefetched resources and subresources set the 'Sec-Purpose:
 // prefetch' header.
-IN_PROC_BROWSER_TEST_P(NoStatePrefetchPurposeHeaderBrowserTest,
-                       SecPurposeHeaderIsSet) {
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, SecPurposeHeaderIsSet) {
   GURL prefetch_page = src_server()->GetURL(kPrefetchPage);
   GURL prefetch_script = src_server()->GetURL(kPrefetchScript);
 
@@ -1204,7 +1164,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchPurposeHeaderBrowserTest,
 }
 
 // Check that on normal navigations the 'Purpose: prefetch' header is not set.
-IN_PROC_BROWSER_TEST_P(NoStatePrefetchPurposeHeaderBrowserTest,
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
                        PurposeHeaderNotSetWhenNotPrefetching) {
   GURL prefetch_page = src_server()->GetURL(kPrefetchPage);
   GURL prefetch_script = src_server()->GetURL(kPrefetchScript);
@@ -1227,10 +1187,6 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchPurposeHeaderBrowserTest,
         request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(RemovePurposeHeaderVariations,
-                         NoStatePrefetchPurposeHeaderBrowserTest,
-                         ::testing::Bool());
 
 // Checks the prefetch of an img tag.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchImage) {

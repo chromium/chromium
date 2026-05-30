@@ -252,11 +252,6 @@ void PrefetchManager::PrefetchUrl(
       *network::PermissionsPolicy::CreateFromParsedPolicy(
           {}, url::Origin::Create(request.url));
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    request.headers.SetHeader(blink::kPurposeHeaderName,
-                              blink::kSecPurposePrefetchHeaderValue);
-  }
   request.headers.SetHeader(blink::kSecPurposeHeaderName,
                             blink::kSecPurposePrefetchHeaderValue);
 

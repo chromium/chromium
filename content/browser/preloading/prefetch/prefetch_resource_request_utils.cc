@@ -406,14 +406,6 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase1(
                                                    "1");
 
   // ------------------------------------------------------------------------
-  // [2] `Purpose`:
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    headers_update_params.modified_headers.SetHeader(
-        blink::kPurposeHeaderName, blink::kSecPurposePrefetchHeaderValue);
-  }
-
-  // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:
   AddSecPurposeHeader(headers_update_params.modified_headers,
                       request_url_origin, prefetch_request);

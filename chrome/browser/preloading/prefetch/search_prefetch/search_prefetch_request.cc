@@ -304,11 +304,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kUserAgent,
       GetUserAgentValue(prefetch_url_, web_contents));
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    resource_request->headers.SetHeader(blink::kPurposeHeaderName,
-                                        blink::kSecPurposePrefetchHeaderValue);
-  }
   resource_request->headers.SetHeader(blink::kSecPurposeHeaderName,
                                       blink::kSecPurposePrefetchHeaderValue);
   resource_request->headers.SetHeader(

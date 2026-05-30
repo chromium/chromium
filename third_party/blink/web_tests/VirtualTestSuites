@@ -1057,25 +1057,6 @@
     "expires": "Aug 1, 2026"
   },
   {
-    "prefix": "enable-purpose-prefetch-header",
-    "owners": [
-      "stevenwei@microsoft.com"
-    ],
-    "platforms": [
-      "Mac",
-      "Win",
-      "Linux"
-    ],
-    "bases": [
-      "http/tests/misc/prefetch-purpose.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--disable-features=RemovePurposeHeaderForPrefetch"
-    ],
-    "expires": "Aug 1, 2026"
-  },
-  {
     "prefix": "enable-system-cursor-size-for-svg",
     "owners": [
       "gerchiko@microsoft.com"

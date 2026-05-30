@@ -60,11 +60,6 @@ void NoStatePrefetchURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   request->load_flags |= net::LOAD_PREFETCH;
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    request->cors_exempt_headers.SetHeader(
-        blink::kPurposeHeaderName, blink::kSecPurposePrefetchHeaderValue);
-  }
 
   if (base::FeatureList::IsEnabled(
           blink::features::kSecPurposePrefetchHeaderNoStatePrefetch)) {

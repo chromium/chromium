@@ -1,1 +1,0 @@
-This directory is for testing if the feature RemovePurposeHeaderForPrefetch is disabled due to a killswitch.  See https://crbug.com/420724819

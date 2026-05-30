@@ -117,11 +117,6 @@ void PrefetchResource(
   request.referrer_policy = kExpectedReferrerPolicy;
 
   auto& headers = request.headers;
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    headers.SetHeader(blink::kPurposeHeaderName,
-                      blink::kSecPurposePrefetchHeaderValue);
-  }
   headers.SetHeader(blink::kSecPurposeHeaderName,
                     blink::kSecPurposePrefetchHeaderValue);
 

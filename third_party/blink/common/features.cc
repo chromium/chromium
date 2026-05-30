@@ -2243,10 +2243,6 @@ BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
 // array of URLs in the renderer process.
 BASE_FEATURE(kRemoveCommitRedirectUrlsArray, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Disables sending the Purpose: "prefetch" header for prefetches and
-// prerenders.
-BASE_FEATURE(kRemovePurposeHeaderForPrefetch, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows same-document available-image reuse for no-store images.
 BASE_FEATURE(kReuseNoStoreImageOnSameSrcReassignment,
              base::FEATURE_ENABLED_BY_DEFAULT);

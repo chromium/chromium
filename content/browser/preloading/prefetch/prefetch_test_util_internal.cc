@@ -877,8 +877,7 @@ void VerifyCommonRequestState(const GURL& url,
 
   EXPECT_EQ(request.load_flags, net::LOAD_PREFETCH);
 
-  EXPECT_EQ(request.headers.GetHeader(blink::kPurposeHeaderName),
-            std::optional<std::string>(blink::kSecPurposePrefetchHeaderValue));
+  EXPECT_EQ(request.headers.GetHeader(blink::kPurposeHeaderName), std::nullopt);
 
   std::string sec_purpose_header_value;
   if (options.sec_purpose_header_value) {
