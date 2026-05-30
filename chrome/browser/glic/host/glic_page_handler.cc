@@ -643,6 +643,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #endif
     state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
 
+    if (base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader)) {
+      state->host_capabilities.push_back(mojom::HostCapability::kNoWebUiLoader);
+    }
+
     if (GlicEnabling::IsAutoOpenForPdfEnabled(profile_)) {
       state->host_capabilities.push_back(mojom::HostCapability::kPdfZeroState);
     }

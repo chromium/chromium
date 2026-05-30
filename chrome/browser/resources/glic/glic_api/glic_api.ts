@@ -3210,6 +3210,8 @@ export enum HostCapability {
   SHARE_IMAGE_VIA_INVOKE = 11,
   // Indicates that the host supports image drag and drop from the web
   IMG_WEB_DRAG_DROP = 12,
+  // Indicates that the host does not show the WebUi preloader.
+  NO_WEB_UI_LOADER = 13,
 }
 
 ///////////////////////////////////////////////

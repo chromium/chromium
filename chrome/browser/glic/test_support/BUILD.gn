@@ -24,7 +24,6 @@ source_set("test_support") {
   ]
   if (!is_android) {
     sources += [
-      "glic_api_test.cc",
       "glic_api_test.h",
       "glic_functional_browsertest.cc",
       "glic_functional_browsertest.h",

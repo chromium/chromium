@@ -2319,6 +2319,8 @@ enum HostCapability {
   kShareImageViaInvoke = 11,
   // Indicates that the host supports image drag and drop from the web
   kImgWebDragDrop = 12,
+  // Indicates that the host does not show the WebUi preloader.
+  kNoWebUiLoader = 13,
 };
 
 // @generate glic_api

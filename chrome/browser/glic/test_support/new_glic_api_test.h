@@ -95,6 +95,12 @@ class WebUIStateListener : public Host::Observer {
   // point where this state is seen.
   void WaitForWebUiState(mojom::WebUiState state);
 
+  // Returns true if `state` has been seen. Should not be used in combination
+  // with `WaitForWebUiState`.
+  bool SawState(mojom::WebUiState state) const {
+    return std::ranges::contains(states_, state);
+  }
+
  private:
   bool HasState(mojom::WebUiState state);
 

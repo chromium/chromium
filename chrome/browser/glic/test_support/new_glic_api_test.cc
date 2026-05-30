@@ -4,7 +4,47 @@
 
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 
+#include "base/check.h"
+#include "base/test/run_until.h"
 #include "base/types/expected_macros.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace glic {
+
+WebUIStateListener::WebUIStateListener(Host* host)
+    : host_(host ? host->GetWeakPtr() : nullptr) {
+  CHECK(host_);
+  host_->AddObserver(this);
+  states_.push_back(host_->GetPrimaryWebUiState());
+}
+
+WebUIStateListener::~WebUIStateListener() {
+  if (!host_) {
+    return;
+  }
+  host_->RemoveObserver(this);
+}
+
+void WebUIStateListener::WebUiStateChanged(mojom::WebUiState state) {
+  states_.push_back(state);
+}
+
+void WebUIStateListener::WaitForWebUiState(mojom::WebUiState state) {
+  ASSERT_TRUE(host_);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    while (!states_.empty()) {
+      if (states_.front() != state) {
+        states_.pop_front();
+        continue;
+      }
+      return true;
+    }
+    return false;
+  })) << "Timed out waiting for WebUI state "
+      << state << ". State =" << host_->GetPrimaryWebUiState();
+}
+
+}  // namespace glic
 
 namespace glic::internal {
 namespace {

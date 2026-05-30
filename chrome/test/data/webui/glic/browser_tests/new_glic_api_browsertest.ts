@@ -94,6 +94,8 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.panelActive()).waitForValue(false);
   }
 
+  async testNoWebUiLoader() {}
+
   async testGetPageMetadata() {
     assertDefined(this.host.getPageMetadata);
     assertDefined(this.host.getFocusedTabStateV2);

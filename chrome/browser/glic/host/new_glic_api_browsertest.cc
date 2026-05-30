@@ -137,6 +137,7 @@ namespace {
 std::vector<std::string> GetTestSuiteNames() {
   std::vector<std::string> names = {
       "NewGlicApiTest",
+      "NewGlicApiTestForNoWebUiLoader",
       "NewGlicApiTestWithFastTimeout",
       "NewGlicApiTestWithWebContentsWarming",
       "NewGlicApiTestWithPixelOutput",
@@ -169,6 +170,7 @@ struct TestParams {
   bool trust_first_onboarding_arm1 = false;
   bool trust_first_onboarding_arm2 = false;
   bool auto_open_pdf = false;
+  bool enable_no_web_ui_loader = false;
 };
 
 class WithTestParams : public testing::WithParamInterface<TestParams> {
@@ -189,6 +191,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.auto_open_pdf) {
       result.push_back("AutoOpenPdf");
+    }
+    if (info.param.enable_no_web_ui_loader) {
+      result.push_back("EnableNoWebUiLoader");
     }
     if (result.empty()) {
       return "Default";
@@ -368,6 +373,42 @@ class NewGlicApiTestWithDefaultTabContextDisabled : public NewGlicApiTest {
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
                        testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
   ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestForNoWebUiLoader : public NewGlicApiTest {
+ public:
+  NewGlicApiTestForNoWebUiLoader() {
+    if (GetParam().enable_no_web_ui_loader) {
+      feature_list_.InitWithFeatures({features::kGlicNoWebUiLoader}, {});
+    } else {
+      feature_list_.InitWithFeatures({}, {features::kGlicNoWebUiLoader});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestForNoWebUiLoader, testNoWebUiLoader) {
+  ToggleGlicForActiveTab(/*prevent_close=*/true);
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+
+  WebUIStateListener listener(&instance->host());
+
+  ASSERT_OK(WaitForGlicOpen());
+
+  auto* web_contents = instance->host().webui_contents();
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Wait for kReady state to ensure loading is complete.
+  ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kReady).has_value());
+
+  bool expect_loading = !GetParam().enable_no_web_ui_loader;
+  EXPECT_EQ(expect_loading, listener.SawState(mojom::WebUiState::kShowLoading));
+
   ExecuteJsTest();
 }
 
@@ -1633,6 +1674,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NewGlicApiTestForNoWebUiLoader,
+    testing::Values(TestParams{.enable_no_web_ui_loader = false},
+                    TestParams{.enable_no_web_ui_loader = true}),
+    &WithTestParams::PrintTestVariant);
+
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithWebActuationSettingDisabled,
                          DefaultTestParamSet(),
@@ -1676,6 +1724,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithWebActuationSettingEnabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithProcessCounterAbuseVerdictDisabled);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestForNoWebUiLoader);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 #endif

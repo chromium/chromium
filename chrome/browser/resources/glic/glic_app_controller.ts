@@ -487,9 +487,11 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   private beginLoad(): void {
     // Wait a moment before showing the loading panel.
-    this.loadingTimer = setTimeout(() => {
-      this.setState(WebUiState.kShowLoading);
-    }, kPreHoldLoadingTimeMs);
+    if (!loadTimeData.getBoolean('noLoader')) {
+      this.loadingTimer = setTimeout(() => {
+        this.setState(WebUiState.kShowLoading);
+      }, kPreHoldLoadingTimeMs);
+    }
 
     this.load();
   }
@@ -583,6 +585,10 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         this.webviewPersistentState);
     this.webview.getWebClientState().subscribe(
         this.webClientStateChanged.bind(this));
+
+    if (loadTimeData.getBoolean('noLoader')) {
+      this.showPanel('guestPanel');
+    }
 
     // Browser is expected to call client's notifyPanelWillOpen(), and then we
     // expect a call to webClientReady() when that finishes.

@@ -316,6 +316,9 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
 
+  source->AddBoolean(
+      "noLoader", base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader));
+
   // Set up for periodic web client responsiveness check and its interval,
   // timeout, and max unresponsive ui time.
   source->AddBoolean(
