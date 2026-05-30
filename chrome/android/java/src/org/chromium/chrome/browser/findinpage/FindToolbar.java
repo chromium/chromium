@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -785,18 +786,21 @@ public class FindToolbar extends LinearLayout implements BackPressHandler, SideU
 
             mResultBar =
                     new FindResultBar(
-                            getContext(), mSecondaryUiContainer, mWindowAndroid, mFindInPageBridge);
+                            getContext(),
+                            AndroidSidePanelEnabledFn.isEnabled()
+                                    ? mSecondaryUiContainer
+                                    : assumeNonNull(mCurrentTab.getContentView()),
+                            mWindowAndroid,
+                            mFindInPageBridge);
 
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mResultBar.getLayoutParams();
-            if (mBrowserControlsStateProvider != null) {
+            if (AndroidSidePanelEnabledFn.isEnabled()) {
+                FrameLayout.LayoutParams lp =
+                        (FrameLayout.LayoutParams) mResultBar.getLayoutParams();
                 lp.topMargin = mBrowserControlsStateProvider.getContentOffset();
                 lp.bottomMargin =
                         BrowserControlsUtils.getBottomContentOffset(mBrowserControlsStateProvider);
-            } else {
-                lp.topMargin = 0;
-                lp.bottomMargin = 0;
+                mResultBar.setLayoutParams(lp);
             }
-            mResultBar.setLayoutParams(lp);
         } else if (!visibility) {
             if (mResultBar != null) {
                 mResultBar.dismiss();
