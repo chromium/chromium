@@ -610,9 +610,8 @@ void BrowserActions::InitializePageActionIconActions() {
           .SetTooltipText(l10n_util::GetStringUTF16(
               IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
           .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? vector_icons::kV8OffIcon
-                                                : vector_icons::kV8OffOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+              vector_icons::kShieldIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
           .Build());
 
