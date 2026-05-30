@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/signin/public",
+  "+google_apis",
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+services/network/test",
+  ],
+}

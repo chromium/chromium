@@ -1,0 +1,88 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package footprints.oneplatform;
+
+// This file is a copy of the Footprints OnePlatform proto.
+// google3/google/internal/footprints/proto/service.proto
+// Last modified: May 5, 2026
+// TODO: b/510128154 Keep this file in sync with the Google proto.
+// b/510128154
+message Header {
+  reserved 1;
+  optional string application_id = 2;
+  reserved 3;
+}
+
+message GetFacsRequest {
+  optional Header header = 1;
+  repeated int32 setting = 2;
+}
+
+enum UserSettingRestrictedReason {
+  USER_SETTING_RESTRICTED_REASON_UNKNOWN = 0;
+  PARENT_CONTROL = 1;
+  DEPENDENT_RECORDING_SETTING_POLICY = 2;
+  reserved 3;
+  DASHER_EDU_U18_ACCOUNT = 9;
+  UNICORN_ACCOUNT = 5;
+  UNICORN_LITE_PROFILE = 11;
+  SUPERVISED_KIDS_ACCOUNT = 14;
+  DASHER_ACCOUNT = 6;
+  MADISON_ACCOUNT = 7;
+  SETTING_DEPRECATED = 4;
+  DASHER_ADMIN_FORCE_SETTING_OFF = 8;
+  NOT_AVAILABLE_FOR_ACCOUNT_TYPE = 10;
+  UNDER_AOC_ACCOUNT = 12;
+  NOT_ACTIVE_PRODUCT_USER = 13;
+  DASHER_GEMINI_LICENSE_HOLDER = 15;
+  SETTING_NOT_AVAILABLE = 16;
+  REQUIRES_PARENT_ENABLEMENT = 17;
+}
+
+message RecordingSettingInfo {
+  reserved 1 to 4;
+  repeated UserSettingRestrictedReason user_setting_restricted_reason = 5;
+  reserved 6, 7;
+}
+
+message FacsSetting {
+  optional int32 setting = 1;
+  optional bool data_recording_enabled = 2;
+  optional RecordingSettingInfo recording_setting_info = 3;
+}
+
+message GetFacsResponse {
+  repeated FacsSetting facs_setting = 1;
+}
+
+message UpdateActivityControlsSettingsRequest {
+  message UpdateSetting {
+    optional int32 setting = 1;
+    optional bool user_setting_enabled = 2;
+  }
+  repeated UpdateSetting update_setting = 1;
+
+  reserved 2 to 7;
+}
+
+message SettingState {
+  optional int32 setting = 1;
+  optional bool data_recording_enabled = 2;
+  optional bool user_setting_enabled = 3;
+  optional bool user_is_eligible_to_consent = 4;
+}
+
+message GetActivityControlsSettingsResponse {
+  repeated SettingState setting_state = 1;
+  reserved 2;
+}
+
+message UpdateActivityControlsSettingsResponse {
+  optional GetActivityControlsSettingsResponse get_activity_controls_settings_response = 1;
+}
