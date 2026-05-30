@@ -60,8 +60,6 @@ class DesksAdminTemplateProviderTest : public testing::Test {
         profile_, &list_controller_);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
-
-    Wait();
   }
 
   void TearDown() override {
@@ -77,8 +75,6 @@ class DesksAdminTemplateProviderTest : public testing::Test {
   const SearchProvider::Results& LastResults() {
     return search_controller_->last_results();
   }
-
-  void Wait() { task_environment_.RunUntilIdle(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -99,7 +95,6 @@ TEST_F(DesksAdminTemplateProviderTest, NoResultsWhenNoAdminTemplates) {
   EXPECT_CALL(mock, GetAdminTemplateMetadata()).WillOnce(Return(empty_result));
 
   StartZeroStateSearch();
-  Wait();
 
   EXPECT_TRUE(LastResults().empty());
 }
@@ -118,7 +113,6 @@ TEST_F(DesksAdminTemplateProviderTest, Basic) {
       .WillOnce(Return(true));
 
   StartZeroStateSearch();
-  Wait();
 
   ASSERT_EQ(1u, LastResults().size());
 
