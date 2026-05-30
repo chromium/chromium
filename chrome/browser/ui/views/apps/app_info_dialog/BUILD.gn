@@ -30,6 +30,38 @@ source_set("app_info_dialog") {
   }
 }
 
+source_set("impl") {
+  sources = [
+    "app_info_dialog_container.cc",
+    "app_info_dialog_views.cc",
+    "app_info_footer_panel.cc",
+    "app_info_header_panel.cc",
+    "app_info_label.cc",
+    "app_info_panel.cc",
+    "app_info_permissions_panel.cc",
+    "app_info_summary_panel.cc",
+  ]
+  deps = [
+    ":app_info_dialog",
+    "//apps",
+    "//chrome/browser/apps/platform_apps",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/web_applications",
+    "//components/app_constants",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "arc_app_info_links_panel.cc" ]
+    deps += [
+      "//ash/strings",
+      "//chrome/browser/ash/arc:arc_util",
+      "//chrome/browser/ui/ash/shelf",
+      "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

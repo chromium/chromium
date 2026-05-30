@@ -705,9 +705,15 @@ static_library("ui") {
     "//chrome/browser/sessions",
     "//chrome/browser/sessions:impl",
 
-    # TODO(crbug.com/)353332589: Remove this circular dependency when
+    # TODO(crbug.com/353332589): Remove this circular dependency when
     # the following headers get modularized:
-    # - //c/b/ui/views/chrome_layout_provider.h).
+    # - c/b/ui/views/chrome_layout_provider.h.
+    # - c/b/ui/views/chrome_typography.h
+    # - c/b/ui/browser_window.h
+    # - c/b/ui/browser.h
+    # - c/b/ui/views/title_origin_label.h
+    # - c/b/ui/views/bubble_anchor_util_views.h
+    # - c/b/ui/views/frame/browser_view.h
     "//chrome/browser/ui/views/file_system_access:impl",
   ]
 
@@ -2068,7 +2074,6 @@ static_library("ui") {
       "views/apps/app_dialog/app_pause_dialog_view.h",
       "views/apps/app_dialog/app_uninstall_dialog_view.cc",
       "views/apps/app_dialog/app_uninstall_dialog_view.h",
-      "views/apps/app_info_dialog/arc_app_info_links_panel.cc",
       "views/apps/chrome_app_window_client_views_chromeos.cc",
       "views/apps/chrome_native_app_window_views_aura_ash.cc",
       "views/apps/chrome_native_app_window_views_aura_ash.h",
@@ -3470,14 +3475,6 @@ static_library("ui") {
       "views/accessibility/non_accessible_image_view.h",
       "views/accessibility/theme_tracking_non_accessible_image_view.cc",
       "views/accessibility/theme_tracking_non_accessible_image_view.h",
-      "views/apps/app_info_dialog/app_info_dialog_container.cc",
-      "views/apps/app_info_dialog/app_info_dialog_views.cc",
-      "views/apps/app_info_dialog/app_info_footer_panel.cc",
-      "views/apps/app_info_dialog/app_info_header_panel.cc",
-      "views/apps/app_info_dialog/app_info_label.cc",
-      "views/apps/app_info_dialog/app_info_panel.cc",
-      "views/apps/app_info_dialog/app_info_permissions_panel.cc",
-      "views/apps/app_info_dialog/app_info_summary_panel.cc",
       "views/apps/chrome_native_app_window_views.cc",
       "views/apps/chrome_native_app_window_views.h",
       "views/autofill/address_bubble_base_view.cc",
@@ -4741,6 +4738,7 @@ static_library("ui") {
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/animations",
       "//chrome/browser/ui/views/apps/app_info_dialog",
+      "//chrome/browser/ui/views/apps/app_info_dialog:impl",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/frame",
@@ -4927,6 +4925,13 @@ static_library("ui") {
       # following headers get componentized:
       # - c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/drive_picker_host",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # the following headers get modularized:
+      # - c/b/ui/browser.h
+      # - c/b/ui/scoped_tabbed_browser_displayer.h
+      # - c/b/ui/views/chrome_layout_provider.h
+      "//chrome/browser/ui/views/apps/app_info_dialog:impl",
     ]
 
     if (is_linux) {
