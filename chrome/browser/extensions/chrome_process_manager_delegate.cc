@@ -24,8 +24,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
 namespace extensions {
@@ -69,10 +69,12 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 #if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
 
-  const bool is_signin_profile = ash::ProfileHelper::IsSigninProfile(profile) &&
-                                 !profile->IsOffTheRecord();
+  const bool is_auth_screen_profile =
+      (ash::IsSigninBrowserContext(profile) ||
+       ash::IsLockScreenBrowserContext(profile)) &&
+      !profile->IsOffTheRecord();
 
-  if (is_signin_profile) {
+  if (is_auth_screen_profile) {
     // Check for flag.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             ::switches::kDisableLoginScreenApps)) {

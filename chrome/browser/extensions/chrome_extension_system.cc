@@ -84,6 +84,7 @@
 #include "chrome/browser/ash/extensions/signin_screen_policy_provider.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/user_manager/user_manager.h"
@@ -160,9 +161,12 @@ void ChromeExtensionSystem::Shared::RegisterManagementPolicyProviders() {
           ->GetProviders());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Lazy creation of SigninScreenPolicyProvider.
+  // Lazy creation of SigninScreenPolicyProvider. Both the sign-in profile and
+  // lock screen profile use this provider to enforce allowed login-screen
+  // extension restrictions.
   if (!signin_screen_policy_provider_) {
-    if (ash::ProfileHelper::IsSigninProfile(profile_)) {
+    if (ash::IsSigninBrowserContext(profile_) ||
+        ash::IsLockScreenBrowserContext(profile_)) {
       signin_screen_policy_provider_ =
           std::make_unique<chromeos::SigninScreenPolicyProvider>();
     }

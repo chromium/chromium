@@ -273,4 +273,51 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
   EXPECT_TRUE(IsExtensionEnabledOnLockScreen(kOtherExtensionId));
 }
 
+// Tests that a force-installed app not in the login screen allowlist is
+// correctly blocked on the lock screen profile.
+IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
+                       LockScreenAllowlistBypass_NotAllowlistedAppInstalled) {
+  constexpr char kNotAllowlistedAppId[] = "mockapnacjbcdncmpkjngjalkhphojek";
+  constexpr char kNotAllowlistedAppDirPath[] =
+      "extensions/trivial_platform_app/app/";
+  constexpr char kNotAllowlistedAppPemPath[] =
+      "extensions/trivial_platform_app/app.pem";
+
+  // First install the badge auth extension so lock screen takeover is active.
+  InstallTestExtensions(/*enable_badge_auth=*/true);
+
+  // Attempt to force-install the non-allowlisted app. Use `kPrefSet` since
+  // `kLoad` would block indefinitely (the app is blocked from loading), and
+  // `kNone` introduces race conditions during policy propagation.
+  ASSERT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(kNotAllowlistedAppDirPath),
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(kNotAllowlistedAppPemPath),
+      ExtensionForceInstallMixin::WaitMode::kPrefSet));
+
+  LogIn();
+  EnsureLockProfileExists();
+
+  extensions::TestExtensionRegistryObserver lock_observer_badge_load(
+      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
+      kBadgeAuthExtensionId);
+
+  LockSession();
+
+  if (!IsExtensionInstalledOnLockScreen(kBadgeAuthExtensionId)) {
+    lock_observer_badge_load.WaitForExtensionLoaded();
+  }
+
+  // On the lock screen profile, the badge auth extension should be installed
+  // and enabled.
+  EXPECT_TRUE(IsExtensionInstalledOnLockScreen(kBadgeAuthExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnLockScreen(kBadgeAuthExtensionId));
+
+  // The non-allowlisted app should not be installed or enabled on the lock
+  // screen profile.
+  EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kNotAllowlistedAppId));
+  EXPECT_FALSE(IsExtensionEnabledOnLockScreen(kNotAllowlistedAppId));
+}
+
 }  // namespace chromeos
