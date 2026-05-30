@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
@@ -55,8 +54,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(
-                ash::ProfileHelper::GetSigninProfile()));
+            Browser::GetCreationStatusForProfile(Profile::FromBrowserContext(
+                ash::BrowserContextHelper::Get()
+                    ->DeprecatedGetOrCreateSigninBrowserContext())));
 }
 
 // Verify that page navigation is blocked in locked fullscreen mode.
