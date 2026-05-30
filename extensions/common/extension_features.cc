@@ -16,6 +16,8 @@ namespace extensions_features {
 
 BASE_FEATURE(kApiActionOpenPopup, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiAlarmsCreateLengthLimit, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiContentSettingsClipboard, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiEnterpriseKioskInput, base::FEATURE_ENABLED_BY_DEFAULT);

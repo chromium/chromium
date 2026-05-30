@@ -8,6 +8,8 @@
 
 #include <utility>
 
+// TODO(crbug.com/445720439): Remove this import.
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +20,8 @@
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/common/api/alarms.h"
 #include "extensions/common/error_utils.h"
+// TODO(crbug.com/445720439): Remove this import.
+#include "extensions/common/extension_features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace extensions {
@@ -49,6 +53,9 @@ constexpr char kWarningMaximumNameLength[] =
     "characters. Chrome 150 will throw an error for alarm creation with names "
     "longer than %u characters.";
 
+constexpr char kErrorMaximumNameLength[] =
+    "Alarm name size is %u bytes which exceeds the limit of %u bytes.";
+
 bool ValidateAlarmCreateInfo(const std::string& alarm_name,
                              const alarms::AlarmCreateInfo& create_info,
                              const Extension* extension,
@@ -62,6 +69,14 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
       !create_info.when.has_value() &&
       !create_info.period_in_minutes.has_value()) {
     *error = kNoScheduledTime;
+    return false;
+  }
+  // TODO(crbug.com/445720439): Remove feature switch.
+  if ((alarm_name.length() > kMaximumNameLength) &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kApiAlarmsCreateLengthLimit)) {
+    *error = base::StringPrintf(kErrorMaximumNameLength, alarm_name.length(),
+                                kMaximumNameLength);
     return false;
   }
 

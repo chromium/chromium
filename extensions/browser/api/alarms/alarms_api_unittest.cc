@@ -20,6 +20,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+// TODO(crbug.com/445720439): Remove this import.
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -29,6 +31,8 @@
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
+// TODO(crbug.com/445720439): Remove this import.
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,6 +94,11 @@ class ExtensionAlarmsTest : public ApiUnitTest {
 
   void CreateAlarm(const std::string& args) {
     RunFunction(base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_), args);
+  }
+
+  std::string FailToCreateAlarm(const std::string& args) {
+    return RunFunctionAndReturnError(
+        base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_), args);
   }
 
   // Takes a JSON result from a function and converts it to a vector of
@@ -362,6 +371,11 @@ TEST_F(ExtensionAlarmsLogTest, CreateDelayBelowMinimum) {
 // TODO(crbug.com/445720439): Clean up this test after long alarm name
 // deprecation.
 TEST_F(ExtensionAlarmsLogTest, CreateLongAlarmName) {
+  // Disable alarm length error to test the warning.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      extensions_features::kApiAlarmsCreateLengthLimit);
+
   // Set up context for the test.
   ConsoleLogMessageLocalFrame local_frame;
   local_frame.Init(
@@ -386,6 +400,39 @@ TEST_F(ExtensionAlarmsLogTest, CreateLongAlarmName) {
       "Alarm length is 1025 characters which exceeds future limit of 1024 "
       "characters. Chrome 150 will throw an error for alarm creation with "
       "names longer than 1024 characters.");
+}
+
+TEST_F(ExtensionAlarmsLogTest, RejectLongAlarmName) {
+  // Alarm name length limit must be enabled by default.
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      extensions_features::kApiAlarmsCreateLengthLimit));
+
+  // Set up context for the test.
+  ConsoleLogMessageLocalFrame local_frame;
+  local_frame.Init(
+      contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces());
+  ASSERT_EQ(local_frame.message_count(), 0u);
+
+  // Short alarm names (no longer than 1024 characters) do not result in
+  // warnings.
+  CreateAlarm("[\"" + std::string(1024, 'a') + "\", {\"when\": 0}]");
+  this->alarm_delegate_->WaitForAlarm();
+  ASSERT_EQ(local_frame.message_count(), 0u);
+
+  // Long alarm names (1025 characters and longer) throw without altering
+  // registered alarms. Attempt to create an alarm with a long name scheduled
+  // far in the future (1 hour) should result in exteption with an appropriate
+  // message and no alarm should be created.
+  EXPECT_EQ(
+      "Alarm name size is 1025 bytes which exceeds the limit of 1024 bytes.",
+      FailToCreateAlarm("[\"" + std::string(1025, 'a') +
+                        "\", {\"delayInMinutes\": 60}]"));
+
+  // No alarm should be created.
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
+      base::MakeRefCounted<AlarmsGetAllFunction>(), "[]");
+  std::vector<JsAlarm> alarms = ToAlarmList(result);
+  EXPECT_EQ(0u, alarms.size());
 }
 
 TEST_F(ExtensionAlarmsTest, Get) {

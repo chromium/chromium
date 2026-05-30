@@ -40,6 +40,9 @@ namespace extensions_features {
 // Controls the availability of action.openPopup().
 BASE_DECLARE_FEATURE(kApiActionOpenPopup);
 
+// Controls the limit for alarms.create() API input.
+BASE_DECLARE_FEATURE(kApiAlarmsCreateLengthLimit);
+
 // Controls the availability of contentSettings.clipboard.
 BASE_DECLARE_FEATURE(kApiContentSettingsClipboard);
 
