@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ApplicationStatus;
@@ -1629,7 +1630,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 (coordinator) -> mTipsOptInCoordinator = coordinator);
     }
 
-    private boolean maybeShowGlicPromo() {
+    @VisibleForTesting
+    boolean maybeShowGlicPromo() {
         Profile profile = mProfileSupplier.get();
         if (profile == null
                 || mActivity == null
@@ -1652,34 +1654,44 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (hasEvaluatedGlicPromo) {
             return false;
         }
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        String featureName =
-                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_GLIC_FEATURE;
-
         boolean isGlicPinned =
                 AdaptiveToolbarPrefs.getCustomizationSetting() == AdaptiveToolbarButtonVariant.GLIC;
         boolean isToolbarPinned =
                 AdaptiveToolbarPrefs.getCustomizationSetting() != AdaptiveToolbarButtonVariant.AUTO;
-        boolean shouldTrigger = tracker.wouldTriggerHelpUi(featureName);
+        // We use wouldTriggerHelpUi and notifyEvent manually instead of shouldTriggerHelpUi
+        // to avoid locking the IPH session and blocking other IPHs from showing.
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        boolean shouldPinGlic =
+                tracker.wouldTriggerHelpUi(
+                        FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE);
+        tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
 
-        if (!isGlicPinned && (shouldTrigger || isToolbarPinned)) {
-            ChromeSharedPreferences.getInstance()
-                    .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false);
-
-            Runnable onAccepted = this::enableGlicButton;
-            Runnable onDismissed = () -> {};
-
-            var bottomSheetController = getBottomSheetController();
-            assert bottomSheetController != null;
-            mGlicPromoCoordinator =
-                    new GlicPromoCoordinator(
-                            mActivity, bottomSheetController, onAccepted, onDismissed);
-            mGlicPromoCoordinator.showBottomSheet();
-            return true;
+        // Auto-enable the Glic button and bypass the promo if:
+        // 1. Glic is already pinned to the toolbar.
+        // 2. The feature engagement tracker recommends pinning Glic AND the user has not
+        //    manually customized the toolbar with a different button (to avoid overriding
+        //    the user's explicit preference).
+        if (isGlicPinned || (shouldPinGlic && !isToolbarPinned)) {
+            enableGlicButton();
+            return false;
         }
 
-        enableGlicButton();
-        return false;
+        showGlicPromo();
+        return true;
+    }
+
+    private void showGlicPromo() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false);
+
+        Runnable onAccepted = this::enableGlicButton;
+        Runnable onDismissed = () -> {};
+
+        var bottomSheetController = getBottomSheetController();
+        assert bottomSheetController != null;
+        mGlicPromoCoordinator =
+                new GlicPromoCoordinator(mActivity, bottomSheetController, onAccepted, onDismissed);
+        mGlicPromoCoordinator.showBottomSheet();
     }
 
     private void enableGlicButton() {
@@ -2602,5 +2614,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTrackerInitializedOneshotSupplier.set(true);
                     });
         }
+    }
+
+    /** Returns the {@link OneshotSupplier} for the {@link SideUiStateProvider}. */
+    public OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
+        return mSideUiStateProviderSupplier;
+    }
+
+    @Nullable GlicPromoCoordinator getGlicPromoCoordinatorForTesting() {
+        return mGlicPromoCoordinator;
     }
 }

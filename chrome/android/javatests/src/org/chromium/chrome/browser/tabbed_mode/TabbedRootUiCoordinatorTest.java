@@ -9,14 +9,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import androidx.annotation.Nullable;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,17 +43,26 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.policy.test.annotations.Policies.Add;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -77,6 +90,7 @@ public class TabbedRootUiCoordinatorTest {
 
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJni;
     @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
+    @Mock private Tracker mTracker;
 
     @Before
     public void setUp() {
@@ -95,6 +109,25 @@ public class TabbedRootUiCoordinatorTest {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        mBrowserTestRule.signOut();
+        TrackerFactory.setTrackerForTests(null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSharedPreferences.getInstance()
+                            .removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+                    ChromeSharedPreferences.getInstance()
+                            .removeKey(
+                                    ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
+                    if (mTabbedRootUiCoordinator != null
+                            && mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting()
+                                    != null) {
+                        mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting().destroy();
+                    }
+                });
     }
 
     @Test
@@ -208,5 +241,120 @@ public class TabbedRootUiCoordinatorTest {
         assertTrue(
                 "Activity title should contain GTS label.",
                 activity.getTitle().toString().contains(tabSwitcherLabel));
+    }
+
+    @Test
+    @MediumTest
+    public void testMaybeShowGlicPromo_WouldTrigger_ToolbarNotPinned() {
+        GlicEnabling.setEnabledForTesting(true);
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+
+        // Mock tracker wouldTriggerHelpUi to return true.
+        doReturn(true)
+                .when(mTracker)
+                .wouldTriggerHelpUi(
+                        FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE);
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        // Ensure toolbar is not pinned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
+                            AdaptiveToolbarButtonVariant.AUTO);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabbedRootUiCoordinator.maybeShowGlicPromo();
+                });
+
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false));
+        // Toolbar should be manually overridden to GLIC.
+        assertEquals(
+                AdaptiveToolbarButtonVariant.GLIC, AdaptiveToolbarPrefs.getCustomizationSetting());
+        // Promo coordinator should be null (not shown).
+        assertNull(mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting());
+
+        // Verify that the trigger event was notified to the tracker.
+        verify(mTracker).notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
+    }
+
+    @Test
+    @MediumTest
+    public void testMaybeShowGlicPromo_WouldTrigger_ToolbarPinned() {
+        GlicEnabling.setEnabledForTesting(true);
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+
+        // Mock tracker wouldTriggerHelpUi to return true.
+        doReturn(true)
+                .when(mTracker)
+                .wouldTriggerHelpUi(
+                        FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE);
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        // Ensure toolbar is pinned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
+                            AdaptiveToolbarButtonVariant.NEW_TAB);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabbedRootUiCoordinator.maybeShowGlicPromo();
+                });
+
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false));
+        // Toolbar should still be NEW_TAB.
+        assertEquals(
+                AdaptiveToolbarButtonVariant.NEW_TAB,
+                AdaptiveToolbarPrefs.getCustomizationSetting());
+        // Promo coordinator should be non-null (shown).
+        assertNotNull(mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting());
+
+        // Verify that the trigger event was notified to the tracker.
+        verify(mTracker).notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
+    }
+
+    @Test
+    @MediumTest
+    public void testMaybeShowGlicPromo_WouldNotTrigger() {
+        GlicEnabling.setEnabledForTesting(true);
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+
+        // Mock tracker wouldTriggerHelpUi to return false.
+        doReturn(false)
+                .when(mTracker)
+                .wouldTriggerHelpUi(
+                        FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE);
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        // Toolbar is AUTO (not pinned).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
+                            AdaptiveToolbarButtonVariant.AUTO);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabbedRootUiCoordinator.maybeShowGlicPromo();
+                });
+
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false));
+        // Toolbar should still be AUTO.
+        assertEquals(
+                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarPrefs.getCustomizationSetting());
+        // Promo coordinator should be non-null (shown).
+        assertNotNull(mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting());
+
+        // Verify that the trigger event was notified to the tracker.
+        verify(mTracker).notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
     }
 }
