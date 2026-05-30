@@ -262,6 +262,7 @@ java_cpp_enum("net_java_test_support_enums_srcjar") {
 
 java_cpp_enum("net_android_java_enums_srcjar") {
   sources = [
+    "../base/ech_mode.h",
     "../base/network_change_notifier.h",
     "../socket/socket_tag.cc",
     "cert_verify_result_android.h",
