@@ -442,7 +442,7 @@ public class ToolbarManagerUnitTest {
                         mOmniboxChipManager,
                         mBottomBarHostManager,
                         mActionRegistry,
-                        /* toggleGlicCallback= */ (preventClose) -> {});
+                        /* toggleGlicCallback= */ (preventClose, invocationSource) -> {});
 
         NonNullObservableSupplier<TabModelDotInfo> dotSupplier =
                 ObservableSuppliers.createNonNull(mTabModelDotInfo);

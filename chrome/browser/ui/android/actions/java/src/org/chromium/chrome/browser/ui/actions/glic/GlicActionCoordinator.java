@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicButtonStateController;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -130,7 +131,7 @@ public class GlicActionCoordinator {
         // Glic.
         if (tasks == null || tasks.isEmpty() || isOnActingTab) {
             boolean wasOpen = mStateController.isPanelOpen();
-            mToggleGlicCallback.onClick(false);
+            mToggleGlicCallback.onClick(false, GlicInvocationSource.TOOLBAR_BUTTON);
             mStateController.updateButtonState();
 
             // Optimistically toggle selection state based on previous panel state.
@@ -145,7 +146,10 @@ public class GlicActionCoordinator {
         if (mTaskMenuCoordinator == null) {
             mTaskMenuCoordinator =
                     new GlicTaskMenuCoordinator(
-                            view.getContext(), mTabModelSelectorSupplier, mToggleGlicCallback);
+                            view.getContext(),
+                            mTabModelSelectorSupplier,
+                            mToggleGlicCallback,
+                            GlicInvocationSource.TOOLBAR_BUTTON);
         }
         mTaskMenuCoordinator.show(view, tasks);
     }

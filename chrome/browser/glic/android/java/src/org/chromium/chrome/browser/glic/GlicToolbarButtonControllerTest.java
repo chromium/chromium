@@ -148,7 +148,8 @@ public class GlicToolbarButtonControllerTest {
     public void testOnClick() {
         mController.onClick(null);
 
-        verify(mToggleGlicCallback).onClick(false);
+        verify(mToggleGlicCallback)
+                .onClick(false, GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
     }
 
     @Test
@@ -490,7 +491,8 @@ public class GlicToolbarButtonControllerTest {
 
         // Verify popup was NOT shown.
         verify(showHook, never()).run();
-        verify(mToggleGlicCallback).onClick(false);
+        verify(mToggleGlicCallback)
+                .onClick(false, GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
     }
 
     @Test

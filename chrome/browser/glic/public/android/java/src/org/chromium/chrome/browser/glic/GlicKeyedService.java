@@ -24,13 +24,15 @@ public interface GlicKeyedService {
     @IntDef({
         GlicInvocationSource.UNSUPPORTED,
         GlicInvocationSource.TOP_CHROME_BUTTON,
-        GlicInvocationSource.THREE_DOTS_MENU
+        GlicInvocationSource.THREE_DOTS_MENU,
+        GlicInvocationSource.TOOLBAR_BUTTON,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface GlicInvocationSource {
         int UNSUPPORTED = 8;
         int TOP_CHROME_BUTTON = 3;
         int THREE_DOTS_MENU = 7;
+        int TOOLBAR_BUTTON = 31;
     }
 
     // LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource)

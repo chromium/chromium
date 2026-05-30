@@ -1259,7 +1259,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mTabModelSelectorSupplier,
                 // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
                 (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier,
-                (preventClose) -> toggleGlic(preventClose, GlicInvocationSource.TOP_CHROME_BUTTON),
+                (preventClose, invocationSource) -> toggleGlic(preventClose, invocationSource),
                 mChromeAndroidTaskSupplier,
                 mBrowserControlsManager);
     }

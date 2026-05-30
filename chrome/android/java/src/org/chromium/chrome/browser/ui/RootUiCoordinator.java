@@ -2135,9 +2135,8 @@ public class RootUiCoordinator
                             mOmniboxChipManager,
                             mBottomBarHostManager,
                             mActionRegistry,
-                            (preventClose) ->
-                                    toggleGlic(
-                                            preventClose, GlicInvocationSource.TOP_CHROME_BUTTON));
+                            (preventClose, invocationSource) ->
+                                    toggleGlic(preventClose, invocationSource));
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

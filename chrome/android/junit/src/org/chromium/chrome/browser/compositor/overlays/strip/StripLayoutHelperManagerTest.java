@@ -286,7 +286,7 @@ public class StripLayoutHelperManagerTest {
                         mBackPressManager,
                         mSnackbarManager,
                         mActivityResultTracker,
-                        CallbackUtils.emptyCallback(),
+                        (preventClose, invocationSource) -> {},
                         mGlicKeyedService);
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);

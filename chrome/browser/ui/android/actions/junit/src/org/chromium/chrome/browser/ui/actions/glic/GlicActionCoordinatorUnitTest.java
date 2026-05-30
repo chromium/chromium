@@ -127,7 +127,8 @@ public class GlicActionCoordinatorUnitTest {
     public void testClick_callsToggle() {
         Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
         callback.onResult(null);
-        verify(mToggleGlicCallback).onClick(false);
+        verify(mToggleGlicCallback)
+                .onClick(false, GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
     }
 
     @Test

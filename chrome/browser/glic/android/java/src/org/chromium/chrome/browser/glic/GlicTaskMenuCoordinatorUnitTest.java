@@ -66,7 +66,11 @@ public class GlicTaskMenuCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
-                new GlicTaskMenuCoordinator(mContext, () -> mTabModelSelector, mToggleGlicCallback);
+                new GlicTaskMenuCoordinator(
+                        mContext,
+                        () -> mTabModelSelector,
+                        mToggleGlicCallback,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
 
         ActorTask task1 = mock(ActorTask.class);
         doReturn("Task One").when(task1).getTitle();
@@ -145,7 +149,10 @@ public class GlicTaskMenuCoordinatorUnitTest {
                 askGeminiItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         clickListener.onClick(null);
 
-        verify(mToggleGlicCallback).onClick(/* preventClose= */ false);
+        verify(mToggleGlicCallback)
+                .onClick(
+                        /* preventClose= */ false,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
     }
 
     @Test
@@ -162,7 +169,10 @@ public class GlicTaskMenuCoordinatorUnitTest {
                 taskItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         clickListener.onClick(null);
 
-        verify(mToggleGlicCallback).onClick(/* preventClose= */ true);
+        verify(mToggleGlicCallback)
+                .onClick(
+                        /* preventClose= */ true,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
     }
 
     @Test
@@ -180,6 +190,30 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
         verify(mTabModelSelector)
                 .openNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(null), eq(false));
-        verify(mToggleGlicCallback).onClick(/* preventClose= */ true);
+        verify(mToggleGlicCallback)
+                .onClick(
+                        /* preventClose= */ true,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
+    }
+
+    @Test
+    public void testClickAskGemini_UsesConfiguredInvocationSource() {
+        GlicTaskMenuCoordinator coordinator =
+                new GlicTaskMenuCoordinator(
+                        mContext,
+                        () -> mTabModelSelector,
+                        mToggleGlicCallback,
+                        GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
+        ModelList modelList = coordinator.buildModelList(Collections.emptyList());
+        ListItem askGeminiItem = modelList.get(1);
+
+        View.OnClickListener clickListener =
+                askGeminiItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        clickListener.onClick(null);
+
+        verify(mToggleGlicCallback)
+                .onClick(
+                        /* preventClose= */ false,
+                        GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
     }
 }

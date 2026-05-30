@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -48,6 +47,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator.StripLayoutTrailingButtonsObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
@@ -74,7 +74,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private GlicKeyedService mGlicKeyedService;
-    @Mock private Callback<Boolean> mGlicClickHandler;
+    @Mock private GlicButtonDelegate mGlicClickHandler;
     @Mock private View mToolbarContainerView;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
@@ -363,7 +363,10 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         float glicY = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
         boolean glicHandled = mCoordinator.click(0L, glicX, glicY, 0, 0, /* tabWidthDp= */ 100f);
         assertTrue("Click on Glic coordinates should be handled.", glicHandled);
-        verify(mGlicClickHandler, Mockito.times(1)).onResult(/* result= */ false);
+        verify(mGlicClickHandler, Mockito.times(1))
+                .onClick(
+                        /* preventClose= */ false,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
 
         // 2. Test click routing on Glic Actor Button coordinates
         float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;

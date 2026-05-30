@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -50,6 +51,7 @@ public class GlicTaskMenuCoordinator {
 
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final GlicButtonDelegate mToggleGlicCallback;
+    private final @GlicInvocationSource int mInvocationSource;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
@@ -58,15 +60,18 @@ public class GlicTaskMenuCoordinator {
      * @param context The Android context.
      * @param tabModelSelectorSupplier Supplier for the active TabModelSelector.
      * @param toggleGlicCallback Callback to activate or open the Glic UI sheet panel.
+     * @param invocationSource The Glic invocation source.
      */
     public GlicTaskMenuCoordinator(
             Context context,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
-            GlicButtonDelegate toggleGlicCallback) {
+            GlicButtonDelegate toggleGlicCallback,
+            @GlicInvocationSource int invocationSource) {
         mContext = context;
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mToggleGlicCallback = toggleGlicCallback;
+        mInvocationSource = invocationSource;
     }
 
     /**
@@ -179,7 +184,8 @@ public class GlicTaskMenuCoordinator {
                             .withClickListener(
                                     v -> {
                                         switchToActuatingTab(task.getLastActedTabs());
-                                        mToggleGlicCallback.onClick(/* preventClose= */ true);
+                                        mToggleGlicCallback.onClick(
+                                                /* preventClose= */ true, mInvocationSource);
                                         dismiss();
                                     });
 
@@ -215,7 +221,8 @@ public class GlicTaskMenuCoordinator {
                             .withIsIncognito(false)
                             .withClickListener(
                                     v -> {
-                                        mToggleGlicCallback.onClick(/* preventClose= */ false);
+                                        mToggleGlicCallback.onClick(
+                                                /* preventClose= */ false, mInvocationSource);
                                         dismiss();
                                     })
                             .build());

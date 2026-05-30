@@ -17,7 +17,6 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -35,8 +34,10 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
@@ -127,7 +128,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final StripLayoutTrailingButtonsObserver mObserver;
     private final float mDensity;
     private final float mStripEndPadding;
-    private final Callback<Boolean> mGlicClickHandler;
+    private final GlicButtonDelegate mGlicClickHandler;
     private final @Nullable GlicKeyedService mGlicKeyedService;
     private final @Nullable GlobalShowHideObserver mGlicUiObserver;
     private final @Nullable ChromeAndroidTaskTracker mTaskTracker;
@@ -231,7 +232,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param updateHost The {@link LayoutUpdateHost} for requesting handles layout.
      * @param renderHost The {@link LayoutRenderHost} for requesting renders.
      * @param windowAndroid The {@link WindowAndroid} for the activity.
-     * @param glicClickHandler The {@link Callback<Boolean>} to execute on Glic button click.
+     * @param glicClickHandler The {@link GlicButtonDelegate} to execute on Glic button click.
      * @param density The display density.
      * @param stripEndPadding The end padding of the tab strip.
      * @param toolbarControlContainer The view containing toolbar controls.
@@ -247,7 +248,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             WindowAndroid windowAndroid,
-            Callback<Boolean> glicClickHandler,
+            GlicButtonDelegate glicClickHandler,
             float density,
             float stripEndPadding,
             View toolbarControlContainer,
@@ -282,7 +283,8 @@ public class StripLayoutTrailingButtonsCoordinator {
 
         StripLayoutViewOnClickHandler glicClickHandlerOnButton =
                 (time, view, motionEventButtonState, modifiers) ->
-                        mGlicClickHandler.onResult(/* result= */ false);
+                        mGlicClickHandler.onClick(
+                                /* preventClose= */ false, GlicInvocationSource.TOP_CHROME_BUTTON);
 
         if (GlicEnabling.isEnabledByFlags() && AndroidSidePanelEnabledFn.isEnabled()) {
             mGlicDismissNudgeButton =
@@ -600,7 +602,10 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mGlicTaskMenuCoordinator == null) {
             mGlicTaskMenuCoordinator =
                     new GlicTaskMenuCoordinator(
-                            mContext, mTabModelSelectorSupplier, mGlicClickHandler::onResult);
+                            mContext,
+                            mTabModelSelectorSupplier,
+                            mGlicClickHandler,
+                            GlicInvocationSource.TOP_CHROME_BUTTON);
         }
         mGlicTaskMenuCoordinator.show(
                 anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);
@@ -1079,7 +1084,8 @@ public class StripLayoutTrailingButtonsCoordinator {
      */
     public boolean onUpOrCancel() {
         if (mGlicButton != null && mGlicButton.onUpOrCancel()) {
-            mGlicClickHandler.onResult(/* result= */ false);
+            mGlicClickHandler.onClick(
+                    /* preventClose= */ false, GlicInvocationSource.TOP_CHROME_BUTTON);
             return true;
         } else if (mGlicActorButton != null && mGlicActorButton.onUpOrCancel()) {
             return true;

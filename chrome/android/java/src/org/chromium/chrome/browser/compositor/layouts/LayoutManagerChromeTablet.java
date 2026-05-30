@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -101,7 +101,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param backPressManager The {@link BackPressManager} for handling back press.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
      * @param activityResultTracker The {@link ActivityResultTracker}.
-     * @param glicClickHandler The {@link Callback<Boolean>} for the tab strip Glic button.
+     * @param glicClickHandler The {@link GlicButtonDelegate} for the tab strip Glic button.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -130,7 +130,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
             ActivityResultTracker activityResultTracker,
-            Callback<Boolean> glicClickHandler,
+            GlicButtonDelegate glicClickHandler,
             @Nullable GlicKeyedService glicKeyedService) {
         super(
                 host,

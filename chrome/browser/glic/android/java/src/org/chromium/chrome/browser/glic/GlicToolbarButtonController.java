@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.glic.GlicButtonStateController.ButtonState;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -284,14 +285,17 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                 if (mTaskMenuCoordinator == null) {
                     mTaskMenuCoordinator =
                             new GlicTaskMenuCoordinator(
-                                    mActivity, mTabModelSelectorSupplier, mToggleGlicCallback);
+                                    mActivity,
+                                    mTabModelSelectorSupplier,
+                                    mToggleGlicCallback,
+                                    GlicInvocationSource.TOP_CHROME_BUTTON);
                 }
                 mTaskMenuCoordinator.show(view, tasks);
                 return;
             }
         }
 
-        mToggleGlicCallback.onClick(false);
+        mToggleGlicCallback.onClick(false, GlicInvocationSource.TOP_CHROME_BUTTON);
         Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {
             tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_GLIC_CLICKED);
