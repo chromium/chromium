@@ -55,6 +55,16 @@ void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
                                                      std::nullopt);
 }
 
+void HistoryEmbeddingsTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument()) {
+    GetHistoryEmbeddingsService()->UpdateVisitMetadata(web_contents(),
+                                                       std::nullopt);
+  }
+}
+
 void HistoryEmbeddingsTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {

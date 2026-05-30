@@ -83,6 +83,9 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
         [this](const page_content_annotations::PageContent&,
                size_t page_content_passages_to_generate,
                const std::string& title, const std::string& url) {
+          if (extraction_callback_) {
+            extraction_callback_.Run();
+          }
           std::vector<std::pair<std::string,
                                 page_content_annotations::EmbeddingPassageType>>
               result;
@@ -200,6 +203,10 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     page_passages_ = std::move(passages);
   }
 
+  void SetExtractionCallback(base::RepeatingCallback<void()> callback) {
+    extraction_callback_ = std::move(callback);
+  }
+
   base::test::ScopedFeatureList feature_list_;
 
  private:
@@ -207,6 +214,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
   passage_embeddings::TestEnvironment passage_embeddings_test_env_;
   std::vector<std::string> page_passages_{"A a B C b a 2 D"};
+  base::RepeatingCallback<void()> extraction_callback_;
 };
 
 class HistoryEmbeddingsRestrictedSigninBrowserTest
@@ -641,6 +649,55 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsKillSwitchBrowserTest,
     EXPECT_EQ(result.scored_url_rows[0].GetBestPassage(), "A a B C b a 2 D");
     EXPECT_EQ(result.scored_url_rows[0].row.url(), GetUrl());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
+                       404NavigationDoesNotPoisonHistory) {
+  OverrideVisibilityScoresForTesting({
+      {"Victim passages", 0.99},
+      {"Attacker passages", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Load victim page.
+  SetPagePassages({"Victim passages"});
+  base::test::TestFuture<UrlData> store_future;
+  service()->SetPassagesStoredCallbackForTesting(
+      store_future.GetRepeatingCallback());
+
+  GURL victim_url = embedded_test_server()->GetURL("/links.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), victim_url));
+  EXPECT_TRUE(store_future.Wait());
+
+  // 2. Navigate to 404 page with attacker passages.
+  SetPagePassages({"Attacker passages"});
+
+  base::test::TestFuture<void> extraction_triggered;
+  SetExtractionCallback(extraction_triggered.GetRepeatingCallback());
+
+  GURL poison_url = embedded_test_server()->GetURL("/non-existent-404");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), poison_url));
+
+  // Wait specifically for the content extraction to be triggered for the 404
+  // page
+  EXPECT_TRUE(extraction_triggered.Wait());
+
+  // Now check if the victim URL has been poisoned.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search(nullptr, "Attacker", {}, 1, /*skip_answering=*/false,
+                    search_future.GetRepeatingCallback());
+  SearchResult result = search_future.Take();
+
+  bool found_victim_with_attacker_content = false;
+  for (const auto& scored_url_row : result.scored_url_rows) {
+    if (scored_url_row.row.url() == victim_url) {
+      found_victim_with_attacker_content = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found_victim_with_attacker_content)
+      << "Victim URL was poisoned with attacker content!";
 }
 
 }  // namespace history_embeddings

@@ -50,6 +50,8 @@ class HistoryEmbeddingsTabHelper
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
   void SetHistoryTabHelperSubscription(
