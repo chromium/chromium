@@ -119,7 +119,7 @@ class MEDIA_EXPORT BitReader {
   const size_t initial_size_;
 
   // Pointer to the next unread byte in the stream.
-  base::raw_span<const uint8_t, DanglingUntriaged> data_;
+  base::raw_span<const uint8_t> data_;
 
   // Number of bits read so far.
   size_t bits_read_ = 0;

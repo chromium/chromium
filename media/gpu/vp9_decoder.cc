@@ -120,6 +120,9 @@ VP9Decoder::~VP9Decoder() = default;
 void VP9Decoder::SetStream(int32_t id,
                            scoped_refptr<DecoderBuffer> decoder_buffer) {
   CHECK(decoder_buffer);
+  // Keep the old buffer alive until the end of this function to ensure
+  // that any active spans in the parser are cleared before the memory is freed.
+  auto outgoing_decoder_buffer = std::move(decoder_buffer_);
   decoder_buffer_ = std::move(decoder_buffer);
   const DecryptConfig* decrypt_config = decoder_buffer_->decrypt_config();
 
