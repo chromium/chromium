@@ -24,6 +24,9 @@ receiver that lives in the browser process. To execute it, build the
     <input type="number" id="indexInput" value="0" min="0" max="99" style="width: 50px;">
     <button id="rustButton">What does the Rust say?</button>
   </div>
+  <div style="margin-top: 10px;">
+    <strong>Finch Status:</strong> <span id="finchStatus">Loading...</span>
+  </div>
   <p id="responseField" style="font-family: monospace; margin-top: 20px; color: #333;"></p>
 
   <script>
@@ -38,13 +41,29 @@ receiver that lives in the browser process. To execute it, build the
   </script>
 
   <script>
-    async function getRustMessage(index) {
+    function getRemote() {
       if (typeof content === 'undefined' || !content.rustTest || !content.rustTest.mojom || !content.rustTest.mojom.RustTestService) {
         throw new Error("'content.rustTest.mojom.RustTestService' is not defined. Ensure MojoJS is enabled.");
       }
-      const remote = content.rustTest.mojom.RustTestService.getRemote();
+      return content.rustTest.mojom.RustTestService.getRemote();
+    }
+
+    async function getRustMessage(index) {
+      const remote = getRemote();
       const { message } = await remote.getStringFromRust(index);
       return message;
+    }
+
+    async function checkFinchFlag() {
+      const finchStatus = document.getElementById('finchStatus');
+      try {
+        const remote = getRemote();
+        const { enabled } = await remote.isFeatureFlagSetViaRustEnabled();
+        finchStatus.innerText = `FeatureFlagSetViaRust is ${enabled}!`;
+        finchStatus.style.color = enabled ? 'green' : 'red';
+      } catch (e) {
+        finchStatus.innerText = "Error: " + e.message;
+      }
     }
 
     document.getElementById('rustButton').addEventListener('click', async () => {
@@ -58,6 +77,9 @@ receiver that lives in the browser process. To execute it, build the
         responseField.innerText = "Error: " + e.message;
       }
     });
+
+    // Check flag status on load
+    window.addEventListener('load', checkFinchFlag);
   </script>
 </body>
 

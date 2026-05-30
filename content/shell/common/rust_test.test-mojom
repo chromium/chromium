@@ -6,4 +6,5 @@ module content.rust_test.mojom;
 
 interface RustTestService {
   GetStringFromRust(uint32 index) => (string message);
+  IsFeatureFlagSetViaRustEnabled() => (bool enabled);
 };

@@ -1174,6 +1174,7 @@ rust_static_library("rust_test_service") {
   sources = [ "browser/rust_test_service.rs" ]
   deps = [
     ":rust_test_mojom_rust",
+    "//base:feature",
     "//mojo/public/rust/bindings",
   ]
 }
