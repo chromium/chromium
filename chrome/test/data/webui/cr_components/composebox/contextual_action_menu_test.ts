@@ -460,7 +460,7 @@ suite('ContextualActionMenu', () => {
     const tabInfo = {
       tabId: 1,
       title: 'Google',
-      url: 'https://google.com',
+      url: 'about:blank',
       lastActiveTime: {internalValue: 0n},
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
@@ -486,7 +486,7 @@ suite('ContextualActionMenu', () => {
     const tabInfo = {
       tabId: 1,
       title: 'Google',
-      url: 'https://google.com',
+      url: 'about:blank',
       lastActiveTime: {internalValue: 0n},
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
@@ -578,7 +578,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: 'https://example.com',
+        url: 'about:blank',
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         lastActive: {internalValue: 0n},
@@ -621,7 +621,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: 'https://example.com',
+        url: 'about:blank',
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         lastActive: {internalValue: 0n},
@@ -681,7 +681,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://example.com'},
+        url: {url: 'about:blank'},
         lastActiveTime: {internalValue: 0n},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
@@ -711,7 +711,7 @@ suite('ContextualActionMenu', () => {
     actionMenu.tabSuggestions = Array(11).fill({
       tabId: 1,
       title: 'Tab',
-      url: {url: 'https://example.com'},
+      url: {url: 'about:blank'},
       lastActiveTime: {internalValue: 0n},
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
@@ -736,7 +736,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://example.com'},
+        url: {url: 'about:blank'},
         lastActiveTime: {internalValue: 0n},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
@@ -807,7 +807,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://example.com'},
+        url: {url: 'about:blank'},
         lastActiveTime: {internalValue: 0n},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
@@ -872,7 +872,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://example.com'},
+        url: {url: 'about:blank'},
         lastActiveTime: {internalValue: 0n},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
@@ -949,7 +949,7 @@ suite('ContextualActionMenu', () => {
       {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://example.com'},
+        url: {url: 'about:blank'},
         lastActiveTime: {internalValue: 0n},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
@@ -1035,10 +1035,10 @@ suite('ContextualActionMenu', () => {
     const tabInfo: TabInfo = {
       tabId: 1,
       title: 'Tab 1',
-      url: 'https://google.com',
+      url: 'about:blank',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
-      lastActive: { internalValue: 0n },
+      lastActive: {internalValue: 0n},
     };
     actionMenu.tabSuggestions = [tabInfo];
     actionMenu.inputState = new MockInputState({
@@ -1071,7 +1071,7 @@ suite('ContextualActionMenu', () => {
         const tabInfo = {
           tabId: 1,
           title: 'Google',
-          url: 'https://google.com',
+          url: 'about:blank',
           lastActiveTime: {internalValue: 0n},
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
@@ -1121,7 +1121,7 @@ suite('ContextualActionMenu', () => {
     const tabInfo = {
       tabId: 1,
       title: 'Google',
-      url: 'https://google.com',
+      url: 'about:blank',
       lastActiveTime: {internalValue: 0n},
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
@@ -1196,7 +1196,7 @@ suite('ContextualActionMenu', () => {
     const tabInfo: TabInfo = {
       tabId: 1,
       title: 'Recent Tab',
-      url: 'https://example.com',
+      url: 'about:blank',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       lastActive: {internalValue: 0n},
@@ -1236,7 +1236,7 @@ suite('ContextualActionMenu', () => {
     const tabInfo: TabInfo = {
       tabId: 1,
       title: 'Tab 1',
-      url: 'https://google.com',
+      url: 'about:blank',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       lastActive: {internalValue: 0n},
@@ -1278,7 +1278,7 @@ suite('ContextualActionMenu', () => {
         const tabInfo: TabInfo = {
           tabId: 1,
           title: 'Tab 1',
-          url: 'https://google.com',
+          url: 'about:blank',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
@@ -1309,7 +1309,7 @@ suite('ContextualActionMenu', () => {
       const tabInfo: TabInfo = {
         tabId: 1,
         title: 'Tab 1',
-        url: 'https://google.com',
+        url: 'about:blank',
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         lastActive: { internalValue: 0n },
@@ -1350,7 +1350,7 @@ suite('ContextualActionMenu', () => {
         const tab1: TabInfo = {
           tabId: 1,
           title: 'Tab 1',
-          url: 'https://google.com/1',
+          url: 'about:blank/1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
@@ -1358,7 +1358,7 @@ suite('ContextualActionMenu', () => {
         const tab2: TabInfo = {
           tabId: 2,
           title: 'Tab 2',
-          url: 'https://google.com/2',
+          url: 'about:blank/2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
@@ -1436,7 +1436,7 @@ suite('ContextualActionMenu', () => {
         const tabInfo = {
           tabId: 1,
           title: 'Google Docs',
-          url: 'https://docs.google.com',
+          url: 'about:blank',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
@@ -1487,7 +1487,7 @@ suite('ContextualActionMenu', () => {
         {
           tabId: 1,
           title: 'Tab 1',
-          url: 'https://example.com',
+          url: 'about:blank',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
