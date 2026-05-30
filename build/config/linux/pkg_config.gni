@@ -39,8 +39,9 @@ declare_args() {
   host_pkg_config = ""
 
   # CrOS systemroots place pkgconfig files at <systemroot>/usr/share/pkgconfig
-  # and one of <systemroot>/usr/lib/pkgconfig or <systemroot>/usr/lib64/pkgconfig
-  # depending on whether the systemroot is for a 32 or 64 bit architecture.
+  # and one of <systemroot>/usr/lib/pkgconfig or
+  # <systemroot>/usr/lib64/pkgconfig depending on whether the systemroot is for
+  # a 32 or 64 bit architecture.
   #
   # When build under GYP, CrOS board builds specify the 'system_libdir' variable
   # as part of the GYP_DEFINES provided by the CrOS emerge build or simple
@@ -58,7 +59,8 @@ pkg_config_args = []
 
 common_pkg_config_args = []
 
-# Chrome OS uses custom pkg_config wrappers that require absolute paths as inputs.
+# Chrome OS uses custom pkg_config wrappers that require absolute paths as
+# inputs.
 # See https://chromium-review.googlesource.com/c/chromium/src/+/6506002
 _pkg_config_requires_abs_path =
     pkg_config != "" ||
