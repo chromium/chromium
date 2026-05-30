@@ -444,7 +444,6 @@ void HTMLMediaElementEncryptedMedia::Encrypted(
 
   event->SetTarget(GetSupplementable());
   GetSupplementable()->ScheduleEvent(event);
-  GetSupplementable()->OnEncryptedMediaInitData();
 }
 
 void HTMLMediaElementEncryptedMedia::DidBlockPlaybackWaitingForKey() {

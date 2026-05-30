@@ -31,6 +31,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/paint_canvas.h"
+#include "media/base/cdm_config.h"
+#include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
@@ -467,8 +469,18 @@ void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
   }
 }
 
-void HTMLVideoElement::OnEncryptedMediaInitData() {
+void HTMLVideoElement::OnCdmAttached(const media::CdmConfig& cdm_config) {
   if (!base::FeatureList::IsEnabled(media::kEncryptedMediaOcclusionTracking)) {
+    return;
+  }
+
+  // Allow External Clear Key for testing purposes, as it is the primary way
+  // we test the EME pipeline in browser tests but is not hardware secure.
+  // TODO(crbug.com/514379948): When ECK uses the CdmCapability, we can
+  // remove the IsExternalClearKey check, and mock ECK with hardware secure
+  // codecs for testing purposes.
+  if (!cdm_config.use_hw_secure_codecs &&
+      !media::IsExternalClearKey(cdm_config.key_system)) {
     return;
   }
 
@@ -554,7 +566,7 @@ void HTMLVideoElement::OnPlay() {
   // for AutoPictureInPictureVideoHeuristicsEnabled feature.
   //
   // For encrypted media, the tracker should only be created via
-  // OnEncryptedMediaInitData(). Initializing it here when only the
+  // OnCdmAttached(). Initializing it here when only the
   // kEncryptedMediaOcclusionTracking feature is enabled would incorrectly
   // attach the tracker to clear videos.
   if (RuntimeEnabledFeatures::AutoPictureInPictureVideoHeuristicsEnabled()) {

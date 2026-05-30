@@ -1806,6 +1806,8 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
   cdm_config_ = web_cdm->GetCdmConfig();
   DCHECK(!cdm_config_->key_system.empty());
 
+  client_->OnCdmAttached(cdm_config_.value());
+
   media_log_->SetProperty<MediaLogProperty::kSetCdm>(cdm_config_.value());
 
   media_metrics_provider_->SetKeySystem(String(cdm_config_->key_system));

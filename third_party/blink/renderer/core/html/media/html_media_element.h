@@ -166,8 +166,6 @@ class CORE_EXPORT HTMLMediaElement
   // Whether the media element has encrypted audio or video streams.
   bool IsEncrypted() const;
 
-  virtual void OnEncryptedMediaInitData() {}
-
   bool SupportsSave() const;
   bool SupportsLoop() const;
 
@@ -634,6 +632,7 @@ class CORE_EXPORT HTMLMediaElement
   void DidUseAudioServiceChange(bool uses_audio_service) override;
   void DidPlayerSizeChange(const gfx::Size& size) override;
   void OnRemotePlaybackDisabled(bool disabled) override;
+  void OnCdmAttached(const media::CdmConfig& cdm_config) override {}
 
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an

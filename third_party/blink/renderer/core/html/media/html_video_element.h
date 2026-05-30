@@ -174,7 +174,7 @@ class CORE_EXPORT HTMLVideoElement final
   }
 
   // HTMLMediaElement overrides.
-  void OnEncryptedMediaInitData() final;
+  void OnCdmAttached(const media::CdmConfig& cdm_config) final;
 
   void RequestSaveVideoFrame();
 

@@ -1,4 +1,6 @@
 include_rules = [
+    "+media/base/cdm_config.h",
+    "+media/base/key_system_names.h",
     "+media/base/logging_override_if_enabled.h",
     "+media/base/media_content_type.h",
     "+media/base/media_switches.h",
