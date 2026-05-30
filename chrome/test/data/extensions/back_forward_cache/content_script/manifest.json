@@ -1,21 +1,30 @@
 {
   "name": "no caching",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Checks that content scripts do prevent back forward cache.",
-  "permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
   "externally_connectable": {
-    "matches": ["*://a.com/*"]
+    "matches": [
+      "*://a.com/*"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["content_script.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content_script.js"
+      ],
       "run_at": "document_end"
     }
   ],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   }
 }

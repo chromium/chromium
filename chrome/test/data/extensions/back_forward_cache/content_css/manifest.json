@@ -1,9 +1,12 @@
 {
   "name": "no caching",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Checks that injected CSS do prevent back forward cache.",
-  "permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
@@ -12,7 +15,6 @@
     }
   ],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   }
 }
