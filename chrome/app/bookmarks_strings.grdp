@@ -125,6 +125,18 @@
       <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
         &amp;Hide bookmarks bar
       </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_LABEL" desc="Label for the bookmarks bar submenu">
+        Bookmarks bar
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE" desc="Menu item to always hide the bookmark bar">
+        Always hide
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW" desc="Menu item to always show the bookmark bar">
+        Always show
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP" desc="Menu item to only show the bookmark bar on the new tab page">
+        Only show on New Tab Page
+      </message>
     </if>
   </if>
   <if expr="use_titlecase">
@@ -185,6 +197,18 @@
       </message>
       <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
         &amp;Hide Bookmarks Bar
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_LABEL" desc="In Title Case: Label for the bookmarks bar submenu">
+        Bookmarks Bar
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE" desc="In Title Case: Menu item to always hide the bookmark bar">
+        Always Hide
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW" desc="In Title Case: Menu item to always show the bookmark bar">
+        Always Show
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP" desc="In Title Case: Menu item to only show the bookmark bar on the new tab page">
+        Only Show on New Tab Page
       </message>
     </if>
   </if>

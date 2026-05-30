@@ -139,6 +139,7 @@ class BookmarkContextMenuController
       selection_;
   const raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<ui::SimpleMenuModel> submenu_model_;
   const std::unique_ptr<BookmarkParentFolder> new_nodes_parent_;
   // Whether IDC_PASTE is enabled.
   const bool can_paste_;

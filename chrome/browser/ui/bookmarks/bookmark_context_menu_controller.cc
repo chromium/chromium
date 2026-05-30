@@ -46,6 +46,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/undo/bookmark_undo_service.h"
@@ -177,6 +178,7 @@ BookmarkContextMenuController::BookmarkContextMenuController(
   CheckSelectionIsValid(selection);
   CHECK(new_nodes_parent_);
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   bookmark_service_->bookmark_model()->AddObserver(this);
 
   BuildMenu();
@@ -306,7 +308,20 @@ void BookmarkContextMenuController::BuildMenu() {
   }
   AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
                   IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
-  AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpSimplificationBookmarkBar)) {
+    submenu_model_->AddCheckItemWithStringId(
+        IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE);
+    submenu_model_->AddCheckItemWithStringId(
+        IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW);
+    submenu_model_->AddCheckItemWithStringId(
+        IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP);
+    menu_model_->AddSubMenuWithStringId(
+        IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR, submenu_model_.get());
+  } else {
+    AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
+  }
 }
 
 void BookmarkContextMenuController::AddItem(int id, const std::u16string str) {

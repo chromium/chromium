@@ -71,8 +71,17 @@ BookmarkContextMenu::BookmarkContextMenu(
           views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    views::MenuModelAdapter::AppendMenuItemFromModel(
-        menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+    views::MenuItemView* item =
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+    // TODO(crbug.com/503036610): Simplify by adding command id for the submenu.
+    if (item && menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
+      ui::MenuModel* submodel = menu_model->GetSubmenuModelAt(i);
+      for (size_t j = 0; j < submodel->GetItemCount(); ++j) {
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            submodel, j, item, submodel->GetCommandIdAt(j));
+      }
+    }
   }
 }
 
