@@ -714,7 +714,9 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
       continue;
     }
     // SAFETY: The iterators are from the same container.
-    Group fields = Group(UNSAFE_BUFFERS({begin, end}));
+    Group fields = base::span(fields_).subspan(
+        static_cast<size_t>(std::distance(fields_.begin(), begin)),
+        static_cast<size_t>(std::distance(begin, end)));
     if (has_reasonable_length(fields)) {
       size_t offset = 0;
       for (auto& field : fields) {

@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "third_party/tflite/src/tensorflow/lite/core/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
@@ -28,10 +29,11 @@ bool FieldClassificationModelExecutor::Preprocess(
   // tokens_per_field) where the batch size is set to 1. The second and third
   // dimensions hold the values of the vectorized field labels.
   CHECK_EQ(input_tensors[0]->dims->size, 3);
-  const size_t maximum_number_of_fields =
-      UNSAFE_TODO(input_tensors[0]->dims->data[1]);
-  const size_t output_sequence_length =
-      UNSAFE_TODO(input_tensors[0]->dims->data[2]);
+  auto input_dims = UNSAFE_BUFFERS(
+      base::span<const int>(input_tensors[0]->dims->data,
+                            static_cast<size_t>(input_tensors[0]->dims->size)));
+  const size_t maximum_number_of_fields = input_dims[1];
+  const size_t output_sequence_length = input_dims[2];
 
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
@@ -55,11 +57,16 @@ bool FieldClassificationModelExecutor::Preprocess(
           });
     }
     // Populate tensors with the vectorized field labels.
+    CHECK_GE(input_tensors[0]->bytes,
+             maximum_number_of_fields * output_sequence_length * sizeof(float));
+    auto input_data = UNSAFE_BUFFERS(
+        base::span<float>(tflite::GetTensorData<float>(input_tensors[0]),
+                          maximum_number_of_fields * output_sequence_length));
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
       std::ranges::copy(
           encoded_input[i],
-          UNSAFE_TODO(tflite::GetTensorData<float>(input_tensors[0]) +
-                      i * output_sequence_length));
+          input_data.subspan(i * output_sequence_length, output_sequence_length)
+              .begin());
     }
   }
   // `input_tensors[1]` is a boolean mask of shape
@@ -74,9 +81,11 @@ bool FieldClassificationModelExecutor::Preprocess(
     // Mitigation for crbug.com/495252686.
     CHECK_LE(maximum_number_of_fields * sizeof(bool), input_tensors[1]->bytes);
 
+    auto mask_data = UNSAFE_BUFFERS(
+        base::span<bool>(tflite::GetTensorData<bool>(input_tensors[1]),
+                         maximum_number_of_fields));
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
-      UNSAFE_TODO(tflite::GetTensorData<bool>(input_tensors[1])[i]) =
-          i < fields_count;
+      mask_data[i] = i < fields_count;
     }
   }
   return true;
@@ -91,17 +100,25 @@ FieldClassificationModelExecutor::Postprocess(
   // the model, for all `kModelExecutorMaxNumberOfFields`.
   CHECK_EQ(1u, output_tensors.size());
   CHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
-  const size_t maximum_number_of_fields =
-      UNSAFE_TODO(output_tensors[0]->dims->data[1]);
-  const size_t num_outputs = UNSAFE_TODO(output_tensors[0]->dims->data[2]);
+  CHECK_EQ(output_tensors[0]->dims->size, 3);
+  auto output_dims = UNSAFE_BUFFERS(base::span<const int>(
+      output_tensors[0]->dims->data,
+      static_cast<size_t>(output_tensors[0]->dims->size)));
+  const size_t maximum_number_of_fields = output_dims[1];
+  const size_t num_outputs = output_dims[2];
+
+  CHECK_GE(output_tensors[0]->bytes,
+           maximum_number_of_fields * num_outputs * sizeof(float));
+  auto output_data = UNSAFE_BUFFERS(
+      base::span<const float>(tflite::GetTensorData<float>(output_tensors[0]),
+                              maximum_number_of_fields * num_outputs));
+
   FieldClassificationModelEncoder::ModelOutput model_predictions(
       maximum_number_of_fields);
   for (size_t i = 0; i < maximum_number_of_fields; ++i) {
     model_predictions[i].resize(num_outputs);
-    const float* data_bgn = UNSAFE_TODO(
-        tflite::GetTensorData<float>(output_tensors[0]) + i * num_outputs);
-    std::ranges::copy(data_bgn, UNSAFE_TODO(data_bgn + num_outputs),
-                      model_predictions[i].begin());
+    auto src = output_data.subspan(i * num_outputs, num_outputs);
+    std::ranges::copy(src, model_predictions[i].begin());
   }
   return model_predictions;
 }

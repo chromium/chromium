@@ -220,8 +220,11 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
     auto end = FindEndOfNextSection(begin, fields.end());
     DCHECK(begin != end || end == fields.end());
     // SAFETY: The iterators are from the same container.
-    AssignFieldIdentifierSections(UNSAFE_BUFFERS({begin, end}),
-                                  frame_token_ids);
+    AssignFieldIdentifierSections(
+        fields.subspan(
+            static_cast<size_t>(std::distance(fields.begin(), begin)),
+            static_cast<size_t>(std::distance(begin, end))),
+        frame_token_ids);
     begin = end;
   }
 }

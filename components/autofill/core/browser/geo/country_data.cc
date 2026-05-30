@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/singleton.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -39,13 +40,17 @@ GetCountryDataMap() {
   // manually specified requirements.
   std::vector<std::pair<std::string, RequiredFieldsForAddressImport>>
       other_countries;
-  // SAFETY: `icu::Locale::getISOCountries` returns a C-style array whose last
-  // entry is a nullptr.
-  for (const char* const* country_pointer = icu::Locale::getISOCountries();
-       *country_pointer; UNSAFE_BUFFERS(++country_pointer)) {
-    if (!kCountryAddressImportRequirementsData.contains(*country_pointer)) {
+  const char* const* countries_ptr = icu::Locale::getISOCountries();
+  size_t count = 0;
+  while (UNSAFE_BUFFERS(countries_ptr[count])) {
+    count++;
+  }
+  auto countries =
+      UNSAFE_BUFFERS(base::span<const char* const>(countries_ptr, count));
+  for (const char* country : countries) {
+    if (!kCountryAddressImportRequirementsData.contains(country)) {
       other_countries.emplace_back(
-          *country_pointer,
+          country,
           RequiredFieldsForAddressImport::ADDRESS_REQUIREMENTS_UNKNOWN);
     }
   }

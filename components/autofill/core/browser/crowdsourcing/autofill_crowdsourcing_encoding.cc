@@ -1078,9 +1078,14 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
                               (*subform_begin)->renderer_form_id();
                      });
     // SAFETY: The iterators are from the same container.
-    EncodeFormFieldsForUpload(form, options.encoder, options.fields,
-                              UNSAFE_BUFFERS({subform_begin, subform_end}),
-                              &uploads.back());
+    EncodeFormFieldsForUpload(
+        form, options.encoder, options.fields,
+        base::span(upload_fields)
+            .subspan(
+                static_cast<size_t>(
+                    std::distance(upload_fields.begin(), subform_begin)),
+                static_cast<size_t>(std::distance(subform_begin, subform_end))),
+        &uploads.back());
     subform_begin = subform_end;
   }
   return uploads;

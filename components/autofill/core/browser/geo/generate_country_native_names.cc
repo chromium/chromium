@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
@@ -34,11 +35,13 @@ std::map<std::u16string, std::string> GenerateCountryNativeNamesMap() {
   std::map<std::u16string, std::string> country_native_names;
 
   int32_t num_locales = 0;
-  const icu::Locale* available_locales =
+  const icu::Locale* available_locales_ptr =
       icu::Locale::getAvailableLocales(num_locales);
+  auto available_locales = UNSAFE_BUFFERS(base::span<const icu::Locale>(
+      available_locales_ptr, static_cast<size_t>(num_locales)));
 
   for (int32_t i = 0; i < num_locales; ++i) {
-    const icu::Locale& locale = UNSAFE_BUFFERS(available_locales[i]);
+    const icu::Locale& locale = available_locales[i];
     std::string country_of_locale = locale.getCountry();
     if (country_of_locale.empty() ||
         !autofill_country_codes.count(country_of_locale)) {
