@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ComponentExtensionBrowserTest,
   // Block until the Incognito worker explicitly proves it is alive and running.
   ASSERT_TRUE(target_incognito_ready.WaitUntilSatisfied());
 
-  // Force the incognito worker to sleep.
+  // Get Incognito workers for the target extension.
   std::vector<extensions::WorkerId> workers =
       extensions::ProcessManager::Get(incognito_profile)
           ->GetServiceWorkersForExtension(target->id());
