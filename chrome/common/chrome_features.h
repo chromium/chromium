@@ -440,6 +440,9 @@ extern const base::FeatureParam<std::string>
     kGlicExperimentalTriggeringLearnMoreURL;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
+    kGlicExperimentalTriggeringSafetyURL;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
     kGlicWebActuationToggleConsiderSafelyURL;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>

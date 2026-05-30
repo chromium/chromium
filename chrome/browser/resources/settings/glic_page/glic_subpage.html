@@ -565,7 +565,7 @@
                 </li>
                 <li>
                   <cr-icon aria-hidden="true"
-                      icon="cr:check-circle">
+                      icon="settings20:agent-mode2">
                   </cr-icon>
                   <div class="secondary">
                     $i18n{glicExperimentalTriggeringWhenOn2}
@@ -578,12 +578,7 @@
               <ul class="icon-bulleted-list">
                 <li>
                   <cr-icon aria-hidden="true"
-<if expr="not _google_chrome">
-                      icon="settings20:web">
-</if>
-<if expr="_google_chrome">
-                      icon="settings-internal:screensaver-auto">
-</if>
+                      icon="privacy:cookie">
                   </cr-icon>
                   <div class="secondary">
                     $i18n{glicExperimentalTriggeringConsider1}
@@ -594,7 +589,15 @@
                       icon="settings20:shield">
                   </cr-icon>
                   <div class="secondary">
-                    $i18nRaw{glicExperimentalTriggeringConsider2}
+                    $i18n{glicExperimentalTriggeringConsider2}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon aria-hidden="true"
+                      icon="settings20:stream-science">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18nRaw{glicExperimentalTriggeringConsider3}
                   </div>
                 </li>
               </ul>

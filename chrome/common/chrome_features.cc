@@ -656,7 +656,12 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicExperimentalTriggeringLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-experimental-triggering-toggle-learn-more-url",
-                   "https://gemini.google/overview/agent/spark/");
+                   "https://support.google.com/chrome?p=gemini_spark");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicExperimentalTriggeringSafetyURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-experimental-triggering-toggle-safety-url",
+                   "https://support.google.com/chrome?p=gemini_spark_safety");
 BASE_FEATURE_PARAM(
     std::string,
     kGlicWebActuationToggleConsiderSafelyURL,

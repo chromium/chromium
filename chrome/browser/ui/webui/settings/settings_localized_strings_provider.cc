@@ -999,6 +999,16 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
           base::UTF8ToUTF16(
               features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
                   .Get())));
+  html_source->AddString(
+      "glicExperimentalTriggeringConsider3",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3,
+          base::UTF8ToUTF16(
+              google_util::AppendGoogleLocaleParam(
+                  glic::GetHelpCenterUrl(
+                      features::kGlicExperimentalTriggeringSafetyURL.Get()),
+                  application_locale)
+                  .spec())));
   html_source->AddBoolean(
       "glicExtensionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicExtensions));

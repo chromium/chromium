@@ -282,23 +282,26 @@
   <!-- TODO(crbug.com/397187800): The following Glic experimental triggering strings are temporary
        and will be finalized and replaced next week. This also includes finalizing the links for
        "Learn more about Gemini Spark" and "unexpected actions". -->
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_TOGGLE" desc="Label for the Gemini experimental triggering setting" translateable="false">
-    Let Gemini Spark use Chrome auto browse on this device
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_TOGGLE" desc="Label for the Gemini experimental triggering setting">
+    Let Gemini Spark browse on this device
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL" desc="Sublabel explaining Gemini Spark feature." translateable="false">
-    If your device is on, Gemini Agent can use Chrome auto browse to complete tasks for you on this device. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about Gemini Spark<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL" desc="Sublabel explaining Gemini Spark feature.">
+    Gemini Spark can use Chrome auto browse on this device to interact with sites and complete tasks on your behalf. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_1" desc="Bullet point explaining what happens when Gemini Spark is enabled." translateable="false">
-    Gemini Spark can use Chrome auto browse to interact with sites and complete tasks on your behalf. It can only use Chrome on this device if the device is awake and Chrome is running.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_1" desc="Bullet point explaining what happens when Gemini Spark is enabled.">
+    Gemini Spark can only use auto browse on this device if the device is awake and Chrome is running.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_2" desc="Bullet point explaining notifications when Gemini Spark is enabled." translateable="false">
-    Spark will decide which actions to take based on the tasks you start from the Gemini Spark dashboard.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_2" desc="Bullet point explaining notifications when Gemini Spark is enabled.">
+    Gemini Spark will decide which actions to take based on the tasks you start or update.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_1" desc="Bullet point explaining what to consider when enabling Gemini Spark." translateable="false">
-    To get things done more efficiently, Spark will have access to logged in sites and cookie data. Anybody with access to your Spark dashboard could access your Chrome browser.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_1" desc="Bullet point explaining site access when enabling Gemini Spark.">
+    Gemini Spark will have access to the same sites as you, including the sites you’re signed in to. It will share necessary info with third parties, which could include personal info you might find sensitive.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_2" desc="Bullet point explaining user responsibility for Gemini Spark." translateable="false">
-    Gemini Spark is experimental and may make mistakes and <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>unexpected actions<ph name="LINK_END">&lt;/a&gt;</ph>, like purchases.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_2" desc="Bullet point explaining access risk when enabling Gemini Spark.">
+    Anybody with access to your Gemini Spark agent could control your Chrome browser.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3" desc="Bullet point explaining user responsibility and risks for Gemini Spark.">
+    Gemini Spark is experimental and may do things like share your info or make purchases without asking. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank"&gt;</ph>Review the risks<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen" formatter_data="android_java">
     Let Chrome browse for you
