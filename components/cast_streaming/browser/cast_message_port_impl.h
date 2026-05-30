@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 
@@ -60,6 +61,8 @@ class CastMessagePortImpl final
   raw_ptr<Client> client_ = nullptr;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
   base::OnceClosure on_close_;
+
+  base::WeakPtrFactory<CastMessagePortImpl> weak_factory_{this};
 };
 
 }  // namespace cast_streaming

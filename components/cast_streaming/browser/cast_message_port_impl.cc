@@ -97,6 +97,7 @@ CastMessagePortImpl::CastMessagePortImpl(
 CastMessagePortImpl::~CastMessagePortImpl() = default;
 
 void CastMessagePortImpl::MaybeClose() {
+  base::WeakPtr<CastMessagePortImpl> weak_this = weak_factory_.GetWeakPtr();
   if (message_port_) {
     message_port_.reset();
   }
@@ -104,10 +105,10 @@ void CastMessagePortImpl::MaybeClose() {
     client_->OnError(
         openscreen::Error(openscreen::Error::Code::kCastV2CastSocketError));
   }
-  if (on_close_) {
+  if (weak_this && weak_this->on_close_) {
     // |this| might be deleted as part of |on_close_| being run. Do not add any
     // code after running the closure.
-    std::move(on_close_).Run();
+    std::move(weak_this->on_close_).Run();
   }
 }
 
