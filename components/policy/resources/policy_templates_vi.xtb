@@ -9519,6 +9519,13 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="7055022222176591388">Không cho phép <ph name="FLASH_PLUGIN_NAME" /> lỗi thời</translation>
 <translation id="7056040036973126753">Dữ liệu về Độ tin cậy của miền có thể được gửi đến Google, tuỳ thuộc vào chính sách Chỉ số người dùng của Chrome (UMA)</translation>
 <translation id="7062803946218028349">Cho phép bật Trung tâm điều khiển điện thoại</translation>
+<translation id="7063646777978847358">Chính sách này kiểm soát việc có hạn chế các yêu cầu tìm nạp ở chế độ nền từ Trình chạy dịch vụ hay không. Nếu một tính năng tải tệp xuống ở chế độ nền bị ảnh hưởng, thì chính sách này có thể phù hợp.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt thì quy định hạn chế sẽ được áp dụng và các yêu cầu tìm nạp ở chế độ nền từ ngữ cảnh Trình chạy dịch vụ có thể bị chặn.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), thì quy định hạn chế sẽ bị bỏ qua, cho phép tất cả Trình chạy dịch vụ gửi yêu cầu tìm nạp ở chế độ nền.
+
+Chính sách doanh nghiệp này chỉ có hiệu lực tạm thời và sẽ bị xoá sau phiên bản M152.</translation>
 <translation id="7066292150801784098">Tắt tính năng tương tác người dùng từ xa với cửa sổ bật lên trong các phiên hỗ trợ từ xa</translation>
 <translation id="706669471845501145">Cho phép các trang web hiển thị thông báo trên màn hình</translation>
 <translation id="7067419518071223152">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những ứng dụng web nào được cấp quyền truy cập vào các loại tệp.

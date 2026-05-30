@@ -9753,6 +9753,13 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="7055022222176591388">Larang <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="7056040036973126753">Data Keandalan Domain dapat dikirim ke Google bergantung pada kebijakan Metrik Pengguna Chrome (UMA)</translation>
 <translation id="7062803946218028349">Izinkan pengaktifan Phone Hub</translation>
+<translation id="7063646777978847358">Kebijakan ini mengontrol apakah permintaan pengambilan latar belakang dari Service Worker dibatasi. Jika fitur yang mendownload file di latar belakang terpengaruh, kebijakan ini mungkin relevan.
+
+Jika kebijakan ini disetel ke Aktif, atau tidak disetel, pembatasan akan aktif, dan permintaan pengambilan latar belakang dari konteks Service Worker dapat diblokir.
+
+Jika kebijakan ini disetel ke Nonaktif, pembatasan akan dilewati, sehingga semua Service Worker dapat membuat permintaan pengambilan data latar belakang.
+
+Kebijakan perusahaan ini bersifat sementara, dan akan dihapus setelah M152.</translation>
 <translation id="7066292150801784098">Cegah interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
 <translation id="706669471845501145">Izinkan situs menampilkan pemberitahuan desktop</translation>
 <translation id="7067419518071223152">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan aplikasi web mana yang diberikan akses ke berbagai jenis file.

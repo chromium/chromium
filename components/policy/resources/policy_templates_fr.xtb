@@ -9345,6 +9345,13 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="7055022222176591388">Interdire le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">Les données sur la fiabilité du domaine peuvent être envoyées à Google, en fonction des règles sur les métriques utilisateur de Chrome (UMA, User Metrics Analysis)</translation>
 <translation id="7062803946218028349">Autoriser l'activation de Phone Hub</translation>
+<translation id="7063646777978847358">Cette règle détermine si les requêtes de récupération en arrière-plan provenant des service workers sont restreintes. Si une fonctionnalité qui télécharge des fichiers en arrière-plan est affectée, cette règle peut être pertinente.
+
+Si cette règle est activée ou n'est pas configurée, la restriction est active et les requêtes de récupération en arrière-plan provenant de contextes de service worker peuvent être bloquées.
+
+Si cette règle est désactivée, la restriction est contournée, ce qui permet à tous les service workers d'effectuer des requêtes de récupération en arrière-plan.
+
+Cette règle d'entreprise est temporaire et sera supprimée après M152.</translation>
 <translation id="7066292150801784098">Désactiver les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="706669471845501145">Autoriser les sites à afficher des notifications sur le bureau</translation>
 <translation id="7067419518071223152">Cette règle permet de lister les formats d'URL pour les applis Web autorisées à accéder à certains types de fichiers.

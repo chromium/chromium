@@ -846,7 +846,7 @@
 <translation id="1573127087832371028">תיאור הבעיה</translation>
 <translation id="1574335334663388774">גרסה <ph name="APP_VERSION" /> של <ph name="APP_NAME" /> כבר מותקנת במכשיר הזה</translation>
 <translation id="1575741822946219011">שפות ושיטות קלט</translation>
-<translation id="1576594961618857597">דמות ברירת מחדל לבנה</translation>
+<translation id="1576594961618857597">אווטאר ברירת מחדל לבן</translation>
 <translation id="1576729678809834061">דיווח על תוצאת החיפוש הזו</translation>
 <translation id="1578488449637163638">כהה</translation>
 <translation id="1578558981922970608">אילוץ סגירה</translation>
@@ -1351,7 +1351,7 @@
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1915734383465415025">מספר החנות</translation>
-<translation id="1916502483199172559">דמות ברירת מחדל אדומה</translation>
+<translation id="1916502483199172559">אווטאר ברירת מחדל אדום</translation>
 <translation id="1916770123977586577">כדי להחיל על האתר את ההגדרות המעודכנות, יש לטעון מחדש את הדף</translation>
 <translation id="1917766536967060661">‏הגישה שלך לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />', וגם האפשרות של <ph name="BLOCKED_MEMBER_FULL_NAME" /> ‏(<ph name="BLOCKED_MEMBER_EMAIL" />) ליצור איתך אינטראקציה בשירותי Google, יאבדו באופן מיידי.</translation>
 <translation id="1918127774159128277">‏רענון היכולות של Wi-Fi ישיר</translation>
@@ -3160,7 +3160,7 @@
 <translation id="3132996321662585180">רענון מדי יום</translation>
 <translation id="3134312457920437826">לא ניתן להתקין את התוסף כי הוא משתמש בגרסה של המניפסט שלא נתמכת.</translation>
 <translation id="3134393957315651797">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />. תיאור הניסוי: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3139925690611372679">דמות ברירת מחדל צהובה</translation>
+<translation id="3139925690611372679">אווטאר ברירת מחדל צהוב</translation>
 <translation id="3141093262818886744">אני רוצה לפתוח בכל זאת</translation>
 <translation id="3141318088920353606">המערכת מקשיבה...</translation>
 <translation id="3142562627629111859">קבוצה חדשה</translation>
@@ -3272,7 +3272,7 @@
 <translation id="3222779980972075989">התחברות אל <ph name="USB_VM_NAME" /></translation>
 <translation id="3223109931751684474">הפסקת השימוש במפתחות הגישה במכשיר הזה</translation>
 <translation id="3223531857777746191">כפתור איפוס</translation>
-<translation id="3225084153129302039">דמות ברירת מחדל סגולה</translation>
+<translation id="3225084153129302039">אווטאר ברירת מחדל סגול</translation>
 <translation id="3226487301970807183">החלפת מצב לחלונית הצדדית משמאל</translation>
 <translation id="322708765617468434">תמיד אפשר להוסיף אדם נוסף למכשיר אחרי ההגדרה. כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -3515,7 +3515,7 @@
 <translation id="3399432415385675819">הודעות יושבתו</translation>
 <translation id="3400390787768057815">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> הרץ) – סריקה שזורה (Interlaced)</translation>
 <translation id="3401484564516348917">‏קריאת מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו, הקבצים והערכים ב-registry</translation>
-<translation id="3402255108239926910">יש לבחור דמות</translation>
+<translation id="3402255108239926910">יש לבחור אווטאר</translation>
 <translation id="3402585168444815892">מתבצעת הרשמה למצב הדגמה</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">לא נשמרו סיסמאות לאתר הזה</translation>
@@ -5176,7 +5176,7 @@
 <translation id="4541706525461326392">הסרת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="4542520061254486227">קריאת הנתונים שלך באתרים <ph name="WEBSITE_1" /> ו-<ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">מנהל האישורים</translation>
-<translation id="4544174279960331769">דמות ברירת מחדל כחולה</translation>
+<translation id="4544174279960331769">אווטאר ברירת מחדל כחול</translation>
 <translation id="4544595896051435161">החיפוש בכרטיסיות עבר למקום אחר</translation>
 <translation id="4545028762441890696">כדי להפעיל את התוסף מחדש, יש לאשר את ההרשאות החדשות:</translation>
 <translation id="4545759655004063573">לא ניתן לשמור עקב הרשאות לא מספיקות. יש לשמור במיקום אחר.</translation>
@@ -5777,7 +5777,7 @@
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4951966678293618079">אין לשמור סיסמאות לאתר הזה אף פעם</translation>
 <translation id="4952580838083306838">הסתרת המארגן</translation>
-<translation id="4953808748584563296">דמות ברירת מחדל כתומה</translation>
+<translation id="4953808748584563296">אווטאר ברירת מחדל כתום</translation>
 <translation id="4954652437333037880">קובץ</translation>
 <translation id="4954831709600868883">יש לך שאלה לגבי <ph name="TEXT" />?</translation>
 <translation id="4955707703665801001">הרשאות הגישה של <ph name="FEATURE_NAME" /></translation>
@@ -6161,7 +6161,7 @@
 <translation id="5226253862147382094">‏בדיקת העדכונים של הלוגו וכתובת ה-URL</translation>
 <translation id="5226514125747186">יופיע עיגול מקווקו מסביב לסמלי אתרים. <ph name="BEGIN_LINK" />מידע נוסף על כרטיסיות לא פעילות<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">לאתרים אין הרשאה להשתמש במיקום שלך</translation>
-<translation id="5227679487546032910">דמות ברירת מחדל כחלחלה</translation>
+<translation id="5227679487546032910">אווטאר ברירת מחדל כחלחל</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> מכשירים מחוברים</translation>
 <translation id="5228579091201413441">הפעלת סנכרון</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{לבטל את קבוצת הכרטיסיות?}one{לבטל את קבוצות הכרטיסיות?}two{לבטל את קבוצות הכרטיסיות?}other{לבטל את קבוצות הכרטיסיות?}}</translation>
@@ -10230,7 +10230,7 @@
 <translation id="8061464966246066292">ניגודיות גבוהה</translation>
 <translation id="8061970399284390013">בדיקת איות ודקדוק</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{גיליון נייר אחד}one{{COUNT} גיליונות נייר}two{{COUNT} גיליונות נייר}other{{COUNT} גיליונות נייר}}</translation>
-<translation id="8063235345342641131">דמות ברירת מחדל ירוקה</translation>
+<translation id="8063235345342641131">אווטאר ברירת מחדל ירוק</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">‏שימוש ב-AI מבית Google לשיפור היצירתיות והפרודוקטיביות</translation>
 <translation id="8066444921260601116">תיבת דו-שיח לחיבור</translation>
@@ -10290,7 +10290,7 @@
 <translation id="8106114112474206597">‏משתמשים במקש I כדי ללחוץ על כפתור העכבר</translation>
 <translation id="810728361871746125">רזולוציית מסך</translation>
 <translation id="8108161424633979910">‫<ph name="NUM" /> חברים</translation>
-<translation id="8109109153262930486">דמות ברירת מחדל</translation>
+<translation id="8109109153262930486">אווטאר ברירת מחדל</translation>
 <translation id="8109991406044913868">‏עיצוב שנוצר באמצעות AI</translation>
 <translation id="8110393529211831722">המינוי מותקן רק במכשיר הזה ולא מסונכרן עם מכשירים אחרים שרשומים בחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">מתבצעת הורדה של רשימת אנשי קשר…</translation>
