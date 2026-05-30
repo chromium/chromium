@@ -147,13 +147,9 @@ void BackForwardButton::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
-  // TODO(crbug.com/515847387): Use a separate Lottie animation
-  // for the forward arrow animation instead of using `reflect_vertical`
-  // to reflect the back arrow animation. For now, only play the animation
-  // for the back arrow.
   const bool play_animation = features::IsToolbarGlowUpEnabled() &&
                               !ui::TouchUiController::Get()->touch_ui() &&
-                              direction_ == Direction::kBack;
+                              event.IsLeftMouseButton();
 
   if (play_animation) {
     views::SingleAnimatedImageContainer::AnimationConfig config{
@@ -162,7 +158,10 @@ bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
         .end_behavior =
             views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
     animated_image_container().PlayAnimation(
-        {IDR_BACK_ARROW_LOTTIE, GetForegroundColor(GetState())}, config);
+        {direction_ == Direction::kBack ? IDR_BACK_ARROW_LOTTIE
+                                        : IDR_FORWARD_ARROW_LOTTIE,
+         GetForegroundColor(GetState())},
+        config);
   }
 
   return ToolbarButton::OnMousePressed(event);
