@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 
@@ -55,6 +56,45 @@ void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
     default:
       break;
   }
+}
+
+void PersonalContextFirstRunServiceImpl::
+    MarkPersonalContextInAutofillNoticeAsShown() {
+  if (pref_service_) {
+    // The notice being shown should enable the feature.
+    pref_service_->SetBoolean(
+        prefs::kPersonalContextInAutofillNoticeHasBeenShown, true);
+    pref_service_->SetBoolean(
+        prefs::kPersonalContextInAutofillSettingsToggleStatus, true);
+  }
+}
+
+void PersonalContextFirstRunServiceImpl::
+    MarkPersonalContextInAutofillNoticeAsAcknowledged() {
+  if (pref_service_) {
+    pref_service_->SetBoolean(
+        prefs::kPersonalContextInAutofillSettingsToggleStatus, true);
+    // It's guaranteed the notice was shown when the user acknowledges it, hence
+    // no need to manually set the kPersonalContextInAutofillNoticeHasBeenShown
+    // pref.
+    pref_service_->SetBoolean(
+        prefs::kPersonalContextInAutofillNoticeShouldBeShown, false);
+  }
+}
+
+bool PersonalContextFirstRunServiceImpl::
+    ShouldShowPersonalContextAutofillNotice() const {
+  if (!features::IsPersonalContextFirstRunNoticePhase2Enabled()) {
+    return false;
+  }
+  if (!enablement_service_) {
+    return false;
+  }
+
+  PersonalContextEnablementState state =
+      enablement_service_->GetEnablementState();
+  return state == PersonalContextEnablementState::kDisabledShouldShowNotice ||
+         state == PersonalContextEnablementState::kEnabledShouldShowNotice;
 }
 
 void PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted(

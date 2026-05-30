@@ -36,6 +36,20 @@ class PersonalContextFirstRunService : public KeyedService {
   virtual void MaybeTriggerFirstRun(content::WebContents* web_contents,
                                     FirstRunInvocationSource invocation_source,
                                     FirstRunTriggerCallback callback) = 0;
+
+  // Called when the user has been shown the Personal Context notice in
+  // Autofill.
+  // TODO(b:517579158): Wire the notice UIs into this function.
+  virtual void MarkPersonalContextInAutofillNoticeAsShown() = 0;
+
+  // Called when the user has acknowledged the Personal Context notice in
+  // Autofill.
+  // TODO(b:517579158): Wire the notice UIs into this function.
+  virtual void MarkPersonalContextInAutofillNoticeAsAcknowledged() = 0;
+
+  // Returns true if the Personal Context notice should be shown in Autofill.
+  // TODO(b:517579158): Wire the notice UIs into this function.
+  virtual bool ShouldShowPersonalContextAutofillNotice() const = 0;
 };
 
 }  // namespace personal_context

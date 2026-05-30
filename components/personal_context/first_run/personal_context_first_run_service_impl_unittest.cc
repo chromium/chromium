@@ -8,9 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/testing_pref_service.h"
@@ -165,6 +167,78 @@ TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenShouldShowNotice) {
 
   service()->MaybeTriggerFirstRun(nullptr, FirstRunInvocationSource::kAutofill,
                                   base::DoNothing());
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       MarkPersonalContextInAutofillNoticeAsShownSetsPrefs) {
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextInAutofillNoticeHasBeenShown, false);
+
+  service()->MarkPersonalContextInAutofillNoticeAsShown();
+
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kPersonalContextInAutofillNoticeHasBeenShown));
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       MarkPersonalContextInAutofillNoticeAsAcknowledgedSetsPrefs) {
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextInAutofillNoticeShouldBeShown, true);
+
+  service()->MarkPersonalContextInAutofillNoticeAsAcknowledged();
+
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kPersonalContextInAutofillNoticeShouldBeShown));
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       ShouldShowPersonalContextAutofillNotice_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPersonalContextFirstRunNoticePhase2);
+
+  EXPECT_CALL(*enablement_service(), GetEnablementState())
+      .WillRepeatedly(
+          Return(PersonalContextEnablementState::kDisabledShouldShowNotice));
+
+  EXPECT_FALSE(service()->ShouldShowPersonalContextAutofillNotice());
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       ShouldShowPersonalContextAutofillNotice_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPersonalContextFirstRunNoticePhase2);
+
+  // Test kDisabledShouldShowNotice
+  EXPECT_CALL(*enablement_service(), GetEnablementState())
+      .WillOnce(
+          Return(PersonalContextEnablementState::kDisabledShouldShowNotice));
+  EXPECT_TRUE(service()->ShouldShowPersonalContextAutofillNotice());
+
+  // Test kEnabledShouldShowNotice
+  EXPECT_CALL(*enablement_service(), GetEnablementState())
+      .WillOnce(
+          Return(PersonalContextEnablementState::kEnabledShouldShowNotice));
+  EXPECT_TRUE(service()->ShouldShowPersonalContextAutofillNotice());
+
+  // Test kEnabled (should be false)
+  EXPECT_CALL(*enablement_service(), GetEnablementState())
+      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+  EXPECT_FALSE(service()->ShouldShowPersonalContextAutofillNotice());
+
+  // Test kDisabledNotEligible (should be false)
+  EXPECT_CALL(*enablement_service(), GetEnablementState())
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledNotEligible));
+  EXPECT_FALSE(service()->ShouldShowPersonalContextAutofillNotice());
 }
 
 }  // namespace
