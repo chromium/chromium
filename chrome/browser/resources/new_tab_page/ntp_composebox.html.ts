@@ -12,9 +12,21 @@ import {getHtml as getContextMenuHtml} from './ntp_composebox_context_menu.html.
 export function getHtml(this: NtpComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    <div id="composebox" part="composebox" @keydown="${this.onKeydown}">
+    <ntp-error-scrim id="errorScrim" part="error-scrim"
+        ?compact-mode="${this.files.size === 0}"
+        .errorMessage="${this.errorMessage}"
+        @dismiss-error-scrim="${this.onDismissErrorScrim}">
+    </ntp-error-scrim>
+    <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
+        @keydown="${this.onKeydown}"
+        @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
+        @dragover="${this.dragAndDropHandler_.handleDragOver}"
+        @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
+        @drop="${this.dragAndDropHandler_.handleDrop}"
+        @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"
+            class="${this.hasTabs() ? 'has-tabs' : ''}"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
             .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
             .showDropdown="${this.showDropdown}"
@@ -32,7 +44,37 @@ export function getHtml(this: NtpComposeboxElement) {
           <cr-composebox-file-inputs id="fileInputs"
               @file-change="${this.onFileChange}"
               .disableFileInputs="${this.shouldDisableFileInputs()}">
-            ${getContextMenuHtml.bind(this)()}
+            ${this.hasTabs() ? '' : getContextMenuHtml.bind(this)()}
+            <div id="carouselContainer" part="carousel-container">
+              <div class="carousel-container-inner">
+                ${this.showFileCarousel ? html`
+                  <cr-composebox-file-carousel
+                    part="cr-composebox-file-carousel"
+                    exportparts="thumbnail, thumbnail-title"
+                    id="carousel"
+                    .files="${this.getFilteredCarouselFiles()}"
+                    @delete-file="${this.onDeleteFile}">
+                  </cr-composebox-file-carousel> ` : ''}
+                  ${this.hasTabs() && this.contextMenuEnabled ? html`
+                    ${getContextMenuHtml.bind(this)()}
+                  ` : ''}
+                  ${this.inToolMode ? html`
+                  <div class="context-menu-container" id="toolChipsContainer"
+                      part="tool-chips-container">
+                      <cr-composebox-tool-chip
+                        exportparts="tool-chip-label"
+                        .inputState="${this.inputState}"
+                        .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+                        @tool-click="${this.onToolClick}"
+                        part="tool-chip">
+                      </cr-composebox-tool-chip>
+                  </div>
+                  ` : ''}
+              </div>
+            </div>
+            ${this.shouldShowDivider() ? html`
+            <div class="carousel-divider" part="carousel-divider"></div>
+            ` : ''}
             <cr-composebox-dropdown
                 id="matches"
                 part="dropdown"

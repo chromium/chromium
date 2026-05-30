@@ -98,3 +98,48 @@ cr-composebox-input::part(cancel) {
     --cr-icon-button-fill-color: ButtonText;
   }
 }
+
+#errorScrim {
+  border-radius: inherit;
+}
+
+#composebox[inert] {
+  pointer-events: none;
+}
+
+:host([is-dragging-file]) #composebox * {
+  pointer-events: none;
+}
+
+#carouselContainer {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+}
+
+.carousel-container-inner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+#carousel {
+  box-sizing: border-box;
+  margin-bottom: var(--context-non-top-carousel-bottom-margin, 4px);
+  margin-top: var(--context-non-top-carousel-top-margin, 6px);
+  inset-inline-start: var(--context-carousel-inline-start-spacing, 50px);
+  position: relative;
+  width: calc(100% - var(--context-carousel-inline-start-spacing, 50px) -
+      var(--context-carousel-inline-end-spacing, 50px));
+}
+
+#toolChipsContainer {
+  padding-bottom: 4px;
+  padding-inline-start: 16px;
+  padding-top: 14px;
+}
+
+:host([searchbox-layout-mode='Compact'][show-dropdown]) .carousel-divider {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 12px;
+}
