@@ -10,3 +10,8 @@ crbug.com/380778943 external/wpt/ai/translator/* [ Skip ]
 # These tests require the component updater and thus do not run on CfT bots.
 external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Skip Timeout ]
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Skip Timeout ]
+
+# Bug: 514359173, 514384316, 514528222
+crbug.com/514528222 [ Mac Release ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-sinkid-constructor.https.html [ Pass Timeout ]
+crbug.com/514384316 [ Mac Release ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-sinkid-setsinkid.https.html [ Pass Timeout ]
+crbug.com/514359173 [ Mac Release ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-sinkid-state-change.https.html [ Pass Timeout ]
