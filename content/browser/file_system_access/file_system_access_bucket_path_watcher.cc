@@ -24,17 +24,20 @@ FileSystemAccessBucketPathWatcher::FileSystemAccessBucketPathWatcher(
     base::PassKey<FileSystemAccessWatcherManager> /*pass_key*/)
     : FileSystemAccessChangeSource(
           FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems(),
-          std::move(file_system_context)) {}
+          std::move(file_system_context)),
+      base::RefCountedDeleteOnSequence<FileSystemAccessBucketPathWatcher>(
+          base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 FileSystemAccessBucketPathWatcher::~FileSystemAccessBucketPathWatcher() =
     default;
 
 void FileSystemAccessBucketPathWatcher::AddRef() const {
-  base::RefCountedThreadSafe<FileSystemAccessBucketPathWatcher>::AddRef();
+  base::RefCountedDeleteOnSequence<FileSystemAccessBucketPathWatcher>::AddRef();
 }
 
 void FileSystemAccessBucketPathWatcher::Release() const {
-  base::RefCountedThreadSafe<FileSystemAccessBucketPathWatcher>::Release();
+  base::RefCountedDeleteOnSequence<
+      FileSystemAccessBucketPathWatcher>::Release();
 }
 
 void FileSystemAccessBucketPathWatcher::Disable() {
