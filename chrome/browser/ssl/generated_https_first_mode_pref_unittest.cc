@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -496,4 +497,43 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 3);
   histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
                                HttpsFirstModeSetting::kDisabled, 1);
+}
+
+// Check that changing the Safe Browsing preference kSafeBrowsingEnhanced
+// updates the generated pref.
+TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSafeBrowsingPreference) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kHttpsFirstBalancedMode,
+       features::kHttpsFirstModeDefaultSettingPairsWithEsb},
+      {});
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Check that when safe browsing pref changes, the pref observer is fired.
+  settings_private::TestGeneratedPrefObserver test_observer;
+  pref.AddObserver(&test_observer);
+
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+  EXPECT_TRUE(test_observer.GetUpdatedPrefName().empty());
+
+  // Toggle Safe Browsing Enhanced.
+  prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,
+                       std::make_unique<base::Value>(true));
+  EXPECT_EQ(test_observer.GetUpdatedPrefName(), kGeneratedHttpsFirstModePref);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kEnabledBalanced);
+
+  test_observer.Reset();
+
+  // Toggle Safe Browsing Enhanced off.
+  prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,
+                       std::make_unique<base::Value>(false));
+  EXPECT_EQ(test_observer.GetUpdatedPrefName(), kGeneratedHttpsFirstModePref);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
 }

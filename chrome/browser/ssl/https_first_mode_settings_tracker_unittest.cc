@@ -19,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_test_utils.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -1260,4 +1261,59 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, AdvancedProtectionStatusChange) {
   aps_manager->SetAdvancedProtectionStatusForTesting(false);
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest, BalancedModeEnabledForEsbUsers) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kHttpsFirstBalancedMode,
+                            features::
+                                kHttpsFirstModeDefaultSettingPairsWithEsb},
+      /*disabled_features=*/{});
+
+  // 1. Add a host to the HTTP allowlist to test that it gets cleared on pref
+  // changes.
+  state->AllowHttpForHost("example.com",
+                          profile()->GetDefaultStoragePartition());
+  EXPECT_TRUE(state->IsHttpAllowedForHost(
+      "example.com", profile()->GetDefaultStoragePartition()));
+
+  // 2. Initially ESB is disabled. Balanced Mode should be disabled by default.
+  EXPECT_FALSE(
+      safe_browsing::IsEnhancedProtectionEnabled(*profile()->GetPrefs()));
+  EXPECT_FALSE(IsBalancedModeEnabled(profile()->GetPrefs()));
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+
+  // 3. Enable ESB. Balanced Mode should now be enabled by default.
+  safe_browsing::SetEnhancedProtectionPref(profile()->GetPrefs(), true);
+  EXPECT_TRUE(
+      safe_browsing::IsEnhancedProtectionEnabled(*profile()->GetPrefs()));
+  EXPECT_TRUE(IsBalancedModeEnabled(profile()->GetPrefs()));
+  EXPECT_EQ(service->GetCurrentSetting(),
+            HttpsFirstModeSetting::kEnabledBalanced);
+
+  // The allowlist should be cleared on this pref change.
+  EXPECT_FALSE(state->IsHttpAllowedForHost(
+      "example.com", profile()->GetDefaultStoragePartition()));
+
+  // 4. If the user explicitly disables Balanced Mode, it should stay disabled.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+  EXPECT_FALSE(IsBalancedModeEnabled(profile()->GetPrefs()));
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+
+  // 5. If the user explicitly enables Balanced Mode, it should stay enabled
+  // even if ESB is disabled.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+  safe_browsing::SetEnhancedProtectionPref(profile()->GetPrefs(), false);
+  EXPECT_TRUE(IsBalancedModeEnabled(profile()->GetPrefs()));
+  EXPECT_EQ(service->GetCurrentSetting(),
+            HttpsFirstModeSetting::kEnabledBalanced);
 }

@@ -18,6 +18,7 @@
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace settings_api = extensions::api::settings_private;
 
@@ -34,6 +35,11 @@ GeneratedHttpsFirstModePref::GeneratedHttpsFirstModePref(Profile* profile)
           base::Unretained(this)));
   user_prefs_registrar_.Add(
       prefs::kHttpsFirstBalancedMode,
+      base::BindRepeating(
+          &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
+          base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
       base::BindRepeating(
           &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
           base::Unretained(this)));

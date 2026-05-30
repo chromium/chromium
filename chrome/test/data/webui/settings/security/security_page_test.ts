@@ -178,6 +178,43 @@ suite('Main', function() {
         page.getPref('generated.https_first_mode_enabled').value);
   });
 
+  // Tests that changing the Safe Browsing setting to Enhanced Protection
+  // dynamically updates the HTTPS-First Mode setting to Balanced and expands
+  // the radio options automatically.
+  test('HttpsFirstModeSettingPairsWithSafeBrowsing', async () => {
+    const toggleButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeToggle');
+    const collapse = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeRadioGroupCollapse');
+    assertTrue(!!toggleButton);
+    assertTrue(!!collapse);
+
+    // Initially disabled.
+    assertEquals(
+        HttpsFirstModeSetting.DISABLED,
+        page.getPref('generated.https_first_mode_enabled').value);
+    assertFalse(isChildVisible(page, '#httpsFirstModeRadioGroup'));
+
+    // Simulate Safe Browsing changing to Enhanced, which in C++ would update
+    // the HFM pref.
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    page.setPrefValue(
+        'generated.https_first_mode_enabled',
+        HttpsFirstModeSetting.ENABLED_BALANCED);
+    flush();
+
+    await eventToPromise('transitionend', collapse);
+
+    // The UI should automatically expand the radio group and select balanced.
+    assertTrue(isChildVisible(page, '#httpsFirstModeRadioGroup'));
+    const balancedButton = page.shadowRoot!.querySelector<HTMLInputElement>(
+        '#httpsFirstModeEnabledBalanced');
+    assertTrue(!!balancedButton);
+    assertTrue(balancedButton.checked);
+  });
+
+
+
   // Tests that the correct Advanced Protection sublabel is used when the
   // HTTPS-First Mode setting toggle has user control disabled.
   test('HttpsFirstModeSettingAdvancedProtectionSubLabel', function() {

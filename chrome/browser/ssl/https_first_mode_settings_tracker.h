@@ -106,6 +106,7 @@ class HttpsFirstModeService : public KeyedService {
 
  private:
   void OnHttpsFirstModePrefChanged();
+  void OnSafeBrowsingEnhancedPrefChanged();
   // HTTPS-Upgrade fallback events are stored in a pref. This method extracts
   // the fallback events, deletes old events, adds a new event if
   // `add_new_entry` is true. Returns true if the heuristic indicates that

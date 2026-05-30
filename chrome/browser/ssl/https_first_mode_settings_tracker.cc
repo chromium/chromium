@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -215,6 +216,11 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
       prefs::kHttpsFirstBalancedMode,
       base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(
+          &HttpsFirstModeService::OnSafeBrowsingEnhancedPrefChanged,
+          base::Unretained(this)));
 
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
@@ -293,6 +299,26 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
   // Since the user modified the UI pref, explicitly disable any automatic
   // HTTPS-First Mode heuristic.
   profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, false);
+}
+
+void HttpsFirstModeService::OnSafeBrowsingEnhancedPrefChanged() {
+  HttpsFirstModeSetting setting = GetCurrentSetting();
+  // Update synthetic field trial group registration.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      kHttpsFirstModeSyntheticFieldTrialName,
+      GetSyntheticFieldTrialGroupName(setting));
+
+  // Reset the HTTP allowlist and HTTPS enforcelist when the pref changes.
+  if (!keep_http_allowlist_on_next_pref_change_) {
+    StatefulSSLHostStateDelegate* state =
+        static_cast<StatefulSSLHostStateDelegate*>(
+            profile_->GetSSLHostStateDelegate());
+    if (state) {
+      state->ClearHttpsOnlyModeAllowlist();
+      state->ClearHttpsEnforcelist();
+    }
+  }
+  keep_http_allowlist_on_next_pref_change_ = false;
 }
 
 bool HttpsFirstModeService::
