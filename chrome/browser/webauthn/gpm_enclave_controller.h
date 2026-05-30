@@ -407,7 +407,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // If changing a GPM PIN, this holds a ReAuthentication Proof Token (RAPT), if
   // the user is authenticating the request via doing a GAIA reauth.
-  std::optional<std::string> rapt_ = std::nullopt;
+  std::optional<std::string> rapt_;
 
   // A timeout to prevent waiting for the enclave to load forever. If triggered
   // while still loading, the user is sent to the mechanism selection screen.

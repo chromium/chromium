@@ -906,7 +906,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
   // This value existence indicates failure because predicted LCP should be the
   // last.
-  std::optional<uint32_t> first_valid_index_except_last = std::nullopt;
+  std::optional<uint32_t> first_valid_index_except_last;
   for (size_t i = 0; i < predicted_lcp_indexes_.size() - 1; i++) {
     const std::optional<uint32_t>& maybe_index = predicted_lcp_indexes_[i];
     if (maybe_index) {

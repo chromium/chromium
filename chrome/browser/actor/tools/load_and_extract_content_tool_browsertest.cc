@@ -96,15 +96,15 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
  protected:
   struct ExpectedNode {
     optimization_guide::proto::ContentAttributeType type;
-    std::optional<std::string> text = std::nullopt;
+    std::optional<std::string> text;
     std::vector<ExpectedNode> children;
   };
 
   struct ExpectedTabObservation {
     TabObservationResult result;
-    std::optional<std::string> expected_url = std::nullopt;
-    std::optional<std::string> expected_title = std::nullopt;
-    std::optional<ExpectedNode> expected_root_node = std::nullopt;
+    std::optional<std::string> expected_url;
+    std::optional<std::string> expected_title;
+    std::optional<ExpectedNode> expected_root_node;
   };
 
   std::unique_ptr<net::test_server::HttpResponse> HandleStallRequest(

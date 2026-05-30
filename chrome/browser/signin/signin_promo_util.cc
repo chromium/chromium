@@ -244,9 +244,9 @@ struct PromoUsageInfo {
   int shown_count = 0;
   int used_count = 0;
   // Optional as not every promo type supports it.
-  std::optional<base::Time> last_shown_time = std::nullopt;
+  std::optional<base::Time> last_shown_time;
   // Optional as not every promo type supports it.
-  std::optional<base::Time> last_external_event_time = std::nullopt;
+  std::optional<base::Time> last_external_event_time;
 };
 
 PromoUsageInfo GetPromoUsageInfo(

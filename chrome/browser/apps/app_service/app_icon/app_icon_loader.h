@@ -223,7 +223,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
-  std::optional<std::string> app_id_ = std::nullopt;
+  std::optional<std::string> app_id_;
 
   const IconType icon_type_ = IconType::kUnknown;
 

@@ -14,26 +14,24 @@
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 
 struct SenderData {
-  std::optional<base::TimeTicks> discovered_time = std::nullopt;
-  std::optional<base::TimeTicks> endpoint_decoded_time = std::nullopt;
-  std::optional<base::TimeTicks> share_target_selected_time = std::nullopt;
-  std::optional<base::TimeTicks> connection_established_time = std::nullopt;
-  std::optional<base::TimeTicks> introduction_sent_time = std::nullopt;
-  std::optional<base::TimeTicks> send_start_time = std::nullopt;
-  std::optional<base::TimeTicks> bandwidth_upgrade_time = std::nullopt;
-  std::optional<nearby::connections::mojom::Medium> upgraded_medium =
-      std::nullopt;
+  std::optional<base::TimeTicks> discovered_time;
+  std::optional<base::TimeTicks> endpoint_decoded_time;
+  std::optional<base::TimeTicks> share_target_selected_time;
+  std::optional<base::TimeTicks> connection_established_time;
+  std::optional<base::TimeTicks> introduction_sent_time;
+  std::optional<base::TimeTicks> send_start_time;
+  std::optional<base::TimeTicks> bandwidth_upgrade_time;
+  std::optional<nearby::connections::mojom::Medium> upgraded_medium;
 };
 
 struct ReceiverData {
   bool is_high_visibility = false;
-  std::optional<base::TimeTicks> endpoint_decoded_time = std::nullopt;
-  std::optional<base::TimeTicks> paired_key_handshake_time = std::nullopt;
-  std::optional<base::TimeTicks> introduction_received_time = std::nullopt;
-  std::optional<base::TimeTicks> accept_transfer_time = std::nullopt;
-  std::optional<base::TimeTicks> bandwidth_upgrade_time = std::nullopt;
-  std::optional<nearby::connections::mojom::Medium> upgraded_medium =
-      std::nullopt;
+  std::optional<base::TimeTicks> endpoint_decoded_time;
+  std::optional<base::TimeTicks> paired_key_handshake_time;
+  std::optional<base::TimeTicks> introduction_received_time;
+  std::optional<base::TimeTicks> accept_transfer_time;
+  std::optional<base::TimeTicks> bandwidth_upgrade_time;
+  std::optional<nearby::connections::mojom::Medium> upgraded_medium;
 };
 
 class NearbyShareTransferProfiler {

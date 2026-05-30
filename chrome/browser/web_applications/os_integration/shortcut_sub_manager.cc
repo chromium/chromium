@@ -284,7 +284,7 @@ void ShortcutSubManager::UpdateShortcut(
     const std::u16string& old_app_title,
     base::OnceClosure on_complete,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  std::optional<ShortcutLocations> locations = std::nullopt;
+  std::optional<ShortcutLocations> locations;
   if (synchronize_options.has_value()) {
     ShortcutLocations creation_locations;
     creation_locations.on_desktop =

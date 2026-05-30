@@ -314,7 +314,7 @@ struct LoadAndExtractContentTool::PerTabState {
 
   // After invocation for this tab, it should have a kOk result code if all
   // phases succeeded, otherwise it should be the first error encountered.
-  std::optional<PerTabResultCode> result_code = std::nullopt;
+  std::optional<PerTabResultCode> result_code;
 };
 
 LoadAndExtractContentTool::LoadAndExtractContentTool(

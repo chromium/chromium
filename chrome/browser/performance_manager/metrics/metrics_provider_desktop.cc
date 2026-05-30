@@ -524,7 +524,7 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
   base::UmaHistogramBoolean("CPU.Experimental.CpuEstimationTaskMigrated",
                             cpu_throughput->migrated);
 
-  std::optional<double> cpu_frequency_percent = std::nullopt;
+  std::optional<double> cpu_frequency_percent;
   if (!cpu_throughput->migrated) {
     // Don't record frequency metrics if the code migrated from one CPU to
     // another in the middle of the estimation loop. This is because the nominal

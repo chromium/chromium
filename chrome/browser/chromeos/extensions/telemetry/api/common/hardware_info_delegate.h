@@ -39,7 +39,7 @@ class HardwareInfoDelegate {
 
   // Each call to getManufacturer will access healthd and spawn a delegate
   // process. We can store the result in cache to optimize performance.
-  std::optional<std::string> manufacturer_cache_ = std::nullopt;
+  std::optional<std::string> manufacturer_cache_;
 };
 
 }  // namespace chromeos

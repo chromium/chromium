@@ -291,7 +291,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
-  std::optional<IwaSourceWithMode> source = std::nullopt;
+  std::optional<IwaSourceWithMode> source;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* web_contents,
           webapps::WebAppUrlLoader::UrlComparison unused_url_comparison) {
@@ -323,7 +323,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
-  std::optional<IwaSourceWithMode> source = std::nullopt;
+  std::optional<IwaSourceWithMode> source;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* web_contents,
           webapps::WebAppUrlLoader::UrlComparison unused_url_comparison) {

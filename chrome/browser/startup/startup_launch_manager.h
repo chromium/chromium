@@ -60,7 +60,7 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
 
     // Stores whether launch on startup is enabled for the client.
     // Null value implies client is not initialized yet.
-    std::optional<bool> launch_enabled_ = std::nullopt;
+    std::optional<bool> launch_enabled_;
   };
 
   explicit StartupLaunchManager(BrowserProcess* browser_process);

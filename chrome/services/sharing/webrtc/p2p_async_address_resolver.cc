@@ -33,7 +33,7 @@ void P2PAsyncAddressResolver::Start(const webrtc::SocketAddress& host_name,
   state_ = STATE_SENT;
   done_callback_ = std::move(done_callback);
 
-  std::optional<net::AddressFamily> family = std::nullopt;
+  std::optional<net::AddressFamily> family;
   if (address_family.has_value()) {
     family = net::ToAddressFamily(*address_family);
   }

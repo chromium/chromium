@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   ASSERT_TRUE(password_button_id);
 
   // Intentionally do not identify the provider button.
-  std::optional<int> provider_button_id = std::nullopt;
+  std::optional<int> provider_button_id;
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequestByNodeIds(
       *active_tab(), password_button_id, provider_button_id);

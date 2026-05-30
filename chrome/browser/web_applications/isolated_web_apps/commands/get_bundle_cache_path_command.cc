@@ -75,8 +75,8 @@ GetBundleCachePathResult GetBundleCachePathImpl(
   base::FileEnumerator bundle_files_iter(bundle_dir, /*recursive=*/true,
                                          base::FileEnumerator::FILES);
 
-  std::optional<base::FilePath> newest_version_path = std::nullopt;
-  std::optional<IwaVersion> newest_version = std::nullopt;
+  std::optional<base::FilePath> newest_version_path;
+  std::optional<IwaVersion> newest_version;
   bundle_files_iter.ForEach([&newest_version_path, &newest_version](
                                 const base::FilePath& current_path) {
     std::optional<IwaVersion> current_version =

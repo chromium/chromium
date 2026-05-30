@@ -524,7 +524,7 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
 
   // Only use the fallback information if the installation is for a path that
   // doesn't enforce a crafted manifest.
-  std::optional<WebAppInstallInfo> fallback_info = std::nullopt;
+  std::optional<WebAppInstallInfo> fallback_info;
   if (web_app_info_ &&
       fallback_behavior_ != FallbackBehavior::kCraftedManifestOnly) {
     fallback_info = web_app_info_->Clone();

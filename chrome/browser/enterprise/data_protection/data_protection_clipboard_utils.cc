@@ -762,7 +762,7 @@ void PasteIfAllowedByPolicy(
       pasted_content = clipboard_paste_data.file_paths;
     }
 
-    std::optional<ui::DataTransferEndpoint> destination_endpoint = std::nullopt;
+    std::optional<ui::DataTransferEndpoint> destination_endpoint;
     if (destination.browser_context() &&
         !destination.browser_context()->IsOffTheRecord()) {
       destination_endpoint = destination.data_transfer_endpoint();

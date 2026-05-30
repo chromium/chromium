@@ -240,7 +240,7 @@ class SearchEnginePreconnector
   base::ClampedNumeric<int32_t> consecutive_connection_failure_ = 0;
 
   // Used for testing. Override the short session value.
-  std::optional<bool> is_short_session_for_testing_ = std::nullopt;
+  std::optional<bool> is_short_session_for_testing_;
 
   base::WeakPtrFactory<SearchEnginePreconnector> weak_factory_{this};
 };

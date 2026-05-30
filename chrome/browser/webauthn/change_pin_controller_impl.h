@@ -114,7 +114,7 @@ class ChangePinControllerImpl
   SuccessCallback notify_pin_change_callback_;
   // EnclaveManager is a KeyedService.
   raw_ptr<EnclaveManager> enclave_manager_ = nullptr;
-  std::optional<std::string> rapt_ = std::nullopt;
+  std::optional<std::string> rapt_;
 
   base::ScopedObservation<AuthenticatorRequestDialogModel,
                           AuthenticatorRequestDialogModel::Observer>

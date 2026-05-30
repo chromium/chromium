@@ -7892,7 +7892,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     int id;
     int priority;
     std::string type;
-    std::optional<std::string> redirect_url = std::nullopt;
+    std::optional<std::string> redirect_url;
     std::optional<std::vector<TestHeaderCondition>>
         excluded_response_header_condition = std::nullopt;
   } rules_data[] = {
@@ -8044,7 +8044,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
     std::string action_type;
     std::string filter;
     bool is_regex_rule = false;
-    std::optional<std::vector<std::string>> resource_types = std::nullopt;
+    std::optional<std::vector<std::string>> resource_types;
     std::optional<std::vector<TestHeaderCondition>>
         excluded_response_header_condition = std::nullopt;
   } rule_data[] = {
@@ -8237,10 +8237,9 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     int priority;
     std::string action_type;
     std::string filter;
-    std::optional<std::vector<TestHeaderCondition>> header_condition =
-        std::nullopt;
-    std::optional<std::vector<TestHeaderInfo>> request_headers = std::nullopt;
-    std::optional<std::vector<TestHeaderInfo>> response_headers = std::nullopt;
+    std::optional<std::vector<TestHeaderCondition>> header_condition;
+    std::optional<std::vector<TestHeaderInfo>> request_headers;
+    std::optional<std::vector<TestHeaderInfo>> response_headers;
   } rule_data[] = {
       // Used for all sub-tests. Allows all main-frame requests at the
       // onHeadersReceived stage.

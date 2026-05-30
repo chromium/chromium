@@ -151,7 +151,7 @@ class FakeWifiDirectManager
 
   std::string expected_ssid_ = "";
   std::string expected_password_ = "";
-  std::optional<uint32_t> expected_frequency_ = std::nullopt;
+  std::optional<uint32_t> expected_frequency_;
   std::unique_ptr<FakeWifiDirectConnection> connection_;
   bool is_interface_valid_ = true;
 };

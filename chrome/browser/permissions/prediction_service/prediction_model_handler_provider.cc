@@ -106,7 +106,7 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     scheduling_params.network_requirements =
         download::SchedulingParams::NetworkRequirements::UNMETERED;
 #else
-    std::optional<download::SchedulingParams> scheduling_params = std::nullopt;
+    std::optional<download::SchedulingParams> scheduling_params;
 #endif
     notification_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
         optimization_guide, getNotificationsAiv4OptTarget(),

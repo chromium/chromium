@@ -357,7 +357,7 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 
   actor::mojom::ActionResultCode result_code =
       actor::mojom::ActionResultCode::kOk;
-  std::optional<size_t> index_of_failed_action = std::nullopt;
+  std::optional<size_t> index_of_failed_action;
   for (size_t i = 0; i < action_results.size(); ++i) {
     if (!actor::IsOk(action_results[i].result->code)) {
       result_code = action_results[i].result->code;

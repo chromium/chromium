@@ -135,7 +135,7 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
       StatusCode code =
           wrapped_socket_->ReceiveNextMessage(&received_message, timeout);
 
-      std::optional<base::Value> maybe_value = std::nullopt;
+      std::optional<base::Value> maybe_value;
       if (code == StatusCode::kOk && interception_started_ &&
           !detach_is_detected_) {
         maybe_value = base::JSONReader::Read(

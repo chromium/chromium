@@ -215,7 +215,7 @@ struct ExternalInstallOptions {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The type of SystemWebApp, if this app is a System Web App.
-  std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
+  std::optional<ash::SystemWebAppType> system_app_type;
 #endif
 
   // Whether the app was installed by an OEM and should be placed in a special

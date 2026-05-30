@@ -41,7 +41,7 @@ class OsIntegrationSynchronizeCommand : public WebAppCommand<AppLock> {
   std::unique_ptr<AppLock> app_lock_;
 
   webapps::AppId app_id_;
-  std::optional<SynchronizeOsOptions> synchronize_options_ = std::nullopt;
+  std::optional<SynchronizeOsOptions> synchronize_options_;
   bool upgrade_to_fully_installed_if_installed_;
 
   base::WeakPtrFactory<OsIntegrationSynchronizeCommand> weak_factory_{this};

@@ -260,7 +260,7 @@ ComposeboxQueryControllerBridge::AddFile(
     const jni_zero::JavaRef<jobject>& file_data) {
   base::UnguessableToken file_token = session_handle_->CreateContextToken();
 
-  std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
+  std::optional<lens::ImageEncodingOptions> image_options;
   if (file_type.find("image") != std::string::npos) {
     image_options = lens::ImageEncodingOptions{.enable_webp_encoding = false,
                                                .max_size = 1500000,

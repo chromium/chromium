@@ -32,7 +32,7 @@ class ComputedAppSizeWithOrigin {
  private:
   uint64_t app_size_in_bytes_ = 0;
   uint64_t data_size_in_bytes_ = 0;
-  std::optional<url::Origin> origin_ = std::nullopt;
+  std::optional<url::Origin> origin_;
 };
 
 }  // namespace web_app

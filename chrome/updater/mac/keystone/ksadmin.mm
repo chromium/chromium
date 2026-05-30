@@ -468,7 +468,7 @@ void KSAdminApp::ChooseService(
   //
   // If ksadmin is running as `root` and deduces the user updater, this logs
   // an error and shuts the process down with exit code 1.
-  std::optional<UpdaterScope> scope = std::nullopt;
+  std::optional<UpdaterScope> scope;
   if (HasSwitch(kCommandSystemStore)) {
     scope = std::make_optional(UpdaterScope::kSystem);
   } else if (HasSwitch(kCommandUserStore)) {

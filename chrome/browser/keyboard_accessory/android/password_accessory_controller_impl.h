@@ -276,7 +276,7 @@ class PasswordAccessoryControllerImpl
   // focus is lost, this data needs to be reset to std::nullopt to make sure
   // that data related to a former frame isn't displayed incorrectly in a
   // different one.
-  std::optional<LastFocusInfo> last_focus_info_ = std::nullopt;
+  std::optional<LastFocusInfo> last_focus_info_;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;

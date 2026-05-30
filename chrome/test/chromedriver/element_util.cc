@@ -107,7 +107,7 @@ Status VerifyElementClickable(const Session* session,
       frame, web_view, webdriver::atoms::IS_ELEMENT_CLICKABLE, args, &result);
   if (status.IsError())
     return status;
-  std::optional<bool> is_clickable = std::nullopt;
+  std::optional<bool> is_clickable;
   if (result->is_dict())
     is_clickable = result->GetDict().FindBool("clickable");
   if (!is_clickable.has_value()) {

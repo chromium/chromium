@@ -159,7 +159,7 @@ class DownloadBubbleUIController {
   raw_ptr<DownloadDisplayController, AcrossTasksDanglingUntriaged>
       display_controller_;
 
-  std::optional<base::Time> last_partial_view_shown_time_ = std::nullopt;
+  std::optional<base::Time> last_partial_view_shown_time_;
 
   // Tracks whether the last time we provided models was for a partial view
   // (true) or a main view (false). This is an approximation for whether the

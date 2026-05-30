@@ -211,7 +211,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static const char kKey[];
 
   base::Time warning_first_shown_time_;
-  std::optional<WarningSurface> warning_first_shown_surface_ = std::nullopt;
+  std::optional<WarningSurface> warning_first_shown_surface_;
   std::vector<WarningActionEvent> action_events_;
   bool is_top_level_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;

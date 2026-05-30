@@ -66,7 +66,7 @@ JNI_CollaborationControllerDelegateImpl_RunResultWithGroupTokenCallback(
   CollaborationControllerDelegate::Outcome outcome =
       static_cast<CollaborationControllerDelegate::Outcome>(joutcome);
 
-  std::optional<data_sharing::GroupToken> token = std::nullopt;
+  std::optional<data_sharing::GroupToken> token;
   if (outcome == CollaborationControllerDelegate::Outcome::kSuccess) {
     token = data_sharing::GroupToken(
         data_sharing::GroupId(ConvertJavaStringToUTF8(env, group_id)),

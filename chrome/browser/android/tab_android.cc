@@ -935,7 +935,7 @@ TabAndroid::TabAndroid(Profile* profile, int tab_id)
 
 void TabAndroid::UpdateProperties() {
   bool pinned = false;
-  std::optional<tab_groups::TabGroupId> tab_group_id = std::nullopt;
+  std::optional<tab_groups::TabGroupId> tab_group_id;
 
   tabs::TabCollection* ancestor = parent_collection_;
   while (ancestor) {

@@ -73,7 +73,7 @@ ExceptionOr<ByteArray> SocketInputStream::Read(std::int64_t size) {
   base::WaitableEvent waitable_event;
   auto response_buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
   int bytes_read = 0;
-  std::optional<Exception> exception = std::nullopt;
+  std::optional<Exception> exception;
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SocketInputStream::ReadFromSocket,
                                 base::Unretained(this), &response_buffer, size,

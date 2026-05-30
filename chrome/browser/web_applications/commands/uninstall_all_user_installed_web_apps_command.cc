@@ -30,7 +30,7 @@ std::string TypesToString(const WebAppManagementTypes& types) {
 }
 std::optional<std::string> ConstructErrorMessage(
     const std::vector<std::string>& errors) {
-  std::optional<std::string> error_message = std::nullopt;
+  std::optional<std::string> error_message;
   if (!errors.empty()) {
     error_message = base::JoinString(errors, "\n");
   }

@@ -213,7 +213,7 @@ std::string ConnectorsService::GetManagementDomain() {
     return std::string();
   }
 
-  std::optional<policy::PolicyScope> scope = std::nullopt;
+  std::optional<policy::PolicyScope> scope;
   for (const char* scope_pref :
        {enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         AnalysisConnectorScopePref(AnalysisConnector::FILE_ATTACHED),

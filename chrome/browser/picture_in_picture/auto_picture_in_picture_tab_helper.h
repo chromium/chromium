@@ -482,11 +482,11 @@ class AutoPictureInPictureTabHelper
 #if BUILDFLAG(IS_ANDROID)
   // If set, this value overrides the result of the real MediaEngagementService
   // check. Intended for Android JNI tests only.
-  std::optional<bool> has_high_engagement_for_testing_ = std::nullopt;
+  std::optional<bool> has_high_engagement_for_testing_;
 
   // If set, this value overrides the result of the real IsCapturingUserMedia
   // check. Intended for Android JNI tests only.
-  std::optional<bool> is_using_camera_or_microphone_for_testing_ = std::nullopt;
+  std::optional<bool> is_using_camera_or_microphone_for_testing_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory

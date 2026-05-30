@@ -484,7 +484,7 @@ QuickStartDecoder::DecodeWifiCredentials(
   mojom::WifiSecurityType security_type = maybe_security_type.value();
 
   // Password may not be included in payload for passwordless, open networks.
-  std::optional<std::string> password = std::nullopt;
+  std::optional<std::string> password;
   const std::string* password_ptr =
       wifi_network_information.FindString(kWifiNetworkPasswordKey);
 

@@ -188,7 +188,7 @@ class StubResolverConfigReader {
 #if BUILDFLAG(IS_ANDROID)
   // Whether or not an Android device or profile is owned.
   // A nullopt indicates this value has not been determined yet.
-  std::optional<bool> android_has_owner_ = std::nullopt;
+  std::optional<bool> android_has_owner_;
 #endif
 
 #if BUILDFLAG(IS_WIN)

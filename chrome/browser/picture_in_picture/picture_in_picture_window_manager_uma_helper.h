@@ -32,7 +32,7 @@ class PictureInPictureWindowManagerUmaHelper {
   void SetClockForTest(const base::TickClock* testing_clock);
 
  private:
-  std::optional<base::TimeTicks> current_enter_pip_time_ = std::nullopt;
+  std::optional<base::TimeTicks> current_enter_pip_time_;
   raw_ptr<const base::TickClock> clock_ = nullptr;
 };
 

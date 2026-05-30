@@ -84,8 +84,8 @@ class FromGWSNavigationAndKeepAliveRequestTracker : public KeyedService {
   // Represents a navigation and a keepalive request made from the same page.
   // Note that both of them must have the same category ID in their URLs.
   struct NavigationAndKeepAliveRequest {
-    std::optional<int64_t> navigation_id = std::nullopt;
-    std::optional<base::UnguessableToken> keepalive_token = std::nullopt;
+    std::optional<int64_t> navigation_id;
+    std::optional<base::UnguessableToken> keepalive_token;
   };
 
   void LogUkmEvent(const FrameCategory& frame_category,

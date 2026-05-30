@@ -113,7 +113,7 @@ class ActorContainerConfig {
   // If `rules_` is not set, i.e. is `nullopt`, then the ActorContainerConfig is
   // "empty" and it should not gate any type of behavior. When it is set to a
   // non-null value, only actions allowed by the resulting Rules are allowed.
-  std::optional<base::flat_map<Location, Rule>> rules_ = std::nullopt;
+  std::optional<base::flat_map<Location, Rule>> rules_;
 };
 
 }  // namespace actor

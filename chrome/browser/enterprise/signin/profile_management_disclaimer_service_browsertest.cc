@@ -56,7 +56,7 @@ enum class ManagedProfileCreationResult {
 struct ManagementDisclaimerTestParam {
   std::string test_name;
   // Preconditions:
-  std::optional<signin::SigninChoice> user_choice = std::nullopt;
+  std::optional<signin::SigninChoice> user_choice;
   policy::ProfileSeparationPolicies policies;
   bool is_managed;
 

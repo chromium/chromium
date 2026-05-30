@@ -141,7 +141,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
-  std::optional<SyncingAccount> account = std::nullopt;
+  std::optional<SyncingAccount> account;
   if (is_password_sync_enabled_) {
     account = SyncingAccount(sync_service_->GetAccountInfo().email);
   }
@@ -154,7 +154,7 @@ void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
 void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
   pref_service_->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
                             false);
-  std::optional<SyncingAccount> account = std::nullopt;
+  std::optional<SyncingAccount> account;
   if (is_password_sync_enabled_) {
     account = SyncingAccount(sync_service_->GetAccountInfo().email);
   }

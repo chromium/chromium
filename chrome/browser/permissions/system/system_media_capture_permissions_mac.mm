@@ -24,7 +24,7 @@ namespace system_permission_settings {
 
 namespace {
 
-std::optional<bool> g_is_screen_capture_allowed_for_testing = std::nullopt;
+std::optional<bool> g_is_screen_capture_allowed_for_testing;
 
 bool UsingFakeMediaDevices() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

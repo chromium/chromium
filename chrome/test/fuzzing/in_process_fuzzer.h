@@ -28,7 +28,7 @@ struct InProcessFuzzerOptions {
       RunLoopTimeoutBehavior::kDefault;
 
   // Sets the timeout for the "Fuzz" method to complete.
-  std::optional<base::TimeDelta> run_loop_timeout = std::nullopt;
+  std::optional<base::TimeDelta> run_loop_timeout;
 };
 
 // In-process fuzz test.

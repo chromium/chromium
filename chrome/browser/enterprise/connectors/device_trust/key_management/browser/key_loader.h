@@ -46,7 +46,7 @@ class KeyLoader {
     DTCLoadKeyResult& operator=(DTCLoadKeyResult&&);
 
     // HTTP response code from the key upload request.
-    std::optional<int> status_code = std::nullopt;
+    std::optional<int> status_code;
 
     // Loaded signing key pair.
     scoped_refptr<SigningKeyPair> key_pair = nullptr;

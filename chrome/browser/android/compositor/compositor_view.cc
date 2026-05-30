@@ -210,7 +210,7 @@ std::optional<int> CompositorView::SurfaceChanged(
     return std::nullopt;
   }
 
-  std::optional<int> surface_handle = std::nullopt;
+  std::optional<int> surface_handle;
   DCHECK(surface);
   if (current_surface_format_ != format) {
     current_surface_format_ = format;

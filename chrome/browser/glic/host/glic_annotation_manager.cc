@@ -162,8 +162,8 @@ void GlicAnnotationManager::ScrollTo(
       base::BindOnce(&RunScrollToCallback, std::move(callback));
   mojom::ScrollToSelector* selector = params->selector.get();
   std::optional<shared_highlighting::TextFragment> text_fragment;
-  std::optional<int> search_range_start_node_id = std::nullopt;
-  std::optional<int> node_id = std::nullopt;
+  std::optional<int> search_range_start_node_id;
+  std::optional<int> node_id;
 
   if (selector->is_exact_text_selector()) {
     auto* exact_text_selector = selector->get_exact_text_selector().get();

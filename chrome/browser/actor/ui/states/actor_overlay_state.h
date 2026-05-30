@@ -26,7 +26,7 @@ struct ActorOverlayState {
   // represented as a union.
   bool mouse_down = false;
   // The target at which the magic mouse should be over.
-  std::optional<gfx::Point> mouse_target = std::nullopt;
+  std::optional<gfx::Point> mouse_target;
 
   bool operator==(const ActorOverlayState& other) const = default;
 };

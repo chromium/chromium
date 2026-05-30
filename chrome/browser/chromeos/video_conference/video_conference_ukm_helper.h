@@ -72,9 +72,9 @@ class VideoConferenceUkmHelper {
   uint64_t microphone_capture_duration_ = 0;
   uint64_t screen_capture_duration_ = 0;
 
-  std::optional<base::Time> prev_camera_capture_time_ = std::nullopt;
-  std::optional<base::Time> prev_microphone_capture_time_ = std::nullopt;
-  std::optional<base::Time> prev_screen_capture_time_ = std::nullopt;
+  std::optional<base::Time> prev_camera_capture_time_;
+  std::optional<base::Time> prev_microphone_capture_time_;
+  std::optional<base::Time> prev_screen_capture_time_;
 };
 
 }  // namespace video_conference

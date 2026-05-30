@@ -61,11 +61,11 @@ struct WebAppIdentityUpdate {
   // If the `new_*` fields are std::nullopt, then they are considered to be the
   // same as the `old_*` fields.
   std::u16string old_title;
-  std::optional<std::u16string> new_title = std::nullopt;
+  std::optional<std::u16string> new_title;
   gfx::Image old_icon;
-  std::optional<gfx::Image> new_icon = std::nullopt;
+  std::optional<gfx::Image> new_icon;
   GURL old_start_url;
-  std::optional<GURL> new_start_url = std::nullopt;
+  std::optional<GURL> new_start_url;
 
   // To be used for forced app migrations to ensure that the user cannot ignore
   // this update. If this is true, `new_start_url` NEEDS to be set and be

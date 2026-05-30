@@ -64,7 +64,7 @@ class FakeWebContentsManager : public WebContentsManager {
     // redirection is allowed by the `LoadUrlComparison`, then `url_load_result`
     // will be given as the result. Otherwise,`kRedirectedUrlLoaded` is
     // returned.
-    std::optional<GURL> redirection_url = std::nullopt;
+    std::optional<GURL> redirection_url;
     webapps::WebAppUrlLoaderResult url_load_result =
         webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 

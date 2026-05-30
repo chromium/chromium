@@ -857,8 +857,8 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
   }
 
   // TODO(crbug.com/462283904): Obtain canonical model input format parameters.
-  std::optional<int> audio_sample_rate_hz = std::nullopt;
-  std::optional<int> audio_channel_count = std::nullopt;
+  std::optional<int> audio_sample_rate_hz;
+  std::optional<int> audio_channel_count;
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelLitertLmBackend)) {
     audio_sample_rate_hz = 16000;

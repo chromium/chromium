@@ -79,7 +79,7 @@ struct WebAppInstallParams {
   bool force_reinstall = false;
 
   // See `WebAppInstallTask::ApplyParamsToWebAppInstallInfo`
-  std::optional<mojom::UserDisplayMode> user_display_mode = std::nullopt;
+  std::optional<mojom::UserDisplayMode> user_display_mode;
 
   // URL to be used as start_url if manifest is unavailable.
   GURL fallback_start_url;

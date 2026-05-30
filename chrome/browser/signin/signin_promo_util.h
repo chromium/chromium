@@ -93,7 +93,7 @@ struct ProfileMenuAvatarButtonPromoInfo {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ProfileMenuAvatarButtonPromoType)
 
-  std::optional<Type> type = std::nullopt;
+  std::optional<Type> type;
   size_t local_data_count = 0;
 
   friend bool operator==(const ProfileMenuAvatarButtonPromoInfo& info1,

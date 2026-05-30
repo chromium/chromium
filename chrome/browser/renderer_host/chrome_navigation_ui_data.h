@@ -121,7 +121,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   bool force_no_https_upgrade_ = false;
 
   // Id of the bookmark which started this navigation.
-  std::optional<int64_t> bookmark_id_ = std::nullopt;
+  std::optional<int64_t> bookmark_id_;
 
   // True if the navigation was initiated in response to a sync message. This is
   // used in tab group sync to identify the sync initiated navigations and

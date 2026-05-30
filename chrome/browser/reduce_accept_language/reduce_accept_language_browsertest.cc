@@ -51,12 +51,12 @@ using ::net::test_server::EmbeddedTestServer;
 enum class FeatureEnableType { FeatureFlagEnable, OriginTrialEnable };
 
 struct ReduceAcceptLanguageTestOptions {
-  std::optional<std::string> content_language_in_parent = std::nullopt;
-  std::optional<std::string> avail_language_in_parent = std::nullopt;
-  std::optional<std::string> vary_in_parent = std::nullopt;
-  std::optional<std::string> content_language_in_child = std::nullopt;
-  std::optional<std::string> avail_language_in_child = std::nullopt;
-  std::optional<std::string> vary_in_child = std::nullopt;
+  std::optional<std::string> content_language_in_parent;
+  std::optional<std::string> avail_language_in_parent;
+  std::optional<std::string> vary_in_parent;
+  std::optional<std::string> content_language_in_child;
+  std::optional<std::string> avail_language_in_child;
+  std::optional<std::string> vary_in_child;
   bool is_fenced_frame = false;
   bool is_critical_origin_trial = false;
 };

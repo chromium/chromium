@@ -189,7 +189,7 @@ void CastActivityManager::LaunchSessionParsed(
   // We either have a value, or an error, however `LaunchSession` calls this
   // function is a default constructed `result`, which is supposed to be
   // ignored.
-  std::optional<base::Value> opt_result = std::nullopt;
+  std::optional<base::Value> opt_result;
   if (result.has_value() && !result->is_none()) {
     opt_result = std::move(*result);
   }
@@ -467,7 +467,7 @@ void CastActivityManager::TerminateSession(
   CHECK(sink);
 
   // TODO(crbug.com/1291748): Get the real client ID.
-  std::optional<std::string> client_id = std::nullopt;
+  std::optional<std::string> client_id;
 
   activity->SendStopSessionMessageToClients(hash_token_);
   message_handler_->StopSession(

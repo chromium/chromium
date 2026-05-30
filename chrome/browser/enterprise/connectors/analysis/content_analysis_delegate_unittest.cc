@@ -623,7 +623,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // DLP response to ovewrite in the callback if present.
-  std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
+  std::optional<ContentAnalysisResponse> dlp_response_;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // This installs a fake SDK manager that creates fake SDK clients when

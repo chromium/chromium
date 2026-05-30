@@ -272,8 +272,8 @@ ChromeDlpRulesManager::GetMaxJoinRestrictionLevelAndRuleId(
   const std::map<RuleId, Level>& restriction_rules = restriction_it->second;
 
   Level max_level = Level::kNotSet;
-  std::optional<T> url_condition = std::nullopt;
-  std::optional<RuleId> matched_rule_id = std::nullopt;
+  std::optional<T> url_condition;
+  std::optional<RuleId> matched_rule_id;
 
   for (const auto& rule_pair : selected_rules) {
     const auto& restriction_rule_itr = restriction_rules.find(rule_pair.first);

@@ -41,7 +41,7 @@ class BluetoothDevice : public api::BluetoothDevice {
 
   // Time when last the Bluetooth device was added/changed by the adapter.
   // Used by BluetoothClassicMedium to remove stale devices during discovery.
-  std::optional<base::TimeTicks> last_discovered_time_ = std::nullopt;
+  std::optional<base::TimeTicks> last_discovered_time_;
 };
 
 }  // namespace nearby::chrome

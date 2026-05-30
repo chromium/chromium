@@ -466,7 +466,7 @@ void DeleteMediaFoundationCdmData(
       continue;
 
     DVLOG(2) << __func__ << ": Processing: " << file_path;
-    std::optional<url::Origin> origin = std::nullopt;
+    std::optional<url::Origin> origin;
     if (auto it = origin_id_mapping.find(origin_id_string);
         it != origin_id_mapping.end()) {
       origin = it->second;

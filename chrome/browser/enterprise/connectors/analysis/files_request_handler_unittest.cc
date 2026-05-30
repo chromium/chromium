@@ -436,7 +436,7 @@ class FilesRequestHandlerTest : public BaseTest {
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // DLP response to ovewrite in the callback if present.
-  std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
+  std::optional<ContentAnalysisResponse> dlp_response_;
 
   // To verify user action requests count in local content analysis request is
   // set correctly.

@@ -1134,7 +1134,7 @@ void WebAppPublisherHelper::LaunchAppWithParams(
       params.intent);
 
   bool is_system_web_app = false;
-  std::optional<GURL> override_url = std::nullopt;
+  std::optional<GURL> override_url;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Terminal SWA has custom launch code and manages its own restore data.
@@ -1606,7 +1606,7 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
-  std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
+  std::optional<ash::SystemWebAppType> system_app_type;
   auto* swa_manager = ash::SystemWebAppManager::Get(profile());
   if (swa_manager) {
     system_app_type = swa_manager->GetSystemAppTypeForAppId(app->app_id);
@@ -1866,7 +1866,7 @@ apps::PackageId WebAppPublisherHelper::GetPackageId(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
-  std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
+  std::optional<ash::SystemWebAppType> system_app_type;
   auto* swa_manager = ash::SystemWebAppManager::Get(profile());
   if (swa_manager) {
     system_app_type = swa_manager->GetSystemAppTypeForAppId(app.app_id);

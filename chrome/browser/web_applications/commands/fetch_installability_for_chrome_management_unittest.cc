@@ -65,7 +65,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
 
   struct FetchResult {
     InstallableCheckResult result = InstallableCheckResult::kInstallable;
-    std::optional<webapps::AppId> app_id = std::nullopt;
+    std::optional<webapps::AppId> app_id;
   };
 
   FetchResult ScheduleCommandAndWait(

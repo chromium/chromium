@@ -69,8 +69,8 @@ struct AttestationResponse {
 // a device identity attestation request.
 struct DeviceTrustResponse {
   std::string challenge_response{};
-  std::optional<DeviceTrustError> error = std::nullopt;
-  std::optional<DTAttestationResult> attestation_result = std::nullopt;
+  std::optional<DeviceTrustError> error;
+  std::optional<DTAttestationResult> attestation_result;
 };
 
 }  // namespace enterprise_connectors

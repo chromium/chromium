@@ -27,7 +27,7 @@ bool g_disabled_for_testing = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
-  std::optional<memory_pressure::ReclaimTarget> reclaim_target = std::nullopt;
+  std::optional<memory_pressure::ReclaimTarget> reclaim_target;
   auto* evaluator = ash::memory::SystemMemoryPressureEvaluator::Get();
   if (evaluator) {
     reclaim_target = evaluator->GetCachedReclaimTarget();
@@ -88,7 +88,7 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
     base::TimeTicks on_memory_pressure_at,
     std::optional<memory_pressure::ReclaimTarget> reclaim_target) {
   bool discard_protected_pages = true;
-  std::optional<base::TimeTicks> origin_time = std::nullopt;
+  std::optional<base::TimeTicks> origin_time;
   if (reclaim_target) {
     discard_protected_pages = reclaim_target->discard_protected;
     origin_time = reclaim_target->origin_time;

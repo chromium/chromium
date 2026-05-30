@@ -50,7 +50,7 @@ namespace {
 #if BUILDFLAG(IS_FUZZILLI)
 // Fuzzilli handles timeouts by itself so that it detects when there are
 // infinite loops.
-constexpr std::optional<base::TimeDelta> kJsExecutionTimeout = std::nullopt;
+constexpr std::optional<base::TimeDelta> kJsExecutionTimeout;
 constexpr RunLoopTimeoutBehavior kJsRunLoopTimeoutBehavior =
     RunLoopTimeoutBehavior::kDefault;
 #else

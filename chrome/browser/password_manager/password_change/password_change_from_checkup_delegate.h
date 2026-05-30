@@ -91,7 +91,7 @@ class PasswordChangeFromCheckupDelegate {
   std::unique_ptr<ChangePasswordFormFiller> form_filler_;
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
-  std::optional<actor::ActorTask::State> find_form_task_state_ = std::nullopt;
+  std::optional<actor::ActorTask::State> find_form_task_state_;
 
   std::optional<actor::TaskId> verification_task_id_;
   std::optional<actor::TaskId> dummy_task_id_;

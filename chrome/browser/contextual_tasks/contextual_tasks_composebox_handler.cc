@@ -351,7 +351,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   CloseLensOverlay(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
 #else
-  std::optional<base::UnguessableToken> overlay_token = std::nullopt;
+  std::optional<base::UnguessableToken> overlay_token;
   bool has_visual_selection = false;
 #endif
   std::optional<base::Uuid> task_id = web_ui_interface_->GetTaskId();

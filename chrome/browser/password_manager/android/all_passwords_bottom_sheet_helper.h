@@ -50,7 +50,7 @@ class AllPasswordsBottomSheetHelper
   base::OnceClosure update_callback_;
 
   // Stores whether the store returned credentials the sheet can show.
-  std::optional<size_t> available_credentials_ = std::nullopt;
+  std::optional<size_t> available_credentials_;
 
   // Records the last focused field type to infer whether an update should be
   // triggered if the store returns suggestions.

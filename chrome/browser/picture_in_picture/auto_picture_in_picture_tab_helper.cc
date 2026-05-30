@@ -180,7 +180,7 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
   current_enter_pip_time_ = std::nullopt;
 
   // Calculate total playback time for the duration of the pip window.
-  std::optional<base::TimeDelta> total_playback_time = std::nullopt;
+  std::optional<base::TimeDelta> total_playback_time;
   if (current_pip_playback_time_) {
     // Start with the existing recorded PiP playback time.
     total_playback_time = current_pip_playback_time_.value();

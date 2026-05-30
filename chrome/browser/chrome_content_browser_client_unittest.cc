@@ -377,7 +377,7 @@ TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams) {
   ui::PageTransition transition;
   bool is_renderer_initiated;
   content::Referrer referrer = content::Referrer();
-  std::optional<url::Origin> initiator_origin = std::nullopt;
+  std::optional<url::Origin> initiator_origin;
 
   GURL remote_ntp_url("chrome-search://remote-ntp");
   transition = ui::PAGE_TRANSITION_LINK;
