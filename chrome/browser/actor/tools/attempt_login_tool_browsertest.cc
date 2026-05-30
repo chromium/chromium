@@ -831,6 +831,12 @@ class ActorAttemptLoginToolTestWithFaviconService
 
   void SetUpOnMainThread() override {
     ActorAttemptLoginToolTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      return;
+    }
+#endif
     ON_CALL(mock_execution_engine(), GetFaviconService())
         .WillByDefault(Return(&mock_favicon_service_));
 

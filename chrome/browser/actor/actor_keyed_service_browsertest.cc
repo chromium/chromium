@@ -87,6 +87,13 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/517619366): Decouple test from Glic eligibility criteria.
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Actor requires Android S+ to run";
+    }
+#endif
     PlatformBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -282,14 +289,6 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        RequestTabObservationSkipAsyncObservationInformation) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/517619366): Decouple test from Glic eligibility criteria.
-  if (base::android::android_info::sdk_int() <
-      base::android::android_info::SDK_VERSION_S) {
-    GTEST_SKIP() << "Actor requires Android S+ to run";
-  }
-#endif
-
   TaskId task_id = actor_keyed_service()->CreateTask(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   // Navigate the active tab to a new page.
