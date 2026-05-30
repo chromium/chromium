@@ -369,7 +369,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1239841552505950173">Inicia l'aplicació</translation>
 <translation id="1241066500170667906">Selecciona l'estat de l'experiment per a <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Més idiomes</translation>
-<translation id="1241968867980182121">Tanca la visualització superior</translation>
+<translation id="1241968867980182121">Tanca la vista superior</translation>
 <translation id="1242044645101871359">Torna a iniciar la sessió</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> vol restablir la vostra configuració.</translation>
 <translation id="1243002225871118300">Canvia la mida de la pantalla i del text</translation>
@@ -6556,7 +6556,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5532223876348815659">General</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vol</translation>
 <translation id="5533343601674003130">Servei de PDF</translation>
-<translation id="5535769176698670170">Canvia per la visualització superior</translation>
+<translation id="5535769176698670170">Canvia per la vista superior</translation>
 <translation id="5537725057119320332">Emet</translation>
 <translation id="5539070192556911367">No es pot accedir a Google</translation>
 <translation id="5541091577812545428">La contrasenya no s'ha canviat</translation>
@@ -10117,7 +10117,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8033827949643255796">seleccionats</translation>
 <translation id="8033958968890501070">Temps d'espera esgotat</translation>
 <translation id="8034399942062051455">L'optimització de V8 està desactivada</translation>
-<translation id="8034697324150621782">Canvia per la visualització superior</translation>
+<translation id="8034697324150621782">Canvia per la vista superior</translation>
 <translation id="8035059678007243127">Pàgina d'incògnit desada a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Mostra el botó Grups de pestanyes desats</translation>
 <translation id="8036193484521570992">Ajuda a millorar la funció Emplenament automàtic</translation>
@@ -10810,7 +10810,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8515580632187889788">En continuar, permets que els tercers verifiquin la informació que identifica aquest dispositiu a la xarxa. Si no vols permetre que els tercers accedeixin a la informació del dispositiu, pots configurar un perfil d'eSIM <ph name="BEGIN_LINK" />manualment<ph name="END_LINK" />.</translation>
 <translation id="8516472100141530292">Fes clic amb el botó dret al grup</translation>
 <translation id="8517759303731677493">Edita…</translation>
-<translation id="8518809011298357036">Tanca la visualització superior</translation>
+<translation id="8518809011298357036">Tanca la vista superior</translation>
 <translation id="8518942514525208851">Amaga el llenguatge obscè</translation>
 <translation id="8520238089740349550">Error: s'ha bloquejat la baixada local</translation>
 <translation id="8520408093016204772">Emmagatzema les teves contrasenyes, adreces d'interès i configuració</translation>
