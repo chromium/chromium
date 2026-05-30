@@ -1675,6 +1675,28 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="Visibility"/>
 </histogram>
 
+<histogram name="Glic.InvokeResult" enum="GlicInvokeResult"
+    expires_after="2027-06-01">
+  <owner>vollick@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the result of a Glic invocation (success or specific error).
+    Recorded when the invocation completes successfully or fails.
+  </summary>
+</histogram>
+
+<histogram name="Glic.InvokeResult.{InvocationSource}" enum="GlicInvokeResult"
+    expires_after="2027-06-01">
+  <owner>vollick@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the result of a Glic invocation (success or specific error) sliced
+    by the invocation source. Recorded when the invocation completes
+    successfully or fails.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
 <histogram name="Glic.LocaleFilteringResult" enum="GlicFilteringResult"
     expires_after="2026-08-01">
   <owner>harringtond@chromium.org</owner>

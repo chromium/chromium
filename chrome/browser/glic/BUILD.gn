@@ -252,6 +252,8 @@ source_set("glic_metrics") {
     "service/metrics/glic_instance_helper_metrics.h",
     "service/metrics/glic_instance_metrics.cc",
     "service/metrics/glic_instance_metrics.h",
+    "service/metrics/glic_invoke_metrics.cc",
+    "service/metrics/glic_invoke_metrics.h",
     "service/metrics/glic_metrics_session_manager.cc",
     "service/metrics/glic_metrics_session_manager.h",
   ]

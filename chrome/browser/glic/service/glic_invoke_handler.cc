@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
+#include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -285,6 +286,8 @@ void GlicInvokeHandler::OnSuccess() {
     main_task_->NotifySequenceCompleted(/*success=*/true);
   }
 
+  RecordInvokeSuccess(options_.GetInvocationSource());
+
   if (options_.on_success) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(options_.on_success));
@@ -300,6 +303,8 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
   if (main_task_) {
     main_task_->NotifySequenceCompleted(/*success=*/false);
   }
+
+  RecordInvokeError(options_.GetInvocationSource(), error);
 
   if (options_.on_error) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

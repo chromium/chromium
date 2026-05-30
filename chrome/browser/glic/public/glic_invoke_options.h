@@ -135,37 +135,41 @@ struct AdditionalTabContext {
   PolicyCheck policy_check = PolicyCheck::kClipboard;
 };
 
+// LINT.IfChange(GlicInvokeError)
 // Possible errors that can occur during a Glic invocation.
 enum class GlicInvokeError {
-  kUnknown,
+  // 0 is reserved for success in metrics.
+  kUnknown = 1,
   // The invocation timed out before completion.
-  kTimeout,
+  kTimeout = 2,
   // The provided conversation ID was invalid (e.g. empty).
-  kInvalidConversationId,
+  kInvalidConversationId = 3,
   // The provided tab was invalid (e.g. null).
-  kInvalidTab,
+  kInvalidTab = 4,
   // The tab was closed before the invocation could complete.
-  kTabClosed,
+  kTabClosed = 5,
   // The instance was destroyed before the invocation could complete.
-  kInstanceDestroyed,
+  kInstanceDestroyed = 6,
   // The instance is already handling an invocation.
-  kInvokeInProgress,
+  kInvokeInProgress = 7,
   // The provided invocation configuration is invalid.
-  kInvalidConfiguration,
+  kInvalidConfiguration = 8,
   // Observed a navigation before the policy checks completed.
-  kAdditionalContextSawNavigation,
+  kAdditionalContextSawNavigation = 9,
   // The clipboard copy policy check failed for the given additional context.
-  kAdditionalContextFailedCopyPolicy,
+  kAdditionalContextFailedCopyPolicy = 10,
   // The clipboard paste policy check failed for the given additional context.
-  kAdditionalContextFailedPastePolicy,
+  kAdditionalContextFailedPastePolicy = 11,
   // Could not find the source frame instance for the policy checks.
-  kAdditionalContextNoSourceFrame,
+  kAdditionalContextNoSourceFrame = 12,
   // Could not find the web client frame instance for the policy checks.
-  kAdditionalContextNoClientFrame,
+  kAdditionalContextNoClientFrame = 13,
   // Could not create clipboard metadata for policy checks. This is likely due
   // to the context type not yet being supported.
-  kAdditionalContextNoClipboardMetadata,
+  kAdditionalContextNoClipboardMetadata = 14,
+  kMaxValue = kAdditionalContextNoClipboardMetadata,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/host/glic_internals_page_handler.cc:GlicInvokeError)
 
 // Details for invoking Glic with tabs shared. See
 // GlicSharingManager::PinTabs().

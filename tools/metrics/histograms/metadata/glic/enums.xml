@@ -517,6 +517,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
 
+<!-- LINT.IfChange(GlicInvokeResult) -->
+
+<enum name="GlicInvokeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Invalid conversation ID"/>
+  <int value="4" label="Invalid tab"/>
+  <int value="5" label="Tab closed"/>
+  <int value="6" label="Instance destroyed"/>
+  <int value="7" label="Invoke in progress"/>
+  <int value="8" label="Invalid configuration"/>
+  <int value="9" label="Additional context saw navigation"/>
+  <int value="10" label="Additional context failed copy policy"/>
+  <int value="11" label="Additional context failed paste policy"/>
+  <int value="12" label="Additional context no source frame"/>
+  <int value="13" label="Additional context no client frame"/>
+  <int value="14" label="Additional context no clipboard metadata"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeResult) -->
+
 <!-- LINT.IfChange(GlicResponseError) -->
 
 <enum name="GlicMetricsError">
