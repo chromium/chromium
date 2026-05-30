@@ -11,7 +11,7 @@ export type {SearchOptions} from './search.js';
 export {search} from './search.js';
 export {SelectableLazyListElement} from './selectable_lazy_list.js';
 export {SplitNewTabPageAppElement} from './split_view/app.js';
-export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';
+export {getHostname, getTabGroupTitle, getTitle, ItemData, SplitViewData, TabData, TabItemType} from './tab_data.js';
 export {Color as TabGroupColor} from './tab_group_types.mojom-webui.js';
 export type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo, Window} from './tab_search.mojom-webui.js';
 export {PageCallbackRouter, PageRemote} from './tab_search.mojom-webui.js';

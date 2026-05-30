@@ -5,7 +5,8 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
+import type {RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
+import {SplitTabLayout} from './tab_search.mojom-webui.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';
 import type {Range} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
@@ -14,6 +15,8 @@ export enum TabItemType {
   OPEN_TAB = 1,
   RECENTLY_CLOSED_TAB = 2,
   RECENTLY_CLOSED_TAB_GROUP = 3,
+  OPEN_SPLIT = 4,
+  RECENTLY_CLOSED_SPLIT = 5,
 }
 
 export class ItemData {
@@ -48,6 +51,68 @@ export class TabGroupData extends ItemData {
     super();
     this.tabGroup = tabGroup;
     this.type = TabItemType.RECENTLY_CLOSED_TAB_GROUP;
+  }
+}
+
+export class SplitViewData extends ItemData {
+  splitView?: RecentlyClosedSplitView;
+  tabs?: [Tab, Tab];
+
+  constructor(options: {
+    splitView?: RecentlyClosedSplitView,
+    tabs?: [Tab, Tab],
+  }) {
+    super();
+    if (!options.splitView && !options.tabs) {
+      throw new Error(
+          'SplitViewData must be initialized with splitView or tabs.');
+    }
+    this.splitView = options.splitView;
+    this.tabs = options.tabs;
+    this.type = options.splitView ? TabItemType.RECENTLY_CLOSED_SPLIT :
+                                    TabItemType.OPEN_SPLIT;
+    this.a11yTypeText =
+        options.splitView ? 'Recently closed split view' : 'Open split view';
+  }
+
+  get title(): string {
+    return 'Split View';
+  }
+
+  get sessionId(): number {
+    return this.splitView ? this.splitView.sessionId : -1;
+  }
+
+  get splitId(): Token|undefined {
+    if (this.splitView) {
+      return this.splitView.id;
+    }
+    return this.tabs![0].splitId ?? undefined;
+  }
+
+  get tabCount(): number {
+    return this.splitView ? this.splitView.tabCount : 2;
+  }
+
+  get lastActiveElapsedText(): string {
+    if (this.splitView) {
+      return this.splitView.lastActiveElapsedText;
+    }
+    return this.tabs![0].lastActiveElapsedText;
+  }
+
+  get tabUrls(): string[] {
+    if (this.splitView) {
+      return this.splitView.tabUrls;
+    }
+    return [this.tabs![0].url, this.tabs![1].url];
+  }
+
+  get layout(): SplitTabLayout {
+    if (this.splitView) {
+      return this.splitView.layout;
+    }
+    return this.tabs![0].splitLayout ?? SplitTabLayout.kSideBySide;
   }
 }
 
@@ -100,6 +165,11 @@ export function ariaLabel(itemData: ItemData): string {
         tabGroup.lastActiveElapsedText} ${itemData.a11yTypeText}`;
   }
 
+  if (itemData instanceof SplitViewData) {
+    return `${itemData.title} ${itemData.tabCount} tabs ${
+        itemData.lastActiveElapsedText} ${itemData.a11yTypeText}`;
+  }
+
   if (itemData instanceof TabData) {
     const tabData = itemData;
     const groupTitleOrEmpty = tabData.tabGroup ? tabData.tabGroup.title : '';
@@ -133,22 +203,48 @@ export function getDisplayHostnameForUrl(url: URL): string {
   }
 }
 
-export function getTitle(data: TabData|TabGroupData): string|undefined {
+export function getTitle(data: TabData|TabGroupData|SplitViewData): string|
+    undefined {
   if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
     return undefined;
+  }
+
+  if (data instanceof SplitViewData) {
+    if (data.tabs) {
+      // Returns the joined titles of both sub-tabs to allow search matching
+      // against either tab's title.
+      return `${data.tabs[0].title} ${data.tabs[1].title}`;
+    }
+    return data.title;
   }
 
   return (data as TabData).tab.title;
 }
 
-export function getHostname(data: TabData|TabGroupData): string|undefined {
+export function getHostname(data: TabData|TabGroupData|SplitViewData): string|
+    undefined {
   if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
     return undefined;
+  }
+
+  if (data instanceof SplitViewData) {
+    // Returns the joined display hostnames of both sub-tabs to allow search
+    // matching against either tab's URL/domain.
+    return data.tabUrls
+        .map(url => {
+          try {
+            return getDisplayHostnameForUrl(new URL(normalizeURL(url)));
+          } catch (e) {
+            return 'about:blank';
+          }
+        })
+        .join(' ');
   }
 
   return (data as TabData).hostname;
 }
 
-export function getTabGroupTitle(data: TabData|TabGroupData): string|undefined {
+export function getTabGroupTitle(data: TabData|TabGroupData|SplitViewData):
+    string|undefined {
   return data.tabGroup?.title;
 }

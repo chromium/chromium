@@ -4,12 +4,12 @@
 
 import {quoteString} from 'chrome://resources/js/util.js';
 
-import type {ItemData, TabData, TabGroupData} from './tab_data.js';
+import type {ItemData, SplitViewData, TabData, TabGroupData} from './tab_data.js';
 import type {Range} from './tab_search_utils.js';
 
 export interface OptionKeyObject {
   name: string;
-  getter: (data: TabData|TabGroupData) => string | undefined;
+  getter: (data: TabData|TabGroupData|SplitViewData) => string | undefined;
   weight: number;
 }
 
