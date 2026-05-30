@@ -1564,7 +1564,7 @@ void Layer::SetMainSideScrollingEnabled(bool enabled) {
 gfx::PointF Layer::CurrentScrollOffset() const {
   const Compositor* compositor = GetCompositor();
   gfx::PointF offset;
-  if (main_side_scrolling_enabled() && compositor &&
+  if (!main_side_scrolling_enabled() && compositor &&
       compositor->GetScrollOffsetForLayer(cc_layer_->element_id(), &offset)) {
     return offset;
   }
@@ -1574,7 +1574,7 @@ gfx::PointF Layer::CurrentScrollOffset() const {
 void Layer::SetScrollOffset(const gfx::PointF& offset) {
   Compositor* compositor = GetCompositor();
   bool scrolled_on_impl_side =
-      main_side_scrolling_enabled() && compositor &&
+      !main_side_scrolling_enabled() && compositor &&
       compositor->ScrollLayerTo(cc_layer_->element_id(), offset);
 
   if (!scrolled_on_impl_side) {

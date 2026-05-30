@@ -1440,7 +1440,7 @@ void ScrollView::UpdateMainSideScrollingEnabledState() {
     return;
   }
 
-  const bool enabled = scroll_synchronizer_count_ == 0;
+  const bool enabled = scroll_synchronizer_count_ > 0;
   if (contents_ && contents_->layer()) {
     contents_->layer()->SetMainSideScrollingEnabled(enabled);
   }

@@ -1689,15 +1689,15 @@ TEST_F(ScrollViewTest, ScrollSynchronization) {
   views::test::RunScheduledLayout(&scroll_view);
 
   ASSERT_TRUE(scroll_view.contents()->layer());
-  EXPECT_TRUE(scroll_view.contents()->layer()->main_side_scrolling_enabled());
+  EXPECT_FALSE(scroll_view.contents()->layer()->main_side_scrolling_enabled());
 
   {
     auto synchronizer = scroll_view.EnableScrollSynchronization();
-    EXPECT_FALSE(
+    EXPECT_TRUE(
         scroll_view.contents()->layer()->main_side_scrolling_enabled());
   }
 
-  EXPECT_TRUE(scroll_view.contents()->layer()->main_side_scrolling_enabled());
+  EXPECT_FALSE(scroll_view.contents()->layer()->main_side_scrolling_enabled());
 }
 
 #if BUILDFLAG(IS_MAC)
