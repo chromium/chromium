@@ -1175,6 +1175,14 @@ by a child template that "extends" this file.
             android:launchMode="singleInstance">
         </activity>
 
+        <activity
+            android:name="org.chromium.chrome.browser.devtools.DevToolsActivity"
+            android:theme="@style/Theme.Chromium.Activity"
+            android:exported="false"
+            {{ self.chrome_activity_common() }}>
+            {{ self.extra_web_rendering_activity_definitions() }}
+        </activity>
+
         <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
             android:exported="false"/>
 
