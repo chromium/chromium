@@ -88,9 +88,7 @@ bool ShouldUseWorkloadReset() {
 }
 
 bool ShouldUseWorkloadIncrease() {
-  return android_get_device_api_level() > __ANDROID_API_V__ &&
-         base::FeatureList::IsEnabled(
-             features::kEnableADPFWorkloadIncreaseOnPageLoad);
+  return android_get_device_api_level() > __ANDROID_API_V__;
 }
 
 
