@@ -580,8 +580,10 @@ void ContentAutofillDriver::SendEmailVerificationToken(
                email_field_id, email, token_field_id, token);
 }
 
-void ContentAutofillDriver::OnEmailVerificationTokenShared() {
-  GetAutofillClient().ShowEmailVerifiedToast();
+void ContentAutofillDriver::OnEmailVerificationTokenShared(
+    FieldRendererId field_id) {
+  FieldGlobalId global_id = {GetFrameToken(), field_id};
+  autofill_manager_->OnEmailVerificationTokenShared(global_id);
 }
 
 void ContentAutofillDriver::FormsSeen(

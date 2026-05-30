@@ -83,7 +83,7 @@ class TestRuntimeFeatureStateContext
 class MockAutofillClient : public TestContentAutofillClient {
  public:
   using TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(void, ShowEmailVerifiedToast, (), (override));
+  MOCK_METHOD(void, ShowEmailVerifiedToast, (const GURL&), (override));
   MOCK_METHOD(void,
               ShowEmailVerificationPopup,
               (const gfx::RectF&,

@@ -1235,16 +1235,16 @@ tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
   return tabs::TabInterface::MaybeGetFromContents(web_contents());
 }
 
-void ChromeAutofillClient::ShowEmailVerifiedToast() {
+void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
 #if !BUILDFLAG(IS_ANDROID)
   // The toast is only supported on desktop for now, since Android uses
   // snackbars instead.
   if (ToastController* toast_controller = GetToastController()) {
     ToastParams params(ToastId::kEmailVerified);
-
+    params.body_string_replacement_params.push_back(
+        base::UTF8ToUTF16(issuer.host()));
     params.menu_model = std::make_unique<EmailVerifiedToastMenuModel>(
         GetTabInterface()->GetBrowserWindowInterface());
-
     toast_controller->MaybeShowToast(std::move(params));
   }
 #endif

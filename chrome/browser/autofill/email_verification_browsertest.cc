@@ -86,7 +86,7 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
     explicit TestEmailVerificationAutofillClient(
         content::WebContents* web_contents)
         : TestContentAutofillClient(web_contents) {}
-    MOCK_METHOD(void, ShowEmailVerifiedToast, (), (override));
+    MOCK_METHOD(void, ShowEmailVerifiedToast, (const GURL&), (override));
     MOCK_METHOD(void,
                 ShowEmailVerificationPopup,
                 (const gfx::RectF&,
@@ -250,7 +250,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
             AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
         popup_run_loop.Quit();
       });
-  EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
+  EXPECT_CALL(*mock_client,
+              ShowEmailVerifiedToast(GURL("https://example.com")));
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->ToFormData(), field_id,

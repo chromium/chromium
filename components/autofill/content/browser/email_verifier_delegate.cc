@@ -26,6 +26,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strike_database/history_clearable_strike_database.h"
 #include "components/strike_database/strike_database.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/email_verifier.h"
@@ -86,12 +87,15 @@ const AutofillField* FindField(
   return iter != std::ranges::end(fields) ? iter->get() : nullptr;
 }
 
-void Verify(base::WeakPtr<AutofillManager> manager,
-            FieldGlobalId email_field_id,
-            std::string email_utf8,
-            FieldGlobalId token_field_id,
-            const std::string& nonce,
-            const content::webid::EmailVerifier::Result& result) {
+}  // namespace
+
+void EmailVerifierDelegate::Verify(
+    base::WeakPtr<AutofillManager> manager,
+    FieldGlobalId email_field_id,
+    std::string email_utf8,
+    FieldGlobalId token_field_id,
+    const std::string& nonce,
+    const content::webid::EmailVerifier::Result& result) {
   content::webid::EmailVerifier* verifier =
       GetOrCreateEmailVerifier(manager->client(), email_field_id.frame_token);
   if (!verifier) {
@@ -100,19 +104,25 @@ void Verify(base::WeakPtr<AutofillManager> manager,
   verifier->Verify(
       result, nonce,
       base::BindOnce(
-          [](base::WeakPtr<AutofillManager> manager,
+          [](base::WeakPtr<EmailVerifierDelegate> delegate,
+             base::WeakPtr<AutofillManager> manager,
              FieldGlobalId email_field_id, std::string email,
-             FieldGlobalId token_field_id, std::optional<std::string> token) {
+             FieldGlobalId token_field_id, net::SchemefulSite issuer_site,
+             std::optional<std::string> token) {
             if (!manager || !token) {
               return;
+            }
+            if (delegate) {
+              delegate->issuers_[token_field_id] = issuer_site.GetURL();
             }
             manager->driver().SendEmailVerificationToken(
                 email_field_id, email, token_field_id, *token);
           },
-          manager, email_field_id, email_utf8, token_field_id));
+          weak_ptr_factory_.GetWeakPtr(), manager, email_field_id, email_utf8,
+          token_field_id, result.issuer_site));
 }
 
-void OnEmailVerificationDecision(
+void EmailVerifierDelegate::OnEmailVerificationDecision(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
     std::string email_utf8,
@@ -168,7 +178,7 @@ void OnEmailVerificationDecision(
   }
 }
 
-void OnIsVerifiable(
+void EmailVerifierDelegate::OnIsVerifiable(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
     FieldGlobalId nonce_field_id,
@@ -190,18 +200,31 @@ void OnIsVerifiable(
   net::SchemefulSite issuer_site = result->issuer_site;
   manager->client().ShowEmailVerificationPopup(
       email_field_bounds, issuer_site, email,
-      base::BindOnce(&OnEmailVerificationDecision, manager, email_field_id,
+      base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
+                     weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
                      base::UTF16ToUTF8(email), nonce_field_id, nonce,
                      std::move(*result)));
 }
 
-}  // namespace
-
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client) {
   observation_.Observe(client);
+  if (auto* content_client = static_cast<ContentAutofillClient*>(client)) {
+    Observe(content_client->web_contents());
+  }
 }
 
 EmailVerifierDelegate::~EmailVerifierDelegate() = default;
+
+void EmailVerifierDelegate::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    // `HasCommitted` returns true even for same document commits, e.g.
+    // if the state is cleared on pushState() or #anchor navigations.
+    // We clear the issuers_ map on these navigations too.
+    issuers_.clear();
+  }
+}
 
 void EmailVerifierDelegate::OnFillOrPreviewForm(
     AutofillManager& manager,
@@ -281,6 +304,16 @@ void EmailVerifierDelegate::OnFillOrPreviewField(
   TriggerVerification(manager, *form, *triggering_email_field, value);
 }
 
+void EmailVerifierDelegate::OnEmailVerificationTokenShared(
+    AutofillManager& manager,
+    FieldGlobalId field_id) {
+  if (auto it = issuers_.find(field_id); it != issuers_.end()) {
+    GURL issuer_url = it->second;
+    issuers_.erase(it);
+    manager.client().ShowEmailVerifiedToast(issuer_url);
+  }
+}
+
 void EmailVerifierDelegate::TriggerVerification(
     AutofillManager& manager,
     const FormStructure& form,
@@ -327,7 +360,8 @@ void EmailVerifierDelegate::TriggerVerification(
 
   verifier->CheckIfVerifiable(
       email_utf8,
-      base::BindOnce(&OnIsVerifiable, manager.GetWeakPtr(),
+      base::BindOnce(&EmailVerifierDelegate::OnIsVerifiable,
+                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
                      email_field.global_id(), nonce_field->global_id(),
                      email_field.bounds(), email_value,
                      base::UTF16ToUTF8(nonce_field->nonce()), already_allowed));

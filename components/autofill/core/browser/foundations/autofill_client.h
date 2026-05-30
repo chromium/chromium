@@ -33,6 +33,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
+#include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace net {
@@ -786,7 +787,7 @@ class AutofillClient {
   // Notifies the user that operation to fetch data from Wallet failed.
   virtual void ShowAutofillAiFetchFromWalletFailureNotification();
 
-  virtual void ShowEmailVerifiedToast();
+  virtual void ShowEmailVerifiedToast(const GURL& issuer);
 
   // Shows a yes/no prompt asking the user to confirm that they want to verify
   // their email. The prompt is anchored on the field at `element_bounds`.

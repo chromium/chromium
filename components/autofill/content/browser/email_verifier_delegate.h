@@ -5,11 +5,20 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_EMAIL_VERIFIER_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_EMAIL_VERIFIER_DELEGATE_H_
 
+#include <map>
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webid/email_verifier.h"
+#include "net/base/schemeful_site.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -22,7 +31,8 @@ class AutofillClient;
 // an email address.
 //
 // https://github.com/dickhardt/email-verification-protocol
-class EmailVerifierDelegate : public AutofillManager::Observer {
+class EmailVerifierDelegate : public AutofillManager::Observer,
+                              public content::WebContentsObserver {
  public:
   explicit EmailVerifierDelegate(AutofillClient* client);
   EmailVerifierDelegate(const EmailVerifierDelegate&) = delete;
@@ -44,6 +54,12 @@ class EmailVerifierDelegate : public AutofillManager::Observer {
                             mojom::ActionPersistence action_persistence,
                             const std::u16string& value,
                             std::optional<FieldType> field_type_used) override;
+  void OnEmailVerificationTokenShared(AutofillManager& manager,
+                                      FieldGlobalId field_id) override;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   // Initiates the verification of the given `email_value` by checking the frame
@@ -54,7 +70,35 @@ class EmailVerifierDelegate : public AutofillManager::Observer {
                            const AutofillField& email_field,
                            const std::u16string& email_value);
 
+  void OnIsVerifiable(
+      base::WeakPtr<AutofillManager> manager,
+      FieldGlobalId email_field_id,
+      FieldGlobalId nonce_field_id,
+      gfx::RectF email_field_bounds,
+      std::u16string email,
+      std::string nonce,
+      bool already_allowed,
+      std::optional<content::webid::EmailVerifier::Result> result);
+
+  void Verify(base::WeakPtr<AutofillManager> manager,
+              FieldGlobalId email_field_id,
+              std::string email_utf8,
+              FieldGlobalId token_field_id,
+              const std::string& nonce,
+              const content::webid::EmailVerifier::Result& result);
+
+  void OnEmailVerificationDecision(
+      base::WeakPtr<AutofillManager> manager,
+      FieldGlobalId email_field_id,
+      std::string email_utf8,
+      FieldGlobalId token_field_id,
+      std::string nonce,
+      content::webid::EmailVerifier::Result result,
+      AutofillClient::EmailVerificationPermissionUiResult ui_result);
+
   ScopedAutofillManagersObservation observation_{this};
+  std::map<FieldGlobalId, GURL> issuers_;
+  base::WeakPtrFactory<EmailVerifierDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

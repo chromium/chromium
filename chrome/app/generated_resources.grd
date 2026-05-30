@@ -2445,7 +2445,7 @@ are declared in tools/grit/grit_args.gni.
       </message>
 
       <message name="IDS_EMAIL_VERIFIED" desc="Toast message to notify the user when their email is automatically verified by the browser.">
-        Email automatically verified
+        <ph name="ISSUER">$1<ex>google.com</ex></ph> verified your email
       </message>
 
       <if expr="is_chromeos">

@@ -373,7 +373,7 @@ void AutofillClient::ShowAutofillAiFetchFromWalletFailureNotification() {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::ShowEmailVerifiedToast() {
+void AutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
   NOTIMPLEMENTED();
 }
 

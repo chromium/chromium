@@ -513,6 +513,10 @@ void AutofillManager::OnSuggestionsHidden(SuggestionHidingReason reason) {
   NotifyObservers(&Observer::OnSuggestionsHidden, reason);
 }
 
+void AutofillManager::OnEmailVerificationTokenShared(FieldGlobalId field_id) {
+  NotifyObservers(&Observer::OnEmailVerificationTokenShared, field_id);
+}
+
 void AutofillManager::OnSelectFieldOptionsDidChange(
     const FormData& form,
     const FieldGlobalId& field_id) {
