@@ -30,7 +30,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    'run_all_tests\.cc': [
+    'run_all_tests\\.cc': [
         "+content/public/test/blink_test_environment.h",
     ],
 }

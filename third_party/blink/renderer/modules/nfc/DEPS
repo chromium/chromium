@@ -8,7 +8,7 @@ specific_include_rules = {
     "+base/apple/foundation_util.h",
     "+services/device/public/cpp/nfc/nfc_utils.h"
   ],
-  "nfc_proxy_test\.cc": [
+  "nfc_proxy_test\\.cc": [
     "+base/run_loop.h",
     "+base/test/bind.h",
   ],

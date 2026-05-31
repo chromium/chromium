@@ -47,7 +47,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "resource_error\.cc": [
+  "resource_error\\.cc": [
     "+net/base/net_errors.h"
   ],
   "replaying_web_data_consumer_handle.h": [

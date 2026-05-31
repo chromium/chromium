@@ -6,13 +6,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "web_page_popup_impl\.h": [
+  "web_page_popup_impl\\.h": [
     "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h",
   ],
   "web_frame_serializer_test_helper.cc": [
     "+base/run_loop.h",
   ],
-  "web_view_impl\.cc": [
+  "web_view_impl\\.cc": [
     "+base/command_line.h",
     "+base/task/common/task_annotator.h",
     "+components/viz/common/features.h",

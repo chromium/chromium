@@ -4,118 +4,118 @@ include_rules = {
 }
 
 specific_include_rules = {
-  "ad_tracker_test\.cc": [
+  "ad_tracker_test\\.cc": [
     "+base/run_loop.h",
   ],
-  "attribution_src_loader(\.cc|\.h|_test\.cc)": [
+  "attribution_src_loader(\\.cc|\\.h|_test\\.cc)": [
     "+components/attribution_reporting",
     "+services/network/public/cpp/attribution_utils.h",
   ],
-  "child_frame_compositing_helper\.h": [
+  "child_frame_compositing_helper\\.h": [
     "+components/viz/common/surfaces/surface_id.h",
   ],
-  "child_frame_compositing_helper\.cc": [
+  "child_frame_compositing_helper\\.cc": [
     "+cc/paint/paint_image.h",
     "+cc/paint/paint_image_builder.h"
   ],
-  "coop_access_violation_report_body\.cc": [
+  "coop_access_violation_report_body\\.cc": [
     "+services/network/public/cpp/cross_origin_opener_policy.h"
   ],
-  "crash_report_context\.h": [
+  "crash_report_context\\.h": [
     "+base/memory/shared_memory_mapping.h",
     "+base/memory/unsafe_shared_memory_region.h",
   ],
-  "dom_timer_test\.cc": [
+  "dom_timer_test\\.cc": [
     "+base/test/scoped_command_line.h",
   ],
-  "frame_view\.cc": [
+  "frame_view\\.cc": [
     "+ui/gfx/transform.h"
   ],
-  "frame_test_helpers(\.cc|\.h)": [
+  "frame_test_helpers(\\.cc|\\.h)": [
     "+components/viz/common/surfaces/frame_sink_id.h",
     "+net/http/http_response_headers.h",
     "+services/network/public/cpp/connection_allowlist_parser.h",
   ],
-  "history_util\.cc": [
+  "history_util\\.cc": [
     "+url/url_util.h"
   ],
-  "local_dom_window\.cc" : [
+  "local_dom_window\\.cc" : [
     "+base/command_line.h"
   ],
-  "local_frame_back_forward_cache_test\.cc": [
+  "local_frame_back_forward_cache_test\\.cc": [
     "+base/run_loop.h",
   ],
-  "local_frame\.h": [
+  "local_frame\\.h": [
     "+base/callback_list.h",
     "+ui/gfx/image/image_skia.h",
     "+ui/gfx/transform.h"
   ],
-  "local_frame\.cc": [
+  "local_frame\\.cc": [
     "+ui/gfx/transform.h"
   ],
-  "local_frame_test\.cc": [
+  "local_frame_test\\.cc": [
     "+base/callback_list.h",
   ],
-  "local_frame_ukm_aggregator\.cc": [
+  "local_frame_ukm_aggregator\\.cc": [
     "+base/cpu_reduction_experiment.h",
   ],
-  "local_frame_ukm_aggregator_test\.cc": [
+  "local_frame_ukm_aggregator_test\\.cc": [
     "+base/metrics/statistics_recorder.h"
   ],
-  "local_frame_view\.cc": [
+  "local_frame_view\\.cc": [
     "+base/timer/lap_timer.h",
     "+cc/view_transition/view_transition_request.h",
     "+cc/tiles/frame_viewer_instrumentation.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],
-  "mhtml_archive_test\.cc": [
+  "mhtml_archive_test\\.cc": [
     "+services/network/public/cpp/is_potentially_trustworthy.h",
   ],
-  "picture_in_picture_controller\.h": [
+  "picture_in_picture_controller\\.h": [
     "+services/media_session/public/mojom/media_session.mojom-blink.h",
   ],
-  "remote_frame\.h": [
+  "remote_frame\\.h": [
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
     "+services/network/public/cpp/permissions_policy/permissions_policy_declaration.h",
   ],
-  "remote_frame\.cc": [
+  "remote_frame\\.cc": [
     "+ui/base/window_open_disposition.h",
   ],
-  "remote_frame_view\.cc": [
+  "remote_frame_view\\.cc": [
     "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
     "+printing/buildflags/buildflags.h",
     "+printing/metafile_skia.h",
     "+ui/gfx/transform_util.h",
   ],
-  "navigator_language\.cc" : [
+  "navigator_language\\.cc" : [
     "+base/command_line.h"
   ],
-  "visual_viewport\.cc": [
+  "visual_viewport\\.cc": [
     "+cc/layers/solid_color_scrollbar_layer.h",
   ],
-  "web_frame_widget_impl\.cc": [
+  "web_frame_widget_impl\\.cc": [
     "+cc/trees/swap_promise.h",
     "+cc/trees/compositor_commit_data.h",
     "+ui/base/mojom/menu_source_type.mojom-blink-forward.h",
     "+components/stylus_handwriting/win/features.h",
   ],
-  "web_frame_widget_impl\.h": [
+  "web_frame_widget_impl\\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",
     "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h",
     "+ui/base/mojom/menu_source_type.mojom-blink-forward.h",
     "+ui/gfx/ca_layer_result.h",
   ],
-  "web_frame_test\.cc": [
+  "web_frame_test\\.cc": [
     "+ui/base/mojom/menu_source_type.mojom-blink.h",
     "+ui/gfx/transform.h",
   ],
-  "web_frame_widget_test\.cc": [
+  "web_frame_widget_test\\.cc": [
     "+base/run_loop.h",
     "+components/stylus_handwriting/win/features.h",
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
   ],
-  "settings\.h": [
+  "settings\\.h": [
     "+ui/base/pointer/pointer_device.h",
   ],
 }

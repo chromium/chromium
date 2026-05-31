@@ -14,7 +14,7 @@ specific_include_rules = {
   ".*unittest.cc": [
     "+components/viz/test",
   ],
-  "layer_tree_settings\.cc": [
+  "layer_tree_settings\\.cc": [
     "+base/base_switches.h",
     "+gpu/config/gpu_finch_features.h",
     "+gpu/command_buffer/service/gpu_switches.h",

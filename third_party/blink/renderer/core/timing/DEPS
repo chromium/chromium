@@ -5,7 +5,7 @@ specific_include_rules = {
         "+crypto/hash.h",
         "+url/url_constants.h",
     ],
-    ".*test\.cc": [
+    ".*test\\.cc": [
       "+base/test/tracing/trace_event_analyzer.h",
       "+base/json/json_reader.h",
     ],

@@ -15,7 +15,7 @@ specific_include_rules = {
         "+gpu/command_buffer/client/context_support.h",
     ],
     # Additional allowed includes for tests.
-    ".*_test(_.*)?\.(cc|h)" : [
+    ".*_test(_.*)?\\.(cc|h)" : [
         "+base/metrics/histogram_base.h",
         "+base/pending_task.h",
         "+base/strings",

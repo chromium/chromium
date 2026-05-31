@@ -23,7 +23,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    ".*_(unit)?test(_helpers?)?\.cc": [
+    ".*_(unit)?test(_helpers?)?\\.cc": [
         "+base/run_loop.h",
         "+base/run_until.h",
         "+base/test",

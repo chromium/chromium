@@ -58,7 +58,7 @@ specific_include_rules = {
     ".*_fuzzer.cc": [
         "+testing/libfuzzer",
     ],
-    ".*_(unit)?test\.cc": [
+    ".*_(unit)?test\\.cc": [
         "+base/run_loop.h",
     ],
     "canvas_fuzzer.cc": [

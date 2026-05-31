@@ -26,7 +26,7 @@ include_rules = [
 
 specific_include_rules = {
     # Let tests create cc::FakeLayerTreeHost and its dependencies.
-    ".*_unittest\.cc": [
+    ".*_unittest\\.cc": [
         "+cc/test",
     ],
 }

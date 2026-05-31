@@ -12,7 +12,7 @@ specific_include_rules = {
   "conversion_util_test.cc": [
     "+services/network/public/cpp/integrity_metadata.h",
   ],
-  "csp_source_test\.cc": [
+  "csp_source_test\\.cc": [
     "+url/url_features.h",
   ],
 }

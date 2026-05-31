@@ -14,7 +14,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    ".*_(unit)?test\.cc": [
+    ".*_(unit)?test\\.cc": [
         "+gin",
         "+services/network/test/test_url_loader_factory.h",
     ],

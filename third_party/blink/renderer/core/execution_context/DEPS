@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "agent_metrics_collector\.cc": [
+  "agent_metrics_collector\\.cc": [
     # Intentionally limited to scope to encourage use of histogram helpers over
     # the raw factory getters.
     "+base/metrics/histogram_base.h",

@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "pressure_observer_test_utils\.cc|.+_test\.cc": [
+  "pressure_observer_test_utils\\.cc|.+_test\\.cc": [
     "+base/run_loop.h",
   ],
 }
