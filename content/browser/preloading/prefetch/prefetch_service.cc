@@ -1620,7 +1620,6 @@ PrefetchService::CreateIsolatedNetworkContext(
   // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  context_params->cors_exempt_header_list = {blink::kPurposeHeaderName};
   if (base::FeatureList::IsEnabled(
           kVariationsHeaderForCrossSiteSpeculationRulesPrefetch)) {
     variations::UpdateCorsExemptHeaderForVariations(context_params.get());

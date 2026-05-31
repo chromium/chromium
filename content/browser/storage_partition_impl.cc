@@ -3605,7 +3605,6 @@ void StoragePartitionImpl::InitNetworkContext() {
   // This mechanisms should be used only for legacy internal headers. You can
   // find a recommended alternative approach on URLRequest::cors_exempt_headers
   // at services/network/public/mojom/url_loader.mojom.
-  context_params->cors_exempt_header_list.push_back(blink::kPurposeHeaderName);
   context_params->cors_exempt_header_list.push_back(
       GetCorsExemptRequestedWithHeaderName());
   context_params->cors_exempt_header_list.push_back("Last-Event-ID");
