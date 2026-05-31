@@ -60,6 +60,9 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
       delete;
   ~SingleAnimatedImageContainer() override;
 
+  bool IsShowingAnimation() const;
+  bool HasAnimatedImage(int resource_id) const;
+
   // Play the animation based on the provided definition and the configuration.
   void PlayAnimation(AnimationDefinition definition,
                      AnimationConfig config = AnimationConfig());
@@ -72,12 +75,13 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
   // LabelButtonImageContainer:
   void UpdateImage(const LabelButton* button) override;
 
- private:
-  void AddAnimatedImage(int resource_id);
-
+ protected:
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  void AddAnimatedImage(int resource_id);
+  virtual std::unique_ptr<lottie::Animation> LoadAnimatedImage(int resource_id);
 
   struct AnimationState {
     AnimationDefinition definition;

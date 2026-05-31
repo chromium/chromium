@@ -73,16 +73,21 @@ SingleAnimatedImageContainer::SingleAnimatedImageContainer(
 SingleAnimatedImageContainer::~SingleAnimatedImageContainer() = default;
 
 void SingleAnimatedImageContainer::AddAnimatedImage(int resource_id) {
-  if (animated_images_.contains(resource_id)) {
+  if (HasAnimatedImage(resource_id)) {
     return;
   }
+
+  animated_images_.emplace(resource_id, LoadAnimatedImage(resource_id));
+}
+
+std::unique_ptr<lottie::Animation>
+SingleAnimatedImageContainer::LoadAnimatedImage(int resource_id) {
   std::optional<std::vector<uint8_t>> lottie_bytes =
       ui::ResourceBundle::GetSharedInstance().GetLottieData(resource_id);
   CHECK(lottie_bytes.has_value());
   scoped_refptr<cc::SkottieWrapper> skottie =
       cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
-  animated_images_.emplace(resource_id,
-                           std::make_unique<lottie::Animation>(skottie));
+  return std::make_unique<lottie::Animation>(skottie);
 }
 
 void SingleAnimatedImageContainer::ClearAnimatedImages() {
@@ -91,11 +96,21 @@ void SingleAnimatedImageContainer::ClearAnimatedImages() {
 }
 
 void SingleAnimatedImageContainer::UpdateImage(const LabelButton* button) {
-  // In order to update back to static image, we shouldn't be animating.
-  if (!slide_animation_.is_animating() &&
-      slide_animation_.GetCurrentValue() == 0.0f) {
+  // In order to update back to static image, we shouldn't be showing animation.
+  if (!IsShowingAnimation()) {
     SingleImageContainer::UpdateImage(button);
   }
+}
+
+bool SingleAnimatedImageContainer::HasAnimatedImage(int resource_id) const {
+  return animated_images_.contains(resource_id);
+}
+
+bool SingleAnimatedImageContainer::IsShowingAnimation() const {
+  // Showing animation state includes paused state at the end of a forward
+  // animation.
+  return slide_animation_.is_animating() ||
+         slide_animation_.GetCurrentValue() != 0.0f;
 }
 
 void SingleAnimatedImageContainer::PlayAnimation(AnimationDefinition definition,
