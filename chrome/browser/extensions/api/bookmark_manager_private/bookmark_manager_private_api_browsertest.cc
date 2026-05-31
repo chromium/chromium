@@ -138,6 +138,39 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest, RunOnDeletedNode) {
           base::StringPrintf("[[\"%s\"]]", node_id.c_str()), GetProfile()));
 }
 
+// Regression test: paste() must not crash when an entry in `selectedIdList`
+// is not a direct child of `parentId`.
+IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
+                       PasteWithNonChildSelectedIdDoesNotCrash) {
+  // Add a bookmark under `other_node()` (not a child of `bookmark_bar_node()`).
+  GURL url("https://www.google.com");
+  const BookmarkNode* other_child =
+      model()->AddURL(model()->other_node(), 0, u"Goog", url);
+  std::string other_child_id = base::NumberToString(other_child->id());
+
+  // Copy it so the clipboard contains bookmark data.
+  auto copy_function =
+      base::MakeRefCounted<BookmarkManagerPrivateCopyFunction>();
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      copy_function.get(),
+      base::StringPrintf(R"([["%s"]])", other_child_id.c_str()), GetProfile()));
+
+  // Paste into the bookmark bar with a `selectedIdList` entry that isn't a
+  // child of the bar. This used to abort the browser process.
+  std::string bar_id = base::NumberToString(model()->bookmark_bar_node()->id());
+  auto paste_function =
+      base::MakeRefCounted<BookmarkManagerPrivatePasteFunction>();
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      paste_function.get(),
+      base::StringPrintf(R"(["%s", ["%s"]])", bar_id.c_str(),
+                         other_child_id.c_str()),
+      GetProfile()));
+
+  // The mismatched id is ignored; paste lands at the end (index 0).
+  ASSERT_EQ(1u, model()->bookmark_bar_node()->children().size());
+  EXPECT_EQ(url, model()->bookmark_bar_node()->children().front()->url());
+}
+
 // Tests that calling bookmarkManagerPrivate.cut() to cut a permanent bookmark
 // node into the clipboard gracefully fails.
 // Regression test for https://crbug.com/40657280.

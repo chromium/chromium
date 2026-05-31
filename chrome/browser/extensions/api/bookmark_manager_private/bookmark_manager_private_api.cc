@@ -510,9 +510,12 @@ void BookmarkManagerPrivatePasteFunction::OnCanPasteFinished(
   }
   size_t highest_index = 0;
   for (const BookmarkNode* node : nodes) {
-    // + 1 so that we insert after the selection.
-    highest_index =
-        std::max(highest_index, parent_node->GetIndexOf(node).value() + 1);
+    // Skip ids that are not direct children of `parent_node`; a compromised
+    // renderer can supply such ids and `GetIndexOf` would return nullopt.
+    if (std::optional<size_t> idx = parent_node->GetIndexOf(node)) {
+      // + 1 so that we insert after the selection.
+      highest_index = std::max(highest_index, *idx + 1);
+    }
   }
   if (!highest_index) {
     highest_index = parent_node->children().size();
