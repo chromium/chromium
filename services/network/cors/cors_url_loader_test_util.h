@@ -245,19 +245,9 @@ class CorsURLLoaderTestBase : public testing::Test {
   }
 
   // Methods forwarded to the `CorsURLLoader` under test.
-
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers = {},
-      const net::HttpRequestHeaders& modified_headers =
-          net::HttpRequestHeaders(),
-      const net::HttpRequestHeaders& modified_cors_exempt_headers =
-          net::HttpRequestHeaders()) {
+      network::HttpRequestHeadersUpdateParams headers_update_params = {}) {
     DCHECK(url_loader_);
-    network::HttpRequestHeadersUpdateParams headers_update_params;
-    headers_update_params.removed_headers = std::move(removed_headers);
-    headers_update_params.modified_headers = std::move(modified_headers);
-    headers_update_params.modified_cors_exempt_headers =
-        std::move(modified_cors_exempt_headers);
     url_loader_->FollowRedirect(std::move(headers_update_params),
                                 /*new_url=*/std::nullopt);
   }

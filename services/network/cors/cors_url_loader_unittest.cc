@@ -1158,7 +1158,9 @@ TEST_F(CorsURLLoaderTest, CorsExemptHeaderRemovalOnCrossOriginRedirects) {
   EXPECT_TRUE(
       GetRequest().cors_exempt_headers.HasHeader(kTestCorsExemptHeader));
 
-  FollowRedirect({kTestCorsExemptHeader});
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers.push_back(kTestCorsExemptHeader);
+  FollowRedirect(std::move(headers_update_params));
   RunUntilCreateLoaderAndStartCalled();
 
   EXPECT_EQ(2, num_created_loaders());
@@ -1186,9 +1188,10 @@ TEST_F(CorsURLLoaderTest, CorsExemptHeaderModificationOnRedirects) {
   EXPECT_TRUE(
       GetRequest().cors_exempt_headers.HasHeader(kTestCorsExemptHeader));
 
-  net::HttpRequestHeaders modified_headers;
-  modified_headers.SetHeader(kTestCorsExemptHeader, "test-modified");
-  FollowRedirect({}, modified_headers);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader(kTestCorsExemptHeader,
+                                                   "test-modified");
+  FollowRedirect(std::move(headers_update_params));
   RunUntilComplete();
 
   ASSERT_EQ(1, num_created_loaders());
@@ -1734,9 +1737,10 @@ TEST_F(CorsURLLoaderTest, SetHostHeaderOnRedirectFails) {
 
   ClearHasReceivedRedirect();
   // This should cause the request to fail.
-  net::HttpRequestHeaders modified_headers;
-  modified_headers.SetHeader(net::HttpRequestHeaders::kHost, "bar.test");
-  FollowRedirect({} /* removed_headers */, modified_headers);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader(
+      net::HttpRequestHeaders::kHost, "bar.test");
+  FollowRedirect(std::move(headers_update_params));
 
   RunUntilComplete();
 
@@ -1763,10 +1767,10 @@ TEST_F(CorsURLLoaderTest, SetProxyAuthorizationHeaderOnRedirectFails) {
 
   ClearHasReceivedRedirect();
   // This should cause the request to fail.
-  net::HttpRequestHeaders modified_headers;
-  modified_headers.SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
-                             "Basic Zm9vOmJhcg==");
-  FollowRedirect({} /* removed_headers */, modified_headers);
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader(
+      net::HttpRequestHeaders::kProxyAuthorization, "Basic Zm9vOmJhcg==");
+  FollowRedirect(std::move(headers_update_params));
 
   RunUntilComplete();
 
