@@ -123,9 +123,6 @@ bool GetEnrollmentTokenFromPolicy(std::string* enrollment_token) {
   base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
       CFPreferencesCopyAppValue(kEnrollmentTokenPolicyName, kBundleId));
 
-  // Read the enrollment token from the new location. If that fails, try the old
-  // location (which will be deprecated soon). If that also fails, bail as there
-  // is no token set.
   if (!value ||
       !CFPreferencesAppValueIsForced(kEnrollmentTokenPolicyName, kBundleId)) {
     return false;
@@ -140,9 +137,6 @@ bool GetEnrollmentTokenFromPolicy(std::string* enrollment_token) {
 }
 
 bool GetEnrollmentTokenFromFile(std::string* enrollment_token) {
-  // Read the enrollment token from the new location. If that fails, try the old
-  // location (which will be deprecated soon). If that also fails, bail as there
-  // is no token set.
   if (!base::ReadFileToString(base::FilePath(kEnrollmentTokenFilePath),
                               enrollment_token)) {
     return false;
