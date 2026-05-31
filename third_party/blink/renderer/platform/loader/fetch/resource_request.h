@@ -508,9 +508,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetClientDataHeader(const String& value) { client_data_header_ = value; }
   const String& GetClientDataHeader() const { return client_data_header_; }
 
-  void SetPurposeHeader(const String& value) { purpose_header_ = value; }
-  const String& GetPurposeHeader() const { return purpose_header_; }
-
   void SetEventSourceLastEventId(const String& value) {
     event_source_last_event_id_ = value;
   }
@@ -802,7 +799,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String devtools_id_;
   String requested_with_header_;
   String client_data_header_;
-  String purpose_header_;
   String event_source_last_event_id_;
 
   std::optional<String> devtools_stack_id_;

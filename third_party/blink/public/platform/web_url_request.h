@@ -256,11 +256,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
   const WebString GetRequestedWithHeader() const;
   void SetRequestedWithHeader(const WebString&);
 
-  // Remembers 'Purpose' header value. Blink should not set this header value
-  // until CORS checks are done to avoid running checks even against headers
-  // that are internally set.
-  const WebString GetPurposeHeader() const;
-
   // https://fetch.spec.whatwg.org/#concept-request-window
   // See network::ResourceRequest::fetch_window_id for details.
   const base::UnguessableToken& GetFetchWindowId() const;
