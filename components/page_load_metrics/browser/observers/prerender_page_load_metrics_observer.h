@@ -88,13 +88,6 @@ class PrerenderPageLoadMetricsObserver
   // Records Interaction to Next Paint (INP) to UMA and UKM.
   void RecordNormalizedResponsivenessMetrics();
 
-  // Records LCP before the first soft navigation arrives.
-  void RecordLargestContentfulPaintBeforeSoftNavigation();
-  // Records INP before the first soft navigation arrives.
-  void RecordResponsivenessMetricsBeforeSoftNavigation();
-  // Records CLS before the first soft navigation arrives.
-  void RecordLayoutShiftBeforeSoftNavigation();
-
   // Records loading status for an activated and loaded page.
   void MaybeRecordMainResourceLoadStatus();
 
