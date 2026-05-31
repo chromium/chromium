@@ -119,6 +119,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchActivationBeacon);
 // Cancels unrelated prefetch when a navigation is started.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCancelUnrelatedPrefetch);
 
+// Kill switch for making `PrefetchHandle`'s callbacks async.
+// TODO(crbug.com/480271813): Remove it after confirming stability.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncPrefetchHandleCallback);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

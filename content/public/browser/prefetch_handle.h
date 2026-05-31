@@ -38,6 +38,10 @@ class PrefetchHandle {
   PrefetchHandle(PrefetchHandle&& other) = default;
   PrefetchHandle& operator=(PrefetchHandle&& other) = default;
 
+  // The following callbacks are called asynchronously from their underlying
+  // prefetch state transitions (with `kPrefetchAsyncPrefetchHandleCallback`
+  // kill switch).
+
   // Sets a callback called when non-redirect header is successfully received.
   virtual void SetOnPrefetchHeadReceivedCallback(
       base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
