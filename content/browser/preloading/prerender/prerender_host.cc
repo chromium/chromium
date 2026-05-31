@@ -373,13 +373,10 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
       potential_activation_additional_headers_str);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // `prerender_headers` contains the "Purpose: prefetch" and "Sec-Purpose:
-  // prefetch;prerender" to notify servers of prerender requests, while
-  // `potential_activation_headers` doesn't contain it. Remove "Purpose" and
-  // "Sec-Purpose" matching from consideration so that activation works with the
-  // header.
-  prerender_headers.RemoveHeader(blink::kPurposeHeaderName);
-  potential_activation_headers.RemoveHeader(blink::kPurposeHeaderName);
+  // `prerender_headers` contains the "Sec-Purpose: prefetch;prerender" to
+  // notify servers of prerender requests, while `potential_activation_headers`
+  // doesn't contain it. Remove "Sec-Purpose" matching from consideration so
+  // that activation works with the header.
   prerender_headers.RemoveHeader(blink::kSecPurposeHeaderName);
   potential_activation_headers.RemoveHeader(blink::kSecPurposeHeaderName);
   // Ditto for "Sec-Speculation-Tags".
