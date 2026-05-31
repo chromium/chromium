@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">अज्ञात नीति.</translation>
 <translation id="1227677022489889280">माइग्रेट करने की वजह बताएं (ज़रूरी है)</translation>
 <translation id="1228893227497259893">गलत इकाई पहचानकर्ता</translation>
+<translation id="122989279399348496">साइन इन रहने पर, <ph name="DOMAIN" /> उन साइटों पर <ph name="EMAIL" /> की पुष्टि कर सकता है जिन पर यह सुविधा उपलब्ध है. इससे आपको अपना इनबॉक्स देखने की ज़रूरत नहीं पड़ेगी</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (अपने-आप पहचानी गई भाषा)</translation>
 <translation id="1232569758102978740">टाइटल रहित</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> में जानकारी भरना ज़रूरी है</translation>
@@ -511,6 +512,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एक से ज़्यादा कार्रवाइयां उपलब्ध हैं, एक-एक करके उन पर जाने के लिए Tab दबाएं</translation>
 <translation id="1800473098294731951">बी9</translation>
 <translation id="1801812870656502108">वर्चुअल कार्ड की जानकारी</translation>
+<translation id="1802420021606590788">Chrome, क्लाउड में किसी प्राइवेट स्पेस में पेजों के टाइटल और यूआरएल प्रोसेस करता है</translation>
 <translation id="1803254472779303354">माउस लॉक इस्तेमाल करने की अनुमति है</translation>
 <translation id="1803351196216024260">साइट, आपके माइक्रोफ़ोन का इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="1804258830776932716">तुरंत अपना खाता लिंक करके Pix का इस्तेमाल शुरू करें</translation>
@@ -3027,6 +3029,7 @@
 <translation id="5742806904559466333">बार, क्लब, और नाइटलाइफ़</translation>
 <translation id="5743684619253032786">नाखून की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="574392208103952083">मीडियम</translation>
+<translation id="5745586894920491759">Chrome, क्लाउड में पेजों के टाइटल और यूआरएल प्रोसेस करता है</translation>
 <translation id="5745733273847572235">साइट, आपकी जगह की जानकारी जानने की अनुमति मांग सकती है</translation>
 <translation id="5750869797196646528">हाथ ट्रैक करने की सुविधा</translation>
 <translation id="5752327398324808817">एक या दो शब्द डालें</translation>
@@ -3421,6 +3424,7 @@
 <translation id="6361757823711327522">बी7</translation>
 <translation id="6363786367719063276">लॉग देखें</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फ़ायरवॉल, और सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करें<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">आपके ईमेल पते की पुष्टि अपने-आप होगी</translation>
 <translation id="6366710531182496394">बाईं ओर ड्युएल स्टेपल</translation>
 <translation id="6367196786591004737">एंट्री मिटाएं</translation>
 <translation id="6370022303958842211">डिवाइस को ऐक्सेस करने से जुड़ी कार्रवाइयां, जैसे कि लॉगिन (इसमें लॉगिन न हो पाने की वजहें भी शामिल हैं), लॉगआउट, लॉक, और अनलॉक से जुड़ी जानकारी</translation>
@@ -4066,6 +4070,7 @@
 <translation id="7388380253839603603">गैस की कीमत और वाहन में फ़्यूल डलवाना</translation>
 <translation id="7388594495505979117">{0,plural, =1{आपका डिवाइस 1 मिनट में रीस्टार्ट होगा}one{आपका डिवाइस # मिनट में रीस्टार्ट होगा}other{आपका डिवाइस # मिनट में रीस्टार्ट होगा}}</translation>
 <translation id="7393161616326137353">एडवेंचर गेम</translation>
+<translation id="7393243238767102021">क्या आपको <ph name="DOMAIN" /> को इस ईमेल पते की अपने-आप पुष्टि करने की अनुमति देनी है?</translation>
 <translation id="7393475648162498734">चेकआउट के समय दिखाएं कि मेरे कार्ड के लिए कौन-कौनसे इनाम और फ़ायदे उपलब्ध हैं</translation>
 <translation id="7393971683644170444">कार्ड की सेवा देने वाली कंपनी से कनेक्ट किया जा रहा है...</translation>
 <translation id="739728382607845710">पेमेंट हैंडलर आइकॉन</translation>
@@ -5062,6 +5067,7 @@
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सुझाव:<ph name="MARKUP_2" />तय करें कि आपके पास डेटा कनेक्शन है<ph name="MARKUP_3" />इस वेबपेज को बाद में फिर लोड करें<ph name="MARKUP_4" />आपने जो पता डाला है उसकी जाँच करें<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">आपकी लोकल फ़ाइलें <ph name="HOURS" /> घंटे में मिटा दी जाएंगी</translation>
+<translation id="8964904785315870349">पुष्टि किया गया ईमेल पता</translation>
 <translation id="8968766641738584599">कार्ड सेव करें</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8971063699422889582">सर्वर के प्रमाणपत्र की समय-सीमा खत्म हो चुकी है.</translation>

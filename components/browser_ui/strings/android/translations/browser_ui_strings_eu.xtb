@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1000614056227025171">Orri nagusia pertsonalizatzeko promozioaren pantailaren behealdean ainguratutako orria altuera osoan irekita dago</translation>
 <translation id="1006017844123154345">Ireki sarean</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1046742265332833834">Gai urdina</translation>
@@ -206,6 +207,7 @@
 <translation id="3064871050034234884">Webguneek soinua erreproduzi dezakete</translation>
 <translation id="3065787901655140044">Babes aurreratua aktibatuta dago</translation>
 <translation id="3069226013421428034">Eman webgune jakin batean saioa hasteko baimena hirugarrenei.</translation>
+<translation id="3084983642903364837">Orri nagusia geroago editatzeko, erabili 3 puntuko menua.</translation>
 <translation id="310297983047869047">Aurreko diapositiba</translation>
 <translation id="3108122610701115301">Ezarri lehenetsi gisa</translation>
 <translation id="310979712355504754">Ezabatu guztiak</translation>
@@ -324,6 +326,7 @@
 <translation id="4217710972110098902">Serieko ataka batera konektatuta</translation>
 <translation id="4223404254440398437">Ukatu da mikrofonoa erabiltzeko baimena</translation>
 <translation id="4226663524361240545">Gailua dardararaz dezakete jakinarazpenek</translation>
+<translation id="4227965147357783918">Orri nagusia pertsonalizatzeko promozioaren pantailaren behealdean ainguratutako orria altuera erdian irekita dago</translation>
 <translation id="4259722352634471385"><ph name="URL" /> orrira joateko aukera blokeatuta dago</translation>
 <translation id="4274673989874969668">Webgune batetik irteten zarenean, webguneak sinkronizatzen jarrai dezake zereginak amaitzeko, hala nola argazkiak kargatzeko edo txat-mezuak bidaltzeko</translation>
 <translation id="4278390842282768270">Baimenduta</translation>

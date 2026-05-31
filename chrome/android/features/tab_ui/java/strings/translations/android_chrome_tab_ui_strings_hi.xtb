@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टैब ग्रुप में शामिल किया गया</translation>
 <translation id="1844381456014878100">7 दिनों तक कोई गतिविधि न होने पर</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{रीडिंग लिस्ट में टैब जोड़ें}one{रीडिंग लिस्ट में टैब जोड़ें}other{रीडिंग लिस्ट में टैब जोड़ें}}</translation>
 <translation id="1909810060368225529">सूचना: शेयर किए गए इस टैब ग्रुप में किए जाने वाले बदलाव, सभी लोगों को दिखेंगे. आपके शेयर किए गए टैब ग्रुप में, सभी लोग बदलाव कर सकते हैं</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{टैब को पिन करें}one{टैब को पिन करें}other{टैब पिन करें}}</translation>
 <translation id="1982637982196732906">इनऐक्टिव सेक्शन में मूव करें</translation>
