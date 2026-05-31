@@ -7039,24 +7039,6 @@
             ]
         }
     ],
-    "ContentHashInFileUploadFinalCall": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentHashInFileUploadFinalCall"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentSchemeIsLocal": [
         {
             "platforms": [
@@ -10346,6 +10328,24 @@
                     "enable_features": [
                         "EnhancedFieldsForSecOps",
                         "EnhancedSecurityEventFields"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnterpriseConnectorContentHashInFileUploadFinalCall": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContentHashInFileUploadFinalCall"
                     ]
                 }
             ]
