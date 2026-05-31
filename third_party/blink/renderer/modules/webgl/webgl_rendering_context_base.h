@@ -426,10 +426,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                   ExceptionState&);
 
   void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLenum format,
-                         GLenum type,
+                         GLenum internalformat,
                          const V8UnionElementOrElementImage* element,
                          const WebGLCopyElementImageConfig* config,
                          ExceptionState& exception_state);
@@ -2001,16 +1998,13 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void Dispose() override;
 
   void TexElementImage2DInternal(GLenum target,
-                                 GLint level,
-                                 GLint internalformat,
+                                 GLenum internalformat,
                                  std::optional<GLfloat> sx,
                                  std::optional<GLfloat> sy,
                                  std::optional<GLfloat> swidth,
                                  std::optional<GLfloat> sheight,
                                  std::optional<GLsizei> width,
                                  std::optional<GLsizei> height,
-                                 GLenum format,
-                                 GLenum type,
                                  const V8UnionElementOrElementImage* element,
                                  ExceptionState& exception_state);
 

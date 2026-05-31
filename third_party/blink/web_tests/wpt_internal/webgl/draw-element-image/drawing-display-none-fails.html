@@ -17,15 +17,11 @@
     const context_gl = canvas_3d.getContext('webgl2');
     const tex = context_gl.createTexture();
     context_gl.bindTexture(context_gl.TEXTURE_2D, tex);
-    const level = 0;
-    const internalformat = context_gl.RGBA;
-    const format = context_gl.RGBA;
-    const type = context_gl.UNSIGNED_BYTE;
+    const internalformat = context_gl.RGBA8;
     assert_throws_dom(
       "InvalidStateError",
         () => context_gl.texElementImage2D(
-            context_gl.TEXTURE_2D, level, internalformat, format, type,
-            canvas_3d_div),
+            context_gl.TEXTURE_2D, internalformat, canvas_3d_div),
       'texElementImage2D cannot draw display:none elements.');
   }, 'texElementImage2D with display:none element');
 </script>

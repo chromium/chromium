@@ -604,10 +604,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                   int64_t src_offset);
 
   void texElementImage2D(GLenum target,
-                         GLint level,
-                         GLint internalformat,
-                         GLenum format,
-                         GLenum type,
+                         GLenum internalformat,
                          const V8UnionElementOrElementImage* element,
                          const WebGLCopyElementImageConfig* config,
                          ExceptionState& exception_state);

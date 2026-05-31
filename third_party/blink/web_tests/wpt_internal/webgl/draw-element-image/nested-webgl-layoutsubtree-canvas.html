@@ -17,7 +17,7 @@ promise_test(async (t) => {
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
   assert_throws_dom("NotSupportedError", () => {
-    gl.texElementImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, inner_div);
+    gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, inner_div);
   });
 }, "texElementImage2D should throw if called on a nested webgl canvas");
 </script>

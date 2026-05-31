@@ -132,10 +132,7 @@ void main(){
 
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    const level = 0;
-    const internalformat = gl.RGBA;
-    const format = gl.RGBA;
-    const type = gl.UNSIGNED_BYTE;
+    const internalformat = gl.RGBA8;
 
     const config = {};
     let hasConfig = false;
@@ -152,13 +149,9 @@ void main(){
       hasConfig = true;
     }
     if (hasConfig) {
-      gl.texElementImage2D(
-        gl.TEXTURE_2D, level, internalformat,
-        format, type, target, config);
+      gl.texElementImage2D(gl.TEXTURE_2D, internalformat, target, config);
     } else {
-      gl.texElementImage2D(
-        gl.TEXTURE_2D, level, internalformat,
-        format, type, target);
+      gl.texElementImage2D(gl.TEXTURE_2D, internalformat, target);
     }
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -211,7 +204,7 @@ void main(){
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     const level = 0;
-    const internalformat = gl.RGBA;
+    const internalformat = gl.RGBA8;
     const format = gl.RGBA;
     const type = gl.UNSIGNED_BYTE;
 
@@ -231,13 +224,9 @@ void main(){
         hasConfig = true;
       }
       if (hasConfig) {
-        gl.texElementImage2D(
-          gl.TEXTURE_2D, level, internalformat,
-          format, type, target, config);
+        gl.texElementImage2D(gl.TEXTURE_2D, internalformat, target, config);
       } else {
-        gl.texElementImage2D(
-          gl.TEXTURE_2D, level, internalformat,
-          format, type, target);
+        gl.texElementImage2D(gl.TEXTURE_2D, internalformat, target);
       }
     }
 

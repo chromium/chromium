@@ -31,17 +31,12 @@
 
         const tex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, tex);
-        const level = 0;
-        const internalformat = gl.RGBA;
-        const format = gl.RGBA;
-        const type = gl.UNSIGNED_BYTE;
-
         // Helper to run texElementImage2D with optional config.
         function callTex(config) {
           if (config === undefined) {
-            gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container);
+            gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, container);
           } else {
-            gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container, config);
+            gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, container, config);
           }
         }
 
@@ -123,6 +118,23 @@
           () => callTex(makeConfig(0, 0, 10, 10, 10, undefined)),
           "Should throw OperationError for valid source and mismatched dest"
         );
+
+        // 4. Verify internalformat validation.
+        // Must be one of RGBA8, SRGB8_ALPHA8, RGBA16F, RGBA32F.
+        assert_throws_js(TypeError,
+          () => gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA, container),
+          "gl.RGBA internalformat should throw TypeError"
+        );
+        assert_throws_js(TypeError,
+          () => gl.texElementImage2D(gl.TEXTURE_2D, 99999, container),
+          "Invalid internalformat should throw TypeError"
+        );
+
+        // Allowed internal formats: should not throw.
+        gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, container);
+        gl.texElementImage2D(gl.TEXTURE_2D, gl.SRGB8_ALPHA8, container);
+        gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA16F, container);
+        gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA32F, container);
 
       }, "texElementImage2D parameter group validation");
     </script>

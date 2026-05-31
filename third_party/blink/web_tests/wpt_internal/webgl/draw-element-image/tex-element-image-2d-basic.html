@@ -73,15 +73,11 @@
 
           const tex = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_2D, tex);
-          const level = 0;
-          const internalformat = gl.RGBA;
-          const format = gl.RGBA;
-          const type = gl.UNSIGNED_BYTE;
-          gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container);
+          const internalformat = gl.RGBA8;
+          gl.texElementImage2D(gl.TEXTURE_2D, internalformat, container);
 
           // Zero-area call should not crash and should not paint
-          gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat,
-                               format, type, occluder, { width: 100, height: 0 });
+          gl.texElementImage2D(gl.TEXTURE_2D, internalformat, occluder, { width: 100, height: 0 });
 
           const fbo = gl.createFramebuffer();
           gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -91,6 +87,8 @@
           assert_true(complete);
 
           const pixels = new Uint8Array(32 * 32 * 4);
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
           gl.readPixels(0, 0, 32, 32, format, type, pixels);
 
           // Check the bottom row

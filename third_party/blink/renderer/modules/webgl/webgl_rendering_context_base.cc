@@ -6928,10 +6928,7 @@ void WebGLRenderingContextBase::texParameteri(GLenum target,
 
 void WebGLRenderingContextBase::texElementImage2D(
     GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLenum format,
-    GLenum type,
+    GLenum internalformat,
     const V8UnionElementOrElementImage* element,
     const WebGLCopyElementImageConfig* config,
     ExceptionState& exception_state) {
@@ -6982,27 +6979,31 @@ void WebGLRenderingContextBase::texElementImage2D(
     }
   }
 
-  TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
-                            sheight, width, height, format, type, element,
-                            exception_state);
+  TexElementImage2DInternal(target, internalformat, sx, sy, swidth, sheight,
+                            width, height, element, exception_state);
 }
 
 void WebGLRenderingContextBase::TexElementImage2DInternal(
     GLenum target,
-    GLint level,
-    GLint internalformat,
+    GLenum internalformat,
     std::optional<GLfloat> sx,
     std::optional<GLfloat> sy,
     std::optional<GLfloat> swidth,
     std::optional<GLfloat> sheight,
     std::optional<GLsizei> width,
     std::optional<GLsizei> height,
-    GLenum format,
-    GLenum type,
     const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       Host()->GetTopExecutionContext()));
+
+  if (internalformat != GL_RGBA8 && internalformat != GL_SRGB8_ALPHA8 &&
+      internalformat != GL_RGBA16F && internalformat != GL_RGBA32F) {
+    exception_state.ThrowTypeError(
+        "Invalid internalformat. Must be one of RGBA8, SRGB8_ALPHA8, RGBA16F, "
+        "or RGBA32F.");
+    return;
+  }
 
   if (isContextLost()) {
     return;
@@ -7020,15 +7021,22 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     return;
   }
 
+  GLenum type = GL_UNSIGNED_BYTE;
+  if (internalformat == GL_RGBA16F) {
+    type = GL_HALF_FLOAT;
+  } else if (internalformat == GL_RGBA32F) {
+    type = GL_FLOAT;
+  }
+
   TexImageParams params = {
       .source_type = kSourceImageBitmap,
       .function_id = kTexImage2D,
       .target = target,
-      .level = level,
-      .internalformat = internalformat,
+      .level = 0,
+      .internalformat = static_cast<GLint>(internalformat),
       .width = image->Size().width(),
       .height = image->Size().height(),
-      .format = format,
+      .format = GL_RGBA,
       .type = type,
   };
   GetCurrentUnpackState(params);

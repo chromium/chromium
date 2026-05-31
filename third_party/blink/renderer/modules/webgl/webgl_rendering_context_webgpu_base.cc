@@ -2306,10 +2306,7 @@ void WebGLRenderingContextWebGPUBase::texImage2D(
 
 void WebGLRenderingContextWebGPUBase::texElementImage2D(
     GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLenum format,
-    GLenum type,
+    GLenum internalformat,
     const V8UnionElementOrElementImage* element,
     const WebGLCopyElementImageConfig* config,
     ExceptionState& exception_state) {

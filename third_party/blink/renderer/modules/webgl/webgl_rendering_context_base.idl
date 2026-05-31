@@ -646,8 +646,8 @@ interface mixin WebGLRenderingContextBase {
         GLenum format, GLenum type, VideoFrame frame);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void texElementImage2D(GLenum target, GLint level, GLint internalformat,
-                           GLenum format, GLenum type, (Element or ElementImage) element,
+    void texElementImage2D(GLenum target, GLenum internalformat,
+                           (Element or ElementImage) element,
                            optional WebGLCopyElementImageConfig config = {});
 
     void texSubImage2D(
