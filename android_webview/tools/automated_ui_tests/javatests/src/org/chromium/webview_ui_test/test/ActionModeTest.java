@@ -205,10 +205,10 @@ public class ActionModeTest {
     }
 
     /**
-     * Perform a view action that clicks on the last word and start the idling resource
-     * to wait for completion of the popup menu
+     * Perform a view action that clicks on the last word and start the idling resource to wait for
+     * completion of the popup menu
      */
-    private final void longClickOnLastWord(int viewId) {
+    private void longClickOnLastWord(int viewId) {
         // TODO(aluo): This function is not guaranteed to click on element. Change to
         // implementation that gets bounding box for elements using Javascript.
         onView(withId(viewId))
