@@ -139,7 +139,7 @@
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Vælg et tema, og vælg derefter de understregede ord for at foretage personlig tilpasning af dine AI-billeder.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
+          Vælg "Giv mig inspiration" for at få mere unikke og varierede AI-billeder.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Når du opretter indhold ved hjælp af AI, sendes dine prompter til Google AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
@@ -636,7 +636,7 @@
 <translation id="3852931845120288955">Titel (A til Å)</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3862598938296403232">Du skal angive en beskrivelse</translation>
-<translation id="386280020966669610">Lad mig inspirere</translation>
+<translation id="386280020966669610">Giv mig inspiration</translation>
 <translation id="3864554910039562428">koralrev</translation>
 <translation id="3865289341173661845">Indholdet i Hjælp er ikke tilgængeligt.</translation>
 <translation id="3865414814144988605">Opløsning</translation>
@@ -735,7 +735,7 @@
 <translation id="4252261480746798874">Når du vælger "Opret dit eget", kan du angive en tilpasset prompt. Du kan også vælge "Vælg et tema" og derefter vælge de understregede ord for at foretage personlig tilpasning af din AI-baggrund.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
+          Vælg "Giv mig inspiration" for at få mere unikke og varierede AI-billeder.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Når du opretter din egen baggrund, sendes prompten til Googles servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles servicevilkår og privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Medtag ikke personlige, følsomme eller fortrolige oplysninger.
