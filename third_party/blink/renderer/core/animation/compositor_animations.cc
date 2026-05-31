@@ -728,23 +728,6 @@ void CompositorAnimations::StartAnimationOnCompositor(
   DCHECK(!started_keyframe_model_ids.empty());
 }
 
-void CompositorAnimations::CancelAnimationOnCompositor(
-    const Element& element,
-    CompositorAnimation* compositor_animation,
-    int id,
-    const EffectModel& model) {
-  if (CheckCanStartElementOnCompositor(element, model) != kNoFailure) {
-    // When an element is being detached, we cancel any associated
-    // Animations for CSS animations. But by the time we get
-    // here the mapping will have been removed.
-    // FIXME: Defer remove/pause operations until after the
-    // compositing update.
-    return;
-  }
-  if (compositor_animation)
-    compositor_animation->RemoveKeyframeModel(id);
-}
-
 void CompositorAnimations::PauseAnimationForTestingOnCompositor(
     const Element& element,
     const Animation& animation,

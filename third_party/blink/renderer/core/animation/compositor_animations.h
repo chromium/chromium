@@ -166,10 +166,6 @@ class CORE_EXPORT CompositorAnimations {
       double animation_playback_rate,
       bool is_monotonic_timeline,
       bool is_boundary_aligned);
-  static void CancelAnimationOnCompositor(const Element&,
-                                          CompositorAnimation*,
-                                          int id,
-                                          const EffectModel& model);
   static void PauseAnimationForTestingOnCompositor(const Element&,
                                                    const Animation&,
                                                    int id,
