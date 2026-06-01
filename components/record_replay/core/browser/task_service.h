@@ -6,8 +6,10 @@
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,21 +20,24 @@ class GURL;
 namespace record_replay {
 
 class TaskStore;
-class TaskData;
 class TaskDefinition;
 class TaskObservation;
 class TaskObserver;
 class TaskParametersExtractor;
 
-// Temporary type alias until TaskParameterValues is defined separately.
-// Currently the values are the same as the TaskData.
-using TaskParameterValues = TaskData;
+using TaskParameterValues =
+    base::flat_map<int, base::flat_map<std::string, std::string>>;
 
 // Service responsible for coordinating the lifecycle of automation tasks.
 class TaskService : public KeyedService {
  public:
+  using ExecutionCallback =
+      base::RepeatingCallback<void(const TaskDefinition&,
+                                   const TaskParameterValues&)>;
+
   TaskService(TaskStore* task_store,
-              TaskParametersExtractor* task_parameters_extractor);
+              TaskParametersExtractor* task_parameters_extractor,
+              ExecutionCallback execution_callback);
   TaskService(const TaskService&) = delete;
   TaskService& operator=(const TaskService&) = delete;
   TaskService(TaskService&&) = delete;
@@ -69,6 +74,7 @@ class TaskService : public KeyedService {
   // For simplification, we assume there is just one task to be observed at one
   // time, and therefore there is just one observer.
   std::unique_ptr<TaskObserver> observer_;
+  ExecutionCallback execution_callback_;
 
   base::WeakPtrFactory<TaskService> weak_ptr_factory_{this};
 };

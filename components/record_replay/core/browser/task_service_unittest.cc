@@ -27,7 +27,8 @@ using ::testing::NiceMock;
 
 class TaskServiceTest : public testing::Test {
  protected:
-  TaskServiceTest() : task_service_(&mock_task_store_, nullptr) {}
+  TaskServiceTest()
+      : task_service_(&mock_task_store_, nullptr, base::DoNothing()) {}
   ~TaskServiceTest() override = default;
 
   NiceMock<MockTaskStore> mock_task_store_;
@@ -36,14 +37,14 @@ class TaskServiceTest : public testing::Test {
 };
 
 TEST_F(TaskServiceTest, CanInstantiate) {
-  TaskService task_service(nullptr, nullptr);
+  TaskService task_service(nullptr, nullptr, base::DoNothing());
   // Check that we can instantiate it successfully.
   EXPECT_TRUE(true);
 }
 
 TEST_F(TaskServiceTest, OnURLVisitedRetrievesTaskDefinitions) {
   NiceMock<MockTaskStore> mock_task_store;
-  TaskService task_service(&mock_task_store, nullptr);
+  TaskService task_service(&mock_task_store, nullptr, base::DoNothing());
 
   GURL url("https://example.com");
   EXPECT_CALL(mock_task_store,
@@ -140,7 +141,7 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
 
 TEST_F(TaskServiceTest, TaskFlowWithParametersExtractor) {
   TaskParametersExtractor extractor;
-  TaskService task_service(&mock_task_store_, &extractor);
+  TaskService task_service(&mock_task_store_, &extractor, base::DoNothing());
 
   // Set up a task definition with steps and parameters.
   TaskDefinition definition;

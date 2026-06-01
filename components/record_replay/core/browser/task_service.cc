@@ -15,9 +15,11 @@
 namespace record_replay {
 
 TaskService::TaskService(TaskStore* task_store,
-                         TaskParametersExtractor* task_parameters_extractor)
+                         TaskParametersExtractor* task_parameters_extractor,
+                         ExecutionCallback execution_callback)
     : task_store_(task_store),
-      task_parameters_extractor_(task_parameters_extractor) {}
+      task_parameters_extractor_(task_parameters_extractor),
+      execution_callback_(std::move(execution_callback)) {}
 
 TaskService::~TaskService() = default;
 
@@ -74,8 +76,9 @@ void TaskService::OnTaskCompleted(const TaskObservation& observation) {
 
 void TaskService::OnExecutionAccepted(const TaskDefinition& definition,
                                       const TaskParameterValues& values) {
-  // TODO(crbug.com/514303674): Handle user accepting task execution callback
-  // from UI.
+  if (execution_callback_) {
+    execution_callback_.Run(definition, values);
+  }
 }
 
 }  // namespace record_replay
