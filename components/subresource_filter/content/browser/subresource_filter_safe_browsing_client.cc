@@ -18,6 +18,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client_request.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace subresource_filter {
 
@@ -57,10 +58,10 @@ void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
   auto* raw_request = request.get();
   CHECK(requests_.find(raw_request) == requests_.end());
   requests_[raw_request] = std::move(request);
-  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("loading"),
-                    "SubresourceFilterSBCheck",
-                    perfetto::Track::FromPointer(raw_request), "check_result",
-                    std::make_unique<base::trace_event::TracedValue>());
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                      "SubresourceFilterSBCheck",
+                      perfetto::Flow::FromPointer(raw_request), "check_result",
+                      std::make_unique<base::trace_event::TracedValue>());
   raw_request->Start(url);
   // Careful, |raw_request| can be destroyed after this line.
 }
@@ -69,10 +70,10 @@ void SubresourceFilterSafeBrowsingClient::OnCheckBrowseUrlResult(
     SubresourceFilterSafeBrowsingClientRequest* request,
     const CheckResult& check_result) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  TRACE_EVENT_END(
-      TRACE_DISABLED_BY_DEFAULT("loading"), /* SubresourceFilterSBCheck */
-      perfetto::Track::FromPointer(request), "check_result",
-      check_result.ToTracedValue());
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                      "SubresourceFilterSBResult",
+                      perfetto::TerminatingFlow::FromPointer(request),
+                      "check_result", check_result.ToTracedValue());
   CHECK(requests_.find(request) != requests_.end());
   requests_.erase(request);
   if (throttle_) {
