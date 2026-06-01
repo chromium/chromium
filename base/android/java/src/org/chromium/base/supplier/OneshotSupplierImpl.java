@@ -30,16 +30,22 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
     private final Promise<T> mPromise = new Promise<>();
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
+    public OneshotSupplierImpl() {
+        // Guard against creation on Instrumentation thread, since this causes the ThreadChecker
+        // to be associated with it (it should be UI thread).
+        assert !ThreadUtils.runningOnInstrumentationThread();
+    }
+
     @Override
     public @Nullable T onAvailable(Callback<T> callback) {
-        mThreadChecker.assertOnValidThread();
+        mThreadChecker.assertOnValidOrInstrumentationThread();
         mPromise.then(callback);
         return get();
     }
 
     @Override
     public @Nullable T get() {
-        mThreadChecker.assertOnValidThread();
+        mThreadChecker.assertOnValidOrInstrumentationThread();
         return mPromise.isFulfilled() ? mPromise.getResult() : null;
     }
 
@@ -51,7 +57,7 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
      * @param object The object to supply.
      */
     public void set(T object) {
-        mThreadChecker.assertOnValidThread();
+        mThreadChecker.assertOnValidOrInstrumentationThread();
         assert !mPromise.isFulfilled();
         assert object != null;
         mPromise.fulfill(object);
