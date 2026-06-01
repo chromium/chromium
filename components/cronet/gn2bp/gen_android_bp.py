@@ -375,10 +375,10 @@ def enable_boringssl(module, arch):
         static_libs = module.target[arch].static_libs
         whole_static_libs = module.target[arch].whole_static_libs
     shared_libs.add(f'{MODULE_PREFIX}{LIBCRYPTO_UNSTRIPPED}')
-    if module.type in ("cc_library_static", "rust_ffi_static", "rust_bindgen"):
-        static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
-    else:
+    if module.type in ("cc_binary", "cc_library_shared", "rust_binary"):
         whole_static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
+    else:
+        static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
 
 
 def add_androidx_experimental_java_deps(module, _):
