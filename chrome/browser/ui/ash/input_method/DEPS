@@ -17,7 +17,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*pixeltest\.cc": [
+  ".*pixeltest\\.cc": [
      "+chrome/browser/ui/views/frame/browser_view.h",
      "+chrome/browser/ui/browser.h",
   ]
