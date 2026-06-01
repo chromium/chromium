@@ -146,8 +146,8 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   void MeasureAcceptUserActionsForInstallDialog();
   void MeasureCancelUserActionsForInstallDialog();
 
-  static bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget,
-                                                          int min_height_limit);
+  static bool IsWidgetCurrentSizeSmallerThanPreferredSize(
+      views::Widget* widget);
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;

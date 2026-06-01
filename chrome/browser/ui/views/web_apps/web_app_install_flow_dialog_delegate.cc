@@ -221,6 +221,9 @@ NewPageActionHighlight(content::WebContents& web_contents) {
 
   return std::nullopt;
 }
+
+constexpr int kMinBoundsForInstallDialog = 50;
+
 }  // namespace
 
 WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
@@ -479,31 +482,19 @@ void WebAppInstallFlowDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
 }
 
 bool WebAppInstallFlowDialogDelegate::
-    IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget,
-                                                int min_height_limit) {
+    IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
   const gfx::Size& current_size = widget->GetSize();
   const gfx::Size& preferred_size =
       widget->GetContentsView()->GetPreferredSize();
-  int min_width =
-      preferred_size.width() - kMinInstallDialogBoundsDiffFromPreferred;
-  int min_height;
-  if (preferred_size.height() >= min_height_limit) {
-    min_height = std::max(
-        preferred_size.height() - kMinInstallDialogBoundsDiffFromPreferred,
-        min_height_limit);
-  } else {
-    min_height = preferred_size.height();
-  }
+  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
+  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
   return current_size.width() < min_width || current_size.height() < min_height;
 }
 
 void WebAppInstallFlowDialogDelegate::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  int min_height = (dialog_type() == InstallDialogType::kDetailed)
-                       ? kMinDetailedInstallDialogHeight
-                       : kMinSimpleFlowInstallDialogHeight;
-  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget, min_height)) {
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebAppInstallFlowDialogDelegate::CloseDialogAsIgnored,
@@ -891,10 +882,7 @@ WebAppInstallFlowDialogDelegate::Show(
   views::Widget* widget = constrained_window::ShowWebModalDialogViews(
       dialog.release(), web_contents);
 
-  int min_height = (install_type == InstallDialogType::kDetailed)
-                       ? kMinDetailedInstallDialogHeight
-                       : kMinSimpleFlowInstallDialogHeight;
-  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget, min_height)) {
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
     delegate_weak_ptr->CloseDialogAsIgnored();
     return nullptr;
   }

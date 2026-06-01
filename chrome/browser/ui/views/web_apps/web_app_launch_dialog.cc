@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
 #include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -46,23 +44,14 @@ namespace {
 
 bool g_auto_accept_launch_for_testing = false;
 
-constexpr int kMinLaunchDialogBoundsDiffFromPreferred = 50;
-constexpr int kMinLaunchDialogHeight = 220;
+constexpr int kMinBoundsForInstallDialog = 50;
 
 bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
   const gfx::Size& current_size = widget->GetSize();
   const gfx::Size& preferred_size =
       widget->GetContentsView()->GetPreferredSize();
-  int min_width =
-      preferred_size.width() - kMinLaunchDialogBoundsDiffFromPreferred;
-  int min_height;
-  if (preferred_size.height() >= kMinLaunchDialogHeight) {
-    min_height = std::max(
-        preferred_size.height() - kMinLaunchDialogBoundsDiffFromPreferred,
-        kMinLaunchDialogHeight);
-  } else {
-    min_height = preferred_size.height();
-  }
+  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
+  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
   return current_size.width() < min_width || current_size.height() < min_height;
 }
 
