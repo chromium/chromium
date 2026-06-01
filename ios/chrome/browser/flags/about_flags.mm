@@ -2893,8 +2893,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillAiWalletPassBranding2026Name,
      flag_descriptions::kAutofillAiWalletPassBranding2026Description,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAiWalletPassBranding2026)},
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWalletPassBranding2026)},
+    {"ios-mini-map-linkified-address",
+     flag_descriptions::kIOSMiniMapLinkifiedAddressName,
+     flag_descriptions::kIOSMiniMapLinkifiedAddressDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSMiniMapLinkifiedAddress)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

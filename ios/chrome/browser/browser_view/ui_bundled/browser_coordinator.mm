@@ -13,6 +13,7 @@
 #import "base/check.h"
 #import "base/check_deref.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -5484,24 +5485,30 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - MiniMapCommands
 
 - (void)presentMiniMapWithIPHForText:(NSString*)text {
+  MiniMapMode mode = base::FeatureList::IsEnabled(kIOSMiniMapLinkifiedAddress)
+                         ? MiniMapMode::kMapNativePreviewURL
+                         : MiniMapMode::kMap;
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
                                                         text:text
                                                          URL:nil
                                                      withIPH:YES
-                                                        mode:MiniMapMode::kMap];
+                                                        mode:mode];
   [self.miniMapCoordinator start];
 }
 
 - (void)presentMiniMapForText:(NSString*)text {
+  MiniMapMode mode = base::FeatureList::IsEnabled(kIOSMiniMapLinkifiedAddress)
+                         ? MiniMapMode::kMapNativePreviewURL
+                         : MiniMapMode::kMap;
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
                                                         text:text
                                                          URL:nil
                                                      withIPH:NO
-                                                        mode:MiniMapMode::kMap];
+                                                        mode:mode];
   [self.miniMapCoordinator start];
 }
 

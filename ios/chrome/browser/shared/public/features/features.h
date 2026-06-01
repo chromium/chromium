@@ -594,6 +594,9 @@ BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLink);
 // experiment.
 BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual);
 
+// Feature flag to open linkified address in Maps native preview.
+BASE_DECLARE_FEATURE(kIOSMiniMapLinkifiedAddress);
+
 // Returns whether notification collision management is enabled.
 bool IsNotificationCollisionManagementEnabled();
 

@@ -983,6 +983,12 @@ inline constexpr char kIOSLevelUpName[] = "Level Up";
 inline constexpr char kIOSLevelUpDescription[] =
     "Enables the 'Level Up' feature on iOS.";
 
+inline constexpr char kIOSMiniMapLinkifiedAddressName[] =
+    "Enables Maps Native Preview for linkified addresses";
+inline constexpr char kIOSMiniMapLinkifiedAddressDescription[] =
+    "When enabled, linkified addresses open Maps Native Preview instead of "
+    "mini map";
+
 inline constexpr char kIOSMiniMapUniversalLinkCounterfactualName[] =
     "Counterfactual for opening Maps Universal links in native view";
 inline constexpr char kIOSMiniMapUniversalLinkCounterfactualDescription[] =
