@@ -754,21 +754,7 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerHttpCache);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kNetTaskSchedulerHttpCacheTransaction);
 
-// When enabled, allows unit tests inheriting from net::WithTaskEnvironment to
-// instantiate and utilize the NetTaskScheduler. Disabling this acts as a global
-// kill-switch to bypass the NetTaskScheduler across all tests.
-//
-// TODO(crbug.com/463794414): Remove this flag after we confirm the tests under
-// the scheduler are sufficiently stable.
-NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskSchedulerInTests);
 
-// When enabled, forces the NetTaskScheduler to be enabled in tests, even for
-// test suites that explicitly bypass it. This is used for manual and automated
-// verification of scheduler-induced test crash profiles.
-//
-// TODO(crbug.com/463794414): Remove this flag after we confirm the tests under
-// the scheduler are sufficiently stable.
-NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskSchedulerForceEnableInTests);
 
 // If enabled, we will add an additional delay to the main job in
 // HttpStreamFactoryJobController.

@@ -63,37 +63,7 @@ TEST_P(WithTaskEnvironmentTest, SchedulerEnabled) {
 
 INSTANTIATE_TEST_SUITE_P(All, WithTaskEnvironmentTest, ::testing::Bool());
 
-class WithTaskEnvironmentSchedulerInTestsTest : public ::testing::Test {
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
 
-// Verifies the global test-only kill-switch (`kNetTaskSchedulerInTests`).
-// Even if the primary `kNetTaskScheduler` feature is enabled, disabling the
-// test-only switch must completely bypass the NetTaskScheduler inside unit
-// tests, falling back to the standard default task runner.
-TEST_F(WithTaskEnvironmentSchedulerInTestsTest, DisabledInTests) {
-  feature_list_.InitWithFeatures({features::kNetTaskScheduler},
-                                 {features::kNetTaskSchedulerInTests});
-
-  DummyWithTaskEnvironment task_environment;
-
-  EXPECT_EQ(GetTaskRunner(RequestPriority::HIGHEST),
-            base::SingleThreadTaskRunner::GetCurrentDefault());
-}
-
-// Verifies that the NetTaskScheduler is successfully initialized in tests
-// when both the primary `kNetTaskScheduler` feature flag and the test-only
-// switch (`kNetTaskSchedulerInTests`) are enabled.
-TEST_F(WithTaskEnvironmentSchedulerInTestsTest, EnabledInTests) {
-  feature_list_.InitWithFeatures(
-      {features::kNetTaskScheduler, features::kNetTaskSchedulerInTests}, {});
-
-  DummyWithTaskEnvironment task_environment;
-
-  EXPECT_NE(GetTaskRunner(RequestPriority::HIGHEST),
-            base::SingleThreadTaskRunner::GetCurrentDefault());
-}
 
 }  // namespace
 }  // namespace net

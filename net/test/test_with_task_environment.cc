@@ -33,8 +33,7 @@ NetTaskEnvironment::NetTaskEnvironment(
 NetTaskEnvironment::~NetTaskEnvironment() = default;
 
 void NetTaskEnvironment::Init() {
-  if (base::FeatureList::IsEnabled(features::kNetTaskSchedulerInTests) &&
-      base::FeatureList::IsEnabled(features::kNetTaskScheduler)) {
+  if (base::FeatureList::IsEnabled(features::kNetTaskScheduler)) {
     scheduler_ =
         NetTaskScheduler::CreateForNetTaskEnvironment(sequence_manager());
     DeferredInitFromSubclass(scheduler_->GetDefaultTaskQueue());
@@ -59,23 +58,10 @@ WithTaskEnvironment::FeatureDisabler::FeatureDisabler(
   }
 }
 
-namespace {
-std::vector<base::test::FeatureRef> FilterDisabledFeatures(
-    std::vector<base::test::FeatureRef> disabled_features) {
-  if (base::FeatureList::IsEnabled(
-          features::kNetTaskSchedulerForceEnableInTests)) {
-    std::erase_if(disabled_features, [](const base::test::FeatureRef& feature) {
-      return feature == features::kNetTaskScheduler;
-    });
-  }
-  return disabled_features;
-}
-}  // namespace
-
 WithTaskEnvironment::WithTaskEnvironment(
     base::test::TaskEnvironment::TimeSource time_source,
     std::vector<base::test::FeatureRef> disabled_features)
-    : feature_disabler_(FilterDisabledFeatures(disabled_features)),
+    : feature_disabler_(disabled_features),
       task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                         time_source) {}
 

@@ -55,33 +55,6 @@ TEST_P(NetTaskEnvironmentTest, Basic) {
 
 INSTANTIATE_TEST_SUITE_P(All, NetTaskEnvironmentTest, ::testing::Bool());
 
-class NetTaskEnvironmentSchedulerInTestsTest : public ::testing::Test {
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
 
-TEST_F(NetTaskEnvironmentSchedulerInTestsTest, DisabledInTests) {
-  // Enable production scheduler, but disable in tests.
-  feature_list_.InitWithFeatures({features::kNetTaskScheduler},
-                                 {features::kNetTaskSchedulerInTests});
-
-  NetTaskEnvironment task_environment;
-
-  // Should behave as if scheduler is disabled.
-  EXPECT_EQ(GetTaskRunner(RequestPriority::HIGHEST),
-            base::SingleThreadTaskRunner::GetCurrentDefault());
-}
-
-TEST_F(NetTaskEnvironmentSchedulerInTestsTest, EnabledInTests) {
-  // Enable both.
-  feature_list_.InitWithFeatures(
-      {features::kNetTaskScheduler, features::kNetTaskSchedulerInTests}, {});
-
-  NetTaskEnvironment task_environment;
-
-  // Should behave as if scheduler is enabled.
-  EXPECT_NE(GetTaskRunner(RequestPriority::HIGHEST),
-            base::SingleThreadTaskRunner::GetCurrentDefault());
-}
 
 }  // namespace net
