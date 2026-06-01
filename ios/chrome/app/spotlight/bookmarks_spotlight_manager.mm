@@ -256,6 +256,10 @@ class SpotlightBookmarkModelBridge;
   // Build a list of tags for every node having the URL and title. Combine the
   // lists of tags into one, that will be used to search for the spotlight item.
   for (const bookmarks::BookmarkNode* node : nodesMatchingURL) {
+    if (!node) {
+      continue;
+    }
+
     NSString* nodeTitle = base::SysUTF16ToNSString(node->GetTitle());
     if (!nodeTitle || ![nodeTitle isEqualToString:title]) {
       continue;
