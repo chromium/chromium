@@ -3436,10 +3436,34 @@ void SkiaRenderer::CopyDrawnRenderPass(
 }
 
 void SkiaRenderer::DidChangeVisibility() {
-  if (visible_)
+  if (visible_) {
     output_surface_->EnsureBackbuffer();
-  else
+    // NOTE: Not recreating buffers right away, they are recreated on demand
+    // later, when a frame is actually needed.
+  } else {
     output_surface_->DiscardBackbuffer();
+
+    if (features::ShouldDiscardVizBufferQueueOnVisibilityChange()) {
+      // We are not visible, all buffers in root and render pass BufferQueues
+      // can go. However, we also need to make sure that the GPU tasks are
+      // flushed for it to have any effect.
+      if (root_buffer_queue_) {
+        root_buffer_queue_->DestroyBuffers();
+      }
+
+      for (auto& pair : render_pass_backings_) {
+        if (pair.second.buffer_queue) {
+          pair.second.buffer_queue->DestroyBuffers();
+        }
+      }
+
+      // The call below also unlocks resources, make sure that there is nothing
+      // to unlock.
+      CHECK(lock_set_for_external_use_.empty());
+      // Make sure that the tasks actually get scheduled.
+      FlushOutputSurface();
+    }
+  }
 }
 
 void SkiaRenderer::FinishDrawingRenderPass() {
@@ -3700,6 +3724,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
 }
 
 void SkiaRenderer::FlushOutputSurface() {
+  TRACE_EVENT("viz", __PRETTY_FUNCTION__);
   auto sync_token = skia_output_surface_->Flush();
   lock_set_for_external_use_.UnlockResources(sync_token);
 }

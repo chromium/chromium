@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/viz/service/display/display.h"
 
 #include <limits>
@@ -25,6 +24,7 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/test/scheduler_test_common.h"
@@ -2380,6 +2380,80 @@ TEST_F(UnsupportedRendererDelegatedInkTest,
   mojo::Remote<gfx::mojom::DelegatedInkPointRenderer> ink_renderer_remote;
   display_->InitDelegatedInkPointRendererReceiver(
       ink_renderer_remote.BindNewPipeAndPassReceiver());
+}
+
+class DisplayVisibilityTest : public DisplayTest {
+ public:
+  DisplayVisibilityTest() = default;
+};
+
+TEST_F(DisplayVisibilityTest, DiscardBuffersOnVisibilityChangeGated) {
+  if constexpr (!features::kAllowVizBufferQueueDiscardOnVisibilityChange) {
+    GTEST_SKIP() << "VizBufferQueueDiscardOnVisibilityChange is not available "
+                    "on this platform.";
+  }
+
+  SetUpGpuDisplay(RendererSettings());
+  skia_output_surface_->SetRendererAllocatesImagesForTesting(true);
+  display_->Initialize(client_.get(), manager_.surface_manager());
+
+  gfx::Size size(100, 100);
+  display_->Resize(size);
+
+  // Submit a frame to allocate some buffers in SkiaRenderer's BufferQueue
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+
+  CompositorRenderPassList pass_list;
+  auto pass = CompositorRenderPass::Create();
+  pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(size), gfx::Rect(size),
+               gfx::Transform());
+  pass_list.push_back(std::move(pass));
+
+  SubmitCompositorFrame(&pass_list, local_surface_id);
+  display_->SetLocalSurfaceId(local_surface_id, 1.f);
+
+  // Draw a frame to ensure resources are allocated
+  DrawAndSwapParams params;
+  params.expected_display_time = base::TimeTicks::Now();
+  EXPECT_TRUE(display_->DrawAndSwap(params));
+
+  // Verify we allocated some buffers (they are not destroyed yet)
+  EXPECT_TRUE(skia_output_surface_->destroyed_mailboxes().empty());
+
+  // Enabled, buffers are discarded.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kVizBufferQueueDiscardOnVisibilityChange);
+
+    display_->SetVisible(false);
+    EXPECT_FALSE(skia_output_surface_->destroyed_mailboxes().empty());
+  }
+
+  // Reset display and surface for next test
+  display_->SetVisible(true);
+  skia_output_surface_->clear_destroyed_mailboxes();
+
+  // Draw again to allocate buffers again
+  pass = CompositorRenderPass::Create();
+  pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(size), gfx::Rect(size),
+               gfx::Transform());
+  pass_list.push_back(std::move(pass));
+  SubmitCompositorFrame(&pass_list, local_surface_id);
+  EXPECT_TRUE(display_->DrawAndSwap(params));
+  EXPECT_TRUE(skia_output_surface_->destroyed_mailboxes().empty());
+
+  // Disabled, buffers are not discarded.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kVizBufferQueueDiscardOnVisibilityChange);
+
+    display_->SetVisible(false);
+    EXPECT_TRUE(skia_output_surface_->destroyed_mailboxes().empty());
+  }
 }
 
 }  // namespace viz

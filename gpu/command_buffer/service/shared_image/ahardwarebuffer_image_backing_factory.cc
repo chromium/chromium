@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -527,10 +528,16 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
       hardware_buffer_handle_(std::move(handle)),
       use_passthrough_(use_passthrough),
       gl_format_caps_(gl_format_caps) {
+  TRACE_EVENT("gpu", __PRETTY_FUNCTION__, "mailbox", mailbox.ToDebugString(),
+              "width", si_info.size.width(), "height", si_info.size.height(),
+              "estimated_size", estimated_size);
   DCHECK(hardware_buffer_handle_.is_valid());
 }
 
 AHardwareBufferImageBacking::~AHardwareBufferImageBacking() {
+  TRACE_EVENT("gpu", __PRETTY_FUNCTION__, "mailbox", mailbox().ToDebugString(),
+              "width", size().width(), "height", size().height(),
+              "estimated_size", GetEstimatedSize());
   // Locking here in destructor since we are accessing member variable
   // |have_context_| via have_context().
   AutoLock auto_lock(this);

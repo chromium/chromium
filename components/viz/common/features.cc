@@ -53,6 +53,12 @@ BASE_FEATURE(kBackForwardTransitionsSameDocSharedImage,
 // compositing, where no root render pass is present.
 BASE_FEATURE(kBufferQueuePerRenderPass, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When the viz::Display visibility changes, whether to destroy all the buffers
+// in the various BufferQueues associated with it. This saves memory, at the
+// cost of recreating the buffers when becoming visible again.
+BASE_FEATURE(kVizBufferQueueDiscardOnVisibilityChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -536,5 +542,10 @@ bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
   return std::ranges::contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+bool ShouldDiscardVizBufferQueueOnVisibilityChange() {
+  return kAllowVizBufferQueueDiscardOnVisibilityChange &&
+         base::FeatureList::IsEnabled(kVizBufferQueueDiscardOnVisibilityChange);
+}
 
 }  // namespace features

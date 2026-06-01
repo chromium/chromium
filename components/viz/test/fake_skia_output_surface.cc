@@ -397,6 +397,10 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
   return gpu::Mailbox::Generate();
 }
 
+void FakeSkiaOutputSurface::DestroySharedImage(const gpu::Mailbox& mailbox) {
+  destroyed_mailboxes_.push_back(mailbox);
+}
+
 void FakeSkiaOutputSurface::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
                                                     bool purgeable) {
   if (set_purgeable_callback_) {

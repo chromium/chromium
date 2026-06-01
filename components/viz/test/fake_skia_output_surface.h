@@ -110,7 +110,11 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   gpu::Mailbox CreateSolidColorSharedImage(
       const SkColor4f& color,
       const gfx::ColorSpace& color_space) override;
-  void DestroySharedImage(const gpu::Mailbox& mailbox) override {}
+  void DestroySharedImage(const gpu::Mailbox& mailbox) override;
+  const std::vector<gpu::Mailbox>& destroyed_mailboxes() const {
+    return destroyed_mailboxes_;
+  }
+  void clear_destroyed_mailboxes() { destroyed_mailboxes_.clear(); }
   void SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
                                bool purgeable) override;
   bool SupportsBGRA() const override;
@@ -141,6 +145,13 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
   void UsePlatformDelegatedInkForTesting() {
     capabilities_.supports_delegated_ink = true;
+  }
+
+  void SetRendererAllocatesImagesForTesting(bool allocates) {
+    capabilities_.renderer_allocates_images = allocates;
+    if (allocates) {
+      capabilities_.number_of_buffers = 3;
+    }
   }
 
   gfx::DelegatedInkMetadata* last_delegated_ink_metadata() const {
@@ -222,6 +233,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
   sk_sp<GrDirectContext> gr_context_;
 
+  std::vector<gpu::Mailbox> destroyed_mailboxes_;
   base::WeakPtrFactory<FakeSkiaOutputSurface> weak_ptr_factory_{this};
 };
 

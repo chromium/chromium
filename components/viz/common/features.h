@@ -24,6 +24,22 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDumpForBadCompositedUiState);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardTransitionsSameDocSharedImage);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBufferQueuePerRenderPass);
+
+// On Windows, this may interact badly with partial delegation and kBufferQueue,
+// causing issues in (at least) tests. Disabled for now on this platform, while
+// the underlying issue is investigated (whether it's test-only or not). Using a
+// constexpr rather than a feature to prevent accidental enablement on Windows.
+inline constexpr bool kAllowVizBufferQueueDiscardOnVisibilityChange =
+#if BUILDFLAG(IS_WIN)
+    false;
+#else
+    true;
+#endif
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kVizBufferQueueDiscardOnVisibilityChange);
+
+VIZ_COMMON_EXPORT bool ShouldDiscardVizBufferQueueOnVisibilityChange();
+
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
 
 #if BUILDFLAG(IS_CHROMEOS)

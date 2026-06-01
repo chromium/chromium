@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -420,6 +421,13 @@ void Display::SetLocalSurfaceId(const LocalSurfaceId& id,
 
 void Display::SetVisible(bool visible) {
   TRACE_EVENT1("viz", "Display::SetVisible", "visible", visible);
+  // This may schedule tasks to e.g. destroy buffers when not visible, as in
+  // SkiaRenderer::SetVisible()
+  std::unique_ptr<gpu::ScopedAllowScheduleGpuTask> allow_schedule_gpu_task;
+  if (features::ShouldDiscardVizBufferQueueOnVisibilityChange()) {
+    allow_schedule_gpu_task.reset(new gpu::ScopedAllowScheduleGpuTask());
+  }
+
   if (renderer_)
     renderer_->SetVisible(visible);
   if (scheduler_)

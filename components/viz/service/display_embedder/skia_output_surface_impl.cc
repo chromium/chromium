@@ -1679,6 +1679,8 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSolidColorSharedImage(
 }
 
 void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
+  TRACE_EVENT("viz", "SkiaOutputSurfaceImpl::DestroySharedImage", "mailbox",
+              mailbox.ToDebugString());
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::DestroySharedImage,
                              base::Unretained(impl_on_gpu_.get()), mailbox);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
