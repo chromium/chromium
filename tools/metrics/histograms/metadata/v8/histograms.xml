@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExternalPointerTableCompactionOutcome"
-    enum="V8ExternalPointerTableCompactionOutcome" expires_after="2026-06-30">
+    enum="V8ExternalPointerTableCompactionOutcome" expires_after="2027-01-30">
   <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1396,7 +1396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedCodePointersCount" units="count"
-    expires_after="2026-06-30">
+    expires_after="2027-01-30">
   <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1410,7 +1410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedCppHeapPointersCount" units="count"
-    expires_after="2026-06-30">
+    expires_after="2027-01-30">
   <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1425,7 +1425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedExternalPointersCount" units="count"
-    expires_after="2026-06-30">
+    expires_after="2027-01-30">
   <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1440,7 +1440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedTrustedPointersCount" units="count"
-    expires_after="2026-06-30">
+    expires_after="2027-01-30">
   <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1476,7 +1476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxReservationSizeGB" units="GB"
-    expires_after="2026-07-04">
+    expires_after="2027-01-30">
   <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
