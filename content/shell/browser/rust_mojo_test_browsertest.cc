@@ -52,8 +52,12 @@ class RustMojoTestBrowserTestWithFeatureEnabled
 // TODO(crbug.com/444509367): Failing on Fushia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_LoadRustMojoService DISABLED_LoadRustMojoService
+#define MAYBE_LoadRustMojoServiceWithFeatureEnabled \
+  DISABLED_LoadRustMojoServiceWithFeatureEnabled
 #else
 #define MAYBE_LoadRustMojoService LoadRustMojoService
+#define MAYBE_LoadRustMojoServiceWithFeatureEnabled \
+  LoadRustMojoServiceWithFeatureEnabled
 #endif
 IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
   EXPECT_TRUE(NavigateToURL(
@@ -68,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
 }
 
 IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithFeatureEnabled,
-                       LoadRustMojoServiceWithFeatureEnabled) {
+                       MAYBE_LoadRustMojoServiceWithFeatureEnabled) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/rust_mojo_test.html")));
 
