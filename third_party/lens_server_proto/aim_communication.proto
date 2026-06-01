@@ -143,26 +143,13 @@ message AimToClientMessage {
     RemoveInjectedInput remove_injected_input = 11;
     UnlockInput unlock_input = 12;
     LockInput lock_input = 13;
-    NotifyLinkClicked notify_link_clicked = 14;
+    OpenLinkInSidePanelMode open_link_in_side_panel_mode = 14;
   }
 }
 
 // Message AIM sends to clients notifying them a link in a response was clicked.
-message NotifyLinkClicked {
+message OpenLinkInSidePanelMode {
   string url = 1;
-
-  LinkBehavior link_behavior = 2;
-
-  // The behavior of the link when clicked.
-  enum LinkBehavior {
-    option features.enum_type = CLOSED;
-
-    // The default behavior if unspecified or empty is to let the browser handle
-    // the link as it normally would (i.e. no cobrowse). Navigation in the same
-    // tab or new tab is primarily driven by the "target" attribute.
-    LINK_BEHAVIOR_UNSPECIFIED = 0;
-    LINK_BEHAVIOR_COBROWSE = 1;
-  }
 }
 
 // Message AIM sends to clients to unlock the input plate.

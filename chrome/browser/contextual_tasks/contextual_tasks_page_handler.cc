@@ -492,21 +492,17 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->GetPageRemote()->LockInput();
   } else if (aim_to_client_message.has_unlock_input()) {
     web_ui_controller_->GetPageRemote()->UnlockInput();
-  } else if (aim_to_client_message.has_notify_link_clicked()) {
-    auto behavior = aim_to_client_message.notify_link_clicked().link_behavior();
-    if (behavior == lens::NotifyLinkClicked::LINK_BEHAVIOR_COBROWSE) {
-      tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
-          web_ui_controller_->GetWebUIWebContents());
-      BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
-      GURL target_url(aim_to_client_message.notify_link_clicked().url());
-
-      // Only accept valid URLs that are HTTP or HTTPS.
-      if (target_url.is_valid() && target_url.SchemeIsHTTPOrHTTPS()) {
-        ui_service_->OnThreadLinkClicked(
-            target_url, web_ui_controller_->GetTaskId().value_or(base::Uuid()),
-            tab ? tab->GetWeakPtr() : nullptr,
-            browser ? browser->GetWeakPtr() : nullptr);
-      }
+  } else if (aim_to_client_message.has_open_link_in_side_panel_mode()) {
+    tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+        web_ui_controller_->GetWebUIWebContents());
+    BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
+    GURL target_url(aim_to_client_message.open_link_in_side_panel_mode().url());
+    // Only accept valid URLs that are HTTP or HTTPS.
+    if (target_url.is_valid() && target_url.SchemeIsHTTPOrHTTPS()) {
+      ui_service_->OnThreadLinkClicked(
+          target_url, web_ui_controller_->GetTaskId().value_or(base::Uuid()),
+          tab ? tab->GetWeakPtr() : nullptr,
+          browser ? browser->GetWeakPtr() : nullptr);
     }
   }
 }
