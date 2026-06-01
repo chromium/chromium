@@ -1358,7 +1358,10 @@ class LocationBarMediator
 
         set.connect(mDropdown.getId(), ConstraintSet.TOP, R.id.url_bar, ConstraintSet.BOTTOM);
         set.connect(
-                mDropdown.getId(), ConstraintSet.BOTTOM, R.id.navigate_button, ConstraintSet.TOP);
+                mDropdown.getId(),
+                ConstraintSet.BOTTOM,
+                R.id.location_bar_attachments_add,
+                ConstraintSet.TOP);
         set.connect(
                 mDropdown.getId(),
                 ConstraintSet.START,
@@ -1368,6 +1371,11 @@ class LocationBarMediator
                 mDropdown.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
         set.connect(
                 R.id.navigate_button, ConstraintSet.TOP, mDropdown.getId(), ConstraintSet.BOTTOM);
+        set.connect(
+                R.id.location_bar_attachments_add,
+                ConstraintSet.TOP,
+                mDropdown.getId(),
+                ConstraintSet.BOTTOM);
         set.connect(R.id.delete_button, ConstraintSet.TOP, R.id.url_bar, ConstraintSet.TOP);
         set.connect(R.id.delete_button, ConstraintSet.BOTTOM, R.id.url_bar, ConstraintSet.BOTTOM);
         set.constrainWidth(mDropdown.getId(), ConstraintSet.MATCH_CONSTRAINT);
