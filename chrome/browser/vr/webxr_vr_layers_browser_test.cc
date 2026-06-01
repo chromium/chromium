@@ -73,8 +73,7 @@ void MockForLayers::VerifyFrame(
 }  // namespace
 
 // Test all kinds of layers in WebXR. This test requests the 'layers' feature.
-// TODO(crbug.com/517698312): Re-enable this test.
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestLayers) {
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
   UiUtils::DisableOverlayForTesting();
   MockForLayers mock;
 

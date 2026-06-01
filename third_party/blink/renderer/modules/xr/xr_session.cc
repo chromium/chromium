@@ -2331,7 +2331,10 @@ void XRSession::OnFrame(double timestamp,
     camera_sync_tokens.reserve(graphics_bindings_.size());
 
     for (auto& binding : graphics_bindings_) {
-      camera_sync_tokens.push_back(binding->OnFrameEnd());
+      gpu::SyncToken camera_sync_token = binding->OnFrameEnd();
+      if (camera_sync_token.HasData()) {
+        camera_sync_tokens.push_back(std::move(camera_sync_token));
+      }
     }
 
     // Submit frame with cached layers data.
