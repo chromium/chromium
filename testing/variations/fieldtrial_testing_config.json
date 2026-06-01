@@ -15152,6 +15152,26 @@
             ]
         }
     ],
+    "KwdbRefreshDebugging": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260601",
+                    "enable_features": [
+                        "KwdbRefreshDebugging"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPPDeferUnusedPreload": [
         {
             "platforms": [
