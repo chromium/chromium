@@ -398,8 +398,8 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   if (auto* html_element = DynamicTo<HTMLElement>(element);
       html_element &&
-      html_element->FastHasAttribute(html_names::kUnboundedAttr) &&
       html_element->IsUnboundedElementActive()) {
+    DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     reasons |= CompositingReason::kUnboundedElement;
   }
 

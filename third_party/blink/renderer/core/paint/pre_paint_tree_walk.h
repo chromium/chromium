@@ -106,6 +106,9 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // fragmented at all).
     bool is_parent_first_for_node = true;
 
+    // Whether we are inside an active unbounded element.
+    bool inside_active_unbounded = false;
+
     const PhysicalBoxFragment* current_container;
     const PhysicalBoxFragment* absolute_positioned_container;
     const PhysicalBoxFragment* fixed_positioned_container;

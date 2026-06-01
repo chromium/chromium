@@ -662,7 +662,7 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
 
 bool RenderSurfaceImpl::ShouldClip() const {
   return !HasCopyRequest() && !ShouldCacheRenderSurface() &&
-         !IsViewTransitionElement();
+         !IsViewTransitionElement() && !IsUnbounded();
 }
 
 }  // namespace cc

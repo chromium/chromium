@@ -977,7 +977,7 @@ input[type="hidden" i] {
   display: none !important;
 }
 @supports blink-feature(UnboundedElement) {
-  [unbounded] {
+  [unbounded]:-internal-unbounded-element-inactive {
     visibility: hidden;
   }
 }

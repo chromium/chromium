@@ -815,6 +815,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoTextField:
     case CSSSelector::kPseudoToolFormActive:
     case CSSSelector::kPseudoToolSubmitActive:
+    case CSSSelector::kPseudoUnboundedElementInactive:
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionGroupChildren:
@@ -3112,6 +3113,14 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSpatialNavigationFocus:
       DCHECK(is_ua_rule_);
       return MatchesSpatialNavigationFocusPseudoClass(element);
+    case CSSSelector::kPseudoUnboundedElementInactive: {
+      DCHECK(is_ua_rule_);
+      DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+      auto* html_element = DynamicTo<HTMLElement>(element);
+      return html_element &&
+             html_element->FastHasAttribute(html_names::kUnboundedAttr) &&
+             !html_element->IsUnboundedElementActive();
+    }
     case CSSSelector::kPseudoHasDatalist:
       DCHECK(is_ua_rule_);
       return MatchesHasDatalistPseudoClass(element);

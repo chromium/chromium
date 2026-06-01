@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -55,6 +57,23 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
 namespace blink {
+
+static HTMLElement* FindActiveUnboundedAncestor(const PaintLayer& layer) {
+  if (!RuntimeEnabledFeatures::UnboundedElementEnabled()) {
+    return nullptr;
+  }
+  if (!layer.GetLayoutObject().IsInclusiveDescendantOfUnboundedElement()) {
+    return nullptr;
+  }
+  for (const PaintLayer* curr = &layer; curr; curr = curr->Parent()) {
+    auto* element = DynamicTo<Element>(curr->GetLayoutObject().GetNode());
+    if (auto* html_element = DynamicTo<HTMLElement>(element);
+        html_element && html_element->IsUnboundedElementActive()) {
+      return html_element;
+    }
+  }
+  NOTREACHED();
+}
 
 static bool HasNonVisibleOverflow(const PaintLayer& layer) {
   if (const auto* box = layer.GetLayoutBox())
@@ -131,6 +150,17 @@ void PaintLayerClipper::CalculateBackgroundClipRectInternal(
   } else {
     destination_property_tree_state.SetClip(
         context.root_fragment->ContentsClip());
+  }
+
+  if (auto* unbounded_ancestor = FindActiveUnboundedAncestor(*layer_)) {
+    // For unbounded elements, we calculate the background clip rect relative to
+    // the active unbounded ancestor's state, so these elements escape ancestor
+    // clips.
+    DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    const auto& unbounded_fragment =
+        unbounded_ancestor->GetLayoutObject()->FirstFragment();
+    destination_property_tree_state =
+        unbounded_fragment.LocalBorderBoxProperties();
   }
 
   // The background rect applies all clips *above* m_layer, but not the overflow

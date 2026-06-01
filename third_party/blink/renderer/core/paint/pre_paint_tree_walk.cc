@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
@@ -639,7 +641,13 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
                                   *context.tree_builder_context);
     property_tree_builder->UpdateForSelf();
   }
-
+  if (const auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
+      html_element && html_element->IsUnboundedElementActive()) {
+    DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    context.inside_active_unbounded = true;
+  }
+  object.GetMutableForPainting().UpdateIsActiveUnboundedElementOrDescendant(
+      context.inside_active_unbounded);
   // This must happen before paint invalidation because background painting
   // depends on the effective allowed touch action and blocking wheel event
   // handlers.

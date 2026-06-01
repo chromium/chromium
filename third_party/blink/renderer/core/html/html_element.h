@@ -404,12 +404,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   // The Unbounded Element API. See crbug.com/508672616.
   ScriptPromise<IDLUndefined> showUnboundedElement(ScriptState*);
-  bool IsUnboundedElementActive() const {
-    return HasElementFlag(ElementFlags::kIsUnboundedElementActive);
-  }
-  void SetUnboundedElementActive(bool active) {
-    SetElementFlag(ElementFlags::kIsUnboundedElementActive, active);
-  }
+  bool IsUnboundedElementActive() const;
+  void SetUnboundedElementActive(bool active);
 
  protected:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;

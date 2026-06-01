@@ -4010,6 +4010,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
         context_.transform_ancestor_for_transition_pseudo_root;
   }
 
+  // For unbounded elements, we re-parent the clip tree to the root node, so
+  // these elements escape ancestor clips.
+  if (auto* html_element = DynamicTo<HTMLElement>(object_.GetNode());
+      html_element && html_element->IsUnboundedElementActive()) {
+    DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    context_.current.clip = &ClipPaintPropertyNode::Root();
+  }
+
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
 

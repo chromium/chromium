@@ -693,8 +693,22 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
 }
 
 gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
-  const EffectNode& effect_node =
-      property_trees->effect_tree().Node(layer->effect_tree_index());
+  const EffectTree& effect_tree = property_trees->effect_tree();
+  int unbounded_effect_id = kInvalidPropertyNodeId;
+  for (int i = layer->effect_tree_index(); i != kInvalidNodeId;) {
+    const EffectNode& node = effect_tree.Node(i);
+    if (node.id == kContentsRootPropertyNodeId) {
+      break;
+    }
+    if (node.render_surface_reason ==
+        cc::RenderSurfaceReason::kUnboundedElement) {
+      unbounded_effect_id = node.id;
+      break;
+    }
+    i = node.parent_id;
+  }
+
+  const EffectNode& effect_node = effect_tree.Node(layer->effect_tree_index());
   int lower_effect_closest_ancestor =
       effect_node.closest_ancestor_with_cached_render_surface_id;
   lower_effect_closest_ancestor =
@@ -706,6 +720,10 @@ gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
   lower_effect_closest_ancestor =
       std::max(lower_effect_closest_ancestor,
                effect_node.closest_ancestor_with_shared_element_id);
+  if (unbounded_effect_id != kInvalidPropertyNodeId) {
+    lower_effect_closest_ancestor =
+        std::max(lower_effect_closest_ancestor, unbounded_effect_id);
+  }
   const bool non_root_with_render_surface =
       lower_effect_closest_ancestor > kContentsRootPropertyNodeId;
   gfx::Rect layer_content_rect = gfx::Rect(layer->bounds());
@@ -728,8 +746,8 @@ gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
 
   const EffectNode& root_effect_node =
       non_root_with_render_surface
-          ? property_trees->effect_tree().Node(lower_effect_closest_ancestor)
-          : property_trees->effect_tree().Node(kContentsRootPropertyNodeId);
+          ? effect_tree.Node(lower_effect_closest_ancestor)
+          : effect_tree.Node(kContentsRootPropertyNodeId);
   ConditionalClip accumulated_clip_in_layer_space =
       ComputeTargetRectInLocalSpace(
           accumulated_clip_in_root_space, property_trees,

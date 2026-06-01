@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
@@ -720,6 +721,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   inline bool IsStacked(const ComputedStyle& style) const {
     NOT_DESTROYED();
+    if (auto* html_element = DynamicTo<HTMLElement>(GetNode());
+        html_element && html_element->IsUnboundedElementActive()) {
+      // For unbounded elements, we treat them as stacked, so they get their own
+      // paint layer by default.
+      DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+      return true;
+    }
     return style.GetPosition() != EPosition::kStatic ||
            (IsStackingContext(style) &&
             (!RuntimeEnabledFeatures::StackingContextIsNotStackedEnabled() ||
@@ -3083,6 +3091,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       layout_object_.UpdateInsideBlockingWheelEventHandler(inside);
     }
 
+    void UpdateIsActiveUnboundedElementOrDescendant(bool inside) {
+      layout_object_.UpdateIsActiveUnboundedElementOrDescendant(inside);
+    }
+
 #if DCHECK_IS_ON()
     void ClearNeedsPaintPropertyUpdateForTesting() {
       layout_object_.bitfields_.SetNeedsPaintPropertyUpdate(false);
@@ -3323,7 +3335,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.PreviousVisibilityVisible();
   }
 
-  // See LocalVisualRect().
+  bool IsInclusiveDescendantOfUnboundedElement() const {
+    NOT_DESTROYED();
+    return bitfields_.IsActiveUnboundedElementOrDescendant();
+  }
+
+  void UpdateIsActiveUnboundedElementOrDescendant(bool inside) {
+    NOT_DESTROYED();
+    bitfields_.SetIsActiveUnboundedElementOrDescendant(inside);
+  }
+
   virtual bool VisualRectRespectsVisibility() const {
     NOT_DESTROYED();
     return true;
@@ -3822,7 +3843,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           may_be_non_contiguous_ifc_(false),
           has_svg_text_descendants_(false),
           is_multicol_container_(false),
-          contains_selection_focus_(false) {}
+          contains_selection_focus_(false),
+          is_active_unbounded_element_or_descendant_(false) {}
 
     // Typically indicates that this object has had its style changed, and
     // requires a "full" layout.
@@ -4178,6 +4200,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // Whether the selection focus is inside this element.
     // Used for text-overflow ellipsis.
     ADD_BOOLEAN_BITFIELD(contains_selection_focus_, ContainsSelectionFocus);
+
+    // Whether this is an (inclusive) descendant of an unbounded element.
+    ADD_BOOLEAN_BITFIELD(is_active_unbounded_element_or_descendant_,
+                         IsActiveUnboundedElementOrDescendant);
   };
 
 #undef ADD_BOOLEAN_BITFIELD

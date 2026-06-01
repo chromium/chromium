@@ -386,6 +386,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoSpatialNavigationFocus,
     kPseudoSpellingError,
     kPseudoTargetText,
+    kPseudoUnboundedElementInactive,
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
 

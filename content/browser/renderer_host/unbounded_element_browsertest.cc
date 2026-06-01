@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,11 +24,16 @@ class UnboundedElementBrowserTest : public ContentBrowserTest {
   UnboundedElementBrowserTest() = default;
   ~UnboundedElementBrowserTest() override = default;
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/508672616): Not yet implemented on Android.
+    GTEST_SKIP();
+#else
     feature_list_.InitWithFeatures(
         {blink::features::kUnboundedElement,
          blink::features::kUnboundedElementOnTheOpenWeb},
         {});
     ContentBrowserTest::SetUp();
+#endif
   }
 
  protected:
@@ -43,18 +50,18 @@ class UnboundedElementBrowserTest : public ContentBrowserTest {
     return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
-  void wait_for_frame() {
-    std::ignore = EvalJs(primary_main_frame_host(),
-                         "new Promise(r => requestAnimationFrame(() => "
-                         "requestAnimationFrame(r)))");
+  void WaitForFrameReady() {
+    WaitForHitTestData(primary_main_frame_host());
+    MainThreadFrameObserver frame_observer(
+        primary_main_frame_host()->GetRenderWidgetHost());
+    frame_observer.Wait();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
-                       DISABLED_ActivationPreconditions) {
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, ActivationPreconditions) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -65,20 +72,67 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   )";
   // showUnboundedElement throws DOMException NotAllowedError without transient
   // user gesture.
-  EXPECT_EQ("NotAllowedError", EvalJs(primary_main_frame_host(), script));
+  EXPECT_EQ("NotAllowedError", EvalJs(primary_main_frame_host(), script,
+                                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-// TODO(crbug.com/508672616): Not yet implemented on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CompositorPopupAllocation DISABLED_CompositorPopupAllocation
-#define MAYBE_CompositorPopupAllocationHighDPI \
-  DISABLED_CompositorPopupAllocationHighDPI
-#else
-#define MAYBE_CompositorPopupAllocation CompositorPopupAllocation
-#define MAYBE_CompositorPopupAllocationHighDPI CompositorPopupAllocationHighDPI
-#endif
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, AncestorClipping) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissEscKey) {
+  std::string setup_script = R"(
+    document.body.innerHTML = `
+      <div id="container" style="width:50px; height:50px; overflow:hidden;
+           position:relative;">
+        <div id="child" style="width:100px; height:100px; position:absolute;
+             top:0; left:0;" unbounded></div>
+      </div>
+    `;
+    const child = document.getElementById('child');
+    child.addEventListener('mousedown', () => { window.__clicked = true; });
+    child.showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+  WaitForFrameReady();
+
+  SimulateMouseClickAt(web_contents(), 0, blink::WebMouseEvent::Button::kLeft,
+                       gfx::Point(75, 75));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  EXPECT_TRUE(
+      EvalJs(primary_main_frame_host(), "window.__clicked").ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRouting) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML =
+        '<div id="child" style="width:100px; height:100px;" unbounded></div>';
+    const div = document.getElementById('child');
+    div.addEventListener('mousemove', (e) => {
+      window.__mouse_x = e.clientX;
+      window.__mouse_y = e.clientY;
+    });
+    div.showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  SimulateMouseEvent(web_contents(), blink::WebInputEvent::Type::kMouseMove,
+                     gfx::Point(50, 50));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__mouse_x"));
+  EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__mouse_y"));
+}
+
+// TODO(crbug.com/508672616): This test is currently broken because visibility
+// styles are not yet reset to "hidden" when
+// unbounded_surface_client_->OnDismissed() is called.
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       DISABLED_LightDismissEscKey) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -88,16 +142,22 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissEscKey) {
     document.getElementById('target').showUnboundedElement();
   )";
   ASSERT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
 
   SimulateKeyPress(web_contents(), ui::DomKey::ESCAPE, ui::DomCode::ESCAPE,
                    ui::VKEY_ESCAPE, false, false, false, false);
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
 
   std::string get_style =
       "getComputedStyle(document.getElementById('target')).visibility";
   EXPECT_EQ("hidden", EvalJs(primary_main_frame_host(), get_style));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissClickOutside) {
+// TODO(crbug.com/508672616): This test is currently broken because visibility
+// styles are not yet reset to "hidden" when
+// unbounded_surface_client_->OnDismissed() is called.
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       DISABLED_LightDismissClickOutside) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -107,29 +167,50 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissClickOutside) {
     document.getElementById('target').showUnboundedElement();
   )";
   ASSERT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
 
   SimulateMouseClickAt(web_contents(), 0, blink::WebMouseEvent::Button::kLeft,
                        gfx::Point(300, 300));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
   std::string get_style =
       "getComputedStyle(document.getElementById('target')).visibility";
   EXPECT_EQ("hidden", EvalJs(primary_main_frame_host(), get_style));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
-                       MAYBE_CompositorPopupAllocation) {
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopoverInsideUnbounded) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::string script = R"(
-    (async () => {
-      document.body.innerHTML =
-        '<div id="target" style="width:100px; height:100px;" unbounded></div>';
-      await document.getElementById('target').showUnboundedElement();
-      return true;
-    })();
+    document.body.innerHTML = `
+      <div id="child" style="width:100px; height:100px;" unbounded>
+        <div id="popover" popover>Nested Popover</div>
+      </div>
+    `;
+    document.getElementById('child').showUnboundedElement().then(() => {
+      document.getElementById('popover').showPopover();
+    });
   )";
-  EXPECT_EQ(true, EvalJs(primary_main_frame_host(), script));
-  wait_for_frame();
+  ASSERT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  EXPECT_TRUE(EvalJs(primary_main_frame_host(),
+                     "document.getElementById('popover')"
+                     ".matches(':popover-open')")
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CompositorPopupAllocation) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML =
+      '<div id="target" style="width:100px; height:100px;" unbounded></div>';
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
 
   ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
   RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
@@ -146,18 +227,25 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   // Execute script that calls showUnboundedElement on an unattached element
   // (empty bounds) and catches the exception name.
   std::string script = R"(
-    (async () => {
-      const div = document.createElement('div');
-      div.setAttribute('unbounded', '');
-      try {
-        await div.showUnboundedElement();
-        return "Success";
-      } catch (e) {
-        return e.name;
-      }
-    })();
+    const div = document.createElement('div');
+    div.setAttribute('unbounded', '');
+    div.showUnboundedElement().then(() => "Success", e => e.name);
   )";
   EXPECT_EQ("NotSupportedError", EvalJs(primary_main_frame_host(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       RequestWithoutAttributeThrowsException) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Execute script that calls showUnboundedElement on an element
+  // without the 'unbounded' attribute and catches the exception name.
+  std::string script = R"(
+    const div = document.createElement('div');
+    div.showUnboundedElement().then(() => "Success", e => e.name);
+  )";
+  EXPECT_EQ("InvalidStateError", EvalJs(primary_main_frame_host(), script));
 }
 
 class UnboundedElementHighDPIBrowserTest : public UnboundedElementBrowserTest {
@@ -172,20 +260,17 @@ class UnboundedElementHighDPIBrowserTest : public UnboundedElementBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
-                       MAYBE_CompositorPopupAllocationHighDPI) {
+                       CompositorPopupAllocationHighDPI) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::string script = R"(
-    (async () => {
-      document.body.innerHTML =
-        '<div id="target" style="width:100px; height:100px;" unbounded></div>';
-      await document.getElementById('target').showUnboundedElement();
-      return true;
-    })();
+    document.body.innerHTML =
+      '<div id="target" style="width:100px; height:100px;" unbounded></div>';
+    document.getElementById('target').showUnboundedElement();
   )";
-  EXPECT_EQ(true, EvalJs(primary_main_frame_host(), script));
-  wait_for_frame();
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
 
   ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
   RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];

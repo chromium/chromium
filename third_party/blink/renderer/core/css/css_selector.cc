@@ -524,6 +524,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
     case kPseudoUnknown:
+    case kPseudoUnboundedElementInactive:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
     case kPseudoUserValid:
@@ -603,6 +604,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-spatial-navigation-focus",
      CSSSelector::kPseudoSpatialNavigationFocus},
     {"-internal-text-field", CSSSelector::kPseudoTextField},
+    {"-internal-unbounded-element-inactive",
+     CSSSelector::kPseudoUnboundedElementInactive},
     {"-internal-video-persistent", CSSSelector::kPseudoVideoPersistent},
     {"-internal-video-persistent-ancestor",
      CSSSelector::kPseudoVideoPersistentAncestor},
@@ -1024,6 +1027,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
     case kPseudoSpatialNavigationFocus:
+    case kPseudoUnboundedElementInactive:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
       if (mode != kUASheetMode) {
@@ -1927,6 +1931,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoTextField:
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
+    case kPseudoUnboundedElementInactive:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
       return true;
