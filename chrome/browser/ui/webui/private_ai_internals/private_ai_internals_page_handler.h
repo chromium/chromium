@@ -57,10 +57,6 @@ class PrivateAiInternalsPageHandler
   void SendRequest(const std::string& feature_name,
                    const std::string& request,
                    SendRequestCallback callback) override;
-  void SendZssRequest(const std::string& inner_text,
-                      SendZssRequestCallback callback) override;
-  void SendFormsAiRequest(const std::string& url,
-                          SendFormsAiRequestCallback callback) override;
 
   // PrivateAiLogger::Observer:
   void OnLogInfo(const base::Location& location,
@@ -74,6 +70,13 @@ class PrivateAiInternalsPageHandler
   void LogToPage(private_ai_internals::mojom::LogLevel level,
                  const base::Location& location,
                  std::string_view message);
+
+  void SendTextRequest(proto::FeatureName feature_name,
+                       const std::string& request,
+                       SendRequestCallback callback);
+  void SendZssRequest(const std::string& inner_text,
+                      SendRequestCallback callback);
+  void SendFormsAiRequest(const std::string& url, SendRequestCallback callback);
 
   raw_ptr<phosphor::TokenManager> token_manager_;
   // The global client, only used for observation.

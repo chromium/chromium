@@ -11,6 +11,12 @@ import {PrivateAiInternalsBrowserProxyImpl} from './private_ai_internals_browser
 
 const proxy = PrivateAiInternalsBrowserProxyImpl.getInstance();
 
+const ZERO_STATE_SUGGESTION_FEATURE_NAME =
+    'FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION';
+const FORMS_AI_FEATURE_NAME = 'FEATURE_NAME_CHROME_FORMS_AI';
+const GENERATE_CONTENT_FEATURE_NAME =
+    'FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT';
+
 function registerOnLogMessageListener() {
   const logsContainer = document.getElementById('logs-container');
   proxy.getCallbackRouter().onLogMessage.addListener(
@@ -110,15 +116,15 @@ function registerOnCreateConnectionButtonListener() {
 function registerOnSendButtonListener() {
   const sendButton = document.getElementById('send-button');
   sendButton?.addEventListener('click', () => {
-    onRequestSend();
+    sendRequest(GENERATE_CONTENT_FEATURE_NAME, 'Text');
   });
   const sendZssButton = document.getElementById('send-zss-button');
   sendZssButton?.addEventListener('click', () => {
-    onZssRequestSend();
+    sendRequest(ZERO_STATE_SUGGESTION_FEATURE_NAME, 'ZSS');
   });
   const sendFormsAiButton = document.getElementById('send-forms-ai-button');
   sendFormsAiButton?.addEventListener('click', () => {
-    onFormsAiRequestSend();
+    sendRequest(FORMS_AI_FEATURE_NAME, 'FormsAI');
   });
 }
 
@@ -139,7 +145,7 @@ function addErrorToConsoleContainer(error: string) {
   consoleContainer?.appendChild(errorElement);
 }
 
-function onRequestSend() {
+function sendRequest(featureName: string, prefix: string) {
   const requestInput =
       document.getElementById('request-input') as HTMLInputElement;
 
@@ -149,39 +155,14 @@ function onRequestSend() {
   }
 
   // Display user's request.
-  addMsgToConsoleContainer('Request: ' + request);
+  const requestLabel = prefix ? `${prefix} Request` : 'Request';
+  const responseLabel = prefix ? `${prefix} Response` : 'Response';
+  addMsgToConsoleContainer(`${requestLabel}: ${request}`);
 
   // Send request to the Private AI client and get a response.
-  proxy.sendRequest(loadTimeData.getString('default_feature_name'), request)
-      .then((response) => {
-        if (response.response) {
-          addMsgToConsoleContainer('Response: ' + response.response);
-        } else {
-          addErrorToConsoleContainer('Error: ' + response.error);
-        }
-      });
-
-  // Clear the input field and refocus.
-  requestInput.value = '';
-  requestInput.focus();
-}
-
-function onZssRequestSend() {
-  const requestInput =
-      document.getElementById('request-input') as HTMLInputElement;
-
-  const text = requestInput.value;
-  if (text.trim() === '') {
-    return;
-  }
-
-  // Display user's request.
-  addMsgToConsoleContainer('ZSS Request: ' + text);
-
-  // Send ZSS request to the Private AI client and get a response.
-  proxy.sendZssRequest(text).then((response) => {
+  proxy.sendRequest(featureName, request).then((response) => {
     if (response.response) {
-      addMsgToConsoleContainer('ZSS Response: ' + response.response);
+      addMsgToConsoleContainer(`${responseLabel}: ${response.response}`);
     } else {
       addErrorToConsoleContainer('Error: ' + response.error);
     }
@@ -192,31 +173,7 @@ function onZssRequestSend() {
   requestInput.focus();
 }
 
-function onFormsAiRequestSend() {
-  const requestInput =
-      document.getElementById('request-input') as HTMLInputElement;
 
-  const url = requestInput.value;
-  if (url.trim() === '') {
-    return;
-  }
-
-  // Display user's request.
-  addMsgToConsoleContainer('FormsAI Request (URL): ' + url);
-
-  // Send FormsAI request to the Private AI client and get a response.
-  proxy.sendFormsAiRequest(url).then((response) => {
-    if (response.response) {
-      addMsgToConsoleContainer('FormsAI Response: ' + response.response);
-    } else {
-      addErrorToConsoleContainer('Error: ' + response.error);
-    }
-  });
-
-  // Clear the input field and refocus.
-  requestInput.value = '';
-  requestInput.focus();
-}
 
 function getServerURL() {
   const privateAiServerUrl =

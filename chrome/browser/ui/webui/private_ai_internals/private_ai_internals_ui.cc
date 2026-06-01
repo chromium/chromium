@@ -63,10 +63,6 @@ PrivateAiInternalsUI::PrivateAiInternalsUI(content::WebUI* web_ui)
                         ? ""
                         : PrivateAiInternalsPageHandler::kApiKeyPlaceholder);
   source->AddString("default_proxy_url", kPrivateAiProxyServerUrl.Get());
-  source->AddString(
-      "default_feature_name",
-      proto::FeatureName_Name(
-          proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT));
   source->AddBoolean(
       "default_use_token_attestation",
       base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation));

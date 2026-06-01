@@ -73,8 +73,6 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
                      network_context_, token_manager_, &webui_logger_,
                      &oak_session_driver_content_, &network_driver_content_);
-  webui_client_->EstablishConnection(
-      proto::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT);
   std::move(callback).Run();
 }
 
@@ -101,8 +99,32 @@ void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
     return;
   }
 
+  if (feature_name_proto == proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION) {
+    SendZssRequest(request, std::move(callback));
+    return;
+  }
+
+  if (feature_name_proto == proto::FEATURE_NAME_CHROME_FORMS_AI) {
+    SendFormsAiRequest(request, std::move(callback));
+    return;
+  }
+
+  SendTextRequest(feature_name_proto, request, std::move(callback));
+}
+
+void PrivateAiInternalsPageHandler::SendTextRequest(
+    proto::FeatureName feature_name,
+    const std::string& request,
+    SendRequestCallback callback) {
+  if (!webui_client_) {
+    auto result = private_ai_internals::mojom::PrivateAiResponse::New();
+    result->error = std::string("Error: not connected");
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   webui_client_->SendTextRequest(
-      feature_name_proto, request,
+      feature_name, request,
       base::BindOnce(
           [](SendRequestCallback callback,
              base::expected<std::string, StatusCode> response) {
@@ -122,7 +144,7 @@ void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
 
 void PrivateAiInternalsPageHandler::SendZssRequest(
     const std::string& inner_text,
-    SendZssRequestCallback callback) {
+    SendRequestCallback callback) {
   if (!webui_client_) {
     auto result = private_ai_internals::mojom::PrivateAiResponse::New();
     result->error = std::string("Error: not connected");
@@ -149,7 +171,7 @@ void PrivateAiInternalsPageHandler::SendZssRequest(
       private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
       paic_message,
       base::BindOnce(
-          [](SendZssRequestCallback callback,
+          [](SendRequestCallback callback,
              base::expected<private_ai::proto::PaicMessage,
                             private_ai::StatusCode> response) {
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
@@ -191,7 +213,7 @@ void PrivateAiInternalsPageHandler::SendZssRequest(
 
 void PrivateAiInternalsPageHandler::SendFormsAiRequest(
     const std::string& url,
-    SendFormsAiRequestCallback callback) {
+    SendRequestCallback callback) {
   if (!webui_client_) {
     auto result = private_ai_internals::mojom::PrivateAiResponse::New();
     result->error = std::string("Error: not connected");
@@ -239,7 +261,7 @@ void PrivateAiInternalsPageHandler::SendFormsAiRequest(
   webui_client_->SendPaicRequest(
       private_ai::proto::FEATURE_NAME_CHROME_FORMS_AI, paic_message,
       base::BindOnce(
-          [](SendFormsAiRequestCallback callback,
+          [](SendRequestCallback callback,
              base::expected<private_ai::proto::PaicMessage,
                             private_ai::StatusCode> response) {
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
