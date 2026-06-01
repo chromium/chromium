@@ -6,7 +6,8 @@ glslang_spirv_tools_dir = "//third_party/spirv-tools/src"
 
 # Chromium uses glslang for ANGLE's Vulkan backend.
 #
-# Note that the latter is not shipped to end users. For ANGLE, glslang is tailored to support only
-# what ANGLE needs. This significantly reduces the binary size of ANGLE as well as glslang's startup
-# time. This flag makes glslang strip features that are not used by ANGLE.
+# Note that the latter is not shipped to end users. For ANGLE, glslang is
+# tailored to support only what ANGLE needs. This significantly reduces the
+# binary size of ANGLE as well as glslang's startup time. This flag makes
+# glslang strip features that are not used by ANGLE.
 glslang_angle = true

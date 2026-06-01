@@ -16,7 +16,8 @@ template("define_override_androidx_targets") {
       "//third_party/androidx:*",
     ]
 
-    # AndroidVectorResources has no local modifications but is an internal class so must be compiled again.
+    # AndroidVectorResources has no local modifications but is an internal class
+    # so must be compiled again.
     sources = [
       "local_modifications/compose_ui/java/androidx/compose/ui/graphics/vector/compat/AndroidVectorResources.android.kt",
       "local_modifications/compose_ui/java/androidx/compose/ui/graphics/vector/compat/XmlVectorParser.android.kt",

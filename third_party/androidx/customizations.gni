@@ -141,9 +141,10 @@ template("_androidx_prebuilt") {
       ignore_manifest = true
       deps += [ "//third_party/android_sdk:android_xr_extensions_java" ]
 
-      # The scenecore and arcore AARs contain broad wildcard keep rules (-keep class ...**)
-      # that keep thousands of unused methods and fail the size bot. We only want to allow
-      # the runtime and openxr AAR proguard files, which contain the specific JNI data models.
+      # The scenecore and arcore AARs contain broad wildcard keep rules (-keep
+      # class ...**) that keep thousands of unused methods and fail the size
+      # bot. We only want to allow the runtime and openxr AAR proguard files,
+      # which contain the specific JNI data models.
       if (target_name != "androidx_xr_runtime_runtime_java" &&
           target_name != "androidx_xr_arcore_arcore_openxr_java") {
         ignore_proguard_configs = true
