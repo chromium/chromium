@@ -42,6 +42,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "annotate_page_content_request_unittest.cc": [
+    "+components/ukm/test_ukm_recorder.h",
+  ],
   "mock_page_content_services\\.(cc|h)": [
     "+testing/gmock",
     "+testing/gtest",

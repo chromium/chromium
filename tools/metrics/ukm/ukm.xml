@@ -16463,6 +16463,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OptimizationGuide.PageContentExtraction">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Metrics related to the page settling and stability detection during page
+    content extraction. Recorded once per committed primary main frame
+    navigation when the page first becomes stable and ready for extraction.
+  </summary>
+  <metric name="IsSameDocument" enum="Boolean">
+    <summary>
+      Whether the navigation was a same-document navigation.
+    </summary>
+  </metric>
+  <metric name="NavigationToReadyLatencyMs">
+    <summary>
+      The duration in milliseconds from when a main frame navigation commits
+      until the page is considered stable and ready for extraction.
+    </summary>
+  </metric>
+</event>
+
 <event name="PageContentAnnotations2" singular="True">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>mcrouse@chromium.org</owner>

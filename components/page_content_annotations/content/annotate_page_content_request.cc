@@ -48,6 +48,7 @@
 #include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -1038,11 +1039,21 @@ void AnnotatedPageContentRequest::MaybeRecordReadyToExtractMetrics() {
     return;
   }
 
+  base::TimeDelta elapsed = navigation_commit_timer_->Elapsed();
+
   base::UmaHistogramTimes(
       base::StrCat(
           {"OptimizationGuide.PageContentExtraction.NavigationToReadyLatency.",
            is_same_document_navigation_ ? "SameDocument" : "CrossDocument"}),
-      navigation_commit_timer_->Elapsed());
+      elapsed);
+
+  ukm::builders::OptimizationGuide_PageContentExtraction(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())
+      .SetIsSameDocument(is_same_document_navigation_)
+      .SetNavigationToReadyLatencyMs(
+          ukm::GetExponentialBucketMinForUserTiming(elapsed.InMilliseconds()))
+      .Record(ukm::UkmRecorder::Get());
+
   navigation_commit_timer_.reset();
 }
 

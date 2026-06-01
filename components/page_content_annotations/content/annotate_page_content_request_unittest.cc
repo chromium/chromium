@@ -36,6 +36,7 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -46,6 +47,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "pdf/buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -1515,6 +1517,7 @@ TEST_P(AnnotatePageContentRequestTest, InterleavedNavigations) {
 
 TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -1523,10 +1526,23 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency) {
       "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
       "CrossDocument",
       1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_PageContentExtraction::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::OptimizationGuide_PageContentExtraction::
+          kIsSameDocumentName,
+      0);
+  EXPECT_TRUE(ukm_recorder.GetEntryMetric(
+      entries[0], ukm::builders::OptimizationGuide_PageContentExtraction::
+                      kNavigationToReadyLatencyMsName));
 }
 
 TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_OnHidden) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetTriggeringMode("on_hidden");
 
   SimulatePageLoad();
@@ -1544,10 +1560,23 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_OnHidden) {
       "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
       "CrossDocument",
       1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_PageContentExtraction::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::OptimizationGuide_PageContentExtraction::
+          kIsSameDocumentName,
+      0);
+  EXPECT_TRUE(ukm_recorder.GetEntryMetric(
+      entries[0], ukm::builders::OptimizationGuide_PageContentExtraction::
+                      kNavigationToReadyLatencyMsName));
 }
 
 TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_SameDocument) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -1566,6 +1595,26 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_SameDocument) {
       "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
       "SameDocument",
       1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_PageContentExtraction::kEntryName);
+  ASSERT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::OptimizationGuide_PageContentExtraction::
+          kIsSameDocumentName,
+      0);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::OptimizationGuide_PageContentExtraction::
+          kIsSameDocumentName,
+      1);
+  EXPECT_TRUE(ukm_recorder.GetEntryMetric(
+      entries[0], ukm::builders::OptimizationGuide_PageContentExtraction::
+                      kNavigationToReadyLatencyMsName));
+  EXPECT_TRUE(ukm_recorder.GetEntryMetric(
+      entries[1], ukm::builders::OptimizationGuide_PageContentExtraction::
+                      kNavigationToReadyLatencyMsName));
 }
 
 TEST_P(AnnotatePageContentRequestTest, AboutBlankNavigation_NoExtraction) {
