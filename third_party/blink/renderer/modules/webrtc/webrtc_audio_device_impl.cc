@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -18,6 +19,8 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_renderer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using media::AudioParameters;
 using media::ChannelLayout;
@@ -225,6 +228,25 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
 
   if (renderer_to_disconnect) {
     renderer_to_disconnect->DisconnectSource();
+
+    // WebRtcAudioRenderer holds strictly main-thread Oilpan handles and asserts
+    // its destruction sequence. If the main thread drops its reference while
+    // we hold this local reference, the off-thread destruction causes memory
+    // corruption. Bounce the final reference to the main thread using the
+    // renderer's own frame-associated task runner to safely die.
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        renderer_to_disconnect->GetTaskRunner();
+
+    if (task_runner) {
+      PostCrossThreadTask(
+          *task_runner, FROM_HERE,
+          CrossThreadBindOnce(
+              [](scoped_refptr<blink::WebRtcAudioRenderer> renderer) {
+                // 'renderer' goes out of scope here, triggering the destructor
+                // safely.
+              },
+              std::move(renderer_to_disconnect)));
+    }
   }
 
   initialized_ = false;

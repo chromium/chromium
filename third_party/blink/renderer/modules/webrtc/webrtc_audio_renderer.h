@@ -122,6 +122,12 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // and remove circular references.
   void DisconnectSource();
 
+  // Returns the task runner associated with the creating frame (the main
+  // thread).
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const {
+    return task_runner_;
+  }
+
   // When sharing a single instance of WebRtcAudioRenderer between multiple
   // users (e.g. WebMediaPlayerMS), call this method to create a proxy object
   // that maintains the Play and Stop states per caller.
