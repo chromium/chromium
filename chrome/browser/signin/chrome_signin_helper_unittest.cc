@@ -26,6 +26,7 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
@@ -209,7 +210,9 @@ class MockSigninBridge : public SigninBridge {
               StartAddAccountFlow,
               (TabAndroid * window,
                const std::string& prefilled_email,
-               const GURL& continue_url),
+               const GURL& continue_url,
+               bool is_web_signin,
+               signin_metrics::AccessPoint access_point),
               (override));
 
   MOCK_METHOD(void,
@@ -222,7 +225,9 @@ class MockSigninBridge : public SigninBridge {
               OpenAccountPickerBottomSheet,
               (content::WebContents * web_contents,
                const GURL& continue_url,
-               const std::optional<CoreAccountId>& account_id),
+               const std::optional<CoreAccountId>& account_id,
+               bool is_web_signin,
+               signin_metrics::AccessPoint access_point),
               (override));
 
   MOCK_METHOD(void,
@@ -509,7 +514,9 @@ TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
   // with the correct continue URL.
   EXPECT_CALL(
       *signin_bridge(),
-      StartAddAccountFlow(_, "test@gmail.com", GURL("http://example.com")));
+      StartAddAccountFlow(_, "test@gmail.com", GURL("http://example.com"),
+                          /*is_web_signin=*/true,
+                          signin_metrics::AccessPoint::kWebSignin));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
@@ -592,7 +599,9 @@ TEST_F(ChromeSigninHelperTest,
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL.
   EXPECT_CALL(*signin_bridge(), OpenAccountPickerBottomSheet(
-                                    _, GURL("http://example.com"), account_id));
+                                    _, GURL("http://example.com"), account_id,
+                                    /*is_web_signin=*/true,
+                                    signin_metrics::AccessPoint::kWebSignin));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
@@ -630,9 +639,10 @@ TEST_F(ChromeSigninHelperTest,
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL and no account id as the email is not on the
   // device.
-  EXPECT_CALL(*signin_bridge(),
-              OpenAccountPickerBottomSheet(_, GURL("http://example.com"),
-                                           Eq(std::nullopt)));
+  EXPECT_CALL(*signin_bridge(), OpenAccountPickerBottomSheet(
+                                    _, GURL("http://example.com"),
+                                    Eq(std::nullopt), /*is_web_signin=*/true,
+                                    signin_metrics::AccessPoint::kWebSignin));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
@@ -666,9 +676,10 @@ TEST_F(ChromeSigninHelperTest, OpenBottomSheetWithConsistencyParameter) {
 
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL.
-  EXPECT_CALL(*signin_bridge(),
-              OpenAccountPickerBottomSheet(_, GURL("http://example.com"),
-                                           Eq(std::nullopt)));
+  EXPECT_CALL(*signin_bridge(), OpenAccountPickerBottomSheet(
+                                    _, GURL("http://example.com"),
+                                    Eq(std::nullopt), /*is_web_signin=*/true,
+                                    signin_metrics::AccessPoint::kWebSignin));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);

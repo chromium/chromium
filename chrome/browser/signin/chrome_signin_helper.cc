@@ -29,6 +29,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -375,7 +376,8 @@ void ProcessMirrorHeader(
         web_contents, continue_url,
         target_account_info
             ? std::make_optional(target_account_info->account_id)
-            : std::nullopt);
+            : std::nullopt,
+        /*is_web_signin=*/true, signin_metrics::AccessPoint::kWebSignin);
     return;
   }
 
@@ -397,7 +399,8 @@ void ProcessMirrorHeader(
           signin::MirrorHeaderEvent::kAccountNotOnDevice);
       SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
           TabAndroid::FromWebContents(web_contents),
-          manage_accounts_params.email, continue_url);
+          manage_accounts_params.email, continue_url, /*is_web_signin=*/true,
+          signin_metrics::AccessPoint::kWebSignin);
       return;
     }
 

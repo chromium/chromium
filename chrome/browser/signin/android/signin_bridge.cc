@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/signin/public/base/signin_deep_link_payload_conversions.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/android/window_android.h"
@@ -19,15 +20,19 @@
 
 using base::android::JavaRef;
 
-void SigninBridge::StartAddAccountFlow(TabAndroid* tab,
-                                       const std::string& prefilled_email,
-                                       const GURL& continue_url) {
+void SigninBridge::StartAddAccountFlow(
+    TabAndroid* tab,
+    const std::string& prefilled_email,
+    const GURL& continue_url,
+    bool is_web_signin,
+    signin_metrics::AccessPoint access_point) {
   if (!tab) {
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SigninBridge_startAddAccountFlow(env, tab->GetJavaObject(),
-                                        prefilled_email, continue_url);
+  Java_SigninBridge_startAddAccountFlow(
+      env, tab->GetJavaObject(), prefilled_email, continue_url, is_web_signin,
+      static_cast<int32_t>(access_point));
 }
 
 void SigninBridge::OpenAccountManagementScreen(
@@ -42,14 +47,17 @@ void SigninBridge::OpenAccountManagementScreen(
 void SigninBridge::OpenAccountPickerBottomSheet(
     content::WebContents* web_contents,
     const GURL& continue_url,
-    const std::optional<CoreAccountId>& account_id) {
+    const std::optional<CoreAccountId>& account_id,
+    bool is_web_signin,
+    signin_metrics::AccessPoint access_point) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   if (!tab) {
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SigninBridge_openAccountPickerBottomSheet(env, tab->GetJavaObject(),
-                                                 continue_url, account_id);
+  Java_SigninBridge_openAccountPickerBottomSheet(
+      env, tab->GetJavaObject(), continue_url, account_id, is_web_signin,
+      static_cast<int32_t>(access_point));
 }
 
 void SigninBridge::StartUpdateCredentialsFlow(TabAndroid* tab,
