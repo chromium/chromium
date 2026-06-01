@@ -50,6 +50,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       SkAlphaType alpha_type,
+      const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
@@ -64,6 +65,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
       SkAlphaType alpha_type,
+      const gfx::HDRMetadata&,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool IsOpaque() override;
@@ -120,11 +122,16 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
     return shared_image_->format();
   }
 
+  const gfx::HDRMetadata& GetHdrMetadata() const override {
+    return hdr_metadata_;
+  }
+
  private:
   AcceleratedStaticBitmapImage(
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       SkAlphaType alpha_type,
+      const gfx::HDRMetadata&,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -147,6 +154,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   sk_sp<MailboxTextureBacking> texture_backing_;
 
   PaintImage::ContentId paint_image_content_id_;
+  gfx::HDRMetadata hdr_metadata_;
   THREAD_CHECKER(thread_checker_);
 };
 

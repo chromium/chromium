@@ -31,10 +31,11 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
 scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
     sk_sp<SkData> data,
     const SkImageInfo& info,
+    const gfx::HDRMetadata& hdr_metadata,
     ImageOrientation orientation) {
   return UnacceleratedStaticBitmapImage::Create(
       SkImages::RasterFromData(info, std::move(data), info.minRowBytes()),
-      orientation);
+      orientation, hdr_metadata);
 }
 
 gfx::Size StaticBitmapImage::SizeWithConfig(SizeConfig config) const {

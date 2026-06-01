@@ -263,7 +263,7 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
 
   scoped_refptr<StaticBitmapImage> bitmap =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          std::move(client_si), token, kPremul_SkAlphaType,
+          std::move(client_si), token, kPremul_SkAlphaType, gfx::HDRMetadata(),
           SharedGpuContext::ContextProviderWrapper(),
           base::PlatformThread::CurrentRef(),
           base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());

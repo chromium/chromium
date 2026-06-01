@@ -147,7 +147,8 @@ scoped_refptr<StaticBitmapImage> GetImageFromImageData(
                                     info.minRowBytes(), 0, 0)) {
     return nullptr;
   }
-  return StaticBitmapImage::Create(std::move(image_pixels), info);
+  return StaticBitmapImage::Create(std::move(image_pixels), info,
+                                   gfx::HDRMetadata());
 }
 
 ExternalSource GetExternalSourceFromExternalImage(

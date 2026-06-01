@@ -136,8 +136,9 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
 
 scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
+  // TODO(https://crbug.com/515698973): This drops HDR metadata.
   return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       std::move(image.shared_image), image.sync_token, image.alpha_type,
-      std::move(image.release_callback));
+      gfx::HDRMetadata(), std::move(image.release_callback));
 }
 }  // namespace blink

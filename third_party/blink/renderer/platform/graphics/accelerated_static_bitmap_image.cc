@@ -47,12 +47,13 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     SkAlphaType alpha_type,
+    const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
     viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, alpha_type,
+      std::move(shared_image), sync_token, alpha_type, hdr_metadata,
       ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
       context_thread_ref, std::move(context_task_runner),
       std::move(release_callback)));
@@ -64,6 +65,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
     SkAlphaType alpha_type,
+    const gfx::HDRMetadata& hdr_metadata,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
   auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
   if (!shared_gpu_context) {
@@ -93,7 +95,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, alpha_type,
+      std::move(shared_image), sync_token, alpha_type, hdr_metadata,
       ImageOrientationEnum::kDefault, shared_gpu_context,
       base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -104,6 +106,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     SkAlphaType alpha_type,
+    const gfx::HDRMetadata& hdr_metadata,
     const ImageOrientation& orientation,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
@@ -118,7 +121,8 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
                                            context_thread_ref,
                                            std::move(context_task_runner),
                                            std::move(release_callback))),
-      paint_image_content_id_(cc::PaintImage::GetNextContentId()) {
+      paint_image_content_id_(cc::PaintImage::GetNextContentId()),
+      hdr_metadata_(hdr_metadata) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -211,6 +215,7 @@ PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
   return CreatePaintImageBuilder()
       .set_texture_backing(texture_backing_, paint_image_content_id_)
       .set_completion_state(PaintImage::CompletionState::kDone)
+      .set_hdr_metadata(hdr_metadata_)
       .TakePaintImage();
 }
 

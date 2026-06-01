@@ -23,23 +23,27 @@ namespace blink {
 
 scoped_refptr<UnacceleratedStaticBitmapImage>
 UnacceleratedStaticBitmapImage::Create(sk_sp<SkImage> image,
-                                       ImageOrientation orientation) {
-  if (!image)
+                                       ImageOrientation orientation,
+                                       const gfx::HDRMetadata& hdr_metadata) {
+  if (!image) {
     return nullptr;
+  }
   DCHECK(!image->isTextureBacked());
-  return base::AdoptRef(
-      new UnacceleratedStaticBitmapImage(std::move(image), orientation));
+  return base::AdoptRef(new UnacceleratedStaticBitmapImage(
+      std::move(image), orientation, hdr_metadata));
 }
 
 UnacceleratedStaticBitmapImage::UnacceleratedStaticBitmapImage(
     sk_sp<SkImage> image,
-    ImageOrientation orientation)
+    ImageOrientation orientation,
+    const gfx::HDRMetadata& hdr_metadata)
     : StaticBitmapImage(orientation) {
   CHECK(image);
   DCHECK(!image->isLazyGenerated());
   paint_image_ =
       CreatePaintImageBuilder()
           .set_image(std::move(image), cc::PaintImage::GetNextContentId())
+          .set_hdr_metadata(hdr_metadata)
           .TakePaintImage();
 }
 

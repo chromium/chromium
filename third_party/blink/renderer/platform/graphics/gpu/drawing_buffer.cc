@@ -780,7 +780,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   DCHECK(release_callback);
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      std::move(shared_image), sync_token, kPremul_SkAlphaType,
+      std::move(shared_image), sync_token, kPremul_SkAlphaType, hdr_metadata_,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback));
@@ -1937,6 +1937,7 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(
       SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
                         ToClosestSkColorType(format), alpha_type,
                         color_space_.ToSkColorSpace()),
+      hdr_metadata_,
       origin == kTopLeft_GrSurfaceOrigin
           ? ImageOrientationEnum::kOriginTopLeft
           : ImageOrientationEnum::kOriginBottomLeft);

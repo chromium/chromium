@@ -354,7 +354,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      client_shared_image, sync_token(), GetAlphaType(),
+      client_shared_image, sync_token(), GetAlphaType(), GetHDRMetadata(),
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 
@@ -556,7 +556,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
   ProduceSyncToken();
   scoped_refptr<StaticBitmapImage> image =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          GetSharedImage(), sync_token(), GetAlphaType(),
+          GetSharedImage(), sync_token(), GetAlphaType(), GetHDRMetadata(),
           context_provider_wrapper_, owning_thread_ref_,
           owning_thread_task_runner_, std::move(release_callback));
   return image;

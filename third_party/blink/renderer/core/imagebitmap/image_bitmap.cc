@@ -436,7 +436,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
   // Create a StaticBitmapImage that directly references the ImageData pixels.
   SkPixmap pm = data->GetSkPixmap();
   auto sk_data = SkData::MakeWithoutCopy(pm.addr(), pm.computeByteSize());
-  auto image = StaticBitmapImage::Create(sk_data, pm.info(),
+  auto image = StaticBitmapImage::Create(sk_data, pm.info(), gfx::HDRMetadata(),
                                          ImageOrientationEnum::kOriginTopLeft);
 
   // Force a copy of the data during the transformation (so that we do not
