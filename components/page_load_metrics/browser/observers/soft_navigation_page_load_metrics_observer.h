@@ -17,6 +17,25 @@ namespace ukm::builders {
 class SoftNavigation;
 }  // namespace ukm::builders
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// State machine to verify this observer's assumptions about page lifecycle.
+//
+// LINT.IfChange(SoftNavigationPageLoadMetricsObserverState)
+enum class SoftNavigationPageLoadMetricsObserverState {
+  kInitial = 0,
+  kStarted = 1,
+  kPrerenderStarted = 2,
+  kPrerenderActivated = 3,
+  kInBackForwardCache = 4,
+  kRestoredFromBackForwardCache = 5,
+  kComplete = 6,
+  kMaxValue = kComplete,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:SoftNavigationPageLoadMetricsObserverState)
+
 // This observer records the SoftNavigation events to UKM, for 'regular' page
 // loads, prerendered and activated page loads, and back-forward cache restores.
 class SoftNavigationPageLoadMetricsObserver
@@ -62,17 +81,6 @@ class SoftNavigationPageLoadMetricsObserver
 
   void OnSoftNavigation() override;
 
-  // State machine to verify this observer's assumptions about page lifecycle.
-  enum class State {
-    kInitial,
-    kStarted,
-    kPrerenderStarted,
-    kPrerenderActivated,
-    kInBackForwardCache,
-    kRestoredFromBackForwardCache,
-    kComplete,
-  };
-
  private:
   bool FromForegroundOptionalEventInForeground(
       const std::optional<base::TimeDelta>& event);
@@ -81,6 +89,7 @@ class SoftNavigationPageLoadMetricsObserver
   void RecordSoftInp(ukm::builders::SoftNavigation& builder);
   void RecordSoftCls(ukm::builders::SoftNavigation& builder);
 
+  using State = SoftNavigationPageLoadMetricsObserverState;
   State state_ = State::kInitial;
   // We record soft navigations after they complete: (1) when the next soft
   // navigation arrives, (2) when the (hard) navigation completes, or *eagerly*

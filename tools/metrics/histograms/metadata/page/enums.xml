@@ -379,6 +379,34 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PriorPrewarmCommitStatus) -->
 
+<!-- LINT.IfChange(SoftNavigationPageLoadMetricsObserverState) -->
+
+<enum name="SoftNavigationPageLoadMetricsObserverState">
+  <int value="0" label="initial (softnav unexpected)">
+    softnav unexpected - no navigation recognized
+  </int>
+  <int value="1" label="started (softnav expected)">
+    softnav expected - a (hard) navigation was started
+  </int>
+  <int value="2" label="prerenderStarted (softnav unexpected)">
+    softnav unexpected - a prerender was started
+  </int>
+  <int value="3" label="prerenderActivated (softnav expected)">
+    softnav expected - a prerender was activated
+  </int>
+  <int value="4" label="inBackForwardCache (softnav unexpected)">
+    softnav unexpected - the page entered the bfcache
+  </int>
+  <int value="5" label="restoredFromBackForwardCache (softnav expected)">
+    softnav expected - the page was restored from bfcache
+  </int>
+  <int value="6" label="complete (softnav unexpected)">
+    softnav unexpected - the navigation completed
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/soft_navigation_page_load_metrics_observer.h:SoftNavigationPageLoadMetricsObserverState) -->
+
 <!-- LINT.IfChange(WebViewPageAttemptResult) -->
 
 <enum name="WebViewPageAttemptResult">

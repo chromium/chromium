@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/soft_navigation_page_load_metrics_observer.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_type.h"
@@ -25,34 +26,34 @@ using page_load_metrics::mojom::EventTiming;
 using page_load_metrics::mojom::PageLoadTiming;
 
 namespace {
-std::string DebugString(SoftNavigationPageLoadMetricsObserver::State state) {
+std::string DebugString(SoftNavigationPageLoadMetricsObserverState state) {
   switch (state) {
-    case SoftNavigationPageLoadMetricsObserver::State::kInitial:
+    case SoftNavigationPageLoadMetricsObserverState::kInitial:
       return "initial";
-    case SoftNavigationPageLoadMetricsObserver::State::kStarted:
+    case SoftNavigationPageLoadMetricsObserverState::kStarted:
       return "started";
-    case SoftNavigationPageLoadMetricsObserver::State::kPrerenderStarted:
+    case SoftNavigationPageLoadMetricsObserverState::kPrerenderStarted:
       return "prerenderStarted";
-    case SoftNavigationPageLoadMetricsObserver::State::kPrerenderActivated:
+    case SoftNavigationPageLoadMetricsObserverState::kPrerenderActivated:
       return "prerenderActivated";
-    case SoftNavigationPageLoadMetricsObserver::State::kInBackForwardCache:
+    case SoftNavigationPageLoadMetricsObserverState::kInBackForwardCache:
       return "inBackForwardCache";
-    case SoftNavigationPageLoadMetricsObserver::State::
+    case SoftNavigationPageLoadMetricsObserverState::
         kRestoredFromBackForwardCache:
       return "restoredFromBackForwardCache";
-    case SoftNavigationPageLoadMetricsObserver::State::kComplete:
+    case SoftNavigationPageLoadMetricsObserverState::kComplete:
       return "complete";
   }
 }
 
 PageLoadType StateToPageLoadType(
-    SoftNavigationPageLoadMetricsObserver::State state) {
+    SoftNavigationPageLoadMetricsObserverState state) {
   switch (state) {
-    case SoftNavigationPageLoadMetricsObserver::State::kStarted:
+    case SoftNavigationPageLoadMetricsObserverState::kStarted:
       return PageLoadType::kPageLoad;
-    case SoftNavigationPageLoadMetricsObserver::State::kPrerenderActivated:
+    case SoftNavigationPageLoadMetricsObserverState::kPrerenderActivated:
       return PageLoadType::kPrerenderPageLoad;
-    case SoftNavigationPageLoadMetricsObserver::State::
+    case SoftNavigationPageLoadMetricsObserverState::
         kRestoredFromBackForwardCache:
       return PageLoadType::kHistoryNavigation;
     default:
@@ -172,6 +173,9 @@ void SoftNavigationPageLoadMetricsObserver::OnSoftNavigation() {
     RecordSoftNavigationEventIfPending();
     pending_soft_navigation_ = true;
   }
+  UMA_HISTOGRAM_ENUMERATION(
+      "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
+      state_);
 }
 
 bool SoftNavigationPageLoadMetricsObserver::

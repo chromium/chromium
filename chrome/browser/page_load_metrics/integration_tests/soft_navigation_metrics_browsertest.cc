@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/features.h"
+#include "components/page_load_metrics/browser/observers/soft_navigation_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_type.h"
@@ -540,6 +541,10 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   EXPECT_EQ(source_id_to_lcp_request_priority.cbegin()->second, 4u);
 
   EXPECT_EQ(std::next(source_id_to_lcp_request_priority.cbegin())->second, 4u);
+
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
+      SoftNavigationPageLoadMetricsObserverState::kStarted, 2);
 }
 
 // This test focuses on measuring the text LCP of a soft navigation in UKM.
@@ -734,6 +739,9 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
                                    static_cast<int>(PageLoadType::kPageLoad),
                                    static_cast<int>(PageLoadType::kPageLoad),
                                    static_cast<int>(PageLoadType::kPageLoad)));
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
+      SoftNavigationPageLoadMetricsObserverState::kStarted, 4);
 }
 
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, NoSoftNavigation) {
@@ -1279,6 +1287,10 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, Prerender) {
             "hadRecentInput");
     EXPECT_THAT(layout_shift_had_recent_input, testing::Optional(false));
   }
+
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
+      SoftNavigationPageLoadMetricsObserverState::kPrerenderActivated, 2);
 }
 
 //
@@ -1608,6 +1620,11 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackForwardCache) {
     EXPECT_EQ(LayoutShiftUkmValue(*layout_shift2_value + *layout_shift3_value),
               *soft_nav3_cls);
   }
+
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
+      SoftNavigationPageLoadMetricsObserverState::kRestoredFromBackForwardCache,
+      3);
 }
 }  // namespace
 }  // namespace page_load_metrics
