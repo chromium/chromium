@@ -898,8 +898,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
     LRUCanvasResourceProviderCache(wtf_size_t capacity);
     // The pointer returned is owned by the image buffer map.
     CanvasNon2DResourceProviderSharedImage* GetCanvasResourceProvider(
-        const CanvasSnapshotInfo& info,
-        bool& tried_to_create_provider);
+        const CanvasSnapshotInfo& info);
 
    private:
     void BubbleToFront(wtf_size_t idx);

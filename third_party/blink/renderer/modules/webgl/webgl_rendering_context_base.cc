@@ -6713,12 +6713,17 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
 
   CanvasNon2DResourceProviderSharedImage* provider = nullptr;
-  bool tried_to_create_provider = false;
   if (can_upload_via_gpu) {
-    provider = generated_video_cache_.GetCanvasResourceProvider(
-        info, tried_to_create_provider);
-    if (!provider && tried_to_create_provider) {
-      return;
+    viz::RasterContextProvider* raster_context_provider = nullptr;
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
+    }
+    if (ShouldCreateAcceleratedImages(raster_context_provider)) {
+      provider = generated_video_cache_.GetCanvasResourceProvider(info);
+      if (!provider) {
+        return;
+      }
     }
   }
 
@@ -9075,9 +9080,7 @@ WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
 
 CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
-        const CanvasSnapshotInfo& info,
-        bool& tried_to_create_provider) {
-  tried_to_create_provider = false;
+        const CanvasSnapshotInfo& info) {
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
     CanvasNon2DResourceProviderSharedImage* provider = providers_[i].get();
@@ -9087,27 +9090,15 @@ CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
     if (!provider->IsValid() || !info.Matches(provider->GetInfo())) {
       continue;
     }
-    tried_to_create_provider = true;
     BubbleToFront(i);
     return provider;
   }
 
-  viz::RasterContextProvider* raster_context_provider = nullptr;
-  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    raster_context_provider =
-        wrapper->ContextProvider().RasterContextProvider();
-  }
-  bool create_accelerated_provider =
-      ShouldCreateAcceleratedImages(raster_context_provider);
-  tried_to_create_provider = create_accelerated_provider;
-
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> temp;
-  if (create_accelerated_provider) {
-    temp = CanvasNon2DResourceProviderSharedImage::Create(
-        info.size, info.format, info.alpha_type, info.color_space,
-        SharedGpuContext::ContextProviderWrapper(),
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-  }
+  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> temp =
+      CanvasNon2DResourceProviderSharedImage::Create(
+          info.size, info.format, info.alpha_type, info.color_space,
+          SharedGpuContext::ContextProviderWrapper(),
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 
   if (!temp) {
     return nullptr;
