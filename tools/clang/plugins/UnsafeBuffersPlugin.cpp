@@ -238,6 +238,12 @@ class UnsafeBuffersDiagnosticConsumer
       return;
     }
 
+    if (level == clang::DiagnosticsEngine::Level::Note) {
+      if (last_warning_suppressed_) {
+        return;
+      }
+    }
+
     const bool is_buffers_note =
         diag_id == clang::diag::note_unsafe_buffer_operation ||
         diag_id == clang::diag::note_unsafe_buffer_variable_fixit_group ||
@@ -280,6 +286,9 @@ class UnsafeBuffersDiagnosticConsumer
         (is_container_diagnostic && unsafe_buffers_config_.check_container);
 
     if (!handle_diagnostic) {
+      if (level != clang::DiagnosticsEngine::Level::Note) {
+        last_warning_suppressed_ = false;
+      }
       return PassthroughDiagnostic(level, diag);
     }
 
@@ -290,8 +299,16 @@ class UnsafeBuffersDiagnosticConsumer
     // they are coming from.
     auto disposition = FileHasSafeBuffersWarnings(sm, loc);
     if (disposition == kSkip) {
+      if (level != clang::DiagnosticsEngine::Level::Note) {
+        last_warning_suppressed_ = true;
+      }
       return;
     }
+
+    if (level != clang::DiagnosticsEngine::Level::Note) {
+      last_warning_suppressed_ = false;
+    }
+
     if (is_libc_diagnostic) {
       if (disposition == kSkipLibc || IsIgnoredLibcFunction(diag)) {
         return;
@@ -415,6 +432,8 @@ class UnsafeBuffersDiagnosticConsumer
   // Used to prevent recursing into HandleDiagnostic() when we're emitting a
   // diagnostic from that function.
   bool inside_handle_diagnostic_ = false;
+  // Used to suppress notes that belong to a suppressed warning.
+  bool last_warning_suppressed_ = false;
   clang::DiagnosticsEngine* engine_;
   clang::CompilerInstance* instance_;
   UnsafeBuffersConfig unsafe_buffers_config_;
