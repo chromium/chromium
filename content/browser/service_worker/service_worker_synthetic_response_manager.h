@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/gurl.h"
+
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_SYNTHETIC_RESPONSE_MANAGER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_SYNTHETIC_RESPONSE_MANAGER_H_
 
@@ -167,6 +169,7 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
 
   base::TimeTicks request_start_time_;
   base::TimeTicks response_received_time_;
+  GURL request_url_;
 
   static bool dry_run_mode_for_testing_;
 

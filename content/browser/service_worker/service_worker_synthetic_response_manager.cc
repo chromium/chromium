@@ -274,6 +274,7 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
               perfetto::Flow::FromPointer(this), "request_id", request_id,
               "url", request.url.spec());
   CHECK(!request.client_side_content_decoding_enabled);
+  request_url_ = request.url;
   request_start_time_ = base::TimeTicks::Now();
   response_callback_ = std::move(receive_response_callback);
   redirect_callback_ = std::move(receive_redirect_callback);
@@ -607,7 +608,7 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
   const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
   CHECK(response_head);
   bool result = network::CheckHeaderConsistencyForSyntheticResponse(
-      *headers, *response_head->headers);
+      *headers, *response_head->headers, request_url_.spec());
   TRACE_EVENT1("ServiceWorker",
                "ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency",
                "result", result);

@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_SYNTHETIC_RESPONSE_UTIL_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_SYNTHETIC_RESPONSE_UTIL_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -22,7 +23,8 @@ namespace network {
 COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckHeaderConsistencyForSyntheticResponse(
     const net::HttpResponseHeaders& actual_headers,
-    const net::HttpResponseHeaders& expected_headers);
+    const net::HttpResponseHeaders& expected_headers,
+    std::string_view request_url);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckHeaderConsistencyForSyntheticResponseForTesting(

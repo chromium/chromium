@@ -39,11 +39,14 @@ void MaybeReportHeaderInconsistency(
     const absl::flat_hash_map<std::string, std::vector<std::string>>
         expected_headers,
     const absl::flat_hash_map<std::string, std::vector<std::string>>
-        actual_headers) {
+        actual_headers,
+    std::string_view request_url) {
   if (!features::kServiceWorkerSyntheticResponseReportInconsistentHeader
            .Get()) {
     return;
   }
+
+  SCOPED_CRASH_KEY_STRING1024("SyntheticResponse", "RequestURL", request_url);
 
   for (const auto& item : expected_headers) {
     if (!actual_headers.contains(item.first)) {
@@ -77,7 +80,8 @@ void MaybeReportHeaderInconsistency(
 bool CheckHeaderConsistencyForSyntheticResponseImpl(
     const net::HttpResponseHeaders& actual_headers,
     const net::HttpResponseHeaders& expected_headers,
-    const std::vector<std::string>& ignored_headers) {
+    const std::vector<std::string>& ignored_headers,
+    std::string_view request_url) {
   auto collect_significant_headers =
       [&](const net::HttpResponseHeaders& headers) {
         absl::flat_hash_map<std::string, std::vector<std::string>> collected;
@@ -123,7 +127,7 @@ bool CheckHeaderConsistencyForSyntheticResponseImpl(
   base::UmaHistogramBoolean(kHistogramIsHeaderConsistent, result);
   if (!result) {
     MaybeReportHeaderInconsistency(significant_expected_headers,
-                                   significant_actual_headers);
+                                   significant_actual_headers, request_url);
   }
 
   return result;
@@ -133,10 +137,11 @@ bool CheckHeaderConsistencyForSyntheticResponseImpl(
 
 bool CheckHeaderConsistencyForSyntheticResponse(
     const net::HttpResponseHeaders& actual_headers,
-    const net::HttpResponseHeaders& expected_headers) {
+    const net::HttpResponseHeaders& expected_headers,
+    std::string_view request_url) {
   return CheckHeaderConsistencyForSyntheticResponseImpl(
-      actual_headers, expected_headers,
-      GetIgnoredHeadersForSyntheticResponse());
+      actual_headers, expected_headers, GetIgnoredHeadersForSyntheticResponse(),
+      request_url);
 }
 
 bool CheckHeaderConsistencyForSyntheticResponseForTesting(  // IN-TEST
@@ -144,7 +149,7 @@ bool CheckHeaderConsistencyForSyntheticResponseForTesting(  // IN-TEST
     const net::HttpResponseHeaders& expected_headers,
     const std::vector<std::string>& ignored_headers) {
   return CheckHeaderConsistencyForSyntheticResponseImpl(
-      actual_headers, expected_headers, ignored_headers);
+      actual_headers, expected_headers, ignored_headers, /*request_url=*/"");
 }
 
 WriteSyntheticResponseFallbackResult WriteSyntheticResponseFallbackBody(

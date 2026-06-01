@@ -1214,7 +1214,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   if (expected_response_headers_for_synthetic_response &&
       !CheckHeaderConsistencyForSyntheticResponse(
           *response_->headers,
-          *expected_response_headers_for_synthetic_response)) {
+          *expected_response_headers_for_synthetic_response,
+          url_request_->url().spec())) {
     // If `expected_response_headers_for_synthetic_response` is set, check the
     // headers are expected ones. If not, returns a fallback response.
     PerformSyntheticResponseFallback();
