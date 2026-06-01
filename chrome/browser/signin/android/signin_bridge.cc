@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/base/signin_deep_link_payload_conversions.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents.h"
@@ -83,9 +84,16 @@ void SigninBridge::WaitForCookiesAndRedirect(TabAndroid* tab,
 }
 
 void SigninBridge::StartSigninDeepLinkFlow(
+    ui::WindowAndroid* window,
+    Profile* profile,
     const signin::SigninDeepLinkPayload& payload) {
+  if (!window || !profile) {
+    return;
+  }
+  CHECK(profile->IsRegularProfile());
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SigninBridge_startSigninDeepLinkFlow(env, payload);
+  Java_SigninBridge_startSigninDeepLinkFlow(env, window->GetJavaObject(),
+                                            profile->GetJavaObject(), payload);
 }
 
 DEFINE_JNI(SigninBridge)

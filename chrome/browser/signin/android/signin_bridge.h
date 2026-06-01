@@ -13,6 +13,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 
+class Profile;
 class TabAndroid;
 
 namespace content {
@@ -62,6 +63,8 @@ class SigninBridge : public KeyedService {
 
   // Start the deep link sign-in flow based on the given payload.
   virtual void StartSigninDeepLinkFlow(
+      ui::WindowAndroid* window,
+      Profile* profile,
       const signin::SigninDeepLinkPayload& payload);
 };
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_

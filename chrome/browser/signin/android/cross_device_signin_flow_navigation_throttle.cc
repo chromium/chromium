@@ -18,6 +18,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 #include "url/gurl.h"
 
 CrossDeviceSigninFlowNavigationThrottle::
@@ -34,7 +35,20 @@ CrossDeviceSigninFlowNavigationThrottle::WillStartRequest() {
   const GURL& url = navigation_handle()->GetURL();
   const auto payload = deep_link_parser_.Parse(url);
   if (payload.has_value() && payload->HasAllRequiredFields()) {
-    signin_bridge_->StartSigninDeepLinkFlow(payload.value());
+    content::WebContents* web_contents = navigation_handle()->GetWebContents();
+    if (!web_contents) {
+      return content::NavigationThrottle::PROCEED;
+    }
+    ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
+    if (!window) {
+      return content::NavigationThrottle::PROCEED;
+    }
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    if (!profile || !profile->IsRegularProfile()) {
+      return content::NavigationThrottle::PROCEED;
+    }
+    signin_bridge_->StartSigninDeepLinkFlow(window, profile, payload.value());
     ClosePageIfNeeded();
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }

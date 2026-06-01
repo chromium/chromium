@@ -3571,6 +3571,29 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Getting your stuff\u2026
       </message>
 
+      <!-- Deep link signin flow strings -->
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_ALREADY_SIGNED_IN_TOAST_MESSAGE" desc="Text of the toast shown when a user attempts to sign in to Chrome via deep link to a account that is already signed in.">
+        You stayed signed in as <ph name="NAME_OR_EMAIL">%1$s<ex>John</ex></ph>.
+      </message>
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SIGNIN_TITLE" desc="Title of the screen shown when an signed-out user starts a sigin flow with a signin deep link.">
+        Pick up where you left off
+      </message>
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SIGNIN_SUBTITLE" desc="Subtitle of the screen shown when an signed-out user starts a sigin flow with a signin deep link.">
+        You scanned a QR code to sign in to Chrome. Confirm that you want to get the passwords, bookmarks, and more from this profile.
+      </message>
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SIGNIN_DISMISS_BUTTON" desc="Text of the dismiss button shown on the screen displayed when an signed-out user starts a sigin flow with a signin deep link.">
+        Stay signed out
+      </message>
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SWITCH_ACCOUNT_TITLE" desc="Title of the screen shown when a signed-in user starts a sigin flow with a signin deep link.">
+        Switch accounts?
+      </message>
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SWITCH_ACCOUNT_SUBTITLE" desc="Subtitle of the screen shown when a signed-in user starts a sigin flow with a signin deep link.">
+        You’re signed in as <ph name="FROM_EMAIL">%1$s<ex>from@gmail.com</ex></ph>.\n\nTo continue from your computer, switch to <ph name="TO_EMAIL">%2$s<ex>to@gmail.com</ex></ph>. You’ll get the passwords, bookmarks, and more from this account.
+      </message>
+      <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SWITCH_ACCOUNT_DISMISS_BUTTON" desc="Text of the dismiss button shown on the screen displayed when a signed-in user starts a sigin flow with a signin deep link.">
+        No thanks
+      </message>
+
       <!-- Account Signin Strings -->
       <message name="IDS_SIGNIN_ADD_ACCOUNT_TO_DEVICE" desc="Text for adding another Google Account to device in the web sign-in flow and account picker dialog, users will be asked to add an account to his device when this text is tapped">
         Add account to device

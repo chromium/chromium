@@ -26,6 +26,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 #include "url/gurl.h"
 
 namespace {
@@ -38,7 +39,9 @@ class MockSigninBridge : public SigninBridge {
 
   MOCK_METHOD(void,
               StartSigninDeepLinkFlow,
-              (const signin::SigninDeepLinkPayload& payload),
+              (ui::WindowAndroid * window,
+               Profile* profile,
+               const signin::SigninDeepLinkPayload& payload),
               (override));
 };
 
@@ -54,11 +57,15 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 
 }  // namespace
 
-class CrossDeviceSigninFlowNavigationThrottleUnitTest : public testing::Test {
+class CrossDeviceSigninFlowNavigationThrottleUnitTest
+    : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         switches::kCrossDeviceSignin, {{"url", kValidBaseUrl}});
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_->get()->AddChild(web_contents()->GetNativeView());
   }
 
   content::NavigationThrottle* CreateAndGetThrottle(
@@ -77,6 +84,7 @@ class CrossDeviceSigninFlowNavigationThrottleUnitTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSigninBridge> mock_signin_bridge_;
   std::unique_ptr<CrossDeviceSigninFlowNavigationThrottle> throttle_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -84,7 +92,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   testing::NiceMock<content::MockNavigationHandle> handle(
       GURL("https://www.google.com/chrome/"
            "go-mobile?entry_point_id=0&email=test@gmail.com"),
-      nullptr);
+      main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -95,7 +103,9 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   signin::SigninDeepLinkPayload expected_payload{
       .entry_point_id = signin::ExternalEntryPoint::kUnknown,
       .email = "test@gmail.com"};
-  EXPECT_CALL(*signin_bridge(), StartSigninDeepLinkFlow(expected_payload))
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),
+                                      profile(), expected_payload))
       .Times(1);
   EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillStartRequest().action());
@@ -106,7 +116,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   testing::NiceMock<content::MockNavigationHandle> handle(
       GURL("https://www.google.com/chrome/"
            "go-mobile?entry_point_id=invalid&email=test@gmail.com"),
-      nullptr);
+      main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -114,7 +124,9 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   auto* throttle = CreateAndGetThrottle(registry);
 
   ASSERT_TRUE(throttle);
-  EXPECT_CALL(*signin_bridge(), StartSigninDeepLinkFlow(testing::_)).Times(0);
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(testing::_, testing::_, testing::_))
+      .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
 }
@@ -122,7 +134,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
        WillStartRequest_ProceedOnNonDeepLinkUrl) {
   testing::NiceMock<content::MockNavigationHandle> handle(
-      GURL("https://example.com/other-path"), nullptr);
+      GURL("https://example.com/other-path"), main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -130,7 +142,9 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   auto* throttle = CreateAndGetThrottle(registry);
 
   ASSERT_TRUE(throttle);
-  EXPECT_CALL(*signin_bridge(), StartSigninDeepLinkFlow(testing::_)).Times(0);
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(testing::_, testing::_, testing::_))
+      .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
 }
@@ -140,7 +154,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   testing::NiceMock<content::MockNavigationHandle> handle(
       GURL("https://www.google.com/chrome/"
            "go-mobile?entry_point_id=0&email=test@gmail.com"),
-      nullptr);
+      main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -151,7 +165,9 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   signin::SigninDeepLinkPayload expected_payload{
       .entry_point_id = signin::ExternalEntryPoint::kUnknown,
       .email = "test@gmail.com"};
-  EXPECT_CALL(*signin_bridge(), StartSigninDeepLinkFlow(expected_payload))
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),
+                                      profile(), expected_payload))
       .Times(1);
   EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillRedirectRequest().action());
@@ -162,7 +178,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   testing::NiceMock<content::MockNavigationHandle> handle(
       GURL("https://www.google.com/chrome/"
            "go-mobile?entry_point_id=invalid&email=test@gmail.com"),
-      nullptr);
+      main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -170,7 +186,9 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   auto* throttle = CreateAndGetThrottle(registry);
 
   ASSERT_TRUE(throttle);
-  EXPECT_CALL(*signin_bridge(), StartSigninDeepLinkFlow(testing::_)).Times(0);
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(testing::_, testing::_, testing::_))
+      .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
 }
@@ -178,7 +196,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
        WillRedirectRequest_ProceedOnNonDeepLinkUrl) {
   testing::NiceMock<content::MockNavigationHandle> handle(
-      GURL("https://example.com/other-path"), nullptr);
+      GURL("https://example.com/other-path"), main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -186,7 +204,9 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   auto* throttle = CreateAndGetThrottle(registry);
 
   ASSERT_TRUE(throttle);
-  EXPECT_CALL(*signin_bridge(), StartSigninDeepLinkFlow(testing::_)).Times(0);
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(testing::_, testing::_, testing::_))
+      .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
 }
@@ -198,12 +218,15 @@ class CrossDeviceSigninFlowNavigationThrottleFactoryUnitTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         switches::kCrossDeviceSignin, {{"url", kValidBaseUrl}});
     ChromeRenderViewHostTestHarness::SetUp();
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_->get()->AddChild(web_contents()->GetNativeView());
     SigninBridgeFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(), base::BindRepeating(&BuildMockSigninBridgeForTesting));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleFactoryUnitTest,
@@ -244,12 +267,15 @@ class CrossDeviceSigninFlowNavigationThrottleFactoryDisabledUnitTest
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(switches::kCrossDeviceSignin);
     ChromeRenderViewHostTestHarness::SetUp();
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_->get()->AddChild(web_contents()->GetNativeView());
     SigninBridgeFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(), base::BindRepeating(&BuildMockSigninBridgeForTesting));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleFactoryDisabledUnitTest,
@@ -273,6 +299,8 @@ class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest
     ChromeRenderViewHostTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         switches::kCrossDeviceSignin, {{"url", kValidBaseUrl}});
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_->get()->AddChild(web_contents()->GetNativeView());
     web_contents()->SetDelegate(&mock_web_contents_delegate_);
   }
 
@@ -300,6 +328,7 @@ class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest
   testing::NiceMock<MockSigninBridge> mock_signin_bridge_;
   std::unique_ptr<CrossDeviceSigninFlowNavigationThrottle> throttle_;
   MockWebContentsDelegate mock_web_contents_delegate_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest,
