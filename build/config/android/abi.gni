@@ -91,8 +91,9 @@ android_64bit_current_cpu =
 
 # Do not define android_secondary_abi_cpu or android_app_secondary_abi for
 # target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The
-# presence of this variable may be used in conjunction with android_64bit_target_cpu
-# to identify target_cpu's that are 32-bit-only or 64-bit-only.
+# presence of this variable may be used in conjunction with
+# android_64bit_target_cpu to identify target_cpu's that are 32-bit-only or
+# 64-bit-only.
 if (enable_android_secondary_abi) {
   if (target_cpu == "arm64") {
     android_secondary_abi_cpu = "arm"

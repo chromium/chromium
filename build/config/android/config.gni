@@ -342,7 +342,8 @@ if (is_android) {
   }
 
   if (is_asan) {
-    # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt warnings.
+    # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt
+    # warnings.
     disable_android_lint = true
   }
 

@@ -11,11 +11,11 @@ declare_args() {
 }
 
 # Defines a test suite which checks that the 'test targets' fail to compile. The
-# test suite runs 'gn gen' with a custom output directory and attempts to compile
-# each test target.
+# test suite runs 'gn gen' with a custom output directory and attempts to
+# compile each test target.
 #
-# All of the tests should be defined in the same dedicated BUILD.gn file in order
-# to minimize the number of targets that are processed by 'gn gen'.
+# All of the tests should be defined in the same dedicated BUILD.gn file in
+# order to minimize the number of targets that are processed by 'gn gen'.
 #
 # Variables
 #   tests: List of test configurations. A test configuration has the following
@@ -56,8 +56,8 @@ template("android_nocompile_test_suite") {
       sources += invoker.sources
     }
 
-    # Depend on compile_java Python scripts so that the action is re-run whenever the script is
-    # modified.
+    # Depend on compile_java Python scripts so that the action is re-run
+    # whenever the script is modified.
     _pydeps = [ "//build/android/gyp/compile_java.pydeps" ]
     if (defined(invoker.pydeps)) {
       _pydeps += invoker.pydeps
@@ -91,10 +91,10 @@ template("android_nocompile_test_suite") {
     _config_path = "$target_gen_dir/${target_name}.nocompile_config"
     write_file(_config_path, _json_test_configs, "json")
 
-    # Compute output directory for no-compile tests based on the directory containing test
-    # targets instead of based on the test suite target name. This avoids calling 'gn gen' for each
-    # android_nocompile_test_suite() for test suites whose tests are declared in the same BUILD.gn
-    # file.
+    # Compute output directory for no-compile tests based on the directory
+    # containing test targets instead of based on the test suite target name.
+    # This avoids calling 'gn gen' for each android_nocompile_test_suite() for
+    # test suites whose tests are declared in the same BUILD.gn file.
     _out_dir = "${_test0_target_out_dir}/nocompile_out"
 
     _stamp_path = "${target_gen_dir}/${target_name}.stamp"

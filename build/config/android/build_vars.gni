@@ -32,9 +32,9 @@ android_build_vars_json = {
 
     if (defined(webview_toolchain)) {
       system_webview_symbols_dir =
-          rebase_path(get_label_info(":foo($webview_toolchain)",
-                                    "root_out_dir"),
-                      root_build_dir) + "/lib.unstripped"
+          rebase_path(
+              get_label_info(":foo($webview_toolchain)", "root_out_dir"),
+              root_build_dir) + "/lib.unstripped"
     }
   }
 }

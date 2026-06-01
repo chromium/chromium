@@ -156,7 +156,8 @@ template("repack_locales") {
     _output_locale = _output_locales[_current_index]
 
     foreach(_gender_suffix, gender_suffixes) {
-      # Compute the name of the target for the current file. Save it for the deps.
+      # Compute the name of the target for the current file. Save it for the
+      # deps.
       _current_name = "${target_name}_${_input_locale}${_gender_suffix}"
       _locale_targets += [ ":$_current_name" ]
 

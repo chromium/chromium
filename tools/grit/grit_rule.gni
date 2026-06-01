@@ -406,7 +406,8 @@ template("grit") {
   }
 }
 
-# This wraps grit(), generating outputs from locales, prefix, and translate_genders.
+# This wraps grit(), generating outputs from locales, prefix, and
+# translate_genders.
 #
 # The "grit_flags" optional parameter will be passed into "grit" after appending
 # "--translate-genders" (if applicable), and the "outputs" optional parameter
