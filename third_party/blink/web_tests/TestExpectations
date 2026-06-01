@@ -9318,6 +9318,9 @@ crbug.com/465849685 [ Debug Linux ] media/media-playback-while-not-visible-permi
 # linux-blink-leak-rel failure
 crbug.com/476257809 [ Linux ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Failure Pass Skip ]
 
+# win-rel flakiness
+crbug.com/515842545 [ Win ] external/wpt/css/css-ui/crashtests/outline-scrollIntoView-crash.html [ Failure Pass ]
+
 # Pointer Lock `unadjustedMovement: true` is unsupported on Linux.
 # The unadjustedmovement=false variant fails on Linux as well, presumably due to
 # an issue with how the events are being sent by the test driver. The behavior
