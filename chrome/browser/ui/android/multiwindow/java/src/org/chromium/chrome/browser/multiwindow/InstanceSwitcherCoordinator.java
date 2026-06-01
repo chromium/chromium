@@ -646,8 +646,11 @@ public class InstanceSwitcherCoordinator {
 
         // 1. Update positive button state.
         boolean positiveButtonDisabled = true;
-        if (selectionCount > 0) {
-            if (selectionCount == 1 && mActiveModelList.size() < mMaxInstanceCount) {
+        if (selectionCount == 1) {
+            // If the active instances list is showing, or if the inactive instances list is showing
+            // when within instance limit, enable the button for opening the active window or for
+            // restoring an inactive window respectively.
+            if (!mIsInactiveListShowing || mActiveModelList.size() < mMaxInstanceCount) {
                 positiveButtonDisabled = false;
             }
         }

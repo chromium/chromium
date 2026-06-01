@@ -338,6 +338,55 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
+    public void testOpenWindowAtInstanceLimit() throws Exception {
+        // Initialize instance list with MAX_INSTANCE_COUNT active instances.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ MAX_INSTANCE_COUNT,
+                        /* numInactiveInstances= */ 0);
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openInstance(anyInt());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Verify "Open" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the second item.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify "Open" button is now enabled even though we are at the instance limit.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()))
+                .perform(click());
+        itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openInstance(instances[1].instanceId);
+    }
+
+    @Test
+    @SmallTest
     public void testRestoreWindow() throws Exception {
         // Initialize instance list with 2 active instances and 1 inactive instance.
         InstanceInfo[] instances =
