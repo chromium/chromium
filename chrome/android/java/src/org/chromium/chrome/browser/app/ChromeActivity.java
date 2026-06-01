@@ -1429,7 +1429,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     public @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
-        if (mActorPipController == null && ChromeFeatureList.sGlic.isEnabled()) {
+        if (!ChromeFeatureList.sGlic.isEnabled()) return null;
+        if (mActorPipController == null) {
             mActorPipController =
                     new ActorPictureInPictureController(
                             this,
