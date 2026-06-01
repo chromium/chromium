@@ -81,6 +81,12 @@ fuzzer_test("renderer_proto_tree_fuzzer") {
 
   # Increase the memory limit, since the fuzzer exceeds it in Debug builds.
   libfuzzer_options = [ "rss_limit_mb=4096" ]
+  if (is_android) {
+    deps += [
+      # Provides org.chromium.ui.base.ResourceBundle.
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
 }
 
 proto_library("html_tree_proto") {
