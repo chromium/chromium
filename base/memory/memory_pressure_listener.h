@@ -71,7 +71,7 @@ enum class MemoryPressureListenerTag {
   // kDOMStorageContextWrapper = 38,
   // kGpuProcessHost = 39,
   kPrerenderHostRegistry = 40,
-  kUrgentPageDiscardingPolicy = 41,
+  // kUrgentPageDiscardingPolicy = 41,
   // kTabLoader = 42,
   kBackgroundTabLoadingPolicy = 43,
   // kThumbnailCache = 44,

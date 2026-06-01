@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "base/memory/available_memory_monitor.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -25,7 +25,7 @@ namespace policies {
 // Urgently discard a tab when receiving a memory pressure signal.
 class UrgentPageDiscardingPolicy
     : public GraphOwned,
-      public base::MemoryPressureListener,
+      public base::MemoryConsumer,
       public base::AvailableMemoryMonitor::Observer {
  public:
   UrgentPageDiscardingPolicy();
@@ -42,8 +42,9 @@ class UrgentPageDiscardingPolicy
   static void DisableForTesting();
 
  private:
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override {}
+  void OnReleaseMemory() override;
 
   // base::AvailableMemoryMonitor::Observer:
   void OnAvailableMemoryUpdated(
@@ -65,8 +66,7 @@ class UrgentPageDiscardingPolicy
       std::optional<memory_pressure::ReclaimTarget> reclaim_target_kb);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  std::optional<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
   // Determines if the system is in a sustained memory pressure state.
   std::optional<SustainedMemoryPressureEvaluator>

@@ -6,9 +6,11 @@
 
 #include <memory>
 
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
@@ -43,23 +45,35 @@ class UrgentPageDiscardingPolicyTest
   }
 
   void TearDown() override {
-    policy_ = nullptr;
+    if (policy_) {
+      std::unique_ptr<UrgentPageDiscardingPolicy> policy =
+          graph()->TakeFromGraphAs(policy_.get());
+      policy_ = nullptr;
+      policy.reset();
+    }
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
- private:
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+ protected:
+  void TriggerMemoryPressure(int memory_limit) {
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        memory_limit, base::DoNothing());
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        task_env().QuitClosure());
+    task_env().RunUntilQuit();
+  }
 
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<UrgentPageDiscardingPolicy> policy_ = nullptr;
 };
 
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_env().QuitClosure());
-  task_env().RunUntilQuit();
+  TriggerMemoryPressure(base::kCriticalMemoryPressureThreshold);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   // Send a second memory pressure notification without switching back to the
@@ -68,17 +82,13 @@ TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
   DiscardEligibilityPolicy::RemovesDiscardAttemptMarkerForTesting(page_node());
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_env().QuitClosure());
-  task_env().RunUntilQuit();
+  TriggerMemoryPressure(base::kCriticalMemoryPressureThreshold);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
 TEST_F(UrgentPageDiscardingPolicyTest, NoDiscardOnModeratePressure) {
   // No tab should be discarded on moderate pressure.
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_env().QuitClosure());
-  task_env().RunUntilQuit();
+  TriggerMemoryPressure(base::kModerateMemoryPressureThreshold);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
