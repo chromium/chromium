@@ -600,12 +600,16 @@ message TextStyle {
 }
 
 // Information about the image. In the future, this may include a pixmap.
-// Next ID: 5
+// Next ID: 6
 message ImageInfo {
   string image_caption = 2 [features = { field_presence: EXPLICIT }];
 
   // Provides the source origin for the image.
   SecurityOrigin security_origin = 4 [features = { field_presence: EXPLICIT }];
+
+  // The image's source (`src`) URL. If redirected, this remains the original
+  // URL, not the final resolved destination.
+  string url = 5 [features = { field_presence: EXPLICIT }];
 
   reserved 1, 3;
 }
