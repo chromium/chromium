@@ -691,11 +691,9 @@ void AutofillManager::ParseFormAsync(
   if (const FormStructure* const cached_form_structure =
           FindCachedFormById(form.global_id());
       cached_form_structure && !NeedsReparse(form, *cached_form_structure)) {
-    UpdateFormCache(
-        base::span_from_ref(form),
-        /*context=*/std::nullopt,
-        FormStructure::RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing,
-        /*preserve_signatures=*/true);
+    UpdateFormCache(base::span_from_ref(form),
+                    /*context=*/std::nullopt,
+                    /*preserve_signatures=*/true);
     std::move(callback).Run(*this, std::move(form));
     return;
   }
@@ -742,10 +740,7 @@ void AutofillManager::ParseFormsAsyncCommon(
           return;
         }
         CHECK_EQ(context.regex_predictions.size(), context.forms.size());
-        self->UpdateFormCache(context.forms, context,
-                              FormStructure::RetrieveFromCacheReason::
-                                  kFormCacheUpdateAfterParsing,
-                              preserve_signatures);
+        self->UpdateFormCache(context.forms, context, preserve_signatures);
         for (const FormData& form : context.forms) {
           if (const FormStructure* const form_structure =
                   self->FindCachedFormById(form.global_id())) {
@@ -921,7 +916,7 @@ void AutofillManager::PopulateCacheForQueryResponse(
       form_structures_[form.global_id()] =
           std::make_unique<FormStructure>(form);
     } else {
-      form_structure->UpdateFormData(form, /*pass_key=*/{});
+      form_structure->UpdateFormData(form, base::PassKey<AutofillManager>());
     }
   }
 }
@@ -1043,7 +1038,6 @@ void AutofillManager::LogServerQueryResponseMetrics(
 void AutofillManager::UpdateFormCache(
     base::span<const FormData> forms,
     base::optional_ref<const AsyncContext> context,
-    FormStructure::RetrieveFromCacheReason reason,
     bool preserve_signatures) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.UpdateCache");
@@ -1104,50 +1098,26 @@ void AutofillManager::UpdateFormCache(
       continue;
     }
 
-    if (base::FeatureList::IsEnabled(features::kAutofillOptimizeCacheUpdates)) {
-      FormSignature form_signature = cached_form_structure->form_signature();
-      FormSignature structural_form_signature =
-          cached_form_structure->structural_form_signature();
-      cached_form_structure->UpdateFormData(forms[i], /*pass_key=*/{});
-      if (context) {
-        reset_predictions(*cached_form_structure);
-        apply_predictions(*cached_form_structure, *context, i);
-      }
-      if (preserve_signatures ||
-          IsCreditCardFormForSignaturePurposes(
-              *cached_form_structure, GetAcUnrecognizedBehavior(client()))) {
-        // Not updating signatures of credit card forms is legacy behavior. We
-        // believe that the signatures are kept stable for voting purposes.
-        // Credit card forms are those which contain only credit card fields.
-        // TODO(crbug.com/431754194): Investigate making the behavior consistent
-        // across all form types.
-        cached_form_structure->set_form_signature(form_signature);
-        cached_form_structure->set_structural_form_signature(
-            structural_form_signature);
-      }
-    } else {
-      auto form_structure = std::make_unique<FormStructure>(forms[i]);
-      form_structure->RetrieveFromCache(*cached_form_structure, reason);
-      if (context) {
-        apply_predictions(*form_structure, *context, i);
-      }
-
-      if (!preserve_signatures &&
-          !IsCreditCardFormForSignaturePurposes(
-              *cached_form_structure, GetAcUnrecognizedBehavior(client()))) {
-        // Not updating signatures of credit card forms is legacy behavior. We
-        // believe that the signatures are kept stable for voting purposes.
-        // Credit card forms are those which contain only credit card fields.
-        // TODO(crbug.com/431754194): Investigate making the behavior consistent
-        // across all form types.
-        form_structure->set_form_signature(CalculateFormSignature(forms[i]));
-        form_structure->set_alternative_form_signature(
-            CalculateAlternativeFormSignature(forms[i]));
-        form_structure->set_structural_form_signature(
-            CalculateStructuralFormSignature(forms[i]));
-      }
-
-      form_structures_[forms[i].global_id()] = std::move(form_structure);
+    FormSignature form_signature = cached_form_structure->form_signature();
+    FormSignature structural_form_signature =
+        cached_form_structure->structural_form_signature();
+    cached_form_structure->UpdateFormData(forms[i],
+                                          base::PassKey<AutofillManager>());
+    if (context) {
+      reset_predictions(*cached_form_structure);
+      apply_predictions(*cached_form_structure, *context, i);
+    }
+    if (preserve_signatures ||
+        IsCreditCardFormForSignaturePurposes(
+            *cached_form_structure, GetAcUnrecognizedBehavior(client()))) {
+      // Not updating signatures of credit card forms is legacy behavior. We
+      // believe that the signatures are kept stable for voting purposes.
+      // Credit card forms are those which contain only credit card fields.
+      // TODO(crbug.com/431754194): Investigate making the behavior consistent
+      // across all form types.
+      cached_form_structure->set_form_signature(form_signature);
+      cached_form_structure->set_structural_form_signature(
+          structural_form_signature);
     }
   }
 }

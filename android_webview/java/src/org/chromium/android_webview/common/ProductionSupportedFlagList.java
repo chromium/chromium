@@ -295,9 +295,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_NEW_REGEX_FOR_PHONE_COUNTRY_CODE,
                 "If enabled, more patterns are added to the PHONE_COUNTRY_CODE regex."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_OPTIMIZE_CACHE_UPDATES,
-                "Reduces the number of field members copied between forms during cache updates."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_POLICY_CONTROLLED_FEATURE_AUTOFILL,
                 "Enables the policy-controlled feature \"autofill\"."),
         Flag.baseFeature(

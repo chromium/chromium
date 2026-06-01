@@ -22,14 +22,15 @@ class FormStructureTestApi {
       : form_structure_(form_structure) {}
 
   AutofillField& PushField() {
-    form_structure_->fields_.push_back(std::make_unique<AutofillField>());
-    return *form_structure_->fields_.back();
+    form_structure_->fields_.data().push_back(
+        std::make_unique<AutofillField>());
+    return *form_structure_->fields_.data().back();
   }
 
   AutofillField& PushField(FormFieldData field) {
-    form_structure_->fields_.push_back(
+    form_structure_->fields_.data().push_back(
         std::make_unique<AutofillField>(std::move(field)));
-    return *form_structure_->fields_.back();
+    return *form_structure_->fields_.data().back();
   }
 
   // Set the heuristic and server types for each field. The `heuristic_types`

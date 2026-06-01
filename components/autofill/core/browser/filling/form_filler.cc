@@ -861,7 +861,7 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
             base::PassKey<FormFiller>());
       }
       autofill_field.set_field_modifiers(previous_state.field_modifiers,
-                                         base::PassKey<FormFiller>());
+                                         /*pass_key=*/{});
       autofill_field.set_autofill_source_profile_guid(
           previous_state.autofill_source_profile_guid);
       autofill_field.set_autofilled_type(previous_state.autofilled_type);

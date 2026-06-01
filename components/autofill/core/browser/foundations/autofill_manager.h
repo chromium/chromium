@@ -584,7 +584,6 @@ class AutofillManager
   // in that case).
   void UpdateFormCache(base::span<const FormData> forms,
                        base::optional_ref<const AsyncContext> context,
-                       FormStructure::RetrieveFromCacheReason reason,
                        bool preserve_signatures);
 
   std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>

@@ -16,6 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -49,6 +50,7 @@ using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
 class AutofillManager;
 struct AutofillServerPrediction;
+class BrowserAutofillManager;
 class FormData;
 struct FormDataPredictions;
 class LogBuffer;
@@ -60,10 +62,13 @@ class FormStructure {
  public:
   explicit FormStructure(const FormData& form);
 
-  FormStructure(const FormStructure&) = delete;
-  FormStructure& operator=(const FormStructure&) = delete;
-
   virtual ~FormStructure();
+
+  static std::unique_ptr<FormStructure> Clone(
+      const FormStructure& other,
+      base::PassKey<BrowserAutofillManager> pass_key) {
+    return base::WrapUnique(new FormStructure(other));
+  }
 
   // Runs rationalization and sectioning. This is to be run after the field
   // types change.
@@ -109,86 +114,11 @@ class FormStructure {
   bool IsCompleteCreditCardForm(
       CreditCardFormCompleteness credit_card_form_completeness) const;
 
-  // This enum defines the behavior of RetrieveFromCache, which needs to adapt
-  // to the reason for retrieving data from the cache.
-  // TODO(crbug.com/456719060): Remove after cleaning up
-  // `kAutofillOptimizeCacheUpdates`.
-  enum class RetrieveFromCacheReason {
-    // kFormCacheUpdateWithoutParsing and kFormCacheUpdateAfterParsing refer to
-    // the process of parsing the form and/or storing the result in
-    // AutofillManager's form cache when the renderer sends a new or potentially
-    // updated FormData object. Form parsing is the process of assigning field
-    // types to fields when the renderer notifies the browser about a new,
-    // modified or interacted with form.
-    //
-    // When the browser receives a FormData object from the renderer, it is
-    // converted to a FormStructure object. After that, the FormStructure is
-    // parsed if it changed significantly since the last parse.
-    // RetrieveFromCache is responsible for retaining information from the
-    // history of the fields in the form (e.g. information about previous fill
-    // operations):
-    //
-    // - The `is_autofilled_according_to_renderer` and similar members of a
-    //   field are copied from the cached form so that a field that was once
-    //   labeled as autofilled remains autofilled.
-    //
-    // - The `value` of a field is copied from the cache as it represents the
-    //   initial value of a field during page load time and must not be updated
-    //   if a form is parsed a second time.
-    //   TODO: crbug.com/40227496 - Update documentation about `value` when
-    //   kAutofillFixValueSemantics is launched.
-    //
-    // - Server predictions are also preserved.
-    //
-    // - Heuristic predictions are preserved only for
-    //   kFormCacheUpdateWithoutParsing. They are discarded for
-    //   kFormCacheUpdateAfterParsing because they are generated during parsing.
-    kFormCacheUpdateWithoutParsing,
-    kFormCacheUpdateAfterParsing,
-
-    // kFormImport refers to the process of importing address profiles / credit
-    // cards from user-filled forms after a form submission.
-    //
-    // During form import, the browser receives a FormData object from the
-    // renderer that is first converted to a FormStructure object.
-    // RetrieveFromCache is responsible for processing the FormData so that the
-    // FormStructure contains the right information that facilitate importing.
-    // Therefore, similar work happens as for kFormCacheUpdateAfterParse,
-    // except:
-    //
-    // - During form import, we want to copy field type information from
-    //   previous parse operations as these tell which information to save.
-    //
-    // - The `value` of a FormStructure's field typically represents the
-    //   initially observed value of a field during page load. So during
-    //   kFormCacheUpdateAfterParse the value is persisted. During import,
-    //   however, we want to store the last observed value. Furthermore, if the
-    //   submitted value of a field has never been changed, we ignore the
-    //   previous value from import (unless it's a state or country as websites
-    //   can find meaningful default values via GeoIP).
-    //   TODO: crbug.com/40227496 - Update documentation about `value` when
-    //   kAutofillFixValueSemantics is launched.
-    //
-    // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is launched,
-    // kFormImport behaves identical to kFormCacheUpdateWithoutParsing. Consider
-    // renaming the enum constants or, better yet, removing the entire enum
-    // then.
-    kFormImport,
-  };
-
-  void UpdateFormData(const FormData& form_data,
-                      base::PassKey<AutofillManager> pass_key) {
+  void UpdateFormData(
+      const FormData& form_data,
+      base::PassKey<AutofillManager, BrowserAutofillManager> pass_key) {
     UpdateFormData(form_data);
   }
-
-  // Assumes that `*this` is FormStructure which was freshly created from a
-  // FormData object that the renderer sent to the browser and copies relevant
-  // information from a `cached_form` to `*this`. Depending on the passed
-  // `reason`, a different subset of data can be copied.
-  // TODO(crbug.com/456719060): Remove after cleaning up
-  // `kAutofillOptimizeCacheUpdates`.
-  void RetrieveFromCache(const FormStructure& cached_form,
-                         RetrieveFromCacheReason reason);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
@@ -197,7 +127,7 @@ class FormStructure {
 
   // See FormFieldData::fields.
   const std::vector<std::unique_ptr<AutofillField>>& fields() const {
-    return fields_;
+    return fields_.data();
   }
   const AutofillField* field(size_t index) const;
   AutofillField* field(size_t index);
@@ -208,11 +138,11 @@ class FormStructure {
 
   // Used for iterating over the fields.
   std::vector<std::unique_ptr<AutofillField>>::const_iterator begin() const {
-    return fields_.begin();
+    return fields_.data().begin();
   }
 
   std::vector<std::unique_ptr<AutofillField>>::const_iterator end() const {
-    return fields_.end();
+    return fields_.data().end();
   }
 
   const std::u16string& form_name() const { return form_name_; }
@@ -326,6 +256,9 @@ class FormStructure {
  private:
   friend class FormStructureTestApi;
 
+  FormStructure(const FormStructure&);
+  FormStructure& operator=(const FormStructure&);
+
   // Copies the information from `form_data` into the members of `FormStructure`
   // that are copies of information in `FormData`. `this` and `form_data` must
   // have the same `global_id()`.
@@ -372,10 +305,6 @@ class FormStructure {
   // main frame) of the form's frame tree as described by MPArch nested frame
   // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin_;
-
-  // A vector of all the input fields in the form.
-  // See FormFieldData::fields.
-  std::vector<std::unique_ptr<AutofillField>> fields_;
 
   // Indicates whether the client may run the AutofillAI model for this form.
   bool may_run_autofill_ai_model_ = false;
@@ -439,6 +368,36 @@ class FormStructure {
 
   // A vector of all iframes in the form.
   std::vector<FrameTokenWithPredecessor> child_frames_;
+
+  // A vector of all the input fields in the form. See `FormFieldData::fields`.
+  // This is a separate class to enable cloning `std::unique_ptr<AutofillField>`
+  // values.
+  class AutofillFieldCopyableVector {
+   public:
+    AutofillFieldCopyableVector();
+    AutofillFieldCopyableVector(const AutofillFieldCopyableVector& other);
+    AutofillFieldCopyableVector(AutofillFieldCopyableVector&&);
+    AutofillFieldCopyableVector& operator=(AutofillFieldCopyableVector&&);
+    AutofillFieldCopyableVector& operator=(const AutofillFieldCopyableVector&);
+    ~AutofillFieldCopyableVector();
+
+    std::vector<std::unique_ptr<AutofillField>>& data() { return data_; }
+    const std::vector<std::unique_ptr<AutofillField>>& data() const {
+      return data_;
+    }
+
+    // Delegate common vector methods for ease of use
+    auto begin() { return data_.begin(); }
+    auto end() { return data_.end(); }
+    auto begin() const { return data_.begin(); }
+    auto end() const { return data_.end(); }
+    size_t size() const { return data_.size(); }
+    bool empty() const { return data_.empty(); }
+    void clear() { data_.clear(); }
+
+   private:
+    std::vector<std::unique_ptr<AutofillField>> data_;
+  } fields_;
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);

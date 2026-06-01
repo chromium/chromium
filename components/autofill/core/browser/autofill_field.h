@@ -41,6 +41,7 @@ namespace autofill {
 class AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
 class FormAutofillHistory;
 class FormFiller;
+class FormStructure;
 
 using FieldPrediction =
     AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
@@ -156,6 +157,14 @@ enum class FieldModifier {
   kMaxValue = kAutofill,
 };
 
+class FormStructure;
+
+class AutofillFieldCopyKey {
+ private:
+  friend class FormStructure;
+  AutofillFieldCopyKey() = default;
+};
+
 class AutofillField : public FormFieldData {
  public:
   using FieldLogEventType = std::variant<std::monostate,
@@ -172,8 +181,6 @@ class AutofillField : public FormFieldData {
   AutofillField();
   explicit AutofillField(const FormFieldData& field);
 
-  AutofillField(const AutofillField&) = delete;
-  AutofillField& operator=(const AutofillField&) = delete;
   AutofillField(AutofillField&&);
   AutofillField& operator=(AutofillField&&);
 
@@ -184,6 +191,9 @@ class AutofillField : public FormFieldData {
   // since it is likely missing some fields.
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
+
+  static std::unique_ptr<AutofillField> Clone(const AutofillField& other,
+                                              AutofillFieldCopyKey pass_key);
 
   // This is deprecated, consider using `AutofillField::field_modifiers_`
   // instead.
@@ -265,14 +275,12 @@ class AutofillField : public FormFieldData {
   void RemoveFieldModifier(FieldModifier modifier,
                            base::PassKey<FormFiller> pass_key);
 
-  // TODO(crbug.com/456719060): Remove `FormStructure` from the `pass_key` of
-  // both functions below after launching `kAutofillOptimizeCacheUpdates`.
   const std::vector<FieldModifier>& field_modifiers(
-      base::PassKey<FormStructure, FormAutofillHistory>) const {
+      base::PassKey<FormAutofillHistory>) const {
     return field_modifiers_;
   }
   void set_field_modifiers(std::vector<FieldModifier> field_modifiers,
-                           base::PassKey<FormStructure, FormFiller>) {
+                           base::PassKey<FormFiller>) {
     field_modifiers_ = std::move(field_modifiers);
   }
 
@@ -527,6 +535,9 @@ class AutofillField : public FormFieldData {
   };
 
   explicit AutofillField(FieldSignature field_signature);
+
+  AutofillField(const AutofillField&);
+  AutofillField& operator=(const AutofillField&);
 
   // Copies the information from `field_data` into the members of
   // `AutofillField` that were inherited from `FormFieldData`.

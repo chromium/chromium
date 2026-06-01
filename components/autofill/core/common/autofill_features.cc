@@ -813,12 +813,6 @@ BASE_FEATURE(kAutofillNewRegexForPhoneCountryCode,
 BASE_FEATURE(kAutofillNewSuggestionGeneration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, cache form updates will happen in place instead of creating a
-// new form and moving it back to the cache, which reduces the number of members
-// that are copied.
-// TODO(crbug.com/456719060): Remove once launched.
-BASE_FEATURE(kAutofillOptimizeCacheUpdates, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, `IsNormalizedNameVariantOf()` uses a linear-time greedy
 // algorithm instead of an exponential one that generates all name variants.
 // TODO(crbug.com/479905438) Remove once launched.

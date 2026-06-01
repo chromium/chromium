@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
 #include <optional>
+#include <string>
 
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -989,19 +991,21 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   // doesn't have a possible type.
   // The `FormFieldData::label_source` of the fields is set manually, since
   // this test doesn't run label inference.
-  FormFieldData name_field;
-  name_field.set_value(profile.GetInfo(
-      NAME_FULL, personal_data().address_data_manager().app_locale()));
-  name_field.set_label_source(FormFieldData::LabelSource::kUnknown);
-  FormFieldData street_field;
-  street_field.set_value(u"unknown");
-  street_field.set_label_source(FormFieldData::LabelSource::kForId);
-  FormFieldData country_field;
-  country_field.set_value(
+  const std::u16string name_value = profile.GetInfo(
+      NAME_FULL, personal_data().address_data_manager().app_locale());
+  const std::u16string country_value =
       profile.GetInfo(ADDRESS_HOME_COUNTRY,
-                      personal_data().address_data_manager().app_locale()));
-  country_field.set_label_source(FormFieldData::LabelSource::kLabelTag);
-  const FormData form = CreateForm({name_field, street_field, country_field});
+                      personal_data().address_data_manager().app_locale());
+  const FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL,
+                   .value = name_value,
+                   .label_source = FormFieldData::LabelSource::kUnknown},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .value = u"unknown",
+                   .label_source = FormFieldData::LabelSource::kForId},
+                  {.role = ADDRESS_HOME_COUNTRY,
+                   .value = country_value,
+                   .label_source = FormFieldData::LabelSource::kLabelTag}}});
   autofill_manager().AddSeenForm(
       test::WithoutValues(form),
       {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_COUNTRY});
@@ -1012,8 +1016,8 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   SubmitForm(form);
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.LabelInference.InferredLabelSource.AtSubmission2"),
-              BucketsAre(Bucket(name_field.label_source(), 1),
-                         Bucket(country_field.label_source(), 1)));
+              BucketsAre(Bucket(FormFieldData::LabelSource::kUnknown, 1),
+                         Bucket(FormFieldData::LabelSource::kLabelTag, 1)));
 }
 
 // Tests that precision metric is recorded for email field predictions.

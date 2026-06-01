@@ -22,6 +22,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -452,10 +453,19 @@ AutofillField::AutofillField(const FormFieldData& field) {
 }
 
 AutofillField::AutofillField(AutofillField&&) = default;
+AutofillField::AutofillField(const AutofillField&) = default;
 
 AutofillField& AutofillField::operator=(AutofillField&&) = default;
+AutofillField& AutofillField::operator=(const AutofillField&) = default;
 
 AutofillField::~AutofillField() = default;
+
+// static
+std::unique_ptr<AutofillField> AutofillField::Clone(
+    const AutofillField& other,
+    AutofillFieldCopyKey pass_key) {
+  return base::WrapUnique(new AutofillField(other));
+}
 
 std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
     FieldSignature field_signature) {
