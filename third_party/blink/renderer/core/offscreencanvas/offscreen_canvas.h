@@ -103,6 +103,10 @@ class CORE_EXPORT OffscreenCanvas final
     disable_reading_from_canvas_ = true;
   }
 
+  void SetFrameSinkIdForTesting(uint32_t client_id, uint32_t sink_id) {
+    SetFrameSinkId(client_id, sink_id);
+  }
+
   void SetFrameSinkId(uint32_t client_id, uint32_t sink_id) {
     client_id_ = client_id;
     sink_id_ = sink_id;

@@ -153,7 +153,7 @@ void OffscreenCanvasTest::SetUp() {
       exception_state);
   // |offscreen_canvas_| should inherit the FrameSinkId from |canvas_element|s
   // SurfaceLayerBridge, but in tests this id is zero; fill it up by hand.
-  offscreen_canvas_->SetFrameSinkId(kClientId, kSinkId);
+  offscreen_canvas_->SetFrameSinkIdForTesting(kClientId, kSinkId);
 
   CanvasContextCreationAttributesCore attrs;
   if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
