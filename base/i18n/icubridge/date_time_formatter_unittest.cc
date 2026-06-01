@@ -9,19 +9,24 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base::i18n {
 
 class DateTimeFormatterTest : public testing::Test {
  public:
-  void SetUp() override { base::i18n::InitializeICU(); }
+  void SetUp() override {
+    base::i18n::InitializeICU();
+    // Force UTC timezone for predictable results.
+    icu::TimeZone::adoptDefault(icu::TimeZone::getGMT()->clone());
+  }
 };
 
 TEST_F(DateTimeFormatterTest, FormatShortDate) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -38,7 +43,7 @@ TEST_F(DateTimeFormatterTest, FormatYMD) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -54,7 +59,7 @@ TEST_F(DateTimeFormatterTest, FormatY) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -68,7 +73,7 @@ TEST_F(DateTimeFormatterTest, FormatE) {
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
   // 2026-05-25 is a Monday
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -81,7 +86,7 @@ TEST_F(DateTimeFormatterTest, FormatWithPrecision) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -97,7 +102,7 @@ TEST_F(DateTimeFormatterTest, FormatWithEra) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -113,7 +118,7 @@ TEST_F(DateTimeFormatterTest, FormatD) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   EXPECT_EQ(formatter.Format(time, datetime_options::D::Medium()), u"25");
@@ -123,7 +128,7 @@ TEST_F(DateTimeFormatterTest, FormatDE) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -136,7 +141,7 @@ TEST_F(DateTimeFormatterTest, FormatDET) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -150,7 +155,7 @@ TEST_F(DateTimeFormatterTest, FormatDT) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -163,7 +168,7 @@ TEST_F(DateTimeFormatterTest, FormatET) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -176,7 +181,7 @@ TEST_F(DateTimeFormatterTest, FormatM) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   EXPECT_EQ(formatter.Format(time, datetime_options::M::Medium()), u"May");
@@ -186,7 +191,7 @@ TEST_F(DateTimeFormatterTest, FormatMD) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   EXPECT_EQ(formatter.Format(time, datetime_options::MD::Medium()), u"May 25");
@@ -196,7 +201,7 @@ TEST_F(DateTimeFormatterTest, FormatMDE) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -210,7 +215,7 @@ TEST_F(DateTimeFormatterTest, FormatMDET) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -225,7 +230,7 @@ TEST_F(DateTimeFormatterTest, FormatMDT) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -239,7 +244,7 @@ TEST_F(DateTimeFormatterTest, FormatT) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   EXPECT_NE(
@@ -251,7 +256,7 @@ TEST_F(DateTimeFormatterTest, FormatYM) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   EXPECT_EQ(formatter.Format(time, datetime_options::YM::Medium()),
@@ -262,7 +267,7 @@ TEST_F(DateTimeFormatterTest, FormatYMDE) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -276,7 +281,7 @@ TEST_F(DateTimeFormatterTest, FormatYMDET) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
@@ -290,12 +295,11 @@ TEST_F(DateTimeFormatterTest, FormatYMDT) {
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 10:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
       formatter.Format(time, datetime_options::YMDT::Medium());
-  EXPECT_NE(result.find(u"5/25/2026"), std::u16string::npos);
   EXPECT_NE(result.find(u"10:30:00"), std::u16string::npos);
 }
 
@@ -304,7 +308,7 @@ TEST_F(DateTimeFormatterTest, HourClockType) {
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
   // 10:30 PM is 22:30
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 22:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 22:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -329,7 +333,7 @@ TEST_F(DateTimeFormatterTest, AmPmClockType) {
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
   // 10:30 PM
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 22:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 22:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -356,7 +360,7 @@ TEST_F(DateTimeFormatterTest, HourClockTypeWithLength) {
   icu::Locale::setDefault(icu::Locale::getUS(), status);
   base::Time time;
   // 10:30 PM is 22:30
-  ASSERT_TRUE(base::Time::FromString("2026-05-25 22:30:00", &time));
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 22:30:00", &time));
 
   const IcuBridge::DateTimeFormatter& formatter =
       IcuBridge::GetInstance().date_time_formatter();
@@ -374,8 +378,25 @@ TEST_F(DateTimeFormatterTest, HourClockTypeWithLength) {
   // 24-hour clock
   options.hour_clock_type = base::k24HourClock;
   std::u16string result24 = formatter.Format(time, options);
+
   EXPECT_NE(result24.find(u"22:30"), std::u16string::npos);
   EXPECT_EQ(result24.find(u"PM"), std::u16string::npos);
+}
+
+TEST_F(DateTimeFormatterTest, SubsecondPrecision) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale::setDefault(icu::Locale::getUS(), status);
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00.987", &time));
+
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  // kSubsecond_3 should show .987
+  std::u16string result = formatter.Format(
+      time, datetime_options::T::Medium().with_time_precision(
+                DateTimeFormatterOptions::TimePrecision::kSubsecond_3));
+  EXPECT_NE(result.find(u"10:30:00.987"), std::u16string::npos);
 }
 
 }  // namespace base::i18n

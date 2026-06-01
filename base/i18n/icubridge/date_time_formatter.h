@@ -116,7 +116,6 @@ struct BASE_I18N_EXPORT DateTimeFormatterOptions {
     kSubsecond_2,     // e.g., "10:30:00.00 AM"
     kSubsecond_3,     // e.g., "10:30:00.000 AM"
     kSubsecond_4,     // e.g., "10:30:00.0000 AM"
-    kMinuteOptional,  // e.g., "10 AM" if minutes are 0, else "10:30 AM"
   };
 
   ItemLength length = ItemLength::kNone;

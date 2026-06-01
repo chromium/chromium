@@ -216,7 +216,6 @@ std::u16string IcuBridge::DateTimeFormatter::Format(
       pattern += "j";
       break;
     case DateTimeFormatterOptions::TimePrecision::kMinute:
-    case DateTimeFormatterOptions::TimePrecision::kMinuteOptional:
       pattern += "jm";
       break;
     case DateTimeFormatterOptions::TimePrecision::kSecond:
