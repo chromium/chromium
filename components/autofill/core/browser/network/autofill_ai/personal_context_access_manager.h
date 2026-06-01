@@ -12,7 +12,6 @@
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/context_memory_error.h"
-#include "components/personal_context/proto/features/common_data.pb.h"
 
 namespace autofill {
 
