@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -575,7 +577,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
         &GetDocument(), test_case.expected_browsing_topics);
   }
 
- private:
+ protected:
   std::unique_ptr<HTMLPreloadScanner> scanner_;
 };
 
@@ -1236,6 +1238,47 @@ TEST_F(HTMLPreloadScannerTest, testCSP) {
     SCOPED_TRACE(test_case.input_html);
     Test(test_case);
   }
+}
+
+TEST_F(HTMLPreloadScannerTest, BaseURICSPEnforcement) {
+  // Regression test for crbug.com/502354038.
+  KURL document_url("http://whatever.test/");
+  NavigateTo(document_url);
+
+  // Set up the document with a CSP that restricts base-uri to 'none'.
+  GetDocument().GetExecutionContext()->GetContentSecurityPolicy()->AddPolicies(
+      ParseContentSecurityPolicies(
+          "base-uri 'none'",
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          document_url));
+
+  // Create the scanner manually after setting up the CSP.
+  HTMLParserOptions options(&GetDocument());
+  scanner_ = std::make_unique<HTMLPreloadScanner>(
+      std::make_unique<HTMLTokenizer>(options), document_url,
+      std::make_unique<CachedDocumentParameters>(&GetDocument()),
+      CreateMediaValuesData(), TokenPreloadScanner::ScannerType::kMainDocument,
+      /* script_token_scanner=*/nullptr,
+      /* take_preload=*/HTMLPreloadScanner::TakePreloadFn(),
+      Vector<ElementLocator>());
+
+  HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+
+  // HTML with a cross-origin <base> tag and a relative image.
+  // The <base> tag should be blocked by CSP, so the image should be resolved
+  // against the document URL, not the blocked base URL.
+  scanner_->AppendToEnd(
+      String("<base href='http://attacker.test/'><img src='test.png'>"));
+
+  std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(KURL());
+  preloader.TakePreloadData(std::move(preload_data));
+
+  // EXPECTATION: The base URL used for the preload request should be the
+  // original document base URL, NOT the attacker-controlled one from the <base>
+  // tag, because 'http://attacker.test/' violates 'base-uri 'none''.
+  preloader.PreloadRequestVerification(ResourceType::kImage, "test.png",
+                                       nullptr, 0, ClientHintsPreferences());
 }
 
 TEST_F(HTMLPreloadScannerTest, testNonce) {

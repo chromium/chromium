@@ -1886,4 +1886,24 @@ TEST_F(ContentSecurityPolicyTest, IsNonceableElement) {
   }
 }
 
+TEST_F(ContentSecurityPolicyTest, StaticAllowBaseURI) {
+  KURL allowed_base("https://example.test/");
+  KURL blocked_base("https://not-example.test/");
+
+  // Empty policies should allow everything.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> empty_policies;
+  EXPECT_TRUE(
+      ContentSecurityPolicy::AllowBaseURI(allowed_base, empty_policies));
+  EXPECT_TRUE(
+      ContentSecurityPolicy::AllowBaseURI(blocked_base, empty_policies));
+
+  // Policy with base-uri 'self'.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies =
+      ParseContentSecurityPolicies(
+          "base-uri 'self'", ContentSecurityPolicyType::kEnforce,
+          ContentSecurityPolicySource::kHTTP, *secure_origin);
+  EXPECT_TRUE(ContentSecurityPolicy::AllowBaseURI(allowed_base, policies));
+  EXPECT_FALSE(ContentSecurityPolicy::AllowBaseURI(blocked_base, policies));
+}
+
 }  // namespace blink

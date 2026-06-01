@@ -33,6 +33,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -1161,7 +1163,10 @@ void TokenPreloadScanner::UpdatePredictedBaseURL(const HTMLToken& token) {
     KURL url(document_url_,
              StripLeadingAndTrailingHtmlSpaces(href_attribute->Value()));
     bool is_valid_base_url =
-        url.IsValid() && !url.ProtocolIsData() && !url.ProtocolIsJavaScript();
+        url.IsValid() && !url.ProtocolIsData() && !url.ProtocolIsJavaScript() &&
+        ContentSecurityPolicy::AllowBaseURI(
+            url, document_parameters_->content_security_policy);
+
     predicted_base_element_url_ = is_valid_base_url ? url : KURL();
   }
 }
@@ -1342,6 +1347,14 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
           : kPreloadLazyLoadImageType;
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
+  if (document->GetExecutionContext() &&
+      document->GetExecutionContext()->GetContentSecurityPolicy()) {
+    for (const auto& policy : document->GetExecutionContext()
+                                  ->GetContentSecurityPolicy()
+                                  ->GetParsedPolicies()) {
+      content_security_policy.push_back(policy->Clone());
+    }
+  }
 }
 
 // static

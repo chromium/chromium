@@ -35,6 +35,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -103,6 +104,8 @@ struct CORE_EXPORT CachedDocumentParameters {
   static std::optional<features::LcppPreloadLazyLoadImageType>
       preload_lazy_load_image_type_for_testing;
   HashSet<String> disabled_image_types;
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+      content_security_policy;
 };
 
 class TokenPreloadScanner {

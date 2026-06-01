@@ -1041,6 +1041,22 @@ bool ContentSecurityPolicy::AllowBaseURI(const KURL& url) {
                          RedirectStatus::kNoRedirect);
 }
 
+// static
+bool ContentSecurityPolicy::AllowBaseURI(
+    const KURL& url,
+    const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies) {
+  for (const auto& policy : policies) {
+    if (!CSPDirectiveListAllowFromSource(
+             *policy, /*policy=*/nullptr, CSPDirectiveName::BaseURI,
+             /*document_url=*/KURL(), url, url, RedirectStatus::kNoRedirect,
+             ReportingDisposition::kSuppressReporting)
+             .IsAllowed()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool ContentSecurityPolicy::AllowConnectToSource(
     const KURL& url,
     const KURL& url_before_redirects,

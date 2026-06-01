@@ -413,6 +413,10 @@ class CORE_EXPORT ContentSecurityPolicy final
   // main world CSP. See ExecutionContext::GetContentSecurityPolicyForWorld.
   static bool ShouldBypassMainWorldDeprecated(const DOMWrapperWorld* world);
 
+  static bool AllowBaseURI(
+      const KURL&,
+      const Vector<network::mojom::blink::ContentSecurityPolicyPtr>&);
+
   static bool IsNonceableElement(const Element*);
 
   static const char* GetDirectiveName(CSPDirectiveName type);
