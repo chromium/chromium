@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/app_bar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -144,7 +145,7 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   [self.layoutGuideCenter referenceView:_appContentView
                               underName:kAppContentGuide];
 
-  if (!IsChromeNextIaEnabled() && !IsAssistantSidePanelEnabled()) {
+  if (!IsChromeNextIaEnabled() && !IsUseSceneViewControllerEnabled()) {
     AddSameConstraints(_appContentContainerView, view);
   }
 
@@ -246,9 +247,12 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 
   _assistantContainerViewController = assistantContainerViewController;
 
-  _assistantShadowView = [[UIView alloc] init];
+  // Use ChromeOverlayContainerView so touches outside the active assistant
+  // sheet pass through to the background content when in the sheet presentation
+  // context.
+  _assistantShadowView = [[ChromeOverlayContainerView alloc] init];
   _assistantShadowView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_assistantShadowView];
+  [self updateAssistantZOrder];
 
   [self addChildViewController:_assistantContainerViewController];
   [_assistantShadowView addSubview:_assistantContainerViewController.view];
@@ -374,6 +378,21 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 
 #pragma mark - Private
 
+// Ensures the Assistant container view remains properly layered below the App
+// Bar view.
+- (void)updateAssistantZOrder {
+  UIView* containerView = _assistantShadowView;
+  UIView* appBarView = _appBar.view;
+  if (!containerView) {
+    return;
+  }
+  if (appBarView && appBarView.superview == self.view) {
+    [self.view insertSubview:containerView belowSubview:appBarView];
+  } else if (containerView.superview != self.view) {
+    [self.view addSubview:containerView];
+  }
+}
+
 // This method updates the top constraints for the assistant and app content.
 - (void)updateAssistantTopConstraints:(BOOL)active {
   CGFloat constant = 0.0;
@@ -438,7 +457,7 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 
 // Updates the active assistant constraints for the current active layout.
 - (void)updateAssistantLayoutConstraints {
-  if (!IsAssistantSidePanelEnabled() || !self.view.window) {
+  if (!IsUseSceneViewControllerEnabled() || !self.view.window) {
     return;
   }
 
@@ -455,6 +474,8 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
     }
     return;
   }
+
+  [self updateAssistantZOrder];
 
   UIView* containerView = _assistantShadowView;
   containerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -485,7 +506,7 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 // Applies visual aesthetics depending on whether the side panel layout is
 // active.
 - (void)updateAssistantVisualStyling:(BOOL)active {
-  if (!IsAssistantSidePanelEnabled() || !self.view.window) {
+  if (!IsUseSceneViewControllerEnabled() || !self.view.window) {
     return;
   }
 

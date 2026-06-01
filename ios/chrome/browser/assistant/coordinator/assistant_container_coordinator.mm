@@ -119,7 +119,7 @@
       std::make_unique<FullscreenUIUpdater>(fullscreenController, self);
 
   __weak __typeof(self) weakSelf = self;
-  if (IsAssistantSidePanelEnabled()) {
+  if (IsUseSceneViewControllerEnabled()) {
     [self.presenter
         addAssistantContainerViewController:_containerViewController];
 
@@ -286,7 +286,7 @@
   // Cleanup view controller and state.
   _fullscreenUIUpdater = nullptr;
 
-  if (IsAssistantSidePanelEnabled()) {
+  if (IsUseSceneViewControllerEnabled()) {
     [self.presenter removeAssistantContainerViewController];
   } else {
     [_containerViewController willMoveToParentViewController:nil];
@@ -315,7 +315,7 @@
 // When the Assistant Side Panel is disabled, the baseVC might not conform to
 // this protocol.
 - (UIViewController<AssistantContainerPresenter>*)presenter {
-  if (IsAssistantSidePanelEnabled()) {
+  if (IsUseSceneViewControllerEnabled()) {
     CHECK([self.baseViewController
               conformsToProtocol:@protocol(AssistantContainerPresenter)],
           base::NotFatalUntil::M152);
