@@ -160,8 +160,8 @@ def AddEventOptionsExtendedAttributes(node: IDLNode, properties: dict):
 
   Extracts extended attributes that are only specific to Event definitions.
   TODO(crbug.com/487746350): Add support for declarative event related
-  properties (`supportsFilters`, `supportsListeners`, `supportsRules`) to this
-  function as required for WebIDL schema conversions.
+  properties (`supportsListeners`, `supportsRules`) to this function as
+  required for WebIDL schema conversions.
 
   Args:
     node: The IDLNode to look for the extended attributes on.
@@ -171,6 +171,11 @@ def AddEventOptionsExtendedAttributes(node: IDLNode, properties: dict):
     if 'options' not in properties:
       properties['options'] = {}
     properties['options']['maxListeners'] = int(value)
+
+  if HasExtendedAttribute(node, 'supportsFilters'):
+    if 'options' not in properties:
+      properties['options'] = {}
+    properties['options']['supportsFilters'] = True
 
 
 def _ExtractNodeComment(node: IDLNode) -> str:

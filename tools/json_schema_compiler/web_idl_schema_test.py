@@ -462,6 +462,12 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('onTestMaxListeners', event_max_listeners.get('name'))
     self.assertEqual({'maxListeners': 1}, event_max_listeners.get('options'))
 
+    event_supports_filters = getEvent(schema, 'onTestSupportsFilters')
+    self.assertEqual('onTestSupportsFilters',
+                     event_supports_filters.get('name'))
+    self.assertEqual({'supportsFilters': True},
+                     event_supports_filters.get('options'))
+
   # Tests that Dictionaries and Enums defined on the top level of the IDL file
   # are processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):

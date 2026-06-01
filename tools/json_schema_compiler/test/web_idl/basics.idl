@@ -80,6 +80,9 @@ interface TestWebIdl {
   // Event with maxListeners extended attribute.
   [maxListeners=1] static attribute OnTestMaxListenersEvent onTestMaxListeners;
 
+  // Event with supportsFilters extended attribute.
+  [supportsFilters] static attribute OnTestSupportsFiltersEvent onTestSupportsFilters;
+
   // Promise returning function, with a comment that provides the name and
   // description of the value the promise resolves to.
   // |arg1|: This is a normal argument comment.
@@ -113,6 +116,9 @@ callback OnTestTwoListener = undefined (ExampleType customType);
 // Callback listener for onTestMaxListeners.
 callback OnTestMaxListenersListener = undefined ();
 
+// Callback listener for onTestSupportsFilters.
+callback OnTestSupportsFiltersListener = undefined ();
+
 interface OnTestOneEvent : ExtensionEvent {
   static void addListener(OnTestOneListener listener);
   static void removeListener(OnTestOneListener listener);
@@ -127,6 +133,11 @@ interface OnTestMaxListenersEvent : ExtensionEvent {
   static void addListener(OnTestMaxListenersListener listener);
   static void removeListener(OnTestMaxListenersListener listener);
   static void hasListener(OnTestMaxListenersListener listener);
+};
+interface OnTestSupportsFiltersEvent : ExtensionEvent {
+  static void addListener(OnTestSupportsFiltersListener listener);
+  static void removeListener(OnTestSupportsFiltersListener listener);
+  static void hasListener(OnTestSupportsFiltersListener listener);
 };
 
 dictionary ExampleType {
