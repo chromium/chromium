@@ -819,6 +819,10 @@ BOOL IsAllSelected(NSUInteger selected_unread_count,
         promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
             promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate
                 promoText:(NSString*)promoText {
+  if (self.editing) {
+    [self exitEditingModeAnimated:NO];
+  }
+
   if (promoEnabled) {
     CHECK(![self.tableViewModel
         hasSectionForSectionIdentifier:kSectionIdentifierSignInPromo]);
