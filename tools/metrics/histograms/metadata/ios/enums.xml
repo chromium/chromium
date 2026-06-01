@@ -2788,6 +2788,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Seed used">Seed is applied by variations service</int>
 </enum>
 
+<!-- LINT.IfChange(WelcomeBackPromoRegistrationResult) -->
+
+<enum name="WelcomeBackPromoRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure_TimeSinceActiveLimitNotMet"/>
+  <int value="2" label="Failure_MinEligibleFeaturesNotMet"/>
+  <int value="3" label="Failure_SessionEndTimeNil"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/welcome_back/metrics/welcome_back_metrics.h:WelcomeBackPromoRegistrationResult) -->
+
 <enum name="WhatsNewType">
   <int value="-1" label="Error"/>
   <int value="0" label="Search Tabs"/>

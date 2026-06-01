@@ -8205,6 +8205,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WelcomeBack.DaysSinceActiveNotFeatureFlagGuarded"
+    units="days" expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the number of days since the user was last active in the app,
+    calculated unconditionally on cold start for the entire user population.
+    Recorded once per cold start if there is a valid previous session end time.
+    Uses 1-day buckets up to 50 days.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WelcomeBack.DetailScreen.Impression"
     enum="IOSBestFeaturesItemType" expires_after="2026-08-02">
   <owner>cheickcisse@google.com</owner>
@@ -8223,6 +8235,41 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of features clicked by the user within the Welcome Back
     screen. Recorded when the Welcome Back screen is dismissed or closed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WelcomeBack.PromoRegistration.MissingFeature"
+    enum="IOSBestFeaturesItemType" expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Tracks which promoted features were missing/already-used when the Welcome
+    Back promo registration failed because the minimum number of eligible
+    features (2) was not met. Logged once per missing feature when the
+    registration fails.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WelcomeBack.PromoRegistrationResult"
+    enum="WelcomeBackPromoRegistrationResult" expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the success and failure reasons when registering the Welcome Back
+    promo. Recorded on profile startup when checking if the promo should be
+    registered.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WelcomeBack.SuppressedInFavorOfPromo"
+    enum="IOSPromosManagerPromo" expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Tracks which other promo was selected for display instead of the Welcome
+    Back promo when the Welcome Back promo was registered, in the display queue,
+    and otherwise fully eligible to trigger. Logged once per session when a
+    promo is displayed.
   </summary>
 </histogram>
 

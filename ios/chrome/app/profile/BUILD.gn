@@ -353,6 +353,7 @@ source_set("welcome_back_profile_agent") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/welcome_back/metrics",
     "//ios/chrome/browser/welcome_back/model",
     "//ios/chrome/browser/welcome_back/model:features",
   ]
@@ -429,6 +430,7 @@ source_set("unit_tests") {
     "profile_state_unittest.mm",
     "scene_observing_profile_agent_unittest.mm",
     "session_metrics_profile_agent_unittest.mm",
+    "welcome_back_screen_profile_agent_unittest.mm",
   ]
   deps = [
     ":certificate_policy_profile_agent",
@@ -438,6 +440,7 @@ source_set("unit_tests") {
     ":profile_controller",
     ":session_metrics_profile_agent",
     ":test_utils",
+    ":welcome_back_profile_agent",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
@@ -450,6 +453,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile/test:test_support",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
@@ -473,6 +477,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/synced_set_up/public",
+    "//ios/chrome/browser/welcome_back/metrics",
+    "//ios/chrome/browser/welcome_back/model",
     "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/security",

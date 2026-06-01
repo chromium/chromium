@@ -291,6 +291,16 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay(
                                 valid_promo_count,
                                 static_cast<int>(Promo::kMaxValue) + 1);
 
+  if (first_promo_opt.value() != Promo::WelcomeBack) {
+    bool welcome_back_in_queue =
+        std::ranges::contains(sorted_promos, Promo::WelcomeBack);
+    if (welcome_back_in_queue &&
+        CanShowPromoWithoutTrigger(Promo::WelcomeBack)) {
+      base::UmaHistogramEnumeration("IOS.WelcomeBack.SuppressedInFavorOfPromo",
+                                    first_promo_opt.value());
+    }
+  }
+
   return first_promo_opt;
 }
 

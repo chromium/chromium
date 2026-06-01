@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
@@ -26,12 +28,23 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/welcome_back/metrics/welcome_back_metrics.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 
 namespace {
 // Minimum number of features required to show the promo.
 constexpr size_t kMinEligibleFeatures = 2;
+
+// Histogram names.
+const char kWelcomeBackDaysSinceActiveHistogram[] =
+    "IOS.WelcomeBack.DaysSinceActive";
+const char kWelcomeBackDaysSinceActiveNotFeatureFlagGuardedHistogram[] =
+    "IOS.WelcomeBack.DaysSinceActiveNotFeatureFlagGuarded";
+const char kWelcomeBackPromoRegistrationResultHistogram[] =
+    "IOS.WelcomeBack.PromoRegistrationResult";
+const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
+    "IOS.WelcomeBack.PromoRegistration.MissingFeature";
 }  // namespace
 
 @implementation WelcomeBackScreenProfileAgent
@@ -46,6 +59,9 @@ constexpr size_t kMinEligibleFeatures = 2;
   }
 
   DCHECK(profileState.profile);
+
+  [self recordDaysSinceActiveHistogramWithName:
+            kWelcomeBackDaysSinceActiveNotFeatureFlagGuardedHistogram];
 
   switch (GetWelcomeBackScreenVariationType()) {
     case WelcomeBackScreenVariationType::kDisabled:
@@ -74,20 +90,8 @@ constexpr size_t kMinEligibleFeatures = 2;
 // Welcome Back Promo if all criteria is met. If not, deregister the Welcome
 // Back promo.
 - (void)maybeRegisterPromo {
-  NSDate* lastSessionEndTime =
-      [PreviousSessionInfo sharedInstance].sessionEndTime;
-  base::TimeDelta timeSinceActive =
-      lastSessionEndTime
-          ? base::Time::Now() - base::Time::FromNSDate(lastSessionEndTime)
-          : base::TimeDelta();
-
-  if (lastSessionEndTime) {
-    // Log the number of days since active. An exact linear histogram with a
-    // max of 50 provides good distribution around the 28-day threshold.
-    int daysSinceActive = timeSinceActive.InDays();
-    base::UmaHistogramExactLinear("IOS.WelcomeBack.DaysSinceActive",
-                                  daysSinceActive, 49);
-  }
+  [self recordDaysSinceActiveHistogramWithName:
+            kWelcomeBackDaysSinceActiveHistogram];
 
   // Mark Autofill feature as used if the Credential Provider Extension is
   // enabled on startup.
@@ -97,14 +101,101 @@ constexpr size_t kMinEligibleFeatures = 2;
         BestFeaturesItemType::kAutofillPasswordsInOtherApps);
   }
 
-  // Only register the promo if a user has been away for >28 days,
-  // `kWelcomeBack` is enabled, `kBestFeaturesScreenInFirstRun` is
-  // disabled, and there are at least two features eligible for display.
-  if (timeSinceActive > base::Days(28) && IsWelcomeBackEnabled() &&
-      !base::FeatureList::IsEnabled(first_run::kBestFeaturesScreenInFirstRun) &&
-      GetWelcomeBackEligibleItems().size() >= kMinEligibleFeatures) {
-    PromosManagerFactory::GetForProfile(self.profileState.profile)
-        ->RegisterPromoForSingleDisplay(promos_manager::Promo::WelcomeBack);
+  // Only log metrics and evaluate registration if Welcome Back is enabled and
+  // the Best Features First Run screen is disabled.
+  if (!IsWelcomeBackEnabled() ||
+      base::FeatureList::IsEnabled(first_run::kBestFeaturesScreenInFirstRun)) {
+    return;
+  }
+
+  NSDate* lastSessionEndTime =
+      [PreviousSessionInfo sharedInstance].sessionEndTime;
+  base::TimeDelta timeSinceActive =
+      [self timeSinceActiveWithLastSessionEndTime:lastSessionEndTime];
+
+  WelcomeBackPromoRegistrationResult result =
+      [self promoRegistrationResultWithLastSessionEndTime:lastSessionEndTime
+                                          timeSinceActive:timeSinceActive];
+
+  base::UmaHistogramEnumeration(kWelcomeBackPromoRegistrationResultHistogram,
+                                result);
+
+  switch (result) {
+    case WelcomeBackPromoRegistrationResult::kSuccess:
+      PromosManagerFactory::GetForProfile(self.profileState.profile)
+          ->RegisterPromoForSingleDisplay(promos_manager::Promo::WelcomeBack);
+      break;
+    case WelcomeBackPromoRegistrationResult::kFailureMinEligibleFeaturesNotMet:
+      [self logMissingWelcomeBackFeatures];
+      break;
+    case WelcomeBackPromoRegistrationResult::kFailureTimeSinceActiveLimitNotMet:
+    case WelcomeBackPromoRegistrationResult::kFailureSessionEndTimeNil:
+      break;
+  }
+}
+
+// Calculates the elapsed days since the last active session and records it to
+// the specified histogram.
+- (void)recordDaysSinceActiveHistogramWithName:(const char*)histogramName {
+  NSDate* lastSessionEndTime =
+      [PreviousSessionInfo sharedInstance].sessionEndTime;
+  base::TimeDelta timeSinceActive =
+      [self timeSinceActiveWithLastSessionEndTime:lastSessionEndTime];
+
+  if (lastSessionEndTime) {
+    int daysSinceActive = timeSinceActive.InDays();
+    base::UmaHistogramExactLinear(histogramName, daysSinceActive, 49);
+  }
+}
+
+// Returns the time elapsed since the last active session.
+- (base::TimeDelta)timeSinceActiveWithLastSessionEndTime:
+    (NSDate*)lastSessionEndTime {
+  return lastSessionEndTime
+             ? base::Time::Now() - base::Time::FromNSDate(lastSessionEndTime)
+             : base::TimeDelta();
+}
+
+// Evaluates registration conditions and returns the resulting outcome of the
+// check.
+- (WelcomeBackPromoRegistrationResult)
+    promoRegistrationResultWithLastSessionEndTime:(NSDate*)lastSessionEndTime
+                                  timeSinceActive:
+                                      (base::TimeDelta)timeSinceActive {
+  if (!lastSessionEndTime) {
+    return WelcomeBackPromoRegistrationResult::kFailureSessionEndTimeNil;
+  }
+  if (timeSinceActive <= base::Days(28)) {
+    return WelcomeBackPromoRegistrationResult::
+        kFailureTimeSinceActiveLimitNotMet;
+  }
+  if (GetWelcomeBackEligibleItems().size() < kMinEligibleFeatures) {
+    return WelcomeBackPromoRegistrationResult::
+        kFailureMinEligibleFeaturesNotMet;
+  }
+  return WelcomeBackPromoRegistrationResult::kSuccess;
+}
+
+// Logs each missing promoted Welcome Back feature to a histogram with
+// granular buckets.
+- (void)logMissingWelcomeBackFeatures {
+  std::vector<BestFeaturesItemType> eligibleItems =
+      GetWelcomeBackEligibleItems();
+  const BestFeaturesItemType allWelcomeBackFeatures[] = {
+      BestFeaturesItemType::kLensSearch,
+      BestFeaturesItemType::kEnhancedSafeBrowsing,
+      BestFeaturesItemType::kLockedIncognitoTabs,
+      BestFeaturesItemType::kSaveAndAutofillPasswords,
+      BestFeaturesItemType::kTabGroups,
+      BestFeaturesItemType::kPriceTrackingAndInsights,
+      BestFeaturesItemType::kAutofillPasswordsInOtherApps,
+      BestFeaturesItemType::kSharePasswordsWithFamily,
+  };
+  for (BestFeaturesItemType item : allWelcomeBackFeatures) {
+    if (!std::ranges::contains(eligibleItems, item)) {
+      base::UmaHistogramEnumeration(
+          kWelcomeBackPromoRegistrationMissingFeatureHistogram, item);
+    }
   }
 }
 
