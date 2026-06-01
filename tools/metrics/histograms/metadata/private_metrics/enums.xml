@@ -26,6 +26,15 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(PrivateInsightsTriggerUploadOutcome) -->
+
+<enum name="PrivateInsightsTriggerUploadOutcome">
+  <int value="0" label="Skipped because it was already running"/>
+  <int value="1" label="Task was posted"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/metrics/private_metrics/private_insights/private_insights_service.h:PrivateInsightsTriggerUploadOutcome) -->
+
 <!-- LINT.IfChange(PumaLogRotationOutcome) -->
 
 <enum name="PumaLogRotationOutcome">

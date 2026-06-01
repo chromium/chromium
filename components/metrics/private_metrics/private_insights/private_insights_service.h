@@ -15,9 +15,20 @@
 
 namespace private_insights {
 
+inline constexpr char kTriggerUploadOutcomeHistogram[] =
+    "PrivateMetrics.PrivateInsights.TriggerUploadOutcome";
+
 class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
     : public KeyedService {
  public:
+  // LINT.IfChange(PrivateInsightsTriggerUploadOutcome)
+  enum class TriggerUploadOutcome {
+    kSkippedAlreadyRunning = 0,
+    kTaskPosted = 1,
+    kMaxValue = kTaskPosted,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/private_metrics/enums.xml:PrivateInsightsTriggerUploadOutcome)
+
   PrivateInsightsService();
   ~PrivateInsightsService() override;
 

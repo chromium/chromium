@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -50,6 +51,8 @@ void PrivateInsightsService::Shutdown() {
 void PrivateInsightsService::TriggerUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_upload_running_) {
+    base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                  TriggerUploadOutcome::kSkippedAlreadyRunning);
     return;
   }
   is_upload_running_ = true;
@@ -61,6 +64,9 @@ void PrivateInsightsService::TriggerUpload() {
       base::BindOnce(&PrivateInsightsService::UploadBlocking),
       base::BindOnce(&PrivateInsightsService::OnUploadComplete,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                TriggerUploadOutcome::kTaskPosted);
 }
 
 // static
