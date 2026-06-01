@@ -232,6 +232,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                             FragmentParserOptions,
                             Sanitizer::Mode,
                             FragmentParserConfig::ParseDeclarativeShadowRoots,
+                            FragmentParserConfig::ForceHtml,
                             const AtomicString& property_name,
                             ExceptionState&);
 

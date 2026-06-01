@@ -160,6 +160,7 @@ void ShadowRoot::SetInnerHTMLWithoutTrustedTypes(
   SetInnerHTMLInternal(
       html, FragmentParserOptions(), Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kDontParse,
+      FragmentParserConfig::ForceHtml::kDontForce,
       trusted_types_names::kInnerHTML, exception_state);
 }
 
@@ -170,6 +171,7 @@ void ShadowRoot::setInnerHTML(
       CheckHTML(html, trusted_types_names::kInnerHTML, exception_state),
       FragmentParserOptions(), Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kDontParse,
+      FragmentParserConfig::ForceHtml::kDontForce,
       trusted_types_names::kInnerHTML, exception_state);
 }
 
@@ -180,6 +182,7 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
       CheckHTML(html, trusted_types_names::kSetHTMLUnsafe, exception_state),
       FragmentParserOptions(), Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce,
       trusted_types_names::kSetHTMLUnsafe, exception_state);
 }
 
@@ -192,6 +195,7 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
       CheckHTML(html, trusted_types_names::kSetHTMLUnsafe, exception_state),
       FragmentParserOptions(options), Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce,
       trusted_types_names::kSetHTMLUnsafe, exception_state);
 }
 
@@ -203,6 +207,7 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
       CheckHTML(html, trusted_types_names::kSetHTMLUnsafe, exception_state),
       FragmentParserOptions(options), Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce,
       trusted_types_names::kSetHTMLUnsafe, exception_state);
 }
 
@@ -211,6 +216,7 @@ void ShadowRoot::SetInnerHTMLInternal(
     FragmentParserOptions options,
     Sanitizer::Mode sanitizer_mode,
     FragmentParserConfig::ParseDeclarativeShadowRoots parse_shadow_roots,
+    FragmentParserConfig::ForceHtml force_html,
     const AtomicString& property_name,
     ExceptionState& exception_state) {
   if (exception_state.HadException()) {
@@ -222,6 +228,7 @@ void ShadowRoot::SetInnerHTMLInternal(
           {
               .sanitizer_mode = sanitizer_mode,
               .parse_declarative_shadows = parse_shadow_roots,
+              .force_html = force_html,
               .interface_name = trusted_types_names::kShadowRoot,
               .property_name = property_name,
               .context_element = &host(),
@@ -238,7 +245,8 @@ void ShadowRoot::setHTML(const String& html,
   SetInnerHTMLInternal(
       html, FragmentParserOptions(options), Sanitizer::Mode::kSafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
-      trusted_types_names::kSetHTML, exception_state);
+      FragmentParserConfig::ForceHtml::kForce, trusted_types_names::kSetHTML,
+      exception_state);
 }
 
 void ShadowRoot::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
