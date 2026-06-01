@@ -1,0 +1,4 @@
+Tests that serialization of deeply nested objects along with duplicates does not crash.
+Evaluating window.__x with deep serialization
+Error: Object reference chain is too long
+
