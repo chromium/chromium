@@ -207,7 +207,7 @@ constexpr base::FeatureParam<std::string> kBocaSpotlightUrlTemplate{
     "https://remotedesktop.google.com/support/session/{sessionCode}"};
 
 // Enables or disables Gemini integration for Boca on ChromeOS.
-BASE_FEATURE(kBocaGeminiIntegration, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaGeminiIntegration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The URL to use for Gemini integration in Boca.
 constexpr base::FeatureParam<std::string> kBocaGeminiUrl{
