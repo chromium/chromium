@@ -439,16 +439,18 @@ Use SPDX license identifiers (https://spdx.org/licenses/) when possible e.g.
 ['Apache-2.0'](https://spdx.org/licenses/Apache-2.0.html). You can find the full
 allowlist in
 [depot_tools/+/main:metadata/fields/custom/license_allowlist.py](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
-If the dependency uses a license that is not in the allowlist, you will need to
-add it to the
-[allowlist](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
-This requires approval from the ATLs who will check that the license
-classification is one of [unencumbered/permissive/notice/reciprocal]. If the
-license is more restrictive than reciprocal, engage with the ATLs to determine
-if the dependency is appropriate for Chromium. The license identifier will still
-need to be added to the restricted list
-['WITH_PERMISSION_ONLY'](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
-Do not use a license on that list without approval from the ATLs.
+
+If the dependency uses a license that is not in the allowlist, check the [license classification](#license-classifications) (see below):
+
+* **For Permissive, Notice, or Reciprocal licenses**: The license will need to be added to the [allowlist](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py) (see link for instructions).
+* **For Restricted or By-Exception-Only licenses** (Googlers can verify this via [go/lican](http://go/lican)):
+  1. **File a request**:
+     * **Googlers**: File a bug with OSL using [this template](http://b/issues/new?component=1450496&template=2332739) (see the [libaom exemption](http://b/issues/515617836) for an example).
+     * **External Contributors**: File a bug in the [Chromium > ThirdParty (1456923)](https://issues.chromium.org/issues/new?component=1456923) public tracker component. A member of the `//third_party/OWNERS` team will review it and file the OSL exception on your behalf.
+  2. **Exemption Resolution**: OSL will review the request and, if approved, instruct the reporter to either:
+     * Add the license to the [allowlist](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py) (handled by the third-party review team); OR
+     * Include a [`restrictive_license_approval.proto`](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/restrictive_license_approval.proto) file in your dependency's directory, with the `README.chromium`.
+
 
 ### License Classifications
 
