@@ -4,6 +4,7 @@
 
 source_set("certificate_model") {
   sources = [
+    "x509_certificate_constants.h",
     "x509_certificate_model_base.cc",
     "x509_certificate_model_base.h",
   ]
