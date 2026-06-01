@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -796,6 +797,48 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Reload should load offline page.
   [ChromeEarlGrey startReloading];
   AssertIsShowingDistillablePage(false, distillableURL);
+}
+
+// Tests that offline page is not loaded if a security interstitial is visible.
+- (void)testOfflinePageSafeBrowsingPhishingError {
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  GURL nonDistillablePageURL(self.testServer->GetURL(kNonDistillableURL));
+
+  // STAGE 1: Launch normally, load & distill "Tomato" page, and add to list.
+  [ReadingListAppInterface forceConnectionToWifi];
+  [ChromeEarlGrey loadURL:distillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  AddCurrentPageToReadingList();
+
+  // Navigate away to clear active tab content, wait for distillation.
+  [ChromeEarlGrey loadURL:nonDistillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  OpenReadingList();
+  AssertEntryVisible(kDistillableTitle);
+  WaitForDistillation();
+  TapToolbarButtonWithID(
+      kReadingListNavigationBarCloseButtonID);  // Close Reading List
+
+  // STAGE 2: Relaunch with phishing flag and safe browsing enabled.
+  AppLaunchConfiguration phishingConfig;
+  phishingConfig.additional_args.push_back(std::string("--mark_as_phishing=") +
+                                           distillablePageURL.spec());
+  phishingConfig.additional_args.push_back(
+      std::string("--enable-features=SafeBrowsingHashPrefixRealTimeLookups"));
+  phishingConfig.relaunch_policy = ForceRelaunchByKilling;
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:phishingConfig];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:"safebrowsing.enabled"];
+
+  // Open Reading List, tap the "Tomato" entry.
+  OpenReadingList();
+  AssertEntryVisible(kDistillableTitle);
+  TapEntry(kDistillableTitle);
+
+  // Assert Safe Browsing block is shown, and distilled page was NOT loaded.
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+  [ChromeEarlGrey waitForWebStateNotContainingText:kContentToKeep];
 }
 
 // Tests that only the "Select" and "Close" button are showing when not editing.

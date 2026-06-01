@@ -17,11 +17,16 @@
 #import "components/captive_portal/core/captive_portal_detector.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
+#import "components/reading_list/core/reading_list_entry.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -335,6 +340,125 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   EXPECT_TRUE(callback_called);
   NSString* error_string = l10n_util::GetNSString(IDS_SAFEBROWSING_HEADING);
   EXPECT_TRUE([page containsString:error_string]);
+}
+
+// Tests PrepareErrorPage with a Reading List entry, which would normally
+// trigger the offline page bypass, but with a Safe Browsing error (which is a
+// security error), so the Safe Browsing interstitial should NOT be bypassed and
+// must be displayed instead.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageWithOfflineDistilledPageAndSafeBrowsingError) {
+  // Store a distilled Reading List entry for the test URL.
+  std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
+  initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL(kTestUrl), "Test Title", base::Time::Now()));
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                            ReadingListModelTestingFactoryWithFakeStorage(
+                                std::move(initial_entries)));
+  std::unique_ptr<TestProfileIOS> reading_list_profile =
+      std::move(builder).Build();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForProfile(reading_list_profile.get());
+  reading_list_model->SetEntryDistilledInfoIfExists(
+      GURL(kTestUrl), base::FilePath("distilled.html"),
+      GURL("http://foo.bar/distilled"), 50, base::Time::FromTimeT(100));
+
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(reading_list_profile.get());
+  OfflinePageTabHelper::CreateForWebState(&web_state, reading_list_model);
+  SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
+  SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
+  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+      &web_state);
+
+  security_interstitials::UnsafeResource resource;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+  resource.url = GURL(kTestUrl);
+  resource.weak_web_state = web_state.GetWeakPtr();
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  SafeBrowsingUrlAllowList::FromWebState(&web_state)
+      ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
+  SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
+      ->StoreMainFrameUnsafeResource(resource);
+
+  NSError* error =
+      [NSError errorWithDomain:kSafeBrowsingErrorDomain
+                          code:base::checked_cast<NSInteger>(
+                                   SafeBrowsingErrorCode::kUnsafeResource)
+                      userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/std::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_NSNE(nil, page);
+  NSString* error_string = l10n_util::GetNSString(IDS_SAFEBROWSING_HEADING);
+  EXPECT_TRUE([page containsString:error_string]);
+}
+
+// Tests PrepareErrorPage with a Reading List entry and a regular non-security
+// error, verifying that it returns nil error page to hand over control to the
+// offline page presentation.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageWithOfflineDistilledPageAndNonSecurityError) {
+  // Store a distilled Reading List entry for the test URL.
+  std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
+  initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL(kTestUrl), "Test Title", base::Time::Now()));
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                            ReadingListModelTestingFactoryWithFakeStorage(
+                                std::move(initial_entries)));
+  std::unique_ptr<TestProfileIOS> reading_list_profile =
+      std::move(builder).Build();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForProfile(reading_list_profile.get());
+  reading_list_model->SetEntryDistilledInfoIfExists(
+      GURL(kTestUrl), base::FilePath("distilled.html"),
+      GURL("http://foo.bar/distilled"), 50, base::Time::FromTimeT(100));
+
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(reading_list_profile.get());
+  OfflinePageTabHelper::CreateForWebState(&web_state, reading_list_model);
+
+  // A typical non-security network error (e.g., connection timed out).
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorTimedOut
+                                   userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = @"dummy_initial_value";
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/std::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_NSEQ(nil, page);
 }
 
 // Tests PrepareErrorPage for a safe browsing enterprise block error, which

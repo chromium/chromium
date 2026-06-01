@@ -494,23 +494,6 @@ void ChromeWebClient::PrepareErrorPage(
     const std::optional<net::SSLInfo>& ssl_info,
     int64_t navigation_id,
     base::OnceCallback<void(NSString*)> callback) {
-  OfflinePageTabHelper* offline_page_tab_helper =
-      OfflinePageTabHelper::FromWebState(web_state);
-  // WebState that are not attached to a tab may not have an
-  // OfflinePageTabHelper.
-  if (offline_page_tab_helper &&
-      (offline_page_tab_helper->CanHandleErrorLoadingURL(url))) {
-    // An offline version of the page will be displayed to replace this error
-    // page. Loading an error page here can cause a race between the
-    // navigation to load the error page and the navigation to display the
-    // offline version of the page. If the latter navigation interrupts the
-    // former and causes it to fail, this can incorrectly appear to be a
-    // navigation back to the previous committed URL. To avoid this race,
-    // return a nil error page here to avoid an error page load. See
-    // crbug.com/980912.
-    std::move(callback).Run(nil);
-    return;
-  }
   DCHECK(error);
   NSError* final_underlying_error =
       base::ios::GetFinalUnderlyingErrorFromError(error);
@@ -541,6 +524,23 @@ void ChromeWebClient::PrepareErrorPage(
         ssl_info.value(), url, ssl_info.value().is_fatal_cert_error,
         navigation_id, std::move(callback));
   } else {
+    OfflinePageTabHelper* offline_page_tab_helper =
+        OfflinePageTabHelper::FromWebState(web_state);
+    // WebState that are not attached to a tab may not have an
+    // OfflinePageTabHelper.
+    if (offline_page_tab_helper &&
+        (offline_page_tab_helper->CanHandleErrorLoadingURL(url))) {
+      // An offline version of the page will be displayed to replace this error
+      // page. Loading an error page here can cause a race between the
+      // navigation to load the error page and the navigation to display the
+      // offline version of the page. If the latter navigation interrupts the
+      // former and causes it to fail, this can incorrectly appear to be a
+      // navigation back to the previous committed URL. To avoid this race,
+      // return a nil error page here to avoid an error page load. See
+      // crbug.com/980912.
+      std::move(callback).Run(nil);
+      return;
+    }
     std::move(callback).Run(
         GetErrorPage(url, error, is_post, is_off_the_record));
   }

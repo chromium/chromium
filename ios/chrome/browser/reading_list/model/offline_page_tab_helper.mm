@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -309,6 +310,18 @@ void OfflinePageTabHelper::ReadingListModelBeingDeleted(
 }
 
 void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
+  CHECK(web_state_);
+
+  // Do not load offline page if a security interstitial blocking page is
+  // currently committed and showing.
+  security_interstitials::IOSBlockingPageTabHelper* blocking_page_tab_helper =
+      security_interstitials::IOSBlockingPageTabHelper::FromWebState(
+          web_state_);
+  if (blocking_page_tab_helper &&
+      blocking_page_tab_helper->GetCurrentBlockingPage()) {
+    return;
+  }
+
   // As presenting the offline version will replace the content of the committed
   // page, the offline version can only be presented if the navigation currently
   // tracked by the OfflinePageTabHelper is the last committed one.

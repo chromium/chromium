@@ -406,6 +406,7 @@ source_set("unit_tests_internal") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
