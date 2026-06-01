@@ -166,10 +166,7 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
 TemplateURLService* GetTemplateURLService(Profile* profile) {
   CHECK(profile);
 #if BUILDFLAG(IS_ANDROID)
-  const ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
-  if ((form_factor == ui::DEVICE_FORM_FACTOR_TABLET ||
-       form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP) &&
-      base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF) &&
+  if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF) &&
       base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)) {
     return TemplateURLServiceFactory::GetForProfile(profile);
   }
