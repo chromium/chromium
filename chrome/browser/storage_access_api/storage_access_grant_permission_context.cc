@@ -23,6 +23,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/storage_access_api/storage_access_api_utils.h"
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context.h"
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
@@ -222,14 +223,6 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
 
   RecordOutcomeSample(RequestOutcome::kAllowedByFedCM, requesting_site);
   return fedcm_context;
-}
-
-bool IsAccessRestrictedInFrame(content::RenderFrameHost* rfh) {
-  return rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
-         rfh->IsNestedWithinFencedFrame() ||
-         rfh->IsSandboxed(
-             network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
-         rfh->GetStorageKey().ForbidsUnpartitionedStorageAccess();
 }
 
 // Verifies that the given RenderFrameHost is allowed to request this

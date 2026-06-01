@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service.h"
+#include "chrome/browser/storage_access_api/storage_access_api_utils.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,8 +34,8 @@ void StorageAccessAPITabHelper::FrameReceivedUserActivation(
   }
 #endif
 
-  if (rfh->GetLastCommittedOrigin().opaque() ||
-      rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin().opaque()) {
+  if (rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin().opaque() ||
+      IsAccessRestrictedInFrame(rfh)) {
     return;
   }
 

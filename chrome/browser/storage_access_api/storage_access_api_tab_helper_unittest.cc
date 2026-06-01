@@ -13,6 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+using testing::_;
+
 class MockStorageAccessAPIService : public StorageAccessAPIService {
  public:
   MOCK_METHOD(std::optional<base::TimeDelta>,
@@ -53,7 +55,7 @@ class StorageAccessAPITabHelperTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_MainFrame) {
   // The service should not be invoked.
-  EXPECT_CALL(service(), RenewPermissionGrant(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(service(), RenewPermissionGrant(_, _)).Times(0);
 
   NavigateAndCommit(GURL("https://example.test/"));
 
@@ -85,7 +87,7 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
 
 TEST_F(StorageAccessAPITabHelperTest,
        OnFrameReceivedUserActivation_SubframeOpaque) {
-  EXPECT_CALL(service(), RenewPermissionGrant(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(service(), RenewPermissionGrant(_, _)).Times(0);
 
   NavigateAndCommit(GURL("https://example.test/"));
 
@@ -98,4 +100,38 @@ TEST_F(StorageAccessAPITabHelperTest,
 
   // User activations in iframes with opaque origins are ignored.
   tab_helper()->FrameReceivedUserActivation(subframe);
+}
+
+TEST_F(StorageAccessAPITabHelperTest,
+       OnFrameReceivedUserActivation_SubframeCredentialless) {
+  EXPECT_CALL(service(), RenewPermissionGrant(_, _)).Times(0);
+
+  NavigateAndCommit(GURL("https://example.test/"));
+
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendCredentiallessChild("subframe");
+
+  subframe = SimulateNavigateAndCommit(GURL("https://bar.test/foo"), subframe);
+  ASSERT_NE(nullptr, subframe);
+
+  // User activations in credentialless iframes are ignored.
+  tab_helper()->FrameReceivedUserActivation(subframe);
+}
+
+TEST_F(StorageAccessAPITabHelperTest,
+       OnFrameReceivedUserActivation_FencedFrame) {
+  EXPECT_CALL(service(), RenewPermissionGrant(_, _)).Times(0);
+
+  NavigateAndCommit(GURL("https://example.test/"));
+
+  content::RenderFrameHost* fenced_frame =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+
+  fenced_frame =
+      SimulateNavigateAndCommit(GURL("https://bar.test/foo"), fenced_frame);
+  ASSERT_NE(nullptr, fenced_frame);
+
+  // User activations in fenced frames are ignored.
+  tab_helper()->FrameReceivedUserActivation(fenced_frame);
 }
