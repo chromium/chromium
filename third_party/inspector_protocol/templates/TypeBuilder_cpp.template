@@ -208,10 +208,8 @@ bool DomainDispatcherImpl::Dispatch({{config.crdtp.namespace}}::span<uint8_t> co
 
 class {{command_name_title}}CallbackImpl : public Backend::{{command_name_title}}Callback, public DomainDispatcher::Callback {
 public:
-    {{command_name_title}}CallbackImpl(std::unique_ptr<DomainDispatcher::WeakPtr> backendImpl, int callId,
-        {{config.crdtp.namespace}}::span<uint8_t> message, FallthroughCallback fallthrough_callback)
-        : DomainDispatcher::Callback(std::move(backendImpl), callId,
-{{config.crdtp.namespace}}::SpanFrom("{{domain.domain}}.{{command.name}}"), message, std::move(fallthrough_callback)) { }
+    {{command_name_title}}CallbackImpl(std::unique_ptr<DomainDispatcher::WeakPtr> backendImpl, {{config.crdtp.namespace}}::Dispatchable& dispatchable)
+        : DomainDispatcher::Callback(std::move(backendImpl), dispatchable) { }
 
     void sendSuccess(
       {%- for parameter in command.returns -%}
@@ -305,6 +303,13 @@ void DomainDispatcherImpl::{{command.name}}({{config.crdtp.namespace}}::Dispatch
         {{protocol.resolve_type(parameter).to_pass_type % ("params." + parameter.name)}}
         {%- endif -%}
       {%- endfor %}
+
+      {%- if protocol.should_pass_associated_data(domain.domain, command.name) -%}
+        {%- if command.parameters -%}, {% endif -%}
+        {{config.crdtp.namespace}}::ConvertAssociatedData<std::remove_cvref_t<{{protocol.type_definition(domain.domain + ".string").pass_type}}>>(
+            dispatchable.AssociatedData())
+      {%- endif -%}
+
       {%- if "returns" in command %}
         {%- for parameter in command.returns -%}
           {%- if not loop.first or command.parameters -%}, {% endif -%}
@@ -312,7 +317,7 @@ void DomainDispatcherImpl::{{command.name}}({{config.crdtp.namespace}}::Dispatch
         {%- endfor %}
       {% endif %});
     if (response.IsFallThrough()) {
-        dispatchable.TakeFallthroughCallback()(dispatchable.CallId(), dispatchable.Method(), dispatchable.Serialized());
+        dispatchable.DispatchFallThrough(response.Message());
         return;
     }
       {% if "returns" in command %}
@@ -345,7 +350,7 @@ void DomainDispatcherImpl::{{command.name}}({{config.crdtp.namespace}}::Dispatch
         {%- endif -%}
       {%- endfor -%}
         {%- if command.parameters -%}, {% endif -%}
-        std::make_unique<{{command_name_title}}CallbackImpl>(weakPtr(), dispatchable.CallId(), dispatchable.Serialized(), dispatchable.TakeFallthroughCallback()));
+        std::make_unique<{{command_name_title}}CallbackImpl>(weakPtr(), dispatchable));
     {% endif %}
 }
   {% endfor %}

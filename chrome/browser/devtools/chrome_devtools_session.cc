@@ -164,9 +164,10 @@ void ChromeDevToolsSession::HandleCommand(
     base::span<const uint8_t> message,
     content::DevToolsManagerDelegate::NotHandledCallback callback) {
   crdtp::Dispatchable dispatchable(
-      crdtp::SpanFrom(message),
+      crdtp::SpanFrom(message), std::string_view(),
       [cb = std::move(callback)](int call_id, crdtp::span<uint8_t> method,
-                                 crdtp::span<uint8_t> message) {
+                                 crdtp::span<uint8_t> message,
+                                 std::string_view fallthrough_data) {
         cb.Run(message);
       });
   DCHECK(dispatchable.ok());  // Checked by content::DevToolsSession.

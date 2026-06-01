@@ -333,11 +333,13 @@ void DevToolsSession::DispatchProtocolMessage(
   }
   // At this point |message| is CBOR.
   crdtp::Dispatchable dispatchable(
-      crdtp::SpanFrom(message),
+      crdtp::SpanFrom(message), std::string_view(),
       [cb = base::BindRepeating(&DevToolsSession::FallThrough,
                                 weak_factory_.GetWeakPtr())](
           int call_id, crdtp::span<uint8_t> method,
-          crdtp::span<uint8_t> message) { cb.Run(call_id, method, message); });
+          crdtp::span<uint8_t> message, std::string_view fallthrough_data) {
+        cb.Run(call_id, method, message);
+      });
   if (!dispatchable.ok()) {
     DispatchProtocolMessageToClient(
         (dispatchable.HasCallId()
@@ -399,11 +401,11 @@ void DevToolsSession::DispatchProtocolMessageInternal(
 void DevToolsSession::HandleCommand(base::span<const uint8_t> message) {
   HandleCommandInternal(
       crdtp::Dispatchable(
-          crdtp::SpanFrom(message),
+          crdtp::SpanFrom(message), std::string_view(),
           [cb = base::BindRepeating(&DevToolsSession::FallThrough,
                                     weak_factory_.GetWeakPtr())](
               int call_id, crdtp::span<uint8_t> method,
-              crdtp::span<uint8_t> message) {
+              crdtp::span<uint8_t> message, std::string_view fallthrough_data) {
             cb.Run(call_id, method, message);
           }),
       message);

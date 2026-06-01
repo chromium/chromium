@@ -44,7 +44,8 @@ void UiDevToolsClient::Dispatch(const std::string& json) {
             crdtp::DispatchResponse::ParseError(status.ToASCIIString())));
     return;
   }
-  crdtp::Dispatchable dispatchable(crdtp::SpanFrom(cbor), nullptr);
+  crdtp::Dispatchable dispatchable(crdtp::SpanFrom(cbor), std::string_view(),
+                                   nullptr);
   if (dispatchable.ok()) {
     dispatcher_.Dispatch(dispatchable);
     return;

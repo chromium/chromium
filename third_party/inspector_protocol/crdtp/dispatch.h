@@ -9,7 +9,9 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <string_view>
 #include <unordered_set>
+
 #include "export.h"
 #include "serializable.h"
 #include "span.h"
@@ -55,6 +57,7 @@ class CRDTP_EXPORT DispatchResponse {
 
   static DispatchResponse Success();
   static DispatchResponse FallThrough();
+  static DispatchResponse FallThrough(std::string associated_data);
 
   // Indicates that a message could not be parsed. E.g., malformed JSON.
   static DispatchResponse ParseError(std::string message);
@@ -84,8 +87,19 @@ class CRDTP_EXPORT DispatchResponse {
  private:
   DispatchResponse() = default;
   DispatchCode code_;
+  // For error responses, a message describing the error.
+  // For fall-through responses, fall-through associated message.
   std::string message_;
 };
+
+// This callback is invoked if the command was not dispatched due to handler
+// not being found. The caller has an opportunity to dispatch the command
+// to a different layer then.
+using FallthroughCallback =
+    std::function<void(int call_id,
+                       span<uint8_t> method,
+                       span<uint8_t> serialized_message,
+                       std::string_view associated_data)>;
 
 // =============================================================================
 // Dispatchable - a shallow parser for CBOR encoded DevTools messages
@@ -93,9 +107,6 @@ class CRDTP_EXPORT DispatchResponse {
 
 // This parser extracts only the known top-level fields from a CBOR encoded map;
 // method, id, sessionId, and params.
-using FallthroughCallback = std::function<
-    void(int call_id, span<uint8_t> method, span<uint8_t> message)>;
-
 class CRDTP_EXPORT Dispatchable {
  public:
   // This constructor parses the |serialized| message. If successful,
@@ -103,7 +114,15 @@ class CRDTP_EXPORT Dispatchable {
   // |Params()| can be used to access, the extracted contents. Otherwise,
   // |ok()| will yield |false|, and |DispatchError()| can be
   // used to send a response or notification to the client.
+  // |associated_data| would be passed as is to handler methods that were
+  // configured as those willing to receive it.
+  // |fallthrough_callback|, if non-empty, will be invoked by the dispatcher
+  // if no handler was found or if the handler chose to fall through,
+  // and can be used to pass command to be handled elsewhere.
+  // Note that in case of an async command, fallthrough_callback may be invoked
+  // asynchronously.
   Dispatchable(span<uint8_t> serialized,
+               std::string_view associated_data,
                FallthroughCallback fallthrough_callback);
 
   // The serialized message that we just parsed.
@@ -131,12 +150,16 @@ class CRDTP_EXPORT Dispatchable {
   // not parse into this; it only provides access to its raw contents here.
   span<uint8_t> Params() const { return params_; }
 
+  std::string_view AssociatedData() const { return associated_data_; }
+
   // Takes the fallthrough callback, if any.
-  FallthroughCallback TakeFallthroughCallback() {
-    FallthroughCallback result;
-    std::swap(result, fallthrough_callback_);
-    return result;
-  }
+  FallthroughCallback TakeFallthroughCallback();
+  // Takes the fallthrough callback and dispatches it with stored
+  // call/method/message. The associated_data is passed through to
+  // the other handling layer (not to be confused with the member
+  // associated_data which is the one to be passed to handlers
+  // during current dispatch).
+  void DispatchFallThrough(const std::string& associated_data);
 
  private:
   bool MaybeParseProperty(cbor::CBORTokenizer* tokenizer);
@@ -155,6 +178,7 @@ class CRDTP_EXPORT Dispatchable {
   bool params_seen_ = false;
   span<uint8_t> params_;
   span<uint8_t> session_id_;
+  std::string_view associated_data_;
   FallthroughCallback fallthrough_callback_;
 };
 
@@ -209,11 +233,7 @@ class CRDTP_EXPORT DomainDispatcher {
 
    protected:
     // |method| must point at static storage (a C++ string literal in practice).
-    Callback(std::unique_ptr<WeakPtr> backend_impl,
-             int call_id,
-             span<uint8_t> method,
-             span<uint8_t> message,
-             FallthroughCallback fallthrough_callback);
+    Callback(std::unique_ptr<WeakPtr> backend_impl, Dispatchable& dispatchable);
 
     void sendIfActive(std::unique_ptr<Serializable> partialMessage,
                       const DispatchResponse& response);
@@ -303,6 +323,7 @@ class CRDTP_EXPORT UberDispatcher {
   std::vector<std::pair<span<uint8_t>, std::unique_ptr<DomainDispatcher>>>
       dispatchers_;
 };
+
 }  // namespace crdtp
 
 #endif  // CRDTP_DISPATCH_H_

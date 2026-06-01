@@ -135,6 +135,21 @@ struct ProtocolTypeTraits<blink::protocol::Binary> {
                         std::vector<uint8_t>* bytes);
 };
 
+template <typename DestType>
+DestType ConvertAssociatedData(std::string_view from);
+
+template <typename DestType>
+  requires std::is_constructible_v<DestType, std::string_view>
+DestType ConvertAssociatedData(std::string_view from) {
+  return DestType(from);
+}
+
+template <typename DestType>
+  requires std::is_convertible_v<DestType, base::span<char>>
+DestType ConvertAssociatedData(std::string_view from) {
+  return DestType(base::span(from.data(), from.size()));
+}
+
 }  // namespace crdtp
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_V8_INSPECTOR_STRING_H_

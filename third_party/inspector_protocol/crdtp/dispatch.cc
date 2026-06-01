@@ -31,6 +31,14 @@ DispatchResponse DispatchResponse::FallThrough() {
 }
 
 // static
+DispatchResponse DispatchResponse::FallThrough(std::string associated_data) {
+  DispatchResponse result;
+  result.code_ = DispatchCode::FALL_THROUGH;
+  result.message_ = std::move(associated_data);
+  return result;
+}
+
+// static
 DispatchResponse DispatchResponse::ParseError(std::string message) {
   DispatchResponse result;
   result.code_ = DispatchCode::PARSE_ERROR;
@@ -90,8 +98,10 @@ DispatchResponse DispatchResponse::SessionNotFound(std::string message) {
 // Dispatchable - a shallow parser for CBOR encoded DevTools messages
 // =============================================================================
 Dispatchable::Dispatchable(span<uint8_t> serialized,
+                           std::string_view associated_data,
                            FallthroughCallback fallthrough_callback)
     : serialized_(serialized),
+      associated_data_(associated_data),
       fallthrough_callback_(std::move(fallthrough_callback)) {
   Status s = cbor::CheckCBORMessage(serialized);
   if (!s.ok()) {
@@ -267,6 +277,17 @@ bool Dispatchable::MaybeParseSessionId(cbor::CBORTokenizer* tokenizer) {
   return true;
 }
 
+FallthroughCallback Dispatchable::TakeFallthroughCallback() {
+  FallthroughCallback result;
+  std::swap(result, fallthrough_callback_);
+  return result;
+}
+
+void Dispatchable::DispatchFallThrough(const std::string& associated_data) {
+  assert(fallthrough_callback_);
+  TakeFallthroughCallback()(call_id_, method_, serialized_, associated_data);
+}
+
 namespace {
 class ProtocolError : public Serializable {
  public:
@@ -427,15 +448,13 @@ void DomainDispatcher::Callback::dispose() {
 
 DomainDispatcher::Callback::Callback(
     std::unique_ptr<DomainDispatcher::WeakPtr> backend_impl,
-    int call_id,
-    span<uint8_t> method,
-    span<uint8_t> message,
-    FallthroughCallback fallthrough_callback)
+    Dispatchable& dispatchable)
     : backend_impl_(std::move(backend_impl)),
-      call_id_(call_id),
-      method_(method),
-      message_(message.begin(), message.end()),
-      fallthrough_callback_(std::move(fallthrough_callback)) {}
+      call_id_(dispatchable.CallId()),
+      method_(dispatchable.Method()),
+      message_(dispatchable.Serialized().begin(),
+               dispatchable.Serialized().end()),
+      fallthrough_callback_(dispatchable.TakeFallthroughCallback()) {}
 
 void DomainDispatcher::Callback::sendIfActive(
     std::unique_ptr<Serializable> partialMessage,
@@ -451,7 +470,9 @@ void DomainDispatcher::Callback::fallThroughIfActive() {
   if (!backend_impl_ || !backend_impl_->get())
     return;
   // Fallthrough callback may be retaining session which outlives backend.
-  fallthrough_callback_(call_id_, method_, SpanFrom(message_));
+  // TODO(caseq): handle fall-through associated data for async callbacks.
+  fallthrough_callback_(call_id_, method_, SpanFrom(message_),
+                        std::string_view());
   fallthrough_callback_ = nullptr;
   backend_impl_ = nullptr;
 }
@@ -536,7 +557,7 @@ void UberDispatcher::Dispatch(Dispatchable& dispatchable) {
   }
   if (auto fallthrough = dispatchable.TakeFallthroughCallback()) {
     fallthrough(dispatchable.CallId(), dispatchable.Method(),
-                dispatchable.Serialized());
+                dispatchable.Serialized(), std::string_view());
   } else {
     SendMethodNotFound(dispatchable.CallId(), method);
   }

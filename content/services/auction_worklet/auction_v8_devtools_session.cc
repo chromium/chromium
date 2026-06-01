@@ -266,6 +266,7 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
   } else {
     crdtp::Dispatchable dispatchable(
         crdtp::span<uint8_t>(cbor_message.characters8(), cbor_message.length()),
+        std::string_view(),
         /*fallthrough_callback=*/nullptr);
     fallback_dispatcher_.Dispatch(dispatchable);
   }

@@ -304,7 +304,7 @@ void DevToolsSession::DispatchProtocolCommandImpl(
     v8_session_->dispatchProtocolMessage(
         v8_inspector::StringView(data.data(), data.size()));
   } else {
-    crdtp::Dispatchable dispatchable(crdtp::SpanFrom(data),
+    crdtp::Dispatchable dispatchable(crdtp::SpanFrom(data), std::string_view(),
                                      /*fallthrough_callback=*/nullptr);
     // This message has already been checked by content::DevToolsSession.
     DCHECK(dispatchable.ok());
