@@ -964,7 +964,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(
                 item(
                         R.string.menu_save_and_share,
-                        item(R.string.menu_add_to_homescreen),
+                        item(R.string.menu_install_create_shortcut),
                         item(0),
                         item(R.string.menu_share_page),
                         item(R.string.menu_copy_link),
@@ -1398,7 +1398,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(
                 item(
                         R.string.menu_save_and_share,
-                        item(R.string.menu_add_to_homescreen),
+                        item(R.string.menu_install_create_shortcut),
                         item(0),
                         item(R.string.menu_share_page),
                         item(R.string.menu_copy_link),

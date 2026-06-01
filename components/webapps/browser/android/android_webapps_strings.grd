@@ -182,8 +182,8 @@
         Install
       </message>
 
-      <message name="IDS_MENU_ADD_TO_HOMESCREEN" desc="Menu item for adding a shortcut to the Home screen (default title). [CHAR_LIMIT=27]">
-        Add to Home screen
+      <message name="IDS_MENU_INSTALL_CREATE_SHORTCUT" desc="Menu item for installing a site or creating a shortcut to it on the device screen. [CHAR_LIMIT=27]">
+        Install and create shortcut
       </message>
       <message name="IDS_MENU_INSTALL_WEBAPP" desc="Menu item for adding a shortcut to the Home screen. [CHAR_LIMIT=27]">
         Install app
@@ -214,8 +214,8 @@
       </message>
 
       <!-- PWA Universal Install UI -->
-      <message name="IDS_PWA_UNI_INSTALL_TITLE" desc="The title for the Universal Install sheet.">
-         Add to home screen
+      <message name="IDS_PWA_UNI_INSTALL_CREATE_SHORTCUT_TITLE" desc="The title for the Universal Install sheet when saving a site.">
+         Install and create shortcut
       </message>
       <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL" desc="The label for the Install option in the Universal Install sheet.">
          Install

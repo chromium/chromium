@@ -588,10 +588,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     }
 
     private void assertDialogShowing(boolean expectShowing) {
+        String dialogTitle = "Install and create shortcut";
         if (expectShowing) {
-            onViewWaiting(withText("Add to home screen")).check(matches(isDisplayed()));
+            onViewWaiting(withText(dialogTitle)).check(matches(isDisplayed()));
         } else {
-            onView(withText("Add to home screen")).check(doesNotExist());
+            onView(withText(dialogTitle)).check(doesNotExist());
         }
     }
 }

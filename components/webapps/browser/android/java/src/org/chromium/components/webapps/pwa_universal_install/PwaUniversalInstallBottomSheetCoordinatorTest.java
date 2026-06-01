@@ -83,7 +83,7 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Add to home screen",
+                            "Install and create shortcut",
                             ((TextView) view.findViewById(R.id.title)).getText());
                     Assert.assertEquals(
                             "Install",

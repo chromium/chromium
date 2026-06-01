@@ -871,7 +871,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     AppMenuItemType.STANDARD,
                     buildModelForStandardMenuItem(
                             R.id.universal_install,
-                            R.string.menu_add_to_homescreen,
+                            R.string.menu_install_create_shortcut,
                             showIcon ? R.drawable.ic_add_to_home_screen : 0));
         }
     }

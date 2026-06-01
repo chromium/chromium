@@ -31,7 +31,7 @@ class PwaUniversalInstallBottomSheetMediator {
                         installCallback, addShortcutCallback, openAppCallback);
         mModel.set(
                 PwaUniversalInstallProperties.TITLE,
-                mActivity.getString(R.string.pwa_uni_install_title));
+                mActivity.getString(R.string.pwa_uni_install_create_shortcut_title));
         mModel.set(
                 PwaUniversalInstallProperties.VIEW_STATE,
                 webAppAlreadyInstalled
