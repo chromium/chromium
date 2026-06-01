@@ -9718,6 +9718,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Webauthn.BrowserModePermissionGranted"
+    enum="Boolean" expires_after="2027-05-28">
+  <owner>ntfschr@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the app calling setWebAuthenticationSupport with BROWSER
+    mode has the CREDENTIAL_MANAGER_SET_ORIGIN permission. This permission has
+    always been required for browser mode; however, if it is missing, the app
+    will only crash later at the time of performing WebAuthn operations. This is
+    recorded once per API call to setWebAuthenticationSupport, but only if the
+    app is requesting BROWSER mode. This will help evaluate if we can safely
+    throw a SecurityException earlier to indicate when apps are missing this
+    permission.
+  </summary>
+</histogram>
+
 <histogram name="Android.Window.OcclusionExperimental.Duration" units="ms"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

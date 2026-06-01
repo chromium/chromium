@@ -48,6 +48,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
@@ -4204,5 +4205,25 @@ public class AwSettingsTest {
                         contentClient,
                         "typeof window.PublicKeyCredential !== 'undefined'");
         return "true".equals(jsResult);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSetWebauthnSupportLogsPermissionStatus() throws Throwable {
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(new TestAwContentsClient());
+        final AwContents awContents = testContainerView.getAwContents();
+        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.Webauthn.BrowserModePermissionGranted", false);
+
+        // Since the test app does not have CREDENTIAL_MANAGER_SET_ORIGIN permission,
+        // this call should log `false` to the histogram and succeed without throwing.
+        settings.setWebauthnSupport(WebauthnMode.BROWSER);
+
+        histogramWatcher.assertExpected();
     }
 }

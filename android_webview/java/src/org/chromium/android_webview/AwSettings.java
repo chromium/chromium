@@ -2399,6 +2399,14 @@ public class AwSettings {
 
     public void setWebauthnSupport(@WebauthnMode int support) {
         synchronized (mAwSettingsLock) {
+            if (support == WebauthnMode.BROWSER) {
+                boolean hasPermission =
+                        mContext.checkSelfPermission(
+                                        android.Manifest.permission.CREDENTIAL_MANAGER_SET_ORIGIN)
+                                == android.content.pm.PackageManager.PERMISSION_GRANTED;
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.WebView.Webauthn.BrowserModePermissionGranted", hasPermission);
+            }
             if (mWebauthnMode != support) {
                 mWebauthnMode = support;
                 mEventHandler.updateWebkitPreferencesLocked();
