@@ -407,7 +407,7 @@ def calculate_transitive_headers(clang_args: list[str],
       found = False
       for d in sysroot_dirs:
         if full.is_relative_to(d):
-          rel = str(full.relative_to(d))
+          rel = full.relative_to(d).as_posix()
           found = True
           break
 
