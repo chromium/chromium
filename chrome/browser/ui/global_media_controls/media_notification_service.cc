@@ -595,7 +595,7 @@ bool MediaNotificationService::HasPresentationContextForSession(
   }
   auto* initiator_rfh = content::RenderFrameHost::FromID(
       context_->presentation_request().render_frame_host_id);
-  if (!initiator_rfh) {
+  if (!initiator_rfh || !initiator_rfh->IsActive()) {
     context_.reset();
     return false;
   }
