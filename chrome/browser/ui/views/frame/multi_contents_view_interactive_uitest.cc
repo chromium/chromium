@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -387,6 +388,20 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
   RunTestSequence(CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
                   FocusInactiveTabInSplit(), WaitForActiveTabChange(1),
                   CheckActiveContentsHasFocus());
+}
+
+// Check that MultiContentsView changes its active view when inactive view is
+// focused using mouse click while a PageInfo bubble is open in the active view.
+// This prevents UI origin confusion issues (e.g. b/488762971).
+IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
+                       ActivatesInactiveViewUsingMouseClickWithPageInfoOpen) {
+  RunTestSequence(CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
+                  // Open PageInfo bubble on the active tab (0).
+                  PressButton(kLocationIconElementId),
+                  // Click the inactive tab (1).
+                  FocusInactiveTabInSplit(),
+                  // Active tab should change to 1.
+                  WaitForActiveTabChange(1), CheckActiveContentsHasFocus());
 }
 
 // Check that MultiContentsView changes its active view when inactive view is

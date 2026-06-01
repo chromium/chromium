@@ -16,6 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/page_context.h"
@@ -321,6 +322,10 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       ->GetSendTabToSelfModel()
       ->SendEntry(kUrl, "example", target_guid, context,
                   send_tab_to_self::NavigationHistory(), base::DoNothing());
+
+  // Ensure receiver browser is active so notification is handled immediately,
+  // as opposed to getting queued and executing during teardown.
+  GetBrowser(1)->window()->Activate();
 
   // Client 1: Wait for entry and fill.
   send_tab_to_self::SendTabToSelfSyncService* service1 =
