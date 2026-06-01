@@ -21,7 +21,12 @@ namespace autofill {
 struct EmailVerificationStrikeDatabaseTraits {
   static constexpr std::string_view kName = "EmailVerification";
   static constexpr size_t kMaxStrikeLimit = 3;
-  static constexpr size_t kMaxStrikeEntities = 300;
+  // We have a low limit here because we only use a one-byte hash below,
+  // so to avoid getting too many collisions we only store 20 emails.
+  // This should be fine because we only prompt the user to accept/reject
+  // if we know they are signed in with that email address to their email
+  // provider, and people generally don't have a lot of email addresses.
+  static constexpr size_t kMaxStrikeEntities = 20;
   static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
       std::nullopt;
   static constexpr std::optional<base::TimeDelta> kExpiryTimeDelta =
@@ -38,11 +43,11 @@ class EmailVerificationStrikeDatabase
       : HistoryClearableStrikeDatabase(strike_db) {}
 
   static std::string GetId(const std::string& email) {
-    // Use just the first two bytes of the hash for privacy reasons, so that the
+    // Use just the first byte of the hash for privacy reasons, so that the
     // original email can't be determined from the hash.
     const std::array<uint8_t, crypto::hash::kSha256Size> hash =
         crypto::hash::Sha256(email);
-    return base::HexEncode(base::span(hash).first<2>());
+    return base::HexEncode(base::span(hash).first<1>());
   }
 };
 

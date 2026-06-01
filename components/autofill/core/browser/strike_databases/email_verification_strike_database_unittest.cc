@@ -12,14 +12,12 @@
 namespace autofill {
 namespace {
 
-TEST(EmailVerificationStrikeDatabaseTest, GetIdReturnsFourCharHex) {
+TEST(EmailVerificationStrikeDatabaseTest, GetIdReturnsTwoCharHex) {
   std::string id = EmailVerificationStrikeDatabase::GetId("test@example.com");
-  EXPECT_EQ(id.length(), 4u);
+  EXPECT_EQ(id.length(), 2u);
   // Verify it's hex.
   EXPECT_TRUE(absl::ascii_isxdigit(static_cast<unsigned char>(id[0])));
   EXPECT_TRUE(absl::ascii_isxdigit(static_cast<unsigned char>(id[1])));
-  EXPECT_TRUE(absl::ascii_isxdigit(static_cast<unsigned char>(id[2])));
-  EXPECT_TRUE(absl::ascii_isxdigit(static_cast<unsigned char>(id[3])));
 }
 
 TEST(EmailVerificationStrikeDatabaseTest, GetIdIsConsistent) {
