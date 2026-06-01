@@ -5,6 +5,8 @@
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_METRICS_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_METRICS_H_
 
+#include <string_view>
+
 #include "build/build_config.h"
 
 namespace ui {
@@ -33,6 +35,7 @@ enum class ClipboardFormatMetric {
 
 void RecordRead(ClipboardFormatMetric metric);
 void RecordWrite(ClipboardFormatMetric metric);
+void RecordWriteTextSizeMetrics(std::u16string_view text);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Records the time interval between when the specified |data| was committed to

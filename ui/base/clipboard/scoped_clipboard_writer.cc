@@ -87,6 +87,7 @@ void ScopedClipboardWriter::SetDataSourceURL(const GURL& main_frame,
 
 void ScopedClipboardWriter::WriteText(std::u16string_view text) {
   RecordWrite(ClipboardFormatMetric::kText);
+  RecordWriteTextSizeMetrics(text);
 
   Clipboard::Data data = Clipboard::TextData{.data = base::UTF16ToUTF8(text)};
   const size_t index = data.index();

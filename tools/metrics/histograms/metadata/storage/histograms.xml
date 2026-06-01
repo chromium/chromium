@@ -286,6 +286,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Clipboard.Write.Text.{TextGranularity}Count" units="count"
+    expires_after="2027-05-28">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Records the number of {TextGranularity} in the text that is written to the
+    clipboard. Recorded each time a text copy is written.
+  </summary>
+  <token key="TextGranularity">
+    <variant name="Character"/>
+    <variant name="Word"/>
+  </token>
+</histogram>
+
 <histogram
     name="IndexedDB.BackendDuration.WriteBlobs.{IndexedDBBackingStoreType}"
     units="ms" expires_after="2026-10-27">
