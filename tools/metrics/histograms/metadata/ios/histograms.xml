@@ -6259,8 +6259,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
-    expires_after="2026-06-01">
-  <owner>nicolasmacbeth@google.com</owner>
+    expires_after="2027-03-30">
+  <owner>gujen@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     The number of URLs a user has successfully added to Chrome Reading List via
