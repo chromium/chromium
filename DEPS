@@ -2089,7 +2089,7 @@ deps = {
     Var('chromium_git') + '/external/colorama.git' + '@' + '3de9f013df4b470069d03d250224062e8cf15c49',
 
   'src/third_party/cpu_features/src':
-    Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + 'd3b2440fcfc25fe8e6d0d4a85f06d68e98312f5b',
+    Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '81d13c49649f0714dd41fb56bb246398b6584085',
 
   'src/third_party/cpuinfo/src':
     Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'ea6b9f1bb6e1001d8b21574d5bc78ddef62e499d',
