@@ -930,8 +930,9 @@ void DecoderTemplate<Traits>::Request::StartTracing() {
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_BEGIN(kCategory, perfetto::DynamicString(TraceNameFromType()),
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(kCategory, perfetto::StaticString(TraceNameFromType()),
+                    perfetto::NamedTrack::FromPointer(
+                        perfetto::StaticString(Traits::GetName()), this));
 }
 
 template <typename Traits>
@@ -940,8 +941,10 @@ void DecoderTemplate<Traits>::Request::EndTracing(bool shutting_down) {
   DCHECK(is_tracing);
   is_tracing = false;
 #endif
-  TRACE_EVENT_END(kCategory, perfetto::Track::FromPointer(this), "completed",
-                  !shutting_down);
+  TRACE_EVENT_END(kCategory,
+                  perfetto::NamedTrack::FromPointer(
+                      perfetto::StaticString(Traits::GetName()), this),
+                  "completed", !shutting_down);
 }
 
 template <typename Traits>
