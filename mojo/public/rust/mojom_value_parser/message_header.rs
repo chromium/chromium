@@ -81,7 +81,7 @@ impl MessageHeader {
     /// This function supports versions 1, 2, and 3. Version 0 is not supported.
     /// If a version higher than 3 is encountered, it is parsed as version 3.
     pub fn deserialize(bytes: &[u8]) -> ParsingResult<(&[u8], Self)> {
-        let mut parser_data = ParserData::new(bytes, &mut []);
+        let mut parser_data = ParserData::new(bytes, &mut [], vec![]);
         let data = &mut parser_data;
         let start_offset = data.bytes_parsed();
         let size = parse_u32(data)? as usize;

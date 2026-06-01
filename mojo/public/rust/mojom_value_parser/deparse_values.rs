@@ -17,12 +17,13 @@ use crate::ast::*;
 
 use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 
 /// Wrapper type for the output of the deparser
 pub struct DeparsedData {
     bytes: Vec<u8>,
     handles: Vec<UntypedHandle>,
+    interface_ids: Vec<InterfaceId>,
 }
 
 impl Default for DeparsedData {
@@ -33,7 +34,7 @@ impl Default for DeparsedData {
 
 impl DeparsedData {
     pub fn new() -> Self {
-        DeparsedData { bytes: vec![], handles: vec![] }
+        DeparsedData { bytes: vec![], handles: vec![], interface_ids: vec![] }
     }
 
     pub fn into_parts(self) -> (Vec<u8>, Vec<UntypedHandle>) {
@@ -189,6 +190,20 @@ fn deparse_leaf_value(
             // Remotes have a version field (4 bytes), which we don't use for now.
             data.extend(0u32.to_le_bytes());
         }
+        (
+            MojomValue::PendingAssociatedReceiver(interface_id),
+            PackedLeafType::PendingAssociatedReceiver,
+        ) => {
+            deparse_interface_id(data, interface_id);
+        }
+        (
+            MojomValue::PendingAssociatedRemote(interface_id),
+            PackedLeafType::PendingAssociatedRemote,
+        ) => {
+            deparse_interface_id(data, interface_id);
+            // Remotes have a version field (4 bytes), which we don't use for now.
+            data.extend(0u32.to_le_bytes());
+        }
         (value, _) => wrong_type!(leaf_type, value),
     }
     Ok(())
@@ -208,6 +223,13 @@ fn deparse_handle(data: &mut DeparsedData, handle: UntypedHandle) {
     let handle_idx = u32::try_from(data.handles.len()).unwrap();
     data.handles.push(handle);
     data.extend(handle_idx.to_le_bytes())
+}
+
+/// Analogous to `deparse_handle`, but for associated interfaces.
+fn deparse_interface_id(data: &mut DeparsedData, interface_id: InterfaceId) {
+    let interfaces_idx = u32::try_from(data.interface_ids.len()).unwrap();
+    data.interface_ids.push(interface_id);
+    data.extend(interfaces_idx.to_le_bytes());
 }
 
 // Mojom structs and arrays are never nested inside each other. Instead, they
@@ -438,6 +460,8 @@ where
                             PackedLeafType::Handle
                                 | PackedLeafType::PendingReceiver
                                 | PackedLeafType::PendingRemote
+                                | PackedLeafType::PendingAssociatedReceiver
+                                | PackedLeafType::PendingAssociatedRemote
                         ) {
                             0xff
                         } else {
@@ -565,6 +589,29 @@ where
     Ok(())
 }
 
+/// Once we've finished deparsing the entire value, write the interface ID array
+/// to the end of the message body if the value contained any IDs.
+fn append_interface_ids(data: &mut DeparsedData) {
+    static INTERFACE_ARRAY_TY: LazyLock<Arc<MojomWireType>> = LazyLock::new(|| {
+        Arc::new(MojomWireType::Leaf { leaf_type: PackedLeafType::UInt32, is_nullable: false })
+    });
+
+    // We should always end messages at an 8-byte alignment...but check just in case
+    let mismatch = data.bytes.len() % 8;
+    assert!(mismatch == 0);
+
+    let array_mojom_value = MojomValue::Array(
+        std::mem::take(&mut data.interface_ids)
+            .into_iter()
+            .map(|id| MojomValue::UInt32(id.into()))
+            .collect(),
+    );
+
+    deparse_array(data, array_mojom_value, &INTERFACE_ARRAY_TY, &PackedArrayType::UnsizedArray)
+        // There should be no way for this to fail
+        .unwrap();
+}
+
 /// Serialize a single mojom value of the given type, outside the context of a
 /// struct. This function is only useful for unit testing, since all mojom
 /// values in practice are members of a struct. The function only works for
@@ -616,4 +663,39 @@ pub fn deparse_single_value_for_testing(
         }
     };
     Ok(data)
+}
+
+/// Serialize a value including its attached interface IDs array at the end.
+/// Returns the raw bytes, attached handles, and the offset to the interface
+/// IDs array from the beginning of the body (0 if none).
+pub fn deparse_top_level_value(
+    value: MojomValue,
+    ty: &MojomWireType,
+) -> Result<(Vec<u8>, Vec<UntypedHandle>, u64)> {
+    let mut data = DeparsedData::new();
+
+    // Make sure we actually got a struct, and unpack it.
+    let (field_values, packed_fields) = match (value, ty) {
+        (
+            MojomValue::Struct(_, field_values),
+            crate::MojomWireType::Pointer {
+                nested_data_type: crate::PackedStructuredType::Struct { packed_field_types, .. },
+                is_nullable: false,
+            },
+        ) => (field_values, packed_field_types),
+        _ => bail!("`deparse_top_level_value` must only be called on struct types"),
+    };
+
+    deparse_struct(&mut data, field_values, packed_fields)?;
+
+    if data.interface_ids.is_empty() {
+        return Ok((data.bytes, data.handles, 0));
+    }
+
+    // If we've got interface IDs, we need to append them to the payload as an
+    // array.
+    let interface_ids_offset = data.bytes.len() as u64;
+    append_interface_ids(&mut data);
+
+    Ok((data.bytes, data.handles, interface_ids_offset))
 }

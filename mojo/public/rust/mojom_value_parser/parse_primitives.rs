@@ -26,7 +26,7 @@
 // TODO(crbug.com/496946897): Figure out if integers are encoded as
 // little-endian or host-endian.
 
-use crate::ast::UntypedHandle;
+use crate::ast::{InterfaceId, UntypedHandle};
 use crate::errors::*;
 use std::any::type_name;
 
@@ -37,6 +37,10 @@ pub struct ParserData<'a> {
     remaining_bytes: &'a [u8],
     /// The handles attached to the message separately from the raw bytes.
     message_handles: &'a mut [Option<UntypedHandle>],
+    /// The interface IDs attached to the message. These were encoded as part
+    /// of the raw bytes, but `remaining_bytes` should not contain the encoded
+    /// version.
+    interface_ids: Vec<Option<InterfaceId>>,
     bytes_parsed: usize,
 }
 
@@ -47,8 +51,14 @@ impl<'a> ParserData<'a> {
     pub fn new(
         data: &'a [u8],
         handles: &'a mut [Option<crate::ast::UntypedHandle>],
+        interface_ids: Vec<Option<InterfaceId>>,
     ) -> ParserData<'a> {
-        ParserData { remaining_bytes: data, message_handles: handles, bytes_parsed: 0 }
+        ParserData {
+            remaining_bytes: data,
+            message_handles: handles,
+            interface_ids,
+            bytes_parsed: 0,
+        }
     }
 
     /// How many bytes have been parsed since the ParserData was created.
@@ -68,6 +78,15 @@ impl<'a> ParserData<'a> {
     pub fn take_handle(&mut self, idx: usize) -> Option<UntypedHandle> {
         let handle_ref = self.message_handles.get_mut(idx)?;
         std::mem::take(handle_ref)
+    }
+
+    /// Take ownership of the interface ID at index i of `message_handles`.
+    ///
+    /// If there is no ID at that index (it's out of bounds, or ownership
+    /// was already taken), returns None.
+    pub fn take_interface_id(&mut self, idx: usize) -> Option<InterfaceId> {
+        let id_ref = self.interface_ids.get_mut(idx)?;
+        std::mem::take(id_ref)
     }
 
     pub fn into_bytes(self) -> &'a [u8] {

@@ -22,7 +22,7 @@ use crate::ast::*;
 use crate::errors::*;
 use crate::parse_primitives::*;
 use std::collections::BTreeMap;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 
 use itertools::Itertools;
 
@@ -74,6 +74,20 @@ fn parse_leaf_element(
             ParserData::take_handle,
             MojomValue::PendingRemote,
         ),
+        PackedLeafType::PendingAssociatedReceiver => parse_endpoint(
+            data,
+            is_nullable,
+            /* is_remote = */ false,
+            ParserData::take_interface_id,
+            MojomValue::PendingAssociatedReceiver,
+        ),
+        PackedLeafType::PendingAssociatedRemote => parse_endpoint(
+            data,
+            is_nullable,
+            /* is_remote = */ true,
+            ParserData::take_interface_id,
+            MojomValue::PendingAssociatedRemote,
+        ),
     }
 }
 
@@ -109,8 +123,12 @@ fn parse_endpoint<'a, T1, T2>(
     constructor: fn(T2) -> MojomValue,
 ) -> ParsingResult<MojomValue>
 where
-    T1: Into<T2>,
+    T1: Into<T2> + 'static,
 {
+    // For diagnostic messages
+    let is_associated_endpoint =
+        std::any::TypeId::of::<T1>() == std::any::TypeId::of::<InterfaceId>();
+
     // On the wire, endpoints are represented
     let idx_u32 = parse_u32(data)?;
     if is_remote {
@@ -123,12 +141,21 @@ where
         if is_nullable {
             return Ok(MojomValue::Nullable(None));
         } else {
-            return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx));
+            return Err(ParsingError::invalid_handle_index(
+                data.bytes_parsed() - if is_remote { 8 } else { 4 },
+                idx,
+                is_associated_endpoint,
+            ));
         }
     };
 
-    let retrieved = lookup(data, idx)
-        .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx))?;
+    let retrieved = lookup(data, idx).ok_or_else(|| {
+        ParsingError::invalid_handle_index(
+            data.bytes_parsed() - if is_remote { 8 } else { 4 },
+            idx,
+            is_associated_endpoint,
+        )
+    })?;
     let retrieved = constructor(retrieved.into());
 
     if is_nullable {
@@ -700,6 +727,74 @@ where
     Ok((ret_names, ret_values))
 }
 
+/// Extract the array of associated interface IDs from the end of this message,
+/// if it exists.
+///
+/// The `interface_ids_offset` argument should be the distance from the
+/// beginning of `data_slice` (the message body) to the beginning of the
+/// interface ID array, or 0 if no array is present.
+///
+/// This function returns the parsed array (empty if it didn't exist), as well
+/// as the data slice with the parsed bytes removed. The elements of the array
+/// are all `Some`, but will be replaced with `None` as the rest of the message
+/// is parsed.
+fn extract_interface_ids(
+    data_slice: &[u8],
+    interface_ids_offset: u64,
+) -> ParsingResult<(&[u8], Vec<Option<InterfaceId>>)> {
+    // We will parse the array later by calling `parse_array`; this is the element
+    // type we'll pass to the function. It's logically a constant, but since `Arc`
+    // involves heap allocations we need to use `LazyLock` instead.
+    static INTERFACE_ARRAY_TY: LazyLock<Arc<MojomWireType>> = LazyLock::new(|| {
+        Arc::new(MojomWireType::Leaf { leaf_type: PackedLeafType::UInt32, is_nullable: false })
+    });
+
+    if interface_ids_offset == 0 {
+        return Ok((data_slice, vec![]));
+    }
+
+    let (data, id_array_data) =
+        data_slice.split_at_checked(interface_ids_offset.try_into().unwrap()).ok_or_else(|| {
+            // interface_ids_ptr pointed past the end of the data slice
+            ParsingError::not_enough_data(
+                data_slice.len(),
+                "Interface ID array".to_string(),
+                interface_ids_offset as usize,
+                data_slice.len(),
+            )
+        })?;
+
+    let id_array_parsed = parse_array(
+        &mut ParserData::new(id_array_data, &mut [], vec![]),
+        &INTERFACE_ARRAY_TY,
+        &PackedArrayType::UnsizedArray,
+    )?;
+    let MojomValue::Array(id_vec) = id_array_parsed else {
+        unreachable!(); // We got this from parse_array
+    };
+
+    let id_vec = id_vec
+        .into_iter()
+        .enumerate()
+        .map(|(idx, id)| {
+            let MojomValue::UInt32(id_u32) = id else {
+                unreachable!(); // We specified UInt32 earlier
+            };
+            // Interface IDs in the body of a message should never be 0 or one
+            // of the control interface IDs.
+            if matches!(id_u32, 0 | 0xffffffff | 0xfffffffe) {
+                return Err(ParsingError::invalid_interface_id(
+                    interface_ids_offset as usize,
+                    idx,
+                    id_u32,
+                ));
+            }
+            Ok(Some(id_u32.try_into().unwrap()))
+        })
+        .collect::<ParsingResult<_>>()?;
+    Ok((data, id_vec))
+}
+
 /// Parse a single mojom value of the given type, outside the context of a
 /// struct. This function is only useful for unit testing, since all mojom
 /// values in practice are members of a struct. The function only works for
@@ -709,7 +804,7 @@ pub fn parse_single_value_for_testing(
     handles: &mut [Option<UntypedHandle>],
     wire_type: &MojomWireType,
 ) -> ParsingResult<MojomValue> {
-    let mut data = ParserData::new(data, handles);
+    let mut data = ParserData::new(data, handles, vec![]);
     match wire_type {
         MojomWireType::Leaf { leaf_type, is_nullable: false } => {
             parse_leaf_element(&mut data, leaf_type, false)
@@ -753,12 +848,18 @@ pub fn parse_single_value_for_testing(
 
 /// Deserialize a single value from the given bytes, and return the remaining
 /// unparsed bytes.
+///
+/// The `interface_ids_offset` argument should be the distance from the
+/// beginning of `data_slice` (the message body) to the beginning of the
+/// interface ID array, or 0 if no array is present.
 pub fn parse_top_level_value<'a>(
     data_slice: &'a [u8],
     handles: &'a mut [Option<UntypedHandle>],
+    interface_ids_offset: u64,
     ty: &MojomWireType,
 ) -> ParsingResult<(&'a [u8], MojomValue)> {
-    let mut data = ParserData::new(data_slice, handles);
+    let (data_slice, interface_ids) = extract_interface_ids(data_slice, interface_ids_offset)?;
+    let mut data = ParserData::new(data_slice, handles, interface_ids);
     match ty {
         MojomWireType::Pointer {
             nested_data_type:

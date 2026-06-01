@@ -21,8 +21,15 @@ pub fn deserialize<'a, Context, T: MojomParse<Context>>(
     handles: &'a mut [Option<UntypedHandle>],
     context: &Context,
 ) -> ParsingResult<(&'a [u8], T)> {
-    let (remaining_bytes, parsed_value) =
-        crate::parse_values::parse_top_level_value(data_slice, handles, T::wire_type())?;
+    // TODO(crbug.com/493274453): This will be made into an argument once we land
+    // full support for associated interfaces
+    let interface_ids_ptr = 0;
+    let (remaining_bytes, parsed_value) = crate::parse_values::parse_top_level_value(
+        data_slice,
+        handles,
+        interface_ids_ptr,
+        T::wire_type(),
+    )?;
     // Convert the parsed MojomValue to a T. This conversion should never fail,
     // since we passed T's wire type to the parser.
     Ok((remaining_bytes, T::try_from_mojom_value(parsed_value, context).unwrap()))
@@ -53,22 +60,12 @@ pub fn serialize<Context, T: MojomParse<Context>>(
     value: T,
     context: &Context,
 ) -> (Vec<u8>, Vec<UntypedHandle>) {
-    let mut data = crate::deparse_values::DeparsedData::new();
-    let packed_format = T::wire_type();
     let mojom_value: MojomValue = value.into_mojom_value(context);
-    // Make sure we actually got a struct, and unpack it.
-    let (field_values, packed_fields) = match (mojom_value, packed_format) {
-        (
-            MojomValue::Struct(_, field_values),
-            crate::MojomWireType::Pointer {
-                nested_data_type: crate::PackedStructuredType::Struct { packed_field_types, .. },
-                is_nullable: false,
-            },
-        ) => (field_values, packed_field_types),
-        _ => panic!("`serialize` can only be called on struct types"),
-    };
-    crate::deparse_values::deparse_struct(&mut data, field_values, packed_fields)
-        // The Err return value is mostly useful for internal debugging
-        .expect("Deparsing should always succeed");
-    data.into_parts()
+    // TODO(crbug.com/493274453): We'll also return the interface ID pointer once we
+    // have full support
+    let (data, handles, _interface_ids_ptr) =
+        crate::deparse_values::deparse_top_level_value(mojom_value, T::wire_type())
+            // The Err return value is mostly useful for internal debugging
+            .expect("Deparsing should always succeed");
+    (data, handles)
 }

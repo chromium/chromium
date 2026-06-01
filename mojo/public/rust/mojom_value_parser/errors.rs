@@ -61,7 +61,9 @@ pub enum ParsingErrorType {
     /// Indicates that the corresponding mojom feature has yet to be implemented
     NotImplemented { feature_name: String },
     /// Indicates that we failed to retrieve a handle from the given index
-    InvalidHandleIndex { idx: usize },
+    InvalidHandleIndex { idx: usize, is_interface_id: bool },
+    /// Indicates that the interface ID array contained an invalid value
+    InvalidInterfaceId { idx: usize, value: u32 },
 }
 
 impl ParsingError {
@@ -129,8 +131,12 @@ impl ParsingError {
         ParsingError { offset, ty: ParsingErrorType::NotImplemented { feature_name } }
     }
 
-    pub fn invalid_handle_index(offset: usize, idx: usize) -> ParsingError {
-        ParsingError { offset, ty: ParsingErrorType::InvalidHandleIndex { idx } }
+    pub fn invalid_handle_index(offset: usize, idx: usize, is_interface_id: bool) -> ParsingError {
+        ParsingError { offset, ty: ParsingErrorType::InvalidHandleIndex { idx, is_interface_id } }
+    }
+
+    pub fn invalid_interface_id(offset: usize, idx: usize, value: u32) -> ParsingError {
+        ParsingError { offset, ty: ParsingErrorType::InvalidInterfaceId { idx, value } }
     }
 }
 
@@ -211,12 +217,16 @@ impl std::fmt::Display for ParsingError {
             ParsingErrorType::NotImplemented { feature_name } => {
                 write!(f, "The rust bindings do not yet support {feature_name}")
             }
-            ParsingErrorType::InvalidHandleIndex { idx } => {
+            ParsingErrorType::InvalidHandleIndex { idx, is_interface_id } => {
+                let ty_str = if *is_interface_id { "interface ID" } else { "handle" };
                 write!(
                     f,
-                    "Failed to retrieve the handle attached to the message at index {idx}. \
+                    "Failed to retrieve the {ty_str} attached to the message at index {idx}. \
                     Either the index was invalid or it was already retrieved."
                 )
+            }
+            ParsingErrorType::InvalidInterfaceId { idx, value } => {
+                write!(f, "The interface ID at index {idx} had the invalid value {value}.")
             }
         }
     }

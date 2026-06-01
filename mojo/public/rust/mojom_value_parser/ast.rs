@@ -13,6 +13,7 @@ chromium::import! {
 
 use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
+use std::num::NonZeroU32;
 use std::sync::Arc;
 
 pub use system::message_pipe::MessageEndpoint;
@@ -43,6 +44,8 @@ pub enum MojomType {
     Handle,
     PendingReceiver,
     PendingRemote,
+    PendingAssociatedReceiver,
+    PendingAssociatedRemote,
     Enum { is_valid: Predicate<i32> },
     Union { variants: BTreeMap<i32, MojomType> },
     // `field_names` is only for debugging; it should have the same
@@ -54,6 +57,12 @@ pub enum MojomType {
     Map { key_type: Box<MojomType>, value_type: Box<MojomType> },
     Nullable { inner_type: Box<MojomType> },
 }
+
+/// This is the contents of an associated remote/receiver on the wire.
+/// It corresponds to the `InterfaceId` type in the `bindings` crate, which
+/// can't be referenced here without causing a dependency cycle. The ID 0 is
+/// reserved for primary interfaces, and thus will never appear on the wire.
+pub type InterfaceId = NonZeroU32;
 
 /// Representation of a value of a MojomType. These are what get encoded/decoded
 /// into/from Mojom messages.
@@ -82,6 +91,8 @@ pub enum MojomValue {
     Handle(UntypedHandle),
     PendingReceiver(MessageEndpoint),
     PendingRemote(MessageEndpoint),
+    PendingAssociatedReceiver(InterfaceId),
+    PendingAssociatedRemote(InterfaceId),
     Union(i32, Box<MojomValue>),
     Struct(Vec<String>, Vec<MojomValue>),
     // Invariant: all MojomValues in the array are the same type.
@@ -199,6 +210,8 @@ pub enum PackedLeafType {
     Handle,
     PendingReceiver,
     PendingRemote,
+    PendingAssociatedReceiver,
+    PendingAssociatedRemote,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -249,8 +262,10 @@ impl MojomWireType {
                 PackedLeafType::Int32 | PackedLeafType::UInt32 | PackedLeafType::Float32 => 4,
                 PackedLeafType::Int64 | PackedLeafType::UInt64 | PackedLeafType::Float64 => 8,
                 PackedLeafType::Enum { .. } => 4,
-                PackedLeafType::Handle | PackedLeafType::PendingReceiver => 4,
-                PackedLeafType::PendingRemote => 8,
+                PackedLeafType::Handle
+                | PackedLeafType::PendingReceiver
+                | PackedLeafType::PendingAssociatedReceiver => 4,
+                PackedLeafType::PendingRemote | PackedLeafType::PendingAssociatedRemote => 8,
             },
             MojomWireType::Pointer { .. } => 8,
 
@@ -265,7 +280,8 @@ impl MojomWireType {
     pub fn alignment(&self) -> usize {
         match self {
             MojomWireType::Union { .. } => 8,
-            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, .. } => 4,
+            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, .. }
+            | MojomWireType::Leaf { leaf_type: PackedLeafType::PendingAssociatedRemote, .. } => 4,
             _ => self.size(),
         }
     }
@@ -280,10 +296,16 @@ impl MojomWireType {
 
     pub fn is_nullable_primitive(&self) -> bool {
         match self {
-            // Handles aren't primitives; they have their own nullability semantics
-            MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, .. } => false,
-            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingReceiver, .. } => false,
-            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, .. } => false,
+            // Handles have their own nullability semantics
+            MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, .. }
+            | MojomWireType::Leaf { leaf_type: PackedLeafType::PendingReceiver, .. }
+            | MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, .. }
+            | MojomWireType::Leaf {
+                leaf_type: PackedLeafType::PendingAssociatedReceiver, ..
+            }
+            | MojomWireType::Leaf { leaf_type: PackedLeafType::PendingAssociatedRemote, .. } => {
+                false
+            }
             MojomWireType::Leaf { is_nullable, .. } => *is_nullable,
             _ => false,
         }
