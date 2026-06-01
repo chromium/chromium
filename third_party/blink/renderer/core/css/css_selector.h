@@ -1015,9 +1015,10 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
     new (&data_.tag_q_name_or_attribute_)
         QualifiedName(o.data_.tag_q_name_or_attribute_);
   } else if (o.Match() == kPseudoClass && o.GetPseudoType() == kPseudoParent) {
-    data_.parent_rule_ = o.data_.parent_rule_;
+    new (&data_.parent_rule_) Member<const StyleRule>(o.data_.parent_rule_);
   } else if (o.HasRareData()) {
-    data_.rare_data_ = o.data_.rare_data_;  // Oilpan-managed.
+    new (&data_.rare_data_)
+        Member<RareData>(o.data_.rare_data_);  // Oilpan-managed.
   } else {
     new (&data_.value_) AtomicString(o.data_.value_);
   }
