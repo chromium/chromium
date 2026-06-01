@@ -2144,7 +2144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop{TabObjectType}.ReorderStripWithDragDrop"
-    enum="Boolean" expires_after="2026-07-05">
+    enum="Boolean" expires_after="2026-11-15">
   <owner>shuyng@google.com</owner>
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -5518,7 +5518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.SubDomainSettingChanged"
-    enum="Boolean" expires_after="2026-07-05">
+    enum="Boolean" expires_after="2026-11-15">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -6498,7 +6498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabSwitcher.NullContextMenuCoordinatorIsIncognito"
-    enum="Boolean" expires_after="2026-07-05">
+    enum="Boolean" expires_after="2026-11-15">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
