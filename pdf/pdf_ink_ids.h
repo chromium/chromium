@@ -9,6 +9,7 @@
 
 #include <variant>
 
+#include "base/functional/callback_forward.h"
 #include "base/types/strong_alias.h"
 
 // Defines various IDs used for PDF Ink Signatures. The IDs use
@@ -30,6 +31,9 @@ using InkTextId = base::StrongAlias<class InkTextIdTag, size_t>;
 
 // Set of all IDs.
 using IdType = std::variant<InkStrokeId, InkModeledShapeId, InkTextId>;
+
+// A callback to generate a unique ID for Ink text objects.
+using GenerateTextIdCallback = base::RepeatingCallback<InkTextId()>;
 
 // Returns the underlying value of an IdType.
 size_t GetIdTypeValue(const IdType& id);

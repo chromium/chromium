@@ -20,6 +20,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -1438,8 +1439,12 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
     const base::DictValue& message) {
   base::ListValue annotations;
 
+  // It is safe to use base::Unretained(&id_generator_) because the callback is
+  // executed synchronously.
   DocumentInkTextBoxesMap document_text_boxes =
-      client_->LoadTextAnnotationsFromPdf();
+      client_->LoadTextAnnotationsFromPdf(
+          base::BindRepeating(&PdfInkModule::IdGenerator::GetTextIdAndAdvance,
+                              base::Unretained(&id_generator_)));
 
   for (auto& [page_index, text_boxes] : document_text_boxes) {
     for (const auto& item : text_boxes) {

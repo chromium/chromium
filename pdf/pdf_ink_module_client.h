@@ -137,7 +137,10 @@ class PdfInkModuleClient {
   virtual bool IsSelectableTextOrLinkArea(const gfx::PointF& point) = 0;
 
   // Returns the saved text annotations across the document.
-  virtual DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf() = 0;
+  // `generate_text_id_callback` is called to generate a unique ID for each text
+  // annotation loaded.
+  virtual DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf(
+      GenerateTextIdCallback generate_text_id_callback) = 0;
 
   // Asks the client to load Ink data from the PDF.
   virtual DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() = 0;

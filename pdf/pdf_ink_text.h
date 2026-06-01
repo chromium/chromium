@@ -86,6 +86,9 @@ struct InkTextBox {
   // parameter (`TextboxId`), binding text object fragments together.
   int id;
 
+  // The globally unique ID generated during load.
+  InkTextId ink_text_id;
+
   InkTextBoxAttributes attributes;
 };
 

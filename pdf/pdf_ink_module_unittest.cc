@@ -358,7 +358,7 @@ class FakeClient : public PdfInkModuleClient {
 
   MOCK_METHOD(DocumentInkTextBoxesMap,
               LoadTextAnnotationsFromPdf,
-              (),
+              (GenerateTextIdCallback generate_text_id_callback),
               (override));
 
   MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
@@ -564,7 +564,7 @@ TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
   DocumentInkTextBoxesMap map;
   map[0] = std::move(test_boxes);
 
-  EXPECT_CALL(client(), LoadTextAnnotationsFromPdf())
+  EXPECT_CALL(client(), LoadTextAnnotationsFromPdf(_))
       .WillOnce(Return(std::move(map)));
 
   EXPECT_CALL(client(), PostMessage).WillOnce([](const base::DictValue& dict) {

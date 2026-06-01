@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
@@ -3679,8 +3680,10 @@ TEST_P(PDFiumEngineInkDrawTextTest, LoadTextAnnotationsFromPdfMultiPages) {
   ASSERT_TRUE(engine);
   ASSERT_EQ(3, engine->GetNumberOfPages());
 
+  size_t next_id = 0;
   DocumentInkTextBoxesMap document_textboxes =
-      engine->LoadTextAnnotationsFromPdf();
+      engine->LoadTextAnnotationsFromPdf(base::BindLambdaForTesting(
+          [&next_id]() { return InkTextId(next_id++); }));
   ASSERT_EQ(2u, document_textboxes.size());
 
   // Page 0 and Page 2 have text annotations; Page 1 is empty and should be
@@ -3719,7 +3722,9 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAvoidsTextboxIdCollisions) {
 
   // Load existing annotations to populate `existing_textbox_ids_`.
   // ink_text_multi_textboxes.pdf has textbox IDs 0 and 42.
-  engine->LoadTextAnnotationsFromPdf();
+  size_t next_id = 0;
+  engine->LoadTextAnnotationsFromPdf(base::BindLambdaForTesting(
+      [&next_id]() { return InkTextId(next_id++); }));
 
   constexpr int kPageIndex = 0;
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
