@@ -47,7 +47,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     // Supplier for other class to observe. Null until the supplier is requested.
     private @Nullable SettableNonNullObservableSupplier<Boolean> mCrashUploadPermittedSupplier;
 
-    private boolean mNativeInitialized;
+    private volatile boolean mNativeInitialized;
 
     PrivacyPreferencesManagerImpl(Context context) {
         mContext = context;
@@ -73,9 +73,11 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
         mNativeInitialized = true;
 
+        // Cache the metrics restructurization state in SharedPreferences immediately when
+        // native is initialized so that it is safe to access pre-native in future sessions.
         mPrefs.writeBoolean(
                 ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE,
-                shouldUseMetricsChoiceRestructure());
+                PrivacyPreferencesManagerImplJni.get().shouldUseMetricsChoiceRestructure());
 
         createPolicyServiceObserver();
     }
@@ -275,7 +277,12 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     public boolean shouldUseMetricsChoiceRestructure() {
-        return PrivacyPreferencesManagerImplJni.get().shouldUseMetricsChoiceRestructure();
+        // This method can be called before the native library is loaded/initialized (e.g.,
+        // in background services or binder threads checking crash uploading permission).
+        // To avoid UnsatisfiedLinkError, we read the value cached in SharedPreferences.
+        // The cache is populated in onNativeInitialized() using the latest C++ state.
+        return mPrefs.readBoolean(
+                ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
     }
 
     @NativeMethods

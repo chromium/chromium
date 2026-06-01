@@ -263,11 +263,10 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(true);
-
+        writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, true);
         assertTrue(preferenceManager.shouldUseMetricsChoiceRestructure());
 
-        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(false);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
         assertFalse(preferenceManager.shouldUseMetricsChoiceRestructure());
     }
 
@@ -277,7 +276,7 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(false);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
 
         writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, true);
         assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByUser());
@@ -292,7 +291,7 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(true);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, true);
 
         // Level NONE -> Permitted false
         writeInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, MetricsReportingLevel.NONE);
@@ -315,7 +314,7 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(false);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
 
         writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, true);
         assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
@@ -330,7 +329,7 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl preferenceManager =
                 new TestPrivacyPreferencesManager(context);
 
-        when(mNativeMock.shouldUseMetricsChoiceRestructure()).thenReturn(true);
+        writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, true);
 
         // Not enforced by policy -> Always true
         writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
