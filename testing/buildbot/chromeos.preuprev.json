@@ -64,6 +64,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -132,6 +133,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -197,6 +199,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -268,6 +271,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -333,6 +337,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }

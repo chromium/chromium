@@ -110,6 +110,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -150,7 +151,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "timeout_sec": 14400,
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -177,6 +178,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "aura_unittests",
         "test_id_prefix": "ninja://ui/aura:aura_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -193,6 +195,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -213,6 +216,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "capture_unittests",
         "test_id_prefix": "ninja://media/capture:capture_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -229,6 +233,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -329,6 +334,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -345,6 +351,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -361,6 +368,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "display_unittests",
         "test_id_prefix": "ninja://ui/display:display_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -385,6 +393,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "fake_libva_driver_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -401,6 +410,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -417,6 +427,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ipc_tests",
         "test_id_prefix": "ninja://ipc:ipc_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -433,6 +444,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "latency_unittests",
         "test_id_prefix": "ninja://ui/latency:latency_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -452,6 +464,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -468,6 +481,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "midi_unittests",
         "test_id_prefix": "ninja://media/midi:midi_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -484,6 +498,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "mojo_unittests",
         "test_id_prefix": "ninja://mojo:mojo_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -503,6 +518,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -522,6 +538,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ozone_gl_unittests",
         "test_id_prefix": "ninja://ui/ozone/gl:ozone_gl_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -538,6 +555,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -554,6 +572,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -570,6 +589,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "printing_unittests",
         "test_id_prefix": "ninja://printing:printing_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -590,6 +610,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "profile_provider_unittest",
         "test_id_prefix": "ninja://chrome/browser/metrics/perf:profile_provider_unittest/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -606,6 +627,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "rust_gtest_interop_unittests",
         "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -622,6 +644,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -638,6 +661,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -690,6 +714,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -716,6 +741,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -742,6 +768,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -765,6 +792,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "aura_unittests",
         "test_id_prefix": "ninja://ui/aura:aura_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -781,6 +809,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -801,6 +830,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "capture_unittests",
         "test_id_prefix": "ninja://media/capture:capture_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -817,6 +847,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -833,6 +864,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -849,6 +881,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -865,6 +898,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "display_unittests",
         "test_id_prefix": "ninja://ui/display:display_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -889,6 +923,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "fake_libva_driver_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -905,6 +940,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -921,6 +957,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ipc_tests",
         "test_id_prefix": "ninja://ipc:ipc_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -937,6 +974,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "latency_unittests",
         "test_id_prefix": "ninja://ui/latency:latency_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -956,6 +994,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -972,6 +1011,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "midi_unittests",
         "test_id_prefix": "ninja://media/midi:midi_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -988,6 +1028,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "mojo_unittests",
         "test_id_prefix": "ninja://mojo:mojo_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1007,6 +1048,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1026,6 +1068,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ozone_gl_unittests",
         "test_id_prefix": "ninja://ui/ozone/gl:ozone_gl_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1042,6 +1085,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1058,6 +1102,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1074,6 +1119,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "printing_unittests",
         "test_id_prefix": "ninja://printing:printing_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1094,6 +1140,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "profile_provider_unittest",
         "test_id_prefix": "ninja://chrome/browser/metrics/perf:profile_provider_unittest/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1110,6 +1157,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "rust_gtest_interop_unittests",
         "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1126,6 +1174,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1142,6 +1191,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1194,6 +1244,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1220,6 +1271,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1246,6 +1298,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -1357,6 +1410,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "aura_unittests",
         "test_id_prefix": "ninja://ui/aura:aura_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1373,6 +1427,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1393,6 +1448,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "capture_unittests",
         "test_id_prefix": "ninja://media/capture:capture_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1409,6 +1465,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1509,6 +1566,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1525,6 +1583,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1541,6 +1600,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "display_unittests",
         "test_id_prefix": "ninja://ui/display:display_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1565,6 +1625,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "fake_libva_driver_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1581,6 +1642,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1597,6 +1659,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ipc_tests",
         "test_id_prefix": "ninja://ipc:ipc_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1613,6 +1676,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "latency_unittests",
         "test_id_prefix": "ninja://ui/latency:latency_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1632,6 +1696,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1648,6 +1713,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "midi_unittests",
         "test_id_prefix": "ninja://media/midi:midi_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1664,6 +1730,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "mojo_unittests",
         "test_id_prefix": "ninja://mojo:mojo_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1683,6 +1750,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1702,6 +1770,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ozone_gl_unittests",
         "test_id_prefix": "ninja://ui/ozone/gl:ozone_gl_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1718,6 +1787,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1734,6 +1804,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1750,6 +1821,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "printing_unittests",
         "test_id_prefix": "ninja://printing:printing_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1770,6 +1842,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "profile_provider_unittest",
         "test_id_prefix": "ninja://chrome/browser/metrics/perf:profile_provider_unittest/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1786,6 +1859,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "rust_gtest_interop_unittests",
         "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1802,6 +1876,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1818,6 +1893,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1870,6 +1946,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1896,6 +1973,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -1922,6 +2000,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -2105,6 +2184,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -2671,6 +2751,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       },
@@ -3182,6 +3263,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -3346,6 +3428,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -3466,6 +3549,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -3589,6 +3673,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }
@@ -3704,6 +3789,7 @@
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"
       }

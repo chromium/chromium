@@ -329,6 +329,7 @@
     'chromeos_integration_tests_suite': {
       'chromeos_integration_tests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -564,11 +565,13 @@
           '--ozone-platform=headless',
         ],
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'base_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -578,21 +581,25 @@
           '--gtest_filter=-*UsingRealWebcam_CaptureMjpeg*',
         ],
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'cc_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'crypto_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'display_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -608,21 +615,25 @@
           ],
         },
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'google_apis_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'ipc_tests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'latency_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -631,16 +642,19 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.media_unittests.filter',
         ],
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'midi_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'mojo_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -649,6 +663,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.net_unittests.filter',
         ],
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -657,21 +672,25 @@
           '--stop-ui',
         ],
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'ozone_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'pdf_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'printing_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -681,21 +700,25 @@
           '--test-launcher-jobs=1',
         ],
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'rust_gtest_interop_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'sql_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
       'url_unittests': {
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -714,6 +737,7 @@
         },
         'test': 'video_decode_accelerator_tests',
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -732,6 +756,7 @@
         },
         'test': 'video_decode_accelerator_tests',
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },
@@ -750,6 +775,7 @@
         },
         'test': 'video_decode_accelerator_tests',
         'skylab': {
+          'timeout_sec': 5400,
           'autotest_name': 'chromium',
         },
       },

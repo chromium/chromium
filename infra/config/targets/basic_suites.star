@@ -160,6 +160,7 @@ targets.legacy_basic_suite(
         "chromeos_integration_tests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
     },
@@ -366,6 +367,7 @@ targets.legacy_basic_suite(
         "aura_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
             args = [
                 "--ozone-platform=headless",
@@ -374,11 +376,13 @@ targets.legacy_basic_suite(
         "base_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "capture_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
             args = [
                 "--test-launcher-jobs=1",
@@ -390,36 +394,43 @@ targets.legacy_basic_suite(
         "cc_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "crypto_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "display_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "google_apis_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "ipc_tests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "latency_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "media_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
             args = [
                 # TODO(b/351276191): Switch to gerneral chromeos.betty.media_unittests.filter
@@ -429,16 +440,19 @@ targets.legacy_basic_suite(
         "midi_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "mojo_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "net_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
             args = [
                 # TODO(b/352673853): These tests require vpython on DUT.
@@ -448,6 +462,7 @@ targets.legacy_basic_suite(
         "ozone_gl_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
             args = [
                 "--stop-ui",
@@ -456,21 +471,25 @@ targets.legacy_basic_suite(
         "ozone_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "pdf_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "printing_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "profile_provider_unittest": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
             args = [
                 "--stop-ui",
@@ -480,36 +499,43 @@ targets.legacy_basic_suite(
         "rust_gtest_interop_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "sql_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "url_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "video_decode_accelerator_tests_fake_vaapi_vp9": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "video_decode_accelerator_tests_fake_vaapi_vp8": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "video_decode_accelerator_tests_fake_vaapi_av1": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
+                timeout_sec = 5400,
             ),
         ),
     },
