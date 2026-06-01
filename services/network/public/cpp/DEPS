@@ -7,10 +7,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "resource_request\.h": [
+  "resource_request\\.h": [
     "+services/network/public/mojom/cors.mojom.h",
   ],
-  ".*\.cc": [
+  ".*\\.cc": [
     # Prefs are used to create an independent file with a persisted key:value
     # store for networking-related data (Like which servers support QUIC),
     # rather than to store user preferences.

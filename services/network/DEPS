@@ -35,13 +35,13 @@ include_rules = [
 
 specific_include_rules = {
   # Some tests use a real proxy_resolver::ProxyResolverImpl.
-  "test_mojo_proxy_resolver_factory\.h": [
+  "test_mojo_proxy_resolver_factory\\.h": [
     "+services/proxy_resolver/proxy_resolver_factory_impl.h",
   ],
-  "prefetch_matches_unittest\.cc": [
+  "prefetch_matches_unittest\\.cc": [
     "+third_party/blink/public/common/navigation/preloading_headers.h",
   ],
-  "network_service\.cc": [
+  "network_service\\.cc": [
     "+components/enterprise/platform_auth/url_session_url_loader_bridge.h",
   ],
 }

@@ -14,7 +14,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "NfcBlocklist\.java": [
+  "NfcBlocklist\\.java": [
     "+components/variations/android/java",
   ],
 }
