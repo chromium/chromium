@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 component("private_insights") {
-  public = [ "private_insights_service.h" ]
-  sources = [ "private_insights_service.cc" ]
+  public = [
+    "private_insights_features.h",
+    "private_insights_service.h",
+  ]
+  sources = [
+    "private_insights_features.cc",
+    "private_insights_service.cc",
+  ]
   defines = [ "IS_PRIVATE_INSIGHTS_IMPL" ]
   deps = [
     "//base",
