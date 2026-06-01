@@ -426,7 +426,6 @@ import java.util.function.Supplier;
     /* package */ void activateSearchMode() {
         if (trySetRequestType(AutocompleteRequestType.SEARCH)) {
             assert mModelList != null;
-            mModelList.clear();
             if (OmniboxFeatures.sShowModelPicker.getValue()
                     && mComposeboxQueryControllerBridge != null) {
                 InputState inputState =
@@ -917,8 +916,12 @@ import java.util.function.Supplier;
         updateFuseboxState();
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
 
-        if (type != AutocompleteRequestType.AI_MODE && isInInputSession()) {
-            mModelList.removeSuggestedTabs();
+        if (isInInputSession()) {
+            if (!ToolModeUtils.isAimRequest(type)) {
+                mModelList.clear();
+            } else if (type != AutocompleteRequestType.AI_MODE) {
+                mModelList.removeSuggestedTabs();
+            }
         }
 
         updateActivationChip();

@@ -2417,4 +2417,17 @@ public class FuseboxMediatorUnitTest {
         mMediator.endInput();
         assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
     }
+
+    @Test
+    public void onAutocompleteRequestTypeChanged_clearsAttachments_nonAim() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertEquals(1, mAttachments.size());
+
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(1, mAttachments.size());
+
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        assertEquals(0, mAttachments.size());
+    }
 }
