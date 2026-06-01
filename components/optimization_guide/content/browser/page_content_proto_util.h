@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
 namespace content {
@@ -76,6 +77,9 @@ struct RenderFrameInfo {
   // has an active popup widget. This is used for defense-in-depth against
   // compromised renderers spoofing popups.
   bool has_active_popup = false;
+
+  // The trusted screen bounds of the active popup widget in DIPs.
+  gfx::Rect popup_bounds_in_dips;
 };
 
 struct TargetNodeInfo {

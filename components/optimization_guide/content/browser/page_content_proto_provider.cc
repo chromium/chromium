@@ -341,6 +341,8 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
           if (widget_host->GetPopupCreatorFrameId() ==
               render_frame_host->GetGlobalId()) {
             render_frame_info.has_active_popup = true;
+            render_frame_info.popup_bounds_in_dips =
+                widget_view->GetViewBounds();
             break;
           }
         }

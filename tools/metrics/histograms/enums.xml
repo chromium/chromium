@@ -22581,6 +22581,14 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="None"/>
 </enum>
 
+<enum name="PageContentPopupValidationStatus">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Already Has Popup"/>
+  <int value="2" label="No Active Popup"/>
+  <int value="3" label="Empty Bounds"/>
+  <int value="4" label="Mismatched Bounds"/>
+</enum>
+
 <enum name="PageImageServiceBackend">
   <int value="0" label="No Valid Backend"/>
   <int value="1" label="Suggest"/>

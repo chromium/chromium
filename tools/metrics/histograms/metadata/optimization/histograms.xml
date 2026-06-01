@@ -2484,6 +2484,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageContentExtraction.PopupValidationStatus"
+    enum="PageContentPopupValidationStatus" expires_after="2026-11-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the browser-side verification results for extracted popup windows.
+    Recorded once per attempted popup window extraction.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.RequestType"
     enum="PageContentExtractionRequestType" expires_after="2027-05-05">
   <owner>xiaochenzh@chromium.org</owner>

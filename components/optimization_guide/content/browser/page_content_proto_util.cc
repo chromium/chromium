@@ -14,6 +14,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
@@ -25,12 +26,15 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -54,12 +58,80 @@ BASE_FEATURE(kAnnotatedPageContentAutofillOtpRedactions,
 // tree are still redacted. This acts as a killswitch for that security fix.
 BASE_FEATURE(kAnnotatedPageContentRedactOrphanFrames,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether we verify and clamp renderer-reported popup bounds
+// against trusted browser-side widget bounds.
+BASE_FEATURE(kAnnotatedPageContentVerifyPopupBounds,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {
 
+// Represents the results of browser-side verification for extracted popups.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PageContentPopupValidationStatus)
+enum class PageContentPopupValidationStatus {
+  kValid = 0,
+  kAlreadyHasPopup = 1,
+  kNoActivePopup = 2,
+  kEmptyBounds = 3,
+  kMismatchedBounds = 4,
+  kMaxValue = kMismatchedBounds,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PageContentPopupValidationStatus)
+
+void RecordPopupValidationStatus(PageContentPopupValidationStatus status) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus", status);
+}
+
 // This is the same as `kInvalidDOMNodeId` defined in blink.
 constexpr int kInvalidDOMNodeId = 0;
+
+gfx::Rect GetTrustedPopupBoundsInBlinkSpace(
+    const RenderFrameInfo& opener_frame_info) {
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromFrameToken(
+      opener_frame_info.global_frame_token);
+  if (!rfh) {
+    return gfx::Rect();
+  }
+
+  content::RenderWidgetHostView* rwhv = rfh->GetView();
+  if (!rwhv) {
+    return gfx::Rect();
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return gfx::Rect();
+  }
+
+  content::RenderWidgetHostView* main_rwhv =
+      web_contents->GetPrimaryMainFrame()->GetView();
+  if (!main_rwhv) {
+    return gfx::Rect();
+  }
+
+  gfx::Rect main_frame_view_rect_dips = main_rwhv->GetViewBounds();
+  float device_scale_factor = rwhv->GetDeviceScaleFactor();
+
+  gfx::Rect trusted_relative_dips = opener_frame_info.popup_bounds_in_dips;
+  trusted_relative_dips.Offset(-main_frame_view_rect_dips.OffsetFromOrigin());
+
+  return gfx::ScaleToEnclosingRect(trusted_relative_dips, device_scale_factor);
+}
+
+bool AreBoundsWithinTolerance(const gfx::Rect& rect1,
+                              const gfx::Rect& rect2,
+                              int tolerance) {
+  return std::abs(rect1.x() - rect2.x()) <= tolerance &&
+         std::abs(rect1.y() - rect2.y()) <= tolerance &&
+         std::abs(rect1.width() - rect2.width()) <= tolerance &&
+         std::abs(rect1.height() - rect2.height()) <= tolerance;
+}
 
 std::optional<AutofillFieldMetadata> GetAutofillFieldData(
     std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
@@ -1252,22 +1324,65 @@ class Converter {
     }
 
     if (page_content_proto().has_popup_window()) {
+      RecordPopupValidationStatus(
+          PageContentPopupValidationStatus::kAlreadyHasPopup);
       return base::ok();
     }
 
     if (!opener_frame_info.has_active_popup) {
+      RecordPopupValidationStatus(
+          PageContentPopupValidationStatus::kNoActivePopup);
       // This could be a race condition where the popup was closed between the
       // start of extraction and the renderer's response. We skip the popup
       // but continue with the rest of the page content.
       return base::ok();
     }
 
+    const bool verify_bounds = base::FeatureList::IsEnabled(
+        features::kAnnotatedPageContentVerifyPopupBounds);
+
+    gfx::Rect validated_bounds = mojom_popup.visible_bounding_box;
+    bool is_bounds_mismatched = false;
+    if (verify_bounds) {
+      gfx::Rect trusted_bounds =
+          GetTrustedPopupBoundsInBlinkSpace(opener_frame_info);
+      if (trusted_bounds.IsEmpty()) {
+        RecordPopupValidationStatus(
+            PageContentPopupValidationStatus::kEmptyBounds);
+        // Skip extracting the popup entirely since it is empty/unverified.
+        return base::ok();
+      }
+      validated_bounds = trusted_bounds;
+
+      // Tolerance in pixels to permit minor renderer-browser coordinates
+      // alignment variances.
+      static constexpr int kPopupBoundsTolerancePixels = 3;
+
+      if (!AreBoundsWithinTolerance(mojom_popup.visible_bounding_box,
+                                    validated_bounds,
+                                    kPopupBoundsTolerancePixels)) {
+        is_bounds_mismatched = true;
+        RecordPopupValidationStatus(
+            PageContentPopupValidationStatus::kMismatchedBounds);
+      } else {
+        RecordPopupValidationStatus(PageContentPopupValidationStatus::kValid);
+      }
+    } else {
+      RecordPopupValidationStatus(PageContentPopupValidationStatus::kValid);
+    }
+
     optimization_guide::proto::PopupWindow* popup_window =
         page_content_proto().mutable_popup_window();
 
-    // First, walk the popup's DOM tree to create proto::ContentNodes.
-    RETURN_IF_ERROR(ConvertPopupNode(*mojom_popup.root_node,
-                                     popup_window->mutable_root_node()));
+    if (is_bounds_mismatched) {
+      // Outside tolerance limits: skip parsing/converting the untrusted popup
+      // tree entirely for security, leaving only a secure empty root node.
+      popup_window->mutable_root_node();
+    } else {
+      // Walk the popup's DOM tree to create proto::ContentNodes.
+      RETURN_IF_ERROR(ConvertPopupNode(*mojom_popup.root_node,
+                                       popup_window->mutable_root_node()));
+    }
 
     // Set the document ID to the frame which opened the popup (might be wrong,
     // because we treat a main page and its same-site iframes as the same
@@ -1278,8 +1393,7 @@ class Converter {
     popup_window->set_opener_common_ancestor_dom_node_id(
         mojom_popup.opener_dom_node_id);
 
-    ConvertRect(mojom_popup.visible_bounding_box,
-                popup_window->mutable_visible_bounding_box());
+    ConvertRect(validated_bounds, popup_window->mutable_visible_bounding_box());
 
     return base::ok();
   }

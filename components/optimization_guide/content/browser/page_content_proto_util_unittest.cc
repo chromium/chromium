@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/content/browser/mock_autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -181,6 +182,40 @@ void AssertValidOrigin(
 class PageContentProtoUtilTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
+};
+
+class PageContentProtoUtilTestWithWebContents
+    : public PageContentProtoUtilTest {
+ public:
+  void SetUp() override {
+    PageContentProtoUtilTest::SetUp();
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
+    content::WebContents::CreateParams create_params(browser_context_.get());
+    web_contents_ = std::unique_ptr<content::TestWebContents>(
+        content::TestWebContents::Create(create_params));
+    web_contents_->NavigateAndCommit(GURL("https://example.com"));
+
+    content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
+    main_frame_token_ = main_rfh->GetGlobalFrameToken();
+
+    content::RenderWidgetHostView* rwhv =
+        web_contents_->GetRenderWidgetHostView();
+    if (rwhv) {
+      rwhv->SetBounds(gfx::Rect(0, 0, 800, 600));
+    }
+  }
+
+  void TearDown() override {
+    web_contents_.reset();
+    browser_context_.reset();
+    PageContentProtoUtilTest::TearDown();
+  }
+
+ protected:
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<content::TestBrowserContext> browser_context_;
+  std::unique_ptr<content::TestWebContents> web_contents_;
+  content::GlobalRenderFrameHostToken main_frame_token_;
 };
 
 TEST_F(PageContentProtoUtilTest, IframeNodeWithNoData) {
@@ -1576,10 +1611,9 @@ TEST_F(PageContentProtoUtilTest, ConvertLabel) {
   EXPECT_EQ(anchor_attributes.label(), "aria label");
 }
 
-TEST_F(PageContentProtoUtilTest, ConvertPopup) {
+TEST_F(PageContentProtoUtilTestWithWebContents, ConvertPopup) {
   base::test::ScopedFeatureList feature_list(
       blink::features::kAIPageContentIncludePopupWindows);
-  auto main_frame_token = CreateFrameToken();
   auto mojom_content = CreatePageContent();
 
   blink::mojom::AIPageContentPopupPtr popup =
@@ -1591,29 +1625,32 @@ TEST_F(PageContentProtoUtilTest, ConvertPopup) {
   popup->root_node->children_nodes.push_back(
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kText));
   popup->opener_dom_node_id = 1;
+  popup->visible_bounding_box = gfx::Rect(0, 0, 200, 200);
   mojom_content->frame_data->popup = std::move(popup);
 
   AIPageContentMap page_content_map;
-  page_content_map[main_frame_token] = std::move(mojom_content);
+  page_content_map[main_frame_token_] = std::move(mojom_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
-        if (token == main_frame_token.frame_token) {
+        if (token == main_frame_token_.frame_token) {
           RenderFrameInfo render_frame_info;
-          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.global_frame_token = main_frame_token_;
           render_frame_info.serialized_server_token = token.ToString();
           // MOCK: signal that the browser process verified this popup.
           render_frame_info.has_active_popup = true;
+          render_frame_info.popup_bounds_in_dips = gfx::Rect(0, 0, 200, 200);
           return render_frame_info;
         }
         return std::nullopt;
       });
 
+  base::HistogramTester histogram_tester;
   AIPageContentResult page_content;
   FrameTokenSet frame_token_set;
 
   EXPECT_TRUE(ConvertAIPageContentToProto(
-                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token_,
                   page_content_map, get_render_frame_info, frame_token_set,
                   page_content)
                   .has_value());
@@ -1627,6 +1664,224 @@ TEST_F(PageContentProtoUtilTest, ConvertPopup) {
       page_content.proto.popup_window().root_node().children_nodes().size(), 2);
   EXPECT_EQ(
       page_content.proto.popup_window().opener_common_ancestor_dom_node_id(),
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      0,  // kValid
+      1);
+}
+
+TEST_F(PageContentProtoUtilTestWithWebContents,
+       ConvertPopupBoundsWithinToleranceKept) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentIncludePopupWindows);
+  auto mojom_content = CreatePageContent();
+
+  blink::mojom::AIPageContentPopupPtr popup =
+      blink::mojom::AIPageContentPopup::New();
+  popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+
+  auto node = CreateTextNode("label", blink::mojom::AIPageContentTextSize::kM,
+                             false, 0);
+  node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  node->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(10, 10, 50, 50);
+  node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(10, 10, 50, 50);
+  popup->root_node->children_nodes.push_back(std::move(node));
+
+  popup->opener_dom_node_id = 1;
+  // Renderer claims (0, 0, 202, 200) (2px deviation, <= 3px tolerance)
+  popup->visible_bounding_box = gfx::Rect(0, 0, 202, 200);
+  mojom_content->frame_data->popup = std::move(popup);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token_] = std::move(mojom_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token_.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token_;
+          render_frame_info.serialized_server_token = token.ToString();
+          render_frame_info.has_active_popup = true;
+          // Browser asserts (0, 0, 200, 200)
+          render_frame_info.popup_bounds_in_dips = gfx::Rect(0, 0, 200, 200);
+          return render_frame_info;
+        }
+        return std::nullopt;
+      });
+
+  base::HistogramTester histogram_tester;
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token_,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  ASSERT_TRUE(page_content.proto.has_popup_window());
+
+  // Within tolerance:
+  // 1. The browser-validated bounds are reported!
+  const auto& popup_box =
+      page_content.proto.popup_window().visible_bounding_box();
+  EXPECT_EQ(popup_box.x(), 0);
+  EXPECT_EQ(popup_box.y(), 0);
+  EXPECT_EQ(popup_box.width(), 200);
+  EXPECT_EQ(popup_box.height(), 200);
+
+  // 2. And all nodes are kept intact!
+  const auto& popup_root = page_content.proto.popup_window().root_node();
+  ASSERT_EQ(popup_root.children_nodes().size(), 1);
+  EXPECT_EQ(popup_root.children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "label");
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      0,  // kValid
+      1);
+}
+
+TEST_F(PageContentProtoUtilTestWithWebContents,
+       ConvertPopupMismatchedBoundsStripsAllNodes) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentIncludePopupWindows);
+  auto mojom_content = CreatePageContent();
+
+  blink::mojom::AIPageContentPopupPtr popup =
+      blink::mojom::AIPageContentPopup::New();
+  popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+
+  // Text node inside the popup
+  auto node = CreateTextNode("inside", blink::mojom::AIPageContentTextSize::kM,
+                             false, 0);
+  node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  node->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(10, 10, 50, 50);
+  node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(10, 10, 50, 50);
+  popup->root_node->children_nodes.push_back(std::move(node));
+
+  popup->opener_dom_node_id = 1;
+  // Renderer claims the popup spans (0, 0, 205, 200) (5px deviation on width, >
+  // 3px tolerance)
+  popup->visible_bounding_box = gfx::Rect(0, 0, 205, 200);
+  mojom_content->frame_data->popup = std::move(popup);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token_] = std::move(mojom_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token_.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token_;
+          render_frame_info.serialized_server_token = token.ToString();
+          render_frame_info.has_active_popup = true;
+          // Browser-validated bounds are (0, 0, 200, 200)
+          render_frame_info.popup_bounds_in_dips = gfx::Rect(0, 0, 200, 200);
+          return render_frame_info;
+        }
+        return std::nullopt;
+      });
+
+  base::HistogramTester histogram_tester;
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token_,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  ASSERT_TRUE(page_content.proto.has_popup_window());
+
+  // Since the deviation (5px) is greater than our 3px tolerance:
+  // 1. The trusted bounds are still reported!
+  const auto& popup_box =
+      page_content.proto.popup_window().visible_bounding_box();
+  EXPECT_EQ(popup_box.x(), 0);
+  EXPECT_EQ(popup_box.y(), 0);
+  EXPECT_EQ(popup_box.width(), 200);
+  EXPECT_EQ(popup_box.height(), 200);
+
+  // 2. But all children nodes have been completely stripped!
+  const auto& popup_root = page_content.proto.popup_window().root_node();
+  EXPECT_EQ(popup_root.children_nodes().size(), 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      4,  // kMismatchedBounds
+      1);
+}
+
+TEST_F(PageContentProtoUtilTestWithWebContents,
+       ConvertPopupVerifyBoundsEmptyBoundsSkips) {
+  auto mojom_content = CreatePageContent();
+
+  blink::mojom::AIPageContentPopupPtr popup =
+      blink::mojom::AIPageContentPopup::New();
+  popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+
+  auto text_node =
+      CreateTextNode("text", blink::mojom::AIPageContentTextSize::kM, false, 0);
+  text_node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  text_node->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(10, 10, 50, 50);
+  text_node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(10, 10, 50, 50);
+  popup->root_node->children_nodes.push_back(std::move(text_node));
+  popup->opener_dom_node_id = 1;
+  popup->visible_bounding_box = gfx::Rect(0, 0, 200, 200);
+  mojom_content->frame_data->popup = std::move(popup);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token_] = std::move(mojom_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token_.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token_;
+          render_frame_info.serialized_server_token = token.ToString();
+          render_frame_info.has_active_popup = true;
+          render_frame_info.popup_bounds_in_dips = gfx::Rect();
+          return render_frame_info;
+        }
+        return std::nullopt;
+      });
+
+  base::HistogramTester histogram_tester;
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode = blink::mojom::AIPageContentMode::kActionableElements;
+
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  std::move(options), main_frame_token_, page_content_map,
+                  get_render_frame_info, frame_token_set, page_content)
+                  .has_value());
+
+  EXPECT_FALSE(page_content.proto.has_popup_window());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      3,  // kEmptyBounds
       1);
 }
 
@@ -1659,6 +1914,7 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupNotAuthorized) {
         return std::nullopt;
       });
 
+  base::HistogramTester histogram_tester;
   AIPageContentResult page_content;
   FrameTokenSet frame_token_set;
 
@@ -1670,13 +1926,17 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupNotAuthorized) {
                   .has_value());
 
   EXPECT_FALSE(page_content.proto.has_popup_window());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      2,  // kNoActivePopup
+      1);
 }
 
-TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
+TEST_F(PageContentProtoUtilTestWithWebContents, ConvertPopupPriority) {
   base::test::ScopedFeatureList feature_list(
       blink::features::kAIPageContentIncludePopupWindows);
 
-  auto main_frame_token = CreateFrameToken();
   auto root_content = CreatePageContent();
 
   // Main frame popup
@@ -1687,10 +1947,14 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
   main_popup->root_node->children_nodes.push_back(CreateTextNode(
       "main popup text", blink::mojom::AIPageContentTextSize::kM, false, 0));
   main_popup->opener_dom_node_id = 1;
+  main_popup->visible_bounding_box = gfx::Rect(0, 0, 200, 200);
   root_content->frame_data->popup = std::move(main_popup);
 
   // Add an iframe
-  auto iframe_token = CreateFrameToken();
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+          ->AppendChild("child");
+  auto iframe_token = child_rfh->GetGlobalFrameToken();
   auto iframe_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe);
   auto iframe_data = blink::mojom::AIPageContentIframeData::New();
@@ -1707,6 +1971,7 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
   iframe_popup->root_node->children_nodes.push_back(CreateTextNode(
       "iframe popup text", blink::mojom::AIPageContentTextSize::kM, false, 0));
   iframe_popup->opener_dom_node_id = 100;
+  iframe_popup->visible_bounding_box = gfx::Rect(0, 0, 200, 200);
   iframe_frame_data->popup = std::move(iframe_popup);
 
   iframe_data->content =
@@ -1717,17 +1982,19 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
   root_content->root_node->children_nodes.push_back(std::move(iframe_node));
 
   AIPageContentMap page_content_map;
-  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[main_frame_token_] = std::move(root_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         RenderFrameInfo render_frame_info;
-        if (token == main_frame_token.frame_token) {
-          render_frame_info.global_frame_token = main_frame_token;
+        if (token == main_frame_token_.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token_;
           render_frame_info.has_active_popup = true;
+          render_frame_info.popup_bounds_in_dips = gfx::Rect(0, 0, 200, 200);
         } else if (token == iframe_token.frame_token) {
           render_frame_info.global_frame_token = iframe_token;
           render_frame_info.has_active_popup = true;
+          render_frame_info.popup_bounds_in_dips = gfx::Rect(0, 0, 200, 200);
         } else {
           return std::nullopt;
         }
@@ -1738,10 +2005,11 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
         return render_frame_info;
       });
 
+  base::HistogramTester histogram_tester;
   AIPageContentResult page_content;
   FrameTokenSet frame_token_set;
   EXPECT_TRUE(ConvertAIPageContentToProto(
-                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token_,
                   page_content_map, get_render_frame_info, frame_token_set,
                   page_content)
                   .has_value());
@@ -1757,18 +2025,30 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
                 .text_data()
                 .text_content(),
             "main popup text");
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      0,  // kValid
+      1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentExtraction.PopupValidationStatus",
+      1,  // kAlreadyHasPopup
+      1);
 }
 
-TEST_F(PageContentProtoUtilTest, ConvertPopupIframeOnly) {
+TEST_F(PageContentProtoUtilTestWithWebContents, ConvertPopupIframeOnly) {
   base::test::ScopedFeatureList feature_list(
       blink::features::kAIPageContentIncludePopupWindows);
 
-  auto main_frame_token = CreateFrameToken();
   auto root_content = CreatePageContent();
   // No main frame popup.
 
   // Add an iframe
-  auto iframe_token = CreateFrameToken();
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+          ->AppendChild("child");
+  auto iframe_token = child_rfh->GetGlobalFrameToken();
+
   auto iframe_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe);
   auto iframe_data = blink::mojom::AIPageContentIframeData::New();
@@ -1785,6 +2065,7 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupIframeOnly) {
   iframe_popup->root_node->children_nodes.push_back(CreateTextNode(
       "iframe popup text", blink::mojom::AIPageContentTextSize::kM, false, 0));
   iframe_popup->opener_dom_node_id = 100;
+  iframe_popup->visible_bounding_box = gfx::Rect(0, 0, 200, 200);
   iframe_frame_data->popup = std::move(iframe_popup);
 
   iframe_data->content =
@@ -1795,17 +2076,18 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupIframeOnly) {
   root_content->root_node->children_nodes.push_back(std::move(iframe_node));
 
   AIPageContentMap page_content_map;
-  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[main_frame_token_] = std::move(root_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         RenderFrameInfo render_frame_info;
-        if (token == main_frame_token.frame_token) {
-          render_frame_info.global_frame_token = main_frame_token;
+        if (token == main_frame_token_.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token_;
           render_frame_info.has_active_popup = false;
         } else if (token == iframe_token.frame_token) {
           render_frame_info.global_frame_token = iframe_token;
           render_frame_info.has_active_popup = true;
+          render_frame_info.popup_bounds_in_dips = gfx::Rect(0, 0, 200, 200);
         } else {
           return std::nullopt;
         }
@@ -1819,7 +2101,7 @@ TEST_F(PageContentProtoUtilTest, ConvertPopupIframeOnly) {
   AIPageContentResult page_content;
   FrameTokenSet frame_token_set;
   EXPECT_TRUE(ConvertAIPageContentToProto(
-                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token_,
                   page_content_map, get_render_frame_info, frame_token_set,
                   page_content)
                   .has_value());
@@ -2341,19 +2623,10 @@ TEST_F(PageContentProtoUtilTest, VisitContentNodes) {
   EXPECT_EQ(visited_mutable_nodes.size(), 4u);
 }
 
-TEST_F(PageContentProtoUtilTest,
+TEST_F(PageContentProtoUtilTestWithWebContents,
        ConvertFormControlDataWithAutofillAnnotations) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-
-  std::unique_ptr<content::TestBrowserContext> browser_context =
-      std::make_unique<content::TestBrowserContext>();
-  content::WebContents::CreateParams create_params(browser_context.get());
-  std::unique_ptr<content::TestWebContents> web_contents(
-      content::TestWebContents::Create(create_params));
-  web_contents->NavigateAndCommit(GURL("https://example.com"));
-  auto* rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   ASSERT_TRUE(rfh);
-  auto main_frame_token = rfh->GetGlobalFrameToken();
 
   auto root_content = CreatePageContent();
   auto form_control_node =
@@ -2368,7 +2641,7 @@ TEST_F(PageContentProtoUtilTest,
       std::move(form_control_node));
 
   AIPageContentMap page_content_map;
-  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[main_frame_token_] = std::move(root_content);
 
   auto provider =
       std::make_unique<testing::NiceMock<MockAutofillAnnotationsProvider>>();
@@ -2377,13 +2650,13 @@ TEST_F(PageContentProtoUtilTest,
   metadata.coarse_field_type = proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD;
   EXPECT_CALL(*provider, GetAutofillFieldData)
       .WillOnce(testing::Return(metadata));
-  AutofillAnnotationsProvider::SetFor(web_contents.get(), std::move(provider));
+  AutofillAnnotationsProvider::SetFor(web_contents_.get(), std::move(provider));
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
-        if (token == main_frame_token.frame_token) {
+        if (token == main_frame_token_.frame_token) {
           RenderFrameInfo render_frame_info;
-          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.global_frame_token = main_frame_token_;
           render_frame_info.source_origin =
               url::Origin::Create(GURL("https://example.com"));
           render_frame_info.url = GURL("https://example.com");
@@ -2398,7 +2671,7 @@ TEST_F(PageContentProtoUtilTest,
   AIPageContentResult page_content;
   FrameTokenSet frame_token_set;
   EXPECT_TRUE(ConvertAIPageContentToProto(
-                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token_,
                   page_content_map, get_render_frame_info, frame_token_set,
                   page_content)
                   .has_value());
@@ -2414,16 +2687,9 @@ TEST_F(PageContentProtoUtilTest,
             proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD);
 }
 
-TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-
-  auto browser_context = std::make_unique<content::TestBrowserContext>();
-  content::WebContents::CreateParams create_params(browser_context.get());
-  std::unique_ptr<content::TestWebContents> web_contents(
-      content::TestWebContents::Create(create_params));
-  web_contents->NavigateAndCommit(GURL("https://example.com"));
-
-  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+TEST_F(PageContentProtoUtilTestWithWebContents,
+       CompromisedRendererIframeNotChild) {
+  content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
   content::RenderFrameHost* child_rfh1 =
       content::RenderFrameHostTester::For(main_rfh)->AppendChild("child1");
   child_rfh1 = content::NavigationSimulator::NavigateAndCommitFromDocument(
@@ -2433,7 +2699,6 @@ TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
   child_rfh2 = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://child2.com"), child_rfh2);
 
-  auto main_frame_token = main_rfh->GetGlobalFrameToken();
   // child1 and child2 must be RemoteFrameTokens from the perspective of the
   // frame that includes them to trigger cross-frame recursion.
   blink::RemoteFrameToken child1_remote_token(
@@ -2475,14 +2740,14 @@ TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
   root_content->root_node->children_nodes.back()
       ->content_attributes->iframe_data = std::move(main_iframe_data);
 
-  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[main_frame_token_] = std::move(root_content);
   page_content_map[child1_token] = std::move(child1_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int child_process_id,
           blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         content::RenderFrameHost* rfh = nullptr;
-        if (token == main_frame_token.frame_token) {
+        if (token == main_frame_token_.frame_token) {
           rfh = main_rfh;
         } else if (token == child1_remote_token) {
           rfh = child_rfh1;
@@ -2504,7 +2769,7 @@ TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
   FrameTokenSet frame_token_set;
   EXPECT_THAT(
       ConvertAIPageContentToProto(blink::mojom::AIPageContentOptions::New(),
-                                  main_frame_token, page_content_map,
+                                  main_frame_token_, page_content_map,
                                   get_render_frame_info, frame_token_set,
                                   page_content),
       base::test::ErrorIs(
@@ -2517,7 +2782,7 @@ struct AutofillRedactionFeatureState {
 };
 
 class PageContentProtoUtilAutofillRedactionTest
-    : public PageContentProtoUtilTest,
+    : public PageContentProtoUtilTestWithWebContents,
       public testing::WithParamInterface<AutofillRedactionFeatureState> {
  public:
   bool ShouldEnableCreditCardRedaction() const {
@@ -2563,17 +2828,8 @@ class PageContentProtoUtilAutofillRedactionTest
     base::test::ScopedFeatureList scoped_feature_list;
     InitializeFeatureList(scoped_feature_list);
 
-    content::RenderViewHostTestEnabler rvh_test_enabler;
-
-    auto browser_context = std::make_unique<content::TestBrowserContext>();
-    content::WebContents::CreateParams create_params(browser_context.get());
-    std::unique_ptr<content::TestWebContents> web_contents(
-        content::TestWebContents::Create(create_params));
-    web_contents->NavigateAndCommit(GURL("https://example.com"));
-    content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+    content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
     CHECK(rfh);
-    content::GlobalRenderFrameHostToken main_frame_token =
-        rfh->GetGlobalFrameToken();
 
     auto provider =
         std::make_unique<testing::NiceMock<MockAutofillAnnotationsProvider>>();
@@ -2581,7 +2837,7 @@ class PageContentProtoUtilAutofillRedactionTest
     metadata.redaction_reason = mock_redaction_reason;
     EXPECT_CALL(*provider, GetAutofillFieldData)
         .WillOnce(testing::Return(metadata));
-    AutofillAnnotationsProvider::SetFor(web_contents.get(),
+    AutofillAnnotationsProvider::SetFor(web_contents_.get(),
                                         std::move(provider));
 
     // Mirror production more closely by always requesting screenshot redaction
@@ -2608,7 +2864,7 @@ class PageContentProtoUtilAutofillRedactionTest
     AIPageContentResult page_content;
     EXPECT_TRUE(ConvertAIPageContentToProtoWithOptions(
                     root_content, page_content, std::move(options),
-                    GURL("https://example.com"), main_frame_token)
+                    GURL("https://example.com"), main_frame_token_)
                     .has_value());
     return page_content;
   }
@@ -2877,15 +3133,7 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
   base::test::ScopedFeatureList scoped_feature_list;
   InitializeFeatureList(scoped_feature_list);
 
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-  auto browser_context = std::make_unique<content::TestBrowserContext>();
-  content::WebContents::CreateParams create_params(browser_context.get());
-  std::unique_ptr<content::TestWebContents> web_contents(
-      content::TestWebContents::Create(create_params));
-  web_contents->NavigateAndCommit(GURL("https://example.com"));
-
-  auto* main_rfh = web_contents->GetPrimaryMainFrame();
-  auto main_frame_token = main_rfh->GetGlobalFrameToken();
+  content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
 
   // Create an orphan frame using a real subframe RFH.
   content::RenderFrameHost* subframe =
@@ -2900,7 +3148,7 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
   // We use dom_node_id 123 for the sensitive field in the orphan.
   EXPECT_CALL(*provider, GetAutofillFieldData(testing::_, 123, testing::_))
       .WillRepeatedly(testing::Return(metadata));
-  AutofillAnnotationsProvider::SetFor(web_contents.get(), std::move(provider));
+  AutofillAnnotationsProvider::SetFor(web_contents_.get(), std::move(provider));
 
   auto root_content = CreatePageContent();
   // root_content is empty (no children), simulating a compromised main frame
@@ -2922,14 +3170,14 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
       std::move(form_control_node));
 
   AIPageContentMap page_content_map;
-  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[main_frame_token_] = std::move(root_content);
   page_content_map[orphan_frame_token] = std::move(orphan_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         RenderFrameInfo render_frame_info;
-        if (token == main_frame_token.frame_token) {
-          render_frame_info.global_frame_token = main_frame_token;
+        if (token == main_frame_token_.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token_;
         } else if (token == orphan_frame_token.frame_token) {
           render_frame_info.global_frame_token = orphan_frame_token;
         } else {
@@ -2951,7 +3199,7 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
   AIPageContentResult result;
   FrameTokenSet frame_token_set;
   ASSERT_TRUE(ConvertAIPageContentToProto(
-                  std::move(options), main_frame_token, page_content_map,
+                  std::move(options), main_frame_token_, page_content_map,
                   get_render_frame_info, frame_token_set, result)
                   .has_value());
 
@@ -2969,15 +3217,7 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
   base::test::ScopedFeatureList scoped_feature_list;
   InitializeFeatureList(scoped_feature_list);
 
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-  auto browser_context = std::make_unique<content::TestBrowserContext>();
-  content::WebContents::CreateParams create_params(browser_context.get());
-  std::unique_ptr<content::TestWebContents> web_contents(
-      content::TestWebContents::Create(create_params));
-  web_contents->NavigateAndCommit(GURL("https://example.com"));
-
-  auto* main_rfh = web_contents->GetPrimaryMainFrame();
-  auto main_frame_token = main_rfh->GetGlobalFrameToken();
+  content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
 
   // Create an orphan frame using a real subframe RFH.
   content::RenderFrameHost* subframe =
@@ -3004,7 +3244,7 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
                                  nested_frame_token),
                              123, testing::_))
       .WillRepeatedly(testing::Return(metadata));
-  AutofillAnnotationsProvider::SetFor(web_contents.get(), std::move(provider));
+  AutofillAnnotationsProvider::SetFor(web_contents_.get(), std::move(provider));
 
   auto root_content = CreatePageContent();
   // root_content is empty (no children), simulating a compromised main frame.
@@ -3039,14 +3279,14 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
       std::move(iframe_node));
 
   AIPageContentMap page_content_map;
-  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[main_frame_token_] = std::move(root_content);
   page_content_map[orphan_frame_token] = std::move(orphan_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         RenderFrameInfo render_frame_info;
-        if (token.value() == main_frame_token.frame_token.value()) {
-          render_frame_info.global_frame_token = main_frame_token;
+        if (token.value() == main_frame_token_.frame_token.value()) {
+          render_frame_info.global_frame_token = main_frame_token_;
         } else if (token.value() == orphan_frame_token.frame_token.value()) {
           render_frame_info.global_frame_token = orphan_frame_token;
         } else if (token.value() == nested_frame_token.frame_token.value()) {
@@ -3070,7 +3310,7 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
   AIPageContentResult result;
   FrameTokenSet frame_token_set;
   ASSERT_TRUE(ConvertAIPageContentToProto(
-                  std::move(options), main_frame_token, page_content_map,
+                  std::move(options), main_frame_token_, page_content_map,
                   get_render_frame_info, frame_token_set, result)
                   .has_value());
 
