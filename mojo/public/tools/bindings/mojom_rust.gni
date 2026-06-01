@@ -23,8 +23,8 @@ template("mojom_rust") {
 
   base_name = target_name
 
-  # Depends on all the mojom dependencies' metadata targets. A generated_file rule will use this
-  # for GN metadata collection.
+  # Depends on all the mojom dependencies' metadata targets. A generated_file
+  # rule will use this for GN metadata collection.
   group("${base_name}_deps_meta") {
     deps = []
     foreach(d, all_deps) {
