@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_VERTICAL_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_VERTICAL_DATA_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -54,9 +55,8 @@ class PLATFORM_EXPORT OpenTypeVerticalData
   float AdvanceHeight(Glyph) const;
 
   void GetVerticalTranslationsForGlyphs(const SkFont&,
-                                        const Glyph*,
-                                        size_t,
-                                        float* out_xy_array) const;
+                                        base::span<const Glyph> glyphs,
+                                        base::span<float> out_xy_array) const;
 
  private:
   void LoadMetrics(sk_sp<SkTypeface>);

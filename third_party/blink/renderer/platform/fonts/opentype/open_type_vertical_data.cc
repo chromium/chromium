@@ -25,9 +25,11 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/zip.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
@@ -176,8 +178,13 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
     return;
   }
   advance_widths_.resize(count_hmtx_entries);
-  for (uint16_t i = 0; i < count_hmtx_entries; ++i)
-    advance_widths_[i] = UNSAFE_TODO(hmtx->entries[i].advance_width);
+  // SAFETY: ValidateTable confirms buffer holds count_hmtx_entries entries.
+  auto hmtx_entries =
+      UNSAFE_BUFFERS(base::span(hmtx->entries, count_hmtx_entries));
+  for (const auto&& [advance_width, hmtx_entry] :
+       base::zip(advance_widths_, hmtx_entries)) {
+    advance_width = hmtx_entry.advance_width;
+  }
 
   // Load vhea first. This table is required for fonts that support vertical
   // flow.
@@ -203,9 +210,11 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
       // Add one entry so that hasVORG() becomes true
       vert_origin_y_.Set(0, default_vert_origin_y_);
     } else {
-      for (uint16_t i = 0; i < count_vert_origin_y_metrics; ++i) {
-        const open_type::VORGTable::VertOriginYMetrics& metrics =
-            UNSAFE_TODO(vorg->vert_origin_y_metrics[i]);
+      // SAFETY: buffer.size() >= vorg->RequiredSize() confirms it holds
+      // count_vert_origin_y_metrics entries.
+      auto vorg_metrics = UNSAFE_BUFFERS(
+          base::span(vorg->vert_origin_y_metrics, count_vert_origin_y_metrics));
+      for (auto& metrics : vorg_metrics) {
         vert_origin_y_.Set(metrics.glyph_index, metrics.vert_origin_y);
       }
     }
@@ -213,6 +222,9 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
 
   // Load vmtx then. This table is required for fonts that support vertical
   // flow.
+  // fF a malicious font over-declares `count_vmtx_entries` beyond the actual
+  // file size, `ValidateTable` safely early-aborts (returns nullptr).
+  // Otherwise, `UNSAFE_BUFFERS` is safe from buffer overruns.
   CopyOpenTypeTable(typeface, open_type::kVmtxTag, buffer);
   const open_type::VmtxTable* vmtx =
       open_type::ValidateTable<open_type::VmtxTable>(buffer,
@@ -222,8 +234,13 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
     return;
   }
   advance_heights_.resize(count_vmtx_entries);
-  for (uint16_t i = 0; i < count_vmtx_entries; ++i)
-    advance_heights_[i] = UNSAFE_TODO(vmtx->entries[i].advance_height);
+  // SAFETY: ValidateTable confirms buffer holds count_vmtx_entries entries.
+  auto vmtx_entries =
+      UNSAFE_BUFFERS(base::span(vmtx->entries, count_vmtx_entries));
+  for (const auto&& [advance_height, vmtx_entry] :
+       base::zip(advance_heights_, vmtx_entries)) {
+    advance_height = vmtx_entry.advance_height;
+  }
 
   // VORG is preferred way to calculate vertical origin than vmtx,
   // so load topSideBearing from vmtx only if VORG is missing.
@@ -236,20 +253,28 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
     DLOG(ERROR) << "vmtx has incorrect tsb count";
     return;
   }
-  wtf_size_t count_top_side_bearings =
-      count_vmtx_entries + size_extra / sizeof(open_type::Int16);
+  wtf_size_t count_tsb_extra = size_extra / sizeof(open_type::Int16);
+  wtf_size_t count_top_side_bearings = count_vmtx_entries + count_tsb_extra;
   top_side_bearings_.resize(count_top_side_bearings);
-  wtf_size_t i;
-  for (i = 0; i < count_vmtx_entries; ++i) {
-    top_side_bearings_[i] = UNSAFE_TODO(vmtx->entries[i].top_side_bearing);
+  for (const auto&& [top_side_bearing, vmtx_entry] :
+       base::zip(top_side_bearings_, vmtx_entries)) {
+    top_side_bearing = vmtx_entry.top_side_bearing;
   }
-  if (i < count_top_side_bearings) {
-    const open_type::Int16* p_top_side_bearings_extra =
-        reinterpret_cast<const open_type::Int16*>(
-            UNSAFE_TODO(&vmtx->entries[count_vmtx_entries]));
-    for (; i < count_top_side_bearings;
-         ++i, UNSAFE_TODO(++p_top_side_bearings_extra)) {
-      top_side_bearings_[i] = *p_top_side_bearings_extra;
+  if (count_tsb_extra > 0) {
+    // SAFETY: The `vmtx` table has `count_vmtx_entries` of `Entry`, followed
+    // by `count_tsb_extra` of `Int16`. `size_extra` calculation and check
+    // above ensure that the buffer is large enough to contain `count_tsb_extra`
+    // entries of `Int16` after `vmtx_entries`. If a malicious font has
+    // incorrectly declared `count_vmtx_entries` then we will return early in
+    // the `vmtx` table load step.
+    auto tsb_extra = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const open_type::Int16*>(vmtx_entries.data() +
+                                                  vmtx_entries.size()),
+        count_tsb_extra));
+    auto tsb_targets =
+        base::span(top_side_bearings_).subspan(count_vmtx_entries);
+    for (const auto&& [tsb_target, tsb] : base::zip(tsb_targets, tsb_extra)) {
+      tsb_target = tsb;
     }
   }
 }
@@ -277,21 +302,24 @@ float OpenTypeVerticalData::AdvanceHeight(Glyph glyph) const {
 
 void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
     const SkFont& font,
-    const Glyph* glyphs,
-    size_t count,
-    float* out_xy_array) const {
+    base::span<const Glyph> glyphs,
+    base::span<float> out_xy_array) const {
   wtf_size_t count_widths = advance_widths_.size();
   DCHECK_GT(count_widths, 0u);
   bool use_vorg = HasVORG();
   wtf_size_t count_top_side_bearings = top_side_bearings_.size();
   float default_vert_origin_y = std::numeric_limits<float>::quiet_NaN();
-  for (float* end = UNSAFE_TODO(&(out_xy_array[count * 2]));
-       out_xy_array != end; UNSAFE_TODO(++glyphs, out_xy_array += 2)) {
-    Glyph glyph = *glyphs;
+
+  const size_t count = glyphs.size();
+  CHECK_EQ(out_xy_array.size(), count * 2);
+
+  for (size_t i = 0; i < count; i += 2) {
+    Glyph glyph = glyphs[0];
+    glyphs = glyphs.subspan(1u);
     uint16_t width_f_unit =
         advance_widths_[glyph < count_widths ? glyph : count_widths - 1];
     float width = width_f_unit * size_per_unit_;
-    out_xy_array[0] = -width / 2;
+    out_xy_array[i] = -width / 2;
 
     // For Y, try VORG first.
     if (use_vorg) {
@@ -299,13 +327,14 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
         auto it = vert_origin_y_.find(glyph);
         if (it != vert_origin_y_.end()) {
           int16_t vert_origin_yf_unit = it->value;
-          UNSAFE_TODO(out_xy_array[1]) = -vert_origin_yf_unit * size_per_unit_;
+          out_xy_array[i + 1] = -vert_origin_yf_unit * size_per_unit_;
           continue;
         }
       }
-      if (std::isnan(default_vert_origin_y))
+      if (std::isnan(default_vert_origin_y)) {
         default_vert_origin_y = -default_vert_origin_y_ * size_per_unit_;
-      UNSAFE_TODO(out_xy_array[1]) = default_vert_origin_y;
+      }
+      out_xy_array[i + 1] = default_vert_origin_y;
       continue;
     }
 
@@ -319,12 +348,12 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
 
       SkRect bounds;
       SkFontGetBoundsForGlyph(font, glyph, &bounds);
-      UNSAFE_TODO(out_xy_array[1]) = bounds.y() - top_side_bearing;
+      out_xy_array[i + 1] = bounds.y() - top_side_bearing;
       continue;
     }
 
     // No vertical info in the font file; use ascent as vertical origin.
-    UNSAFE_TODO(out_xy_array[1]) = -ascent_fallback_;
+    out_xy_array[i + 1] = -ascent_fallback_;
   }
 }
 

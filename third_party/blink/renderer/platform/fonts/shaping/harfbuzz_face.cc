@@ -38,6 +38,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -290,8 +291,8 @@ static hb_bool_t HarfBuzzGetGlyphVerticalOrigin(hb_font_t* hb_font,
 
   float result[] = {0, 0};
   Glyph the_glyph = glyph;
-  vertical_data->GetVerticalTranslationsForGlyphs(hb_font_data->font_,
-                                                  &the_glyph, 1, result);
+  vertical_data->GetVerticalTranslationsForGlyphs(
+      hb_font_data->font_, base::span_from_ref(the_glyph), result);
   *x = SkiaScalarToHarfBuzzPosition(-result[0]);
   *y = SkiaScalarToHarfBuzzPosition(-result[1]);
   return true;
