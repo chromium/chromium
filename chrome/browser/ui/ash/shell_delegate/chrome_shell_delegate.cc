@@ -345,9 +345,12 @@ bool ChromeShellDelegate::IsSessionRestoreInProgress() const {
 
 void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
     const ash::WindowState& window_state) {
-  bool locked = window_state.IsPinned();
+  const bool locked = window_state.IsPinned();
   // Reset the clipboard and kill dev tools when entering or exiting locked
   // fullscreen (security concerns).
+  if (locked) {
+    ash::ClipboardImageModelFactory::Get()->CancelAllRequests();
+  }
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   content::DevToolsAgentHost::DetachAllClients();
 

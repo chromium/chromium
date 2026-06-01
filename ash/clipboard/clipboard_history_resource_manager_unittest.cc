@@ -48,6 +48,7 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
                ImageModelCallback),
               (override));
   MOCK_METHOD(void, CancelRequest, (const base::UnguessableToken&), (override));
+  MOCK_METHOD(void, CancelAllRequests, (), (override));
   MOCK_METHOD(void, Activate, (), (override));
   MOCK_METHOD(void, Deactivate, (), (override));
   MOCK_METHOD(void, RenderCurrentPendingRequests, (), (override));

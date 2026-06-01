@@ -43,6 +43,9 @@ class ASH_PUBLIC_EXPORT ClipboardImageModelFactory {
   // Called to stop rendering which was requested with |id|.
   virtual void CancelRequest(const base::UnguessableToken& id) = 0;
 
+  // Called to cancel all pending and running requests.
+  virtual void CancelAllRequests() = 0;
+
   // Until Activate() is called, ClipboardImageModelFactory is in an inactive
   // state and all rendering requests will be queued until activated.
   virtual void Activate() = 0;

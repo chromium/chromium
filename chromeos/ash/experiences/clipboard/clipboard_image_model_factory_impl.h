@@ -32,6 +32,7 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
               const gfx::Size& bounding_box_size,
               ImageModelCallback callback) override;
   void CancelRequest(const base::UnguessableToken& id) override;
+  void CancelAllRequests() override;
   void Activate() override;
   void Deactivate() override;
   void RenderCurrentPendingRequests() override;

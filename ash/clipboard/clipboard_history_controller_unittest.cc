@@ -122,6 +122,8 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
 
   void CancelRequest(const base::UnguessableToken& request_id) override {}
 
+  void CancelAllRequests() override {}
+
   void Activate() override {}
 
   void Deactivate() override {}

@@ -85,14 +85,19 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "tab_scrubber_browsertest.cc" ]
+  sources = [
+    "chrome_shell_delegate_browsertest.cc",
+    "tab_scrubber_browsertest.cc",
+  ]
 
   deps = [
     ":shell_delegate",
     "//ash",
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/test:test_support_ui",
     "//components/exo",
@@ -101,6 +106,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//ui/aura",
+    "//ui/base/clipboard",
     "//ui/events:gesture_detection",
     "//ui/events:test_support",
     "//ui/wm",

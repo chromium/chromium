@@ -45,6 +45,16 @@ void ClipboardImageModelFactoryImpl::CancelRequest(
   pending_list_.erase(iter);
 }
 
+void ClipboardImageModelFactoryImpl::CancelAllRequests() {
+  pending_list_.clear();
+  if (request_ && request_->IsRunningRequest()) {
+    request_->Stop(
+        ClipboardImageModelRequest::RequestStopReason::kRequestCanceled);
+  }
+  request_.reset();
+  active_until_empty_ = false;
+}
+
 void ClipboardImageModelFactoryImpl::Activate() {
   active_ = true;
   StartNextRequest();
