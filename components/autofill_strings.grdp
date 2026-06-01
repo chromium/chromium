@@ -180,14 +180,14 @@
   </message>
 
   <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_TITLE" desc="Title of the prompt asking user to verify their email.">
-    Allow <ph name="DOMAIN">$1<ex>example.com</ex></ph> to verify this email automatically?
+    Verify this email automatically?
   </message>
   <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_BODY" desc="Body of the prompt asking user to verify their email. $1 is the issuer domain (e.g., gmail.com) and $2 is the email address.">
     While you're signed in, <ph name="DOMAIN">$1<ex>example.com</ex></ph> can confirm <ph name="EMAIL">$2<ex>foo@example.com</ex></ph> on supported sites so you don't have to check your inbox
   </message>
 
-  <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_ALLOW" desc="Label for the allow button in the email verification prompt.">
-    Allow
+  <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_VERIFY" desc="Label for the allow button in the email verification prompt.">
+    Verify
   </message>
   <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_NOT_NOW" desc="Label for the not now button in the email verification prompt.">
     Not now

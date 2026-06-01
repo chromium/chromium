@@ -111,8 +111,8 @@ EmailVerificationPopupView::EmailVerificationPopupView(
 
   headline->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_TITLE, issuer_site_string))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_TITLE))
           .SetTextStyle(views::style::TextStyle::STYLE_BODY_3_MEDIUM)
           .SetAccessibleRole(ax::mojom::Role::kHeading)
           .Build());
@@ -161,7 +161,7 @@ EmailVerificationPopupView::EmailVerificationPopupView(
   auto* allow_button = controls->AddChildView(
       views::Builder<views::MdTextButton>()
           .SetText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_ALLOW))
+              IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_VERIFY))
           .SetStyle(ui::ButtonStyle::kProminent)
           .SetCallback(base::BindRepeating(
               &EmailVerificationPopupView::OnConfirm, base::Unretained(this)))
