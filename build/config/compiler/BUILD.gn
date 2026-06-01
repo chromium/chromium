@@ -524,11 +524,6 @@ config("compiler") {
     # linker_driver.py script runs dsymutil itself, which is set to be the
     # linker for Rust targets as well.
     rustflags += [ "-Csplit-debuginfo=unpacked" ]
-
-    # TODO(crbug.com/517327185): Code should not rely on whether this is
-    # enabled or not.
-    cflags_objc = [ "-fobjc-constant-literals" ]
-    cflags_objcc = [ "-fobjc-constant-literals" ]
   }
 
   # Linux/Android/Fuchsia common flags setup.
@@ -2032,10 +2027,6 @@ config("default_clippy_lints") {
     # Lints disabled during the initial rollout period (when any objection
     # coming from a Chromium engineer would get a lint disabled):
     "-Aclippy::needless_return",
-
-    # TODO(crbug.com/514692100): Fix or otherwise handle these.
-    "-Aclippy::manual-filter",
-    "-Aclippy::useless-borrows-in-formatting",
   ]
 }
 

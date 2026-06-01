@@ -648,12 +648,6 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO(crbug.com/510018269): Remove once
-    # https://github.com/rust-lang/compiler-builtins/pull/1213 rolls into
-    # rust-lang/rust/. In the meantime, this cherry-picks that commit directly.
-    GitCherryPick(RUST_SRC_DIR, 'c68a95901e7f0cc3006570230fe8d1f98f2d4469',
-                  'https://github.com/zmodem/rust.git')
-
     print('Finished applying cherry-picks.')
 
 
