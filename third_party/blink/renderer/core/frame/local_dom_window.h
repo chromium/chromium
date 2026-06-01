@@ -530,6 +530,31 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // document.
   bool ConsumeDisplayCaptureRequestToken();
 
+  // Returns the state of the |digital_credentials_create_token_| in this
+  // document.
+  bool IsDigitalCredentialsCreateTokenActive() const;
+
+  // Consumes the |digital_credentials_create_token_| if it was active in this
+  // document.
+  bool ConsumeDigitalCredentialsCreateToken();
+
+  // Activates the |digital_credentials_create_token_| for testing.
+  void ActivateDigitalCredentialsCreateTokenForTesting() {
+    digital_credentials_create_token_.Activate();
+  }
+
+  // Returns the state of the |digital_credentials_get_token_| in this document.
+  bool IsDigitalCredentialsGetTokenActive() const;
+
+  // Consumes the |digital_credentials_get_token_| if it was active in this
+  // document.
+  bool ConsumeDigitalCredentialsGetToken();
+
+  // Activates the |digital_credentials_get_token_| for testing.
+  void ActivateDigitalCredentialsGetTokenForTesting() {
+    digital_credentials_get_token_.Activate();
+  }
+
   // Called when a network request buffered an additional `num_bytes` while this
   // frame is in back-forward cache.
   void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
@@ -638,6 +663,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   DelegatedCapabilityRequestToken payment_request_token_;
   DelegatedCapabilityRequestToken fullscreen_request_token_;
   DelegatedCapabilityRequestToken display_capture_request_token_;
+  DelegatedCapabilityRequestToken digital_credentials_create_token_;
+  DelegatedCapabilityRequestToken digital_credentials_get_token_;
 
   // https://dom.spec.whatwg.org/#window-current-event
   // We represent the "undefined" value as nullptr.

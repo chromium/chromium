@@ -6600,6 +6600,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5899" label="GeolocationAccuracyModeApproximate"/>
   <int value="5900" label="SVGAnimVal"/>
   <int value="5901" label="SubtleCryptoGetPublicKey"/>
+  <int value="5902" label="CapabilityDelegationOfDigitalCredentialsCreate"/>
+  <int value="5903" label="CapabilityDelegationOfDigitalCredentialsGet"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

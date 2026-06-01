@@ -12604,6 +12604,8 @@ from previous Chrome versions.
       label="ReadAnythingReadAloudAutomaticWordHighlighting:enabled"/>
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
   <int value="-525988723" label="AndroidCaretBrowsing:disabled"/>
+  <int value="-524927652"
+      label="CapabilityDelegationDigitalCredentials:enabled"/>
   <int value="-524878465" label="RobustWindowManagementExperimental:enabled"/>
   <int value="-524278467" label="GlicTabRestoration:enabled"/>
   <int value="-523224129" label="PwaRestoreUi:disabled"/>
@@ -18433,6 +18435,8 @@ from previous Chrome versions.
   <int value="1385846825" label="TabHoverCardImageSettings:disabled"/>
   <int value="1386300777"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
+  <int value="1386897318"
+      label="CapabilityDelegationDigitalCredentials:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
   <int value="1387497264" label="AutofillEnableLocalIban:enabled"/>
   <int value="1387796442"

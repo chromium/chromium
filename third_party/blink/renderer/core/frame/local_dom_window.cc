@@ -1382,6 +1382,20 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     // TODO(crbug.com/1412770): Add use counter.
     display_capture_request_token_.Activate();
   }
+  if (RuntimeEnabledFeatures::CapabilityDelegationDigitalCredentialsEnabled(
+          this)) {
+    if (event->delegatedCapability() ==
+        mojom::blink::DelegatedCapability::kDigitalCredentialsCreate) {
+      UseCounter::Count(
+          this, WebFeature::kCapabilityDelegationOfDigitalCredentialsCreate);
+      digital_credentials_create_token_.Activate();
+    } else if (event->delegatedCapability() ==
+               mojom::blink::DelegatedCapability::kDigitalCredentialsGet) {
+      UseCounter::Count(
+          this, WebFeature::kCapabilityDelegationOfDigitalCredentialsGet);
+      digital_credentials_get_token_.Activate();
+    }
+  }
 
   event->SetShouldMeasureDataAccessBeforeOrigin();
 
@@ -2587,6 +2601,22 @@ bool LocalDOMWindow::IsFullscreenRequestTokenActive() const {
 
 bool LocalDOMWindow::ConsumeFullscreenRequestToken() {
   return fullscreen_request_token_.ConsumeIfActive();
+}
+
+bool LocalDOMWindow::IsDigitalCredentialsCreateTokenActive() const {
+  return digital_credentials_create_token_.IsActive();
+}
+
+bool LocalDOMWindow::ConsumeDigitalCredentialsCreateToken() {
+  return digital_credentials_create_token_.ConsumeIfActive();
+}
+
+bool LocalDOMWindow::IsDigitalCredentialsGetTokenActive() const {
+  return digital_credentials_get_token_.IsActive();
+}
+
+bool LocalDOMWindow::ConsumeDigitalCredentialsGetToken() {
+  return digital_credentials_get_token_.ConsumeIfActive();
 }
 
 bool LocalDOMWindow::IsDisplayCaptureRequestTokenActive() const {

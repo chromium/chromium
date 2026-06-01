@@ -1055,6 +1055,12 @@
       status: "stable",
     },
     {
+      // Enables capability delegation for the Digital Credentials API (both
+      // create and get requests).
+      // https://crbug.com/512747131
+      name: "CapabilityDelegationDigitalCredentials",
+    },
+    {
       name: "CapabilityDelegationDisplayCaptureRequest",
       status: "experimental",
     },

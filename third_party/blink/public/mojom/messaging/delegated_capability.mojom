@@ -10,4 +10,6 @@ enum DelegatedCapability {
     kPaymentRequest,
     kFullscreenRequest,
     kDisplayCaptureRequest,
+    kDigitalCredentialsCreate,
+    kDigitalCredentialsGet,
 };

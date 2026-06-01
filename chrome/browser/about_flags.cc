@@ -5496,6 +5496,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsAppTitleName,
      flag_descriptions::kDesktopPWAsAppTitleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableAppTitle)},
+    {"capability-delegation-digital-credentials",
+     flag_descriptions::kCapabilityDelegationDigitalCredentialsName,
+     flag_descriptions::kCapabilityDelegationDigitalCredentialsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kCapabilityDelegationDigitalCredentials)},
     {"tab-strip-declutter", flag_descriptions::kTabStripDeclutterName,
      flag_descriptions::kTabStripDeclutterDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabStripDeclutter)},

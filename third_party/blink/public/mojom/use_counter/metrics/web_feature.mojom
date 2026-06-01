@@ -5216,6 +5216,8 @@ enum WebFeature {
   kGeolocationAccuracyModeApproximate = 5899,
   kSVGAnimVal = 5900,
   kSubtleCryptoGetPublicKey = 5901,
+  kCapabilityDelegationOfDigitalCredentialsCreate = 5902,
+  kCapabilityDelegationOfDigitalCredentialsGet = 5903,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

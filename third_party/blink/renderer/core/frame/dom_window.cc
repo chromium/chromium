@@ -1069,6 +1069,16 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
     } else if (capability_list.Contains("display-capture")) {
       delegated_capability =
           mojom::blink::DelegatedCapability::kDisplayCaptureRequest;
+    } else if (RuntimeEnabledFeatures::
+                   CapabilityDelegationDigitalCredentialsEnabled(source) &&
+               capability_list.Contains("digital-credentials-create")) {
+      delegated_capability =
+          mojom::blink::DelegatedCapability::kDigitalCredentialsCreate;
+    } else if (RuntimeEnabledFeatures::
+                   CapabilityDelegationDigitalCredentialsEnabled(source) &&
+               capability_list.Contains("digital-credentials-get")) {
+      delegated_capability =
+          mojom::blink::DelegatedCapability::kDigitalCredentialsGet;
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,

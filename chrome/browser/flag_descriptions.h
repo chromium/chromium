@@ -86,6 +86,13 @@ inline constexpr char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 inline constexpr char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";
 
+inline constexpr char kCapabilityDelegationDigitalCredentialsName[] =
+    "Capability Delegation for Digital Credentials";
+inline constexpr char kCapabilityDelegationDigitalCredentialsDescription[] =
+    "Allows a web page to delegate the capability of requesting digital "
+    "credentials (via both create and get requests of the Digital Credentials "
+    "API) to trusted cross-origin iframes.";
+
 inline constexpr char kCaptureHandleForStandalonePwasAndIwasName[] =
     "Capture Handle for Standalone PWAs and IWAs";
 inline constexpr char kCaptureHandleForStandalonePwasAndIwasDescription[] =
