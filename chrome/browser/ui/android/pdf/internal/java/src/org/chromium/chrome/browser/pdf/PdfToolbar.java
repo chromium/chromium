@@ -11,16 +11,44 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Toolbar for the PDF viewer. To handle clicks on the navigation icon, set a listener with {@link
  * #setNavigationOnClickListener(OnClickListener)}.
  */
 @NullMarked
-public class PdfToolbar extends Toolbar {
+public class PdfToolbar extends Toolbar implements View.OnLayoutChangeListener {
+    private static final float THRESHOLD_DOWNLOAD_DP = 800f;
+    private static final float THRESHOLD_ROTATE_DP = 750f;
+    private static final float THRESHOLD_FIT_DP = 700f;
+    private static final float THRESHOLD_ZOOM_DP = 650f;
+    private static final float THRESHOLD_NAV_EDIT_DP = 600f;
+    private @Nullable View mDownloadButton;
+    private @Nullable View mRotateButton;
+    private @Nullable View mFitToPageButton;
+    private @Nullable List<View> mZoomControls;
+    private @Nullable List<View> mPageNav;
+    private @Nullable View mEditButton;
+
+    private @Nullable View mPageZoomDivider;
+    private @Nullable View mZoomFitDivider;
+    private @Nullable View mRotateEditDivider;
+
+    private @Nullable ConstraintLayout mConstraintLayout;
+    private @Nullable View mCenterGroup;
+    private @Nullable View mEndGroup;
+    private @Nullable View mTitle;
+
+    private @Nullable Boolean mIsTitleConstrainedToCenter;
+
     public PdfToolbar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -30,6 +58,138 @@ public class PdfToolbar extends Toolbar {
         super.onFinishInflate();
         EditText currentPage = findViewById(R.id.current_page);
         currentPage.setFocusableInTouchMode(true);
+
+        mDownloadButton = findViewById(R.id.download_button);
+        mRotateButton = findViewById(R.id.rotate_button);
+        mFitToPageButton = findViewById(R.id.fit_to_page_button);
+
+        mZoomControls =
+                Arrays.asList(
+                        findViewById(R.id.zoom_decrease_button),
+                        findViewById(R.id.zoom_value),
+                        findViewById(R.id.zoom_increase_button));
+
+        mPageNav =
+                Arrays.asList(
+                        currentPage,
+                        findViewById(R.id.page_count_divider),
+                        findViewById(R.id.page_count));
+
+        mEditButton = findViewById(R.id.edit_button);
+
+        mPageZoomDivider = findViewById(R.id.page_zoom_divider);
+        mZoomFitDivider = findViewById(R.id.zoom_fit_divider);
+        mRotateEditDivider = findViewById(R.id.rotate_edit_divider);
+
+        mConstraintLayout = findViewById(R.id.pdf_toolbar_layout);
+        mCenterGroup = findViewById(R.id.pdf_toolbar_group_center);
+        mEndGroup = findViewById(R.id.pdf_toolbar_group_end);
+        mTitle = findViewById(R.id.pdf_title);
+
+        addOnLayoutChangeListener(this);
+    }
+
+    @Override
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
+        int width = right - left;
+        if (width != (oldRight - oldLeft)) {
+            adjustChildVisibilities(width);
+        }
+    }
+
+    private void adjustChildVisibilities(int widthPx) {
+        float density = getResources().getDisplayMetrics().density;
+        float widthDp = widthPx / density;
+
+        // 1. Download button
+        setViewVisibility(mDownloadButton, widthDp > THRESHOLD_DOWNLOAD_DP);
+
+        // 2. Rotate button
+        setViewVisibility(mRotateButton, widthDp > THRESHOLD_ROTATE_DP);
+
+        // 3. Fit to page button
+        setViewVisibility(mFitToPageButton, widthDp > THRESHOLD_FIT_DP);
+
+        // 4. Zoom controls
+        boolean showZoom = widthDp > THRESHOLD_ZOOM_DP;
+        setViewsVisibility(mZoomControls, showZoom);
+
+        // 5. Page nav and edit button
+        boolean showNavEdit = widthDp > THRESHOLD_NAV_EDIT_DP;
+        setViewsVisibility(mPageNav, showNavEdit);
+        setViewVisibility(mEditButton, showNavEdit);
+
+        // Hide center group if everything in it is hidden
+        setViewVisibility(mCenterGroup, showNavEdit);
+
+        // Dividers
+        setViewVisibility(mPageZoomDivider, showNavEdit && showZoom);
+        setViewVisibility(mZoomFitDivider, showZoom && (widthDp > THRESHOLD_FIT_DP));
+        setViewVisibility(mRotateEditDivider, (widthDp > THRESHOLD_ROTATE_DP) && showNavEdit);
+
+        // Adjust title constraints
+        if (mConstraintLayout != null
+                && mTitle != null
+                && mCenterGroup != null
+                && mEndGroup != null) {
+            if (mIsTitleConstrainedToCenter == null || mIsTitleConstrainedToCenter != showNavEdit) {
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(mConstraintLayout);
+                if (showNavEdit) {
+                    constraintSet.connect(
+                            R.id.pdf_title,
+                            ConstraintSet.END,
+                            R.id.pdf_toolbar_group_center,
+                            ConstraintSet.START,
+                            0);
+                } else {
+                    constraintSet.connect(
+                            R.id.pdf_title,
+                            ConstraintSet.END,
+                            R.id.pdf_toolbar_group_end,
+                            ConstraintSet.START,
+                            0);
+                }
+                constraintSet.applyTo(mConstraintLayout);
+                mIsTitleConstrainedToCenter = showNavEdit;
+            }
+        }
+    }
+
+    public boolean isDownloadButtonVisible() {
+        return mDownloadButton != null && mDownloadButton.getVisibility() == View.VISIBLE;
+    }
+
+    public boolean isRotateButtonVisible() {
+        return mRotateButton != null && mRotateButton.getVisibility() == View.VISIBLE;
+    }
+
+    public boolean isFitToPageButtonVisible() {
+        return mFitToPageButton != null && mFitToPageButton.getVisibility() == View.VISIBLE;
+    }
+
+    private void setViewVisibility(@Nullable View view, boolean visible) {
+        if (view == null) return;
+        int targetVisibility = visible ? View.VISIBLE : View.GONE;
+        if (view.getVisibility() != targetVisibility) {
+            view.setVisibility(targetVisibility);
+        }
+    }
+
+    private void setViewsVisibility(@Nullable List<View> views, boolean visible) {
+        if (views == null) return;
+        for (View view : views) {
+            setViewVisibility(view, visible);
+        }
     }
 
     @Override

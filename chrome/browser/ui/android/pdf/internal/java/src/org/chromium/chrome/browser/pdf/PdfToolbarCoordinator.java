@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pdf;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.ListView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,6 +37,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                     0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f,
                     2.0f, 2.5f, 3.0f, 4.0f, 5.0f);
     private @Nullable AnchoredPopupWindow mMenuWindow;
+    private @Nullable PdfToolbar mToolbar;
 
     public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
@@ -46,6 +48,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             toolbar = (PdfToolbar) stub.inflate();
         }
         toolbar.setVisibility(View.VISIBLE);
+        mToolbar = toolbar;
 
         // TODO(crbug.com/507061296): Remove hardcoded values after the PDF is loaded.
         mModel =
@@ -78,6 +81,10 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
             mDelegate.toggleFitToPage(showFitToHeight, currentPageNumber - 1);
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, !showFitToHeight);
+        } else if (actionId == R.id.download_button) {
+            mDelegate.download();
+        } else if (actionId == R.id.rotate_button) {
+            mDelegate.rotate();
         } else if (actionId == R.id.more_menu_button) {
             showMenu(view);
         }
@@ -94,6 +101,53 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
 
     private void showMenu(View anchorView) {
         ModelList modelList = new ModelList();
+
+        if (mToolbar != null) {
+            if (!mToolbar.isDownloadButtonVisible()) {
+                modelList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.pdf_download)
+                                .withClickListener(
+                                        v -> {
+                                            mDelegate.download();
+                                            dismissMenu();
+                                        })
+                                .build());
+            }
+            if (!mToolbar.isRotateButtonVisible()) {
+                modelList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.pdf_rotate)
+                                .withClickListener(
+                                        v -> {
+                                            mDelegate.rotate();
+                                            dismissMenu();
+                                        })
+                                .build());
+            }
+            if (!mToolbar.isFitToPageButtonVisible()) {
+                boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
+                int fitTitleRes =
+                        showFitToHeight ? R.string.pdf_fit_height : R.string.pdf_fit_width;
+                modelList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(fitTitleRes)
+                                .withClickListener(
+                                        v -> {
+                                            int currentPageNumber =
+                                                    mModel.get(
+                                                            PdfToolbarProperties
+                                                                    .CURRENT_PAGE_NUMBER);
+                                            mDelegate.toggleFitToPage(
+                                                    showFitToHeight, currentPageNumber - 1);
+                                            mModel.set(
+                                                    PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON,
+                                                    !showFitToHeight);
+                                            dismissMenu();
+                                        })
+                                .build());
+            }
+        }
 
         // Two-page view / Single page view item
         boolean isTwoPageActive = mModel.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE);
@@ -131,6 +185,12 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(
                         anchorView.getContext(), modelList, delegate);
+        ListView listView = listMenu.getListView();
+        if (listView != null) {
+            listView.setItemsCanFocus(false);
+            listView.setFocusable(false);
+            listView.setFocusableInTouchMode(false);
+        }
 
         View contentView = listMenu.getContentView();
         int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
@@ -223,5 +283,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     public void destroy() {
         mPropertyModelChangeProcessor.destroy();
         dismissMenu();
+        mToolbar = null;
     }
 }

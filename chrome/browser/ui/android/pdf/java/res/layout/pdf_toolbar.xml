@@ -18,13 +18,16 @@ found in the LICENSE file.
     android:background="@drawable/toolbar_no_divider">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pdf_toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/pdf_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="300dp"
+            app:layout_constrainedWidth="true"
             android:maxLines="1"
             android:ellipsize="end"
             android:paddingEnd="12dp"

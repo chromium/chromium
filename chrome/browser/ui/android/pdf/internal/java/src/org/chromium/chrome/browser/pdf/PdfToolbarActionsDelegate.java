@@ -41,4 +41,10 @@ public interface PdfToolbarActionsDelegate {
      *     position when toggling between one and two pages per row.
      */
     void toggleTwoPagesPerRow(boolean twoPagesPerRowEnabled, float zoomLevel, int currentPageIndex);
+
+    /** Downloads the PDF document. */
+    void download();
+
+    /** Rotates the PDF document. */
+    void rotate();
 }

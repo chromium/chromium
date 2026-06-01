@@ -4884,6 +4884,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PDF_DOCUMENT_PROPERTIES" desc="Menu option to view PDF document properties.">
         Document properties
       </message>
+      <message name="IDS_PDF_DOWNLOAD" desc="Menu option to download the PDF document.">
+        Download
+      </message>
+      <message name="IDS_PDF_ROTATE" desc="Menu option to rotate the PDF document.">
+        Rotate
+      </message>
+      <message name="IDS_PDF_FIT_HEIGHT" desc="Menu option to fit the PDF page height to the screen.">
+        Fit to height
+      </message>
+      <message name="IDS_PDF_FIT_WIDTH" desc="Menu option to fit the PDF page width to the screen.">
+        Fit to width
+      </message>
 
       <!-- Accessibility -->
 

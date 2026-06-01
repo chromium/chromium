@@ -817,4 +817,14 @@ public class PdfCoordinator
         mChromePdfViewerFragment.zoomTo(zoomLevel);
         mChromePdfViewerFragment.scrollToPage(currentPageIndex);
     }
+
+    @Override
+    public void download() {
+        // TODO(crbug.com/501138999): Implement download action
+    }
+
+    @Override
+    public void rotate() {
+        // TODO(crbug.com/501138999): Implement rotate action
+    }
 }

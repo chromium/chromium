@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
@@ -264,5 +265,97 @@ public class PdfToolbarCoordinatorUnitTest {
         itemView.performClick();
         verify(mDelegate).toggleTwoPagesPerRow(false, 1.0f, 98);
         verify(mSpyPopupWindow).dismiss();
+    }
+
+    @Test
+    public void testAdaptiveHiding() {
+        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
+        org.junit.Assert.assertNotNull("Toolbar should not be null", toolbar);
+
+        View downloadButton = mPdfPageView.findViewById(R.id.download_button);
+        View rotateButton = mPdfPageView.findViewById(R.id.rotate_button);
+        View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View currentPage = mPdfPageView.findViewById(R.id.current_page);
+        View editButton = mPdfPageView.findViewById(R.id.edit_button);
+        View title = mPdfPageView.findViewById(R.id.pdf_title);
+
+        float density = mActivity.getResources().getDisplayMetrics().density;
+
+        // State 1: Wide screen (e.g. 900dp) -> All should be visible
+        int widthPx = (int) (900 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+
+        assertEquals(View.VISIBLE, downloadButton.getVisibility());
+        assertEquals(View.VISIBLE, rotateButton.getVisibility());
+        assertEquals(View.VISIBLE, fitToPageButton.getVisibility());
+        assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
+        assertEquals(View.VISIBLE, currentPage.getVisibility());
+        assertEquals(View.VISIBLE, editButton.getVisibility());
+
+        // Verify title is constrained to center group
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) title.getLayoutParams();
+        assertEquals(R.id.pdf_toolbar_group_center, layoutParams.endToStart);
+
+        // State 2: Narrower (e.g. 780dp) -> Download should be GONE, others VISIBLE
+        widthPx = (int) (780 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+        assertEquals(View.VISIBLE, rotateButton.getVisibility());
+        assertEquals(View.VISIBLE, fitToPageButton.getVisibility());
+        assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
+        assertEquals(View.VISIBLE, currentPage.getVisibility());
+        assertEquals(View.VISIBLE, editButton.getVisibility());
+
+        // State 3: Narrower (e.g. 720dp) -> Download and Rotate GONE
+        widthPx = (int) (720 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+        assertEquals(View.GONE, rotateButton.getVisibility());
+        assertEquals(View.VISIBLE, fitToPageButton.getVisibility());
+        assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
+        assertEquals(View.VISIBLE, currentPage.getVisibility());
+        assertEquals(View.VISIBLE, editButton.getVisibility());
+
+        // State 4: Narrower (e.g. 680dp) -> Download, Rotate, Fit GONE
+        widthPx = (int) (680 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+        assertEquals(View.GONE, rotateButton.getVisibility());
+        assertEquals(View.GONE, fitToPageButton.getVisibility());
+        assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
+        assertEquals(View.VISIBLE, currentPage.getVisibility());
+        assertEquals(View.VISIBLE, editButton.getVisibility());
+
+        // State 5: Narrower (e.g. 620dp) -> Download, Rotate, Fit, Zoom GONE
+        widthPx = (int) (620 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+        assertEquals(View.GONE, rotateButton.getVisibility());
+        assertEquals(View.GONE, fitToPageButton.getVisibility());
+        assertEquals(View.GONE, zoomDecreaseButton.getVisibility());
+        assertEquals(View.VISIBLE, currentPage.getVisibility());
+        assertEquals(View.VISIBLE, editButton.getVisibility());
+
+        // State 6: Most narrow (e.g. 550dp) -> All center gone, only print/menu/title remain
+        widthPx = (int) (550 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+        assertEquals(View.GONE, rotateButton.getVisibility());
+        assertEquals(View.GONE, fitToPageButton.getVisibility());
+        assertEquals(View.GONE, zoomDecreaseButton.getVisibility());
+        assertEquals(View.GONE, currentPage.getVisibility());
+        assertEquals(View.GONE, editButton.getVisibility());
+
+        // Print and More menu should still be visible
+        View printButton = mPdfPageView.findViewById(R.id.print_button);
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        assertEquals(View.VISIBLE, printButton.getVisibility());
+        assertEquals(View.VISIBLE, moreMenuButton.getVisibility());
+
+        // Verify title is now constrained to end group
+        layoutParams = (ConstraintLayout.LayoutParams) title.getLayoutParams();
+        assertEquals(R.id.pdf_toolbar_group_end, layoutParams.endToStart);
     }
 }
