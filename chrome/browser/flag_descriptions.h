@@ -8434,6 +8434,12 @@ inline constexpr char kAndroidEntraSsoDescription[] =
     "Enables native support for Entra SSO on Android provided by selected "
     "Authentication Brokers.";
 
+inline constexpr char kEnableDlpFileSystemApiName[] =
+    "Enable DLP upload scans for FileSystem API.";
+inline constexpr char kEnableDlpFileSystemApiDescription[] =
+    "Enable DLP upload scan support for FileSystem API-backed cloud storage on "
+    "ChromeOS.";
+
 // ============================================================================
 // Don't just add flags to the end, put them in the alphabetical order.
 // ============================================================================

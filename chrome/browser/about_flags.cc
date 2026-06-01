@@ -39,6 +39,7 @@
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -5123,6 +5124,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"jupiter-screensaver", flag_descriptions::kJupiterScreensaverName,
      flag_descriptions::kJupiterScreensaverDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kJupiterScreensaver)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {
         "disable-accelerated-video-decode",
@@ -10157,8 +10159,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     "kAIRewriterAPI"),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
-    {"proofreader-api",
-     flag_descriptions::kProofreaderAPIName,
+    {"proofreader-api", flag_descriptions::kProofreaderAPIName,
      flag_descriptions::kProofreaderAPIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kAIProofreaderChoices),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
@@ -13034,12 +13035,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCentralizedInfoBarFrameworkDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(infobars::kCentralizedInfoBarFramework)},
 
-
     {"autofill-ai-wallet-pass-branding-2026",
      flag_descriptions::kAutofillAiWalletPassBranding2026Name,
      flag_descriptions::kAutofillAiWalletPassBranding2026Description, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAiWalletPassBranding2026)},
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWalletPassBranding2026)},
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-dlp-file-system-api",
+     flag_descriptions::kEnableDlpFileSystemApiName,
+     flag_descriptions::kEnableDlpFileSystemApiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(enterprise_data_protection::kEnableDlpFileSystemApi)},
+#endif
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
