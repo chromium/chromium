@@ -87,6 +87,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 @interface BubblePresenter () <GestureInProductHelpViewDelegate,
                                OverlayPresenterObserving>
 
+// Returns whether the guide is in the bottom half of the root view.
+- (BOOL)isGuideAtBottom:(GuideName*)guideName;
+
 @end
 
 @implementation BubblePresenter {
@@ -464,11 +467,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
-                         GetApplicationContext()->GetLocalState()->GetBoolean(
-                             omnibox::kIsOmniboxInBottomPosition);
   BubbleArrowDirection arrowDirection =
-      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+      [self isGuideAtBottom:kLensOverlayEntrypointGuide]
+          ? BubbleArrowDirectionDown
+          : BubbleArrowDirectionUp;
   NSString* text = l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT);
 
   CGPoint lensOverlayEntrypointAnchor =
@@ -607,7 +609,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (UIAccessibilityIsVoiceOverRunning() ||
       (![self.delegate isOverscrollActionsSupportedForBubblePresenter:self]) ||
       (![self canPresentBubble])) {
-    // TODO(crbug.com/41494458): Add voice over announcement once fixed.
     return;
   }
   const base::Feature& pullToRefreshFeature =
@@ -635,7 +636,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
   const base::Feature& backForwardSwipeFeature =
       feature_engagement::kIPHiOSSwipeBackForwardFeature;
-
   if (!_engagementTracker->WouldTriggerHelpUI(backForwardSwipeFeature)) {
     return;
   }
@@ -796,11 +796,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
-                         GetApplicationContext()->GetLocalState()->GetBoolean(
-                             omnibox::kIsOmniboxInBottomPosition);
   BubbleArrowDirection arrowDirection =
-      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+      [self isGuideAtBottom:kPageActionMenuEntrypointGuide]
+          ? BubbleArrowDirectionDown
+          : BubbleArrowDirectionUp;
   NSString* text = l10n_util::GetNSString(IDS_IOS_BWG_IPH_TEXT);
 
   CGPoint pageActionMenuEntrypointAnchor =
@@ -845,11 +844,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
-                         GetApplicationContext()->GetLocalState()->GetBoolean(
-                             omnibox::kIsOmniboxInBottomPosition);
   BubbleArrowDirection arrowDirection =
-      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+      [self isGuideAtBottom:kReaderModeOptionsEntrypointGuide]
+          ? BubbleArrowDirectionDown
+          : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_IPH_DESCRIPTION);
 
@@ -883,11 +881,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
-                         GetApplicationContext()->GetLocalState()->GetBoolean(
-                             prefs::kBottomOmnibox);
   BubbleArrowDirection arrowDirection =
-      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+      [self isGuideAtBottom:kPageActionMenuEntrypointGuide]
+          ? BubbleArrowDirectionDown
+          : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH);
 
@@ -1101,6 +1098,18 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 #pragma mark - Private Utils
+
+// Returns whether the guide is in the bottom half of the root view.
+- (BOOL)isGuideAtBottom:(GuideName*)guideName {
+  CGRect frameInWindow = [self anchorViewFrameForGuide:guideName];
+  if (CGRectIsEmpty(frameInWindow)) {
+    return NO;
+  }
+  CGRect frameInView = [self.rootViewController.view convertRect:frameInWindow
+                                                        fromView:nil];
+  CGFloat viewHeight = self.rootViewController.view.bounds.size.height;
+  return frameInView.origin.y > viewHeight / 2;
+}
 
 // Returns the anchor point for a bubble with an `arrowDirection` pointing to a
 // `guideName`. The point is in the window coordinates.

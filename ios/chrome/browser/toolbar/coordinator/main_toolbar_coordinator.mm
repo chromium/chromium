@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -1326,6 +1327,8 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   toolbarMediator.incognito = isIncognito;
   toolbarMediator.navigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(browser);
+  toolbarMediator.tabBasedIPHAgent =
+      TabBasedIPHBrowserAgent::FromBrowser(browser);
   if (IsFullscreenRefactoringEnabled()) {
     toolbarMediator.fullscreenCommands =
         HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);

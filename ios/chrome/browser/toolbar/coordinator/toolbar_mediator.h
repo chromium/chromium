@@ -25,6 +25,7 @@ namespace web {
 class WebState;
 }  // namespace web
 class WebStateList;
+class TabBasedIPHBrowserAgent;
 
 class AuthenticationService;
 @protocol BWGCommands;
@@ -39,6 +40,9 @@ class GeminiService;
 
 // Helper for web navigation.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
+
+// Helper for tab-based IPH.
+@property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHAgent;
 
 // Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;

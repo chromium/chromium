@@ -1866,4 +1866,44 @@ int watchRunNumber = 0;
   return nil;
 }
 
++ (UIView*)viewWithAccessibilityID:(NSString*)accessibilityID
+                           inViews:(NSArray<UIView*>*)views {
+  for (UIView* view in views) {
+    if ([view.accessibilityIdentifier isEqualToString:accessibilityID]) {
+      return view;
+    }
+    UIView* subview = [self viewWithAccessibilityID:accessibilityID
+                                            inViews:view.subviews];
+    if (subview) {
+      return subview;
+    }
+  }
+  return nil;
+}
+
++ (UIView*)viewWithAccessibilityID:(NSString*)accessibilityID {
+  NSMutableArray<UIWindow*>* windows = [[NSMutableArray alloc] init];
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    [windows addObjectsFromArray:windowScene.windows];
+  }
+  return [self viewWithAccessibilityID:accessibilityID inViews:windows];
+}
+
++ (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID {
+  UIView* view = [self viewWithAccessibilityID:accessibilityID];
+  if (!view) {
+    return NO;
+  }
+  UIView* current = view;
+  while (current) {
+    if (current.layer.animationKeys.count > 0) {
+      return YES;
+    }
+    current = current.superview;
+  }
+  return NO;
+}
+
 @end

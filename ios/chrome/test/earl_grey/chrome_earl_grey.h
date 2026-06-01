@@ -840,6 +840,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether Chrome Next is enabled.
 - (BOOL)isChromeNextEnabled;
 
+// Returns YES if the view with `accessibilityID` or any of its ancestors is
+// animating.
+- (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;
+
+// Waits for the view with `accessibilityID` to stop animating within `timeout`.
+- (void)waitForViewToStopAnimatingWithAccessibilityID:(NSString*)accessibilityID
+                                              timeout:(base::TimeDelta)timeout;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

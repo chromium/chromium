@@ -10,6 +10,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -247,11 +248,17 @@
   if (self.navigationBrowserAgent) {
     self.navigationBrowserAgent->GoBack();
   }
+  if (self.tabBasedIPHAgent) {
+    self.tabBasedIPHAgent->NotifyBackForwardButtonTap();
+  }
 }
 
 - (void)goForward {
   if (self.navigationBrowserAgent) {
     self.navigationBrowserAgent->GoForward();
+  }
+  if (self.tabBasedIPHAgent) {
+    self.tabBasedIPHAgent->NotifyBackForwardButtonTap();
   }
 }
 

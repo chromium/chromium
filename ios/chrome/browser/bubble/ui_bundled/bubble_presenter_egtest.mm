@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -28,6 +29,7 @@ namespace {
 
 using ::chrome_test_util::BackButton;
 using ::chrome_test_util::ForwardButton;
+using ::chrome_test_util::PrimaryToolbar;
 using ::chrome_test_util::SecondaryToolbar;
 
 // Open split screen. Should only be invoked for iPad.
@@ -99,9 +101,6 @@ void ReloadFromOmnibox() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
-
   // Enable lens overlay flag to test the IPH.
   if ([self
           isRunningTest:@selector
@@ -109,6 +108,10 @@ void ReloadFromOmnibox() {
     config.features_enabled.push_back(kGeminiKillSwitch);
     config.features_disabled.push_back(kPageActionMenu);
     config.iph_feature_enabled = "IPH_iOSLensOverlayEntrypointTip";
+    config.features_enabled_and_params.push_back(
+        {kChromeNextIa, {{"chrome_next_ia_lens_icon_visible", "true"}}});
+  } else {
+    config.features_enabled.push_back(kChromeNextIa);
   }
 
   return config;
@@ -169,7 +172,13 @@ void ReloadFromOmnibox() {
       @"Pull to refresh IPH did not appear after reloading from context menu.",
       ^{
         // Side swipe on the toolbar.
-        [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
+        id<GREYMatcher> toolbarMatcher = SecondaryToolbar();
+        if ([ChromeEarlGrey isChromeNextEnabled] &&
+            ![ChromeEarlGrey
+                localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition]) {
+          toolbarMatcher = PrimaryToolbar();
+        }
+        [[EarlGrey selectElementWithMatcher:toolbarMatcher]
             performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
       });
   AssertGestureIPHInvisible(
@@ -266,6 +275,12 @@ void ReloadFromOmnibox() {
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   AssertGestureIPHVisibleWithDismissAction(
       @"Swipe back/forward IPH did not appear after tapping back button.", ^{
+        [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ForwardButton()
+                                                    timeout:base::Seconds(2)];
+        [ChromeEarlGrey
+            waitForViewToStopAnimatingWithAccessibilityID:
+                kToolbarForwardButtonIdentifier
+                                                  timeout:base::Seconds(2)];
         [[EarlGrey selectElementWithMatcher:ForwardButton()]
             performAction:grey_tap()];
       });
@@ -426,6 +441,8 @@ void ReloadFromOmnibox() {
   }
   [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
                 safariSwitcher:NO];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -460,6 +477,8 @@ void ReloadFromOmnibox() {
   }
   [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
                 safariSwitcher:NO];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -497,6 +516,8 @@ void ReloadFromOmnibox() {
   }
   [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
                 safariSwitcher:NO];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -549,6 +570,8 @@ void ReloadFromOmnibox() {
   }
   [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
                 safariSwitcher:NO];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -584,6 +607,8 @@ void ReloadFromOmnibox() {
   }
   [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
                 safariSwitcher:NO];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");

@@ -821,6 +821,10 @@ enum class TipsNotificationType;
 // Waits for the MessagingBackendService to be initialized.
 + (NSError*)waitForMessagingBackendServiceInitialized;
 
+// Returns YES if the view with `accessibilityID` or any of its ancestors is
+// animating.
++ (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_
