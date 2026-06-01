@@ -566,9 +566,6 @@ public class StatusMediator
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             tintRes = mNavigationIconTintRes;
             iconRes = R.drawable.search_spark_black_24dp;
-            // TODO(crbug.com/497047954): remove the click listener when Fusebox reparenting is
-            // done.
-            clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
         } else if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT
