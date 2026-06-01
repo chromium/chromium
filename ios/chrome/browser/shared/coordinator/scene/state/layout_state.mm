@@ -167,10 +167,6 @@ UIInterfaceOrientation GetTargetInterfaceOrientation(
     return AppBarPosition::kNone;
   }
 
-  if (!IsCompactHeight(view.traitCollection)) {
-    return AppBarPosition::kBottom;
-  }
-
   UIInterfaceOrientation orientation =
       scene.effectiveGeometry.interfaceOrientation;
 
