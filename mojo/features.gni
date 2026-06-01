@@ -11,11 +11,9 @@ declare_args() {
       is_mac || (is_ios && use_blink && target_platform == "iphoneos")
 
   # Builds non-ipcz-based Mojo Core. No longer supported anywhere but Chrome OS.
-  # We check target_os instead of is_chromeos since this also needs to be set
-  # when building NaCl binaries (is_nacl) for Chrome OS.
   #
   # When this is true, ipcz-based Mojo Core can be disabled by disabling the
   # MojoIpcz feature flag; and it's disabled by default on Chrome OS. When this
   # is false, ipcz-based Mojo Core is used unconditionally.
-  mojo_support_legacy_core = target_os == "chromeos"
+  mojo_support_legacy_core = is_chromeos
 }
