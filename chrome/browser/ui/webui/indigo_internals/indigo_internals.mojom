@@ -28,6 +28,12 @@ struct RemoteEligibility {
   bool has_user_image;
 };
 
+// Represents a loaded prompt in Indigo's database.
+struct IndigoPrompt {
+  string key;
+  string prompt;
+};
+
 // Consolidates all eligibility signals for the Indigo feature.
 struct CombinedEligibility {
   LocalEligibility local_eligibility;
@@ -35,6 +41,14 @@ struct CombinedEligibility {
   bool can_generate_image;
   bool ready_to_onboard;
   bool has_onboarded_pref;
+};
+
+// Information about Indigo/Glic integration prompts.
+struct GlicPromptInfo {
+  bool integration_enabled;
+  string current_key;
+  string override_prompt;
+  array<IndigoPrompt> loaded_prompts;
 };
 
 // Interface for creating a PageHandler. This is the entry point for the
@@ -61,6 +75,9 @@ interface PageHandler {
 
   // Fetches the optimization guide status (see above).
   GetOptimizationGuideStatus() => (OptimizationGuideStatus status);
+
+  // Fetches all loaded prompts and configuration information for Glic.
+  GetGlicPromptInfo() => (GlicPromptInfo info);
 };
 
 // Interface for the browser process to push updates to the WebUI.

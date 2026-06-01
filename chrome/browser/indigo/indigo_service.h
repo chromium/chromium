@@ -116,6 +116,11 @@ class IndigoService : public KeyedService,
   // Returns the prompt for the given key if available.
   std::optional<std::string> GetPrompt(const std::string& key) const;
 
+  // Returns the map of all loaded prompts.
+  const base::flat_map<std::string, std::string>& GetLoadedPrompts() const {
+    return prompts_;
+  }
+
   // KeyedService:
   void Shutdown() override;
 

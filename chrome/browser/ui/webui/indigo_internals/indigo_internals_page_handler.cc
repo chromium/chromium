@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals_page_handler.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 
@@ -116,6 +118,27 @@ void IndigoInternalsPageHandler::GetCombinedEligibility(
 void IndigoInternalsPageHandler::GetOptimizationGuideStatus(
     GetOptimizationGuideStatusCallback callback) {
   std::move(callback).Run(GetCurrentOptimizationGuideStatus(profile_));
+}
+
+void IndigoInternalsPageHandler::GetGlicPromptInfo(
+    GetGlicPromptInfoCallback callback) {
+  auto info = indigo_internals::mojom::GlicPromptInfo::New();
+  info->integration_enabled =
+      base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
+  info->current_key = features::kIndigoGlicPromptKey.Get();
+  info->override_prompt = features::kIndigoGlicPrompt.Get();
+
+  indigo::IndigoService* service =
+      indigo::IndigoServiceFactory::GetForProfile(profile_);
+  if (service) {
+    for (const auto& [key, prompt] : service->GetLoadedPrompts()) {
+      auto mojo_prompt = indigo_internals::mojom::IndigoPrompt::New();
+      mojo_prompt->key = key;
+      mojo_prompt->prompt = prompt;
+      info->loaded_prompts.push_back(std::move(mojo_prompt));
+    }
+  }
+  std::move(callback).Run(std::move(info));
 }
 
 void IndigoInternalsPageHandler::OnUrlKeyedDataCollectionConsentStateChanged(

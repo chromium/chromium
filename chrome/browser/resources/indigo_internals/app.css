@@ -142,6 +142,66 @@
   color: var(--google-grey-700);
 }
 
+.monospace-value {
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.status-item.prompt-item {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.prompt-item .status-label {
+  margin-bottom: 5px;
+}
+
+.prompt-value {
+  font-family: monospace;
+  white-space: pre-wrap;
+  font-size: 12px;
+  align-self: stretch;
+  background: var(--cr-card-background-color);
+  padding: 8px;
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 4px;
+  display: block;
+}
+
+.prompts-table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.prompts-table th {
+  padding: 8px;
+  font-weight: bold;
+  text-align: left;
+  border-bottom: 2px solid var(--cr-separator-color);
+}
+
+.prompts-table td {
+  vertical-align: top;
+}
+
+.prompts-table .key-cell {
+  width: 15%;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.prompts-table .prompt-cell {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.prompts-table .empty-cell {
+  padding: 12px;
+  text-align: center;
+  color: var(--cr-secondary-text-color);
+}
 @media (prefers-color-scheme: dark) {
   .header {
     background-color: var(--google-blue-900);

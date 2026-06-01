@@ -10,7 +10,7 @@ import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {browserProxyFactory} from './indigo_internals.mojom-webui.js';
-import type {CombinedEligibility} from './indigo_internals.mojom-webui.js';
+import type {CombinedEligibility, GlicPromptInfo, IndigoPrompt} from './indigo_internals.mojom-webui.js';
 import {LocalEligibility, OptimizationGuideStatus} from './indigo_internals.mojom-webui.js';
 
 export class IndigoInternalsAppElement extends CrLitElement {
@@ -32,6 +32,10 @@ export class IndigoInternalsAppElement extends CrLitElement {
       optimizationGuideStatus_: {type: Number},
       combinedEligibility_: {type: Object},
       lastUpdated_: {type: String},
+      loadedPrompts_: {type: Array},
+      currentPromptKey_: {type: String},
+      overridePrompt_: {type: String},
+      integrationEnabled_: {type: Boolean},
     };
   }
 
@@ -40,6 +44,10 @@ export class IndigoInternalsAppElement extends CrLitElement {
       null;
   protected accessor combinedEligibility_: CombinedEligibility|null = null;
   protected accessor lastUpdated_: string = '';
+  protected accessor loadedPrompts_: IndigoPrompt[] = [];
+  protected accessor currentPromptKey_: string = '';
+  protected accessor overridePrompt_: string = '';
+  protected accessor integrationEnabled_: boolean = false;
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
@@ -55,6 +63,12 @@ export class IndigoInternalsAppElement extends CrLitElement {
         ({status}: {status: OptimizationGuideStatus}) => {
           this.optimizationGuideStatus_ = status;
         });
+    proxy.handler.getGlicPromptInfo().then(({info}: {info: GlicPromptInfo}) => {
+      this.integrationEnabled_ = info.integrationEnabled;
+      this.currentPromptKey_ = info.currentKey;
+      this.overridePrompt_ = info.overridePrompt;
+      this.loadedPrompts_ = info.loadedPrompts;
+    });
 
     this.listenerIds_ = [
       proxy.callbackRouter.onLocalEligibilityChanged.addListener(
@@ -155,6 +169,14 @@ export class IndigoInternalsAppElement extends CrLitElement {
       default:
         assertNotReachedCase(this.optimizationGuideStatus_);
     }
+  }
+
+  protected getIntegrationStatusText_(): string {
+    return this.integrationEnabled_ ? 'Enabled' : 'Disabled';
+  }
+
+  protected getIntegrationStatusClass_(): string {
+    return this.integrationEnabled_ ? 'status-eligible' : 'status-ineligible';
   }
 
   protected async onFetchCombinedClick_() {

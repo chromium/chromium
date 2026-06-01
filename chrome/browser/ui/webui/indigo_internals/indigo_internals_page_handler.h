@@ -36,6 +36,7 @@ class IndigoInternalsPageHandler
   void GetCombinedEligibility(GetCombinedEligibilityCallback callback) override;
   void GetOptimizationGuideStatus(
       GetOptimizationGuideStatusCallback callback) override;
+  void GetGlicPromptInfo(GetGlicPromptInfoCallback callback) override;
 
  private:
   void OnLocalEligibilityChanged(indigo::LocalEligibility status);
