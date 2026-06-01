@@ -133,6 +133,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   Action SanitizeSingleNode(Node* node, Mode safe) const;
   bool ShouldReplaceNodeWithChildren(Node* node) const;
   void ProcessElement(Element* element, Mode safe) const;
+  bool AllowIsAttribute(const QualifiedName& element_name) const;
 
   // Helper for Create: Convert from IDL representation to internal.
   bool setFrom(const SanitizerConfig*, bool allowCommentsAndDataAttributes);
@@ -150,6 +151,9 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   void SanitizeJavascriptNavigationAttributes(Element* element,
                                               Mode safe) const;
   void SanitizeTemplate(Node* node, Mode safe) const;
+  bool KeepAttribute(const SanitizerNameSet* allow_per_element,
+                     const SanitizerNameSet* remove_per_element,
+                     const QualifiedName& attribute) const;
 
   // Helpers for get(): Convert from internal to IDL representation.
   QualifiedName getFrom(const String& name, const String& namespaceURI) const;
@@ -199,6 +203,14 @@ class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
   bool ShouldReplaceWithChildren(Node* node) const {
     return sanitizer_->ShouldReplaceNodeWithChildren(node);
   }
+
+  // Special treaming for parser-processed HTML feature:
+  // This determines whether an is= attribute would be allowed on this
+  // element QName. The parser wants to know this before creating the element.
+  bool AllowIsAttribute(const QualifiedName& element_name) const {
+    return sanitizer_->AllowIsAttribute(element_name);
+  }
+
   void DidParseDocument(Document* document);
   void Trace(Visitor* visitor) const { visitor->Trace(sanitizer_); }
 

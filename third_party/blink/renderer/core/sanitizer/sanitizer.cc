@@ -769,6 +769,27 @@ bool Sanitizer::RemoveProcessingInstruction(const AtomicString& target) {
   }
 }
 
+bool Sanitizer::KeepAttribute(const SanitizerNameSet* allow_per_element,
+                              const SanitizerNameSet* remove_per_element,
+                              const QualifiedName& attribute) const {
+  bool keep = false;
+  if (remove_per_element && remove_per_element->Contains(attribute)) {
+    keep = false;
+  } else if (allow_attrs_ && allow_attrs_->Contains(attribute)) {
+    keep = true;
+  } else if (allow_per_element && allow_per_element->Contains(attribute)) {
+    keep = true;
+  } else if (remove_attrs_ && remove_attrs_->Contains(attribute)) {
+    keep = false;
+  } else if (allow_attrs_ && attribute.NamespaceURI().IsNull() &&
+             attribute.LocalName().starts_with("data-")) {
+    keep = data_attrs_ == SanitizerBoolWithAbsence::kTrue;
+  } else {
+    keep = !allow_attrs_ && !allow_per_element;
+  }
+  return keep;
+}
+
 void Sanitizer::SanitizeElement(Element* element, Mode safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core, Step 1.5.8 + 1.5.9.1-4
   //
@@ -789,21 +810,7 @@ void Sanitizer::SanitizeElement(Element* element, Mode safe) const {
           ? nullptr
           : &remove_per_element_iter->value;
   for (const QualifiedName& name : element->getAttributeQualifiedNames()) {
-    bool keep = false;
-    if (remove_per_element && remove_per_element->Contains(name)) {
-      keep = false;
-    } else if (allow_attrs_ && allow_attrs_->Contains(name)) {
-      keep = true;
-    } else if (allow_per_element && allow_per_element->Contains(name)) {
-      keep = true;
-    } else if (remove_attrs_ && remove_attrs_->Contains(name)) {
-      keep = false;
-    } else if (allow_attrs_ && name.NamespaceURI().IsNull() &&
-               name.LocalName().starts_with("data-")) {
-      keep = data_attrs_ == SanitizerBoolWithAbsence::kTrue;
-    } else {
-      keep = !allow_attrs_ && !allow_per_element;
-    }
+    bool keep = KeepAttribute(allow_per_element, remove_per_element, name);
     if (!keep) {
       element->removeAttribute(name);
     }
@@ -1408,6 +1415,23 @@ bool Sanitizer::isValid() const {
   }
 
   return true;
+}
+
+bool Sanitizer::AllowIsAttribute(const QualifiedName& element_name) const {
+  const auto allow_per_element_iter =
+      allow_attrs_per_element_.find(element_name);
+  const SanitizerNameSet* allow_per_element =
+      (allow_per_element_iter == allow_attrs_per_element_.end())
+          ? nullptr
+          : &allow_per_element_iter->value;
+  const auto remove_per_element_iter =
+      remove_attrs_per_element_.find(element_name);
+  const SanitizerNameSet* remove_per_element =
+      (remove_per_element_iter == remove_attrs_per_element_.end())
+          ? nullptr
+          : &remove_per_element_iter->value;
+  return KeepAttribute(allow_per_element, remove_per_element,
+                       html_names::kIsAttr);
 }
 
 void StreamingSanitizer::DidParseDocument(Document* document) {
