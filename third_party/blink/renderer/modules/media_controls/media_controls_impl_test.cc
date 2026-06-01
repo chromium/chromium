@@ -175,7 +175,7 @@ class MediaControlsImplTest
     SetupPageWithClients(MakeGarbageCollected<FakeChromeClient>(),
                          MakeGarbageCollected<StubLocalFrameClientForImpl>());
 
-    GetDocument().write("<video controls>");
+    GetDocument().write("<video controls></video>");
     auto& video = To<HTMLVideoElement>(
         *GetDocument().QuerySelector(AtomicString("video")));
     media_controls_ = static_cast<MediaControlsImpl*>(video.GetMediaControls());

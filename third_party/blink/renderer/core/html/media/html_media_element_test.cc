@@ -33,6 +33,8 @@
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
+#include "third_party/blink/renderer/core/html/track/text_track.h"
+#include "third_party/blink/renderer/core/html/track/text_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -518,6 +520,28 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
   void ClearMediaPlayer() { Media()->ClearMediaPlayer(); }
+
+  bool TextTracksAreReady() const { return Media()->TextTracksAreReady(); }
+
+  bool PendingTextTracksContains(const TextTrack* track) const {
+    return Media()->text_tracks_when_resource_selection_began_.Contains(track);
+  }
+
+  size_t PendingTextTracksCount(const TextTrack* track) const {
+    size_t count = 0;
+    for (const auto& t : Media()->text_tracks_when_resource_selection_began_) {
+      if (t == track) {
+        ++count;
+      }
+    }
+    return count;
+  }
+
+  void AddPendingTextTracksFromCurrentList() {
+    Media()->AddPendingTextTracksFromCurrentList();
+  }
+
+  void FinishParsingChildren() { Media()->FinishParsingChildren(); }
 
   void SetPreviousProgressTime() {
     Media()->previous_progress_time_ = base::ElapsedTimer();
@@ -1212,6 +1236,132 @@ TEST_P(HTMLMediaElementTest, SetTrackStateFromDemuxer) {
   test::RunPendingTasks();
   EXPECT_FALSE(video_track->selected());
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
+// Builds a non-loadable text track in the given mode/readiness, appends it to
+// the media element, and marks it configured so AutomaticTrackSelection
+// leaves its mode alone.
+namespace {
+TextTrack* AppendConfiguredTextTrack(HTMLMediaElement* media,
+                                     TextTrackMode mode,
+                                     TextTrack::ReadinessState readiness) {
+  auto* track = MakeGarbageCollected<TextTrack>(
+      V8TextTrackKind(V8TextTrackKind::Enum::kCaptions), g_empty_atom,
+      g_empty_atom, *media);
+  track->SetReadinessState(readiness);
+  media->textTracks()->Append(track);
+  track->SetModeEnum(mode);
+  track->SetHasBeenConfigured(true);
+  return track;
+}
+}  // namespace
+
+// LoadInternal populates the pending-text-track snapshot with non-disabled,
+// still-loading tracks.
+TEST_P(HTMLMediaElementTest, TextTrackSnapshotPopulatedByLoadInternal) {
+  TextTrack* track = AppendConfiguredTextTrack(Media(), TextTrackMode::kHidden,
+                                               TextTrack::kLoading);
+
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(PendingTextTracksContains(track));
+  EXPECT_FALSE(TextTracksAreReady());
+
+  // The ready-state gate lifts once the track finishes loading.
+  track->SetReadinessState(TextTrack::kLoaded);
+  EXPECT_TRUE(TextTracksAreReady());
+}
+
+// Disabled tracks are skipped by the snapshot.
+TEST_P(HTMLMediaElementTest, TextTrackSnapshotSkipsDisabledTracks) {
+  TextTrack* track = AppendConfiguredTextTrack(
+      Media(), TextTrackMode::kDisabled, TextTrack::kLoading);
+
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(PendingTextTracksContains(track));
+  EXPECT_TRUE(TextTracksAreReady());
+}
+
+// Tracks already loaded (or failed to load) are skipped by the snapshot.
+TEST_P(HTMLMediaElementTest, TextTrackSnapshotSkipsAlreadyLoadedTracks) {
+  TextTrack* track = AppendConfiguredTextTrack(Media(), TextTrackMode::kHidden,
+                                               TextTrack::kLoaded);
+
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(PendingTextTracksContains(track));
+  EXPECT_TRUE(TextTracksAreReady());
+}
+
+// While the blocked-on-parser flag is set, TextTracksAreReady() must return
+// false even when the pending list is empty.
+TEST_P(HTMLMediaElementTest, TextTracksAreReadyFalseWhileBlockedOnParser) {
+  ASSERT_TRUE(TextTracksAreReady());
+
+  Media()->BeginParsingChildren();
+  EXPECT_FALSE(TextTracksAreReady());
+
+  FinishParsingChildren();
+  EXPECT_TRUE(TextTracksAreReady());
+}
+
+// On parser pop, FinishParsingChildren must populate the pending text tracks
+// list, so a default <track> that was just promoted gates ReadyState until it
+// finishes loading.
+TEST_P(HTMLMediaElementTest, FinishParsingChildrenPopulatesPendingTracks) {
+  Media()->BeginParsingChildren();
+  TextTrack* track = AppendConfiguredTextTrack(Media(), TextTrackMode::kHidden,
+                                               TextTrack::kLoading);
+  ASSERT_FALSE(PendingTextTracksContains(track));
+  ASSERT_FALSE(TextTracksAreReady());
+
+  FinishParsingChildren();
+
+  EXPECT_TRUE(PendingTextTracksContains(track));
+  EXPECT_FALSE(TextTracksAreReady());
+}
+
+// Repeated AddPendingTextTracksFromCurrentList calls do not duplicate entries.
+TEST_P(HTMLMediaElementTest, AddPendingTextTracksFromCurrentListIsIdempotent) {
+  TextTrack* track = AppendConfiguredTextTrack(Media(), TextTrackMode::kHidden,
+                                               TextTrack::kLoading);
+
+  AddPendingTextTracksFromCurrentList();
+  AddPendingTextTracksFromCurrentList();
+  AddPendingTextTracksFromCurrentList();
+
+  EXPECT_EQ(1u, PendingTextTracksCount(track));
+  EXPECT_FALSE(TextTracksAreReady());
+}
+
+// Each resource selection cycle clears the snapshot, so a previously-captured
+// track that is no longer eligible (e.g. now disabled) is not retained.
+TEST_P(HTMLMediaElementTest,
+       ResourceSelectionAlgorithmClearsTextTrackSnapshot) {
+  TextTrack* track = AppendConfiguredTextTrack(Media(), TextTrackMode::kHidden,
+                                               TextTrack::kLoading);
+
+  // First load cycle captures the track.
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_TRUE(PendingTextTracksContains(track));
+  EXPECT_FALSE(TextTracksAreReady());
+
+  // Disable the track and start a new load cycle. The clear runs synchronously
+  // from load(); avoid pumping tasks so we don't create a second player.
+  track->SetModeEnum(TextTrackMode::kDisabled);
+  Media()->load();
+  EXPECT_FALSE(PendingTextTracksContains(track));
+  EXPECT_TRUE(TextTracksAreReady());
+
+  // The later populate step must also skip the now-disabled track.
+  AddPendingTextTracksFromCurrentList();
+  EXPECT_FALSE(PendingTextTracksContains(track));
+  EXPECT_TRUE(TextTracksAreReady());
 }
 
 // Ensure a visibility observer is created for lazy loading.

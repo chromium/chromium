@@ -314,6 +314,11 @@ class CORE_EXPORT HTMLMediaElement
 
   void HonorUserPreferencesForAutomaticTextTrackSelection();
 
+  // Implements the "populate the list of pending text tracks" step of the
+  // resource selection algorithm. Idempotently adds non-disabled,
+  // still-loading tracks to the snapshot used by TextTracksAreReady().
+  void AddPendingTextTracksFromCurrentList();
+
   bool TextTracksAreReady() const;
   void ConfigureTextTrackDisplay();
   void UpdateTextTrackDisplay();

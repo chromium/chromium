@@ -849,8 +849,16 @@ void HTMLMediaElement::CloneNonAttributePropertiesFrom(const Element& other,
 void HTMLMediaElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
 
-  if (Traversal<HTMLTrackElement>::FirstChild(*this))
-    ScheduleTextTrackResourceLoad();
+  // When the blocked-on-parser flag is cleared, honor user preferences for
+  // automatic text track selection and populate the list of pending text tracks
+  HonorUserPreferencesForAutomaticTextTrackSelection();
+  AddPendingTextTracksFromCurrentList();
+
+  // If the pending list is still empty, update ready state as it was
+  // previously blocked by TextTracksAreReady waiting for the parser to finish.
+  if (web_media_player_ && text_tracks_when_resource_selection_began_.empty()) {
+    SetReadyState(static_cast<ReadyState>(web_media_player_->GetReadyState()));
+  }
 }
 
 bool HTMLMediaElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
@@ -1210,6 +1218,10 @@ void HTMLMediaElement::InvokeResourceSelectionAlgorithm() {
   last_seek_time_ = 0;
   duration_ = std::numeric_limits<double>::quiet_NaN();
 
+  // Reset the snapshot used by TextTracksAreReady(). It is repopulated by
+  // the "populate the list of pending text tracks" step in LoadInternal().
+  text_tracks_when_resource_selection_began_.clear();
+
   // 3 - Set the media element's delaying-the-load-event flag to true (this
   // delays the load event)
   SetShouldDelayLoadEvent(true);
@@ -1224,19 +1236,34 @@ void HTMLMediaElement::InvokeResourceSelectionAlgorithm() {
 }
 
 void HTMLMediaElement::LoadInternal() {
-  // HTMLMediaElement::textTracksAreReady will need "... the text tracks whose
-  // mode was not in the disabled state when the element's resource selection
-  // algorithm last started".
-  text_tracks_when_resource_selection_began_.clear();
-  if (text_tracks_) {
-    for (unsigned i = 0; i < text_tracks_->length(); ++i) {
-      TextTrack* track = text_tracks_->AnonymousIndexedGetter(i);
-      if (track->mode() != TextTrackMode::kDisabled)
-        text_tracks_when_resource_selection_began_.push_back(track);
-    }
+  // If the media element's blocked-on-parser flag is false, populate the list
+  // of pending text tracks. The blocked-on-parser case is handled later when
+  // HonorUserPreferences... runs from the load timer after the parser pop.
+  if (IsFinishedParsingChildren()) {
+    AddPendingTextTracksFromCurrentList();
   }
 
   SelectMediaResource();
+}
+
+void HTMLMediaElement::AddPendingTextTracksFromCurrentList() {
+  if (!text_tracks_) {
+    return;
+  }
+  for (unsigned i = 0; i < text_tracks_->length(); ++i) {
+    TextTrack* track = text_tracks_->AnonymousIndexedGetter(i);
+    if (track->mode() == TextTrackMode::kDisabled) {
+      continue;
+    }
+    if (track->GetReadinessState() != TextTrack::kLoading &&
+        track->GetReadinessState() != TextTrack::kNotLoaded) {
+      continue;
+    }
+    if (text_tracks_when_resource_selection_began_.Contains(track)) {
+      continue;
+    }
+    text_tracks_when_resource_selection_began_.push_back(track);
+  }
 }
 
 void HTMLMediaElement::SelectMediaResource() {
@@ -1865,19 +1892,17 @@ void HTMLMediaElement::SetMediaPlayerHostForTesting(
 }
 
 bool HTMLMediaElement::TextTracksAreReady() const {
-  // 4.8.12.11.1 Text track model
-  // ...
-  // The text tracks of a media element are ready if all the text tracks whose
-  // mode was not in the disabled state when the element's resource selection
-  // algorithm last started now have a text track readiness state of loaded or
-  // failed to load.
+  // https://html.spec.whatwg.org/#text-track-readiness-state
+  // The text tracks of a media element are ready when both the element's list
+  // of pending text tracks is empty and the element's blocked-on-parser flag
+  // is false.
   for (const auto& text_track : text_tracks_when_resource_selection_began_) {
     if (text_track->GetReadinessState() == TextTrack::kLoading ||
         text_track->GetReadinessState() == TextTrack::kNotLoaded)
       return false;
   }
 
-  return true;
+  return IsFinishedParsingChildren();
 }
 
 void HTMLMediaElement::TextTrackReadyStateChanged(TextTrack* track) {
