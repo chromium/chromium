@@ -13,6 +13,7 @@
 
 @interface CreditCardScannerViewController (Testing)
 - (void)didTapEnterManually:(id)sender;
+- (void)setupEnterManuallyButton;
 @end
 
 class CreditCardScannerViewControllerTest : public PlatformTest {
@@ -37,4 +38,27 @@ TEST_F(CreditCardScannerViewControllerTest, EnterManuallyDismisses) {
   [view_controller_ didTapEnterManually:nil];
 
   EXPECT_OCMOCK_VERIFY(mock_presentation_provider_);
+}
+
+// Tests that calling setupEnterManuallyButton multiple times adds the button
+// only once.
+TEST_F(CreditCardScannerViewControllerTest, EnterManuallyButtonAddedOnce) {
+  UIView* mockScannerView = [[UIView alloc] init];
+  UIToolbar* toolbar = [[UIToolbar alloc] init];
+  UIBarButtonItem* item1 = [[UIBarButtonItem alloc] init];
+  UIBarButtonItem* item2 = [[UIBarButtonItem alloc] init];
+  UIBarButtonItem* item3 = [[UIBarButtonItem alloc] init];
+  toolbar.items = @[ item1, item2, item3 ];
+  [mockScannerView addSubview:toolbar];
+
+  view_controller_.scannerView = (ScannerView*)mockScannerView;
+
+  // Call once to setup the button.
+  [view_controller_ setupEnterManuallyButton];
+  EXPECT_EQ(toolbar.items.count, 5U);
+
+  // Call again (simulating view reappearing). It should not add a duplicate
+  // button.
+  [view_controller_ setupEnterManuallyButton];
+  EXPECT_EQ(toolbar.items.count, 5U);
 }

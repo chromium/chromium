@@ -28,6 +28,7 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kCreditCardScannerViewID;
+  [self setupEnterManuallyButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -35,7 +36,6 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
   // Crop the scanner subviews to the size of the `scannerView` to avoid the
   // preview overlay being visible outside the screen bounds while presenting.
   self.scannerView.clipsToBounds = YES;
-  [self setupEnterManuallyButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -87,10 +87,10 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
     }
   }
 
-  // The toolbar is expected to have at least 3 items by default, set up in the
+  // The toolbar is expected to have exactly 3 items by default, set up in the
   // base class `ScannerView` (represented as `@[ close, spacer, _torchButton
   // ]`).
-  if (!toolbar || toolbar.items.count < 3) {
+  if (!toolbar || toolbar.items.count != 3) {
     return;
   }
 
