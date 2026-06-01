@@ -1362,10 +1362,10 @@ set_defaults("ios_xctest_test") {
 # Template to build a xcuitest test runner bundle.
 #
 # Xcode requires a test runner application with a copy of the XCTest dynamic
-# library bundle in it for the XCUITest to run. The test runner bundle is created
-# by copying the system bundle XCTRunner.app from Xcode SDK with the plist file
-# being properly tweaked, and a xctest and it needs to be code signed in order
-# to run on devices.
+# library bundle in it for the XCUITest to run. The test runner bundle is
+# created by copying the system bundle XCTRunner.app from Xcode SDK with the
+# plist file being properly tweaked, and a xctest and it needs to be code signed
+# in order to run on devices.
 #
 # Arguments
 #
