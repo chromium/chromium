@@ -136,9 +136,14 @@ BASE_FEATURE(kNtpModulesLoad, base::FEATURE_DISABLED_BY_DEFAULT);
 // requirement for all modules.
 BASE_FEATURE(kNtpModuleSignInRequirement, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, OneGoogleBar will be shown.
+// If enabled, OneGoogleBar will be shown. Disabled on Android to save memory.
 // This is a kill switch. Keep indefinitely.
-BASE_FEATURE(kNtpOneGoogleBar, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpOneGoogleBar,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // If enabled, outlook calendar module will be shown.
 BASE_FEATURE(kNtpOutlookCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
