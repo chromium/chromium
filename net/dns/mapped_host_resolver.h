@@ -76,7 +76,6 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   void SetRequestContext(URLRequestContext* request_context) override;
   bool IsHappyEyeballsV3Enabled() const override;
   HostResolverManager* GetManagerForTesting() override;
-  std::unique_ptr<CanaryDomainService> CreateCanaryDomainService() override;
 
  private:
   std::unique_ptr<HostResolver> impl_;

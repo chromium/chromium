@@ -41,7 +41,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/dns/canary_domain_service.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -672,10 +671,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return url_loader_factories_.size();
   }
 
-  net::CanaryDomainService* canary_domain_service_for_testing() {
-    return canary_domain_service_.get();
-  }
-
   // Returns whether all URLLoaderFactories owned by `this` are bound to
   // `bound_network`.
   bool AllURLLoaderFactoriesAreBoundToNetworkForTesting(
@@ -1012,10 +1007,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::set<std::unique_ptr<HostResolver>, base::UniquePtrComparator>
       host_resolvers_;
   std::unique_ptr<net::HostResolver::ProbeRequest> doh_probes_request_;
-
-  // Created on-demand. Null if unused.
-  // Must be destroyed before `url_request_context_owner_`;
-  std::unique_ptr<net::CanaryDomainService> canary_domain_service_;
 
   // Used for certificate verification.
   uint64_t next_cert_verify_id_ = 0;

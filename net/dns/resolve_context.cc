@@ -735,10 +735,6 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
   }
 }
 
-bool ResolveContext::IsDohFallbackProbeEnabled() const {
-  return false;
-}
-
 bool ResolveContext::IsDohConfigFromFallbackDohNameservers() const {
   if (!current_session_) {
     return false;

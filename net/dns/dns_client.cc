@@ -199,29 +199,6 @@ class DnsClientImpl : public DnsClient {
 
     DCHECK(session_);  // Should be true if CanUseSecureDnsTransactions() true.
 
-    // If the canary domain check is enabled and the canary domain is not
-    // successfully resolved, fall back to insecure DNS.
-    if (context->IsDohFallbackProbeEnabled()) {
-      switch (context->doh_fallback_canary_domain_check_status()) {
-        case CanaryDomainCheckStatus::kPositive:
-          // On a positive canary domain check, no fallback to insecure DNS.
-          break;
-        case CanaryDomainCheckStatus::kNegative:
-          RecordFallbackFromSecureTransactionPreferred(
-              FallbackFromSecureTransactionPreferredReason::
-                  kFallbackPreferredCanaryDomainCheckNegative);
-          return true;
-        case CanaryDomainCheckStatus::kNotStarted:
-        case CanaryDomainCheckStatus::kStarted:
-          RecordFallbackFromSecureTransactionPreferred(
-              FallbackFromSecureTransactionPreferredReason::
-                  kFallbackPreferredCanaryDomainCheckPending);
-          return true;
-        case CanaryDomainCheckStatus::kInactive:
-          NOTREACHED();
-      }
-    }
-
     // Otherwise, fall back to insecure DNS if there are no available DoH
     // servers.
     if (context->NumAvailableDohServers(session_.get()) == 0) {

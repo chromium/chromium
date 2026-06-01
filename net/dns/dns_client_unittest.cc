@@ -740,9 +740,8 @@ TEST_F(DnsClientTest, AutoUpgradeFails_LoopbackAndNonLoopbackLocalNameservers) {
 TEST_F(DnsClientTest,
        FallbackFromSecureTransactionPreferred_DohFallbackAllowed_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{net::features::kAddAutomaticWithDohFallbackMode},
-      /*disabled_features=*/{net::features::kProbeSecureDnsCanaryDomain});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
 
   DnsConfig config = BasicValidConfig();
   config.secure_dns_mode = SecureDnsMode::kAutomatic;
@@ -771,10 +770,6 @@ TEST_F(DnsClientTest,
 TEST_F(
     DnsClientTest,
     FallbackFromSecureTransactionPreferred_DohFallbackAllowed_IneligibleAuto) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      net::features::kProbeSecureDnsCanaryDomain);
-
   DnsConfig config = ValidConfigWithDoh(/*doh_only=*/false);
   config.secure_dns_mode = SecureDnsMode::kAutomatic;
   client_->SetSystemConfig(config);
@@ -796,10 +791,6 @@ TEST_F(
 TEST_F(
     DnsClientTest,
     FallbackFromSecureTransactionPreferred_DohFallbackAllowed_IneligibleSecure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      net::features::kProbeSecureDnsCanaryDomain);
-
   DnsConfig config = ValidConfigWithDoh(/*doh_only=*/false);
   config.secure_dns_mode = SecureDnsMode::kSecure;
   client_->SetSystemConfig(config);

@@ -32,7 +32,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/dns/canary_domain_service.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_query_type.h"
@@ -52,6 +51,7 @@ namespace net {
 
 class HostCache;
 class IPEndPoint;
+class ResolveContext;
 class URLRequestContext;
 
 // Fills `ip_endpoints` with a socket address for `host_list` which should be a
@@ -303,7 +303,6 @@ class MockHostResolverBase : public HostResolver {
   HostCache* GetHostCache() override;
   void SetRequestContext(URLRequestContext* request_context) override {}
   bool IsHappyEyeballsV3Enabled() const override;
-  std::unique_ptr<CanaryDomainService> CreateCanaryDomainService() override;
 
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.

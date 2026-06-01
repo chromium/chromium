@@ -50,24 +50,6 @@ enum class DohServerAutoupgradeStatus {
 
   kMaxValue = kFailureWithNoPriorSuccesses
 };
-
-// Status of a canary domain check being used to check for whether a
-// particular behavior is allowed.
-enum class CanaryDomainCheckStatus {
-  // The canary domain check is disabled by feature flag or empty host.
-  kInactive,
-  // The canary domain check has not yet started.
-  kNotStarted,
-  // The canary domain check has started but not yet completed.
-  kStarted,
-  // The canary domain check has completed and was positive.
-  // A positive result indicates that the behavior is allowed.
-  kPositive,
-  // The canary domain check has completed and was negative.
-  // A positive result indicates that the behavior is not allowed.
-  kNegative,
-};
-
 // Per-URLRequestContext data used by HostResolver. Expected to be owned by the
 // ContextHostResolver, and all usage/references are expected to be cleaned up
 // or cancelled before the URLRequestContext goes out of service.
@@ -262,25 +244,9 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Sets the status of a canary domain check for allowing DoH fallback.
-  void set_doh_fallback_canary_domain_check_status(
-      CanaryDomainCheckStatus status) {
-    doh_fallback_canary_domain_check_status_ = status;
-  }
-
-  // Gets the status of a canary domain check for allowing DoH fallback.
-  // A positive status indicates that Secure DNS DoH fallback is allowed.
-  CanaryDomainCheckStatus doh_fallback_canary_domain_check_status() const {
-    return doh_fallback_canary_domain_check_status_;
-  }
-
   // Returns true if the current DoH configuration was added from the fallback
   // DoH nameservers as part of the fallback-to-default-provider functionality.
   bool IsDohConfigFromFallbackDohNameservers() const;
-
-  // Returns true if a canary domain probe should be performed for the purpose
-  // of determining whether to allow DoH fallback.
-  bool IsDohFallbackProbeEnabled() const;
 
  private:
   friend DohDnsServerIterator;
@@ -389,10 +355,6 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   std::vector<ServerStats> doh_server_stats_;
 
   base::OneShotTimer doh_autoupgrade_success_metric_timer_;
-
-  // Status of a canary domain check to allow DoH fallback for Secure DNS.
-  CanaryDomainCheckStatus doh_fallback_canary_domain_check_status_ =
-      CanaryDomainCheckStatus::kInactive;
 
   base::WeakPtrFactory<ResolveContext> weak_ptr_factory_{this};
 };

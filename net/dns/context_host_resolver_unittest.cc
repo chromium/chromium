@@ -26,7 +26,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
-#include "net/dns/canary_domain_service.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_test_util.h"
@@ -139,88 +138,6 @@ TEST_F(ContextHostResolverTest, Resolve) {
   EXPECT_THAT(callback.GetResult(rv), test::IsOk());
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
   EXPECT_THAT(request->GetAddressResults(), testing::ElementsAre(kEndpoint));
-}
-
-TEST_F(ContextHostResolverTest, CreateCanaryDomainService) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kProbeSecureDnsCanaryDomain,
-      {{features::kSecureDnsCanaryDomainHost.name, "example.com"}});
-
-  auto context = CreateTestURLRequestContextBuilder()->Build();
-  auto resolve_context =
-      std::make_unique<ResolveContext>(context.get(), /*enable_caching=*/false);
-  ResolveContext* resolve_context_ptr = resolve_context.get();
-  auto resolver = std::make_unique<ContextHostResolver>(
-      manager_.get(), std::move(resolve_context));
-
-  // Initially, no session. CreateCanaryDomainService should still return a
-  // service.
-  std::unique_ptr<CanaryDomainService> service =
-      resolver->CreateCanaryDomainService();
-  EXPECT_TRUE(service);
-
-  // But starting it should not trigger a probe if no session.
-  service->Start();
-  EXPECT_EQ(CanaryDomainCheckStatus::kNotStarted,
-            resolve_context_ptr->doh_fallback_canary_domain_check_status());
-
-  // Set up a session with AUTOMATIC mode and fallback upgrade enabled.
-  DnsConfig config;
-  config.secure_dns_mode = SecureDnsMode::kAutomatic;
-  config.should_perform_doh_fallback_upgrade = true;
-  auto session = base::MakeRefCounted<DnsSession>(
-      config, base::BindRepeating([](int, int) -> int { return 0; }),
-      /*net_log=*/nullptr);
-  resolve_context_ptr->InvalidateCachesAndPerSessionData(session.get(), false);
-
-  service = resolver->CreateCanaryDomainService();
-  EXPECT_TRUE(service);
-
-  // Disable fallback upgrade.
-  config.should_perform_doh_fallback_upgrade = false;
-  session = base::MakeRefCounted<DnsSession>(
-      config, base::BindRepeating([](int, int) -> int { return 0; }),
-      /*net_log=*/nullptr);
-  resolve_context_ptr->InvalidateCachesAndPerSessionData(session.get(), false);
-
-  service = resolver->CreateCanaryDomainService();
-  EXPECT_TRUE(service);
-  service->Start();
-  EXPECT_EQ(CanaryDomainCheckStatus::kNotStarted,
-            resolve_context_ptr->doh_fallback_canary_domain_check_status());
-
-  // Change mode to SECURE.
-  config.secure_dns_mode = SecureDnsMode::kSecure;
-  config.should_perform_doh_fallback_upgrade = false;
-  session = base::MakeRefCounted<DnsSession>(
-      config, base::BindRepeating([](int, int) -> int { return 0; }),
-      /*net_log=*/nullptr);
-  resolve_context_ptr->InvalidateCachesAndPerSessionData(session.get(), false);
-
-  service = resolver->CreateCanaryDomainService();
-  EXPECT_TRUE(service);
-  service->Start();
-  EXPECT_EQ(CanaryDomainCheckStatus::kNotStarted,
-            resolve_context_ptr->doh_fallback_canary_domain_check_status());
-}
-
-TEST_F(ContextHostResolverTest, CreateCanaryDomainService_Disabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kProbeSecureDnsCanaryDomain);
-
-  auto context = CreateTestURLRequestContextBuilder()->Build();
-  auto resolve_context =
-      std::make_unique<ResolveContext>(context.get(), /*enable_caching=*/false);
-  ResolveContext* resolve_context_ptr = resolve_context.get();
-  auto resolver = std::make_unique<ContextHostResolver>(
-      manager_.get(), std::move(resolve_context));
-
-  std::unique_ptr<CanaryDomainService> service =
-      resolver->CreateCanaryDomainService();
-  EXPECT_TRUE(service);
-  EXPECT_EQ(CanaryDomainCheckStatus::kInactive,
-            resolve_context_ptr->doh_fallback_canary_domain_check_status());
 }
 
 TEST_F(ContextHostResolverTest, ResolveWithScheme) {

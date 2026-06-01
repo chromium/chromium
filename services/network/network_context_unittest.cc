@@ -113,7 +113,6 @@
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
-#include "net/dns/canary_domain_service.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_session.h"
@@ -5528,120 +5527,6 @@ TEST_F(NetworkContextActivateDohProbesTest, NotPrimaryContext) {
   network_context.reset();
 
   EXPECT_FALSE(state->IsDohProbeRunning());
-}
-
-TEST_F(NetworkContextTest, CanaryDomainServiceProbe_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      net::features::kProbeSecureDnsCanaryDomain);
-
-  network_service_->set_host_resolver_factory_for_testing(
-      std::make_unique<net::MockHostResolverFactory>());
-
-  // Use a separate ResolveContext to control the DnsSession.
-  // Must outlive `network_context` because CanaryDomainService will hold a
-  // SafeRef to it.
-  net::ResolveContext resolve_context(nullptr, false);
-
-  mojom::NetworkContextParamsPtr params =
-      CreateNetworkContextParamsForTesting();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(params));
-
-  auto* mock_resolver = static_cast<net::MockHostResolverBase*>(
-      network_context->url_request_context()->host_resolver());
-  mock_resolver->SetResolveContextForTesting(&resolve_context);
-
-  network_context->ActivateDohProbes();
-
-  net::CanaryDomainService* canary_domain_service =
-      network_context->canary_domain_service_for_testing();
-  EXPECT_TRUE(canary_domain_service);
-  EXPECT_EQ(net::CanaryDomainCheckStatus::kInactive,
-            resolve_context.doh_fallback_canary_domain_check_status());
-  EXPECT_EQ(mock_resolver->num_resolve(), 0u);
-}
-
-TEST_F(NetworkContextTest,
-       CanaryDomainServiceProbe_NotStartedIfConfigDisallows) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kProbeSecureDnsCanaryDomain,
-      {{"canary_domain_host", "test.test"}});
-
-  network_service_->set_host_resolver_factory_for_testing(
-      std::make_unique<net::MockHostResolverFactory>());
-
-  // Use a separate ResolveContext to control the DnsSession.
-  // Must outlive `network_context` because CanaryDomainService will hold a
-  // SafeRef to it.
-  net::ResolveContext resolve_context(nullptr, false);
-
-  mojom::NetworkContextParamsPtr params =
-      CreateNetworkContextParamsForTesting();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(params));
-
-  auto* mock_resolver = static_cast<net::MockHostResolverBase*>(
-      network_context->url_request_context()->host_resolver());
-  mock_resolver->SetResolveContextForTesting(&resolve_context);
-
-  // Case 1: Mode is not AUTOMATIC.
-  {
-    net::DnsConfig config;
-    config.secure_dns_mode = net::SecureDnsMode::kSecure;
-    auto session = base::MakeRefCounted<net::DnsSession>(
-        config, base::BindRepeating([](int min, int max) -> int { return 0; }),
-        nullptr);
-    resolve_context.InvalidateCachesAndPerSessionData(session.get(), false);
-
-    network_context->ActivateDohProbes();
-    EXPECT_TRUE(network_context->canary_domain_service_for_testing());
-    EXPECT_EQ(net::CanaryDomainCheckStatus::kNotStarted,
-              resolve_context.doh_fallback_canary_domain_check_status());
-    EXPECT_EQ(mock_resolver->num_resolve(), 0u);
-  }
-
-  // Case 2: should_perform_doh_fallback_upgrade is false.
-  {
-    net::DnsConfig config;
-    config.secure_dns_mode = net::SecureDnsMode::kAutomatic;
-    config.should_perform_doh_fallback_upgrade = false;
-    auto session = base::MakeRefCounted<net::DnsSession>(
-        config, base::BindRepeating([](int min, int max) -> int { return 0; }),
-        nullptr);
-    resolve_context.InvalidateCachesAndPerSessionData(session.get(), false);
-
-    network_context->ActivateDohProbes();
-    EXPECT_TRUE(network_context->canary_domain_service_for_testing());
-    EXPECT_EQ(net::CanaryDomainCheckStatus::kNotStarted,
-              resolve_context.doh_fallback_canary_domain_check_status());
-    EXPECT_EQ(mock_resolver->num_resolve(), 0u);
-  }
-}
-
-// Simulates a HostResolver that returns a nullptr CanaryDomainService.
-class NullCanaryDomainServiceHostResolver : public net::HangingHostResolver {
- public:
-  std::unique_ptr<net::CanaryDomainService> CreateCanaryDomainService()
-      override {
-    return nullptr;
-  }
-};
-
-TEST_F(NetworkContextTest, CanaryDomainServiceProbe_NullService) {
-  auto resolver = std::make_unique<NullCanaryDomainServiceHostResolver>();
-  network_service_->set_host_resolver_factory_for_testing(
-      std::make_unique<HostResolverFactory>(std::move(resolver)));
-
-  mojom::NetworkContextParamsPtr params =
-      CreateNetworkContextParamsForTesting();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(params));
-
-  // Should not crash if CreateCanaryDomainService returns nullptr.
-  network_context->ActivateDohProbes();
-  EXPECT_FALSE(network_context->canary_domain_service_for_testing());
 }
 
 TEST_F(NetworkContextTest, PrivacyModeDisabledByDefault) {

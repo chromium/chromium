@@ -42,7 +42,6 @@
 namespace net {
 
 class AddressList;
-class CanaryDomainService;
 class ContextHostResolver;
 class DnsClient;
 struct DnsConfigOverrides;
@@ -589,10 +588,6 @@ class NET_EXPORT HostResolver {
   virtual HostResolverManager* GetManagerForTesting();
   virtual const URLRequestContext* GetContextForTesting() const;
   virtual handles::NetworkHandle GetTargetNetworkForTesting() const;
-
-  // Creates a CanaryDomainService that uses this resolver. Can return nullptr,
-  // for example, if the resolver is shutting down.
-  virtual std::unique_ptr<CanaryDomainService> CreateCanaryDomainService();
 
   // Creates a new HostResolver. `manager` must outlive the returned resolver.
   //
