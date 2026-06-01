@@ -1537,6 +1537,9 @@ void DrawingBuffer::ClearNewlyAllocatedFramebuffers(ClearOption clear_option) {
 
   state_restorer_->SetClearStateDirty();
   gl_->Disable(GL_SCISSOR_TEST);
+  if (IsWebGL2()) {
+    gl_->Disable(GL_RASTERIZER_DISCARD);
+  }
   gl_->ClearColor(0, 0, 0,
                   DefaultBufferRequiresAlphaChannelToBePreserved() ? 1 : 0);
   gl_->ColorMask(true, true, true, true);
@@ -2275,6 +2278,7 @@ DrawingBuffer::ScopedStateRestorer::~ScopedStateRestorer() {
 
   if (clear_state_dirty_) {
     client->DrawingBufferClientRestoreScissorTest();
+    client->DrawingBufferClientRestoreRasterizerDiscard();
     client->DrawingBufferClientRestoreMaskAndClearValues();
   }
   if (pixel_pack_parameters_dirty_)

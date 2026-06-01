@@ -660,10 +660,10 @@ void PassthroughResources::SharedImageData::EnsureClear(
     else
       api->glColorMaskFn(true, true, true, true);
     api->glDisableFn(GL_SCISSOR_TEST);
-    api->glClearFn(GL_COLOR_BUFFER_BIT);
     if (has_rasterizer_discard) {
       api->glDisableFn(GL_RASTERIZER_DISCARD);
     }
+    api->glClearFn(GL_COLOR_BUFFER_BIT);
 
     if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) ==
         GL_FRAMEBUFFER_COMPLETE) {
