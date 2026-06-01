@@ -12,12 +12,10 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_experimental_opt_in_resources.h"
 #include "chrome/grit/glic_experimental_opt_in_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -110,14 +108,6 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
 
   GURL url = GetExperimentalTriggeringOptInURL(profile, required_state_);
   source->AddString("glicExperimentalTriggeringOptInURL", url.spec());
-
-  static constexpr webui::LocalizedString kStrings[] = {
-      {"offlineNoticeHeader", IDS_GLIC_OFFLINE_NOTICE_HEADER},
-      {"experimentalOptInOfflineNoticeMessage",
-       IDS_GLIC_EXPERIMENTAL_OPT_IN_OFFLINE_NOTICE_MESSAGE},
-      {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
-  };
-  source->AddLocalizedStrings(kStrings);
 }
 
 GlicExperimentalOptInUI::~GlicExperimentalOptInUI() = default;
