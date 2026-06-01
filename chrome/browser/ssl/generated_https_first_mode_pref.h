@@ -33,6 +33,9 @@ class GeneratedHttpsFirstModePref
   // Fired when preferences used to generate this preference are changed.
   void OnSourcePreferencesChanged();
 
+  // Fired when the security settings bundle preference is changed.
+  void OnSettingsBundleChanged();
+
   // safe_browsing::AdvancedProtectionStatusManager::StatusChangedObserver:
   void OnAdvancedProtectionStatusChanged(bool enabled) override;
 

@@ -221,6 +221,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kHttpsFirstBalancedMode, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kHttpsFirstModeBundleToastQueued, false);
   registry->RegisterBooleanPref(
       prefs::kHttpsFirstModeIncognito, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

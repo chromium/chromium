@@ -18,6 +18,7 @@
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace settings_api = extensions::api::settings_private;
@@ -43,6 +44,10 @@ GeneratedHttpsFirstModePref::GeneratedHttpsFirstModePref(Profile* profile)
       base::BindRepeating(
           &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
           base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kSecuritySettingsBundle,
+      base::BindRepeating(&GeneratedHttpsFirstModePref::OnSettingsBundleChanged,
+                          base::Unretained(this)));
 
   // Track Advanced Protection status.
   if (base::FeatureList::IsEnabled(
@@ -228,5 +233,27 @@ void GeneratedHttpsFirstModePref::ApplyManagementState(
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));
     }
+  }
+}
+
+void GeneratedHttpsFirstModePref::OnSettingsBundleChanged() {
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kBundledSecuritySettingsAskBeforeHttp)) {
+    return;
+  }
+  auto bundle = safe_browsing::GetSecurityBundleSetting(*profile_->GetPrefs());
+  switch (bundle) {
+    case safe_browsing::SecuritySettingsBundleSetting::STANDARD:
+      SetPref(std::make_unique<base::Value>(
+                  static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                  .get());
+      break;
+    case safe_browsing::SecuritySettingsBundleSetting::ENHANCED:
+      SetPref(std::make_unique<base::Value>(
+                  static_cast<int>(IsBalancedModeAvailable()
+                                       ? HttpsFirstModeSetting::kEnabledBalanced
+                                       : HttpsFirstModeSetting::kDisabled))
+                  .get());
+      break;
   }
 }

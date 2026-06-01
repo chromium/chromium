@@ -15,9 +15,11 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+#include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
@@ -35,11 +37,17 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
   void SetUp() override {
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
+        StatefulSSLHostStateDelegateFactory::GetInstance(),
+        StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting());
+    builder.AddTestingFactory(
         safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance(),
         safe_browsing::AdvancedProtectionStatusManagerFactory::
             GetDefaultFactoryForTesting());
+    builder.AddTestingFactory(
+        HttpsFirstModeServiceFactory::GetInstance(),
+        HttpsFirstModeServiceFactory::GetDefaultFactoryForTesting());
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment();
+        CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
   }
@@ -497,6 +505,67 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 3);
   histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
                                HttpsFirstModeSetting::kDisabled, 1);
+}
+
+// Check that updating the security settings bundle correctly updates the
+// generated HFM pref when the bundle integration feature is enabled.
+TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSettingsBundle_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kHttpsFirstBalancedMode,
+       safe_browsing::kBundledSecuritySettingsAskBeforeHttp},
+      {});
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Initially, HFM is disabled.
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+
+  // Change bundle to Enhanced. HFM should update to Balanced.
+  prefs()->SetUserPref(
+      prefs::kSecuritySettingsBundle,
+      std::make_unique<base::Value>(static_cast<int>(
+          safe_browsing::SecuritySettingsBundleSetting::ENHANCED)));
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kEnabledBalanced);
+
+  // Change bundle to Standard. HFM should update to Disabled.
+  prefs()->SetUserPref(
+      prefs::kSecuritySettingsBundle,
+      std::make_unique<base::Value>(static_cast<int>(
+          safe_browsing::SecuritySettingsBundleSetting::STANDARD)));
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+}
+
+// Check that updating the security settings bundle does not affect the
+// generated HFM pref when the bundle integration feature is disabled.
+TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSettingsBundle_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kHttpsFirstBalancedMode},
+      {safe_browsing::kBundledSecuritySettingsAskBeforeHttp});
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Initially, HFM is disabled.
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+
+  // Change bundle to Enhanced. Since bundle feature is disabled, HFM should
+  // remain disabled.
+  prefs()->SetUserPref(
+      prefs::kSecuritySettingsBundle,
+      std::make_unique<base::Value>(static_cast<int>(
+          safe_browsing::SecuritySettingsBundleSetting::ENHANCED)));
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
 }
 
 // Check that changing the Safe Browsing preference kSafeBrowsingEnhanced

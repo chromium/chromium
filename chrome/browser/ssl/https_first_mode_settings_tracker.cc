@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -36,6 +37,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/security_settings_bundle_toast_helper.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -222,6 +227,14 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
           &HttpsFirstModeService::OnSafeBrowsingEnhancedPrefChanged,
           base::Unretained(this)));
 
+  // Observe the settings bundle to trigger migration/toast dynamically
+  // if the bundle changes during the session.
+  pref_change_registrar_.Add(
+      prefs::kSecuritySettingsBundle,
+      base::BindRepeating(
+          &HttpsFirstModeService::OnSecuritySettingsBundleChanged,
+          base::Unretained(this)));
+
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
   HttpsFirstModeSetting setting = GetCurrentSetting();
@@ -246,8 +259,74 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
 }
 
 void HttpsFirstModeService::AfterStartup() {
+  MigrateEnhancedBundleUsersAndMaybeShowToast();
   CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
   MaybeEnableHttpsFirstModeForEngagedSites(base::OnceClosure());
+}
+
+void HttpsFirstModeService::MigrateEnhancedBundleUsersAndMaybeShowToast() {
+  PrefService* prefs = profile_->GetPrefs();
+
+  // If the Toast has already been shown or HFM features are not enabled, abort.
+  if (prefs->GetBoolean(prefs::kHttpsFirstModeBundleToastQueued) ||
+      !IsBalancedModeAvailable() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kBundledSecuritySettingsAskBeforeHttp)) {
+    return;
+  }
+
+  // Check if this is an Enhanced Protection bundle user.
+  auto bundle_setting = safe_browsing::GetSecurityBundleSetting(*prefs);
+  if (bundle_setting !=
+      safe_browsing::SecuritySettingsBundleSetting::ENHANCED) {
+    return;
+  }
+
+  // Advanced Protection Program users are opted into the Enhanced bundle by
+  // default but shouldn't have their secure connections settings modified or
+  // show the toast since HFM is managed by AP.
+  auto* advanced_protection_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile_);
+  if (advanced_protection_manager &&
+      advanced_protection_manager->IsUnderAdvancedProtection()) {
+    return;
+  }
+
+  // If the user has explicitly modified secure connections settings in the
+  // past, do not override their choice. Simply mark the Toast as shown and
+  // abort.
+  if (prefs->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+      prefs->HasPrefPath(prefs::kHttpsFirstBalancedMode)) {
+    prefs->SetBoolean(prefs::kHttpsFirstModeBundleToastQueued, true);
+    return;
+  }
+
+  // Upgrade them to HFM Balanced Mode.
+  keep_http_allowlist_on_next_pref_change_ = true;
+  prefs->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+
+  // Note: kHttpsFirstModeBundleToastQueued acts as the one-time UI migration
+  // queue. It is marked true immediately on upgrade to prevent duplicate
+  // migration evaluation on subsequent browser runs. The actual on-screen toast
+  // is managed on startup by verifying
+  // kSecuritySettingsBundleMigrationToastState is kPending.
+  prefs->SetBoolean(prefs::kHttpsFirstModeBundleToastQueued, true);
+  if (prefs->GetInteger(prefs::kSecuritySettingsBundleMigrationToastState) !=
+      static_cast<int>(
+          safe_browsing::SecuritySettingsBundleToastState::kShown)) {
+    prefs->SetInteger(
+        prefs::kSecuritySettingsBundleMigrationToastState,
+        static_cast<int>(
+            safe_browsing::SecuritySettingsBundleToastState::kPending));
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Dynamically trigger the toast on the active window immediately for the
+  // current session.
+  safe_browsing::SecuritySettingsBundleToastHelper::GetForProfile(profile_)
+      ->TriggerIfNeeded();
+#endif
 }
 
 void HttpsFirstModeService::
@@ -291,8 +370,10 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
     StatefulSSLHostStateDelegate* state =
         static_cast<StatefulSSLHostStateDelegate*>(
             profile_->GetSSLHostStateDelegate());
-    state->ClearHttpsOnlyModeAllowlist();
-    state->ClearHttpsEnforcelist();
+    if (state) {
+      state->ClearHttpsOnlyModeAllowlist();
+      state->ClearHttpsEnforcelist();
+    }
   }
   keep_http_allowlist_on_next_pref_change_ = false;
 
@@ -319,6 +400,12 @@ void HttpsFirstModeService::OnSafeBrowsingEnhancedPrefChanged() {
     }
   }
   keep_http_allowlist_on_next_pref_change_ = false;
+}
+
+void HttpsFirstModeService::OnSecuritySettingsBundleChanged() {
+  // Trigger bundle migration dynamically if the bundle transitioned
+  // into Enhanced during the session (e.g., via sync).
+  MigrateEnhancedBundleUsersAndMaybeShowToast();
 }
 
 bool HttpsFirstModeService::

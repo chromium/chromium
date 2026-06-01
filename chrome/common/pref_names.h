@@ -97,6 +97,11 @@ inline constexpr char kHttpsOnlyModeEnabled[] = "https_only_mode_enabled";
 inline constexpr char kHttpsFirstBalancedMode[] =
     "https_first_balanced_mode_enabled";
 
+// A boolean specifying whether the HTTPS-First Mode settings bundle upgrade
+// Toast has been queued.
+inline constexpr char kHttpsFirstModeBundleToastQueued[] =
+    "https_first_mode_bundle_toast_queued";
+
 // A boolean specifying whether HTTPS-First Mode (aka "HTTPS-Only Mode") is
 // enabled in Incognito Mode.
 inline constexpr char kHttpsFirstModeIncognito[] =

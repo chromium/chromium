@@ -68,6 +68,10 @@ class HttpsFirstModeService : public KeyedService {
   // is created.
   void AfterStartup();
 
+  // Migrates existing Enhanced bundle users to Balanced HFM and schedules the
+  // upgrade Toast if they haven't manually customized HFM.
+  void MigrateEnhancedBundleUsersAndMaybeShowToast();
+
   // Returns true if the Typically Secure Heuristic enabled HTTPS-First Mode
   // in this profile. Does not update the recorded fallback events list.
   bool IsInterstitialEnabledByTypicallySecureUserHeuristic() const;
@@ -107,6 +111,9 @@ class HttpsFirstModeService : public KeyedService {
  private:
   void OnHttpsFirstModePrefChanged();
   void OnSafeBrowsingEnhancedPrefChanged();
+  // Triggered when the Security Settings Bundle pref changes during the
+  // session.
+  void OnSecuritySettingsBundleChanged();
   // HTTPS-Upgrade fallback events are stored in a pref. This method extracts
   // the fallback events, deletes old events, adds a new event if
   // `add_new_entry` is true. Returns true if the heuristic indicates that
