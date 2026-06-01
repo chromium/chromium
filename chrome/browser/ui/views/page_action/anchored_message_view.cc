@@ -344,6 +344,9 @@ void AnchoredMessageBubbleView::UpdateContent(
       item_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       item_label->SetTextStyle(views::style::STYLE_BODY_4);
       item_label->SetEnabledColor(ui::kColorSysOnSurface);
+      item_label->SetMultiLine(false);
+      item_label->SetMaximumWidthSingleLine(450);
+      item_label->SetElideBehavior(gfx::ELIDE_TAIL);
     }
   } else {
     expand_button_->SetVisible(false);
@@ -407,9 +410,10 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 }
 
 void AnchoredMessageBubbleView::OnExpandButtonPressed() {
-  const bool expand = !bottom_container_->GetVisible();
-  bottom_container_->SetVisible(expand);
-  if (expand) {
+  expanded_ = !expanded_;
+  bottom_container_->SetVisible(expanded_);
+  SizeToContents();
+  if (expanded_) {
     delegate_->AnchoredMessageExpanded();
   } else {
     delegate_->AnchoredMessageCollapsed();

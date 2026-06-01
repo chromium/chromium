@@ -103,6 +103,7 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   raw_ptr<ui::SimpleMenuModel> menu_model_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
+  bool expanded_ = false;
   const raw_ref<Delegate> delegate_;
 };
 
