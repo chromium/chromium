@@ -9,14 +9,17 @@
 
 #include "base/compiler_specific.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
+#include "base/i18n/internal/legacy_icu_converter.h"
 #include "base/i18n/language_code.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 
 namespace base {
 namespace {
+
 constexpr std::string_view kBcp47SubtagSeparator = "-";
 
+using ::base::i18n::internal::ConvertLegacyCodeToBcp47IfNecessary;
 using ::base::i18n::internal::create_icu_canonicalizer;
 using ::base::i18n::internal::Icu4xLocale;
 
@@ -24,8 +27,8 @@ i18n::internal::ImmutableString ImmutableStringFromIcu4xLocale(
     const i18n::internal::Icu4xLocale& locale) {
   std::vector<std::string_view> parts;
 
-  // We must keep the temporary strings alive until ImmutableString has copied
-  // them.
+  // We must keep the temporary strings alive until ImmutableString has
+  // copied them.
   rust::Vec<rust::String> variants = locale.variants();
   rust::Vec<rust::String> extensions = locale.extensions_as_strings();
   rust::Str script = locale.script();
@@ -111,7 +114,15 @@ std::optional<LanguageCode> LanguageCodeBuilder::FromString(
     return std::nullopt;
   }
 
-  return impl_->FromString(code);
+  std::optional<std::string> bcp47_converted_code =
+      ConvertLegacyCodeToBcp47IfNecessary(code);
+  // If there is no value, the code is already bcp47-compatible and extra copies
+  // can be avoided.
+  if (!bcp47_converted_code.has_value()) {
+    return impl_->FromString(code);
+  }
+
+  return impl_->FromString(*bcp47_converted_code);
 }
 
 }  // namespace base

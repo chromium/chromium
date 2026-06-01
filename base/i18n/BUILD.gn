@@ -2,47 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/locales.gni")
-import("//build/rust/rust_static_library.gni")
-
 source_set("base_i18n_export") {
   public = [ "base_i18n_export.h" ]
 }
 
-rust_static_library("i18n_icu_bridge_ffi") {
-  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-  crate_root = "internal/icu_bridge.rs"
-  sources = [ "internal/icu_bridge.rs" ]
-  cxx_bindings = [ "internal/icu_bridge.rs" ]
-  build_native_rust_unit_tests = true
-  visibility = [
-    ":*",
-    "//base:i18n",
-  ]
-  deps = [
-    "//third_party/rust/icu_locale/v2:lib",
-    "//third_party/rust/icu_locale_core/v2:lib",
-    "//third_party/rust/icu_provider/v2:lib",
-    "//third_party/rust/log/v0_4:lib",
-  ]
-}
-
-action("canonical_language_codes_gen") {
-  script = "//tools/i18n/generate_canonical_locales_list.py"
-  outputs = [ "$root_gen_dir/base/i18n/internal/canonical_language_codes.inc" ]
-  args = rebase_path(outputs, root_build_dir) + [ "${enable_pseudolocales}" ]
-  visibility = [ ":*" ]
-}
-
-source_set("canonical_language_codes") {
-  deps = [ ":canonical_language_codes_gen" ]
-  sources = [ "$root_gen_dir/base/i18n/internal/canonical_language_codes.inc" ]
-  visibility = [ ":*" ]
-}
 source_set("language_code") {
   sources = [
-    "internal/immutable_string.cc",
-    "internal/immutable_string.h",
     "language_code.cc",
     "language_code.h",
     "language_code_builder.cc",
@@ -57,9 +22,10 @@ source_set("language_code") {
 
   public_deps = [ ":base_i18n_export" ]
   deps = [
-    ":canonical_language_codes",
-    ":i18n_icu_bridge_ffi",
     "//base",
+    "//base/i18n/internal",
+    "//base/i18n/internal:canonical_language_codes",
+    "//base/i18n/internal:i18n_icu_bridge_ffi",
   ]
   visibility = [
     ":*",
@@ -74,4 +40,19 @@ source_set("unicodestring") {
 
 source_set("time_formatting_types") {
   sources = [ "time_formatting_types.h" ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "language_code_matcher_unittest.cc",
+    "language_code_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

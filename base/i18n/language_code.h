@@ -59,6 +59,8 @@ class BASE_I18N_EXPORT LanguageCode {
 
   // Returns the language code in legacy ICU format, replacing hyphens with
   // underscores (e.g., "en_US", "zh_CN").
+  // Note: This does not work correctly when the code has extensions.
+  // TODO(crbug.com/517510055): Convert unicode extensions to the legacy format.
   std::string ToLegacyICUFormat() const;
 
   // Returns the region subtag in the language code if present.

@@ -4,35 +4,49 @@
 
 #include "base/i18n/language_code.h"
 
+#include <string_view>
+
 #include "base/i18n/language_code_builder.h"
 #include "base/i18n/language_codes.h"
+#include "base/test/gmock_expected_support.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
-TEST(LanguageCodeTest, ParseAndToString) {
-  std::optional<LanguageCode> lc =
-      LanguageCodeBuilder::GetInstance().FromString("en-US");
-  ASSERT_TRUE(lc.has_value());
-  EXPECT_EQ(lc, language_codes::ENGLISH_US());
+using ::testing::Eq;
+using ::testing::Optional;
+using ::testing::Property;
 
-  std::optional<LanguageCode> lc_norm =
-      LanguageCodeBuilder::GetInstance().FromString("EN-us");
-  ASSERT_TRUE(lc_norm.has_value());
-  EXPECT_EQ(lc_norm->ToString(), "en-US");
+MATCHER_P(OptionalToString, expected, "") {
+  return ExplainMatchResult(
+      Optional(Property(&LanguageCode::ToString, Eq(expected))), arg,
+      result_listener);
+}
+
+MATCHER_P(OptionalRegionToString, expected, "") {
+  return ExplainMatchResult(
+      Optional(Property(&RegionCode::ToString, Eq(expected))), arg,
+      result_listener);
+}
+
+TEST(LanguageCodeTest, ParseAndToString) {
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en-US"),
+              Optional(language_codes::ENGLISH_US()));
+
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("EN-us"),
+              OptionalToString("en-US"));
 }
 
 TEST(LanguageCodeTest, InvalidLocales) {
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance().FromString("").has_value());
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
-                   .FromString("toolonglanguagecode")
-                   .has_value());
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
-                   .FromString("pt-longscript-BR")
-                   .has_value());
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
-                   .FromString("pt-BRA-Brazil")
-                   .has_value());
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString(""), std::nullopt);
+  EXPECT_EQ(
+      LanguageCodeBuilder::GetInstance().FromString("toolonglanguagecode"),
+      std::nullopt);
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString("pt-longscript-BR"),
+            std::nullopt);
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString("pt-BRA-Brazil"),
+            std::nullopt);
 }
 
 TEST(LanguageCodeTest, ValidButUnknowLocales) {
@@ -55,82 +69,59 @@ TEST(LanguageCodeTest, ToLegacyICUFormat) {
 
 TEST(LanguageCodeTest, ComplexLocales) {
   // Valid complex locales (lang-script-region) within length limit.
-  std::optional<LanguageCode> lc_zh =
-      LanguageCodeBuilder::GetInstance().FromString("zh-Hant-HK");
-  ASSERT_TRUE(lc_zh.has_value());
-  EXPECT_EQ(lc_zh->ToString(), "zh-Hant-HK");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("zh-Hant-HK"),
+              OptionalToString("zh-Hant-HK"));
 
-  std::optional<LanguageCode> lc_sr =
-      LanguageCodeBuilder::GetInstance().FromString("sr-Latn-RS");
-  ASSERT_TRUE(lc_sr.has_value());
-  EXPECT_EQ(lc_sr->ToString(), "sr-Latn-RS");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("sr-Latn-RS"),
+              OptionalToString("sr-Latn-RS"));
 }
 
 TEST(LanguageCodeTest, NumericRegions) {
   // Locales with numeric regions.
-  std::optional<LanguageCode> lc_es =
-      LanguageCodeBuilder::GetInstance().FromString("es-419");
-  ASSERT_TRUE(lc_es.has_value());
-  EXPECT_EQ(lc_es, language_codes::SPANISH_LATIN_AMERICAN());
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("es-419"),
+              Optional(language_codes::SPANISH_LATIN_AMERICAN()));
 }
 
 TEST(LanguageCodeTest, ThreeLetterLanguages) {
   // 3-letter language codes.
-  std::optional<LanguageCode> lc_fil =
-      LanguageCodeBuilder::GetInstance().FromString("fil-PH");
-  ASSERT_TRUE(lc_fil.has_value());
-  EXPECT_EQ(lc_fil->ToString(), "fil-PH");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("fil-PH"),
+              OptionalToString("fil-PH"));
 
   // Asturian (ast).
-  std::optional<LanguageCode> lc_ast =
-      LanguageCodeBuilder::GetInstance().FromString("ast-ES");
-  ASSERT_TRUE(lc_ast.has_value());
-  EXPECT_EQ(lc_ast->ToString(), "ast-ES");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("ast-ES"),
+              OptionalToString("ast-ES"));
 }
 
 TEST(LanguageCodeTest, Variants) {
   // Locales with variants.
-  std::optional<LanguageCode> lc_gb_scuse =
-      LanguageCodeBuilder::GetInstance().FromString("en-GB-scuse");
-  ASSERT_TRUE(lc_gb_scuse.has_value());
-  EXPECT_EQ(lc_gb_scuse->ToString(), "en-GB-scuse");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en-GB-scuse"),
+              OptionalToString("en-GB-scuse"));
 
-  std::optional<LanguageCode> lc_gb_oxendict =
-      LanguageCodeBuilder::GetInstance().FromString("en-GB-oxendict");
-  ASSERT_TRUE(lc_gb_oxendict.has_value());
-  EXPECT_EQ(lc_gb_oxendict->ToString(), "en-GB-oxendict");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en-GB-oxendict"),
+              OptionalToString("en-GB-oxendict"));
 
   // German with orthography variant.
-  std::optional<LanguageCode> lc_de_1996 =
-      LanguageCodeBuilder::GetInstance().FromString("de-1996");
-  ASSERT_TRUE(lc_de_1996.has_value());
-  EXPECT_EQ(lc_de_1996->ToString(), "de-1996");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("de-1996"),
+              OptionalToString("de-1996"));
 }
 
 TEST(LanguageCodeTest, Extensions) {
   // Locales with extensions.
-  std::optional<LanguageCode> lc_us_gregory =
-      LanguageCodeBuilder::GetInstance().FromString("en-US-u-ca-gregory");
-  ASSERT_TRUE(lc_us_gregory.has_value());
-  EXPECT_EQ(lc_us_gregory->ToString(), "en-US-u-ca-gregory");
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("en-US-u-ca-gregory"),
+      OptionalToString("en-US-u-ca-gregory"));
 
-  std::optional<LanguageCode> lc_us_posix =
-      LanguageCodeBuilder::GetInstance().FromString("en-US-u-va-posix");
-  ASSERT_TRUE(lc_us_posix.has_value());
-  EXPECT_EQ(lc_us_posix->ToString(), "en-US-u-va-posix");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en-US-u-va-posix"),
+              OptionalToString("en-US-u-va-posix"));
 
   // Extension with multiple keywords.
-  std::optional<LanguageCode> lc_complex_ext =
-      LanguageCodeBuilder::GetInstance().FromString(
-          "en-US-u-ca-gregory-co-emoji");
-  ASSERT_TRUE(lc_complex_ext.has_value());
-  EXPECT_EQ(lc_complex_ext->ToString(), "en-US-u-ca-gregory-co-emoji");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString(
+                  "en-US-u-ca-gregory-co-emoji"),
+              OptionalToString("en-US-u-ca-gregory-co-emoji"));
 
   // Private use extensions.
-  std::optional<LanguageCode> lc_private =
-      LanguageCodeBuilder::GetInstance().FromString("en-US-x-private");
-  ASSERT_TRUE(lc_private.has_value());
-  EXPECT_EQ(lc_private->ToString(), "en-US-x-private");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en-US-x-private"),
+              OptionalToString("en-US-x-private"));
 }
 
 TEST(LanguageCodeTest, LongBcp47Codes) {
@@ -138,10 +129,8 @@ TEST(LanguageCodeTest, LongBcp47Codes) {
   // chars). Azerbaijani in Cyrillic script as spoken in Russia with a variant
   // and extensions. "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk"
   const std::string long_code = "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk";
-  std::optional<LanguageCode> lc_long =
-      LanguageCodeBuilder::GetInstance().FromString(long_code);
-  ASSERT_TRUE(lc_long.has_value());
-  EXPECT_EQ(lc_long->ToString(), long_code);
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString(long_code),
+              OptionalToString(long_code));
 
   // Another long one: "en-US-u-ca-gregory-co-emoji-kb-true-hc-h24"
   // Note: LanguageCodeBuilder canonicalizes the extensions.
@@ -149,131 +138,228 @@ TEST(LanguageCodeTest, LongBcp47Codes) {
       "en-US-u-ca-gregory-co-emoji-kb-true-hc-h24";
   const std::string very_long_code_canonical =
       "en-US-u-ca-gregory-co-emoji-hc-h24-kb";
-  std::optional<LanguageCode> lc_very_long =
-      LanguageCodeBuilder::GetInstance().FromString(very_long_code);
-  ASSERT_TRUE(lc_very_long.has_value());
-  EXPECT_EQ(lc_very_long->ToString(), very_long_code_canonical);
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString(very_long_code),
+              OptionalToString(very_long_code_canonical));
 }
 
 TEST(LanguageCodeTest, PrivateUseTags) {
   // Basic private use tag.
-  std::optional<LanguageCode> lc_x_simple =
-      LanguageCodeBuilder::GetInstance().FromString("en-x-test");
-  ASSERT_TRUE(lc_x_simple.has_value());
-  EXPECT_EQ(lc_x_simple->ToString(), "en-x-test");
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en-x-test"),
+              OptionalToString("en-x-test"));
 
   // Long private use tag.
   const std::string long_x = "en-US-x-this-is-a-very-long-private-use-tag";
-  std::optional<LanguageCode> lc_x_long =
-      LanguageCodeBuilder::GetInstance().FromString(long_x);
-  ASSERT_TRUE(lc_x_long.has_value());
-  EXPECT_EQ(lc_x_long->ToString(), long_x);
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString(long_x),
+              OptionalToString(long_x));
 
   // Private use only not allowed.
-  std::optional<LanguageCode> lc_x_only =
-      LanguageCodeBuilder::GetInstance().FromString("x-private");
-  EXPECT_FALSE(lc_x_only.has_value());
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString("x-private"),
+            std::nullopt);
+}
+
+TEST(LanguageCodeTest, LocaleWithAtSign) {
+  // Locales with keywords after '@' should be converted to BCP47 extensions.
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("en-US@currency=USD"),
+      OptionalToString("en-US-u-cu-usd"));
+
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("ca_ES@valencia"),
+              OptionalToString("ca-ES-u-va-valencia"));
+
+  // Multiple keywords.
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString(
+                  "de_DE@calendar=gregorian;collation=phonebook"),
+              OptionalToString("de-DE-u-ca-gregory-co-phonebk"));
+
+  // Japanese line break and line word extensions.
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("ja@lb=normal"),
+              OptionalToString("ja-u-lb-normal"));
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("ja@lb=strict"),
+              OptionalToString("ja-u-lb-strict"));
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("ja@lb=loose"),
+              OptionalToString("ja-u-lb-loose"));
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("ja@lw=phrase"),
+              OptionalToString("ja-u-lw-phrase"));
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("ja@lb=normal;lw=phrase"),
+      OptionalToString("ja-u-lb-normal-lw-phrase"));
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("ja@lb=strict;lw=phrase"),
+      OptionalToString("ja-u-lb-strict-lw-phrase"));
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("ja@lb=loose;lw=phrase"),
+      OptionalToString("ja-u-lb-loose-lw-phrase"));
+
+  // Collation and attributes.
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("de@collation=phonebook"),
+      OptionalToString("de-u-co-phonebk"));
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("el@colCaseFirst=upper"),
+      OptionalToString("el-u-kf-upper"));
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("el-u-kf-upper"),
+              OptionalToString("el-u-kf-upper"));
+
+  // Timezone aliases.
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("en-US@timezone=pst8pdt"),
+      OptionalToString("en-US-u-tz-uslax"));
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("en-US@timezone=est5edt"),
+      OptionalToString("en-US-u-tz-usnyc"));
+}
+
+TEST(LanguageCodeTest, LegacyIcuRobustness) {
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en@"),
+              OptionalToString("en"));
+
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en@ab=cd;;;"),
+              OptionalToString("en-u-ab-cd"));
+
+  // Keywords without values.
+  // "en@calendar" -> "en-u-calendar" -> ICU4X might return "en".
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("en@calendar"),
+              OptionalToString("en-u-ca"));
+}
+
+TEST(LanguageCodeTest, LegacyIcuRepeatedKeys) {
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("en@calendar;calendar"),
+      OptionalToString("en-u-ca"));
+}
+
+TEST(LanguageCodeTest, LegacyIcuBadlyFormed) {
+  // Values with special characters.
+  // ICU4X canonicalizer will likely fail on these, returning nullopt, which is
+  // sane.
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString(
+                "en@calendar=../../etc/passwd"),
+            std::nullopt);
+  EXPECT_EQ(
+      LanguageCodeBuilder::GetInstance().FromString("en@calendar=foo bar"),
+      std::nullopt);
+}
+
+TEST(LanguageCodeTest, LegacyIcuLongCodes) {
+  // Extremely long input.
+  std::string long_string(1000, 'a');
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString(long_string + "_US"),
+            std::nullopt);
+  // Extremely long keyword value.
+  std::string long_value(1000, 'b');
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString("en@calendar=" +
+                                                          long_value),
+            std::nullopt);
+}
+
+TEST(LanguageCodeTest, LegacyIcuWellFormedCodes) {
+  // Mixed case keys (mapping is case-insensitive for keys).
+  EXPECT_THAT(
+      LanguageCodeBuilder::GetInstance().FromString("en@Calendar=gregorian"),
+      OptionalToString("en-u-ca-gregory"));
+
+  // Multiple equal signs.
+  // "en@calendar=gregorian=extra" -> "en-u-ca-gregorian=extra"
+  // ICU4X will likely reject "gregorian=extra" as a value.
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString(
+                "en@calendar=gregorian=extra"),
+            std::nullopt);
+
+  // Just an @ sign.
+  // "@" is < 2 chars, so it returns nullopt immediately.
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString("@"), std::nullopt);
+
+  // Just an _ sign.
+  EXPECT_EQ(LanguageCodeBuilder::GetInstance().FromString("_"), std::nullopt);
 }
 
 TEST(LanguageCodeTest, CopyAndMove) {
-  std::optional<LanguageCode> lc_original =
-      LanguageCodeBuilder::GetInstance().FromString("en-US");
-  ASSERT_TRUE(lc_original.has_value());
+  ASSERT_OK_AND_ASSIGN(LanguageCode lc_original,
+                       LanguageCodeBuilder::GetInstance().FromString("en-US"));
 
   // Copy constructor
-  LanguageCode lc_copy(*lc_original);
+  LanguageCode lc_copy(lc_original);
   EXPECT_EQ(lc_copy.ToString(), "en-US");
-  EXPECT_EQ(lc_copy, *lc_original);
+  EXPECT_EQ(lc_copy, lc_original);
 
   // Copy assignment
-  LanguageCode lc_copy_assign = *lc_original;
-  lc_copy_assign = *lc_original;
+  LanguageCode lc_copy_assign = lc_original;
+  lc_copy_assign = lc_original;
   EXPECT_EQ(lc_copy_assign.ToString(), "en-US");
-  EXPECT_EQ(lc_copy_assign, *lc_original);
+  EXPECT_EQ(lc_copy_assign, lc_original);
 
   // Move constructor
   LanguageCode lc_move(std::move(lc_copy));
   EXPECT_EQ(lc_move.ToString(), "en-US");
-  EXPECT_EQ(lc_move, *lc_original);
+  EXPECT_EQ(lc_move, lc_original);
 
   // Move assignment
-  LanguageCode lc_move_assign = *lc_original;
+  LanguageCode lc_move_assign = lc_original;
   lc_move_assign = std::move(lc_move);
   EXPECT_EQ(lc_move_assign.ToString(), "en-US");
-  EXPECT_EQ(lc_move_assign, *lc_original);
+  EXPECT_EQ(lc_move_assign, lc_original);
 }
 
 TEST(LanguageCodeTest, Canonicalize) {
   // Deprecated tags: "iw" -> "he"
-  std::optional<LanguageCode> lc_iw =
-      LanguageCodeBuilder::GetInstance().FromString("iw");
-  ASSERT_TRUE(lc_iw.has_value());
-  EXPECT_EQ(lc_iw, language_codes::HEBREW());
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("iw"),
+              Optional(language_codes::HEBREW()));
 
   // Deprecated tags: "cmn" -> "zh"
-  std::optional<LanguageCode> lc_cmn =
-      LanguageCodeBuilder::GetInstance().FromString("cmn");
-  ASSERT_TRUE(lc_cmn.has_value());
-  EXPECT_EQ(lc_cmn, language_codes::CHINESE());
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString("cmn"),
+              Optional(language_codes::CHINESE()));
 }
 
 TEST(LanguageCodeTest, GetRegionCode) {
   // Simple case.
-  auto lc_en_us = LanguageCodeBuilder::GetInstance().FromString("en-US");
-  ASSERT_TRUE(lc_en_us.has_value());
-  auto region_en_us = lc_en_us->GetRegionCode();
-  ASSERT_TRUE(region_en_us.has_value());
-  EXPECT_EQ(region_en_us->ToString(), "US");
+  ASSERT_OK_AND_ASSIGN(LanguageCode lc_en_us,
+                       LanguageCodeBuilder::GetInstance().FromString("en-US"));
+  EXPECT_THAT(lc_en_us.GetRegionCode(), OptionalRegionToString("US"));
 
   // No region.
-  auto lc_en = LanguageCodeBuilder::GetInstance().FromString("en");
-  ASSERT_TRUE(lc_en.has_value());
-  EXPECT_FALSE(lc_en->GetRegionCode().has_value());
+  ASSERT_OK_AND_ASSIGN(LanguageCode lc_en,
+                       LanguageCodeBuilder::GetInstance().FromString("en"));
+  EXPECT_FALSE(lc_en.GetRegionCode().has_value());
 
   // Language, Script, Region.
-  auto lc_zh_hant_tw =
-      LanguageCodeBuilder::GetInstance().FromString("zh-Hant-TW");
-  ASSERT_TRUE(lc_zh_hant_tw.has_value());
-  auto region_zh_hant_tw = lc_zh_hant_tw->GetRegionCode();
-  ASSERT_TRUE(region_zh_hant_tw.has_value());
-  EXPECT_EQ(region_zh_hant_tw->ToString(), "TW");
+  ASSERT_OK_AND_ASSIGN(
+      LanguageCode lc_zh_hant_tw,
+      LanguageCodeBuilder::GetInstance().FromString("zh-Hant-TW"));
+  EXPECT_THAT(lc_zh_hant_tw.GetRegionCode(), OptionalRegionToString("TW"));
 
   // Numeric region.
-  auto lc_es_419 = LanguageCodeBuilder::GetInstance().FromString("es-419");
-  ASSERT_TRUE(lc_es_419.has_value());
-  auto region_es_419 = lc_es_419->GetRegionCode();
-  ASSERT_TRUE(region_es_419.has_value());
-  EXPECT_EQ(region_es_419->ToString(), "419");
+  ASSERT_OK_AND_ASSIGN(LanguageCode lc_es_419,
+                       LanguageCodeBuilder::GetInstance().FromString("es-419"));
+  EXPECT_THAT(lc_es_419.GetRegionCode(), OptionalRegionToString("419"));
 
   // Script but no region.
-  auto lc_sr_latn = LanguageCodeBuilder::GetInstance().FromString("sr-Latn");
-  ASSERT_TRUE(lc_sr_latn.has_value());
-  EXPECT_FALSE(lc_sr_latn->GetRegionCode().has_value());
+  ASSERT_OK_AND_ASSIGN(
+      LanguageCode lc_sr_latn,
+      LanguageCodeBuilder::GetInstance().FromString("sr-Latn"));
+  EXPECT_FALSE(lc_sr_latn.GetRegionCode().has_value());
 
   // Complex case with extensions.
-  auto lc_complex =
-      LanguageCodeBuilder::GetInstance().FromString("en-US-u-ca-gregory");
-  ASSERT_TRUE(lc_complex.has_value());
-  auto region_complex = lc_complex->GetRegionCode();
-  ASSERT_TRUE(region_complex.has_value());
-  EXPECT_EQ(region_complex->ToString(), "US");
+  ASSERT_OK_AND_ASSIGN(
+      LanguageCode lc_complex,
+      LanguageCodeBuilder::GetInstance().FromString("en-US-u-ca-gregory"));
+  EXPECT_THAT(lc_complex.GetRegionCode(), OptionalRegionToString("US"));
 
   // Extension but no region.
-  auto lc_ext_no_region =
-      LanguageCodeBuilder::GetInstance().FromString("en-u-ca-gregory");
-  ASSERT_TRUE(lc_ext_no_region.has_value());
-  EXPECT_FALSE(lc_ext_no_region->GetRegionCode().has_value());
+  ASSERT_OK_AND_ASSIGN(
+      LanguageCode lc_ext_no_region,
+      LanguageCodeBuilder::GetInstance().FromString("en-u-ca-gregory"));
+  EXPECT_FALSE(lc_ext_no_region.GetRegionCode().has_value());
 
   // Script + Extension but no region.
-  auto lc_script_ext_no_region =
-      LanguageCodeBuilder::GetInstance().FromString("sr-Latn-u-ca-gregory");
-  ASSERT_TRUE(lc_script_ext_no_region.has_value());
-  EXPECT_FALSE(lc_script_ext_no_region->GetRegionCode().has_value());
+  ASSERT_OK_AND_ASSIGN(
+      LanguageCode lc_script_ext_no_region,
+      LanguageCodeBuilder::GetInstance().FromString("sr-Latn-u-ca-gregory"));
+  EXPECT_FALSE(lc_script_ext_no_region.GetRegionCode().has_value());
 }
 
 struct LanguageTestData {
-  std::string tag;
-  std::string name;
+  std::string_view tag;
+  std::string_view name;
   const LanguageCode& (*get_code)();
 };
 
@@ -284,11 +370,8 @@ class LanguageCodeAllCodesTest
 // work as expected.
 TEST_P(LanguageCodeAllCodesTest, VerifyAllLangCodeFunctions) {
   const LanguageTestData& param = GetParam();
-  std::optional<LanguageCode> lc =
-      LanguageCodeBuilder::GetInstance().FromString(param.tag);
-  ASSERT_TRUE(lc.has_value());
-  EXPECT_EQ(lc->ToString(), param.tag);
-  EXPECT_EQ(*lc, param.get_code());
+  EXPECT_THAT(LanguageCodeBuilder::GetInstance().FromString(param.tag),
+              Optional(param.get_code()));
 }
 
 const LanguageTestData kTestData[] = {
@@ -303,7 +386,7 @@ INSTANTIATE_TEST_SUITE_P(
     LanguageCodeAllCodesTest,
     testing::ValuesIn(kTestData),
     [](const testing::TestParamInfo<LanguageTestData>& info) {
-      return info.param.name;
+      return std::string(info.param.name);
     });
 
 }  // namespace base

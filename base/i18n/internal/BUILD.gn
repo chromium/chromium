@@ -1,0 +1,58 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//build/rust/rust_static_library.gni")
+
+source_set("internal") {
+  sources = [
+    "immutable_string.cc",
+    "immutable_string.h",
+    "legacy_icu_converter.cc",
+    "legacy_icu_converter.h",
+  ]
+  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+  deps = [
+    "//base",
+    "//base/i18n:base_i18n_export",
+  ]
+  visibility = [ "//base/i18n:*" ]
+}
+
+rust_static_library("i18n_icu_bridge_ffi") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "icu_bridge.rs"
+  sources = [ "icu_bridge.rs" ]
+  cxx_bindings = [ "icu_bridge.rs" ]
+  build_native_rust_unit_tests = true
+  deps = [
+    "//third_party/rust/icu_locale/v2:lib",
+    "//third_party/rust/icu_locale_core/v2:lib",
+    "//third_party/rust/icu_provider/v2:lib",
+    "//third_party/rust/log/v0_4:lib",
+  ]
+  visibility = [
+    ":*",
+    "//base/i18n:*",
+  ]
+}
+
+action("canonical_language_codes_gen") {
+  script = "//tools/i18n/generate_canonical_locales_list.py"
+  outputs = [ "$root_gen_dir/base/i18n/internal/canonical_language_codes.inc" ]
+  args = rebase_path(outputs, root_build_dir) + [ "${enable_pseudolocales}" ]
+  visibility = [
+    ":*",
+    "//base/i18n:*",
+  ]
+}
+
+source_set("canonical_language_codes") {
+  deps = [ ":canonical_language_codes_gen" ]
+  sources = [ "$root_gen_dir/base/i18n/internal/canonical_language_codes.inc" ]
+  visibility = [
+    ":*",
+    "//base/i18n:*",
+  ]
+}
