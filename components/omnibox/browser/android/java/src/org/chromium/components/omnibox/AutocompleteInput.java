@@ -90,6 +90,20 @@ public class AutocompleteInput implements UserData {
             this.fullName = fullName;
             this.enteredViaSpace = enteredViaSpace;
         }
+
+        @Override
+        public boolean equals(@Nullable Object o) {
+            if (this == o) return true;
+            if (!(o instanceof SiteSearchData that)) return false;
+            return enteredViaSpace == that.enteredViaSpace
+                    && Objects.equals(keyword, that.keyword)
+                    && Objects.equals(fullName, that.fullName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(keyword, fullName, enteredViaSpace);
+        }
     }
 
     // LINT.IfChange(Members)
@@ -109,6 +123,7 @@ public class AutocompleteInput implements UserData {
     private String mInitialUserText = "";
     private final SettableNonNullObservableSupplier<String> mUserText =
             ObservableSuppliers.createNonNull("");
+    private @Nullable String mPreviewText;
     private final SettableNonNullObservableSupplier<Boolean> mAllowUserTextAutocompletion =
             ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
@@ -155,6 +170,7 @@ public class AutocompleteInput implements UserData {
         mFocusReason = other.mFocusReason;
         mModelMode = other.mModelMode;
         mUserText.set(other.mUserText.get());
+        mPreviewText = other.mPreviewText;
         mAllowUserTextAutocompletion.set(other.mAllowUserTextAutocompletion.get());
         mInitialUserText = other.mInitialUserText;
         mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
@@ -324,6 +340,8 @@ public class AutocompleteInput implements UserData {
     public AutocompleteInput setUserText(@Nullable String text) {
         if (text == null) text = "";
 
+        mPreviewText = null;
+
         String oldText = mUserText.get();
         if (TextUtils.equals(text, oldText)) return this;
 
@@ -408,6 +426,46 @@ public class AutocompleteInput implements UserData {
     /** Returns the supplier for the text as currently typed by the User. */
     public NonNullObservableSupplier<String> getUserTextSupplier() {
         return mUserText;
+    }
+
+    /**
+     * Sets the preview text. If the preview text is empty or same as user text, it is reset to
+     * null.
+     *
+     * @param text The preview text.
+     * @return The AutocompleteInput object.
+     */
+    public AutocompleteInput setPreviewText(@Nullable String text) {
+        if (text == null || TextUtils.equals(mUserText.get(), text)) {
+            mPreviewText = null;
+        } else {
+            mPreviewText = text;
+        }
+        return this;
+    }
+
+    /** Returns the preview text if set, otherwise the user text. */
+    public String getPreviewText() {
+        return mPreviewText == null ? mUserText.get() : mPreviewText;
+    }
+
+    /** Returns whether there is an active preview text. */
+    public boolean hasPreviewText() {
+        return mPreviewText != null;
+    }
+
+    /** Resets the preview text. */
+    public AutocompleteInput resetPreviewText() {
+        return setPreviewText(null);
+    }
+
+    /** Commits the preview text as the user text. */
+    public AutocompleteInput commitPreviewText() {
+        if (hasPreviewText()) {
+            String textToCommit = mPreviewText;
+            setUserText(textToCommit);
+        }
+        return this;
     }
 
     /** Sets whether user text should be autocompleted. */
@@ -498,6 +556,7 @@ public class AutocompleteInput implements UserData {
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
         mUserText.set("");
+        mPreviewText = null;
         mAllowUserTextAutocompletion.set(true);
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mSiteSearchData.set(null);

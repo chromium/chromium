@@ -1237,13 +1237,24 @@ class AutocompleteMediator
     private void onKeywordModeEntered(@Nullable SiteSearchData siteSearchData) {
         if (!isInInputSession()) return;
 
+        // Detect preview based on the item selection lock state.
+        // If mIgnoreOmniboxItemSelection is false, it means we are actively navigating
+        // suggestions (e.g. via DPAD/TAB) and focusing on the action button.
+        boolean isPreview = !mIgnoreOmniboxItemSelection && siteSearchData != null;
+
         // If explicitly requested to exit keyword mode (siteSearchData == null),
         // we should only do so if we are actively moving focus (mIgnoreOmniboxItemSelection is
         // false).
         // Otherwise, it might be the chip losing focus because the user started typing.
-        if (mIgnoreOmniboxItemSelection && siteSearchData == null) return;
+        // Bypass this check if we are exiting a preview.
+        if (mIgnoreOmniboxItemSelection
+                && siteSearchData == null
+                && !mAutocompleteInput.hasPreviewText()) {
+            return;
+        }
 
         mShouldPreventOmniboxAutocomplete = true;
+        boolean wasPreview = mAutocompleteInput.hasPreviewText();
 
         if (siteSearchData != null) {
             mIgnoreOmniboxItemSelection = true;
@@ -1264,18 +1275,37 @@ class AutocompleteMediator
                 query = currentText.substring(firstSpaceIndex + 1).trim();
             }
 
-            mAutocompleteInput.setUserText(query);
+            if (isPreview) {
+                mAutocompleteInput.setPreviewText(query);
+            } else {
+                mAutocompleteInput.setUserText(query);
+            }
             mAutocompleteInput.setSiteSearchData(siteSearchData);
-            mDelegate.setOmniboxEditingText(query);
+            mDelegate.setOmniboxEditingText(mAutocompleteInput.getPreviewText());
 
         } else {
             // When explicitly clearing keyword mode, we just update the data.
             // Do not clear the text. The text belongs to the user or the suggestion.
             mAutocompleteInput.setSiteSearchData(null);
+            if (wasPreview) {
+                mAutocompleteInput.resetPreviewText();
+                String restoredText = mAutocompleteInput.getPreviewText();
+                mDelegate.setOmniboxEditingText(restoredText);
+                mIgnoreOmniboxItemSelection = false;
+            }
         }
 
         mShouldPreventOmniboxAutocomplete = false;
-        onInputChanged();
+
+        if (siteSearchData != null) {
+            if (!isPreview) {
+                onInputChanged();
+            }
+        } else {
+            if (!wasPreview) {
+                onInputChanged();
+            }
+        }
     }
 
     private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {

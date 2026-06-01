@@ -1844,13 +1844,68 @@ public class AutocompleteMediatorUnitTest {
         verify(mOmniboxActionDelegate)
                 .setOnKeywordModeEnteredCb(mKeywordModeEnteredCaptor.capture());
 
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        clearInvocations(mAutocompleteController);
+
         SiteSearchData data = new SiteSearchData("keyword", "Full Name");
-        mMediator.allowPendingItemSelection();
         mKeywordModeEnteredCaptor.getValue().accept(data);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTextStateProvider).setSiteSearchChip("Full Name");
         assertEquals("", session.getAutocompleteInput().getUserText());
         assertEquals(data, session.getAutocompleteInput().getSiteSearchData());
+
+        verify(mAutocompleteController).start(any(), any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void onKeywordModeEntered_previewDoesNotTriggerAutocomplete() {
+        int pageClassification = PageClassification.BLANK_VALUE;
+        var session = createSession(JUnitTestGURLs.BLUE_1, "Title", pageClassification);
+        session.getAutocompleteInput().setUserText("original text");
+        mMediator.beginInput(session);
+
+        verify(mOmniboxActionDelegate)
+                .setOnKeywordModeEnteredCb(mKeywordModeEnteredCaptor.capture());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        clearInvocations(mAutocompleteController);
+        clearInvocations(mTextStateProvider);
+        clearInvocations(mAutocompleteDelegate);
+
+        // Enter preview
+        SiteSearchData data =
+                new SiteSearchData("keyword", "Full Name", /* enteredViaSpace= */ false);
+        mMediator.allowPendingItemSelection();
+        mKeywordModeEnteredCaptor.getValue().accept(data);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTextStateProvider).setSiteSearchChip("Full Name");
+        assertEquals("original text", session.getAutocompleteInput().getUserText());
+        assertEquals("", session.getAutocompleteInput().getPreviewText());
+        assertTrue(session.getAutocompleteInput().hasPreviewText());
+        verify(mAutocompleteDelegate).setOmniboxEditingText("");
+
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+
+        // Exit preview
+        clearInvocations(mAutocompleteController);
+        clearInvocations(mTextStateProvider);
+        clearInvocations(mAutocompleteDelegate);
+
+        mKeywordModeEnteredCaptor.getValue().accept(null);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertEquals("original text", session.getAutocompleteInput().getUserText());
+        assertEquals("original text", session.getAutocompleteInput().getPreviewText());
+        assertFalse(session.getAutocompleteInput().hasPreviewText());
+        verify(mAutocompleteDelegate).setOmniboxEditingText("original text");
+
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
     }
 
     @Test
